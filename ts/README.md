@@ -1,0 +1,1 @@
+This folder contains example generated code that the client generator will target.

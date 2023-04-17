@@ -1,0 +1,32 @@
+{
+  "name": "typescript-node-project",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "rm -rf dist && tsup src/main.ts --format esm",
+    "watch": "tsup src/main.ts --watch --format esm",
+    "check": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "eslint": "^8.37.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.8.7",
+    "typescript": "^5.0.3"
+  },
+  "dependencies": {
+    "@mysten/bcs": "^0.7.0",
+    "@mysten/sui.js": "^0.32.1",
+    "commander": "^10.0.0",
+    "tsup": "^6.7.0"
+  }
+}

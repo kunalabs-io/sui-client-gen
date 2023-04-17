@@ -1,0 +1,17 @@
+[package]
+name = "generator"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = "1.27.0"
+anyhow = "1.0.69"
+futures = "0.3.25"
+
+move-model = { git = "https://github.com/MystenLabs/sui", subdir = "external-crates/move/move-model", branch = "releases/sui-v0.31.0-release" }
+sui-sdk = { git = "https://github.com/MystenLabs/sui", subdir = "crates/sui-sdk", branch = "releases/sui-v0.31.0-release" }
+sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui", subdir = "crates/sui-json-rpc-types", branch = "releases/sui-v0.31.0-release" }
+move-core-types = { git = "https://github.com/MystenLabs/sui", subdir = "external-crates/move/move-core/types", branch = "releases/sui-v0.31.0-release" }
+move-binary-format = { git = "https://github.com/MystenLabs/sui", subdir = "external-crates/move/move-binary-format", branch = "releases/sui-v0.31.0-release" }
+move-symbol-pool = { git = "https://github.com/MystenLabs/sui", subdir = "external-crates/move/move-symbol-pool", branch = "releases/sui-v0.31.0-release" }
+move-bytecode-utils = { git = "https://github.com/MystenLabs/sui", subdir = "external-crates/move/move-bytecode-utils", branch = "releases/sui-v0.31.0-release" }
