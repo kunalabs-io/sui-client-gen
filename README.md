@@ -4,11 +4,11 @@ A tool for generating TS SDKs for Sui Move smart contracts. Supports code genera
 
 ## Caveats
 - When specifying both source and on-chain packages, the generator will currently generate two separate dependency graphs (one for on-chain and one for source). This is due to a technical detail and will be resolved in a future version so that only a single dependency graph is generated (https://github.com/kunalabs-io/sui-client-gen/issues/1#issuecomment-1554754842).
-- Since whitespace detection relies on some Rust nightly features which are currently unstable, the generated code is not formatted nicely. Usage of formatters on the generated code (e.g., `prettier`, `eslint`) is recommended.
+- Since whitespace detection relies on some Rust nightly features which are currently unstable (https://github.com/udoprog/genco/issues/39#issuecomment-1569076737), the generated code is not formatted nicely. Usage of formatters on the generated code (e.g., `prettier`, `eslint`) is recommended.
 
 ## Getting Started
 
-1) Install the generator: `cargo install sui-client-gen`
+1) Install the generator: `cargo install --locked --git https://github.com/kunalabs-io/sui-client-gen.git`
 
 2) Create a new directory and in it a `gen.toml` file like so:
 
