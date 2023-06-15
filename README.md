@@ -18,7 +18,7 @@ A tool for generating TS SDKs for Sui Move smart contracts. Supports code genera
 rpc = "https://fullnode.devnet.sui.io:443"
 
 [packages]
-# reference package source code (syntax same as in Move.toml):
+# based on source code (syntax same as in Move.toml):
 DeepBook = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/deepbook", rev = "releases/sui-v1.4.0-release" }
 # an on-chain package:
 FooPackage = { address = "0x12345" }
