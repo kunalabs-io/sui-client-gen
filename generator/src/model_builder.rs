@@ -100,8 +100,10 @@ impl Models {
         }
 
         // TODO: allow some of these options to be passed in as flags
-        let resolved_graph = MoveBuildConfig::default()
-            .resolution_graph_for_package(stub_path, &mut io::stderr())?;
+        let mut build_config = MoveBuildConfig::default();
+        build_config.skip_fetch_latest_git_deps = true;
+        let resolved_graph =
+            build_config.resolution_graph_for_package(stub_path, &mut io::stderr())?;
 
         let source_addr_map = find_address_origins(&resolved_graph);
         let source_published_at = resolve_published_at(&resolved_graph, &source_addr_map);
