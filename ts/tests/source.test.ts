@@ -200,7 +200,7 @@ it('creates and decodes an object with object as type param', async () => {
     other: new StructFromOtherModule(false),
   })
 
-  const de = bcs.de(`${Foo.$typeName}<${T}>`, foo.data.bcs.bcsBytes, 'base58')
+  const de = bcs.de(`${Foo.$typeName}<${T}>`, foo.data.bcs.bcsBytes, 'base64')
 
   expect(Foo.fromFields(T, de)).toEqual(exp)
   expect(Foo.fromFieldsWithTypes(foo.data.content)).toEqual(exp)
@@ -371,7 +371,7 @@ it('creates and decodes Foo with vector of objects as type param', async () => {
     other: new StructFromOtherModule(false),
   })
 
-  const de = bcs.de(`${Foo.$typeName}<${T}>`, foo.data.bcs.bcsBytes, 'base58')
+  const de = bcs.de(`${Foo.$typeName}<${T}>`, foo.data.bcs.bcsBytes, 'base64')
 
   expect(Foo.fromFields(T, de)).toEqual(exp)
 
