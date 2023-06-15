@@ -26,3 +26,7 @@ FooPackage = { address = "0x12345" }
 
 3) Run the generator from inside the directory: `sui-client-gen`
 4) Run the linter on the generated code: `pnpm eslint . --fix`
+
+## Docs
+
+For more info see the design doc https://github.com/kunalabs-io/sui-client-gen/issues/1
