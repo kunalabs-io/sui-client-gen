@@ -26,6 +26,7 @@ use std::io::{self, Write};
 use std::path::Path;
 use sui_json_rpc_types::SuiRawMovePackage;
 use sui_move_build::gather_published_ids;
+use sui_sdk::types::base_types::SequenceNumber;
 use sui_sdk::types::move_package::UpgradeInfo;
 use tempfile::tempdir;
 
@@ -321,13 +322,18 @@ async fn resolve_original_package_id(
         .iter()
         .map(|origin| AccountAddress::from(origin.package))
         .collect();
+
+    // in case of framework packages which get upgraded through a system upgrade, the first version can be != 1
+    let mut min_version: SequenceNumber = u64::MAX.into();
+    let mut addr = addr;
     for pkg in dl.get_multi(origin_pkgs).await? {
-        if pkg.version == 1.into() {
-            return Ok(pkg.id.into());
+        if pkg.version < min_version {
+            min_version = pkg.version;
+            addr = pkg.id.into();
         }
     }
 
-    panic!("Could not find original package id for {}", addr);
+    Ok(addr)
 }
 
 /// Add compiled modules to the model. The `modules` list must be
