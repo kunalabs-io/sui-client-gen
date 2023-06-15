@@ -1,0 +1,8 @@
+[config]
+rpc = "https://fullnode.devnet.sui.io:443"
+
+[packages]
+AMM = { local = "../../../move/amm" }
+Fixture = { local = "../../../move/fixture" }
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "releases/sui-v1.3.0-release" }
+# MoveStdlib = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "releases/sui-v1.3.0-release" }

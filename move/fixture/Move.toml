@@ -1,10 +1,11 @@
 [package]
-name = "fixture"
+name = "Fixture"
 version = "0.0.1"
+published-at = "0x8ca3a4eb60a07bf0dd80dccfcec25a427275fc5af85ca9af63e34661c36a4f20"
+#published-at = "0xcb3ff9e555263ad536f9bbca2ee9762ba57a454a02cb9248aecddf4b4af0b340"
 
 [dependencies]
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "releases/sui-v0.31.0-release" }
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "releases/sui-v1.3.0-release" }
 
 [addresses]
-fixture =  "0x0"
-sui =  "0x2"
+fixture = "0x8ca3a4eb60a07bf0dd80dccfcec25a427275fc5af85ca9af63e34661c36a4f20"

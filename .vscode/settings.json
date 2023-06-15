@@ -16,4 +16,5 @@
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "editor.tabSize": 2
   },
+  "rust-analyzer.checkOnSave.command": "clippy"
 }

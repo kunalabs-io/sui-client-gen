@@ -1,0 +1,10 @@
+[package]
+name = "AMM"
+version = "0.1.0"
+published-at = "0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "releases/sui-v1.3.0-release" }
+
+[addresses]
+amm = "0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc"

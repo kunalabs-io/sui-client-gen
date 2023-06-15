@@ -2,13 +2,13 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "lib": ["ESNext"],
+    "lib": [
+      "ESNext"
+    ],
     "moduleResolution": "Node",
     "composite": true,
-
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-
     "strict": true,
     "useDefineForClassFields": true,
     "allowJs": false,
@@ -17,8 +17,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-
-    "baseUrl": "src",
   },
-  "include": ["src/", ".eslintrc.cjs"]
+  "include": [
+    "example/",
+    "tests/",
+    ".eslintrc.cjs"
+  ]
 }

@@ -1,3 +1,28 @@
 # sui-client-gen
 
-See the design doc here https://github.com/kunalabs-io/sui-client-gen/issues/1.
+A tool for generating TS SDKs for Sui Move smart contracts. Supports code generation both for source code and on-chain packages.
+
+## Caveats
+- When specifying both source and on-chain packages, the generator will currently generate two separate dependency graphs (one for on-chain and one for source). This is due to a technical detail and will be resolved in a future version so that only a single dependency graph is generated (https://github.com/kunalabs-io/sui-client-gen/issues/1#issuecomment-1554754842).
+- Since whitespace detection relies on some Rust nightly features which are currently unstable, the generated code is not formatted nicely. Usage of formatters on the generated code (e.g., `prettier`, `eslint`) is recommended.
+
+## Getting Started
+
+1) Install the generator: `cargo install sui-client-gen`
+
+2) Create a new directory and in it a `gen.toml` file like so:
+
+```toml
+[config]
+# will be set to mainnet by default if ommitted
+rpc = "https://fullnode.devnet.sui.io:443"
+
+[packages]
+# reference package source code (syntax same as in Move.toml):
+DeepBook = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/deepbook", rev = "releases/sui-v1.4.0-release" }
+# an on-chain package:
+FooPackage = { address = "0x12345" }
+```
+
+3) Run the generator from inside the directory: `sui-client-gen`
+4) Run the linter on the generated code: `pnpm eslint . --fix`
