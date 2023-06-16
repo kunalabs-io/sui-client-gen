@@ -23,7 +23,7 @@ rpc = "https://fullnode.devnet.sui.io:443"
 # based on source code (syntax same as in Move.toml):
 DeepBook = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/deepbook", rev = "releases/sui-v1.4.0-release" }
 # an on-chain package:
-FooPackage = { address = "0x12345" }
+FooPackage = { id = "0x12345" }
 ```
 
 3) Run the generator from inside the directory: `sui-client-gen`

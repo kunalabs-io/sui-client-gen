@@ -19,7 +19,7 @@ pub struct Config {
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct OnChainPackage {
-    pub address: AccountAddress,
+    pub id: AccountAddress,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -120,11 +120,11 @@ pub fn parse_package(pkg_name: &str, tval: TV) -> Result<Package> {
         bail!("Malformed dependency {}", tval);
     };
 
-    if table.contains_key("address") {
-        let Some(Ok(address)) = table.get("address").unwrap().as_str().map(AccountAddress::from_hex_literal) else {
+    if table.contains_key("id") {
+        let Some(Ok(id)) = table.get("id").unwrap().as_str().map(AccountAddress::from_hex_literal) else {
             bail!("Invalid address");
         };
-        Ok(Package::OnChain(OnChainPackage { address }))
+        Ok(Package::OnChain(OnChainPackage { id }))
     } else {
         Ok(Package::Dependency(parse_dependency(pkg_name, tval)?))
     }
@@ -143,7 +143,7 @@ mod tests {
         rpc = "https://fullnode.mainnet.sui.io:443"
 
         [packages]
-        deepbook = { address = "0xdee9" }
+        deepbook = { id = "0xdee9" }
         amm = { local = "../move/amm" }
         fixture = { local = "../move/fixture" }
         framework = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "releases/sui-v1.0.0-release" }
@@ -170,7 +170,7 @@ mod tests {
                 (
                     "deepbook".into(),
                     Package::OnChain(OnChainPackage {
-                        address: AccountAddress::from_hex_literal("0xdee9").unwrap(),
+                        id: AccountAddress::from_hex_literal("0xdee9").unwrap(),
                     }),
                 ),
                 (

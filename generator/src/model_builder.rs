@@ -41,15 +41,15 @@ struct SubstTOML<'a>(&'a PM::Substitution);
 pub struct Models {
     /// Move model for source packages defined in gen.toml
     pub source_model: GlobalEnv,
-    /// Map from account address to package name for source packages
-    pub source_addr_map: BTreeMap<AccountAddress, PM::PackageName>,
-    /// Map from original package address to the published at address for source packages
+    /// Map from id to package name for source packages
+    pub source_id_map: BTreeMap<AccountAddress, PM::PackageName>,
+    /// Map from original package id to the published at id for source packages
     pub source_published_at: BTreeMap<AccountAddress, AccountAddress>,
     /// Move model for on-chain packages defined in gen.toml
     pub on_chain_model: GlobalEnv,
-    /// Map from account address to package name for on-chain packages
-    pub on_chain_addr_map: BTreeMap<AccountAddress, PM::PackageName>,
-    /// Map from original package address to the published at address for on-chain packages
+    /// Map from package id to package name for on-chain packages
+    pub on_chain_id_map: BTreeMap<AccountAddress, PM::PackageName>,
+    /// Map from original package id to the published at id for on-chain packages
     pub on_chain_published_at: BTreeMap<AccountAddress, AccountAddress>,
 }
 
@@ -106,8 +106,8 @@ impl Models {
         let resolved_graph =
             build_config.resolution_graph_for_package(stub_path, &mut io::stderr())?;
 
-        let source_addr_map = find_address_origins(&resolved_graph);
-        let source_published_at = resolve_published_at(&resolved_graph, &source_addr_map);
+        let source_id_map = find_address_origins(&resolved_graph);
+        let source_published_at = resolve_published_at(&resolved_graph, &source_id_map);
 
         let source_model = ModelBuilder::create(
             resolved_graph,
@@ -126,14 +126,12 @@ impl Models {
         }
 
         // build a model for on-chain packages
-        let (pkg_addrs, original_map) = resolve_on_chain_packages(
-            cache,
-            on_chain_pkgs.iter().map(|(_, pkg)| pkg.address).collect(),
-        )
-        .await?;
+        let (pkg_ids, original_map) =
+            resolve_on_chain_packages(cache, on_chain_pkgs.iter().map(|(_, pkg)| pkg.id).collect())
+                .await?;
 
         let mut modules = vec![];
-        let pkgs = cache.get_multi(pkg_addrs).await?;
+        let pkgs = cache.get_multi(pkg_ids).await?;
         for pkg in pkgs {
             let SuiRawMovePackage { module_map, .. } = pkg;
             for (_, bytes) in module_map {
@@ -154,21 +152,21 @@ impl Models {
             bail!("On-chain model has errors.");
         }
 
-        let mut on_chain_addr_map: BTreeMap<AccountAddress, PM::PackageName> = BTreeMap::new();
+        let mut on_chain_id_map: BTreeMap<AccountAddress, PM::PackageName> = BTreeMap::new();
         let mut on_chain_published_at: BTreeMap<AccountAddress, AccountAddress> = BTreeMap::new();
         for (name, pkg) in on_chain_pkgs {
-            let original_addr = original_map.get(&pkg.address).unwrap();
+            let original_id = original_map.get(&pkg.id).unwrap();
 
-            on_chain_addr_map.insert(*original_addr, name);
-            on_chain_published_at.insert(*original_addr, pkg.address);
+            on_chain_id_map.insert(*original_id, name);
+            on_chain_published_at.insert(*original_id, pkg.id);
         }
 
         Ok(Self {
             source_model,
-            source_addr_map,
+            source_id_map,
             source_published_at,
             on_chain_model,
-            on_chain_addr_map,
+            on_chain_id_map,
             on_chain_published_at,
         })
     }
@@ -200,17 +198,17 @@ fn find_address_origins(graph: &ResolvedGraph) -> BTreeMap<AccountAddress, PM::P
 }
 
 /// Resolve published_at addresses by gathering published ids from the graph and matching
-/// them with package addresses using the package name -> address map.
+/// them with package ids using the package name -> address map.
 fn resolve_published_at(
     graph: &ResolvedGraph,
-    addr_map: &BTreeMap<AccountAddress, PM::PackageName>,
+    id_map: &BTreeMap<AccountAddress, PM::PackageName>,
 ) -> BTreeMap<AccountAddress, AccountAddress> {
     let (_, dependency_ids) = gather_published_ids(graph);
 
     let mut published_at: BTreeMap<AccountAddress, AccountAddress> = BTreeMap::new();
-    for (addr, name) in addr_map {
-        if let Some(id) = dependency_ids.published.get(name) {
-            published_at.insert(*addr, **id);
+    for (pkg_id, name) in id_map {
+        if let Some(published_id) = dependency_ids.published.get(name) {
+            published_at.insert(*pkg_id, **published_id);
         }
     }
 
@@ -224,25 +222,21 @@ fn resolve_published_at(
  */
 async fn resolve_on_chain_packages(
     dl: &mut PackageCache<'_>,
-    addresses: Vec<AccountAddress>,
+    ids: Vec<AccountAddress>,
 ) -> Result<(
     Vec<AccountAddress>,
     BTreeMap<AccountAddress, AccountAddress>,
 )> {
-    let top_level_origins = future::join_all(addresses.iter().map(|addr| {
+    let top_level_origins = future::join_all(ids.iter().map(|addr| {
         let mut dl = dl.clone();
         async move { resolve_original_package_id(&mut dl, *addr).await.unwrap() }
     }))
     .await;
 
-    let mut original_map: BTreeMap<_, _> = addresses
-        .clone()
-        .into_iter()
-        .zip(top_level_origins)
-        .collect();
+    let mut original_map: BTreeMap<_, _> = ids.clone().into_iter().zip(top_level_origins).collect();
     let mut highest_versions: BTreeMap<AccountAddress, UpgradeInfo> = BTreeMap::new();
 
-    for pkg in dl.get_multi(addresses.clone()).await? {
+    for pkg in dl.get_multi(ids.clone()).await? {
         let original_id = original_map.get(&pkg.id.into()).cloned().unwrap();
         match highest_versions.get(&original_id) {
             None => {
@@ -269,7 +263,7 @@ async fn resolve_on_chain_packages(
     }
 
     let mut processed: HashSet<AccountAddress> = HashSet::new();
-    let mut pkg_queue: HashSet<AccountAddress> = addresses.into_iter().collect();
+    let mut pkg_queue: HashSet<AccountAddress> = ids.into_iter().collect();
 
     while !pkg_queue.is_empty() {
         for pkg in pkg_queue.iter() {
@@ -309,12 +303,12 @@ async fn resolve_on_chain_packages(
 
 async fn resolve_original_package_id(
     dl: &mut PackageCache<'_>,
-    addr: AccountAddress,
+    id: AccountAddress,
 ) -> Result<AccountAddress> {
-    let pkg = dl.get(addr).await?;
+    let pkg = dl.get(id).await?;
 
     if pkg.version == 1.into() {
-        return Ok(addr);
+        return Ok(id);
     }
 
     let origin_pkgs = pkg
@@ -325,15 +319,15 @@ async fn resolve_original_package_id(
 
     // in case of framework packages which get upgraded through a system upgrade, the first version can be != 1
     let mut min_version: SequenceNumber = u64::MAX.into();
-    let mut addr = addr;
+    let mut id = id;
     for pkg in dl.get_multi(origin_pkgs).await? {
         if pkg.version < min_version {
             min_version = pkg.version;
-            addr = pkg.id.into();
+            id = pkg.id.into();
         }
     }
 
-    Ok(addr)
+    Ok(id)
 }
 
 /// Add compiled modules to the model. The `modules` list must be

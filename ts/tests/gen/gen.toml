@@ -2,7 +2,7 @@
 rpc = "https://fullnode.devnet.sui.io:443"
 
 [packages]
-FixtureChain = { address = "0xcb3ff9e555263ad536f9bbca2ee9762ba57a454a02cb9248aecddf4b4af0b340" }
+FixtureChain = { id = "0xcb3ff9e555263ad536f9bbca2ee9762ba57a454a02cb9248aecddf4b4af0b340" }
 Fixture = { local = "../../../move/fixture" }
 Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "releases/sui-v1.3.0-release" }
 MoveStdlib = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "releases/sui-v1.3.0-release" }

@@ -271,7 +271,7 @@ pub fn gen_package_init_ts(modules: &[ModuleEnv], framework: &FrameworkImportCtx
 }
 
 pub fn gen_init_ts(
-    pkg_addrs: Vec<AccountAddress>,
+    pkg_ids: Vec<AccountAddress>,
     top_level_pkg_names: &BTreeMap<AccountAddress, move_symbol_pool::Symbol>,
     is_source: bool,
 ) -> js::Tokens {
@@ -291,23 +291,23 @@ pub fn gen_init_ts(
             initialized = true;
 
             $(ref toks {
-                for pkg_addr in pkg_addrs {
-                    let pkg_init_path = match top_level_pkg_names.get(&pkg_addr) {
+                for pkg_id in pkg_ids {
+                    let pkg_init_path = match top_level_pkg_names.get(&pkg_id) {
                         Some(pkg_name) => {
                             format!("../{}/init", package_import_name(*pkg_name))
                         },
                         None=> {
                             if is_source {
-                                format!("../_dependencies/source/{}/init", pkg_addr.to_hex_literal())
+                                format!("../_dependencies/source/{}/init", pkg_id.to_hex_literal())
                             } else {
-                                format!("../_dependencies/onchain/{}/init", pkg_addr.to_hex_literal())
+                                format!("../_dependencies/onchain/{}/init", pkg_id.to_hex_literal())
                             }
                         }
                     };
 
                     let pkg_import = &js::import(
                         pkg_init_path,
-                        format!("{}_{}", "package", pkg_addr.short_str_lossless())
+                        format!("{}_{}", "package", pkg_id.short_str_lossless())
                     )
                     .into_wildcard();
 

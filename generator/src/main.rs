@@ -4,16 +4,18 @@ use std::path::{Path, PathBuf};
 use anyhow::Result;
 use genco::fmt;
 use genco::prelude::*;
-use sui_client_gen::framework_sources;
-use sui_client_gen::gen::{gen_init_ts, gen_package_init_ts, module_import_name, package_import_name};
-use sui_client_gen::gen::{FrameworkImportCtx, FunctionsGen, StructClassImportCtx, StructsGen};
-use sui_client_gen::manifest::{parse_gen_manifest_from_file, GenManifest, Package};
-use sui_client_gen::model_builder::Models;
-use sui_client_gen::package_cache::PackageCache;
 use move_core_types::account_address::AccountAddress;
 use move_model::model::{GlobalEnv, ModuleEnv};
 use move_package::source_package::parsed_manifest::PackageName;
 use move_symbol_pool::Symbol;
+use sui_client_gen::framework_sources;
+use sui_client_gen::gen::{
+    gen_init_ts, gen_package_init_ts, module_import_name, package_import_name,
+};
+use sui_client_gen::gen::{FrameworkImportCtx, FunctionsGen, StructClassImportCtx, StructsGen};
+use sui_client_gen::manifest::{parse_gen_manifest_from_file, GenManifest, Package};
+use sui_client_gen::model_builder::Models;
+use sui_client_gen::package_cache::PackageCache;
 use sui_move_build::SuiPackageHooks;
 use sui_sdk::SuiClientBuilder;
 
@@ -123,30 +125,30 @@ fn resolve_top_level_pkg_addr_map(
         }
     }
 
-    let source_top_level_addr_map: BTreeMap<AccountAddress, Symbol> = models
-        .source_addr_map
+    let source_top_level_id_map: BTreeMap<AccountAddress, Symbol> = models
+        .source_id_map
         .iter()
-        .filter_map(|(addr, name)| {
+        .filter_map(|(id, name)| {
             if source_top_level_package_names.contains(name) {
-                Some((*addr, *name))
+                Some((*id, *name))
             } else {
                 None
             }
         })
         .collect();
-    let on_chain_top_level_addr_map: BTreeMap<AccountAddress, Symbol> = models
-        .on_chain_addr_map
+    let on_chain_top_level_id_map: BTreeMap<AccountAddress, Symbol> = models
+        .on_chain_id_map
         .iter()
-        .filter_map(|(addr, name)| {
+        .filter_map(|(id, name)| {
             if on_chain_top_level_package_names.contains(name) {
-                Some((*addr, *name))
+                Some((*id, *name))
             } else {
                 None
             }
         })
         .collect();
 
-    (source_top_level_addr_map, on_chain_top_level_addr_map)
+    (source_top_level_id_map, on_chain_top_level_id_map)
 }
 
 fn gen_packages_for_model(
@@ -157,12 +159,12 @@ fn gen_packages_for_model(
 ) -> Result<()> {
     let mut pkgs: BTreeMap<AccountAddress, Vec<ModuleEnv>> = BTreeMap::new();
     for module in env.get_modules() {
-        let pkg_addr = *module.self_address();
-        match pkgs.get_mut(&pkg_addr) {
+        let pkg_id = *module.self_address();
+        match pkgs.get_mut(&pkg_id) {
             Some(modules) => modules.push(module),
             None => {
                 let modules = vec![module];
-                pkgs.insert(pkg_addr, modules);
+                pkgs.insert(pkg_id, modules);
             }
         }
     }
@@ -171,26 +173,26 @@ fn gen_packages_for_model(
         return Ok(());
     }
 
-    for (pkg_addr, modules) in pkgs.iter() {
-        let is_top_level = top_level_pkg_names.contains_key(pkg_addr);
+    for (pkg_id, modules) in pkgs.iter() {
+        let is_top_level = top_level_pkg_names.contains_key(pkg_id);
         let levels_from_root = if is_top_level { 0 } else { 2 };
 
-        let package_path = match top_level_pkg_names.get(pkg_addr) {
+        let package_path = match top_level_pkg_names.get(pkg_id) {
             Some(pkg_name) => PathBuf::from(package_import_name(*pkg_name)),
             None => PathBuf::from("_dependencies")
                 .join(match is_source {
                     true => "source",
                     false => "onchain",
                 })
-                .join(pkg_addr.to_hex_literal()),
+                .join(pkg_id.to_hex_literal()),
         };
 
         std::fs::create_dir_all(&package_path)?;
 
         // generate index.ts
-        let published_at = published_at_map.get(pkg_addr).unwrap_or(pkg_addr);
+        let published_at = published_at_map.get(pkg_id).unwrap_or(pkg_id);
         let tokens: js::Tokens = quote!(
-            export const PACKAGE_ID = $[str]($[const](pkg_addr.to_hex_literal()));
+            export const PACKAGE_ID = $[str]($[const](pkg_id.to_hex_literal()));
             export const PUBLISHED_AT = $[str]($[const](published_at.to_hex_literal()));
         );
         write_tokens_to_file(&tokens, &package_path.join("index.ts"))?;
