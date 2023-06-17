@@ -1,1 +1,1 @@
-This folder contains example generated code that the client generator will target.
+This folder contains usage examples and e2e tests.
