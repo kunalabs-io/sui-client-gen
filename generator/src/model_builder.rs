@@ -23,7 +23,7 @@ use move_package::{BuildConfig as MoveBuildConfig, ModelConfig};
 use std::collections::{BTreeMap, HashSet, VecDeque};
 use std::fs::{self, File};
 use std::io::{self, Write};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use sui_json_rpc_types::SuiRawMovePackage;
 use sui_move_build::gather_published_ids;
 use sui_sdk::types::base_types::SequenceNumber;
@@ -54,7 +54,11 @@ pub struct Models {
 }
 
 impl Models {
-    pub async fn build(cache: &mut PackageCache<'_>, packages: &GM::Packages) -> Result<Self> {
+    pub async fn build(
+        cache: &mut PackageCache<'_>,
+        packages: &GM::Packages,
+        manifest_path: &PathBuf,
+    ) -> Result<Self> {
         // separate source and on-chain packages
         let mut source_pkgs: Vec<(PM::PackageName, PM::InternalDependency)> = vec![];
         let mut on_chain_pkgs: Vec<(PM::PackageName, GM::OnChainPackage)> = vec![];
@@ -63,7 +67,8 @@ impl Models {
                 GM::Package::Dependency(PM::Dependency::Internal(mut dep)) => match &dep.kind {
                     // for local dependencies, convert relative paths to absolute since the stub root is in different directory
                     PM::DependencyKind::Local(relative_path) => {
-                        let absolute_path = fs::canonicalize(relative_path)?;
+                        let absolute_path =
+                            fs::canonicalize(manifest_path.parent().unwrap().join(relative_path))?;
                         dep.kind = PM::DependencyKind::Local(absolute_path);
                         source_pkgs.push((*name, dep));
                     }

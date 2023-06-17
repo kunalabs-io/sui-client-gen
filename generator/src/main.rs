@@ -2,6 +2,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use anyhow::Result;
+use clap::*;
 use genco::fmt;
 use genco::prelude::*;
 use move_core_types::account_address::AccountAddress;
@@ -21,11 +22,36 @@ use sui_sdk::SuiClientBuilder;
 
 const DEFAULT_RPC: &str = "https://fullnode.mainnet.sui.io:443";
 
+#[derive(Parser)]
+#[clap(
+    name = "sui-client-gen",
+    version,
+    about = "A tool for generating TS SDKs for Sui Move smart contracts."
+)]
+struct Args {
+    #[arg(
+        short,
+        long,
+        help = "Path to the `gen.toml` file.",
+        default_value = "./gen.toml"
+    )]
+    manifest: String,
+    #[arg(
+        short,
+        long,
+        help = "Path to the output directory. If omitted, the current directory will be used.",
+        default_value = "."
+    )]
+    out: String,
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
+    let args = Args::parse();
+
     move_package::package_hooks::register_package_hooks(Box::new(SuiPackageHooks));
 
-    let manifest = parse_gen_manifest_from_file(Path::new("./gen.toml"))?;
+    let manifest = parse_gen_manifest_from_file(Path::new(&args.manifest))?;
     let rpc_url = match &manifest.config {
         Some(config) => config
             .rpc
@@ -37,21 +63,29 @@ async fn main() -> Result<()> {
 
     // build models
     let mut cache = PackageCache::new(rpc_client.read_api());
-    let models = Models::build(&mut cache, &manifest.packages).await?;
+    let models = Models::build(
+        &mut cache,
+        &manifest.packages,
+        &PathBuf::from(&args.manifest),
+    )
+    .await?;
 
     // gen _framework
-    std::fs::create_dir_all(PathBuf::from("_framework"))?;
+    let out_root = PathBuf::from(args.out);
+    std::fs::create_dir_all(&out_root)?;
+
+    std::fs::create_dir_all(out_root.join("_framework"))?;
     write_str_to_file(
         framework_sources::BCS,
-        PathBuf::from("_framework").join("bcs.ts").as_ref(),
+        out_root.join("_framework").join("bcs.ts").as_ref(),
     )?;
     write_str_to_file(
         framework_sources::LOADER,
-        PathBuf::from("_framework").join("loader.ts").as_ref(),
+        out_root.join("_framework").join("loader.ts").as_ref(),
     )?;
     write_str_to_file(
         framework_sources::UTIL,
-        PathBuf::from("_framework").join("util.ts").as_ref(),
+        out_root.join("_framework").join("util.ts").as_ref(),
     )?;
 
     // gen top-level packages and dependencies
@@ -63,18 +97,20 @@ async fn main() -> Result<()> {
         &source_top_level_addr_map,
         &models.source_published_at,
         true,
+        &out_root,
     )?;
     gen_packages_for_model(
         &models.on_chain_model,
         &on_chain_top_level_addr_map,
         &models.on_chain_published_at,
         false,
+        &out_root,
     )?;
 
     // gen .eslintrc.json
     write_str_to_file(
         framework_sources::ESLINTRC,
-        &PathBuf::from(".eslintrc.json"),
+        &out_root.join(".eslintrc.json"),
     )?;
 
     Ok(())
@@ -156,6 +192,7 @@ fn gen_packages_for_model(
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
     published_at_map: &BTreeMap<AccountAddress, AccountAddress>,
     is_source: bool,
+    out_root: &PathBuf,
 ) -> Result<()> {
     let mut pkgs: BTreeMap<AccountAddress, Vec<ModuleEnv>> = BTreeMap::new();
     for module in env.get_modules() {
@@ -177,7 +214,7 @@ fn gen_packages_for_model(
         let is_top_level = top_level_pkg_names.contains_key(pkg_id);
         let levels_from_root = if is_top_level { 0 } else { 2 };
 
-        let package_path = match top_level_pkg_names.get(pkg_id) {
+        let package_path = out_root.join(match top_level_pkg_names.get(pkg_id) {
             Some(pkg_name) => PathBuf::from(package_import_name(*pkg_name)),
             None => PathBuf::from("_dependencies")
                 .join(match is_source {
@@ -185,7 +222,7 @@ fn gen_packages_for_model(
                     false => "onchain",
                 })
                 .join(pkg_id.to_hex_literal()),
-        };
+        });
 
         std::fs::create_dir_all(&package_path)?;
 
@@ -257,11 +294,11 @@ fn gen_packages_for_model(
         is_source,
     );
     if is_source {
-        write_tokens_to_file(&tokens, &PathBuf::from("_framework").join("init-source.ts"))?;
+        write_tokens_to_file(&tokens, &out_root.join("_framework").join("init-source.ts"))?;
     } else {
         write_tokens_to_file(
             &tokens,
-            &PathBuf::from("_framework").join("init-onchain.ts"),
+            &out_root.join("_framework").join("init-onchain.ts"),
         )?;
     }
 
