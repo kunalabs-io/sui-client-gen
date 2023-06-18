@@ -18,12 +18,12 @@ use move_model::model::{FunId, FunctionData, GlobalEnv, Loc, ModuleData, ModuleI
 use move_model::{self, addr_to_big_uint};
 use move_package::compilation::model_builder::ModelBuilder;
 use move_package::resolution::resolution_graph::ResolvedGraph;
-use move_package::source_package::parsed_manifest::{self as PM};
+use move_package::source_package::parsed_manifest as PM;
 use move_package::{BuildConfig as MoveBuildConfig, ModelConfig};
 use std::collections::{BTreeMap, HashSet, VecDeque};
 use std::fs::{self, File};
 use std::io::{self, Write};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use sui_json_rpc_types::SuiRawMovePackage;
 use sui_move_build::gather_published_ids;
 use sui_sdk::types::base_types::SequenceNumber;
@@ -57,7 +57,7 @@ impl Models {
     pub async fn build(
         cache: &mut PackageCache<'_>,
         packages: &GM::Packages,
-        manifest_path: &PathBuf,
+        manifest_path: &Path,
     ) -> Result<Self> {
         // separate source and on-chain packages
         let mut source_pkgs: Vec<(PM::PackageName, PM::InternalDependency)> = vec![];
@@ -113,8 +113,10 @@ impl Models {
         }
 
         // TODO: allow some of these options to be passed in as flags
-        let mut build_config = MoveBuildConfig::default();
-        build_config.skip_fetch_latest_git_deps = true;
+        let build_config = MoveBuildConfig {
+            skip_fetch_latest_git_deps: true,
+            ..Default::default()
+        };
         let resolved_graph =
             build_config.resolution_graph_for_package(stub_path, &mut io::stderr())?;
 

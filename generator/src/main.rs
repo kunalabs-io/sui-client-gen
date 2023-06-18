@@ -192,7 +192,7 @@ fn gen_packages_for_model(
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
     published_at_map: &BTreeMap<AccountAddress, AccountAddress>,
     is_source: bool,
-    out_root: &PathBuf,
+    out_root: &Path,
 ) -> Result<()> {
     let mut pkgs: BTreeMap<AccountAddress, Vec<ModuleEnv>> = BTreeMap::new();
     for module in env.get_modules() {
