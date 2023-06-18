@@ -1,6 +1,6 @@
 use crate::manifest::{self as GM};
 use crate::package_cache::PackageCache;
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use codespan_reporting::{
     diagnostic::Severity,
     term::termcolor::{ColorChoice, StandardStream},
@@ -68,7 +68,14 @@ impl Models {
                     // for local dependencies, convert relative paths to absolute since the stub root is in different directory
                     PM::DependencyKind::Local(relative_path) => {
                         let absolute_path =
-                            fs::canonicalize(manifest_path.parent().unwrap().join(relative_path))?;
+                            fs::canonicalize(manifest_path.parent().unwrap().join(relative_path))
+                                .with_context(|| {
+                                format!(
+                                    "gen.toml: Failed to resolve \"{}\" package path \"{}\".",
+                                    name,
+                                    relative_path.display()
+                                )
+                            })?;
                         dep.kind = PM::DependencyKind::Local(absolute_path);
                         source_pkgs.push((*name, dep));
                     }
@@ -92,9 +99,9 @@ impl Models {
         // to build a single ResolvedGraph.
         let temp_dir = tempdir()?;
         let stub_path = temp_dir.path();
-        fs::create_dir(stub_path.join("sources")).unwrap();
+        fs::create_dir(stub_path.join("sources"))?;
 
-        let mut stub_manifest = File::create(stub_path.join("Move.toml")).unwrap();
+        let mut stub_manifest = File::create(stub_path.join("Move.toml"))?;
 
         writeln!(stub_manifest, "[package]")?;
         writeln!(stub_manifest, "name = \"{}\"", STUB_PACKAGE_NAME)?;
@@ -147,7 +154,7 @@ impl Models {
 
         let module_map = Modules::new(modules.iter());
         let dep_graph = module_map.compute_dependency_graph();
-        let topo_order = dep_graph.compute_topological_order().unwrap();
+        let topo_order = dep_graph.compute_topological_order()?;
 
         let mut on_chain_model = GlobalEnv::new();
         add_modules_to_model(&mut on_chain_model, topo_order)?;
