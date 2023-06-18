@@ -69,8 +69,8 @@ export function addInternal(txb: TransactionBlock, typeArg: Type, args: AddInter
 
 export interface AddMultipleArgs {
   self: ObjectArg
-  fields: Array<string | TransactionArgument>
-  values: Array<string | TransactionArgument>
+  fields: Array<string | TransactionArgument> | TransactionArgument
+  values: Array<string | TransactionArgument> | TransactionArgument
 }
 
 export function addMultiple(txb: TransactionBlock, typeArg: Type, args: AddMultipleArgs) {
@@ -137,8 +137,8 @@ export function isAuthorized(txb: TransactionBlock, typeArg: Type, pub: ObjectAr
 
 export interface NewWithFieldsArgs {
   pub: ObjectArg
-  fields: Array<string | TransactionArgument>
-  values: Array<string | TransactionArgument>
+  fields: Array<string | TransactionArgument> | TransactionArgument
+  values: Array<string | TransactionArgument> | TransactionArgument
 }
 
 export function newWithFields(txb: TransactionBlock, typeArg: Type, args: NewWithFieldsArgs) {

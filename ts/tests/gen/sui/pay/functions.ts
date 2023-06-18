@@ -43,7 +43,7 @@ export function divideAndKeep(txb: TransactionBlock, typeArg: Type, args: Divide
 
 export interface JoinVecArgs {
   self: ObjectArg
-  coins: Array<ObjectArg>
+  coins: Array<ObjectArg> | TransactionArgument
 }
 
 export function joinVec(txb: TransactionBlock, typeArg: Type, args: JoinVecArgs) {
@@ -55,7 +55,7 @@ export function joinVec(txb: TransactionBlock, typeArg: Type, args: JoinVecArgs)
 }
 
 export interface JoinVecAndTransferArgs {
-  coins: Array<ObjectArg>
+  coins: Array<ObjectArg> | TransactionArgument
   receiver: string | TransactionArgument
 }
 
@@ -102,7 +102,7 @@ export function splitAndTransfer(txb: TransactionBlock, typeArg: Type, args: Spl
 
 export interface SplitVecArgs {
   self: ObjectArg
-  splitAmounts: Array<bigint | TransactionArgument>
+  splitAmounts: Array<bigint | TransactionArgument> | TransactionArgument
 }
 
 export function splitVec(txb: TransactionBlock, typeArg: Type, args: SplitVecArgs) {

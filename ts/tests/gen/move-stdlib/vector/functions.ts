@@ -3,7 +3,7 @@ import { GenericArg, Type, generic, pure, vector } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js'
 
 export interface ContainsArgs {
-  v: Array<GenericArg>
+  v: Array<GenericArg> | TransactionArgument
   e: GenericArg
 }
 
@@ -16,7 +16,7 @@ export function contains(txb: TransactionBlock, typeArg: Type, args: ContainsArg
 }
 
 export interface IndexOfArgs {
-  v: Array<GenericArg>
+  v: Array<GenericArg> | TransactionArgument
   e: GenericArg
 }
 
@@ -29,8 +29,8 @@ export function indexOf(txb: TransactionBlock, typeArg: Type, args: IndexOfArgs)
 }
 
 export interface AppendArgs {
-  lhs: Array<GenericArg>
-  other: Array<GenericArg>
+  lhs: Array<GenericArg> | TransactionArgument
+  other: Array<GenericArg> | TransactionArgument
 }
 
 export function append(txb: TransactionBlock, typeArg: Type, args: AppendArgs) {
@@ -42,7 +42,7 @@ export function append(txb: TransactionBlock, typeArg: Type, args: AppendArgs) {
 }
 
 export interface BorrowArgs {
-  v: Array<GenericArg>
+  v: Array<GenericArg> | TransactionArgument
   i: bigint | TransactionArgument
 }
 
@@ -55,7 +55,7 @@ export function borrow(txb: TransactionBlock, typeArg: Type, args: BorrowArgs) {
 }
 
 export interface BorrowMutArgs {
-  v: Array<GenericArg>
+  v: Array<GenericArg> | TransactionArgument
   i: bigint | TransactionArgument
 }
 
@@ -67,7 +67,11 @@ export function borrowMut(txb: TransactionBlock, typeArg: Type, args: BorrowMutA
   })
 }
 
-export function destroyEmpty(txb: TransactionBlock, typeArg: Type, v: Array<GenericArg>) {
+export function destroyEmpty(
+  txb: TransactionBlock,
+  typeArg: Type,
+  v: Array<GenericArg> | TransactionArgument
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vector::destroy_empty`,
     typeArguments: [typeArg],
@@ -84,7 +88,7 @@ export function empty(txb: TransactionBlock, typeArg: Type) {
 }
 
 export interface InsertArgs {
-  v: Array<GenericArg>
+  v: Array<GenericArg> | TransactionArgument
   e: GenericArg
   i: bigint | TransactionArgument
 }
@@ -101,7 +105,11 @@ export function insert(txb: TransactionBlock, typeArg: Type, args: InsertArgs) {
   })
 }
 
-export function isEmpty(txb: TransactionBlock, typeArg: Type, v: Array<GenericArg>) {
+export function isEmpty(
+  txb: TransactionBlock,
+  typeArg: Type,
+  v: Array<GenericArg> | TransactionArgument
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vector::is_empty`,
     typeArguments: [typeArg],
@@ -109,7 +117,11 @@ export function isEmpty(txb: TransactionBlock, typeArg: Type, v: Array<GenericAr
   })
 }
 
-export function length(txb: TransactionBlock, typeArg: Type, v: Array<GenericArg>) {
+export function length(
+  txb: TransactionBlock,
+  typeArg: Type,
+  v: Array<GenericArg> | TransactionArgument
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vector::length`,
     typeArguments: [typeArg],
@@ -117,7 +129,11 @@ export function length(txb: TransactionBlock, typeArg: Type, v: Array<GenericArg
   })
 }
 
-export function popBack(txb: TransactionBlock, typeArg: Type, v: Array<GenericArg>) {
+export function popBack(
+  txb: TransactionBlock,
+  typeArg: Type,
+  v: Array<GenericArg> | TransactionArgument
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vector::pop_back`,
     typeArguments: [typeArg],
@@ -126,7 +142,7 @@ export function popBack(txb: TransactionBlock, typeArg: Type, v: Array<GenericAr
 }
 
 export interface PushBackArgs {
-  v: Array<GenericArg>
+  v: Array<GenericArg> | TransactionArgument
   e: GenericArg
 }
 
@@ -139,7 +155,7 @@ export function pushBack(txb: TransactionBlock, typeArg: Type, args: PushBackArg
 }
 
 export interface RemoveArgs {
-  v: Array<GenericArg>
+  v: Array<GenericArg> | TransactionArgument
   i: bigint | TransactionArgument
 }
 
@@ -151,7 +167,11 @@ export function remove(txb: TransactionBlock, typeArg: Type, args: RemoveArgs) {
   })
 }
 
-export function reverse(txb: TransactionBlock, typeArg: Type, v: Array<GenericArg>) {
+export function reverse(
+  txb: TransactionBlock,
+  typeArg: Type,
+  v: Array<GenericArg> | TransactionArgument
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vector::reverse`,
     typeArguments: [typeArg],
@@ -168,7 +188,7 @@ export function singleton(txb: TransactionBlock, typeArg: Type, e: GenericArg) {
 }
 
 export interface SwapArgs {
-  v: Array<GenericArg>
+  v: Array<GenericArg> | TransactionArgument
   i: bigint | TransactionArgument
   j: bigint | TransactionArgument
 }
@@ -186,7 +206,7 @@ export function swap(txb: TransactionBlock, typeArg: Type, args: SwapArgs) {
 }
 
 export interface SwapRemoveArgs {
-  v: Array<GenericArg>
+  v: Array<GenericArg> | TransactionArgument
   i: bigint | TransactionArgument
 }
 

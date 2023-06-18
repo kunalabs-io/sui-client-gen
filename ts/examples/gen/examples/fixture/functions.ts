@@ -20,16 +20,16 @@ export function createBar(txb: TransactionBlock, value: bigint | TransactionArgu
 
 export interface CreateFooArgs {
   generic: GenericArg
-  reifiedPrimitiveVec: Array<bigint | TransactionArgument>
-  reifiedObjectVec: Array<ObjectArg>
-  genericVec: Array<GenericArg>
-  genericVecNested: Array<ObjectArg>
+  reifiedPrimitiveVec: Array<bigint | TransactionArgument> | TransactionArgument
+  reifiedObjectVec: Array<ObjectArg> | TransactionArgument
+  genericVec: Array<GenericArg> | TransactionArgument
+  genericVecNested: Array<ObjectArg> | TransactionArgument
   twoGenerics: ObjectArg
   twoGenericsReifiedPrimitive: ObjectArg
   twoGenericsReifiedObject: ObjectArg
   twoGenericsNested: ObjectArg
   twoGenericsReifiedNested: ObjectArg
-  twoGenericsNestedVec: Array<ObjectArg>
+  twoGenericsNestedVec: Array<ObjectArg> | TransactionArgument
   objRef: ObjectArg
 }
 
@@ -143,12 +143,12 @@ export function createSpecialAsGenerics(
 }
 
 export interface CreateSpecialInVectorsArgs {
-  string: Array<string | TransactionArgument>
-  asciiString: Array<string | TransactionArgument>
-  idField: Array<ObjectId | TransactionArgument>
-  bar: Array<ObjectArg>
-  option: Array<bigint | TransactionArgument | TransactionArgument | null>
-  optionGeneric: Array<GenericArg | TransactionArgument | null>
+  string: Array<string | TransactionArgument> | TransactionArgument
+  asciiString: Array<string | TransactionArgument> | TransactionArgument
+  idField: Array<ObjectId | TransactionArgument> | TransactionArgument
+  bar: Array<ObjectArg> | TransactionArgument
+  option: Array<bigint | TransactionArgument | TransactionArgument | null> | TransactionArgument
+  optionGeneric: Array<GenericArg | TransactionArgument | null> | TransactionArgument
 }
 
 export function createSpecialInVectors(

@@ -68,7 +68,10 @@ export function idFromAddress(txb: TransactionBlock, bytes: string | Transaction
   })
 }
 
-export function idFromBytes(txb: TransactionBlock, bytes: Array<number | TransactionArgument>) {
+export function idFromBytes(
+  txb: TransactionBlock,
+  bytes: Array<number | TransactionArgument> | TransactionArgument
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object::id_from_bytes`,
     arguments: [pure(txb, bytes, `vector<u8>`)],

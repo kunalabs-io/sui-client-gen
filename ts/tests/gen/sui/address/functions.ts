@@ -17,7 +17,10 @@ export function toBytes(txb: TransactionBlock, a: string | TransactionArgument) 
   })
 }
 
-export function fromBytes(txb: TransactionBlock, bytes: Array<number | TransactionArgument>) {
+export function fromBytes(
+  txb: TransactionBlock,
+  bytes: Array<number | TransactionArgument> | TransactionArgument
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::address::from_bytes`,
     arguments: [pure(txb, bytes, `vector<u8>`)],

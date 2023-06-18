@@ -19,7 +19,10 @@ export function allCharactersPrintable(
   })
 }
 
-export function string(txb: TransactionBlock, bytes: Array<number | TransactionArgument>) {
+export function string(
+  txb: TransactionBlock,
+  bytes: Array<number | TransactionArgument> | TransactionArgument
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::ascii::string`,
     arguments: [pure(txb, bytes, `vector<u8>`)],
@@ -84,7 +87,10 @@ export function pushChar(txb: TransactionBlock, args: PushCharArgs) {
   })
 }
 
-export function tryString(txb: TransactionBlock, bytes: Array<number | TransactionArgument>) {
+export function tryString(
+  txb: TransactionBlock,
+  bytes: Array<number | TransactionArgument> | TransactionArgument
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::ascii::try_string`,
     arguments: [pure(txb, bytes, `vector<u8>`)],

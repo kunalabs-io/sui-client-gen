@@ -9,8 +9,8 @@ export function createExampleStruct(txb: TransactionBlock) {
 export interface SpecialTypesArgs {
   asciiString: string | TransactionArgument
   utf8String: string | TransactionArgument
-  vectorOfU64: Array<bigint | TransactionArgument>
-  vectorOfObjects: Array<ObjectArg>
+  vectorOfU64: Array<bigint | TransactionArgument> | TransactionArgument
+  vectorOfObjects: Array<ObjectArg> | TransactionArgument
   idField: ObjectId | TransactionArgument
   address: string | TransactionArgument
   optionSome: bigint | TransactionArgument | TransactionArgument | null

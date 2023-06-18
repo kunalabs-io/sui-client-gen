@@ -618,7 +618,9 @@ impl<'env> FunctionsGen<'env> {
                 PrimitiveType::Signer => quote!(string | $transaction_argument),
                 _ => panic!("unexpected primitive type: {:?}", ty),
             },
-            Type::Vector(ty) => quote!(Array<$(self.param_type_to_field_type(ty))>),
+            Type::Vector(ty) => {
+                quote!(Array<$(self.param_type_to_field_type(ty))> | $transaction_argument)
+            }
             Type::Struct(mid, sid, ts) => {
                 let module = self.env.get_module(*mid);
                 let strct = module.get_struct(*sid);

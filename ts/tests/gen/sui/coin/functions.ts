@@ -92,9 +92,9 @@ export function burn(txb: TransactionBlock, typeArg: Type, args: BurnArgs) {
 export interface CreateCurrencyArgs {
   witness: GenericArg
   decimals: number | TransactionArgument
-  symbol: Array<number | TransactionArgument>
-  name: Array<number | TransactionArgument>
-  description: Array<number | TransactionArgument>
+  symbol: Array<number | TransactionArgument> | TransactionArgument
+  name: Array<number | TransactionArgument> | TransactionArgument
+  description: Array<number | TransactionArgument> | TransactionArgument
   iconUrl: ObjectArg | TransactionArgument | null
 }
 

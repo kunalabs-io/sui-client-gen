@@ -20,7 +20,11 @@ export function insert(txb: TransactionBlock, typeArg: Type, args: InsertArgs) {
   })
 }
 
-export function new_(txb: TransactionBlock, typeArg: Type, entries: Array<ObjectArg>) {
+export function new_(
+  txb: TransactionBlock,
+  typeArg: Type,
+  entries: Array<ObjectArg> | TransactionArgument
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::priority_queue::new`,
     typeArguments: [typeArg],
@@ -29,8 +33,8 @@ export function new_(txb: TransactionBlock, typeArg: Type, entries: Array<Object
 }
 
 export interface CreateEntriesArgs {
-  p: Array<bigint | TransactionArgument>
-  v: Array<GenericArg>
+  p: Array<bigint | TransactionArgument> | TransactionArgument
+  v: Array<GenericArg> | TransactionArgument
 }
 
 export function createEntries(txb: TransactionBlock, typeArg: Type, args: CreateEntriesArgs) {
@@ -42,7 +46,7 @@ export function createEntries(txb: TransactionBlock, typeArg: Type, args: Create
 }
 
 export interface MaxHeapifyRecursiveArgs {
-  v: Array<ObjectArg>
+  v: Array<ObjectArg> | TransactionArgument
   len: bigint | TransactionArgument
   i: bigint | TransactionArgument
 }
@@ -93,7 +97,7 @@ export function priorities(txb: TransactionBlock, typeArg: Type, pq: ObjectArg) 
 }
 
 export interface RestoreHeapRecursiveArgs {
-  v: Array<ObjectArg>
+  v: Array<ObjectArg> | TransactionArgument
   i: bigint | TransactionArgument
 }
 

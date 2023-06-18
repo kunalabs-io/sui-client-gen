@@ -3,10 +3,10 @@ import { pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js'
 
 export interface EcvrfVerifyArgs {
-  hash: Array<number | TransactionArgument>
-  alphaString: Array<number | TransactionArgument>
-  publicKey: Array<number | TransactionArgument>
-  proof: Array<number | TransactionArgument>
+  hash: Array<number | TransactionArgument> | TransactionArgument
+  alphaString: Array<number | TransactionArgument> | TransactionArgument
+  publicKey: Array<number | TransactionArgument> | TransactionArgument
+  proof: Array<number | TransactionArgument> | TransactionArgument
 }
 
 export function ecvrfVerify(txb: TransactionBlock, args: EcvrfVerifyArgs) {

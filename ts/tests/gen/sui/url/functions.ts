@@ -27,7 +27,7 @@ export function newUnsafe(txb: TransactionBlock, url: string | TransactionArgume
 
 export function newUnsafeFromBytes(
   txb: TransactionBlock,
-  bytes: Array<number | TransactionArgument>
+  bytes: Array<number | TransactionArgument> | TransactionArgument
 ) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::url::new_unsafe_from_bytes`,

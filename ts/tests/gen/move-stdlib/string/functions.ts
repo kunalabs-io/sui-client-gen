@@ -66,7 +66,7 @@ export function bytes(txb: TransactionBlock, s: string | TransactionArgument) {
 
 export interface AppendUtf8Args {
   s: string | TransactionArgument
-  bytes: Array<number | TransactionArgument>
+  bytes: Array<number | TransactionArgument> | TransactionArgument
 }
 
 export function appendUtf8(txb: TransactionBlock, args: AppendUtf8Args) {
@@ -83,7 +83,10 @@ export function fromAscii(txb: TransactionBlock, s: string | TransactionArgument
   })
 }
 
-export function internalCheckUtf8(txb: TransactionBlock, v: Array<number | TransactionArgument>) {
+export function internalCheckUtf8(
+  txb: TransactionBlock,
+  v: Array<number | TransactionArgument> | TransactionArgument
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::string::internal_check_utf8`,
     arguments: [pure(txb, v, `vector<u8>`)],
@@ -91,8 +94,8 @@ export function internalCheckUtf8(txb: TransactionBlock, v: Array<number | Trans
 }
 
 export interface InternalIndexOfArgs {
-  v: Array<number | TransactionArgument>
-  r: Array<number | TransactionArgument>
+  v: Array<number | TransactionArgument> | TransactionArgument
+  r: Array<number | TransactionArgument> | TransactionArgument
 }
 
 export function internalIndexOf(txb: TransactionBlock, args: InternalIndexOfArgs) {
@@ -103,7 +106,7 @@ export function internalIndexOf(txb: TransactionBlock, args: InternalIndexOfArgs
 }
 
 export interface InternalIsCharBoundaryArgs {
-  v: Array<number | TransactionArgument>
+  v: Array<number | TransactionArgument> | TransactionArgument
   i: bigint | TransactionArgument
 }
 
@@ -115,7 +118,7 @@ export function internalIsCharBoundary(txb: TransactionBlock, args: InternalIsCh
 }
 
 export interface InternalSubStringArgs {
-  v: Array<number | TransactionArgument>
+  v: Array<number | TransactionArgument> | TransactionArgument
   i: bigint | TransactionArgument
   j: bigint | TransactionArgument
 }
@@ -155,14 +158,20 @@ export function toAscii(txb: TransactionBlock, s: string | TransactionArgument) 
   })
 }
 
-export function tryUtf8(txb: TransactionBlock, bytes: Array<number | TransactionArgument>) {
+export function tryUtf8(
+  txb: TransactionBlock,
+  bytes: Array<number | TransactionArgument> | TransactionArgument
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::string::try_utf8`,
     arguments: [pure(txb, bytes, `vector<u8>`)],
   })
 }
 
-export function utf8(txb: TransactionBlock, bytes: Array<number | TransactionArgument>) {
+export function utf8(
+  txb: TransactionBlock,
+  bytes: Array<number | TransactionArgument> | TransactionArgument
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::string::utf8`,
     arguments: [pure(txb, bytes, `vector<u8>`)],

@@ -3,8 +3,8 @@ import { pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js'
 
 export interface HmacSha3256Args {
-  key: Array<number | TransactionArgument>
-  msg: Array<number | TransactionArgument>
+  key: Array<number | TransactionArgument> | TransactionArgument
+  msg: Array<number | TransactionArgument> | TransactionArgument
 }
 
 export function hmacSha3256(txb: TransactionBlock, args: HmacSha3256Args) {

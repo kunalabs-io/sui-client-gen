@@ -45,16 +45,16 @@ export function createWithTwoGenerics(
 
 export interface CreateFooArgs {
   t0: GenericArg
-  vecU64: Array<bigint | TransactionArgument>
-  vecBar: Array<ObjectArg>
-  vecT0: Array<GenericArg>
-  vecWithTwoGenerics1: Array<ObjectArg>
+  vecU64: Array<bigint | TransactionArgument> | TransactionArgument
+  vecBar: Array<ObjectArg> | TransactionArgument
+  vecT0: Array<GenericArg> | TransactionArgument
+  vecWithTwoGenerics1: Array<ObjectArg> | TransactionArgument
   withTwoGenerics1: ObjectArg
   withTwoGenerics2: ObjectArg
   withTwoGenerics3: ObjectArg
   withTwoGenerics4: ObjectArg
   withTwoGenerics5: ObjectArg
-  vecWithTwoGenerics2: Array<ObjectArg>
+  vecWithTwoGenerics2: Array<ObjectArg> | TransactionArgument
   bar: ObjectArg
 }
 
@@ -168,12 +168,12 @@ export function createSpecialAsGenerics(
 }
 
 export interface CreateSpecialInVectorsArgs {
-  vecString1: Array<string | TransactionArgument>
-  vecString2: Array<string | TransactionArgument>
-  vecId: Array<ObjectId | TransactionArgument>
-  vecBar: Array<ObjectArg>
-  vecOption1: Array<bigint | TransactionArgument | TransactionArgument | null>
-  vecOption2: Array<GenericArg | TransactionArgument | null>
+  vecString1: Array<string | TransactionArgument> | TransactionArgument
+  vecString2: Array<string | TransactionArgument> | TransactionArgument
+  vecId: Array<ObjectId | TransactionArgument> | TransactionArgument
+  vecBar: Array<ObjectArg> | TransactionArgument
+  vecOption1: Array<bigint | TransactionArgument | TransactionArgument | null> | TransactionArgument
+  vecOption2: Array<GenericArg | TransactionArgument | null> | TransactionArgument
 }
 
 export function createSpecialInVectors(

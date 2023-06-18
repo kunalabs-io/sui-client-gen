@@ -3,8 +3,8 @@ import { pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js'
 
 export interface Secp256r1EcrecoverArgs {
-  signature: Array<number | TransactionArgument>
-  msg: Array<number | TransactionArgument>
+  signature: Array<number | TransactionArgument> | TransactionArgument
+  msg: Array<number | TransactionArgument> | TransactionArgument
   hash: number | TransactionArgument
 }
 
@@ -20,9 +20,9 @@ export function secp256r1Ecrecover(txb: TransactionBlock, args: Secp256r1Ecrecov
 }
 
 export interface Secp256r1VerifyArgs {
-  signature: Array<number | TransactionArgument>
-  publicKey: Array<number | TransactionArgument>
-  msg: Array<number | TransactionArgument>
+  signature: Array<number | TransactionArgument> | TransactionArgument
+  publicKey: Array<number | TransactionArgument> | TransactionArgument
+  msg: Array<number | TransactionArgument> | TransactionArgument
   hash: number | TransactionArgument
 }
 

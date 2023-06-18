@@ -2,7 +2,10 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js'
 
-export function new_(txb: TransactionBlock, bytes: Array<number | TransactionArgument>) {
+export function new_(
+  txb: TransactionBlock,
+  bytes: Array<number | TransactionArgument> | TransactionArgument
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::bcs::new`,
     arguments: [pure(txb, bytes, `vector<u8>`)],

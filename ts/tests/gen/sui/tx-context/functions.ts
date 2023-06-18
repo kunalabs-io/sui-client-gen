@@ -3,7 +3,7 @@ import { pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js'
 
 export interface DeriveIdArgs {
-  txHash: Array<number | TransactionArgument>
+  txHash: Array<number | TransactionArgument> | TransactionArgument
   idsCreated: bigint | TransactionArgument
 }
 

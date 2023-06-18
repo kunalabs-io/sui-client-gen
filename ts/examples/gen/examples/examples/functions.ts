@@ -10,7 +10,7 @@ export interface SpecialTypesArgs {
   asciiString: string | TransactionArgument
   utf8String: string | TransactionArgument
   vectorOfU64: Array<bigint | TransactionArgument> | TransactionArgument
-  vectorOfObjects: Array<ObjectArg>
+  vectorOfObjects: Array<ObjectArg> | TransactionArgument
   idField: ObjectId | TransactionArgument
   address: string | TransactionArgument
   optionSome: bigint | TransactionArgument | TransactionArgument | null

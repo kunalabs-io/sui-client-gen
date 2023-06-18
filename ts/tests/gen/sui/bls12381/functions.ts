@@ -3,9 +3,9 @@ import { pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js'
 
 export interface Bls12381MinPkVerifyArgs {
-  signature: Array<number | TransactionArgument>
-  publicKey: Array<number | TransactionArgument>
-  msg: Array<number | TransactionArgument>
+  signature: Array<number | TransactionArgument> | TransactionArgument
+  publicKey: Array<number | TransactionArgument> | TransactionArgument
+  msg: Array<number | TransactionArgument> | TransactionArgument
 }
 
 export function bls12381MinPkVerify(txb: TransactionBlock, args: Bls12381MinPkVerifyArgs) {
@@ -20,9 +20,9 @@ export function bls12381MinPkVerify(txb: TransactionBlock, args: Bls12381MinPkVe
 }
 
 export interface Bls12381MinSigVerifyArgs {
-  signature: Array<number | TransactionArgument>
-  publicKey: Array<number | TransactionArgument>
-  msg: Array<number | TransactionArgument>
+  signature: Array<number | TransactionArgument> | TransactionArgument
+  publicKey: Array<number | TransactionArgument> | TransactionArgument
+  msg: Array<number | TransactionArgument> | TransactionArgument
 }
 
 export function bls12381MinSigVerify(txb: TransactionBlock, args: Bls12381MinSigVerifyArgs) {

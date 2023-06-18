@@ -9,7 +9,7 @@ export function additivePolicy(txb: TransactionBlock) {
 export interface AuthorizeUpgradeArgs {
   cap: ObjectArg
   policy: number | TransactionArgument
-  digest: Array<number | TransactionArgument>
+  digest: Array<number | TransactionArgument> | TransactionArgument
 }
 
 export function authorizeUpgrade(txb: TransactionBlock, args: AuthorizeUpgradeArgs) {
