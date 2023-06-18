@@ -8,7 +8,7 @@ A tool for generating TS SDKs for Sui Move smart contracts. Supports code genera
 - Because ESLint renames some types (e.g., `String` -> `string`) due to the `@typescript-eslint/ban-types` rule which breaks the generated code, an `.eslintrc.json` file is generated in the root directory to turn off this rule.
 - When re-running the generator, the files generated on previous run will *not* be automatically deleted in order to avoid accidental data wipes. The old files should be deleted manually before re-running the tool (it's safe to delete everything aside from `gen.toml`).
 
-## Getting Started
+## Quick Start
 
 1) Install the generator: `cargo install --locked --git https://github.com/kunalabs-io/sui-client-gen.git`
 
@@ -22,12 +22,76 @@ rpc = "https://fullnode.devnet.sui.io:443"
 [packages]
 # based on source code (syntax same as in Move.toml):
 DeepBook = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/deepbook", rev = "releases/sui-v1.4.0-release" }
+AMM = { local = "../move/amm" }
 # an on-chain package:
 FooPackage = { id = "0x12345" }
 ```
 
 3) Run the generator from inside the directory: `sui-client-gen`
-4) Run the linter on the generated code: `pnpm eslint . --fix`
+4) Run the linter / formatter on the generated code: `pnpm eslint . --fix`
+
+## Usage Example
+
+### Import generated functions and structs
+```ts
+// import generated functions and structs
+import { faucetMint } from './gen/fixture/example-coin/functions'
+import { createPoolWithCoins } from './gen/amm/util/functions'
+import { createExampleStruct, specialTypes } from './gen/examples/examples/functions'
+import { Pool } from './gen/amm/pool/structs'
+```
+
+### Create an AMM pool
+```ts
+const txb = new TransactionBlock()
+
+const [suiCoin] = txb.splitCoin(tx.gas, [tx.pure(1_000_000)])
+const exampleCoin = faucetMint(txb, FAUCET_ID)
+
+const lp = createPoolWithCoins(
+    txb,
+    ['0x2:sui::SUI', `${EXAMPLE_PACKAGE_ID}::example_coin::EXAMPLE_COIN`],
+    {
+        registry: REGISTRY_ID, // or txb.object(REGISTRY_ID)
+        initA: suiCoin,
+        initB: exampleCoin,
+        lpFeeBps: 30n, // or txb.pure(30n)
+        adminFeePct: 10n // or txb.pure(10n)
+    }
+)
+tx.transferObjects([lp], txb.pure(addresss))
+
+await signer.signAndExecuteTransactionBlock({ transactionBLock: txb })
+```
+
+### Fetch pool object
+```ts
+const pool = await Pool.fetch(provider, POOL_ID)
+
+// alternatively
+const res = await provider.getObject({ id: POOL_ID, options: { showContent: true } })
+const pool = Pool.fromSuiParsedData(res.data.content)
+
+console.log(pool)
+```
+
+### Special types
+
+```ts
+const e1 = createExampleStruct(txb)
+const e2 = createExampleStruct(txb)
+
+specialTypes(txb, {
+    asciiString: 'example ascii string', // or txb.pure('example ascii string', BCS.STRING)
+    utf8String: 'example utf8 string', // or txb.pure('example utf8 string', BCS.STRING)
+    vectorOfU64: [1n, 2n], // or txb.pure([1n, 2n], 'vector<u64>')
+    vectorOfObjects: [e1, e2] // or txb.makeMoveVec({ objects: [e1, e2], type: ExampleStruct.$typeName })
+    idField: '0x12345', // or txb.pure(normalizeSuiAddress('0x12345'), BCS.ADDRESS)
+    address: '0x12345', // or txb.pure(normalizeSuiAddress('0x12345'), BCS.ADDRESS)
+    optionSome: 5n // or txb.pure([5n], 'vector<u64>')
+    optionNone: null // or txb.pure([], 'vector<u64>')
+})
+```
 
 ## Docs
 
