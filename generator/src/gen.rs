@@ -916,10 +916,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
     fn gen_from_fields_field_parse(&mut self, field: &FieldEnv) -> js::Tokens {
         let strct = &field.struct_env;
 
-        let field_arg_name = format!(
-            "fields.{}",
-            field.get_name().display(self.symbol_pool()).to_string()
-        );
+        let field_arg_name = format!("fields.{}", field.get_name().display(self.symbol_pool()));
 
         self.gen_from_fields_field_parse_inner(&field.get_type(), &field_arg_name, strct)
     }
@@ -1045,7 +1042,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
         let field_arg_name = format!(
             "item.fields.{}",
-            field.get_name().display(self.symbol_pool()).to_string()
+            field.get_name().display(self.symbol_pool())
         );
 
         self.gen_from_fields_with_types_field_parse_inner(&field.get_type(), &field_arg_name, strct)
