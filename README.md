@@ -30,11 +30,10 @@ FooPackage = { id = "0x12345" }
 3) Run the generator from inside the directory: `sui-client-gen`
 4) Run the linter / formatter on the generated code: `pnpm eslint . --fix`
 
-## Usage Example
+## Usage Examples
 
 ### Import generated functions and structs
 ```ts
-// import generated functions and structs
 import { faucetMint } from './gen/fixture/example-coin/functions'
 import { createPoolWithCoins } from './gen/amm/util/functions'
 import { createExampleStruct, specialTypes } from './gen/examples/examples/functions'
@@ -64,7 +63,7 @@ tx.transferObjects([lp], txb.pure(addresss))
 await signer.signAndExecuteTransactionBlock({ transactionBLock: txb })
 ```
 
-### Fetch pool object
+### Fetch Pool object
 ```ts
 const pool = await Pool.fetch(provider, POOL_ID)
 
@@ -85,11 +84,11 @@ specialTypes(txb, {
     asciiString: 'example ascii string', // or txb.pure('example ascii string', BCS.STRING)
     utf8String: 'example utf8 string', // or txb.pure('example utf8 string', BCS.STRING)
     vectorOfU64: [1n, 2n], // or txb.pure([1n, 2n], 'vector<u64>')
-    vectorOfObjects: [e1, e2] // or txb.makeMoveVec({ objects: [e1, e2], type: ExampleStruct.$typeName })
+    vectorOfObjects: [e1, e2], // or txb.makeMoveVec({ objects: [e1, e2], type: ExampleStruct.$typeName })
     idField: '0x12345', // or txb.pure(normalizeSuiAddress('0x12345'), BCS.ADDRESS)
     address: '0x12345', // or txb.pure(normalizeSuiAddress('0x12345'), BCS.ADDRESS)
-    optionSome: 5n // or txb.pure([5n], 'vector<u64>')
-    optionNone: null // or txb.pure([], 'vector<u64>')
+    optionSome: 5n, // or txb.pure([5n], 'vector<u64>')
+    optionNone: null, // or txb.pure([], 'vector<u64>')
 })
 ```
 
