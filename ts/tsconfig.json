@@ -19,7 +19,7 @@
     "noEmit": true,
   },
   "include": [
-    "example/",
+    "examples/",
     "tests/",
     ".eslintrc.cjs"
   ]
