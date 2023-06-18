@@ -6,12 +6,12 @@ import {
   fromExportedKeypair,
 } from '@mysten/sui.js'
 import { createPoolWithCoins } from './gen/amm/util/functions'
-import { PACKAGE_ID as FIXTURE_PACKAGE_ID } from './gen/fixture'
-import { faucetMint } from './gen/fixture/example-coin/functions'
+import { PACKAGE_ID as FIXTURE_PACKAGE_ID } from './gen/examples'
+import { faucetMint } from './gen/examples/example-coin/functions'
 import { Command } from 'commander'
 import { Pool, PoolCreationEvent, PoolRegistry } from './gen/amm/pool/structs'
-import { createWithGenericField } from './gen/fixture/fixture/functions'
-import { WithGenericField } from './gen/fixture/fixture/structs'
+import { createWithGenericField } from './gen/examples/fixture/functions'
+import { WithGenericField } from './gen/examples/fixture/structs'
 import { Field } from './gen/sui/dynamic-field/structs'
 
 const EXAMPLE_COIN_FAUCET_ID = '0x810610be4cf14d2eb108c3437cb85ffb166e4ab22ba95ea94d309df792b1beb0'

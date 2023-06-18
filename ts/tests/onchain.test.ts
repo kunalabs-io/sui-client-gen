@@ -14,7 +14,7 @@ import {
   WithSpecialTypesAsGenerics,
   WithSpecialTypesInVectors,
   WithTwoGenerics,
-} from './gen/fixture-chain/fixture/structs'
+} from './gen/examples-chain/fixture/structs'
 import {
   createBar,
   createFoo,
@@ -22,9 +22,9 @@ import {
   createSpecialAsGenerics,
   createSpecialInVectors,
   createWithTwoGenerics,
-} from './gen/fixture-chain/fixture/functions'
+} from './gen/examples-chain/fixture/functions'
 import { bcsOnchain as bcs } from './gen/_framework/bcs'
-import { StructFromOtherModule } from './gen/fixture-chain/other-module/structs'
+import { StructFromOtherModule } from './gen/examples-chain/other-module/structs'
 import { string } from './gen/move-stdlib/ascii/functions'
 import { utf8 } from './gen/move-stdlib/string/functions'
 import { none, some } from './gen/move-stdlib/option/functions'
