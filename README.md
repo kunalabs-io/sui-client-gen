@@ -16,7 +16,7 @@ A tool for generating TS SDKs for Sui Move smart contracts. Supports code genera
 
 ```toml
 [config]
-# will be set to mainnet by default if ommitted
+# will be set to mainnet by default if omitted
 rpc = "https://fullnode.devnet.sui.io:443"
 
 [packages]
@@ -94,4 +94,5 @@ specialTypes(txb, {
 
 ## Docs
 
-For more info see the design doc https://github.com/kunalabs-io/sui-client-gen/issues/1
+For more detailed usage documentation, check out the [docs](https://github.com/kunalabs-io/sui-client-gen/blob/master/DOC.md).
+For technical details on the internals and reasoning behind the design decisions, check out the [design doc](https://github.com/kunalabs-io/sui-client-gen/issues/1).
