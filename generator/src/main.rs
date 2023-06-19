@@ -28,7 +28,7 @@ const DEFAULT_RPC: &str = "https://fullnode.mainnet.sui.io:443";
 #[clap(
     name = "sui-client-gen",
     version,
-    about = "A tool for generating TS SDKs for Sui Move smart contracts."
+    about = "Generate TS SDKs for Sui Move smart contracts."
 )]
 struct Args {
     #[arg(
@@ -38,6 +38,7 @@ struct Args {
         default_value = "./gen.toml"
     )]
     manifest: String,
+
     #[arg(
         short,
         long,
@@ -45,6 +46,12 @@ struct Args {
         default_value = "."
     )]
     out: String,
+
+    #[arg(
+        long,
+        help = "Remove all contents of the output directory before generating, except for gen.toml. Use with caution."
+    )]
+    clean: bool,
 }
 
 #[tokio::main]
@@ -78,6 +85,11 @@ async fn main() -> Result<()> {
     if source_model.is_none() && on_chain_model.is_none() {
         writeln!(std::io::stderr(), "No packages to generate.")?;
         return Ok(());
+    }
+
+    // clean output
+    if args.clean {
+        clean_output(&PathBuf::from(&args.out))?;
     }
 
     // gen _framework
@@ -138,6 +150,28 @@ async fn main() -> Result<()> {
         framework_sources::ESLINTRC,
         &out_root.join(".eslintrc.json"),
     )?;
+
+    Ok(())
+}
+
+fn clean_output(out_root: &Path) -> Result<()> {
+    let mut paths_to_remove = vec![];
+    for entry in std::fs::read_dir(out_root)? {
+        let entry = entry?;
+        let path = entry.path();
+        if path.is_file() && path.file_name().unwrap() == "gen.toml" {
+            continue;
+        }
+        paths_to_remove.push(path);
+    }
+
+    for path in paths_to_remove {
+        if path.is_dir() {
+            std::fs::remove_dir_all(path)?;
+        } else {
+            std::fs::remove_file(path)?;
+        }
+    }
 
     Ok(())
 }
