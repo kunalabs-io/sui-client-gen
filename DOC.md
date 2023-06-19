@@ -119,7 +119,7 @@ Move field types are mapped to TS types as follows:
 | `0x2::object::ID`           | `string`     |
 | `0x2::object::UID`          | `string`     |
 | `0x2::url::Url`             | `string`     |
-| `0x1::option::Option<T>`    | `T | null`   |
+| `0x1::option::Option<T>`    | `T \| null`   |
 | `vector<T>`                 | `T[]`        |
 
 The struct class holds the above fields as well as the `$typeName` and `$numTypeParams` static fields and the `$typeArgs` field in case the struct has type parameters. The `$typeName` field holds the full name of the type with the address but without type parameters (e.g., `0x2::balance::Balance` and not `0x2::balance::Balance<T>`).
