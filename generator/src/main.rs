@@ -9,13 +9,14 @@ use move_core_types::account_address::AccountAddress;
 use move_model::model::{GlobalEnv, ModuleEnv};
 use move_package::source_package::parsed_manifest::PackageName;
 use move_symbol_pool::Symbol;
+use std::io::Write;
 use sui_client_gen::framework_sources;
 use sui_client_gen::gen::{
     gen_init_ts, gen_package_init_ts, module_import_name, package_import_name,
 };
 use sui_client_gen::gen::{FrameworkImportCtx, FunctionsGen, StructClassImportCtx, StructsGen};
 use sui_client_gen::manifest::{parse_gen_manifest_from_file, GenManifest, Package};
-use sui_client_gen::model_builder::Models;
+use sui_client_gen::model_builder::{build_models, ModelResult};
 use sui_client_gen::package_cache::PackageCache;
 use sui_move_build::SuiPackageHooks;
 use sui_sdk::SuiClientBuilder;
@@ -63,12 +64,17 @@ async fn main() -> Result<()> {
 
     // build models
     let mut cache = PackageCache::new(rpc_client.read_api());
-    let models = Models::build(
+    let (source_model, on_chain_model) = build_models(
         &mut cache,
         &manifest.packages,
         &PathBuf::from(&args.manifest),
     )
     .await?;
+
+    if source_model.is_none() && on_chain_model.is_none() {
+        writeln!(std::io::stderr(), "No packages to generate.")?;
+        return Ok(());
+    }
 
     // gen _framework
     let out_root = PathBuf::from(args.out);
@@ -90,22 +96,26 @@ async fn main() -> Result<()> {
 
     // gen top-level packages and dependencies
     let (source_top_level_addr_map, on_chain_top_level_addr_map) =
-        resolve_top_level_pkg_addr_map(&models, &manifest);
+        resolve_top_level_pkg_addr_map(&source_model, &on_chain_model, &manifest);
 
-    gen_packages_for_model(
-        &models.source_model,
-        &source_top_level_addr_map,
-        &models.source_published_at,
-        true,
-        &out_root,
-    )?;
-    gen_packages_for_model(
-        &models.on_chain_model,
-        &on_chain_top_level_addr_map,
-        &models.on_chain_published_at,
-        false,
-        &out_root,
-    )?;
+    if let Some(m) = source_model {
+        gen_packages_for_model(
+            &m.env,
+            &source_top_level_addr_map,
+            &m.published_at,
+            true,
+            &out_root,
+        )?;
+    }
+    if let Some(m) = on_chain_model {
+        gen_packages_for_model(
+            &m.env,
+            &on_chain_top_level_addr_map,
+            &m.published_at,
+            false,
+            &out_root,
+        )?;
+    }
 
     // gen .eslintrc.json
     write_str_to_file(
@@ -142,7 +152,8 @@ fn write_str_to_file(s: &str, path: &Path) -> Result<()> {
 
 /// Creates a mapping between address and package name for top-level packages.
 fn resolve_top_level_pkg_addr_map(
-    models: &Models,
+    source_model: &Option<ModelResult>,
+    on_chain_model: &Option<ModelResult>,
     manifest: &GenManifest,
 ) -> (
     BTreeMap<AccountAddress, Symbol>,
@@ -161,28 +172,36 @@ fn resolve_top_level_pkg_addr_map(
         }
     }
 
-    let source_top_level_id_map: BTreeMap<AccountAddress, Symbol> = models
-        .source_id_map
-        .iter()
-        .filter_map(|(id, name)| {
-            if source_top_level_package_names.contains(name) {
-                Some((*id, *name))
-            } else {
-                None
-            }
-        })
-        .collect();
-    let on_chain_top_level_id_map: BTreeMap<AccountAddress, Symbol> = models
-        .on_chain_id_map
-        .iter()
-        .filter_map(|(id, name)| {
-            if on_chain_top_level_package_names.contains(name) {
-                Some((*id, *name))
-            } else {
-                None
-            }
-        })
-        .collect();
+    let source_top_level_id_map: BTreeMap<AccountAddress, Symbol> = if let Some(m) = source_model {
+        m.id_map
+            .iter()
+            .filter_map(|(id, name)| {
+                if source_top_level_package_names.contains(name) {
+                    Some((*id, *name))
+                } else {
+                    None
+                }
+            })
+            .collect()
+    } else {
+        BTreeMap::new()
+    };
+
+    let on_chain_top_level_id_map: BTreeMap<AccountAddress, Symbol> =
+        if let Some(m) = on_chain_model {
+            m.id_map
+                .iter()
+                .filter_map(|(id, name)| {
+                    if on_chain_top_level_package_names.contains(name) {
+                        Some((*id, *name))
+                    } else {
+                        None
+                    }
+                })
+                .collect()
+        } else {
+            BTreeMap::new()
+        };
 
     (source_top_level_id_map, on_chain_top_level_id_map)
 }

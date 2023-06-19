@@ -38,152 +38,166 @@ const STUB_PACKAGE_NAME: &str = "SuiClientGenRootPackageStub";
 struct DependencyTOML<'a>(PM::PackageName, &'a PM::InternalDependency);
 struct SubstTOML<'a>(&'a PM::Substitution);
 
-pub struct Models {
-    /// Move model for source packages defined in gen.toml
-    pub source_model: GlobalEnv,
-    /// Map from id to package name for source packages
-    pub source_id_map: BTreeMap<AccountAddress, PM::PackageName>,
-    /// Map from original package id to the published at id for source packages
-    pub source_published_at: BTreeMap<AccountAddress, AccountAddress>,
-    /// Move model for on-chain packages defined in gen.toml
-    pub on_chain_model: GlobalEnv,
-    /// Map from package id to package name for on-chain packages
-    pub on_chain_id_map: BTreeMap<AccountAddress, PM::PackageName>,
-    /// Map from original package id to the published at id for on-chain packages
-    pub on_chain_published_at: BTreeMap<AccountAddress, AccountAddress>,
+pub struct ModelResult {
+    /// Move model for packages defined in gen.toml
+    pub env: GlobalEnv,
+    /// Map from id to package name
+    pub id_map: BTreeMap<AccountAddress, PM::PackageName>,
+    /// Map from original package id to the published at id
+    pub published_at: BTreeMap<AccountAddress, AccountAddress>,
 }
 
-impl Models {
-    pub async fn build(
-        cache: &mut PackageCache<'_>,
-        packages: &GM::Packages,
-        manifest_path: &Path,
-    ) -> Result<Self> {
-        // separate source and on-chain packages
-        let mut source_pkgs: Vec<(PM::PackageName, PM::InternalDependency)> = vec![];
-        let mut on_chain_pkgs: Vec<(PM::PackageName, GM::OnChainPackage)> = vec![];
-        for (name, pkg) in packages.iter() {
-            match pkg.clone() {
-                GM::Package::Dependency(PM::Dependency::Internal(mut dep)) => match &dep.kind {
-                    // for local dependencies, convert relative paths to absolute since the stub root is in different directory
-                    PM::DependencyKind::Local(relative_path) => {
-                        let absolute_path =
-                            fs::canonicalize(manifest_path.parent().unwrap().join(relative_path))
-                                .with_context(|| {
+pub async fn build_models(
+    cache: &mut PackageCache<'_>,
+    packages: &GM::Packages,
+    manifest_path: &Path,
+) -> Result<(Option<ModelResult>, Option<ModelResult>)> {
+    // separate source and on-chain packages
+    let mut source_pkgs: Vec<(PM::PackageName, PM::InternalDependency)> = vec![];
+    let mut on_chain_pkgs: Vec<(PM::PackageName, GM::OnChainPackage)> = vec![];
+    for (name, pkg) in packages.iter() {
+        match pkg.clone() {
+            GM::Package::Dependency(PM::Dependency::Internal(mut dep)) => match &dep.kind {
+                // for local dependencies, convert relative paths to absolute since the stub root is in different directory
+                PM::DependencyKind::Local(relative_path) => {
+                    let absolute_path =
+                        fs::canonicalize(manifest_path.parent().unwrap().join(relative_path))
+                            .with_context(|| {
                                 format!(
                                     "gen.toml: Failed to resolve \"{}\" package path \"{}\".",
                                     name,
                                     relative_path.display()
                                 )
                             })?;
-                        dep.kind = PM::DependencyKind::Local(absolute_path);
-                        source_pkgs.push((*name, dep));
-                    }
-                    PM::DependencyKind::Git(_) => {
-                        source_pkgs.push((*name, dep));
-                    }
-                    PM::DependencyKind::Custom(_) => {
-                        bail!("Encountered a custom dependency {} in gen.toml. Custom dependencies are not supported.", name)
-                    }
-                },
-                GM::Package::Dependency(PM::Dependency::External(_)) => {
-                    bail!("Encountered an external dependency {} in gen.toml. External dependencies are not supported.", name)
+                    dep.kind = PM::DependencyKind::Local(absolute_path);
+                    source_pkgs.push((*name, dep));
                 }
-                GM::Package::OnChain(pkg) => {
-                    on_chain_pkgs.push((*name, pkg));
+                PM::DependencyKind::Git(_) => {
+                    source_pkgs.push((*name, dep));
                 }
-            }
-        }
-
-        // build a model for source packages -- create a stub Move.toml with packages listed as dependencies
-        // to build a single ResolvedGraph.
-        let temp_dir = tempdir()?;
-        let stub_path = temp_dir.path();
-        fs::create_dir(stub_path.join("sources"))?;
-
-        let mut stub_manifest = File::create(stub_path.join("Move.toml"))?;
-
-        writeln!(stub_manifest, "[package]")?;
-        writeln!(stub_manifest, "name = \"{}\"", STUB_PACKAGE_NAME)?;
-        writeln!(stub_manifest, "version = \"0.1.0\"")?;
-
-        writeln!(stub_manifest, "\n[dependencies]")?;
-        for (name, dep) in source_pkgs.iter() {
-            writeln!(stub_manifest, " {}", DependencyTOML(*name, dep))?;
-        }
-
-        // TODO: allow some of these options to be passed in as flags
-        let build_config = MoveBuildConfig {
-            skip_fetch_latest_git_deps: true,
-            ..Default::default()
-        };
-        let resolved_graph =
-            build_config.resolution_graph_for_package(stub_path, &mut io::stderr())?;
-
-        let source_id_map = find_address_origins(&resolved_graph);
-        let source_published_at = resolve_published_at(&resolved_graph, &source_id_map);
-
-        let source_model = ModelBuilder::create(
-            resolved_graph,
-            ModelConfig {
-                all_files_as_targets: true,
-                target_filter: None,
+                PM::DependencyKind::Custom(_) => {
+                    bail!("Encountered a custom dependency {} in gen.toml. Custom dependencies are not supported.", name)
+                }
             },
-        )
-        .build_model()?;
-
-        let mut stderr = StandardStream::stderr(ColorChoice::Always);
-        source_model.report_diag(&mut stderr, Severity::Warning);
-
-        if source_model.has_errors() {
-            bail!("Source model has errors.");
-        }
-
-        // build a model for on-chain packages
-        let (pkg_ids, original_map) =
-            resolve_on_chain_packages(cache, on_chain_pkgs.iter().map(|(_, pkg)| pkg.id).collect())
-                .await?;
-
-        let mut modules = vec![];
-        let pkgs = cache.get_multi(pkg_ids).await?;
-        for pkg in pkgs {
-            let SuiRawMovePackage { module_map, .. } = pkg;
-            for (_, bytes) in module_map {
-                let module = CompiledModule::deserialize_with_defaults(&bytes)?;
-                modules.push(module)
+            GM::Package::Dependency(PM::Dependency::External(_)) => {
+                bail!("Encountered an external dependency {} in gen.toml. External dependencies are not supported.", name)
+            }
+            GM::Package::OnChain(pkg) => {
+                on_chain_pkgs.push((*name, pkg));
             }
         }
-
-        let module_map = Modules::new(modules.iter());
-        let dep_graph = module_map.compute_dependency_graph();
-        let topo_order = dep_graph.compute_topological_order()?;
-
-        let mut on_chain_model = GlobalEnv::new();
-        add_modules_to_model(&mut on_chain_model, topo_order)?;
-
-        source_model.report_diag(&mut stderr, Severity::Warning);
-        if source_model.has_errors() {
-            bail!("On-chain model has errors.");
-        }
-
-        let mut on_chain_id_map: BTreeMap<AccountAddress, PM::PackageName> = BTreeMap::new();
-        let mut on_chain_published_at: BTreeMap<AccountAddress, AccountAddress> = BTreeMap::new();
-        for (name, pkg) in on_chain_pkgs {
-            let original_id = original_map.get(&pkg.id).unwrap();
-
-            on_chain_id_map.insert(*original_id, name);
-            on_chain_published_at.insert(*original_id, pkg.id);
-        }
-
-        Ok(Self {
-            source_model,
-            source_id_map,
-            source_published_at,
-            on_chain_model,
-            on_chain_id_map,
-            on_chain_published_at,
-        })
     }
+
+    let source_model = if !source_pkgs.is_empty() {
+        Some(build_source_model(source_pkgs)?)
+    } else {
+        None
+    };
+
+    let on_chain_model = if !on_chain_pkgs.is_empty() {
+        Some(build_on_chain_model(on_chain_pkgs, cache).await?)
+    } else {
+        None
+    };
+
+    Ok((source_model, on_chain_model))
+}
+
+// build a model for source packages -- create a stub Move.toml with packages listed as dependencies
+// to build a single ResolvedGraph.
+fn build_source_model(pkgs: Vec<(PM::PackageName, PM::InternalDependency)>) -> Result<ModelResult> {
+    let temp_dir = tempdir()?;
+    let stub_path = temp_dir.path();
+    fs::create_dir(stub_path.join("sources"))?;
+
+    let mut stub_manifest = File::create(stub_path.join("Move.toml"))?;
+
+    writeln!(stub_manifest, "[package]")?;
+    writeln!(stub_manifest, "name = \"{}\"", STUB_PACKAGE_NAME)?;
+    writeln!(stub_manifest, "version = \"0.1.0\"")?;
+
+    writeln!(stub_manifest, "\n[dependencies]")?;
+    for (name, dep) in pkgs.iter() {
+        writeln!(stub_manifest, " {}", DependencyTOML(*name, dep))?;
+    }
+
+    // TODO: allow some of these options to be passed in as flags
+    let build_config = MoveBuildConfig {
+        skip_fetch_latest_git_deps: true,
+        ..Default::default()
+    };
+    let resolved_graph = build_config.resolution_graph_for_package(stub_path, &mut io::stderr())?;
+
+    let source_id_map = find_address_origins(&resolved_graph);
+    let source_published_at = resolve_published_at(&resolved_graph, &source_id_map);
+
+    let source_env = ModelBuilder::create(
+        resolved_graph,
+        ModelConfig {
+            all_files_as_targets: true,
+            target_filter: None,
+        },
+    )
+    .build_model()?;
+
+    let mut stderr = StandardStream::stderr(ColorChoice::Always);
+    source_env.report_diag(&mut stderr, Severity::Warning);
+
+    if source_env.has_errors() {
+        bail!("Source model has errors.");
+    }
+
+    Ok(ModelResult {
+        env: source_env,
+        id_map: source_id_map,
+        published_at: source_published_at,
+    })
+}
+
+async fn build_on_chain_model(
+    pkgs: Vec<(PM::PackageName, GM::OnChainPackage)>,
+    cache: &mut PackageCache<'_>,
+) -> Result<ModelResult> {
+    let (pkg_ids, original_map) =
+        resolve_on_chain_packages(cache, pkgs.iter().map(|(_, pkg)| pkg.id).collect()).await?;
+
+    let mut modules = vec![];
+    let raw_pkgs = cache.get_multi(pkg_ids).await?;
+    for pkg in raw_pkgs {
+        let SuiRawMovePackage { module_map, .. } = pkg;
+        for (_, bytes) in module_map {
+            let module = CompiledModule::deserialize_with_defaults(&bytes)?;
+            modules.push(module)
+        }
+    }
+
+    let module_map = Modules::new(modules.iter());
+    let dep_graph = module_map.compute_dependency_graph();
+    let topo_order = dep_graph.compute_topological_order()?;
+
+    let mut on_chain_env = GlobalEnv::new();
+    add_modules_to_model(&mut on_chain_env, topo_order)?;
+
+    let mut stderr = StandardStream::stderr(ColorChoice::Always);
+    on_chain_env.report_diag(&mut stderr, Severity::Warning);
+    if on_chain_env.has_errors() {
+        bail!("On-chain model has errors.");
+    }
+
+    let mut on_chain_id_map: BTreeMap<AccountAddress, PM::PackageName> = BTreeMap::new();
+    let mut on_chain_published_at: BTreeMap<AccountAddress, AccountAddress> = BTreeMap::new();
+    for (name, pkg) in pkgs {
+        let original_id = original_map.get(&pkg.id).unwrap();
+
+        on_chain_id_map.insert(*original_id, name);
+        on_chain_published_at.insert(*original_id, pkg.id);
+    }
+
+    Ok(ModelResult {
+        env: on_chain_env,
+        id_map: on_chain_id_map,
+        published_at: on_chain_published_at,
+    })
 }
 
 /**
