@@ -142,7 +142,7 @@ impl<'env, 'a> StructClassImportCtx<'env, 'a> {
 
     /// Returns the import path for a struct. If the struct is defined in the current module,
     /// returns `None`.
-    pub fn import_path_for_strct(&self, strct: &StructEnv) -> Option<String> {
+    pub fn import_path_for_struct(&self, strct: &StructEnv) -> Option<String> {
         let module_name = module_import_name(&strct.module_env);
 
         if strct.module_env.self_address() == self.module.self_address()
@@ -198,7 +198,7 @@ impl<'env, 'a> StructClassImportCtx<'env, 'a> {
     /// has already been imported, imports it with an alias (e.g. Foo1, Foo2, etc.).
     pub fn get_class(&mut self, strct: &StructEnv) -> js::Tokens {
         let class_name = strct.get_name().display(strct.symbol_pool()).to_string();
-        let import_path = self.import_path_for_strct(strct);
+        let import_path = self.import_path_for_struct(strct);
 
         let import_path = match import_path {
             None => return quote!($class_name),
