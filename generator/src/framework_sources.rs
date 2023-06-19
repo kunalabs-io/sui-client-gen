@@ -75,7 +75,7 @@ export class StructClassLoader {
 
     const loader = this.map.get(typeName)
     if (!loader) {
-      throw new Error(`no loader registered for type ${typeName}`)
+      throw new Error(`no loader registered for type ${typeName}, include relevant package in gen.toml`)
     }
 
     if (loader.numTypeParams !== typeArgs.length) {
@@ -130,7 +130,7 @@ export class StructClassLoader {
 
     const loader = this.map.get(typeName)
     if (!loader) {
-      throw new Error(`no loader registered for type ${typeName}`)
+      throw new Error(`no loader registered for type ${typeName}, include relevant package in gen.toml`)
     }
 
     return loader.fromFieldsWithTypes(value)
