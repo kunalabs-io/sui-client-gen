@@ -1,6 +1,6 @@
 # sui-client-gen
 
-A tool for generating TS SDKs for Sui Move smart contracts. Supports code generation both for source code and on-chain packages.
+A tool for generating TS SDKs for Sui Move smart contracts. Supports code generation both for source code and on-chain packages with no IDLs or ABIs required.
 
 ## Caveats
 - When specifying both source and on-chain packages, the generator will currently generate two separate dependency graphs (one for on-chain and one for source). This is due to a technical detail and will be resolved in a future version so that only a single dependency graph is generated (https://github.com/kunalabs-io/sui-client-gen/issues/1#issuecomment-1554754842).
