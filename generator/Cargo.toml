@@ -14,6 +14,7 @@ genco = "0.17.5"
 clap = "4.3.4"
 codespan-reporting = "0.11.1"
 convert_case = "0.6.0"
+colored = "2.0.0"
 
 sui-move-build = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.2.0-release" }
 sui-move = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.2.0-release", features = [

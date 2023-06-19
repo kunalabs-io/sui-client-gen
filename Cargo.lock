@@ -9581,6 +9581,7 @@ dependencies = [
  "anyhow",
  "clap 4.3.4",
  "codespan-reporting",
+ "colored",
  "convert_case 0.6.0",
  "futures",
  "genco",

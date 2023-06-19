@@ -3,6 +3,7 @@ use std::path::{Path, PathBuf};
 
 use anyhow::Result;
 use clap::*;
+use colored::*;
 use genco::fmt;
 use genco::prelude::*;
 use move_core_types::account_address::AccountAddress;
@@ -62,12 +63,15 @@ async fn main() -> Result<()> {
     };
     let rpc_client = SuiClientBuilder::default().build(rpc_url).await?;
 
+    let mut progress_output = std::io::stderr();
+
     // build models
     let mut cache = PackageCache::new(rpc_client.read_api());
     let (source_model, on_chain_model) = build_models(
         &mut cache,
         &manifest.packages,
         &PathBuf::from(&args.manifest),
+        &mut progress_output,
     )
     .await?;
 
@@ -77,6 +81,8 @@ async fn main() -> Result<()> {
     }
 
     // gen _framework
+    writeln!(progress_output, "{}", "GENERATING FRAMEWORK".green().bold())?;
+
     let out_root = PathBuf::from(args.out);
     std::fs::create_dir_all(&out_root)?;
 
@@ -99,6 +105,11 @@ async fn main() -> Result<()> {
         resolve_top_level_pkg_addr_map(&source_model, &on_chain_model, &manifest);
 
     if let Some(m) = source_model {
+        writeln!(
+            progress_output,
+            "{}",
+            "GENERATING SOURCE PACKAGES".green().bold()
+        )?;
         gen_packages_for_model(
             &m.env,
             &source_top_level_addr_map,
@@ -108,6 +119,11 @@ async fn main() -> Result<()> {
         )?;
     }
     if let Some(m) = on_chain_model {
+        writeln!(
+            progress_output,
+            "{}",
+            "GENERATING ON-CHAIN PACKAGES".green().bold()
+        )?;
         gen_packages_for_model(
             &m.env,
             &on_chain_top_level_addr_map,

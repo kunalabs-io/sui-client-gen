@@ -5,6 +5,7 @@ use codespan_reporting::{
     diagnostic::Severity,
     term::termcolor::{ColorChoice, StandardStream},
 };
+use colored::*;
 use core::fmt;
 use futures::future;
 use move_binary_format::access::ModuleAccess;
@@ -47,10 +48,11 @@ pub struct ModelResult {
     pub published_at: BTreeMap<AccountAddress, AccountAddress>,
 }
 
-pub async fn build_models(
+pub async fn build_models<Progress: Write>(
     cache: &mut PackageCache<'_>,
     packages: &GM::Packages,
     manifest_path: &Path,
+    progress_output: &mut Progress,
 ) -> Result<(Option<ModelResult>, Option<ModelResult>)> {
     // separate source and on-chain packages
     let mut source_pkgs: Vec<(PM::PackageName, PM::InternalDependency)> = vec![];
@@ -89,13 +91,13 @@ pub async fn build_models(
     }
 
     let source_model = if !source_pkgs.is_empty() {
-        Some(build_source_model(source_pkgs)?)
+        Some(build_source_model(source_pkgs, progress_output)?)
     } else {
         None
     };
 
     let on_chain_model = if !on_chain_pkgs.is_empty() {
-        Some(build_on_chain_model(on_chain_pkgs, cache).await?)
+        Some(build_on_chain_model(on_chain_pkgs, cache, progress_output).await?)
     } else {
         None
     };
@@ -105,7 +107,16 @@ pub async fn build_models(
 
 // build a model for source packages -- create a stub Move.toml with packages listed as dependencies
 // to build a single ResolvedGraph.
-fn build_source_model(pkgs: Vec<(PM::PackageName, PM::InternalDependency)>) -> Result<ModelResult> {
+fn build_source_model<Progress: Write>(
+    pkgs: Vec<(PM::PackageName, PM::InternalDependency)>,
+    progress_output: &mut Progress,
+) -> Result<ModelResult> {
+    writeln!(
+        progress_output,
+        "{}",
+        "BUILDING SOURCE MODEL".green().bold()
+    )?;
+
     let temp_dir = tempdir()?;
     let stub_path = temp_dir.path();
     fs::create_dir(stub_path.join("sources"))?;
@@ -154,13 +165,25 @@ fn build_source_model(pkgs: Vec<(PM::PackageName, PM::InternalDependency)>) -> R
     })
 }
 
-async fn build_on_chain_model(
+async fn build_on_chain_model<Progress: Write>(
     pkgs: Vec<(PM::PackageName, GM::OnChainPackage)>,
     cache: &mut PackageCache<'_>,
+    progress_output: &mut Progress,
 ) -> Result<ModelResult> {
+    writeln!(
+        progress_output,
+        "{}",
+        "BUILDING ON-CHAIN MODEL".green().bold()
+    )?;
+
     let (pkg_ids, original_map) =
         resolve_on_chain_packages(cache, pkgs.iter().map(|(_, pkg)| pkg.id).collect()).await?;
 
+    writeln!(
+        progress_output,
+        "{}",
+        "FETCHING ON-CHAIN PACKAGES".green().bold()
+    )?;
     let mut modules = vec![];
     let raw_pkgs = cache.get_multi(pkg_ids).await?;
     for pkg in raw_pkgs {
