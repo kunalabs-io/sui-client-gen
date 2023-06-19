@@ -1,0 +1,75 @@
+name: Release Binaries
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Repo tag to build from'
+        type: string
+        required: true
+
+env:
+  TAG_NAME: "${{ github.event.inputs.version_tag || github.ref }}"
+  CARGO_TERM_COLOR: always
+  # Disable incremental compilation.
+  #
+  # Incremental compilation is useful as part of an edit-build-test-edit cycle,
+  # as it lets the compiler avoid recompiling code that hasn't changed. However,
+  # on CI, we're not making small edits; we're almost always building the entire
+  # project from scratch. Thus, incremental compilation on CI actually
+  # introduces *additional* overhead to support making future builds
+  # faster...but no future builds will ever occur in any given CI environment.
+  #
+  # See https://matklad.github.io/2021/09/04/fast-rust-builds.html#ci-workflow
+  # for details.
+  CARGO_INCREMENTAL: 0
+  # Allow more retries for network requests in cargo (downloading crates) and
+  # rustup (installing toolchains). This should help to reduce flaky CI failures
+  # from transient network timeouts or other issues.
+  CARGO_NET_RETRY: 10
+  RUSTUP_MAX_RETRIES: 10
+  # Don't emit giant backtraces in the CI logs.
+  RUST_BACKTRACE: short
+
+jobs:
+  release-build:
+    timeout-minutes: 45
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Clean up tag name
+        shell: bash
+        run: |
+          echo "version_tag=$(echo ${{ env.TAG_NAME }} | sed s/'refs\/tags\/'//)" >> $GITHUB_ENV
+      - name: Checking out ${{ env.version_tag }}
+        if: ${{ env.version_tag != 'main' }}
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ env.version_tag }}
+
+      - name: cargo build (release)
+        if: ${{ env.version_tag != 'main' }}
+        id: build
+        run: |
+          cargo build --release
+          echo BIN="target/release/sui-client-gen" >> $GITHUB_OUTPUT
+      - name: Upload release artifacts
+        if: ${{ env.version_tag != 'main' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: binary
+          path: |
+            ${{ steps.build.outputs.BIN }}
+      - name: Publish binaries for ${{ env.version_tag }} release
+        if: ${{ env.version_tag != 'main' }}
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.version_tag }}
+          files: |
+            ${{ steps.build.outputs.BIN }}
+        env:
+          # Have to use a Personal Access Token (PAT), based on https://tinyurl.com/2by2ntdr
+          GITHUB_TOKEN: ${{ secrets.GH_RELEASE_BUILDS_TOKEN }}
