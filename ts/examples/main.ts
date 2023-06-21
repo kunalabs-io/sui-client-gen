@@ -45,21 +45,21 @@ const signer = new RawSigner(keypair, provider)
 async function createPool() {
   const address = await signer.getAddress()
 
-  const tx = new TransactionBlock()
+  const txb = new TransactionBlock()
 
-  const [suiCoin] = tx.splitCoins(tx.gas, [tx.pure(1_000_000)])
-  const exampleCoin = faucetMint(tx, EXAMPLE_COIN_FAUCET_ID)
-  const lp = createPoolWithCoins(tx, ['0x2::sui::SUI', EXAMPLE_COIN.$typeName], {
+  const [suiCoin] = txb.splitCoins(txb.gas, [txb.pure(1_000_000)])
+  const exampleCoin = faucetMint(txb, EXAMPLE_COIN_FAUCET_ID)
+  const lp = createPoolWithCoins(txb, ['0x2::sui::SUI', EXAMPLE_COIN.$typeName], {
     registry: AMM_POOL_REGISTRY_ID,
     initA: suiCoin,
     initB: exampleCoin,
     lpFeeBps: 30n,
     adminFeePct: 10n,
   })
-  tx.transferObjects([lp], tx.pure(address))
+  txb.transferObjects([lp], txb.pure(address))
 
   const res = await signer.signAndExecuteTransactionBlock({
-    transactionBlock: tx,
+    transactionBlock: txb,
   })
   console.log(`tx digest: ${res.digest}`)
 }
@@ -100,21 +100,21 @@ async function fetchPoolRegistryItems() {
  * An example for calling transactions with generic fields.
  */
 async function createStructWithVector() {
-  const tx = new TransactionBlock()
+  const txb = new TransactionBlock()
 
-  const coin = faucetMint(tx, tx.object(EXAMPLE_COIN_FAUCET_ID))
+  const coin = faucetMint(txb, txb.object(EXAMPLE_COIN_FAUCET_ID))
 
-  const field = tx.makeMoveVec({
+  const field = txb.makeMoveVec({
     objects: [coin],
   })
   createWithGenericField(
-    tx,
+    txb,
     `vector<0x2::coin::Coin<${EXAMPLES_PACKAGE_ID}::example_coin::EXAMPLE_COIN>>`,
     field
   )
 
   const res = await signer.signAndExecuteTransactionBlock({
-    transactionBlock: tx,
+    transactionBlock: txb,
   })
   console.log(res)
 }
