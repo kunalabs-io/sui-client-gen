@@ -2,7 +2,7 @@ import { bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Table =============================== */
 
@@ -16,7 +16,7 @@ export function isTable(type: Type): boolean {
 }
 
 export interface TableFields {
-  id: ObjectId
+  id: string
   size: bigint
 }
 
@@ -26,7 +26,7 @@ export class Table {
 
   readonly $typeArgs: [Type, Type]
 
-  readonly id: ObjectId
+  readonly id: string
   readonly size: bigint
 
   constructor(typeArgs: [Type, Type], fields: TableFields) {
@@ -61,13 +61,13 @@ export class Table {
       throw new Error('not an object')
     }
     if (!isTable(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a Table object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a Table object`)
     }
     return Table.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<Table> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<Table> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Table object at id ${id}: ${res.error.code}`)
     }

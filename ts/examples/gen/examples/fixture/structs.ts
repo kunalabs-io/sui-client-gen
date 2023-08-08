@@ -10,19 +10,19 @@ import { ID, UID } from '../../sui/object/structs'
 import { Url } from '../../sui/url/structs'
 import { StructFromOtherModule } from '../other-module/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Bar =============================== */
 
 bcs.registerStructType(
-  '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar',
+  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar',
   {
     value: `u64`,
   }
 )
 
 export function isBar(type: Type): boolean {
-  return type === '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar'
+  return type === '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
 }
 
 export interface BarFields {
@@ -31,7 +31,7 @@ export interface BarFields {
 
 export class Bar {
   static readonly $typeName =
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
   static readonly $numTypeParams = 0
 
   readonly value: bigint
@@ -59,7 +59,7 @@ export class Bar {
 /* ============================== Dummy =============================== */
 
 bcs.registerStructType(
-  '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Dummy',
+  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy',
   {
     dummy_field: `bool`,
   }
@@ -67,7 +67,7 @@ bcs.registerStructType(
 
 export function isDummy(type: Type): boolean {
   return (
-    type === '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Dummy'
+    type === '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
   )
 }
 
@@ -77,7 +77,7 @@ export interface DummyFields {
 
 export class Dummy {
   static readonly $typeName =
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Dummy'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
   static readonly $numTypeParams = 0
 
   readonly dummyField: boolean
@@ -105,33 +105,33 @@ export class Dummy {
 /* ============================== Foo =============================== */
 
 bcs.registerStructType(
-  '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Foo<T>',
+  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<T>',
   {
     id: `0x2::object::UID`,
     generic: `T`,
     reified_primitive_vec: `vector<u64>`,
-    reified_object_vec: `vector<0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar>`,
+    reified_object_vec: `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
     generic_vec: `vector<T>`,
-    generic_vec_nested: `vector<0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<T, u8>>`,
-    two_generics: `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<T, 0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar>`,
-    two_generics_reified_primitive: `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<u16, u64>`,
-    two_generics_reified_object: `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar, 0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar>`,
-    two_generics_nested: `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<T, 0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<u8, u8>>`,
-    two_generics_reified_nested: `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar, 0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<u8, u8>>`,
-    two_generics_nested_vec: `vector<0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar, vector<0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<T, u8>>>>`,
-    dummy: `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Dummy`,
-    other: `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::other_module::StructFromOtherModule`,
+    generic_vec_nested: `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<T, u8>>`,
+    two_generics: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<T, 0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
+    two_generics_reified_primitive: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<u16, u64>`,
+    two_generics_reified_object: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, 0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
+    two_generics_nested: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<T, 0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<u8, u8>>`,
+    two_generics_reified_nested: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, 0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<u8, u8>>`,
+    two_generics_nested_vec: `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<T, u8>>>>`,
+    dummy: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy`,
+    other: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule`,
   }
 )
 
 export function isFoo(type: Type): boolean {
   return type.startsWith(
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Foo<'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<'
   )
 }
 
 export interface FooFields<T> {
-  id: ObjectId
+  id: string
   generic: T
   reifiedPrimitiveVec: Array<bigint>
   reifiedObjectVec: Array<Bar>
@@ -149,12 +149,12 @@ export interface FooFields<T> {
 
 export class Foo<T> {
   static readonly $typeName =
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Foo'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo'
   static readonly $numTypeParams = 1
 
   readonly $typeArg: Type
 
-  readonly id: ObjectId
+  readonly id: string
   readonly generic: T
   readonly reifiedPrimitiveVec: Array<bigint>
   readonly reifiedObjectVec: Array<Bar>
@@ -205,7 +205,7 @@ export class Foo<T> {
       twoGenerics: WithTwoGenerics.fromFields<T, Bar>(
         [
           `${typeArg}`,
-          `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar`,
+          `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
         ],
         fields.two_generics
       ),
@@ -215,30 +215,30 @@ export class Foo<T> {
       ),
       twoGenericsReifiedObject: WithTwoGenerics.fromFields<Bar, Bar>(
         [
-          `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar`,
-          `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar`,
+          `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
+          `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
         ],
         fields.two_generics_reified_object
       ),
       twoGenericsNested: WithTwoGenerics.fromFields<T, WithTwoGenerics<number, number>>(
         [
           `${typeArg}`,
-          `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<u8, u8>`,
+          `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<u8, u8>`,
         ],
         fields.two_generics_nested
       ),
       twoGenericsReifiedNested: WithTwoGenerics.fromFields<Bar, WithTwoGenerics<number, number>>(
         [
-          `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar`,
-          `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<u8, u8>`,
+          `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
+          `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<u8, u8>`,
         ],
         fields.two_generics_reified_nested
       ),
       twoGenericsNestedVec: fields.two_generics_nested_vec.map((item: any) =>
         WithTwoGenerics.fromFields<Bar, Array<WithTwoGenerics<T, number>>>(
           [
-            `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar`,
-            `vector<0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<${typeArg}, u8>>`,
+            `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
+            `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${typeArg}, u8>>`,
           ],
           item
         )
@@ -300,13 +300,13 @@ export class Foo<T> {
       throw new Error('not an object')
     }
     if (!isFoo(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a Foo object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a Foo object`)
     }
     return Foo.fromFieldsWithTypes(content)
   }
 
-  static async fetch<T>(provider: JsonRpcProvider, id: ObjectId): Promise<Foo<T>> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch<T>(client: SuiClient, id: string): Promise<Foo<T>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Foo object at id ${id}: ${res.error.code}`)
     }
@@ -320,7 +320,7 @@ export class Foo<T> {
 /* ============================== WithGenericField =============================== */
 
 bcs.registerStructType(
-  '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithGenericField<T>',
+  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<T>',
   {
     id: `0x2::object::UID`,
     generic_field: `T`,
@@ -329,23 +329,23 @@ bcs.registerStructType(
 
 export function isWithGenericField(type: Type): boolean {
   return type.startsWith(
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithGenericField<'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<'
   )
 }
 
 export interface WithGenericFieldFields<T> {
-  id: ObjectId
+  id: string
   genericField: T
 }
 
 export class WithGenericField<T> {
   static readonly $typeName =
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithGenericField'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField'
   static readonly $numTypeParams = 1
 
   readonly $typeArg: Type
 
-  readonly id: ObjectId
+  readonly id: string
   readonly genericField: T
 
   constructor(typeArg: Type, fields: WithGenericFieldFields<T>) {
@@ -397,13 +397,13 @@ export class WithGenericField<T> {
       throw new Error('not an object')
     }
     if (!isWithGenericField(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a WithGenericField object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a WithGenericField object`)
     }
     return WithGenericField.fromFieldsWithTypes(content)
   }
 
-  static async fetch<T>(provider: JsonRpcProvider, id: ObjectId): Promise<WithGenericField<T>> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch<T>(client: SuiClient, id: string): Promise<WithGenericField<T>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching WithGenericField object at id ${id}: ${res.error.code}`)
     }
@@ -420,7 +420,7 @@ export class WithGenericField<T> {
 /* ============================== WithSpecialTypes =============================== */
 
 bcs.registerStructType(
-  '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithSpecialTypes<T, U>',
+  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<T, U>',
   {
     id: `0x2::object::UID`,
     string: `0x1::string::String`,
@@ -430,7 +430,7 @@ bcs.registerStructType(
     uid: `0x2::object::UID`,
     balance: `0x2::balance::Balance<0x2::sui::SUI>`,
     option: `0x1::option::Option<u64>`,
-    option_obj: `0x1::option::Option<0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar>`,
+    option_obj: `0x1::option::Option<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
     option_none: `0x1::option::Option<u64>`,
     balance_generic: `0x2::balance::Balance<T>`,
     option_generic: `0x1::option::Option<U>`,
@@ -440,17 +440,17 @@ bcs.registerStructType(
 
 export function isWithSpecialTypes(type: Type): boolean {
   return type.startsWith(
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithSpecialTypes<'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<'
   )
 }
 
 export interface WithSpecialTypesFields<U> {
-  id: ObjectId
+  id: string
   string: string
   asciiString: string
   url: string
-  idField: ObjectId
-  uid: ObjectId
+  idField: string
+  uid: string
   balance: Balance
   option: bigint | null
   optionObj: Bar | null
@@ -462,17 +462,17 @@ export interface WithSpecialTypesFields<U> {
 
 export class WithSpecialTypes<U> {
   static readonly $typeName =
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithSpecialTypes'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes'
   static readonly $numTypeParams = 2
 
   readonly $typeArgs: [Type, Type]
 
-  readonly id: ObjectId
+  readonly id: string
   readonly string: string
   readonly asciiString: string
   readonly url: string
-  readonly idField: ObjectId
-  readonly uid: ObjectId
+  readonly idField: string
+  readonly uid: string
   readonly balance: Balance
   readonly option: bigint | null
   readonly optionObj: Bar | null
@@ -517,7 +517,7 @@ export class WithSpecialTypes<U> {
       option: Option.fromFields<bigint>(`u64`, fields.option).vec[0] || null,
       optionObj:
         Option.fromFields<Bar>(
-          `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar`,
+          `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
           fields.option_obj
         ).vec[0] || null,
       optionNone: Option.fromFields<bigint>(`u64`, fields.option_none).vec[0] || null,
@@ -556,7 +556,7 @@ export class WithSpecialTypes<U> {
           ? Option.fromFieldsWithTypes<Bar>({
               type:
                 '0x1::option::Option<' +
-                `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar` +
+                `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar` +
                 '>',
               fields: { vec: [item.fields.option_obj] },
             }).vec[0]
@@ -602,13 +602,13 @@ export class WithSpecialTypes<U> {
       throw new Error('not an object')
     }
     if (!isWithSpecialTypes(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a WithSpecialTypes object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a WithSpecialTypes object`)
     }
     return WithSpecialTypes.fromFieldsWithTypes(content)
   }
 
-  static async fetch<U>(provider: JsonRpcProvider, id: ObjectId): Promise<WithSpecialTypes<U>> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch<U>(client: SuiClient, id: string): Promise<WithSpecialTypes<U>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching WithSpecialTypes object at id ${id}: ${res.error.code}`)
     }
@@ -625,7 +625,7 @@ export class WithSpecialTypes<U> {
 /* ============================== WithSpecialTypesAsGenerics =============================== */
 
 bcs.registerStructType(
-  '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7>',
+  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7>',
   {
     id: `0x2::object::UID`,
     string: `T0`,
@@ -641,12 +641,12 @@ bcs.registerStructType(
 
 export function isWithSpecialTypesAsGenerics(type: Type): boolean {
   return type.startsWith(
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithSpecialTypesAsGenerics<'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<'
   )
 }
 
 export interface WithSpecialTypesAsGenericsFields<T0, T1, T2, T3, T4, T5, T6, T7> {
-  id: ObjectId
+  id: string
   string: T0
   asciiString: T1
   url: T2
@@ -659,12 +659,12 @@ export interface WithSpecialTypesAsGenericsFields<T0, T1, T2, T3, T4, T5, T6, T7
 
 export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
   static readonly $typeName =
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithSpecialTypesAsGenerics'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics'
   static readonly $numTypeParams = 8
 
   readonly $typeArgs: [Type, Type, Type, Type, Type, Type, Type, Type]
 
-  readonly id: ObjectId
+  readonly id: string
   readonly string: T0
   readonly asciiString: T1
   readonly url: T2
@@ -767,16 +767,18 @@ export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
       throw new Error('not an object')
     }
     if (!isWithSpecialTypesAsGenerics(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a WithSpecialTypesAsGenerics object`)
+      throw new Error(
+        `object at ${(content.fields as any).id} is not a WithSpecialTypesAsGenerics object`
+      )
     }
     return WithSpecialTypesAsGenerics.fromFieldsWithTypes(content)
   }
 
   static async fetch<T0, T1, T2, T3, T4, T5, T6, T7>(
-    provider: JsonRpcProvider,
-    id: ObjectId
+    client: SuiClient,
+    id: string
   ): Promise<WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7>> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(
         `error fetching WithSpecialTypesAsGenerics object at id ${id}: ${res.error.code}`
@@ -795,13 +797,13 @@ export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
 /* ============================== WithSpecialTypesInVectors =============================== */
 
 bcs.registerStructType(
-  '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithSpecialTypesInVectors<T>',
+  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<T>',
   {
     id: `0x2::object::UID`,
     string: `vector<0x1::string::String>`,
     ascii_string: `vector<0x1::ascii::String>`,
     id_field: `vector<0x2::object::ID>`,
-    bar: `vector<0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar>`,
+    bar: `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
     option: `vector<0x1::option::Option<u64>>`,
     option_generic: `vector<0x1::option::Option<T>>`,
   }
@@ -809,15 +811,15 @@ bcs.registerStructType(
 
 export function isWithSpecialTypesInVectors(type: Type): boolean {
   return type.startsWith(
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithSpecialTypesInVectors<'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<'
   )
 }
 
 export interface WithSpecialTypesInVectorsFields<T> {
-  id: ObjectId
+  id: string
   string: Array<string>
   asciiString: Array<string>
-  idField: Array<ObjectId>
+  idField: Array<string>
   bar: Array<Bar>
   option: Array<bigint | null>
   optionGeneric: Array<T | null>
@@ -825,15 +827,15 @@ export interface WithSpecialTypesInVectorsFields<T> {
 
 export class WithSpecialTypesInVectors<T> {
   static readonly $typeName =
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithSpecialTypesInVectors'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors'
   static readonly $numTypeParams = 1
 
   readonly $typeArg: Type
 
-  readonly id: ObjectId
+  readonly id: string
   readonly string: Array<string>
   readonly asciiString: Array<string>
-  readonly idField: Array<ObjectId>
+  readonly idField: Array<string>
   readonly bar: Array<Bar>
   readonly option: Array<bigint | null>
   readonly optionGeneric: Array<T | null>
@@ -921,16 +923,15 @@ export class WithSpecialTypesInVectors<T> {
       throw new Error('not an object')
     }
     if (!isWithSpecialTypesInVectors(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a WithSpecialTypesInVectors object`)
+      throw new Error(
+        `object at ${(content.fields as any).id} is not a WithSpecialTypesInVectors object`
+      )
     }
     return WithSpecialTypesInVectors.fromFieldsWithTypes(content)
   }
 
-  static async fetch<T>(
-    provider: JsonRpcProvider,
-    id: ObjectId
-  ): Promise<WithSpecialTypesInVectors<T>> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch<T>(client: SuiClient, id: string): Promise<WithSpecialTypesInVectors<T>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(
         `error fetching WithSpecialTypesInVectors object at id ${id}: ${res.error.code}`
@@ -949,7 +950,7 @@ export class WithSpecialTypesInVectors<T> {
 /* ============================== WithTwoGenerics =============================== */
 
 bcs.registerStructType(
-  '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<T, U>',
+  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<T, U>',
   {
     generic_field_1: `T`,
     generic_field_2: `U`,
@@ -958,7 +959,7 @@ bcs.registerStructType(
 
 export function isWithTwoGenerics(type: Type): boolean {
   return type.startsWith(
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<'
   )
 }
 
@@ -969,7 +970,7 @@ export interface WithTwoGenericsFields<T, U> {
 
 export class WithTwoGenerics<T, U> {
   static readonly $typeName =
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics'
   static readonly $numTypeParams = 2
 
   readonly $typeArgs: [Type, Type]

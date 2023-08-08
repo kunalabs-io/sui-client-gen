@@ -1,11 +1,7 @@
-import {
-  Connection,
-  JsonRpcProvider,
-  RawSigner,
-  TransactionBlock,
-  fromExportedKeypair,
-  normalizeSuiAddress,
-} from '@mysten/sui.js'
+import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519'
+import { fromB64, normalizeSuiAddress } from '@mysten/sui.js/utils'
+import { SuiClient } from '@mysten/sui.js/client'
+import { TransactionBlock } from '@mysten/sui.js/transactions'
 import { createPoolWithCoins } from './gen/amm/util/functions'
 import { PACKAGE_ID as EXAMPLES_PACKAGE_ID } from './gen/examples'
 import { faucetMint } from './gen/examples/example-coin/functions'
@@ -19,31 +15,27 @@ import { createExampleStruct, specialTypes } from './gen/examples/examples/funct
 import { BCS } from '@mysten/bcs'
 import { ExampleStruct } from './gen/examples/examples/structs'
 
-const EXAMPLE_COIN_FAUCET_ID = '0x810610be4cf14d2eb108c3437cb85ffb166e4ab22ba95ea94d309df792b1beb0'
-const AMM_POOL_REGISTRY_ID = '0xf5fbeb73a0a1967766cc4804cd46ee8f303f15337cb6fb6a9b0368060f017136'
+const EXAMPLE_COIN_FAUCET_ID = '0x23a00d64a785280a794d0bdd2f641dfabf117c78e07cb682550ed3c2b41dd760'
+const AMM_POOL_REGISTRY_ID = '0xe3e05313eff4f6f44206982e42fa1219c972113f3a651abe168123abc0202411'
 
-const AMM_POOL_ID = '0x31f15e8544b739ee857d759a2c85a60712a67f1918a534f123f978b76a0dbbd2'
+const AMM_POOL_ID = '0x799331284a2f75ed54b1a2bf212a26e3f465cbc7b974dbfa956f093de9ad8059'
 
-const WITH_GENERIC_FIELD_ID = '0x8cff8a5ed1cf49dcc8aac13e250f843cb26be8ed6a5e2e304051507965d4b79f'
+const WITH_GENERIC_FIELD_ID = '0xf170bc37f72659e942b376cef95b3194f8ffbecc0a82e601d682ae6e2693cd35'
 
-const keypair = fromExportedKeypair({
-  schema: 'ED25519',
-  privateKey: 'c6dC5eHuDwtumSoCO4v6MQCqVoYlGQwtdZVcyUYSuAo=',
-}) // address: 0x590b8e60ae1d7c1ff57f4697b03bd3a19a7db7d766c87e880153bc494596cb26
+const keypair = Ed25519Keypair.fromSecretKey(
+  fromB64('AMVT58FaLF2tJtg/g8X2z1/vG0FvNn0jvRu9X2Wl8F+u').slice(1)
+) // address: 0x8becfafb14c111fc08adee6cc9afa95a863d1bf133f796626eec353f98ea8507
 
-const provider = new JsonRpcProvider(
-  new Connection({
-    fullnode: 'https://fullnode.devnet.sui.io:443/',
-  })
-)
-const signer = new RawSigner(keypair, provider)
+const client = new SuiClient({
+  url: 'https://fullnode.testnet.sui.io:443/',
+})
 
 /**
  * An example for calling transactions.
  * Create a new AMM pool. Will not work if the pool already exists.
  */
 async function createPool() {
-  const address = await signer.getAddress()
+  const address = await keypair.getPublicKey().toSuiAddress()
 
   const txb = new TransactionBlock()
 
@@ -58,7 +50,8 @@ async function createPool() {
   })
   txb.transferObjects([lp], txb.pure(address))
 
-  const res = await signer.signAndExecuteTransactionBlock({
+  const res = await client.signAndExecuteTransactionBlock({
+    signer: keypair,
     transactionBlock: txb,
   })
   console.log(`tx digest: ${res.digest}`)
@@ -66,13 +59,13 @@ async function createPool() {
 
 /** An example for object fetching. Fetch and print the AMM pool at AMM_POOL_ID. */
 async function fetchPool() {
-  const pool = await Pool.fetch(provider, AMM_POOL_ID)
+  const pool = await Pool.fetch(client, AMM_POOL_ID)
   console.log(pool)
 }
 
 /** An example for event fetching. Fetch and print the pool creation events. */
 async function fetchPoolCreationEvents() {
-  const res = await provider.queryEvents({
+  const res = await client.queryEvents({
     query: {
       MoveEventType: PoolCreationEvent.$typeName,
     },
@@ -87,12 +80,12 @@ async function fetchPoolCreationEvents() {
  * Fetch and print the items in the AMM pool registry at AMM_POOL_REGISTRY_ID.
  */
 async function fetchPoolRegistryItems() {
-  const registry = await PoolRegistry.fetch(provider, AMM_POOL_REGISTRY_ID)
-  const fields = await provider.getDynamicFields({
+  const registry = await PoolRegistry.fetch(client, AMM_POOL_REGISTRY_ID)
+  const fields = await client.getDynamicFields({
     parentId: registry.table.id,
   })
 
-  const item = await Field.fetch(provider, fields.data[0].objectId)
+  const item = await Field.fetch(client, fields.data[0].objectId)
   console.log(item)
 }
 
@@ -113,7 +106,8 @@ async function createStructWithVector() {
     field
   )
 
-  const res = await signer.signAndExecuteTransactionBlock({
+  const res = await client.signAndExecuteTransactionBlock({
+    signer: keypair,
     transactionBlock: txb,
   })
   console.log(res)
@@ -121,7 +115,7 @@ async function createStructWithVector() {
 
 /** An example for object fetching with generic fields. */
 async function fetchWithGenericField() {
-  const field = await WithGenericField.fetch(provider, WITH_GENERIC_FIELD_ID)
+  const field = await WithGenericField.fetch(client, WITH_GENERIC_FIELD_ID)
   console.log(field)
 }
 
@@ -157,7 +151,8 @@ async function createSpecialTypes() {
     optionNone: txb.pure([], 'vector<u64>'),
   })
 
-  const res = await signer.signAndExecuteTransactionBlock({
+  const res = await client.signAndExecuteTransactionBlock({
+    signer: keypair,
     transactionBlock: txb,
   })
   console.log(res.digest)

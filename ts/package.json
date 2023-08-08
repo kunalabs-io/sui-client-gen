@@ -26,8 +26,8 @@
     "vitest": "^0.32.0"
   },
   "dependencies": {
-    "@mysten/bcs": "^0.7.2",
-    "@mysten/sui.js": "^0.36.0",
+    "@mysten/bcs": "^0.7.3",
+    "@mysten/sui.js": "^0.39.0",
     "commander": "^10.0.1",
     "tsup": "^6.7.0"
   }

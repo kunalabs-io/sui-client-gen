@@ -3,7 +3,7 @@ import { FieldsWithTypes, Type } from '../../../../_framework/util'
 import { String } from '../../0x1/ascii/structs'
 import { ID, UID } from '../object/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Publisher =============================== */
 
@@ -18,7 +18,7 @@ export function isPublisher(type: Type): boolean {
 }
 
 export interface PublisherFields {
-  id: ObjectId
+  id: string
   package: string
   moduleName: string
 }
@@ -27,7 +27,7 @@ export class Publisher {
   static readonly $typeName = '0x2::package::Publisher'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
   readonly package: string
   readonly moduleName: string
 
@@ -69,13 +69,13 @@ export class Publisher {
       throw new Error('not an object')
     }
     if (!isPublisher(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a Publisher object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a Publisher object`)
     }
     return Publisher.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<Publisher> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<Publisher> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Publisher object at id ${id}: ${res.error.code}`)
     }
@@ -100,8 +100,8 @@ export function isUpgradeCap(type: Type): boolean {
 }
 
 export interface UpgradeCapFields {
-  id: ObjectId
-  package: ObjectId
+  id: string
+  package: string
   version: bigint
   policy: number
 }
@@ -110,8 +110,8 @@ export class UpgradeCap {
   static readonly $typeName = '0x2::package::UpgradeCap'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
-  readonly package: ObjectId
+  readonly id: string
+  readonly package: string
   readonly version: bigint
   readonly policy: number
 
@@ -152,13 +152,13 @@ export class UpgradeCap {
       throw new Error('not an object')
     }
     if (!isUpgradeCap(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a UpgradeCap object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a UpgradeCap object`)
     }
     return UpgradeCap.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<UpgradeCap> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<UpgradeCap> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching UpgradeCap object at id ${id}: ${res.error.code}`)
     }
@@ -183,8 +183,8 @@ export function isUpgradeTicket(type: Type): boolean {
 }
 
 export interface UpgradeTicketFields {
-  cap: ObjectId
-  package: ObjectId
+  cap: string
+  package: string
   policy: number
   digest: Array<number>
 }
@@ -193,8 +193,8 @@ export class UpgradeTicket {
   static readonly $typeName = '0x2::package::UpgradeTicket'
   static readonly $numTypeParams = 0
 
-  readonly cap: ObjectId
-  readonly package: ObjectId
+  readonly cap: string
+  readonly package: string
   readonly policy: number
   readonly digest: Array<number>
 
@@ -243,16 +243,16 @@ export function isUpgradeReceipt(type: Type): boolean {
 }
 
 export interface UpgradeReceiptFields {
-  cap: ObjectId
-  package: ObjectId
+  cap: string
+  package: string
 }
 
 export class UpgradeReceipt {
   static readonly $typeName = '0x2::package::UpgradeReceipt'
   static readonly $numTypeParams = 0
 
-  readonly cap: ObjectId
-  readonly package: ObjectId
+  readonly cap: string
+  readonly package: string
 
   constructor(fields: UpgradeReceiptFields) {
     this.cap = fields.cap

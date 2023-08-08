@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { GenericArg, Type, generic } from '../../_framework/util'
-import { TransactionBlock } from '@mysten/sui.js'
+import { TransactionBlock } from '@mysten/sui.js/transactions'
 
 export function isOneTimeWitness(txb: TransactionBlock, typeArg: Type, t: GenericArg) {
   return txb.moveCall({

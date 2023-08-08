@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { GenericArg, ObjectArg, Type, generic, obj } from '../../_framework/util'
-import { TransactionBlock } from '@mysten/sui.js'
+import { TransactionBlock } from '@mysten/sui.js/transactions'
 
 export function borrow(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
   return txb.moveCall({

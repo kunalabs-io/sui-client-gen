@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
-import { ObjectId, TransactionArgument, TransactionBlock } from '@mysten/sui.js'
+import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export function new_(txb: TransactionBlock) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::object::new`, arguments: [] })
@@ -78,14 +78,14 @@ export function idFromBytes(
   })
 }
 
-export function idToAddress(txb: TransactionBlock, id: ObjectId | TransactionArgument) {
+export function idToAddress(txb: TransactionBlock, id: string | TransactionArgument) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object::id_to_address`,
     arguments: [pure(txb, id, `0x2::object::ID`)],
   })
 }
 
-export function idToBytes(txb: TransactionBlock, id: ObjectId | TransactionArgument) {
+export function idToBytes(txb: TransactionBlock, id: string | TransactionArgument) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object::id_to_bytes`,
     arguments: [pure(txb, id, `0x2::object::ID`)],

@@ -5,12 +5,12 @@ import { Balance, Supply } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== AdminCap =============================== */
 
 bcs.registerStructType(
-  '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::AdminCap',
+  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap',
   {
     id: `0x2::object::UID`,
   }
@@ -18,22 +18,22 @@ bcs.registerStructType(
 
 export function isAdminCap(type: Type): boolean {
   return (
-    type === '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::AdminCap'
+    type === '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
   )
 }
 
 export interface AdminCapFields {
-  id: ObjectId
+  id: string
 }
 
 export class AdminCap {
   static readonly $typeName =
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::AdminCap'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
 
-  constructor(id: ObjectId) {
+  constructor(id: string) {
     this.id = id
   }
 
@@ -57,13 +57,13 @@ export class AdminCap {
       throw new Error('not an object')
     }
     if (!isAdminCap(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a AdminCap object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a AdminCap object`)
     }
     return AdminCap.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<AdminCap> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<AdminCap> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching AdminCap object at id ${id}: ${res.error.code}`)
     }
@@ -77,7 +77,7 @@ export class AdminCap {
 /* ============================== LP =============================== */
 
 bcs.registerStructType(
-  '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::LP<A, B>',
+  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<A, B>',
   {
     dummy_field: `bool`,
   }
@@ -85,7 +85,7 @@ bcs.registerStructType(
 
 export function isLP(type: Type): boolean {
   return type.startsWith(
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::LP<'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<'
   )
 }
 
@@ -95,7 +95,7 @@ export interface LPFields {
 
 export class LP {
   static readonly $typeName =
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::LP'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP'
   static readonly $numTypeParams = 2
 
   readonly $typeArgs: [Type, Type]
@@ -129,26 +129,26 @@ export class LP {
 /* ============================== Pool =============================== */
 
 bcs.registerStructType(
-  '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::Pool<A, B>',
+  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<A, B>',
   {
     id: `0x2::object::UID`,
     balance_a: `0x2::balance::Balance<A>`,
     balance_b: `0x2::balance::Balance<B>`,
-    lp_supply: `0x2::balance::Supply<0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::LP<A, B>>`,
+    lp_supply: `0x2::balance::Supply<0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<A, B>>`,
     lp_fee_bps: `u64`,
     admin_fee_pct: `u64`,
-    admin_fee_balance: `0x2::balance::Balance<0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::LP<A, B>>`,
+    admin_fee_balance: `0x2::balance::Balance<0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<A, B>>`,
   }
 )
 
 export function isPool(type: Type): boolean {
   return type.startsWith(
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::Pool<'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<'
   )
 }
 
 export interface PoolFields {
-  id: ObjectId
+  id: string
   balanceA: Balance
   balanceB: Balance
   lpSupply: Supply
@@ -159,12 +159,12 @@ export interface PoolFields {
 
 export class Pool {
   static readonly $typeName =
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::Pool'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool'
   static readonly $numTypeParams = 2
 
   readonly $typeArgs: [Type, Type]
 
-  readonly id: ObjectId
+  readonly id: string
   readonly balanceA: Balance
   readonly balanceB: Balance
   readonly lpSupply: Supply
@@ -190,13 +190,13 @@ export class Pool {
       balanceA: Balance.fromFields(`${typeArgs[0]}`, fields.balance_a),
       balanceB: Balance.fromFields(`${typeArgs[1]}`, fields.balance_b),
       lpSupply: Supply.fromFields(
-        `0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::LP<${typeArgs[0]}, ${typeArgs[1]}>`,
+        `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${typeArgs[0]}, ${typeArgs[1]}>`,
         fields.lp_supply
       ),
       lpFeeBps: BigInt(fields.lp_fee_bps),
       adminFeePct: BigInt(fields.admin_fee_pct),
       adminFeeBalance: Balance.fromFields(
-        `0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::LP<${typeArgs[0]}, ${typeArgs[1]}>`,
+        `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${typeArgs[0]}, ${typeArgs[1]}>`,
         fields.admin_fee_balance
       ),
     })
@@ -216,7 +216,7 @@ export class Pool {
       lpFeeBps: BigInt(item.fields.lp_fee_bps),
       adminFeePct: BigInt(item.fields.admin_fee_pct),
       adminFeeBalance: new Balance(
-        `0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::LP<${typeArgs[0]}, ${typeArgs[1]}>`,
+        `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${typeArgs[0]}, ${typeArgs[1]}>`,
         BigInt(item.fields.admin_fee_balance)
       ),
     })
@@ -231,13 +231,13 @@ export class Pool {
       throw new Error('not an object')
     }
     if (!isPool(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a Pool object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a Pool object`)
     }
     return Pool.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<Pool> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<Pool> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Pool object at id ${id}: ${res.error.code}`)
     }
@@ -251,7 +251,7 @@ export class Pool {
 /* ============================== PoolCreationEvent =============================== */
 
 bcs.registerStructType(
-  '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolCreationEvent',
+  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent',
   {
     pool_id: `0x2::object::ID`,
   }
@@ -260,22 +260,22 @@ bcs.registerStructType(
 export function isPoolCreationEvent(type: Type): boolean {
   return (
     type ===
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolCreationEvent'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
   )
 }
 
 export interface PoolCreationEventFields {
-  poolId: ObjectId
+  poolId: string
 }
 
 export class PoolCreationEvent {
   static readonly $typeName =
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolCreationEvent'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
   static readonly $numTypeParams = 0
 
-  readonly poolId: ObjectId
+  readonly poolId: string
 
-  constructor(poolId: ObjectId) {
+  constructor(poolId: string) {
     this.poolId = poolId
   }
 
@@ -298,31 +298,31 @@ export class PoolCreationEvent {
 /* ============================== PoolRegistry =============================== */
 
 bcs.registerStructType(
-  '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistry',
+  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry',
   {
     id: `0x2::object::UID`,
-    table: `0x2::table::Table<0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistryItem, bool>`,
+    table: `0x2::table::Table<0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem, bool>`,
   }
 )
 
 export function isPoolRegistry(type: Type): boolean {
   return (
     type ===
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistry'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
   )
 }
 
 export interface PoolRegistryFields {
-  id: ObjectId
+  id: string
   table: Table
 }
 
 export class PoolRegistry {
   static readonly $typeName =
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistry'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
   readonly table: Table
 
   constructor(fields: PoolRegistryFields) {
@@ -335,7 +335,7 @@ export class PoolRegistry {
       id: UID.fromFields(fields.id).id,
       table: Table.fromFields(
         [
-          `0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistryItem`,
+          `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem`,
           `bool`,
         ],
         fields.table
@@ -362,13 +362,13 @@ export class PoolRegistry {
       throw new Error('not an object')
     }
     if (!isPoolRegistry(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a PoolRegistry object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a PoolRegistry object`)
     }
     return PoolRegistry.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<PoolRegistry> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<PoolRegistry> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching PoolRegistry object at id ${id}: ${res.error.code}`)
     }
@@ -382,7 +382,7 @@ export class PoolRegistry {
 /* ============================== PoolRegistryItem =============================== */
 
 bcs.registerStructType(
-  '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistryItem',
+  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem',
   {
     a: `0x1::type_name::TypeName`,
     b: `0x1::type_name::TypeName`,
@@ -392,7 +392,7 @@ bcs.registerStructType(
 export function isPoolRegistryItem(type: Type): boolean {
   return (
     type ===
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistryItem'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
   )
 }
 
@@ -403,7 +403,7 @@ export interface PoolRegistryItemFields {
 
 export class PoolRegistryItem {
   static readonly $typeName =
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistryItem'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
   static readonly $numTypeParams = 0
 
   readonly a: TypeName

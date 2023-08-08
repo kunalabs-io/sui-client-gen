@@ -5,7 +5,7 @@ import { Encoding } from '@mysten/bcs'
 /* ============================== StructFromOtherModule =============================== */
 
 bcs.registerStructType(
-  '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::other_module::StructFromOtherModule',
+  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule',
   {
     dummy_field: `bool`,
   }
@@ -14,7 +14,7 @@ bcs.registerStructType(
 export function isStructFromOtherModule(type: Type): boolean {
   return (
     type ===
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::other_module::StructFromOtherModule'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
   )
 }
 
@@ -24,7 +24,7 @@ export interface StructFromOtherModuleFields {
 
 export class StructFromOtherModule {
   static readonly $typeName =
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::other_module::StructFromOtherModule'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
   static readonly $numTypeParams = 0
 
   readonly dummyField: boolean

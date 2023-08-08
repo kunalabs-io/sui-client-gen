@@ -2,7 +2,7 @@ import { bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type } from '../../../../_framework/util'
 import { ID, UID } from '../object/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Versioned =============================== */
 
@@ -16,7 +16,7 @@ export function isVersioned(type: Type): boolean {
 }
 
 export interface VersionedFields {
-  id: ObjectId
+  id: string
   version: bigint
 }
 
@@ -24,7 +24,7 @@ export class Versioned {
   static readonly $typeName = '0x2::versioned::Versioned'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
   readonly version: bigint
 
   constructor(fields: VersionedFields) {
@@ -52,13 +52,13 @@ export class Versioned {
       throw new Error('not an object')
     }
     if (!isVersioned(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a Versioned object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a Versioned object`)
     }
     return Versioned.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<Versioned> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<Versioned> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Versioned object at id ${id}: ${res.error.code}`)
     }
@@ -81,7 +81,7 @@ export function isVersionChangeCap(type: Type): boolean {
 }
 
 export interface VersionChangeCapFields {
-  versionedId: ObjectId
+  versionedId: string
   oldVersion: bigint
 }
 
@@ -89,7 +89,7 @@ export class VersionChangeCap {
   static readonly $typeName = '0x2::versioned::VersionChangeCap'
   static readonly $numTypeParams = 0
 
-  readonly versionedId: ObjectId
+  readonly versionedId: string
   readonly oldVersion: bigint
 
   constructor(fields: VersionChangeCapFields) {

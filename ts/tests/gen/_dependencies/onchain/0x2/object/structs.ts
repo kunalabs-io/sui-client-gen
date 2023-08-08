@@ -1,7 +1,6 @@
 import { bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type } from '../../../../_framework/util'
 import { Encoding } from '@mysten/bcs'
-import { ObjectId } from '@mysten/sui.js'
 
 /* ============================== ID =============================== */
 
@@ -54,16 +53,16 @@ export function isUID(type: Type): boolean {
 }
 
 export interface UIDFields {
-  id: ObjectId
+  id: string
 }
 
 export class UID {
   static readonly $typeName = '0x2::object::UID'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
 
-  constructor(id: ObjectId) {
+  constructor(id: string) {
     this.id = id
   }
 

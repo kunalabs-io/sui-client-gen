@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
-import { ObjectId, TransactionArgument, TransactionBlock } from '@mysten/sui.js'
+import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export function default_(txb: TransactionBlock, typeArg: Type, pub: ObjectArg) {
   return txb.moveCall({
@@ -149,9 +149,9 @@ export function item(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
 }
 
 export interface NewRequestArgs {
-  item: ObjectId | TransactionArgument
+  item: string | TransactionArgument
   paid: bigint | TransactionArgument
-  from: ObjectId | TransactionArgument
+  from: string | TransactionArgument
 }
 
 export function newRequest(txb: TransactionBlock, typeArg: Type, args: NewRequestArgs) {

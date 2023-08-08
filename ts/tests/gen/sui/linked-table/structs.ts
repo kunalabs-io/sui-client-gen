@@ -5,7 +5,7 @@ import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
 import { Option } from '../../move-stdlib/option/structs'
 import { UID } from '../object/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== LinkedTable =============================== */
 
@@ -21,7 +21,7 @@ export function isLinkedTable(type: Type): boolean {
 }
 
 export interface LinkedTableFields<K> {
-  id: ObjectId
+  id: string
   size: bigint
   head: K | null
   tail: K | null
@@ -33,7 +33,7 @@ export class LinkedTable<K> {
 
   readonly $typeArgs: [Type, Type]
 
-  readonly id: ObjectId
+  readonly id: string
   readonly size: bigint
   readonly head: K | null
   readonly tail: K | null
@@ -102,13 +102,13 @@ export class LinkedTable<K> {
       throw new Error('not an object')
     }
     if (!isLinkedTable(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a LinkedTable object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a LinkedTable object`)
     }
     return LinkedTable.fromFieldsWithTypes(content)
   }
 
-  static async fetch<K>(provider: JsonRpcProvider, id: ObjectId): Promise<LinkedTable<K>> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch<K>(client: SuiClient, id: string): Promise<LinkedTable<K>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching LinkedTable object at id ${id}: ${res.error.code}`)
     }

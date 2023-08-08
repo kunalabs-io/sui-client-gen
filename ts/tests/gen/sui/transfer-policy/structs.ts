@@ -5,7 +5,7 @@ import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { VecSet } from '../vec-set/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== RuleKey =============================== */
 
@@ -66,7 +66,7 @@ export function isTransferPolicy(type: Type): boolean {
 }
 
 export interface TransferPolicyFields {
-  id: ObjectId
+  id: string
   balance: Balance
   rules: VecSet<TypeName>
 }
@@ -77,7 +77,7 @@ export class TransferPolicy {
 
   readonly $typeArg: Type
 
-  readonly id: ObjectId
+  readonly id: string
   readonly balance: Balance
   readonly rules: VecSet<TypeName>
 
@@ -122,13 +122,13 @@ export class TransferPolicy {
       throw new Error('not an object')
     }
     if (!isTransferPolicy(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a TransferPolicy object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a TransferPolicy object`)
     }
     return TransferPolicy.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<TransferPolicy> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<TransferPolicy> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching TransferPolicy object at id ${id}: ${res.error.code}`)
     }
@@ -151,8 +151,8 @@ export function isTransferPolicyCap(type: Type): boolean {
 }
 
 export interface TransferPolicyCapFields {
-  id: ObjectId
-  policyId: ObjectId
+  id: string
+  policyId: string
 }
 
 export class TransferPolicyCap {
@@ -161,8 +161,8 @@ export class TransferPolicyCap {
 
   readonly $typeArg: Type
 
-  readonly id: ObjectId
-  readonly policyId: ObjectId
+  readonly id: string
+  readonly policyId: string
 
   constructor(typeArg: Type, fields: TransferPolicyCapFields) {
     this.$typeArg = typeArg
@@ -202,13 +202,13 @@ export class TransferPolicyCap {
       throw new Error('not an object')
     }
     if (!isTransferPolicyCap(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a TransferPolicyCap object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a TransferPolicyCap object`)
     }
     return TransferPolicyCap.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<TransferPolicyCap> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<TransferPolicyCap> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching TransferPolicyCap object at id ${id}: ${res.error.code}`)
     }
@@ -233,7 +233,7 @@ export function isTransferPolicyCreated(type: Type): boolean {
 }
 
 export interface TransferPolicyCreatedFields {
-  id: ObjectId
+  id: string
 }
 
 export class TransferPolicyCreated {
@@ -242,9 +242,9 @@ export class TransferPolicyCreated {
 
   readonly $typeArg: Type
 
-  readonly id: ObjectId
+  readonly id: string
 
-  constructor(typeArg: Type, id: ObjectId) {
+  constructor(typeArg: Type, id: string) {
     this.$typeArg = typeArg
 
     this.id = id
@@ -289,9 +289,9 @@ export function isTransferRequest(type: Type): boolean {
 }
 
 export interface TransferRequestFields {
-  item: ObjectId
+  item: string
   paid: bigint
-  from: ObjectId
+  from: string
   receipts: VecSet<TypeName>
 }
 
@@ -301,9 +301,9 @@ export class TransferRequest {
 
   readonly $typeArg: Type
 
-  readonly item: ObjectId
+  readonly item: string
   readonly paid: bigint
-  readonly from: ObjectId
+  readonly from: string
   readonly receipts: VecSet<TypeName>
 
   constructor(typeArg: Type, fields: TransferRequestFields) {

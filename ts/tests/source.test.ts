@@ -1,10 +1,7 @@
-import {
-  Connection,
-  JsonRpcProvider,
-  RawSigner,
-  TransactionBlock,
-  fromExportedKeypair,
-} from '@mysten/sui.js'
+import { TransactionBlock } from '@mysten/sui.js/transactions'
+import { SuiClient } from '@mysten/sui.js/client'
+import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519'
+import { fromB64 } from '@mysten/sui.js/utils'
 import { it, expect } from 'vitest'
 import {
   Bar,
@@ -33,17 +30,13 @@ import { new_ as newUid, idFromAddress } from './gen/sui/object/functions'
 import { zero } from './gen/sui/balance/functions'
 import { Balance } from './gen/sui/balance/structs'
 
-const keypair = fromExportedKeypair({
-  schema: 'ED25519',
-  privateKey: 'c6dC5eHuDwtumSoCO4v6MQCqVoYlGQwtdZVcyUYSuAo=',
-}) // address: 0x590b8e60ae1d7c1ff57f4697b03bd3a19a7db7d766c87e880153bc494596cb26
+const keypair = Ed25519Keypair.fromSecretKey(
+  fromB64('AMVT58FaLF2tJtg/g8X2z1/vG0FvNn0jvRu9X2Wl8F+u').slice(1)
+) // address: 0x8becfafb14c111fc08adee6cc9afa95a863d1bf133f796626eec353f98ea8507
 
-const provider = new JsonRpcProvider(
-  new Connection({
-    fullnode: 'https://fullnode.devnet.sui.io:443/',
-  })
-)
-const signer = new RawSigner(keypair, provider)
+const client = new SuiClient({
+  url: 'https://fullnode.testnet.sui.io:443/',
+})
 
 it('creates and decodes an object with object as type param', async () => {
   const txb = new TransactionBlock()
@@ -117,7 +110,8 @@ it('creates and decodes an object with object as type param', async () => {
     objRef: createBar(txb, 100n),
   })
 
-  const res = await signer.signAndExecuteTransactionBlock({
+  const res = await client.signAndExecuteTransactionBlock({
+    signer: keypair,
     transactionBlock: txb,
     options: {
       showEffects: true,
@@ -126,7 +120,7 @@ it('creates and decodes an object with object as type param', async () => {
 
   const id = res.effects!.created![0].reference.objectId
 
-  const foo = await provider.getObject({
+  const foo = await client.getObject({
     id,
     options: {
       showBcs: true,
@@ -205,11 +199,10 @@ it('creates and decodes an object with object as type param', async () => {
   expect(Foo.fromFields(T, de)).toEqual(exp)
   expect(Foo.fromFieldsWithTypes(foo.data.content)).toEqual(exp)
   expect(Foo.fromSuiParsedData(foo.data.content)).toEqual(exp)
-  expect(await Foo.fetch(provider, id)).toEqual(exp)
+  expect(await Foo.fetch(client, id)).toEqual(exp)
 })
 
 it('creates and decodes Foo with vector of objects as type param', async () => {
-  const provider = new JsonRpcProvider()
   const txb = new TransactionBlock()
 
   const T = `vector<${Bar.$typeName}>`
@@ -288,7 +281,8 @@ it('creates and decodes Foo with vector of objects as type param', async () => {
     objRef: createBar(txb, 100n),
   })
 
-  const res = await signer.signAndExecuteTransactionBlock({
+  const res = await client.signAndExecuteTransactionBlock({
+    signer: keypair,
     transactionBlock: txb,
     options: {
       showEffects: true,
@@ -297,7 +291,7 @@ it('creates and decodes Foo with vector of objects as type param', async () => {
 
   const id = res.effects!.created![0].reference.objectId
 
-  const foo = await provider.getObject({
+  const foo = await client.getObject({
     id,
     options: {
       showBcs: true,
@@ -398,7 +392,8 @@ it('decodes special-cased types correctly with fromFieldsWithTypes', async () =>
     optionGenericNone: none(txb, 'u64'),
   })
 
-  const res = await signer.signAndExecuteTransactionBlock({
+  const res = await client.signAndExecuteTransactionBlock({
+    signer: keypair,
     transactionBlock: txb,
     options: {
       showEffects: true,
@@ -407,7 +402,7 @@ it('decodes special-cased types correctly with fromFieldsWithTypes', async () =>
 
   const id = res.effects!.created![0].reference.objectId
 
-  const obj = await provider.getObject({
+  const obj = await client.getObject({
     id,
     options: {
       showBcs: true,
@@ -419,7 +414,7 @@ it('decodes special-cased types correctly with fromFieldsWithTypes', async () =>
     throw new Error(`not a moveObject`)
   }
 
-  const uid = obj.data.content.fields.uid.id
+  const uid = (obj.data.content.fields as { uid: { id: string } }).uid.id
 
   expect(WithSpecialTypes.fromFieldsWithTypes(obj.data.content)).toEqual(
     new WithSpecialTypes(['0x2::sui::SUI', 'u64'], {
@@ -472,7 +467,8 @@ it('decodes special-cased types as generics correctly with fromFieldsWithTypes',
     }
   )
 
-  const res = await signer.signAndExecuteTransactionBlock({
+  const res = await client.signAndExecuteTransactionBlock({
+    signer: keypair,
     transactionBlock: txb,
     options: {
       showEffects: true,
@@ -481,7 +477,7 @@ it('decodes special-cased types as generics correctly with fromFieldsWithTypes',
 
   const id = res.effects!.created![0].reference.objectId
 
-  const obj = await provider.getObject({
+  const obj = await client.getObject({
     id,
     options: {
       showBcs: true,
@@ -493,7 +489,7 @@ it('decodes special-cased types as generics correctly with fromFieldsWithTypes',
     throw new Error(`not a moveObject`)
   }
 
-  const uid = obj.data.content.fields.uid.id
+  const uid = (obj.data.content.fields as { uid: { id: string } }).uid.id
 
   expect(WithSpecialTypesAsGenerics.fromFieldsWithTypes(obj.data.content)).toEqual(
     new WithSpecialTypesAsGenerics(
@@ -549,7 +545,8 @@ it('calls function correctly when special types are used', async () => {
     }
   )
 
-  const res = await signer.signAndExecuteTransactionBlock({
+  const res = await client.signAndExecuteTransactionBlock({
+    signer: keypair,
     transactionBlock: txb,
     options: {
       showEffects: true,
@@ -558,7 +555,7 @@ it('calls function correctly when special types are used', async () => {
 
   const id = res.effects!.created![0].reference.objectId
 
-  const obj = await provider.getObject({
+  const obj = await client.getObject({
     id,
     options: {
       showBcs: true,
@@ -579,7 +576,7 @@ it('calls function correctly when special types are used', async () => {
         asciiString: 'ascii',
         url: 'https://example.com',
         idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
-        uid: obj.data.content.fields.uid.id,
+        uid: (obj.data.content.fields as { uid: { id: string } }).uid.id,
         balance: new Balance('0x2::sui::SUI', 0n),
         option: 100n,
         optionObj: new Bar(100n),
@@ -624,7 +621,8 @@ it('calls function correctly when special types are used as generics', async () 
     }
   )
 
-  const res = await signer.signAndExecuteTransactionBlock({
+  const res = await client.signAndExecuteTransactionBlock({
+    signer: keypair,
     transactionBlock: txb,
     options: {
       showEffects: true,
@@ -633,7 +631,7 @@ it('calls function correctly when special types are used as generics', async () 
 
   const id = res.effects!.created![0].reference.objectId
 
-  const obj = await provider.getObject({
+  const obj = await client.getObject({
     id,
     options: {
       showBcs: true,
@@ -663,7 +661,7 @@ it('calls function correctly when special types are used as generics', async () 
         asciiString: 'ascii',
         url: 'https://example.com',
         idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
-        uid: obj.data.content.fields.uid.id,
+        uid: (obj.data.content.fields as { uid: { id: string } }).uid.id,
         balance: new Balance('0x2::sui::SUI', 0n),
         option: [5n, null, 3n],
         optionNone: null,
@@ -684,7 +682,8 @@ it('calls function correctly when special types are used as as vectors', async (
     optionGeneric: [[5n], null],
   })
 
-  const res = await signer.signAndExecuteTransactionBlock({
+  const res = await client.signAndExecuteTransactionBlock({
+    signer: keypair,
     transactionBlock: txb,
     options: {
       showEffects: true,
@@ -693,7 +692,7 @@ it('calls function correctly when special types are used as as vectors', async (
 
   const id = res.effects!.created![0].reference.objectId
 
-  const obj = await provider.getObject({
+  const obj = await client.getObject({
     id,
     options: {
       showBcs: true,

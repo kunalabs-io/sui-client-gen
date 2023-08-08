@@ -602,8 +602,8 @@ impl<'env> FunctionsGen<'env> {
     fn param_type_to_field_type(&self, ty: &Type) -> js::Tokens {
         let object_arg = &self.framework.import("util", "ObjectArg");
         let generic_arg = &self.framework.import("util", "GenericArg");
-        let transaction_argument = &js::import("@mysten/sui.js", "TransactionArgument");
-        let object_id = &js::import("@mysten/sui.js", "ObjectId");
+        let transaction_argument =
+            &js::import("@mysten/sui.js/transactions", "TransactionArgument");
 
         match ty {
             Type::Primitive(ty) => match ty {
@@ -629,7 +629,7 @@ impl<'env> FunctionsGen<'env> {
                     "0x1::string::String" | "0x1::ascii::String" => {
                         quote!(string | $transaction_argument)
                     }
-                    "0x2::object::ID" => quote!($object_id | $transaction_argument),
+                    "0x2::object::ID" => quote!(string | $transaction_argument),
                     "0x1::option::Option" => {
                         quote!(($(self.param_type_to_field_type(&ts[0])) | $(transaction_argument) | null))
                     }
@@ -778,7 +778,7 @@ impl<'env> FunctionsGen<'env> {
         func: &FunctionEnv,
         tokens: &mut Tokens<JavaScript>,
     ) -> Result<()> {
-        let transaction_block = &js::import("@mysten/sui.js", "TransactionBlock");
+        let transaction_block = &js::import("@mysten/sui.js/transactions", "TransactionBlock");
         let published_at = &js::import("..", "PUBLISHED_AT");
 
         func.get_type_parameter_count();
@@ -864,8 +864,6 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         ty: &Type,
         type_param_names: Vec<Symbol>,
     ) -> js::Tokens {
-        let object_id = &js::import("@mysten/sui.js", "ObjectId");
-
         match ty {
             Type::Primitive(ty) => match ty {
                 PrimitiveType::U8 | PrimitiveType::U16 | PrimitiveType::U32 => quote!(number),
@@ -886,8 +884,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 match field_strct.get_full_name_with_address().as_ref() {
                     "0x1::string::String" | "0x1::ascii::String" => quote!(string),
                     "0x2::url::Url" => quote!(string),
-                    "0x2::object::ID" => quote!($(object_id)),
-                    "0x2::object::UID" => quote!($(object_id)),
+                    "0x2::object::ID" => quote!(string),
+                    "0x2::object::UID" => quote!(string),
                     "0x1::option::Option" => {
                         let ty = &ts[0];
                         quote!(($(self.gen_struct_class_field_type(ty, type_param_names)) | null))
@@ -1247,9 +1245,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let fields_with_types = &self.framework.import("util", "FieldsWithTypes");
         let parse_type_name = &self.framework.import("util", "parseTypeName");
         let encoding = &js::import("@mysten/bcs", "Encoding");
-        let sui_parsed_data = &js::import("@mysten/sui.js", "SuiParsedData");
-        let json_rpc_provider = &js::import("@mysten/sui.js", "JsonRpcProvider");
-        let object_id = &js::import("@mysten/sui.js", "ObjectId");
+        let sui_parsed_data = &js::import("@mysten/sui.js/client", "SuiParsedData");
+        let sui_client = &js::import("@mysten/sui.js/client", "SuiClient");
 
         strct.get_abilities().has_key();
 
@@ -1381,16 +1378,16 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                         }
                         if (!is$(&struct_name)(content.type)) {
                             throw new Error($(self.interpolate(
-                                format!("object at ${{content.fields.id}} is not a {} object", &struct_name))
+                                format!("object at ${{(content.fields as any).id}} is not a {} object", &struct_name))
                             ));
                         }
                         return $(&struct_name).fromFieldsWithTypes(content);
                     }$['\n']
 
                     static async fetch$(
-                        self.gen_params_toks(strct))(provider: $json_rpc_provider, id: $object_id
+                        self.gen_params_toks(strct))(client: $sui_client, id: string
                     ): Promise<$(&struct_name)$(self.gen_params_toks(strct))> {
-                        const res = await provider.getObject({
+                        const res = await client.getObject({
                             id,
                             options: {
                                 showContent: true,
