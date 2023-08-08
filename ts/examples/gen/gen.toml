@@ -4,4 +4,4 @@ rpc = "https://fullnode.devnet.sui.io:443"
 [packages]
 AMM = { local = "../../../move/amm" }
 Examples = { local = "../../../move/examples" }
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "releases/sui-v1.3.0-release" }
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "releases/sui-v1.6.0-release" }

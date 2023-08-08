@@ -5,12 +5,12 @@ import { Option } from '../../move-stdlib/option/structs'
 import { String as String1 } from '../../move-stdlib/string/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== ExampleStruct =============================== */
 
 bcs.registerStructType(
-  '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::examples::ExampleStruct',
+  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct',
   {
     dummy_field: `bool`,
   }
@@ -19,7 +19,7 @@ bcs.registerStructType(
 export function isExampleStruct(type: Type): boolean {
   return (
     type ===
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::examples::ExampleStruct'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
   )
 }
 
@@ -29,7 +29,7 @@ export interface ExampleStructFields {
 
 export class ExampleStruct {
   static readonly $typeName =
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::examples::ExampleStruct'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
   static readonly $numTypeParams = 0
 
   readonly dummyField: boolean
@@ -57,13 +57,13 @@ export class ExampleStruct {
 /* ============================== SpecialTypesStruct =============================== */
 
 bcs.registerStructType(
-  '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::examples::SpecialTypesStruct',
+  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct',
   {
     id: `0x2::object::UID`,
     ascii_string: `0x1::ascii::String`,
     utf8_string: `0x1::string::String`,
     vector_of_u64: `vector<u64>`,
-    vector_of_objects: `vector<0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::examples::ExampleStruct>`,
+    vector_of_objects: `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct>`,
     id_field: `0x2::object::ID`,
     address: `address`,
     option_some: `0x1::option::Option<u64>`,
@@ -74,17 +74,17 @@ bcs.registerStructType(
 export function isSpecialTypesStruct(type: Type): boolean {
   return (
     type ===
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::examples::SpecialTypesStruct'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
   )
 }
 
 export interface SpecialTypesStructFields {
-  id: ObjectId
+  id: string
   asciiString: string
   utf8String: string
   vectorOfU64: Array<bigint>
   vectorOfObjects: Array<ExampleStruct>
-  idField: ObjectId
+  idField: string
   address: string
   optionSome: bigint | null
   optionNone: bigint | null
@@ -92,15 +92,15 @@ export interface SpecialTypesStructFields {
 
 export class SpecialTypesStruct {
   static readonly $typeName =
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::examples::SpecialTypesStruct'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
   readonly asciiString: string
   readonly utf8String: string
   readonly vectorOfU64: Array<bigint>
   readonly vectorOfObjects: Array<ExampleStruct>
-  readonly idField: ObjectId
+  readonly idField: string
   readonly address: string
   readonly optionSome: bigint | null
   readonly optionNone: bigint | null
@@ -175,13 +175,13 @@ export class SpecialTypesStruct {
       throw new Error('not an object')
     }
     if (!isSpecialTypesStruct(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a SpecialTypesStruct object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a SpecialTypesStruct object`)
     }
     return SpecialTypesStruct.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<SpecialTypesStruct> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<SpecialTypesStruct> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching SpecialTypesStruct object at id ${id}: ${res.error.code}`)
     }

@@ -88,3 +88,11 @@ export function singleton(txb: TransactionBlock, typeArg: Type, e: GenericArg) {
     arguments: [generic(txb, `${typeArg}`, e)],
   })
 }
+
+export function drop(txb: TransactionBlock, typeArg: Type, t: ObjectArg) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::table_vec::drop`,
+    typeArguments: [typeArg],
+    arguments: [obj(txb, t)],
+  })
+}

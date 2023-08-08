@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js'
+import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export interface BorrowArgs {
   t: ObjectArg
@@ -86,5 +86,13 @@ export function singleton(txb: TransactionBlock, typeArg: Type, e: GenericArg) {
     target: `${PUBLISHED_AT}::table_vec::singleton`,
     typeArguments: [typeArg],
     arguments: [generic(txb, `${typeArg}`, e)],
+  })
+}
+
+export function drop(txb: TransactionBlock, typeArg: Type, t: ObjectArg) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::table_vec::drop`,
+    typeArguments: [typeArg],
+    arguments: [obj(txb, t)],
   })
 }

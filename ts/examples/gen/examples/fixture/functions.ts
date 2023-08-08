@@ -42,13 +42,13 @@ export function createFoo(txb: TransactionBlock, typeArgs: [Type, Type], args: C
       pure(txb, args.reifiedPrimitiveVec, `vector<u64>`),
       vector(
         txb,
-        `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar`,
+        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
         args.reifiedObjectVec
       ),
       vector(txb, `${typeArgs[0]}`, args.genericVec),
       vector(
         txb,
-        `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<${typeArgs[0]}, u8>`,
+        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${typeArgs[0]}, u8>`,
         args.genericVecNested
       ),
       obj(txb, args.twoGenerics),
@@ -58,7 +58,7 @@ export function createFoo(txb: TransactionBlock, typeArgs: [Type, Type], args: C
       obj(txb, args.twoGenericsReifiedNested),
       vector(
         txb,
-        `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar, vector<0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<${typeArgs[0]}, u8>>>`,
+        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${typeArgs[0]}, u8>>>`,
         args.twoGenericsNestedVec
       ),
       obj(txb, args.objRef),
@@ -99,7 +99,7 @@ export function createSpecial(
       pure(txb, args.option, `0x1::option::Option<u64>`),
       option(
         txb,
-        `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar`,
+        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
         args.optionObj
       ),
       pure(txb, args.optionNone, `0x1::option::Option<u64>`),
@@ -165,7 +165,7 @@ export function createSpecialInVectors(
       pure(txb, args.idField, `vector<0x2::object::ID>`),
       vector(
         txb,
-        `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar`,
+        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
         args.bar
       ),
       pure(txb, args.option, `vector<0x1::option::Option<u64>>`),

@@ -3,7 +3,7 @@ import { initLoaderIfNeeded } from '../../_framework/init-source'
 import { structClassLoaderSource } from '../../_framework/loader'
 import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== DynamicFields =============================== */
 
@@ -74,13 +74,13 @@ export class DynamicFields<K> {
       throw new Error('not an object')
     }
     if (!isDynamicFields(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a DynamicFields object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a DynamicFields object`)
     }
     return DynamicFields.fromFieldsWithTypes(content)
   }
 
-  static async fetch<K>(provider: JsonRpcProvider, id: ObjectId): Promise<DynamicFields<K>> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch<K>(client: SuiClient, id: string): Promise<DynamicFields<K>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching DynamicFields object at id ${id}: ${res.error.code}`)
     }
@@ -179,13 +179,13 @@ export class Ownership {
       throw new Error('not an object')
     }
     if (!isOwnership(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a Ownership object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a Ownership object`)
     }
     return Ownership.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<Ownership> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<Ownership> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Ownership object at id ${id}: ${res.error.code}`)
     }
@@ -207,16 +207,16 @@ export function isUID(type: Type): boolean {
 }
 
 export interface UIDFields {
-  id: ObjectId
+  id: string
 }
 
 export class UID {
   static readonly $typeName = '0x2::object::UID'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
 
-  constructor(id: ObjectId) {
+  constructor(id: string) {
     this.id = id
   }
 

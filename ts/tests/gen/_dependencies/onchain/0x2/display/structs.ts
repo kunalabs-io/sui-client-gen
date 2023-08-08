@@ -3,7 +3,7 @@ import { FieldsWithTypes, Type, parseTypeName } from '../../../../_framework/uti
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Display =============================== */
 
@@ -18,7 +18,7 @@ export function isDisplay(type: Type): boolean {
 }
 
 export interface DisplayFields {
-  id: ObjectId
+  id: string
   fields: VecMap<string, string>
   version: number
 }
@@ -29,7 +29,7 @@ export class Display {
 
   readonly $typeArg: Type
 
-  readonly id: ObjectId
+  readonly id: string
   readonly fields: VecMap<string, string>
   readonly version: number
 
@@ -74,13 +74,13 @@ export class Display {
       throw new Error('not an object')
     }
     if (!isDisplay(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a Display object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a Display object`)
     }
     return Display.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<Display> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<Display> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Display object at id ${id}: ${res.error.code}`)
     }
@@ -102,7 +102,7 @@ export function isDisplayCreated(type: Type): boolean {
 }
 
 export interface DisplayCreatedFields {
-  id: ObjectId
+  id: string
 }
 
 export class DisplayCreated {
@@ -111,9 +111,9 @@ export class DisplayCreated {
 
   readonly $typeArg: Type
 
-  readonly id: ObjectId
+  readonly id: string
 
-  constructor(typeArg: Type, id: ObjectId) {
+  constructor(typeArg: Type, id: string) {
     this.$typeArg = typeArg
 
     this.id = id
@@ -153,7 +153,7 @@ export function isVersionUpdated(type: Type): boolean {
 }
 
 export interface VersionUpdatedFields {
-  id: ObjectId
+  id: string
   version: number
   fields: VecMap<string, string>
 }
@@ -164,7 +164,7 @@ export class VersionUpdated {
 
   readonly $typeArg: Type
 
-  readonly id: ObjectId
+  readonly id: string
   readonly version: number
   readonly fields: VecMap<string, string>
 

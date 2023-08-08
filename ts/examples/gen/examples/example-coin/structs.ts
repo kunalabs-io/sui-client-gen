@@ -8,7 +8,7 @@ import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 /* ============================== EXAMPLE_COIN =============================== */
 
 bcs.registerStructType(
-  '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::example_coin::EXAMPLE_COIN',
+  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN',
   {
     dummy_field: `bool`,
   }
@@ -17,7 +17,7 @@ bcs.registerStructType(
 export function isEXAMPLE_COIN(type: Type): boolean {
   return (
     type ===
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::example_coin::EXAMPLE_COIN'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
   )
 }
 
@@ -27,7 +27,7 @@ export interface EXAMPLE_COINFields {
 
 export class EXAMPLE_COIN {
   static readonly $typeName =
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::example_coin::EXAMPLE_COIN'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
   static readonly $numTypeParams = 0
 
   readonly dummyField: boolean
@@ -55,17 +55,17 @@ export class EXAMPLE_COIN {
 /* ============================== Faucet =============================== */
 
 bcs.registerStructType(
-  '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::example_coin::Faucet',
+  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet',
   {
     id: `0x2::object::UID`,
-    cap: `0x2::coin::TreasuryCap<0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::example_coin::EXAMPLE_COIN>`,
+    cap: `0x2::coin::TreasuryCap<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN>`,
   }
 )
 
 export function isFaucet(type: Type): boolean {
   return (
     type ===
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::example_coin::Faucet'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'
   )
 }
 
@@ -76,7 +76,7 @@ export interface FaucetFields {
 
 export class Faucet {
   static readonly $typeName =
-    '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::example_coin::Faucet'
+    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'
   static readonly $numTypeParams = 0
 
   readonly id: string
@@ -91,7 +91,7 @@ export class Faucet {
     return new Faucet({
       id: UID.fromFields(fields.id).id,
       cap: TreasuryCap.fromFields(
-        `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::example_coin::EXAMPLE_COIN`,
+        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN`,
         fields.cap
       ),
     })

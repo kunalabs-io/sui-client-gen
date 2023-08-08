@@ -9,7 +9,7 @@ import {
   pure,
   vector,
 } from '../../_framework/util'
-import { ObjectId, TransactionArgument, TransactionBlock } from '@mysten/sui.js'
+import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export function createWithGenericField(txb: TransactionBlock, typeArg: Type, t0: GenericArg) {
   return txb.moveCall({
@@ -67,13 +67,13 @@ export function createFoo(txb: TransactionBlock, typeArgs: [Type, Type], args: C
       pure(txb, args.vecU64, `vector<u64>`),
       vector(
         txb,
-        `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar`,
+        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
         args.vecBar
       ),
       vector(txb, `${typeArgs[0]}`, args.vecT0),
       vector(
         txb,
-        `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<${typeArgs[0]}, u8>`,
+        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${typeArgs[0]}, u8>`,
         args.vecWithTwoGenerics1
       ),
       obj(txb, args.withTwoGenerics1),
@@ -83,7 +83,7 @@ export function createFoo(txb: TransactionBlock, typeArgs: [Type, Type], args: C
       obj(txb, args.withTwoGenerics5),
       vector(
         txb,
-        `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar, vector<0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::WithTwoGenerics<${typeArgs[0]}, u8>>>`,
+        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${typeArgs[0]}, u8>>>`,
         args.vecWithTwoGenerics2
       ),
       obj(txb, args.bar),
@@ -95,7 +95,7 @@ export interface CreateSpecialArgs {
   string1: string | TransactionArgument
   string2: string | TransactionArgument
   url: ObjectArg
-  id: ObjectId | TransactionArgument
+  id: string | TransactionArgument
   uid: ObjectArg
   balance1: ObjectArg
   option1: bigint | TransactionArgument | TransactionArgument | null
@@ -124,7 +124,7 @@ export function createSpecial(
       pure(txb, args.option1, `0x1::option::Option<u64>`),
       option(
         txb,
-        `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar`,
+        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
         args.option2
       ),
       pure(txb, args.option3, `0x1::option::Option<u64>`),
@@ -170,7 +170,7 @@ export function createSpecialAsGenerics(
 export interface CreateSpecialInVectorsArgs {
   vecString1: Array<string | TransactionArgument> | TransactionArgument
   vecString2: Array<string | TransactionArgument> | TransactionArgument
-  vecId: Array<ObjectId | TransactionArgument> | TransactionArgument
+  vecId: Array<string | TransactionArgument> | TransactionArgument
   vecBar: Array<ObjectArg> | TransactionArgument
   vecOption1: Array<bigint | TransactionArgument | TransactionArgument | null> | TransactionArgument
   vecOption2: Array<GenericArg | TransactionArgument | null> | TransactionArgument
@@ -190,7 +190,7 @@ export function createSpecialInVectors(
       pure(txb, args.vecId, `vector<0x2::object::ID>`),
       vector(
         txb,
-        `0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::fixture::Bar`,
+        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
         args.vecBar
       ),
       pure(txb, args.vecOption1, `vector<0x1::option::Option<u64>>`),

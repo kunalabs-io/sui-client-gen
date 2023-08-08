@@ -31,11 +31,11 @@ import { zero } from './gen/sui/balance/functions'
 import { Balance } from './gen/sui/balance/structs'
 
 const keypair = Ed25519Keypair.fromSecretKey(
-  fromB64('c6dC5eHuDwtumSoCO4v6MQCqVoYlGQwtdZVcyUYSuAo=')
-) // address: 0x590b8e60ae1d7c1ff57f4697b03bd3a19a7db7d766c87e880153bc494596cb26
+  fromB64('AMVT58FaLF2tJtg/g8X2z1/vG0FvNn0jvRu9X2Wl8F+u').slice(1)
+) // address: 0x8becfafb14c111fc08adee6cc9afa95a863d1bf133f796626eec353f98ea8507
 
 const client = new SuiClient({
-  url: 'https://fullnode.devnet.sui.io:443/',
+  url: 'https://fullnode.testnet.sui.io:443/',
 })
 
 it('creates and decodes an object with object as type param', async () => {
@@ -203,9 +203,6 @@ it('creates and decodes an object with object as type param', async () => {
 })
 
 it('creates and decodes Foo with vector of objects as type param', async () => {
-  const client = new SuiClient({
-    url: 'https://fullnode.devnet.sui.io:443/',
-  })
   const txb = new TransactionBlock()
 
   const T = `vector<${Bar.$typeName}>`

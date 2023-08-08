@@ -10,7 +10,7 @@ import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 /* ============================== AdminCap =============================== */
 
 bcs.registerStructType(
-  '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::AdminCap',
+  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap',
   {
     id: `0x2::object::UID`,
   }
@@ -18,7 +18,7 @@ bcs.registerStructType(
 
 export function isAdminCap(type: Type): boolean {
   return (
-    type === '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::AdminCap'
+    type === '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
   )
 }
 
@@ -28,7 +28,7 @@ export interface AdminCapFields {
 
 export class AdminCap {
   static readonly $typeName =
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::AdminCap'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
   static readonly $numTypeParams = 0
 
   readonly id: string
@@ -77,7 +77,7 @@ export class AdminCap {
 /* ============================== LP =============================== */
 
 bcs.registerStructType(
-  '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::LP<A, B>',
+  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<A, B>',
   {
     dummy_field: `bool`,
   }
@@ -85,7 +85,7 @@ bcs.registerStructType(
 
 export function isLP(type: Type): boolean {
   return type.startsWith(
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::LP<'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<'
   )
 }
 
@@ -95,7 +95,7 @@ export interface LPFields {
 
 export class LP {
   static readonly $typeName =
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::LP'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP'
   static readonly $numTypeParams = 2
 
   readonly $typeArgs: [Type, Type]
@@ -129,21 +129,21 @@ export class LP {
 /* ============================== Pool =============================== */
 
 bcs.registerStructType(
-  '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::Pool<A, B>',
+  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<A, B>',
   {
     id: `0x2::object::UID`,
     balance_a: `0x2::balance::Balance<A>`,
     balance_b: `0x2::balance::Balance<B>`,
-    lp_supply: `0x2::balance::Supply<0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::LP<A, B>>`,
+    lp_supply: `0x2::balance::Supply<0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<A, B>>`,
     lp_fee_bps: `u64`,
     admin_fee_pct: `u64`,
-    admin_fee_balance: `0x2::balance::Balance<0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::LP<A, B>>`,
+    admin_fee_balance: `0x2::balance::Balance<0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<A, B>>`,
   }
 )
 
 export function isPool(type: Type): boolean {
   return type.startsWith(
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::Pool<'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<'
   )
 }
 
@@ -159,7 +159,7 @@ export interface PoolFields {
 
 export class Pool {
   static readonly $typeName =
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::Pool'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool'
   static readonly $numTypeParams = 2
 
   readonly $typeArgs: [Type, Type]
@@ -190,13 +190,13 @@ export class Pool {
       balanceA: Balance.fromFields(`${typeArgs[0]}`, fields.balance_a),
       balanceB: Balance.fromFields(`${typeArgs[1]}`, fields.balance_b),
       lpSupply: Supply.fromFields(
-        `0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::LP<${typeArgs[0]}, ${typeArgs[1]}>`,
+        `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${typeArgs[0]}, ${typeArgs[1]}>`,
         fields.lp_supply
       ),
       lpFeeBps: BigInt(fields.lp_fee_bps),
       adminFeePct: BigInt(fields.admin_fee_pct),
       adminFeeBalance: Balance.fromFields(
-        `0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::LP<${typeArgs[0]}, ${typeArgs[1]}>`,
+        `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${typeArgs[0]}, ${typeArgs[1]}>`,
         fields.admin_fee_balance
       ),
     })
@@ -216,7 +216,7 @@ export class Pool {
       lpFeeBps: BigInt(item.fields.lp_fee_bps),
       adminFeePct: BigInt(item.fields.admin_fee_pct),
       adminFeeBalance: new Balance(
-        `0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::LP<${typeArgs[0]}, ${typeArgs[1]}>`,
+        `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${typeArgs[0]}, ${typeArgs[1]}>`,
         BigInt(item.fields.admin_fee_balance)
       ),
     })
@@ -251,7 +251,7 @@ export class Pool {
 /* ============================== PoolCreationEvent =============================== */
 
 bcs.registerStructType(
-  '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolCreationEvent',
+  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent',
   {
     pool_id: `0x2::object::ID`,
   }
@@ -260,7 +260,7 @@ bcs.registerStructType(
 export function isPoolCreationEvent(type: Type): boolean {
   return (
     type ===
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolCreationEvent'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
   )
 }
 
@@ -270,7 +270,7 @@ export interface PoolCreationEventFields {
 
 export class PoolCreationEvent {
   static readonly $typeName =
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolCreationEvent'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
   static readonly $numTypeParams = 0
 
   readonly poolId: string
@@ -298,17 +298,17 @@ export class PoolCreationEvent {
 /* ============================== PoolRegistry =============================== */
 
 bcs.registerStructType(
-  '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistry',
+  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry',
   {
     id: `0x2::object::UID`,
-    table: `0x2::table::Table<0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistryItem, bool>`,
+    table: `0x2::table::Table<0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem, bool>`,
   }
 )
 
 export function isPoolRegistry(type: Type): boolean {
   return (
     type ===
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistry'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
   )
 }
 
@@ -319,7 +319,7 @@ export interface PoolRegistryFields {
 
 export class PoolRegistry {
   static readonly $typeName =
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistry'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
   static readonly $numTypeParams = 0
 
   readonly id: string
@@ -335,7 +335,7 @@ export class PoolRegistry {
       id: UID.fromFields(fields.id).id,
       table: Table.fromFields(
         [
-          `0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistryItem`,
+          `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem`,
           `bool`,
         ],
         fields.table
@@ -382,7 +382,7 @@ export class PoolRegistry {
 /* ============================== PoolRegistryItem =============================== */
 
 bcs.registerStructType(
-  '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistryItem',
+  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem',
   {
     a: `0x1::type_name::TypeName`,
     b: `0x1::type_name::TypeName`,
@@ -392,7 +392,7 @@ bcs.registerStructType(
 export function isPoolRegistryItem(type: Type): boolean {
   return (
     type ===
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistryItem'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
   )
 }
 
@@ -403,7 +403,7 @@ export interface PoolRegistryItemFields {
 
 export class PoolRegistryItem {
   static readonly $typeName =
-    '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistryItem'
+    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
   static readonly $numTypeParams = 0
 
   readonly a: TypeName

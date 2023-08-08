@@ -4,7 +4,7 @@ import { structClassLoaderOnchain } from '../../../../_framework/loader'
 import { FieldsWithTypes, Type, parseTypeName } from '../../../../_framework/util'
 import { UID } from '../object/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Field =============================== */
 
@@ -19,7 +19,7 @@ export function isField(type: Type): boolean {
 }
 
 export interface FieldFields<T0, T1> {
-  id: ObjectId
+  id: string
   name: T0
   value: T1
 }
@@ -30,7 +30,7 @@ export class Field<T0, T1> {
 
   readonly $typeArgs: [Type, Type]
 
-  readonly id: ObjectId
+  readonly id: string
   readonly name: T0
   readonly value: T1
 
@@ -80,13 +80,13 @@ export class Field<T0, T1> {
       throw new Error('not an object')
     }
     if (!isField(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a Field object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a Field object`)
     }
     return Field.fromFieldsWithTypes(content)
   }
 
-  static async fetch<T0, T1>(provider: JsonRpcProvider, id: ObjectId): Promise<Field<T0, T1>> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch<T0, T1>(client: SuiClient, id: string): Promise<Field<T0, T1>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Field object at id ${id}: ${res.error.code}`)
     }
