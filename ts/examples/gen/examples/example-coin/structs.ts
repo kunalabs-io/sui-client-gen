@@ -3,7 +3,7 @@ import { FieldsWithTypes, Type } from '../../_framework/util'
 import { TreasuryCap } from '../../sui/coin/structs'
 import { UID } from '../../sui/object/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== EXAMPLE_COIN =============================== */
 
@@ -70,7 +70,7 @@ export function isFaucet(type: Type): boolean {
 }
 
 export interface FaucetFields {
-  id: ObjectId
+  id: string
   cap: TreasuryCap
 }
 
@@ -79,7 +79,7 @@ export class Faucet {
     '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::example_coin::Faucet'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
   readonly cap: TreasuryCap
 
   constructor(fields: FaucetFields) {
@@ -116,13 +116,13 @@ export class Faucet {
       throw new Error('not an object')
     }
     if (!isFaucet(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a Faucet object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a Faucet object`)
     }
     return Faucet.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<Faucet> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<Faucet> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Faucet object at id ${id}: ${res.error.code}`)
     }

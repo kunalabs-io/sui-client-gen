@@ -5,7 +5,7 @@ import { bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type } from '../../_framework/util'
 import { ID, UID } from '../../sui/object/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== ExampleStruct =============================== */
 
@@ -79,12 +79,12 @@ export function isSpecialTypesStruct(type: Type): boolean {
 }
 
 export interface SpecialTypesStructFields {
-  id: ObjectId
+  id: string
   asciiString: string
   utf8String: string
   vectorOfU64: Array<bigint>
   vectorOfObjects: Array<ExampleStruct>
-  idField: ObjectId
+  idField: string
   address: string
   optionSome: bigint | null
   optionNone: bigint | null
@@ -95,12 +95,12 @@ export class SpecialTypesStruct {
     '0x2991435bfa6230ddf9bf1ac5e2abffb293692f9de47d008cb4cc6ff06f5a2e88::examples::SpecialTypesStruct'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
   readonly asciiString: string
   readonly utf8String: string
   readonly vectorOfU64: Array<bigint>
   readonly vectorOfObjects: Array<ExampleStruct>
-  readonly idField: ObjectId
+  readonly idField: string
   readonly address: string
   readonly optionSome: bigint | null
   readonly optionNone: bigint | null
@@ -175,13 +175,13 @@ export class SpecialTypesStruct {
       throw new Error('not an object')
     }
     if (!isSpecialTypesStruct(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a SpecialTypesStruct object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a SpecialTypesStruct object`)
     }
     return SpecialTypesStruct.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<SpecialTypesStruct> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<SpecialTypesStruct> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching SpecialTypesStruct object at id ${id}: ${res.error.code}`)
     }

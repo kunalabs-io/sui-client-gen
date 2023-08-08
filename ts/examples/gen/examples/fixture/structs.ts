@@ -10,7 +10,7 @@ import { ID, UID } from '../../sui/object/structs'
 import { Url } from '../../sui/url/structs'
 import { StructFromOtherModule } from '../other-module/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Bar =============================== */
 
@@ -131,7 +131,7 @@ export function isFoo(type: Type): boolean {
 }
 
 export interface FooFields<T> {
-  id: ObjectId
+  id: string
   generic: T
   reifiedPrimitiveVec: Array<bigint>
   reifiedObjectVec: Array<Bar>
@@ -154,7 +154,7 @@ export class Foo<T> {
 
   readonly $typeArg: Type
 
-  readonly id: ObjectId
+  readonly id: string
   readonly generic: T
   readonly reifiedPrimitiveVec: Array<bigint>
   readonly reifiedObjectVec: Array<Bar>
@@ -300,13 +300,13 @@ export class Foo<T> {
       throw new Error('not an object')
     }
     if (!isFoo(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a Foo object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a Foo object`)
     }
     return Foo.fromFieldsWithTypes(content)
   }
 
-  static async fetch<T>(provider: JsonRpcProvider, id: ObjectId): Promise<Foo<T>> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch<T>(client: SuiClient, id: string): Promise<Foo<T>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Foo object at id ${id}: ${res.error.code}`)
     }
@@ -334,7 +334,7 @@ export function isWithGenericField(type: Type): boolean {
 }
 
 export interface WithGenericFieldFields<T> {
-  id: ObjectId
+  id: string
   genericField: T
 }
 
@@ -345,7 +345,7 @@ export class WithGenericField<T> {
 
   readonly $typeArg: Type
 
-  readonly id: ObjectId
+  readonly id: string
   readonly genericField: T
 
   constructor(typeArg: Type, fields: WithGenericFieldFields<T>) {
@@ -397,13 +397,13 @@ export class WithGenericField<T> {
       throw new Error('not an object')
     }
     if (!isWithGenericField(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a WithGenericField object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a WithGenericField object`)
     }
     return WithGenericField.fromFieldsWithTypes(content)
   }
 
-  static async fetch<T>(provider: JsonRpcProvider, id: ObjectId): Promise<WithGenericField<T>> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch<T>(client: SuiClient, id: string): Promise<WithGenericField<T>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching WithGenericField object at id ${id}: ${res.error.code}`)
     }
@@ -445,12 +445,12 @@ export function isWithSpecialTypes(type: Type): boolean {
 }
 
 export interface WithSpecialTypesFields<U> {
-  id: ObjectId
+  id: string
   string: string
   asciiString: string
   url: string
-  idField: ObjectId
-  uid: ObjectId
+  idField: string
+  uid: string
   balance: Balance
   option: bigint | null
   optionObj: Bar | null
@@ -467,12 +467,12 @@ export class WithSpecialTypes<U> {
 
   readonly $typeArgs: [Type, Type]
 
-  readonly id: ObjectId
+  readonly id: string
   readonly string: string
   readonly asciiString: string
   readonly url: string
-  readonly idField: ObjectId
-  readonly uid: ObjectId
+  readonly idField: string
+  readonly uid: string
   readonly balance: Balance
   readonly option: bigint | null
   readonly optionObj: Bar | null
@@ -602,13 +602,13 @@ export class WithSpecialTypes<U> {
       throw new Error('not an object')
     }
     if (!isWithSpecialTypes(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a WithSpecialTypes object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a WithSpecialTypes object`)
     }
     return WithSpecialTypes.fromFieldsWithTypes(content)
   }
 
-  static async fetch<U>(provider: JsonRpcProvider, id: ObjectId): Promise<WithSpecialTypes<U>> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch<U>(client: SuiClient, id: string): Promise<WithSpecialTypes<U>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching WithSpecialTypes object at id ${id}: ${res.error.code}`)
     }
@@ -646,7 +646,7 @@ export function isWithSpecialTypesAsGenerics(type: Type): boolean {
 }
 
 export interface WithSpecialTypesAsGenericsFields<T0, T1, T2, T3, T4, T5, T6, T7> {
-  id: ObjectId
+  id: string
   string: T0
   asciiString: T1
   url: T2
@@ -664,7 +664,7 @@ export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
 
   readonly $typeArgs: [Type, Type, Type, Type, Type, Type, Type, Type]
 
-  readonly id: ObjectId
+  readonly id: string
   readonly string: T0
   readonly asciiString: T1
   readonly url: T2
@@ -767,16 +767,18 @@ export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
       throw new Error('not an object')
     }
     if (!isWithSpecialTypesAsGenerics(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a WithSpecialTypesAsGenerics object`)
+      throw new Error(
+        `object at ${(content.fields as any).id} is not a WithSpecialTypesAsGenerics object`
+      )
     }
     return WithSpecialTypesAsGenerics.fromFieldsWithTypes(content)
   }
 
   static async fetch<T0, T1, T2, T3, T4, T5, T6, T7>(
-    provider: JsonRpcProvider,
-    id: ObjectId
+    client: SuiClient,
+    id: string
   ): Promise<WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7>> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(
         `error fetching WithSpecialTypesAsGenerics object at id ${id}: ${res.error.code}`
@@ -814,10 +816,10 @@ export function isWithSpecialTypesInVectors(type: Type): boolean {
 }
 
 export interface WithSpecialTypesInVectorsFields<T> {
-  id: ObjectId
+  id: string
   string: Array<string>
   asciiString: Array<string>
-  idField: Array<ObjectId>
+  idField: Array<string>
   bar: Array<Bar>
   option: Array<bigint | null>
   optionGeneric: Array<T | null>
@@ -830,10 +832,10 @@ export class WithSpecialTypesInVectors<T> {
 
   readonly $typeArg: Type
 
-  readonly id: ObjectId
+  readonly id: string
   readonly string: Array<string>
   readonly asciiString: Array<string>
-  readonly idField: Array<ObjectId>
+  readonly idField: Array<string>
   readonly bar: Array<Bar>
   readonly option: Array<bigint | null>
   readonly optionGeneric: Array<T | null>
@@ -921,16 +923,15 @@ export class WithSpecialTypesInVectors<T> {
       throw new Error('not an object')
     }
     if (!isWithSpecialTypesInVectors(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a WithSpecialTypesInVectors object`)
+      throw new Error(
+        `object at ${(content.fields as any).id} is not a WithSpecialTypesInVectors object`
+      )
     }
     return WithSpecialTypesInVectors.fromFieldsWithTypes(content)
   }
 
-  static async fetch<T>(
-    provider: JsonRpcProvider,
-    id: ObjectId
-  ): Promise<WithSpecialTypesInVectors<T>> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch<T>(client: SuiClient, id: string): Promise<WithSpecialTypesInVectors<T>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(
         `error fetching WithSpecialTypesInVectors object at id ${id}: ${res.error.code}`

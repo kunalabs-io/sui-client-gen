@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js'
+import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export function destroy(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
   return txb.moveCall({

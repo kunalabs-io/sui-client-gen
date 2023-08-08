@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { ObjectArg, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js'
+import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export function bls12381(txb: TransactionBlock) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::groth16::bls12381`, arguments: [] })

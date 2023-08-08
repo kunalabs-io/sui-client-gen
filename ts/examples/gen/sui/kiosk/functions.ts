@@ -1,11 +1,11 @@
 import { PUBLISHED_AT } from '..'
 import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
-import { ObjectId, TransactionArgument, TransactionBlock } from '@mysten/sui.js'
+import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export interface BorrowArgs {
   self: ObjectArg
   cap: ObjectArg
-  id: ObjectId | TransactionArgument
+  id: string | TransactionArgument
 }
 
 export function borrow(txb: TransactionBlock, typeArg: Type, args: BorrowArgs) {
@@ -19,7 +19,7 @@ export function borrow(txb: TransactionBlock, typeArg: Type, args: BorrowArgs) {
 export interface BorrowMutArgs {
   self: ObjectArg
   cap: ObjectArg
-  id: ObjectId | TransactionArgument
+  id: string | TransactionArgument
 }
 
 export function borrowMut(txb: TransactionBlock, typeArg: Type, args: BorrowMutArgs) {
@@ -49,7 +49,7 @@ export function owner(txb: TransactionBlock, self: ObjectArg) {
 export interface TakeArgs {
   self: ObjectArg
   cap: ObjectArg
-  id: ObjectId | TransactionArgument
+  id: string | TransactionArgument
 }
 
 export function take(txb: TransactionBlock, typeArg: Type, args: TakeArgs) {
@@ -92,7 +92,7 @@ export function withdraw(txb: TransactionBlock, args: WithdrawArgs) {
 export interface BorrowValArgs {
   self: ObjectArg
   cap: ObjectArg
-  id: ObjectId | TransactionArgument
+  id: string | TransactionArgument
 }
 
 export function borrowVal(txb: TransactionBlock, typeArg: Type, args: BorrowValArgs) {
@@ -118,7 +118,7 @@ export function closeAndWithdraw(txb: TransactionBlock, args: CloseAndWithdrawAr
 export interface DelistArgs {
   self: ObjectArg
   cap: ObjectArg
-  id: ObjectId | TransactionArgument
+  id: string | TransactionArgument
 }
 
 export function delist(txb: TransactionBlock, typeArg: Type, args: DelistArgs) {
@@ -143,7 +143,7 @@ export function hasAccess(txb: TransactionBlock, args: HasAccessArgs) {
 
 export interface HasItemArgs {
   self: ObjectArg
-  id: ObjectId | TransactionArgument
+  id: string | TransactionArgument
 }
 
 export function hasItem(txb: TransactionBlock, args: HasItemArgs) {
@@ -155,7 +155,7 @@ export function hasItem(txb: TransactionBlock, args: HasItemArgs) {
 
 export interface HasItemWithTypeArgs {
   self: ObjectArg
-  id: ObjectId | TransactionArgument
+  id: string | TransactionArgument
 }
 
 export function hasItemWithType(txb: TransactionBlock, typeArg: Type, args: HasItemWithTypeArgs) {
@@ -168,7 +168,7 @@ export function hasItemWithType(txb: TransactionBlock, typeArg: Type, args: HasI
 
 export interface IsListedArgs {
   self: ObjectArg
-  id: ObjectId | TransactionArgument
+  id: string | TransactionArgument
 }
 
 export function isListed(txb: TransactionBlock, args: IsListedArgs) {
@@ -180,7 +180,7 @@ export function isListed(txb: TransactionBlock, args: IsListedArgs) {
 
 export interface IsListedExclusivelyArgs {
   self: ObjectArg
-  id: ObjectId | TransactionArgument
+  id: string | TransactionArgument
 }
 
 export function isListedExclusively(txb: TransactionBlock, args: IsListedExclusivelyArgs) {
@@ -192,7 +192,7 @@ export function isListedExclusively(txb: TransactionBlock, args: IsListedExclusi
 
 export interface IsLockedArgs {
   self: ObjectArg
-  id: ObjectId | TransactionArgument
+  id: string | TransactionArgument
 }
 
 export function isLocked(txb: TransactionBlock, args: IsLockedArgs) {
@@ -209,7 +209,7 @@ export function itemCount(txb: TransactionBlock, self: ObjectArg) {
 export interface ListArgs {
   self: ObjectArg
   cap: ObjectArg
-  id: ObjectId | TransactionArgument
+  id: string | TransactionArgument
   price: bigint | TransactionArgument
 }
 
@@ -229,7 +229,7 @@ export function list(txb: TransactionBlock, typeArg: Type, args: ListArgs) {
 export interface ListWithPurchaseCapArgs {
   self: ObjectArg
   cap: ObjectArg
-  id: ObjectId | TransactionArgument
+  id: string | TransactionArgument
   minPrice: bigint | TransactionArgument
 }
 
@@ -325,7 +325,7 @@ export function profitsMut(txb: TransactionBlock, args: ProfitsMutArgs) {
 
 export interface PurchaseArgs {
   self: ObjectArg
-  id: ObjectId | TransactionArgument
+  id: string | TransactionArgument
   payment: ObjectArg
 }
 

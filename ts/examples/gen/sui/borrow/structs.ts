@@ -4,7 +4,6 @@ import { initLoaderIfNeeded } from '../../_framework/init-source'
 import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
 import { ID } from '../object/structs'
 import { Encoding } from '@mysten/bcs'
-import { ObjectId } from '@mysten/sui.js'
 
 /* ============================== Borrow =============================== */
 
@@ -19,7 +18,7 @@ export function isBorrow(type: Type): boolean {
 
 export interface BorrowFields {
   ref: string
-  obj: ObjectId
+  obj: string
 }
 
 export class Borrow {
@@ -27,7 +26,7 @@ export class Borrow {
   static readonly $numTypeParams = 0
 
   readonly ref: string
-  readonly obj: ObjectId
+  readonly obj: string
 
   constructor(fields: BorrowFields) {
     this.ref = fields.ref

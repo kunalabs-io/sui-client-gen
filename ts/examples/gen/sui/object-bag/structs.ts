@@ -2,7 +2,7 @@ import { bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== ObjectBag =============================== */
 
@@ -16,7 +16,7 @@ export function isObjectBag(type: Type): boolean {
 }
 
 export interface ObjectBagFields {
-  id: ObjectId
+  id: string
   size: bigint
 }
 
@@ -24,7 +24,7 @@ export class ObjectBag {
   static readonly $typeName = '0x2::object_bag::ObjectBag'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
   readonly size: bigint
 
   constructor(fields: ObjectBagFields) {
@@ -52,13 +52,13 @@ export class ObjectBag {
       throw new Error('not an object')
     }
     if (!isObjectBag(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a ObjectBag object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a ObjectBag object`)
     }
     return ObjectBag.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<ObjectBag> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<ObjectBag> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching ObjectBag object at id ${id}: ${res.error.code}`)
     }

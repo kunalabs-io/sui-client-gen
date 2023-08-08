@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { ObjectArg, pure, vector } from '../../_framework/util'
-import { ObjectId, TransactionArgument, TransactionBlock } from '@mysten/sui.js'
+import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export function createExampleStruct(txb: TransactionBlock) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::examples::create_example_struct`, arguments: [] })
@@ -11,7 +11,7 @@ export interface SpecialTypesArgs {
   utf8String: string | TransactionArgument
   vectorOfU64: Array<bigint | TransactionArgument> | TransactionArgument
   vectorOfObjects: Array<ObjectArg> | TransactionArgument
-  idField: ObjectId | TransactionArgument
+  idField: string | TransactionArgument
   address: string | TransactionArgument
   optionSome: bigint | TransactionArgument | TransactionArgument | null
   optionNone: bigint | TransactionArgument | TransactionArgument | null

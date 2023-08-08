@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { ObjectArg, Type, obj, pure, vector } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js'
+import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export interface JoinArgs {
   self: ObjectArg

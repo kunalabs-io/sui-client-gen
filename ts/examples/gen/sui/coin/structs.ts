@@ -6,7 +6,7 @@ import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
 import { Balance, Supply } from '../balance/structs'
 import { UID } from '../object/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Coin =============================== */
 
@@ -20,7 +20,7 @@ export function isCoin(type: Type): boolean {
 }
 
 export interface CoinFields {
-  id: ObjectId
+  id: string
   balance: Balance
 }
 
@@ -30,7 +30,7 @@ export class Coin {
 
   readonly $typeArg: Type
 
-  readonly id: ObjectId
+  readonly id: string
   readonly balance: Balance
 
   constructor(typeArg: Type, fields: CoinFields) {
@@ -68,13 +68,13 @@ export class Coin {
       throw new Error('not an object')
     }
     if (!isCoin(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a Coin object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a Coin object`)
     }
     return Coin.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<Coin> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<Coin> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Coin object at id ${id}: ${res.error.code}`)
     }
@@ -101,7 +101,7 @@ export function isCoinMetadata(type: Type): boolean {
 }
 
 export interface CoinMetadataFields {
-  id: ObjectId
+  id: string
   decimals: number
   name: string
   symbol: string
@@ -115,7 +115,7 @@ export class CoinMetadata {
 
   readonly $typeArg: Type
 
-  readonly id: ObjectId
+  readonly id: string
   readonly decimals: number
   readonly name: string
   readonly symbol: string
@@ -184,13 +184,13 @@ export class CoinMetadata {
       throw new Error('not an object')
     }
     if (!isCoinMetadata(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a CoinMetadata object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a CoinMetadata object`)
     }
     return CoinMetadata.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<CoinMetadata> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<CoinMetadata> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching CoinMetadata object at id ${id}: ${res.error.code}`)
     }
@@ -262,7 +262,7 @@ export function isTreasuryCap(type: Type): boolean {
 }
 
 export interface TreasuryCapFields {
-  id: ObjectId
+  id: string
   totalSupply: Supply
 }
 
@@ -272,7 +272,7 @@ export class TreasuryCap {
 
   readonly $typeArg: Type
 
-  readonly id: ObjectId
+  readonly id: string
   readonly totalSupply: Supply
 
   constructor(typeArg: Type, fields: TreasuryCapFields) {
@@ -310,13 +310,13 @@ export class TreasuryCap {
       throw new Error('not an object')
     }
     if (!isTreasuryCap(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a TreasuryCap object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a TreasuryCap object`)
     }
     return TreasuryCap.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<TreasuryCap> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<TreasuryCap> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching TreasuryCap object at id ${id}: ${res.error.code}`)
     }

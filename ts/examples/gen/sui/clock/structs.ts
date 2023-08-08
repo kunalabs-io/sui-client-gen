@@ -2,7 +2,7 @@ import { bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Clock =============================== */
 
@@ -16,7 +16,7 @@ export function isClock(type: Type): boolean {
 }
 
 export interface ClockFields {
-  id: ObjectId
+  id: string
   timestampMs: bigint
 }
 
@@ -24,7 +24,7 @@ export class Clock {
   static readonly $typeName = '0x2::clock::Clock'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
   readonly timestampMs: bigint
 
   constructor(fields: ClockFields) {
@@ -52,13 +52,13 @@ export class Clock {
       throw new Error('not an object')
     }
     if (!isClock(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a Clock object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a Clock object`)
     }
     return Clock.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<Clock> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<Clock> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Clock object at id ${id}: ${res.error.code}`)
     }

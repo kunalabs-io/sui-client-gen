@@ -3,7 +3,7 @@ import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Borrow =============================== */
 
@@ -17,16 +17,16 @@ export function isBorrow(type: Type): boolean {
 }
 
 export interface BorrowFields {
-  kioskId: ObjectId
-  itemId: ObjectId
+  kioskId: string
+  itemId: string
 }
 
 export class Borrow {
   static readonly $typeName = '0x2::kiosk::Borrow'
   static readonly $numTypeParams = 0
 
-  readonly kioskId: ObjectId
-  readonly itemId: ObjectId
+  readonly kioskId: string
+  readonly itemId: string
 
   constructor(fields: BorrowFields) {
     this.kioskId = fields.kioskId
@@ -63,16 +63,16 @@ export function isItem(type: Type): boolean {
 }
 
 export interface ItemFields {
-  id: ObjectId
+  id: string
 }
 
 export class Item {
   static readonly $typeName = '0x2::kiosk::Item'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
 
-  constructor(id: ObjectId) {
+  constructor(id: string) {
     this.id = id
   }
 
@@ -104,8 +104,8 @@ export function isItemDelisted(type: Type): boolean {
 }
 
 export interface ItemDelistedFields {
-  kiosk: ObjectId
-  id: ObjectId
+  kiosk: string
+  id: string
 }
 
 export class ItemDelisted {
@@ -114,8 +114,8 @@ export class ItemDelisted {
 
   readonly $typeArg: Type
 
-  readonly kiosk: ObjectId
-  readonly id: ObjectId
+  readonly kiosk: string
+  readonly id: string
 
   constructor(typeArg: Type, fields: ItemDelistedFields) {
     this.$typeArg = typeArg
@@ -161,8 +161,8 @@ export function isItemListed(type: Type): boolean {
 }
 
 export interface ItemListedFields {
-  kiosk: ObjectId
-  id: ObjectId
+  kiosk: string
+  id: string
   price: bigint
 }
 
@@ -172,8 +172,8 @@ export class ItemListed {
 
   readonly $typeArg: Type
 
-  readonly kiosk: ObjectId
-  readonly id: ObjectId
+  readonly kiosk: string
+  readonly id: string
   readonly price: bigint
 
   constructor(typeArg: Type, fields: ItemListedFields) {
@@ -223,8 +223,8 @@ export function isItemPurchased(type: Type): boolean {
 }
 
 export interface ItemPurchasedFields {
-  kiosk: ObjectId
-  id: ObjectId
+  kiosk: string
+  id: string
   price: bigint
 }
 
@@ -234,8 +234,8 @@ export class ItemPurchased {
 
   readonly $typeArg: Type
 
-  readonly kiosk: ObjectId
-  readonly id: ObjectId
+  readonly kiosk: string
+  readonly id: string
   readonly price: bigint
 
   constructor(typeArg: Type, fields: ItemPurchasedFields) {
@@ -290,7 +290,7 @@ export function isKiosk(type: Type): boolean {
 }
 
 export interface KioskFields {
-  id: ObjectId
+  id: string
   profits: Balance
   owner: string
   itemCount: number
@@ -301,7 +301,7 @@ export class Kiosk {
   static readonly $typeName = '0x2::kiosk::Kiosk'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
   readonly profits: Balance
   readonly owner: string
   readonly itemCount: number
@@ -347,13 +347,13 @@ export class Kiosk {
       throw new Error('not an object')
     }
     if (!isKiosk(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a Kiosk object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a Kiosk object`)
     }
     return Kiosk.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<Kiosk> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<Kiosk> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Kiosk object at id ${id}: ${res.error.code}`)
     }
@@ -376,16 +376,16 @@ export function isKioskOwnerCap(type: Type): boolean {
 }
 
 export interface KioskOwnerCapFields {
-  id: ObjectId
-  for: ObjectId
+  id: string
+  for: string
 }
 
 export class KioskOwnerCap {
   static readonly $typeName = '0x2::kiosk::KioskOwnerCap'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
-  readonly for: ObjectId
+  readonly id: string
+  readonly for: string
 
   constructor(fields: KioskOwnerCapFields) {
     this.id = fields.id
@@ -415,13 +415,13 @@ export class KioskOwnerCap {
       throw new Error('not an object')
     }
     if (!isKioskOwnerCap(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a KioskOwnerCap object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a KioskOwnerCap object`)
     }
     return KioskOwnerCap.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<KioskOwnerCap> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<KioskOwnerCap> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching KioskOwnerCap object at id ${id}: ${res.error.code}`)
     }
@@ -444,7 +444,7 @@ export function isListing(type: Type): boolean {
 }
 
 export interface ListingFields {
-  id: ObjectId
+  id: string
   isExclusive: boolean
 }
 
@@ -452,7 +452,7 @@ export class Listing {
   static readonly $typeName = '0x2::kiosk::Listing'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
   readonly isExclusive: boolean
 
   constructor(fields: ListingFields) {
@@ -487,16 +487,16 @@ export function isLock(type: Type): boolean {
 }
 
 export interface LockFields {
-  id: ObjectId
+  id: string
 }
 
 export class Lock {
   static readonly $typeName = '0x2::kiosk::Lock'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
 
-  constructor(id: ObjectId) {
+  constructor(id: string) {
     this.id = id
   }
 
@@ -530,9 +530,9 @@ export function isPurchaseCap(type: Type): boolean {
 }
 
 export interface PurchaseCapFields {
-  id: ObjectId
-  kioskId: ObjectId
-  itemId: ObjectId
+  id: string
+  kioskId: string
+  itemId: string
   minPrice: bigint
 }
 
@@ -542,9 +542,9 @@ export class PurchaseCap {
 
   readonly $typeArg: Type
 
-  readonly id: ObjectId
-  readonly kioskId: ObjectId
-  readonly itemId: ObjectId
+  readonly id: string
+  readonly kioskId: string
+  readonly itemId: string
   readonly minPrice: bigint
 
   constructor(typeArg: Type, fields: PurchaseCapFields) {
@@ -588,13 +588,13 @@ export class PurchaseCap {
       throw new Error('not an object')
     }
     if (!isPurchaseCap(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a PurchaseCap object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a PurchaseCap object`)
     }
     return PurchaseCap.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<PurchaseCap> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<PurchaseCap> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching PurchaseCap object at id ${id}: ${res.error.code}`)
     }

@@ -9,7 +9,7 @@ import {
   pure,
   vector,
 } from '../../_framework/util'
-import { ObjectId, TransactionArgument, TransactionBlock } from '@mysten/sui.js'
+import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export function createBar(txb: TransactionBlock, value: bigint | TransactionArgument) {
   return txb.moveCall({
@@ -70,7 +70,7 @@ export interface CreateSpecialArgs {
   string: string | TransactionArgument
   asciiString: string | TransactionArgument
   url: ObjectArg
-  idField: ObjectId | TransactionArgument
+  idField: string | TransactionArgument
   uid: ObjectArg
   balance: ObjectArg
   option: bigint | TransactionArgument | TransactionArgument | null
@@ -145,7 +145,7 @@ export function createSpecialAsGenerics(
 export interface CreateSpecialInVectorsArgs {
   string: Array<string | TransactionArgument> | TransactionArgument
   asciiString: Array<string | TransactionArgument> | TransactionArgument
-  idField: Array<ObjectId | TransactionArgument> | TransactionArgument
+  idField: Array<string | TransactionArgument> | TransactionArgument
   bar: Array<ObjectArg> | TransactionArgument
   option: Array<bigint | TransactionArgument | TransactionArgument | null> | TransactionArgument
   optionGeneric: Array<GenericArg | TransactionArgument | null> | TransactionArgument

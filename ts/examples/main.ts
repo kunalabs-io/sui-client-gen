@@ -1,11 +1,7 @@
-import {
-  Connection,
-  JsonRpcProvider,
-  RawSigner,
-  TransactionBlock,
-  fromExportedKeypair,
-  normalizeSuiAddress,
-} from '@mysten/sui.js'
+import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519'
+import { fromB64, normalizeSuiAddress } from '@mysten/sui.js/utils'
+import { SuiClient } from '@mysten/sui.js/client'
+import { TransactionBlock } from '@mysten/sui.js/transactions'
 import { createPoolWithCoins } from './gen/amm/util/functions'
 import { PACKAGE_ID as EXAMPLES_PACKAGE_ID } from './gen/examples'
 import { faucetMint } from './gen/examples/example-coin/functions'
@@ -26,24 +22,21 @@ const AMM_POOL_ID = '0x31f15e8544b739ee857d759a2c85a60712a67f1918a534f123f978b76
 
 const WITH_GENERIC_FIELD_ID = '0x8cff8a5ed1cf49dcc8aac13e250f843cb26be8ed6a5e2e304051507965d4b79f'
 
-const keypair = fromExportedKeypair({
-  schema: 'ED25519',
-  privateKey: 'c6dC5eHuDwtumSoCO4v6MQCqVoYlGQwtdZVcyUYSuAo=',
-}) // address: 0x590b8e60ae1d7c1ff57f4697b03bd3a19a7db7d766c87e880153bc494596cb26
-
-const provider = new JsonRpcProvider(
-  new Connection({
-    fullnode: 'https://fullnode.devnet.sui.io:443/',
-  })
+const keypair = Ed25519Keypair.fromSecretKey(
+  fromB64('c6dC5eHuDwtumSoCO4v6MQCqVoYlGQwtdZVcyUYSuAo=')
 )
-const signer = new RawSigner(keypair, provider)
+// address: 0x590b8e60ae1d7c1ff57f4697b03bd3a19a7db7d766c87e880153bc494596cb26
+
+const client = new SuiClient({
+  url: 'https://fullnode.devnet.sui.io:443/',
+})
 
 /**
  * An example for calling transactions.
  * Create a new AMM pool. Will not work if the pool already exists.
  */
 async function createPool() {
-  const address = await signer.getAddress()
+  const address = await keypair.getPublicKey().toSuiAddress()
 
   const txb = new TransactionBlock()
 
@@ -58,7 +51,8 @@ async function createPool() {
   })
   txb.transferObjects([lp], txb.pure(address))
 
-  const res = await signer.signAndExecuteTransactionBlock({
+  const res = await client.signAndExecuteTransactionBlock({
+    signer: keypair,
     transactionBlock: txb,
   })
   console.log(`tx digest: ${res.digest}`)
@@ -66,13 +60,13 @@ async function createPool() {
 
 /** An example for object fetching. Fetch and print the AMM pool at AMM_POOL_ID. */
 async function fetchPool() {
-  const pool = await Pool.fetch(provider, AMM_POOL_ID)
+  const pool = await Pool.fetch(client, AMM_POOL_ID)
   console.log(pool)
 }
 
 /** An example for event fetching. Fetch and print the pool creation events. */
 async function fetchPoolCreationEvents() {
-  const res = await provider.queryEvents({
+  const res = await client.queryEvents({
     query: {
       MoveEventType: PoolCreationEvent.$typeName,
     },
@@ -87,12 +81,12 @@ async function fetchPoolCreationEvents() {
  * Fetch and print the items in the AMM pool registry at AMM_POOL_REGISTRY_ID.
  */
 async function fetchPoolRegistryItems() {
-  const registry = await PoolRegistry.fetch(provider, AMM_POOL_REGISTRY_ID)
-  const fields = await provider.getDynamicFields({
+  const registry = await PoolRegistry.fetch(client, AMM_POOL_REGISTRY_ID)
+  const fields = await client.getDynamicFields({
     parentId: registry.table.id,
   })
 
-  const item = await Field.fetch(provider, fields.data[0].objectId)
+  const item = await Field.fetch(client, fields.data[0].objectId)
   console.log(item)
 }
 
@@ -113,7 +107,8 @@ async function createStructWithVector() {
     field
   )
 
-  const res = await signer.signAndExecuteTransactionBlock({
+  const res = await client.signAndExecuteTransactionBlock({
+    signer: keypair,
     transactionBlock: txb,
   })
   console.log(res)
@@ -121,7 +116,7 @@ async function createStructWithVector() {
 
 /** An example for object fetching with generic fields. */
 async function fetchWithGenericField() {
-  const field = await WithGenericField.fetch(provider, WITH_GENERIC_FIELD_ID)
+  const field = await WithGenericField.fetch(client, WITH_GENERIC_FIELD_ID)
   console.log(field)
 }
 
@@ -157,7 +152,8 @@ async function createSpecialTypes() {
     optionNone: txb.pure([], 'vector<u64>'),
   })
 
-  const res = await signer.signAndExecuteTransactionBlock({
+  const res = await client.signAndExecuteTransactionBlock({
+    signer: keypair,
     transactionBlock: txb,
   })
   console.log(res.digest)

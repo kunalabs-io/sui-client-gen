@@ -5,7 +5,7 @@ import { Balance, Supply } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
 import { Encoding } from '@mysten/bcs'
-import { JsonRpcProvider, ObjectId, SuiParsedData } from '@mysten/sui.js'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== AdminCap =============================== */
 
@@ -23,7 +23,7 @@ export function isAdminCap(type: Type): boolean {
 }
 
 export interface AdminCapFields {
-  id: ObjectId
+  id: string
 }
 
 export class AdminCap {
@@ -31,9 +31,9 @@ export class AdminCap {
     '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::AdminCap'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
 
-  constructor(id: ObjectId) {
+  constructor(id: string) {
     this.id = id
   }
 
@@ -57,13 +57,13 @@ export class AdminCap {
       throw new Error('not an object')
     }
     if (!isAdminCap(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a AdminCap object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a AdminCap object`)
     }
     return AdminCap.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<AdminCap> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<AdminCap> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching AdminCap object at id ${id}: ${res.error.code}`)
     }
@@ -148,7 +148,7 @@ export function isPool(type: Type): boolean {
 }
 
 export interface PoolFields {
-  id: ObjectId
+  id: string
   balanceA: Balance
   balanceB: Balance
   lpSupply: Supply
@@ -164,7 +164,7 @@ export class Pool {
 
   readonly $typeArgs: [Type, Type]
 
-  readonly id: ObjectId
+  readonly id: string
   readonly balanceA: Balance
   readonly balanceB: Balance
   readonly lpSupply: Supply
@@ -231,13 +231,13 @@ export class Pool {
       throw new Error('not an object')
     }
     if (!isPool(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a Pool object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a Pool object`)
     }
     return Pool.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<Pool> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<Pool> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Pool object at id ${id}: ${res.error.code}`)
     }
@@ -265,7 +265,7 @@ export function isPoolCreationEvent(type: Type): boolean {
 }
 
 export interface PoolCreationEventFields {
-  poolId: ObjectId
+  poolId: string
 }
 
 export class PoolCreationEvent {
@@ -273,9 +273,9 @@ export class PoolCreationEvent {
     '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolCreationEvent'
   static readonly $numTypeParams = 0
 
-  readonly poolId: ObjectId
+  readonly poolId: string
 
-  constructor(poolId: ObjectId) {
+  constructor(poolId: string) {
     this.poolId = poolId
   }
 
@@ -313,7 +313,7 @@ export function isPoolRegistry(type: Type): boolean {
 }
 
 export interface PoolRegistryFields {
-  id: ObjectId
+  id: string
   table: Table
 }
 
@@ -322,7 +322,7 @@ export class PoolRegistry {
     '0xa2e606bf4fc2f98902fea611310f9f3d826aeacef767db704126b63ce16670bc::pool::PoolRegistry'
   static readonly $numTypeParams = 0
 
-  readonly id: ObjectId
+  readonly id: string
   readonly table: Table
 
   constructor(fields: PoolRegistryFields) {
@@ -362,13 +362,13 @@ export class PoolRegistry {
       throw new Error('not an object')
     }
     if (!isPoolRegistry(content.type)) {
-      throw new Error(`object at ${content.fields.id} is not a PoolRegistry object`)
+      throw new Error(`object at ${(content.fields as any).id} is not a PoolRegistry object`)
     }
     return PoolRegistry.fromFieldsWithTypes(content)
   }
 
-  static async fetch(provider: JsonRpcProvider, id: ObjectId): Promise<PoolRegistry> {
-    const res = await provider.getObject({ id, options: { showContent: true } })
+  static async fetch(client: SuiClient, id: string): Promise<PoolRegistry> {
+    const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching PoolRegistry object at id ${id}: ${res.error.code}`)
     }
