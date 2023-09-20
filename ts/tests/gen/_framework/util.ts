@@ -1,12 +1,6 @@
-import {
-  is,
-  ObjectCallArg,
-  ObjectId,
-  TransactionArgument,
-  TransactionBlock,
-  normalizeSuiAddress,
-  bcs,
-} from '@mysten/sui.js'
+import { normalizeSuiAddress } from '@mysten/sui.js/utils'
+import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { bcs, ObjectArg as SuiObjectArg } from '@mysten/sui.js/bcs'
 import { BCS } from '@mysten/bcs'
 
 /** A Move type, e.g., `address`, `bool`, `u64`, `vector<u64>`, `0x2::sui::SUI`... */
@@ -18,7 +12,11 @@ export interface FieldsWithTypes {
   type: string
 }
 
-export type ObjectArg = ObjectId | ObjectCallArg | TransactionArgument
+export type ObjectId = string
+
+export type ObjectCallArg = { Object: SuiObjectArg }
+
+export type ObjectArg = string | ObjectCallArg | TransactionArgument
 export type PureArg =
   | bigint
   | string
@@ -34,12 +32,20 @@ export function parseTypeName(name: Type): { typeName: string; typeArgs: Type[] 
   return { typeName: parsed.name, typeArgs: parsed.params as string[] }
 }
 
+export function isTransactionArgument(arg: GenericArg): arg is TransactionArgument {
+  if (!arg || typeof arg !== 'object' || Array.isArray(arg)) {
+    return false
+  }
+
+  return 'kind' in arg
+}
+
 export function obj(txb: TransactionBlock, arg: ObjectArg) {
-  return is(arg, TransactionArgument) ? arg : txb.object(arg)
+  return isTransactionArgument(arg) ? arg : txb.object(arg)
 }
 
 export function pure(txb: TransactionBlock, arg: PureArg, type: Type) {
-  if (is(arg, TransactionArgument)) {
+  if (isTransactionArgument(arg)) {
     return obj(txb, arg)
   }
 
@@ -64,7 +70,7 @@ export function pure(txb: TransactionBlock, arg: PureArg, type: Type) {
     if (Array.isArray(arg)) {
       return arg.some(item => isOrHasNestedTransactionArgument(item))
     }
-    return is(arg, TransactionArgument)
+    return isTransactionArgument(arg)
   }
 
   function convertArg(arg: PureArg, type: Type): PureArg {
@@ -106,12 +112,12 @@ export function pure(txb: TransactionBlock, arg: PureArg, type: Type) {
         throw new Error('nesting TransactionArgument is not currently supported')
       }
       if (
-        is(arg[0], TransactionArgument) &&
-        arg.filter(arg => !is(arg, TransactionArgument)).length > 0
+        isTransactionArgument(arg[0]) &&
+        arg.filter(arg => !isTransactionArgument(arg)).length > 0
       ) {
         throw new Error('mixing TransactionArgument with other types is not currently supported')
       }
-      if (is(arg[0], TransactionArgument)) {
+      if (isTransactionArgument(arg[0])) {
         return txb.makeMoveVec({
           objects: arg as Array<TransactionArgument>,
           type: typeArgs[0],
@@ -129,7 +135,7 @@ export function option(txb: TransactionBlock, type: Type, arg: GenericArg | null
 
   if (typeArgIsPure(type)) {
     return pure(txb, arg as PureArg | TransactionArgument, `0x1::option::Option<${type}>`)
-  } else if (is(arg, TransactionArgument)) {
+  } else if (isTransactionArgument(arg)) {
     return arg
   } else {
     if (arg === null) {
@@ -171,7 +177,7 @@ export function vector(
 ) {
   if (typeArgIsPure(itemType)) {
     return pure(txb, items as PureArg, `vector<${itemType}>`)
-  } else if (is(items, TransactionArgument)) {
+  } else if (isTransactionArgument(items)) {
     return items
   } else {
     const { typeName: itemTypeName, typeArgs: itemTypeArgs } = parseTypeName(itemType)
