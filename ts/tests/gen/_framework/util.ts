@@ -17,6 +17,7 @@ export type ObjectId = string
 export type ObjectCallArg = { Object: SuiObjectArg }
 
 export type ObjectArg = string | ObjectCallArg | TransactionArgument
+
 export type PureArg =
   | bigint
   | string
