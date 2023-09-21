@@ -1,3 +1,4 @@
+import * as authenticatorState from './authenticator-state/structs'
 import * as bag from './bag/structs'
 import * as balance from './balance/structs'
 import * as bcs from './bcs/structs'
@@ -8,6 +9,7 @@ import * as display from './display/structs'
 import * as dynamicField from './dynamic-field/structs'
 import * as dynamicObjectField from './dynamic-object-field/structs'
 import * as groth16 from './groth16/structs'
+import * as kioskExtension from './kiosk-extension/structs'
 import * as kiosk from './kiosk/structs'
 import * as linkedTable from './linked-table/structs'
 import * as objectBag from './object-bag/structs'
@@ -48,6 +50,11 @@ export function registerClasses(loader: StructClassLoader) {
   loader.register(coin.TreasuryCap)
   loader.register(coin.CurrencyCreated)
   loader.register(dynamicField.Field)
+  loader.register(authenticatorState.AuthenticatorState)
+  loader.register(authenticatorState.AuthenticatorStateInner)
+  loader.register(authenticatorState.JWK)
+  loader.register(authenticatorState.JwkId)
+  loader.register(authenticatorState.ActiveJwk)
   loader.register(bag.Bag)
   loader.register(table.Table)
   loader.register(tableVec.TableVec)
@@ -84,4 +91,6 @@ export function registerClasses(loader: StructClassLoader) {
   loader.register(kiosk.ItemListed)
   loader.register(kiosk.ItemPurchased)
   loader.register(kiosk.ItemDelisted)
+  loader.register(kioskExtension.Extension)
+  loader.register(kioskExtension.ExtensionKey)
 }

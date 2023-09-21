@@ -6,11 +6,11 @@ settings:
 
 dependencies:
   '@mysten/bcs':
-    specifier: ^0.7.3
-    version: 0.7.3
+    specifier: ^0.7.4
+    version: 0.7.4
   '@mysten/sui.js':
-    specifier: ^0.39.0
-    version: 0.39.0
+    specifier: ^0.42.0
+    version: 0.42.0
   commander:
     specifier: ^10.0.1
     version: 10.0.1
@@ -315,21 +315,21 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: false
 
-  /@mysten/bcs@0.7.3:
-    resolution: {integrity: sha512-fbusBfsyc2MpTACi72H5edWJ670T84va+qn9jSPpb5BzZ+pzUM1Q0ApPrF5OT+mB1o5Ng+mxPQpBCZQkfiV2TA==}
+  /@mysten/bcs@0.7.4:
+    resolution: {integrity: sha512-6DKzM4L10Au3Og5EJRBqJZmXWZ7hS/clVjbVUH4sA0aFtS3AZo2xc+r5fUFfdJbaWZUxVaDiQ8BNiEZWkAnEOw==}
     dependencies:
       bs58: 5.0.0
     dev: false
 
-  /@mysten/sui.js@0.39.0:
-    resolution: {integrity: sha512-fJu6k7+Qb1z2h9i5Jai0sTWmaGP1UT6d/JIXhEwMZ6cz+13GT/8zRp8kUhP7Oq9Z2hxmwfy1ROptbsrv/x9V8A==}
+  /@mysten/sui.js@0.42.0:
+    resolution: {integrity: sha512-khYpfrWTRNk7WTuDWJx/KCbleqY1B40gVRt1DttqlNkD2lvg134xZn7F/r94jxgnUETbK+hVoQvBY7F36MsfRw==}
     engines: {node: '>=16'}
     dependencies:
-      '@mysten/bcs': 0.7.3
-      '@noble/curves': 1.1.0
-      '@noble/hashes': 1.3.1
+      '@mysten/bcs': 0.7.4
+      '@noble/curves': 1.2.0
+      '@noble/hashes': 1.3.2
       '@open-rpc/client-js': 1.8.1
-      '@scure/bip32': 1.3.1
+      '@scure/bip32': 1.3.2
       '@scure/bip39': 1.2.1
       '@suchipi/femver': 1.0.0
       events: 3.3.0
@@ -341,14 +341,14 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@noble/curves@1.1.0:
-    resolution: {integrity: sha512-091oBExgENk/kGj3AZmtBDMpxQPDtxQABR2B9lb1JbVTs6ytdzZNwvhxQ4MWasRNEzlbEH8jCWFCwhF/Obj5AA==}
+  /@noble/curves@1.2.0:
+    resolution: {integrity: sha512-oYclrNgRaM9SsBUBVbb8M6DTV7ZHRTKugureoYEncY5c65HOmRzvSiTE3y5CYaPYJA/GVkrhXEoF0M3Ya9PMnw==}
     dependencies:
-      '@noble/hashes': 1.3.1
+      '@noble/hashes': 1.3.2
     dev: false
 
-  /@noble/hashes@1.3.1:
-    resolution: {integrity: sha512-EbqwksQwz9xDRGfDST86whPBgM65E0OH/pCgqW0GBVzO22bNE+NuIbeTb714+IfSjU3aRk47EUvXIb5bTsenKA==}
+  /@noble/hashes@1.3.2:
+    resolution: {integrity: sha512-MVC8EAQp7MvEcm30KWENFjgR+Mkmf+D189XJTkFIlwohU5hcBbn1ZkKq7KVTi2Hme3PMGF390DaL52beVrIihQ==}
     engines: {node: '>= 16'}
     dev: false
 
@@ -383,23 +383,23 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@scure/base@1.1.1:
-    resolution: {integrity: sha512-ZxOhsSyxYwLJj3pLZCefNitxsj093tb2vq90mp2txoYeBqbcjDjqFhyM8eUjq/uFm6zJ+mUuqxlS2FkuSY1MTA==}
+  /@scure/base@1.1.3:
+    resolution: {integrity: sha512-/+SgoRjLq7Xlf0CWuLHq2LUZeL/w65kfzAPG5NH9pcmBhs+nunQTn4gvdwgMTIXnt9b2C/1SeL2XiysZEyIC9Q==}
     dev: false
 
-  /@scure/bip32@1.3.1:
-    resolution: {integrity: sha512-osvveYtyzdEVbt3OfwwXFr4P2iVBL5u1Q3q4ONBfDY/UpOuXmOlbgwc1xECEboY8wIays8Yt6onaWMUdUbfl0A==}
+  /@scure/bip32@1.3.2:
+    resolution: {integrity: sha512-N1ZhksgwD3OBlwTv3R6KFEcPojl/W4ElJOeCZdi+vuI5QmTFwLq3OFf2zd2ROpKvxFdgZ6hUpb0dx9bVNEwYCA==}
     dependencies:
-      '@noble/curves': 1.1.0
-      '@noble/hashes': 1.3.1
-      '@scure/base': 1.1.1
+      '@noble/curves': 1.2.0
+      '@noble/hashes': 1.3.2
+      '@scure/base': 1.1.3
     dev: false
 
   /@scure/bip39@1.2.1:
     resolution: {integrity: sha512-Z3/Fsz1yr904dduJD0NpiyRHhRYHdcnyh73FZWiV+/qhWi83wNJ3NWolYqCEN+ZWsUz2TWwajJggcRE9r1zUYg==}
     dependencies:
-      '@noble/hashes': 1.3.1
-      '@scure/base': 1.1.1
+      '@noble/hashes': 1.3.2
+      '@scure/base': 1.1.3
     dev: false
 
   /@suchipi/femver@1.0.0:
@@ -756,7 +756,7 @@ packages:
       normalize-path: 3.0.0
       readdirp: 3.6.0
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     dev: false
 
   /color-convert@2.0.1:
@@ -1101,8 +1101,8 @@ packages:
   /fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
 
-  /fsevents@2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+  /fsevents@2.3.3:
+    resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
@@ -1251,8 +1251,8 @@ packages:
   /isomorphic-fetch@3.0.0:
     resolution: {integrity: sha512-qvUtwJ3j6qwsF3jLxkZ72qCgjMysPzDfeV240JHiGZsANBYd+EEuu35v7dfrJ9Up0Ak07D7GGSkGhCHTqg/5wA==}
     dependencies:
-      node-fetch: 2.6.12
-      whatwg-fetch: 3.6.17
+      node-fetch: 2.7.0
+      whatwg-fetch: 3.6.19
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -1426,8 +1426,8 @@ packages:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
     dev: true
 
-  /node-fetch@2.6.12:
-    resolution: {integrity: sha512-C/fGU2E8ToujUivIO0H+tpQ6HWo4eEmchoPIoXtxCrVghxdKq+QOHqEZW7tuP3KlV3bC8FRMO5nMCC7Zm1VP6g==}
+  /node-fetch@2.7.0:
+    resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
     engines: {node: 4.x || >=6.0.0}
     peerDependencies:
       encoding: ^0.1.0
@@ -1649,7 +1649,7 @@ packages:
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
     hasBin: true
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
 
   /run-parallel@1.2.0:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
@@ -1957,7 +1957,7 @@ packages:
       postcss: 8.4.24
       rollup: 3.25.1
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     dev: true
 
   /vitest@0.32.0:
@@ -2038,8 +2038,8 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /whatwg-fetch@3.6.17:
-    resolution: {integrity: sha512-c4ghIvG6th0eudYwKZY5keb81wtFz9/WeAHAoy8+r18kcWlitUIrmGFQ2rWEl4UCKUilD3zCLHOIPheHx5ypRQ==}
+  /whatwg-fetch@3.6.19:
+    resolution: {integrity: sha512-d67JP4dHSbm2TrpFj8AbO8DnL1JXL5J9u0Kq2xW6d0TFDbCA3Muhdt8orXC22utleTVj7Prqt82baN6RBvnEgw==}
     dev: false
 
   /whatwg-url@5.0.0:
