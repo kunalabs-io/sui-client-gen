@@ -1,8 +1,7 @@
-import { bcsSource as bcs } from '../../_framework/bcs'
+import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../_framework/init-source'
 import { structClassLoaderSource } from '../../_framework/loader'
 import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
-import { Encoding } from '@mysten/bcs'
 
 /* ============================== Entry =============================== */
 

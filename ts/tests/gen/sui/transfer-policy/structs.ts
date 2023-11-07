@@ -1,10 +1,9 @@
-import { bcsSource as bcs } from '../../_framework/bcs'
+import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
 import { TypeName } from '../../move-stdlib/type-name/structs'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { VecSet } from '../vec-set/structs'
-import { Encoding } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== RuleKey =============================== */

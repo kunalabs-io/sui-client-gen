@@ -1,7 +1,6 @@
-import { bcsOnchain as bcs } from '../../../../_framework/bcs'
+import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type, parseTypeName } from '../../../../_framework/util'
 import { Bag } from '../bag/structs'
-import { Encoding } from '@mysten/bcs'
 
 /* ============================== Extension =============================== */
 

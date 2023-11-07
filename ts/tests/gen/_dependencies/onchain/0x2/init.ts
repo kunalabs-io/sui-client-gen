@@ -21,11 +21,14 @@ import * as sui from './sui/structs'
 import * as tableVec from './table-vec/structs'
 import * as table from './table/structs'
 import * as transferPolicy from './transfer-policy/structs'
+import * as transfer from './transfer/structs'
 import * as txContext from './tx-context/structs'
 import * as url from './url/structs'
 import * as vecMap from './vec-map/structs'
 import * as vecSet from './vec-set/structs'
 import * as versioned from './versioned/structs'
+import * as zkloginVerifiedId from './zklogin-verified-id/structs'
+import * as zkloginVerifiedIssuer from './zklogin-verified-issuer/structs'
 import { StructClassLoader } from '../../../_framework/loader'
 
 export function registerClasses(loader: StructClassLoader) {
@@ -41,7 +44,10 @@ export function registerClasses(loader: StructClassLoader) {
   loader.register(url.Url)
   loader.register(object.ID)
   loader.register(object.UID)
+  loader.register(transfer.Receiving)
   loader.register(clock.Clock)
+  loader.register(zkloginVerifiedId.VerifiedID)
+  loader.register(zkloginVerifiedIssuer.VerifiedIssuer)
   loader.register(bcs.BCS)
   loader.register(borrow.Referent)
   loader.register(borrow.Borrow)

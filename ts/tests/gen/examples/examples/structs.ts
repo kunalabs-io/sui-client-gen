@@ -1,10 +1,9 @@
-import { bcsSource as bcs } from '../../_framework/bcs'
+import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type } from '../../_framework/util'
 import { String } from '../../move-stdlib/ascii/structs'
 import { Option } from '../../move-stdlib/option/structs'
 import { String as String1 } from '../../move-stdlib/string/structs'
 import { ID, UID } from '../../sui/object/structs'
-import { Encoding } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== ExampleStruct =============================== */

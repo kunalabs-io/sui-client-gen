@@ -4,12 +4,11 @@ import { String } from '../../_dependencies/onchain/0x1/string/structs'
 import { Balance } from '../../_dependencies/onchain/0x2/balance/structs'
 import { ID, UID } from '../../_dependencies/onchain/0x2/object/structs'
 import { Url } from '../../_dependencies/onchain/0x2/url/structs'
-import { bcsOnchain as bcs } from '../../_framework/bcs'
+import { Encoding, bcsOnchain as bcs } from '../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../_framework/init-onchain'
 import { structClassLoaderOnchain } from '../../_framework/loader'
 import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
 import { StructFromOtherModule } from '../other-module/structs'
-import { Encoding } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Dummy =============================== */

@@ -1,6 +1,5 @@
-import { bcsOnchain as bcs } from '../../../../_framework/bcs'
+import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type, parseTypeName } from '../../../../_framework/util'
-import { Encoding } from '@mysten/bcs'
 
 /* ============================== Supply =============================== */
 

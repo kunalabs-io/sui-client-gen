@@ -1,11 +1,10 @@
-import { bcsOnchain as bcs } from '../../../../_framework/bcs'
+import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type, parseTypeName } from '../../../../_framework/util'
 import { String as String1 } from '../../0x1/ascii/structs'
 import { Option } from '../../0x1/option/structs'
 import { String } from '../../0x1/string/structs'
 import { Balance, Supply } from '../balance/structs'
 import { UID } from '../object/structs'
-import { Encoding } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Coin =============================== */

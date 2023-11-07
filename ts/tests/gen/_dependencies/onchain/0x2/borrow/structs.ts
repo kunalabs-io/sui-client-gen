@@ -1,9 +1,8 @@
-import { bcsOnchain as bcs } from '../../../../_framework/bcs'
+import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../../../_framework/init-onchain'
 import { FieldsWithTypes, Type, parseTypeName } from '../../../../_framework/util'
 import { Option } from '../../0x1/option/structs'
 import { ID } from '../object/structs'
-import { Encoding } from '@mysten/bcs'
 
 /* ============================== Referent =============================== */
 

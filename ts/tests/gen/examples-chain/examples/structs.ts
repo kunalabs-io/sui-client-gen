@@ -2,9 +2,8 @@ import { String } from '../../_dependencies/onchain/0x1/ascii/structs'
 import { Option } from '../../_dependencies/onchain/0x1/option/structs'
 import { String as String1 } from '../../_dependencies/onchain/0x1/string/structs'
 import { ID, UID } from '../../_dependencies/onchain/0x2/object/structs'
-import { bcsOnchain as bcs } from '../../_framework/bcs'
+import { Encoding, bcsOnchain as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type } from '../../_framework/util'
-import { Encoding } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== ExampleStruct =============================== */

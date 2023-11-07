@@ -1,8 +1,7 @@
-import { bcsSource as bcs } from '../../_framework/bcs'
+import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type } from '../../_framework/util'
 import { TreasuryCap } from '../../sui/coin/structs'
 import { UID } from '../../sui/object/structs'
-import { Encoding } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== EXAMPLE_COIN =============================== */

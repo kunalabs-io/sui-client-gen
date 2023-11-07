@@ -12,6 +12,8 @@ import { BCS, getSuiMoveConfig } from '@mysten/bcs'
 export const bcsSource = new BCS(getSuiMoveConfig())
 export const bcsOnchain = new BCS(getSuiMoveConfig())
 
+export type Encoding = 'base58' | 'base64' | 'hex'
+
 "#;
 
 pub static LOADER: &str = r#"
@@ -170,7 +172,11 @@ export const structClassLoaderOnchain = new StructClassLoader()
 
 pub static UTIL: &str = r#"
 import { normalizeSuiAddress } from '@mysten/sui.js/utils'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import {
+  TransactionArgument,
+  TransactionBlock,
+  TransactionObjectArgument,
+} from '@mysten/sui.js/transactions'
 import { bcs, ObjectArg as SuiObjectArg } from '@mysten/sui.js/bcs'
 import { BCS } from '@mysten/bcs'
 
@@ -210,6 +216,18 @@ export function isTransactionArgument(arg: GenericArg): arg is TransactionArgume
   }
 
   return 'kind' in arg
+}
+
+export function isTransactionObjectArgument(arg: GenericArg): arg is TransactionObjectArgument {
+  if (!isTransactionArgument(arg)) {
+    return false
+  }
+
+  if (arg.kind === 'Input' && arg.type === 'pure') {
+    return false
+  }
+
+  return true
 }
 
 export function obj(txb: TransactionBlock, arg: ObjectArg) {
@@ -289,9 +307,9 @@ export function pure(txb: TransactionBlock, arg: PureArg, type: Type) {
       ) {
         throw new Error('mixing TransactionArgument with other types is not currently supported')
       }
-      if (isTransactionArgument(arg[0])) {
+      if (isTransactionObjectArgument(arg[0])) {
         return txb.makeMoveVec({
-          objects: arg as Array<TransactionArgument>,
+          objects: arg as Array<TransactionObjectArgument>,
           type: typeArgs[0],
         })
       }
@@ -333,7 +351,7 @@ export function generic(txb: TransactionBlock, type: Type, arg: GenericArg) {
       const itemType = typeArgs[0]
 
       return txb.makeMoveVec({
-        objects: arg.map(item => obj(txb, item as ObjectArg)),
+        objects: arg.map(item => obj(txb, item as ObjectArg)) as Array<TransactionObjectArgument>,
         type: itemType,
       })
     } else {
@@ -354,7 +372,9 @@ export function vector(
   } else {
     const { typeName: itemTypeName, typeArgs: itemTypeArgs } = parseTypeName(itemType)
     if (itemTypeName === '0x1::option::Option') {
-      const objects = items.map(item => option(txb, itemTypeArgs[0], item))
+      const objects = items.map(item =>
+        option(txb, itemTypeArgs[0], item)
+      ) as Array<TransactionObjectArgument>
       return txb.makeMoveVec({
         objects,
         type: itemType,
@@ -362,7 +382,7 @@ export function vector(
     }
 
     return txb.makeMoveVec({
-      objects: items as Array<TransactionArgument>,
+      objects: items as Array<TransactionObjectArgument>,
       type: itemType,
     })
   }

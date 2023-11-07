@@ -1,9 +1,8 @@
 import { Option } from '../../_dependencies/source/0x1/option/structs'
-import { bcsSource as bcs } from '../../_framework/bcs'
+import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../_framework/init-source'
 import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
 import { ID } from '../object/structs'
-import { Encoding } from '@mysten/bcs'
 
 /* ============================== Borrow =============================== */
 

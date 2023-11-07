@@ -1,7 +1,6 @@
 import { String } from '../../_dependencies/source/0x1/ascii/structs'
-import { bcsSource as bcs } from '../../_framework/bcs'
+import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type } from '../../_framework/util'
-import { Encoding } from '@mysten/bcs'
 
 /* ============================== Url =============================== */
 

@@ -1,9 +1,8 @@
-import { bcsOnchain as bcs } from '../../../../_framework/bcs'
+import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../../../_framework/init-onchain'
 import { structClassLoaderOnchain } from '../../../../_framework/loader'
 import { FieldsWithTypes, Type, parseTypeName } from '../../../../_framework/util'
 import { UID } from '../object/structs'
-import { Encoding } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Field =============================== */

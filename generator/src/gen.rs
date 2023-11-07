@@ -1244,7 +1244,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let init_loader_if_needed = &self.framework.import_init_loader_if_needed();
         let fields_with_types = &self.framework.import("util", "FieldsWithTypes");
         let parse_type_name = &self.framework.import("util", "parseTypeName");
-        let encoding = &js::import("@mysten/bcs", "Encoding");
+        let encoding = &self.framework.import("bcs", "Encoding");
         let sui_parsed_data = &js::import("@mysten/sui.js/client", "SuiParsedData");
         let sui_client = &js::import("@mysten/sui.js/client", "SuiClient");
 

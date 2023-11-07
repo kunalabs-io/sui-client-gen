@@ -1,7 +1,7 @@
 import { String as String1 } from '../../_dependencies/source/0x1/ascii/structs'
 import { Option } from '../../_dependencies/source/0x1/option/structs'
 import { String } from '../../_dependencies/source/0x1/string/structs'
-import { bcsSource as bcs } from '../../_framework/bcs'
+import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../_framework/init-source'
 import { structClassLoaderSource } from '../../_framework/loader'
 import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
@@ -9,7 +9,6 @@ import { Balance } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { Url } from '../../sui/url/structs'
 import { StructFromOtherModule } from '../other-module/structs'
-import { Encoding } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Bar =============================== */

@@ -1,6 +1,5 @@
-import { bcsOnchain as bcs } from '../../../../_framework/bcs'
+import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type } from '../../../../_framework/util'
-import { Encoding } from '@mysten/bcs'
 
 /* ============================== ID =============================== */
 

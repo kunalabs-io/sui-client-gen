@@ -1,7 +1,6 @@
-import { bcsSource as bcs } from '../../../../_framework/bcs'
+import { Encoding, bcsSource as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type } from '../../../../_framework/util'
 import { String } from '../ascii/structs'
-import { Encoding } from '@mysten/bcs'
 
 /* ============================== TypeName =============================== */
 

@@ -1,8 +1,7 @@
-import { bcsSource as bcs } from '../../_framework/bcs'
+import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
-import { Encoding } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Display =============================== */
