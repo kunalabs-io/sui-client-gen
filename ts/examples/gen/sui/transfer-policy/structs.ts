@@ -1,6 +1,6 @@
 import { TypeName } from '../../_dependencies/source/0x1/type-name/structs'
 import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
-import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { VecSet } from '../vec-set/structs'
@@ -13,6 +13,7 @@ bcs.registerStructType('0x2::transfer_policy::RuleKey<T>', {
 })
 
 export function isRuleKey(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::transfer_policy::RuleKey<')
 }
 
@@ -61,6 +62,7 @@ bcs.registerStructType('0x2::transfer_policy::TransferPolicy<T>', {
 })
 
 export function isTransferPolicy(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::transfer_policy::TransferPolicy<')
 }
 
@@ -146,6 +148,7 @@ bcs.registerStructType('0x2::transfer_policy::TransferPolicyCap<T>', {
 })
 
 export function isTransferPolicyCap(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::transfer_policy::TransferPolicyCap<')
 }
 
@@ -228,6 +231,7 @@ bcs.registerStructType('0x2::transfer_policy::TransferPolicyCreated<T>', {
 })
 
 export function isTransferPolicyCreated(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::transfer_policy::TransferPolicyCreated<')
 }
 
@@ -284,6 +288,7 @@ bcs.registerStructType('0x2::transfer_policy::TransferRequest<T>', {
 })
 
 export function isTransferRequest(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::transfer_policy::TransferRequest<')
 }
 

@@ -1,5 +1,5 @@
 import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
-import { FieldsWithTypes, Type, parseTypeName } from '../../../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
 import { ID } from '../object/structs'
 
 /* ============================== Receiving =============================== */
@@ -10,6 +10,7 @@ bcs.registerStructType('0x2::transfer::Receiving<T0>', {
 })
 
 export function isReceiving(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::transfer::Receiving<')
 }
 

@@ -1,5 +1,5 @@
 import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
-import { FieldsWithTypes, Type } from '../../../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
 import { String } from '../../0x1/ascii/structs'
 import { ID, UID } from '../object/structs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -13,6 +13,7 @@ bcs.registerStructType('0x2::package::Publisher', {
 })
 
 export function isPublisher(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::package::Publisher'
 }
 
@@ -95,6 +96,7 @@ bcs.registerStructType('0x2::package::UpgradeCap', {
 })
 
 export function isUpgradeCap(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::package::UpgradeCap'
 }
 
@@ -178,6 +180,7 @@ bcs.registerStructType('0x2::package::UpgradeTicket', {
 })
 
 export function isUpgradeTicket(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::package::UpgradeTicket'
 }
 
@@ -238,6 +241,7 @@ bcs.registerStructType('0x2::package::UpgradeReceipt', {
 })
 
 export function isUpgradeReceipt(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::package::UpgradeReceipt'
 }
 

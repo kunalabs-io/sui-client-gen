@@ -1,7 +1,7 @@
 import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../_framework/init-source'
 import { structClassLoaderSource } from '../../_framework/loader'
-import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
 import { Option } from '../../move-stdlib/option/structs'
 import { UID } from '../object/structs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -16,6 +16,7 @@ bcs.registerStructType('0x2::linked_table::LinkedTable<K, V>', {
 })
 
 export function isLinkedTable(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::linked_table::LinkedTable<')
 }
 
@@ -127,6 +128,7 @@ bcs.registerStructType('0x2::linked_table::Node<K, V>', {
 })
 
 export function isNode(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::linked_table::Node<')
 }
 

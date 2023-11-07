@@ -1,5 +1,5 @@
 import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
-import { FieldsWithTypes, Type } from '../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 
 /* ============================== Curve =============================== */
 
@@ -8,6 +8,7 @@ bcs.registerStructType('0x2::groth16::Curve', {
 })
 
 export function isCurve(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::groth16::Curve'
 }
 
@@ -51,6 +52,7 @@ bcs.registerStructType('0x2::groth16::PreparedVerifyingKey', {
 })
 
 export function isPreparedVerifyingKey(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::groth16::PreparedVerifyingKey'
 }
 
@@ -110,6 +112,7 @@ bcs.registerStructType('0x2::groth16::ProofPoints', {
 })
 
 export function isProofPoints(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::groth16::ProofPoints'
 }
 
@@ -150,6 +153,7 @@ bcs.registerStructType('0x2::groth16::PublicProofInputs', {
 })
 
 export function isPublicProofInputs(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::groth16::PublicProofInputs'
 }
 

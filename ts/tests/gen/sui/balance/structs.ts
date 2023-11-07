@@ -1,5 +1,5 @@
 import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
-import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
 
 /* ============================== Balance =============================== */
 
@@ -8,6 +8,7 @@ bcs.registerStructType('0x2::balance::Balance<T>', {
 })
 
 export function isBalance(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::balance::Balance<')
 }
 
@@ -54,6 +55,7 @@ bcs.registerStructType('0x2::balance::Supply<T>', {
 })
 
 export function isSupply(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::balance::Supply<')
 }
 

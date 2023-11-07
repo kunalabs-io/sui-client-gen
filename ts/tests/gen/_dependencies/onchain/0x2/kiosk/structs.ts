@@ -1,5 +1,5 @@
 import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
-import { FieldsWithTypes, Type, parseTypeName } from '../../../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -12,6 +12,7 @@ bcs.registerStructType('0x2::kiosk::Borrow', {
 })
 
 export function isBorrow(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::kiosk::Borrow'
 }
 
@@ -62,6 +63,7 @@ bcs.registerStructType('0x2::kiosk::Kiosk', {
 })
 
 export function isKiosk(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::kiosk::Kiosk'
 }
 
@@ -148,6 +150,7 @@ bcs.registerStructType('0x2::kiosk::KioskOwnerCap', {
 })
 
 export function isKioskOwnerCap(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::kiosk::KioskOwnerCap'
 }
 
@@ -218,6 +221,7 @@ bcs.registerStructType('0x2::kiosk::PurchaseCap<T0>', {
 })
 
 export function isPurchaseCap(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::kiosk::PurchaseCap<')
 }
 
@@ -304,6 +308,7 @@ bcs.registerStructType('0x2::kiosk::Item', {
 })
 
 export function isItem(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::kiosk::Item'
 }
 
@@ -345,6 +350,7 @@ bcs.registerStructType('0x2::kiosk::Listing', {
 })
 
 export function isListing(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::kiosk::Listing'
 }
 
@@ -388,6 +394,7 @@ bcs.registerStructType('0x2::kiosk::Lock', {
 })
 
 export function isLock(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::kiosk::Lock'
 }
 
@@ -430,6 +437,7 @@ bcs.registerStructType('0x2::kiosk::ItemListed<T0>', {
 })
 
 export function isItemListed(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::kiosk::ItemListed<')
 }
 
@@ -492,6 +500,7 @@ bcs.registerStructType('0x2::kiosk::ItemPurchased<T0>', {
 })
 
 export function isItemPurchased(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::kiosk::ItemPurchased<')
 }
 
@@ -556,6 +565,7 @@ bcs.registerStructType('0x2::kiosk::ItemDelisted<T0>', {
 })
 
 export function isItemDelisted(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::kiosk::ItemDelisted<')
 }
 

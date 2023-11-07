@@ -1,5 +1,5 @@
 import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
-import { FieldsWithTypes, Type } from '../../../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
 
 /* ============================== TxContext =============================== */
 
@@ -12,6 +12,7 @@ bcs.registerStructType('0x2::tx_context::TxContext', {
 })
 
 export function isTxContext(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::tx_context::TxContext'
 }
 

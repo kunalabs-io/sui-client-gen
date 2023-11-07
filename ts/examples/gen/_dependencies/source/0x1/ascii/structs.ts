@@ -1,5 +1,5 @@
 import { Encoding, bcsSource as bcs } from '../../../../_framework/bcs'
-import { FieldsWithTypes, Type } from '../../../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
 
 /* ============================== Char =============================== */
 
@@ -8,6 +8,7 @@ bcs.registerStructType('0x1::ascii::Char', {
 })
 
 export function isChar(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x1::ascii::Char'
 }
 
@@ -21,8 +22,8 @@ export class Char {
 
   readonly byte: number
 
-  constructor(byte: number) {
-    this.byte = byte
+  constructor(byte_: number) {
+    this.byte = byte_
   }
 
   static fromFields(fields: Record<string, any>): Char {
@@ -48,6 +49,7 @@ bcs.registerStructType('0x1::ascii::String', {
 })
 
 export function isString(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x1::ascii::String'
 }
 

@@ -1,7 +1,7 @@
 import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../_framework/init-source'
 import { structClassLoaderSource } from '../../_framework/loader'
-import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
 
 /* ============================== Entry =============================== */
 
@@ -11,6 +11,7 @@ bcs.registerStructType('0x2::vec_map::Entry<K, V>', {
 })
 
 export function isEntry(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::vec_map::Entry<')
 }
 
@@ -74,6 +75,7 @@ bcs.registerStructType('0x2::vec_map::VecMap<K, V>', {
 })
 
 export function isVecMap(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::vec_map::VecMap<')
 }
 

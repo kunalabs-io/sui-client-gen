@@ -1,5 +1,5 @@
 import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
-import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
@@ -11,6 +11,7 @@ bcs.registerStructType('0x2::table::Table<K, V>', {
 })
 
 export function isTable(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::table::Table<')
 }
 

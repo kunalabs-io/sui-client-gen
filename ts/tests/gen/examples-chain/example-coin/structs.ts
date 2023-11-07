@@ -1,7 +1,7 @@
 import { TreasuryCap } from '../../_dependencies/onchain/0x2/coin/structs'
 import { UID } from '../../_dependencies/onchain/0x2/object/structs'
 import { Encoding, bcsOnchain as bcs } from '../../_framework/bcs'
-import { FieldsWithTypes, Type } from '../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== EXAMPLE_COIN =============================== */
@@ -14,6 +14,7 @@ bcs.registerStructType(
 )
 
 export function isEXAMPLE_COIN(type: Type): boolean {
+  type = compressSuiType(type)
   return (
     type ===
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
@@ -62,6 +63,7 @@ bcs.registerStructType(
 )
 
 export function isFaucet(type: Type): boolean {
+  type = compressSuiType(type)
   return (
     type ===
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'

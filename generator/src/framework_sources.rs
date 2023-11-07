@@ -17,7 +17,7 @@ export type Encoding = 'base58' | 'base64' | 'hex'
 "#;
 
 pub static LOADER: &str = r#"
-import { FieldsWithTypes, Type, parseTypeName } from './util'
+import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from './util'
 
 export type PrimitiveValue = string | number | boolean | bigint
 
@@ -67,6 +67,7 @@ export class StructClassLoader {
   }
 
   fromFields(type: Type, value: Record<string, any> | PrimitiveValue) {
+    type = compressSuiType(type)
     const ret = this.#handlePrimitiveValue(type, value, this.fromFields.bind(this))
     if (ret !== undefined) {
       return ret
@@ -77,7 +78,9 @@ export class StructClassLoader {
 
     const loader = this.map.get(typeName)
     if (!loader) {
-      throw new Error(`no loader registered for type ${typeName}, include relevant package in gen.toml`)
+      throw new Error(
+        `no loader registered for type ${typeName}, include relevant package in gen.toml`
+      )
     }
 
     if (loader.numTypeParams !== typeArgs.length) {
@@ -88,6 +91,7 @@ export class StructClassLoader {
   }
 
   fromFieldsWithTypes(type: Type, value: FieldsWithTypes | PrimitiveValue) {
+    type = compressSuiType(type)
     const { typeName, typeArgs } = parseTypeName(type)
 
     // some types are special-cased in the RPC so we need to handle this manually
@@ -132,7 +136,9 @@ export class StructClassLoader {
 
     const loader = this.map.get(typeName)
     if (!loader) {
-      throw new Error(`no loader registered for type ${typeName}, include relevant package in gen.toml`)
+      throw new Error(
+        `no loader registered for type ${typeName}, include relevant package in gen.toml`
+      )
     }
 
     return loader.fromFieldsWithTypes(value)
@@ -411,6 +417,45 @@ export function typeArgIsPure(type: Type): boolean {
       return typeArgIsPure(typeArgs[0])
     default:
       return false
+  }
+}
+
+export function compressSuiAddress(addr: string): string {
+  // remove leading zeros
+  const stripped = addr.split('0x').join('')
+  for (let i = 0; i < stripped.length; i++) {
+    if (stripped[i] !== '0') {
+      return `0x${stripped.substring(i)}`
+    }
+  }
+  return '0x0'
+}
+
+export function compressSuiType(type: string): string {
+  const { typeName, typeArgs } = parseTypeName(type)
+  switch (typeName) {
+    case 'bool':
+    case 'u8':
+    case 'u16':
+    case 'u32':
+    case 'u64':
+    case 'u128':
+    case 'u256':
+    case 'address':
+    case 'signer':
+      return typeName
+    case 'vector':
+      return `vector<${compressSuiType(typeArgs[0])}>`
+    default: {
+      const tok = typeName.split('::')
+      tok[0] = compressSuiAddress(tok[0])
+      const compressedName = tok.join('::')
+      if (typeArgs.length > 0) {
+        return `${compressedName}<${typeArgs.map(typeArg => compressSuiType(typeArg)).join(',')}>`
+      } else {
+        return compressedName
+      }
+    }
   }
 }
 

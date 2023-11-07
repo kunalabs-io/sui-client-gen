@@ -1,5 +1,5 @@
 import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
-import { FieldsWithTypes, Type } from '../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib/ascii/structs'
 import { Option } from '../../move-stdlib/option/structs'
 import { String as String1 } from '../../move-stdlib/string/structs'
@@ -16,6 +16,7 @@ bcs.registerStructType(
 )
 
 export function isExampleStruct(type: Type): boolean {
+  type = compressSuiType(type)
   return (
     type ===
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
@@ -71,6 +72,7 @@ bcs.registerStructType(
 )
 
 export function isSpecialTypesStruct(type: Type): boolean {
+  type = compressSuiType(type)
   return (
     type ===
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'

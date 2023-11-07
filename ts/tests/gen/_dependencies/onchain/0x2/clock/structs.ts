@@ -1,5 +1,5 @@
 import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
-import { FieldsWithTypes, Type } from '../../../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
 import { UID } from '../object/structs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
@@ -11,6 +11,7 @@ bcs.registerStructType('0x2::clock::Clock', {
 })
 
 export function isClock(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::clock::Clock'
 }
 

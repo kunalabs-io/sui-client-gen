@@ -240,3 +240,42 @@ export function typeArgIsPure(type: Type): boolean {
       return false
   }
 }
+
+export function compressSuiAddress(addr: string): string {
+  // remove leading zeros
+  const stripped = addr.split('0x').join('')
+  for (let i = 0; i < stripped.length; i++) {
+    if (stripped[i] !== '0') {
+      return `0x${stripped.substring(i)}`
+    }
+  }
+  return '0x0'
+}
+
+export function compressSuiType(type: string): string {
+  const { typeName, typeArgs } = parseTypeName(type)
+  switch (typeName) {
+    case 'bool':
+    case 'u8':
+    case 'u16':
+    case 'u32':
+    case 'u64':
+    case 'u128':
+    case 'u256':
+    case 'address':
+    case 'signer':
+      return typeName
+    case 'vector':
+      return `vector<${compressSuiType(typeArgs[0])}>`
+    default: {
+      const tok = typeName.split('::')
+      tok[0] = compressSuiAddress(tok[0])
+      const compressedName = tok.join('::')
+      if (typeArgs.length > 0) {
+        return `${compressedName}<${typeArgs.map(typeArg => compressSuiType(typeArg)).join(',')}>`
+      } else {
+        return compressedName
+      }
+    }
+  }
+}

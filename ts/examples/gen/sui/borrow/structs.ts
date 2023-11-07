@@ -1,7 +1,7 @@
 import { Option } from '../../_dependencies/source/0x1/option/structs'
 import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../_framework/init-source'
-import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
 import { ID } from '../object/structs'
 
 /* ============================== Borrow =============================== */
@@ -12,6 +12,7 @@ bcs.registerStructType('0x2::borrow::Borrow', {
 })
 
 export function isBorrow(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::borrow::Borrow'
 }
 
@@ -56,6 +57,7 @@ bcs.registerStructType('0x2::borrow::Referent<T>', {
 })
 
 export function isReferent(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::borrow::Referent<')
 }
 

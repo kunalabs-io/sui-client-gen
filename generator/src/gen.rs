@@ -1204,12 +1204,14 @@ impl<'env, 'a> StructsGen<'env, 'a> {
     /// Generates the `is<StructName>` function for a struct.
     pub fn gen_is_type_func(&self, tokens: &mut js::Tokens, strct: &StructEnv) {
         let type_ = &self.framework.import("util", "Type");
+        let compress_sui_type = &self.framework.import("util", "compressSuiType");
 
         let struct_name = strct.get_name().display(self.symbol_pool()).to_string();
         let type_params = self.strct_type_param_names(strct);
 
         quote_in! { *tokens =>
             export function is$(&struct_name)(type: $type_): boolean {
+                type = $compress_sui_type(type);
                 $(if type_params.is_empty() {
                     return type === $[str]($[const](strct.get_full_name_with_address()))
                 } else {

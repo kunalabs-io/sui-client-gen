@@ -1,5 +1,5 @@
 import { Encoding, bcsSource as bcs } from '../../../../_framework/bcs'
-import { FieldsWithTypes, Type } from '../../../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
 
 /* ============================== FixedPoint32 =============================== */
 
@@ -8,6 +8,7 @@ bcs.registerStructType('0x1::fixed_point32::FixedPoint32', {
 })
 
 export function isFixedPoint32(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x1::fixed_point32::FixedPoint32'
 }
 

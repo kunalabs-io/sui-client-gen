@@ -1,6 +1,6 @@
 import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../../../_framework/init-onchain'
-import { FieldsWithTypes, Type, parseTypeName } from '../../../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
 import { Option } from '../../0x1/option/structs'
 import { ID } from '../object/structs'
 
@@ -12,6 +12,7 @@ bcs.registerStructType('0x2::borrow::Referent<T0>', {
 })
 
 export function isReferent(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::borrow::Referent<')
 }
 
@@ -78,6 +79,7 @@ bcs.registerStructType('0x2::borrow::Borrow', {
 })
 
 export function isBorrow(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::borrow::Borrow'
 }
 

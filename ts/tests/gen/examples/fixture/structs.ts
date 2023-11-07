@@ -1,7 +1,7 @@
 import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../_framework/init-source'
 import { structClassLoaderSource } from '../../_framework/loader'
-import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
 import { String as String1 } from '../../move-stdlib/ascii/structs'
 import { Option } from '../../move-stdlib/option/structs'
 import { String } from '../../move-stdlib/string/structs'
@@ -21,6 +21,7 @@ bcs.registerStructType(
 )
 
 export function isBar(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
 }
 
@@ -65,6 +66,7 @@ bcs.registerStructType(
 )
 
 export function isDummy(type: Type): boolean {
+  type = compressSuiType(type)
   return (
     type === '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
   )
@@ -124,6 +126,7 @@ bcs.registerStructType(
 )
 
 export function isFoo(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith(
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<'
   )
@@ -327,6 +330,7 @@ bcs.registerStructType(
 )
 
 export function isWithGenericField(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith(
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<'
   )
@@ -438,6 +442,7 @@ bcs.registerStructType(
 )
 
 export function isWithSpecialTypes(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith(
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<'
   )
@@ -639,6 +644,7 @@ bcs.registerStructType(
 )
 
 export function isWithSpecialTypesAsGenerics(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith(
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<'
   )
@@ -809,6 +815,7 @@ bcs.registerStructType(
 )
 
 export function isWithSpecialTypesInVectors(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith(
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<'
   )
@@ -957,6 +964,7 @@ bcs.registerStructType(
 )
 
 export function isWithTwoGenerics(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith(
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<'
   )

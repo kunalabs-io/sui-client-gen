@@ -1,6 +1,6 @@
 import { TypeName } from '../../_dependencies/source/0x1/type-name/structs'
 import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
-import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
 import { Balance, Supply } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
@@ -16,6 +16,7 @@ bcs.registerStructType(
 )
 
 export function isAdminCap(type: Type): boolean {
+  type = compressSuiType(type)
   return (
     type === '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
   )
@@ -83,6 +84,7 @@ bcs.registerStructType(
 )
 
 export function isLP(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith(
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<'
   )
@@ -141,6 +143,7 @@ bcs.registerStructType(
 )
 
 export function isPool(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith(
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<'
   )
@@ -257,6 +260,7 @@ bcs.registerStructType(
 )
 
 export function isPoolCreationEvent(type: Type): boolean {
+  type = compressSuiType(type)
   return (
     type ===
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
@@ -305,6 +309,7 @@ bcs.registerStructType(
 )
 
 export function isPoolRegistry(type: Type): boolean {
+  type = compressSuiType(type)
   return (
     type ===
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
@@ -389,6 +394,7 @@ bcs.registerStructType(
 )
 
 export function isPoolRegistryItem(type: Type): boolean {
+  type = compressSuiType(type)
   return (
     type ===
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'

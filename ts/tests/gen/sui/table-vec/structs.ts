@@ -1,5 +1,5 @@
 import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
-import { FieldsWithTypes, Type, parseTypeName } from '../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
 import { Table } from '../table/structs'
 
 /* ============================== TableVec =============================== */
@@ -9,6 +9,7 @@ bcs.registerStructType('0x2::table_vec::TableVec<Element>', {
 })
 
 export function isTableVec(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::table_vec::TableVec<')
 }
 

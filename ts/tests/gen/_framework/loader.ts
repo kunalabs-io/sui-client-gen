@@ -1,4 +1,4 @@
-import { FieldsWithTypes, Type, parseTypeName } from './util'
+import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from './util'
 
 export type PrimitiveValue = string | number | boolean | bigint
 
@@ -48,6 +48,7 @@ export class StructClassLoader {
   }
 
   fromFields(type: Type, value: Record<string, any> | PrimitiveValue) {
+    type = compressSuiType(type)
     const ret = this.#handlePrimitiveValue(type, value, this.fromFields.bind(this))
     if (ret !== undefined) {
       return ret
@@ -71,6 +72,7 @@ export class StructClassLoader {
   }
 
   fromFieldsWithTypes(type: Type, value: FieldsWithTypes | PrimitiveValue) {
+    type = compressSuiType(type)
     const { typeName, typeArgs } = parseTypeName(type)
 
     // some types are special-cased in the RPC so we need to handle this manually

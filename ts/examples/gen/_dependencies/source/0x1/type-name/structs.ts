@@ -1,5 +1,5 @@
 import { Encoding, bcsSource as bcs } from '../../../../_framework/bcs'
-import { FieldsWithTypes, Type } from '../../../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
 import { String } from '../ascii/structs'
 
 /* ============================== TypeName =============================== */
@@ -9,6 +9,7 @@ bcs.registerStructType('0x1::type_name::TypeName', {
 })
 
 export function isTypeName(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x1::type_name::TypeName'
 }
 

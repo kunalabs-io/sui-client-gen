@@ -1,5 +1,5 @@
 import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
-import { FieldsWithTypes, Type } from '../../../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
 
 /* ============================== ID =============================== */
 
@@ -8,6 +8,7 @@ bcs.registerStructType('0x2::object::ID', {
 })
 
 export function isID(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::object::ID'
 }
 
@@ -48,6 +49,7 @@ bcs.registerStructType('0x2::object::UID', {
 })
 
 export function isUID(type: Type): boolean {
+  type = compressSuiType(type)
   return type === '0x2::object::UID'
 }
 

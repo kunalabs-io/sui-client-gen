@@ -1,7 +1,7 @@
 import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../../../_framework/init-onchain'
 import { structClassLoaderOnchain } from '../../../../_framework/loader'
-import { FieldsWithTypes, Type, parseTypeName } from '../../../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
 
 /* ============================== Wrapper =============================== */
 
@@ -10,6 +10,7 @@ bcs.registerStructType('0x2::dynamic_object_field::Wrapper<T0>', {
 })
 
 export function isWrapper(type: Type): boolean {
+  type = compressSuiType(type)
   return type.startsWith('0x2::dynamic_object_field::Wrapper<')
 }
 
