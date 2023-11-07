@@ -177,6 +177,18 @@ impl<'env, 'a> StructClassImportCtx<'env, 'a> {
                     strct.module_env.self_address().to_hex_literal(),
                     module_name
                 ))
+            } else if strct_is_top_level {
+                let strct_pkg_name = package_import_name(
+                    *self
+                        .top_level_pkg_names
+                        .get(strct.module_env.self_address())
+                        .unwrap(),
+                );
+
+                Some(format!(
+                    "../../../../{}/{}/structs",
+                    strct_pkg_name, module_name
+                ))
             } else {
                 Some(format!(
                     "../../{}/{}/structs",
