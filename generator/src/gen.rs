@@ -869,6 +869,22 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         }
     }
 
+    fn gen_field_name_non_reserved(&self, field: &FieldEnv) -> impl FormatInto<JavaScript> {
+        let name = field
+            .get_name()
+            .display(self.symbol_pool())
+            .to_string()
+            .to_case(Case::Camel);
+        let name = if JS_RESERVED_WORDS.contains(&name.as_str()) {
+            name + "_"
+        } else {
+            name
+        };
+        quote_fn! {
+            $name
+        }
+    }
+
     /// Generates a TS interface field type for a struct field. References class structs generated
     /// in other modules by importing them when needed.
     fn gen_struct_class_field_type(
@@ -1281,7 +1297,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 constructor($(gen_type_args_param(type_params.len(), "", ",", &self.framework)) $(match fields.len() {
                         0 => (),
                         1 => {
-                            $(self.gen_field_name(&fields[0])): $(
+                            $(self.gen_field_name_non_reserved(&fields[0])): $(
                                 self.gen_struct_class_field_type(&fields[0].get_type(), self.strct_type_param_names(strct))
                             ),
                         },
@@ -1296,7 +1312,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
                     $(match fields.len() {
                         0 => (),
-                        1 => this.$(self.gen_field_name(&fields[0])) = $(self.gen_field_name(&fields[0]));,
+                        1 => this.$(self.gen_field_name(&fields[0])) = $(self.gen_field_name_non_reserved(&fields[0]));,
                         _ => {
                             $(for field in &fields join (; ) =>
                                 this.$(self.gen_field_name(field)) = fields.$(self.gen_field_name(field));
