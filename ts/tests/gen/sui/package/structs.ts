@@ -1,16 +1,10 @@
-import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib/ascii/structs'
 import { ID, UID } from '../object/structs'
+import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Publisher =============================== */
-
-bcs.registerStructType('0x2::package::Publisher', {
-  id: `0x2::object::UID`,
-  package: `0x1::ascii::String`,
-  module_name: `0x1::ascii::String`,
-})
 
 export function isPublisher(type: Type): boolean {
   type = compressSuiType(type)
@@ -26,6 +20,14 @@ export interface PublisherFields {
 export class Publisher {
   static readonly $typeName = '0x2::package::Publisher'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('Publisher', {
+      id: UID.bcs,
+      package: String.bcs,
+      module_name: String.bcs,
+    })
+  }
 
   readonly id: string
   readonly package: string
@@ -60,8 +62,8 @@ export class Publisher {
     })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): Publisher {
-    return Publisher.fromFields(bcs.de([Publisher.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): Publisher {
+    return Publisher.fromFields(Publisher.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -88,13 +90,6 @@ export class Publisher {
 
 /* ============================== UpgradeCap =============================== */
 
-bcs.registerStructType('0x2::package::UpgradeCap', {
-  id: `0x2::object::UID`,
-  package: `0x2::object::ID`,
-  version: `u64`,
-  policy: `u8`,
-})
-
 export function isUpgradeCap(type: Type): boolean {
   type = compressSuiType(type)
   return type === '0x2::package::UpgradeCap'
@@ -110,6 +105,15 @@ export interface UpgradeCapFields {
 export class UpgradeCap {
   static readonly $typeName = '0x2::package::UpgradeCap'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('UpgradeCap', {
+      id: UID.bcs,
+      package: ID.bcs,
+      version: bcs.u64(),
+      policy: bcs.u8(),
+    })
+  }
 
   readonly id: string
   readonly package: string
@@ -144,8 +148,8 @@ export class UpgradeCap {
     })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): UpgradeCap {
-    return UpgradeCap.fromFields(bcs.de([UpgradeCap.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): UpgradeCap {
+    return UpgradeCap.fromFields(UpgradeCap.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -172,11 +176,6 @@ export class UpgradeCap {
 
 /* ============================== UpgradeReceipt =============================== */
 
-bcs.registerStructType('0x2::package::UpgradeReceipt', {
-  cap: `0x2::object::ID`,
-  package: `0x2::object::ID`,
-})
-
 export function isUpgradeReceipt(type: Type): boolean {
   type = compressSuiType(type)
   return type === '0x2::package::UpgradeReceipt'
@@ -190,6 +189,13 @@ export interface UpgradeReceiptFields {
 export class UpgradeReceipt {
   static readonly $typeName = '0x2::package::UpgradeReceipt'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('UpgradeReceipt', {
+      cap: ID.bcs,
+      package: ID.bcs,
+    })
+  }
 
   readonly cap: string
   readonly package: string
@@ -213,19 +219,12 @@ export class UpgradeReceipt {
     return new UpgradeReceipt({ cap: item.fields.cap, package: item.fields.package })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): UpgradeReceipt {
-    return UpgradeReceipt.fromFields(bcs.de([UpgradeReceipt.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): UpgradeReceipt {
+    return UpgradeReceipt.fromFields(UpgradeReceipt.bcs.parse(data))
   }
 }
 
 /* ============================== UpgradeTicket =============================== */
-
-bcs.registerStructType('0x2::package::UpgradeTicket', {
-  cap: `0x2::object::ID`,
-  package: `0x2::object::ID`,
-  policy: `u8`,
-  digest: `vector<u8>`,
-})
 
 export function isUpgradeTicket(type: Type): boolean {
   type = compressSuiType(type)
@@ -242,6 +241,15 @@ export interface UpgradeTicketFields {
 export class UpgradeTicket {
   static readonly $typeName = '0x2::package::UpgradeTicket'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('UpgradeTicket', {
+      cap: ID.bcs,
+      package: ID.bcs,
+      policy: bcs.u8(),
+      digest: bcs.vector(bcs.u8()),
+    })
+  }
 
   readonly cap: string
   readonly package: string
@@ -276,7 +284,7 @@ export class UpgradeTicket {
     })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): UpgradeTicket {
-    return UpgradeTicket.fromFields(bcs.de([UpgradeTicket.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): UpgradeTicket {
+    return UpgradeTicket.fromFields(UpgradeTicket.bcs.parse(data))
   }
 }

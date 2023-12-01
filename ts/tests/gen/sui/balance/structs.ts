@@ -1,11 +1,7 @@
-import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
+import { bcs } from '@mysten/bcs'
 
 /* ============================== Balance =============================== */
-
-bcs.registerStructType('0x2::balance::Balance<T>', {
-  value: `u64`,
-})
 
 export function isBalance(type: Type): boolean {
   type = compressSuiType(type)
@@ -19,6 +15,12 @@ export interface BalanceFields {
 export class Balance {
   static readonly $typeName = '0x2::balance::Balance'
   static readonly $numTypeParams = 1
+
+  static get bcs() {
+    return bcs.struct('Balance', {
+      value: bcs.u64(),
+    })
+  }
 
   readonly $typeArg: Type
 
@@ -43,16 +45,12 @@ export class Balance {
     return new Balance(typeArgs[0], BigInt(item.fields.value))
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): Balance {
-    return Balance.fromFields(typeArg, bcs.de([Balance.$typeName, typeArg], data, encoding))
+  static fromBcs(typeArg: Type, data: Uint8Array): Balance {
+    return Balance.fromFields(typeArg, Balance.bcs.parse(data))
   }
 }
 
 /* ============================== Supply =============================== */
-
-bcs.registerStructType('0x2::balance::Supply<T>', {
-  value: `u64`,
-})
 
 export function isSupply(type: Type): boolean {
   type = compressSuiType(type)
@@ -66,6 +64,12 @@ export interface SupplyFields {
 export class Supply {
   static readonly $typeName = '0x2::balance::Supply'
   static readonly $numTypeParams = 1
+
+  static get bcs() {
+    return bcs.struct('Supply', {
+      value: bcs.u64(),
+    })
+  }
 
   readonly $typeArg: Type
 
@@ -90,7 +94,7 @@ export class Supply {
     return new Supply(typeArgs[0], BigInt(item.fields.value))
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): Supply {
-    return Supply.fromFields(typeArg, bcs.de([Supply.$typeName, typeArg], data, encoding))
+  static fromBcs(typeArg: Type, data: Uint8Array): Supply {
+    return Supply.fromFields(typeArg, Supply.bcs.parse(data))
   }
 }

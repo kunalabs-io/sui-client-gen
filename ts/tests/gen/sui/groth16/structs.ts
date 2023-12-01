@@ -1,11 +1,7 @@
-import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { bcs } from '@mysten/bcs'
 
 /* ============================== Curve =============================== */
-
-bcs.registerStructType('0x2::groth16::Curve', {
-  id: `u8`,
-})
 
 export function isCurve(type: Type): boolean {
   type = compressSuiType(type)
@@ -19,6 +15,12 @@ export interface CurveFields {
 export class Curve {
   static readonly $typeName = '0x2::groth16::Curve'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('Curve', {
+      id: bcs.u8(),
+    })
+  }
 
   readonly id: number
 
@@ -37,19 +39,12 @@ export class Curve {
     return new Curve(item.fields.id)
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): Curve {
-    return Curve.fromFields(bcs.de([Curve.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): Curve {
+    return Curve.fromFields(Curve.bcs.parse(data))
   }
 }
 
 /* ============================== PreparedVerifyingKey =============================== */
-
-bcs.registerStructType('0x2::groth16::PreparedVerifyingKey', {
-  vk_gamma_abc_g1_bytes: `vector<u8>`,
-  alpha_g1_beta_g2_bytes: `vector<u8>`,
-  gamma_g2_neg_pc_bytes: `vector<u8>`,
-  delta_g2_neg_pc_bytes: `vector<u8>`,
-})
 
 export function isPreparedVerifyingKey(type: Type): boolean {
   type = compressSuiType(type)
@@ -66,6 +61,15 @@ export interface PreparedVerifyingKeyFields {
 export class PreparedVerifyingKey {
   static readonly $typeName = '0x2::groth16::PreparedVerifyingKey'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('PreparedVerifyingKey', {
+      vk_gamma_abc_g1_bytes: bcs.vector(bcs.u8()),
+      alpha_g1_beta_g2_bytes: bcs.vector(bcs.u8()),
+      gamma_g2_neg_pc_bytes: bcs.vector(bcs.u8()),
+      delta_g2_neg_pc_bytes: bcs.vector(bcs.u8()),
+    })
+  }
 
   readonly vkGammaAbcG1Bytes: Array<number>
   readonly alphaG1BetaG2Bytes: Array<number>
@@ -100,16 +104,12 @@ export class PreparedVerifyingKey {
     })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): PreparedVerifyingKey {
-    return PreparedVerifyingKey.fromFields(bcs.de([PreparedVerifyingKey.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): PreparedVerifyingKey {
+    return PreparedVerifyingKey.fromFields(PreparedVerifyingKey.bcs.parse(data))
   }
 }
 
 /* ============================== ProofPoints =============================== */
-
-bcs.registerStructType('0x2::groth16::ProofPoints', {
-  bytes: `vector<u8>`,
-})
 
 export function isProofPoints(type: Type): boolean {
   type = compressSuiType(type)
@@ -123,6 +123,12 @@ export interface ProofPointsFields {
 export class ProofPoints {
   static readonly $typeName = '0x2::groth16::ProofPoints'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('ProofPoints', {
+      bytes: bcs.vector(bcs.u8()),
+    })
+  }
 
   readonly bytes: Array<number>
 
@@ -141,16 +147,12 @@ export class ProofPoints {
     return new ProofPoints(item.fields.bytes.map((item: any) => item))
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): ProofPoints {
-    return ProofPoints.fromFields(bcs.de([ProofPoints.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): ProofPoints {
+    return ProofPoints.fromFields(ProofPoints.bcs.parse(data))
   }
 }
 
 /* ============================== PublicProofInputs =============================== */
-
-bcs.registerStructType('0x2::groth16::PublicProofInputs', {
-  bytes: `vector<u8>`,
-})
 
 export function isPublicProofInputs(type: Type): boolean {
   type = compressSuiType(type)
@@ -164,6 +166,12 @@ export interface PublicProofInputsFields {
 export class PublicProofInputs {
   static readonly $typeName = '0x2::groth16::PublicProofInputs'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('PublicProofInputs', {
+      bytes: bcs.vector(bcs.u8()),
+    })
+  }
 
   readonly bytes: Array<number>
 
@@ -182,7 +190,7 @@ export class PublicProofInputs {
     return new PublicProofInputs(item.fields.bytes.map((item: any) => item))
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): PublicProofInputs {
-    return PublicProofInputs.fromFields(bcs.de([PublicProofInputs.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): PublicProofInputs {
+    return PublicProofInputs.fromFields(PublicProofInputs.bcs.parse(data))
   }
 }

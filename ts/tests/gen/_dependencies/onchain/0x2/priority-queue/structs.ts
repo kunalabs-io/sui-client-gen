@@ -1,13 +1,9 @@
-import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../../../_framework/init-onchain'
 import { structClassLoaderOnchain } from '../../../../_framework/loader'
 import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
+import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== PriorityQueue =============================== */
-
-bcs.registerStructType('0x2::priority_queue::PriorityQueue<T0>', {
-  entries: `vector<0x2::priority_queue::Entry<T0>>`,
-})
 
 export function isPriorityQueue(type: Type): boolean {
   type = compressSuiType(type)
@@ -21,6 +17,14 @@ export interface PriorityQueueFields<T0> {
 export class PriorityQueue<T0> {
   static readonly $typeName = '0x2::priority_queue::PriorityQueue'
   static readonly $numTypeParams = 1
+
+  static get bcs(): (t0: BcsType<any>) => BcsType<any> {
+    return bcs.generic(['T0'], T0 =>
+      bcs.struct('PriorityQueue<T0>', {
+        entries: bcs.vector(Entry.bcs(T0)),
+      })
+    )
+  }
 
   readonly $typeArg: Type
 
@@ -55,24 +59,19 @@ export class PriorityQueue<T0> {
     )
   }
 
-  static fromBcs<T0>(
-    typeArg: Type,
-    data: Uint8Array | string,
-    encoding?: Encoding
-  ): PriorityQueue<T0> {
+  static fromBcs<T0>(typeArg: Type, data: Uint8Array): PriorityQueue<T0> {
+    initLoaderIfNeeded()
+
+    const typeArgs = [typeArg]
+
     return PriorityQueue.fromFields(
       typeArg,
-      bcs.de([PriorityQueue.$typeName, typeArg], data, encoding)
+      PriorityQueue.bcs(structClassLoaderOnchain.getBcsType(typeArgs[0])).parse(data)
     )
   }
 }
 
 /* ============================== Entry =============================== */
-
-bcs.registerStructType('0x2::priority_queue::Entry<T0>', {
-  priority: `u64`,
-  value: `T0`,
-})
 
 export function isEntry(type: Type): boolean {
   type = compressSuiType(type)
@@ -87,6 +86,15 @@ export interface EntryFields<T0> {
 export class Entry<T0> {
   static readonly $typeName = '0x2::priority_queue::Entry'
   static readonly $numTypeParams = 1
+
+  static get bcs(): (t0: BcsType<any>) => BcsType<any> {
+    return bcs.generic(['T0'], T0 =>
+      bcs.struct('Entry<T0>', {
+        priority: bcs.u64(),
+        value: T0,
+      })
+    )
+  }
 
   readonly $typeArg: Type
 
@@ -123,7 +131,14 @@ export class Entry<T0> {
     })
   }
 
-  static fromBcs<T0>(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): Entry<T0> {
-    return Entry.fromFields(typeArg, bcs.de([Entry.$typeName, typeArg], data, encoding))
+  static fromBcs<T0>(typeArg: Type, data: Uint8Array): Entry<T0> {
+    initLoaderIfNeeded()
+
+    const typeArgs = [typeArg]
+
+    return Entry.fromFields(
+      typeArg,
+      Entry.bcs(structClassLoaderOnchain.getBcsType(typeArgs[0])).parse(data)
+    )
   }
 }

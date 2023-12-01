@@ -1,13 +1,9 @@
-import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../_framework/init-source'
 import { structClassLoaderSource } from '../../_framework/loader'
 import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
+import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== VecSet =============================== */
-
-bcs.registerStructType('0x2::vec_set::VecSet<K>', {
-  contents: `vector<K>`,
-})
 
 export function isVecSet(type: Type): boolean {
   type = compressSuiType(type)
@@ -21,6 +17,14 @@ export interface VecSetFields<K> {
 export class VecSet<K> {
   static readonly $typeName = '0x2::vec_set::VecSet'
   static readonly $numTypeParams = 1
+
+  static get bcs(): (k: BcsType<any>) => BcsType<any> {
+    return bcs.generic(['K'], K =>
+      bcs.struct('VecSet<K>', {
+        contents: bcs.vector(K),
+      })
+    )
+  }
 
   readonly $typeArg: Type
 
@@ -57,7 +61,14 @@ export class VecSet<K> {
     )
   }
 
-  static fromBcs<K>(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): VecSet<K> {
-    return VecSet.fromFields(typeArg, bcs.de([VecSet.$typeName, typeArg], data, encoding))
+  static fromBcs<K>(typeArg: Type, data: Uint8Array): VecSet<K> {
+    initLoaderIfNeeded()
+
+    const typeArgs = [typeArg]
+
+    return VecSet.fromFields(
+      typeArg,
+      VecSet.bcs(structClassLoaderSource.getBcsType(typeArgs[0])).parse(data)
+    )
   }
 }

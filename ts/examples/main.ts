@@ -71,7 +71,7 @@ async function fetchPoolCreationEvents() {
     },
   })
   res.data.map(e => {
-    console.log(PoolCreationEvent.fromBcs(e.bcs!, 'base58'))
+    console.log(PoolCreationEvent.fromBcs(fromB64(e.bcs!)))
   })
 }
 

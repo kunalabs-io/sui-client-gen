@@ -1,18 +1,14 @@
-import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
 import { String as String1 } from '../../0x1/ascii/structs'
 import { Option } from '../../0x1/option/structs'
 import { String } from '../../0x1/string/structs'
 import { Balance, Supply } from '../balance/structs'
 import { UID } from '../object/structs'
+import { Url } from '../url/structs'
+import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Coin =============================== */
-
-bcs.registerStructType('0x2::coin::Coin<T0>', {
-  id: `0x2::object::UID`,
-  balance: `0x2::balance::Balance<T0>`,
-})
 
 export function isCoin(type: Type): boolean {
   type = compressSuiType(type)
@@ -27,6 +23,13 @@ export interface CoinFields {
 export class Coin {
   static readonly $typeName = '0x2::coin::Coin'
   static readonly $numTypeParams = 1
+
+  static get bcs() {
+    return bcs.struct('Coin', {
+      id: UID.bcs,
+      balance: Balance.bcs,
+    })
+  }
 
   readonly $typeArg: Type
 
@@ -59,8 +62,8 @@ export class Coin {
     })
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): Coin {
-    return Coin.fromFields(typeArg, bcs.de([Coin.$typeName, typeArg], data, encoding))
+  static fromBcs(typeArg: Type, data: Uint8Array): Coin {
+    return Coin.fromFields(typeArg, Coin.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -87,15 +90,6 @@ export class Coin {
 
 /* ============================== CoinMetadata =============================== */
 
-bcs.registerStructType('0x2::coin::CoinMetadata<T0>', {
-  id: `0x2::object::UID`,
-  decimals: `u8`,
-  name: `0x1::string::String`,
-  symbol: `0x1::ascii::String`,
-  description: `0x1::string::String`,
-  icon_url: `0x1::option::Option<0x2::url::Url>`,
-})
-
 export function isCoinMetadata(type: Type): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::coin::CoinMetadata<')
@@ -113,6 +107,17 @@ export interface CoinMetadataFields {
 export class CoinMetadata {
   static readonly $typeName = '0x2::coin::CoinMetadata'
   static readonly $numTypeParams = 1
+
+  static get bcs() {
+    return bcs.struct('CoinMetadata', {
+      id: UID.bcs,
+      decimals: bcs.u8(),
+      name: String.bcs,
+      symbol: String1.bcs,
+      description: String.bcs,
+      icon_url: Option.bcs(Url.bcs),
+    })
+  }
 
   readonly $typeArg: Type
 
@@ -173,11 +178,8 @@ export class CoinMetadata {
     })
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): CoinMetadata {
-    return CoinMetadata.fromFields(
-      typeArg,
-      bcs.de([CoinMetadata.$typeName, typeArg], data, encoding)
-    )
+  static fromBcs(typeArg: Type, data: Uint8Array): CoinMetadata {
+    return CoinMetadata.fromFields(typeArg, CoinMetadata.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -204,11 +206,6 @@ export class CoinMetadata {
 
 /* ============================== TreasuryCap =============================== */
 
-bcs.registerStructType('0x2::coin::TreasuryCap<T0>', {
-  id: `0x2::object::UID`,
-  total_supply: `0x2::balance::Supply<T0>`,
-})
-
 export function isTreasuryCap(type: Type): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::coin::TreasuryCap<')
@@ -222,6 +219,13 @@ export interface TreasuryCapFields {
 export class TreasuryCap {
   static readonly $typeName = '0x2::coin::TreasuryCap'
   static readonly $numTypeParams = 1
+
+  static get bcs() {
+    return bcs.struct('TreasuryCap', {
+      id: UID.bcs,
+      total_supply: Supply.bcs,
+    })
+  }
 
   readonly $typeArg: Type
 
@@ -254,8 +258,8 @@ export class TreasuryCap {
     })
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): TreasuryCap {
-    return TreasuryCap.fromFields(typeArg, bcs.de([TreasuryCap.$typeName, typeArg], data, encoding))
+  static fromBcs(typeArg: Type, data: Uint8Array): TreasuryCap {
+    return TreasuryCap.fromFields(typeArg, TreasuryCap.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -282,10 +286,6 @@ export class TreasuryCap {
 
 /* ============================== CurrencyCreated =============================== */
 
-bcs.registerStructType('0x2::coin::CurrencyCreated<T0>', {
-  decimals: `u8`,
-})
-
 export function isCurrencyCreated(type: Type): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::coin::CurrencyCreated<')
@@ -298,6 +298,12 @@ export interface CurrencyCreatedFields {
 export class CurrencyCreated {
   static readonly $typeName = '0x2::coin::CurrencyCreated'
   static readonly $numTypeParams = 1
+
+  static get bcs() {
+    return bcs.struct('CurrencyCreated', {
+      decimals: bcs.u8(),
+    })
+  }
 
   readonly $typeArg: Type
 
@@ -322,10 +328,7 @@ export class CurrencyCreated {
     return new CurrencyCreated(typeArgs[0], item.fields.decimals)
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): CurrencyCreated {
-    return CurrencyCreated.fromFields(
-      typeArg,
-      bcs.de([CurrencyCreated.$typeName, typeArg], data, encoding)
-    )
+  static fromBcs(typeArg: Type, data: Uint8Array): CurrencyCreated {
+    return CurrencyCreated.fromFields(typeArg, CurrencyCreated.bcs.parse(data))
   }
 }

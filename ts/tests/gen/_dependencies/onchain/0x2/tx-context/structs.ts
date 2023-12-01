@@ -1,15 +1,7 @@
-import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
+import { bcs, fromHEX, toHEX } from '@mysten/bcs'
 
 /* ============================== TxContext =============================== */
-
-bcs.registerStructType('0x2::tx_context::TxContext', {
-  sender: `address`,
-  tx_hash: `vector<u8>`,
-  epoch: `u64`,
-  epoch_timestamp_ms: `u64`,
-  ids_created: `u64`,
-})
 
 export function isTxContext(type: Type): boolean {
   type = compressSuiType(type)
@@ -27,6 +19,19 @@ export interface TxContextFields {
 export class TxContext {
   static readonly $typeName = '0x2::tx_context::TxContext'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('TxContext', {
+      sender: bcs.bytes(32).transform({
+        input: (val: string) => fromHEX(val),
+        output: (val: Uint8Array) => toHEX(val),
+      }),
+      tx_hash: bcs.vector(bcs.u8()),
+      epoch: bcs.u64(),
+      epoch_timestamp_ms: bcs.u64(),
+      ids_created: bcs.u64(),
+    })
+  }
 
   readonly sender: string
   readonly txHash: Array<number>
@@ -65,7 +70,7 @@ export class TxContext {
     })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): TxContext {
-    return TxContext.fromFields(bcs.de([TxContext.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): TxContext {
+    return TxContext.fromFields(TxContext.bcs.parse(data))
   }
 }

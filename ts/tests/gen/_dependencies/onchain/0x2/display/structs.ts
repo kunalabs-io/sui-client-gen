@@ -1,16 +1,11 @@
-import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
+import { String } from '../../0x1/string/structs'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
+import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Display =============================== */
-
-bcs.registerStructType('0x2::display::Display<T0>', {
-  id: `0x2::object::UID`,
-  fields: `0x2::vec_map::VecMap<0x1::string::String, 0x1::string::String>`,
-  version: `u16`,
-})
 
 export function isDisplay(type: Type): boolean {
   type = compressSuiType(type)
@@ -26,6 +21,14 @@ export interface DisplayFields {
 export class Display {
   static readonly $typeName = '0x2::display::Display'
   static readonly $numTypeParams = 1
+
+  static get bcs() {
+    return bcs.struct('Display', {
+      id: UID.bcs,
+      fields: VecMap.bcs(String.bcs, String.bcs),
+      version: bcs.u16(),
+    })
+  }
 
   readonly $typeArg: Type
 
@@ -65,8 +68,8 @@ export class Display {
     })
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): Display {
-    return Display.fromFields(typeArg, bcs.de([Display.$typeName, typeArg], data, encoding))
+  static fromBcs(typeArg: Type, data: Uint8Array): Display {
+    return Display.fromFields(typeArg, Display.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -93,10 +96,6 @@ export class Display {
 
 /* ============================== DisplayCreated =============================== */
 
-bcs.registerStructType('0x2::display::DisplayCreated<T0>', {
-  id: `0x2::object::ID`,
-})
-
 export function isDisplayCreated(type: Type): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::display::DisplayCreated<')
@@ -109,6 +108,12 @@ export interface DisplayCreatedFields {
 export class DisplayCreated {
   static readonly $typeName = '0x2::display::DisplayCreated'
   static readonly $numTypeParams = 1
+
+  static get bcs() {
+    return bcs.struct('DisplayCreated', {
+      id: ID.bcs,
+    })
+  }
 
   readonly $typeArg: Type
 
@@ -133,21 +138,12 @@ export class DisplayCreated {
     return new DisplayCreated(typeArgs[0], item.fields.id)
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): DisplayCreated {
-    return DisplayCreated.fromFields(
-      typeArg,
-      bcs.de([DisplayCreated.$typeName, typeArg], data, encoding)
-    )
+  static fromBcs(typeArg: Type, data: Uint8Array): DisplayCreated {
+    return DisplayCreated.fromFields(typeArg, DisplayCreated.bcs.parse(data))
   }
 }
 
 /* ============================== VersionUpdated =============================== */
-
-bcs.registerStructType('0x2::display::VersionUpdated<T0>', {
-  id: `0x2::object::ID`,
-  version: `u16`,
-  fields: `0x2::vec_map::VecMap<0x1::string::String, 0x1::string::String>`,
-})
 
 export function isVersionUpdated(type: Type): boolean {
   type = compressSuiType(type)
@@ -163,6 +159,14 @@ export interface VersionUpdatedFields {
 export class VersionUpdated {
   static readonly $typeName = '0x2::display::VersionUpdated'
   static readonly $numTypeParams = 1
+
+  static get bcs() {
+    return bcs.struct('VersionUpdated', {
+      id: ID.bcs,
+      version: bcs.u16(),
+      fields: VecMap.bcs(String.bcs, String.bcs),
+    })
+  }
 
   readonly $typeArg: Type
 
@@ -202,10 +206,7 @@ export class VersionUpdated {
     })
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): VersionUpdated {
-    return VersionUpdated.fromFields(
-      typeArg,
-      bcs.de([VersionUpdated.$typeName, typeArg], data, encoding)
-    )
+  static fromBcs(typeArg: Type, data: Uint8Array): VersionUpdated {
+    return VersionUpdated.fromFields(typeArg, VersionUpdated.bcs.parse(data))
   }
 }

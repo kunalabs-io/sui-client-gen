@@ -1,17 +1,10 @@
-import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { TreasuryCap } from '../../sui/coin/structs'
 import { UID } from '../../sui/object/structs'
+import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== EXAMPLE_COIN =============================== */
-
-bcs.registerStructType(
-  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN',
-  {
-    dummy_field: `bool`,
-  }
-)
 
 export function isEXAMPLE_COIN(type: Type): boolean {
   type = compressSuiType(type)
@@ -30,6 +23,12 @@ export class EXAMPLE_COIN {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
   static readonly $numTypeParams = 0
 
+  static get bcs() {
+    return bcs.struct('EXAMPLE_COIN', {
+      dummy_field: bcs.bool(),
+    })
+  }
+
   readonly dummyField: boolean
 
   constructor(dummyField: boolean) {
@@ -47,20 +46,12 @@ export class EXAMPLE_COIN {
     return new EXAMPLE_COIN(item.fields.dummy_field)
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): EXAMPLE_COIN {
-    return EXAMPLE_COIN.fromFields(bcs.de([EXAMPLE_COIN.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): EXAMPLE_COIN {
+    return EXAMPLE_COIN.fromFields(EXAMPLE_COIN.bcs.parse(data))
   }
 }
 
 /* ============================== Faucet =============================== */
-
-bcs.registerStructType(
-  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet',
-  {
-    id: `0x2::object::UID`,
-    cap: `0x2::coin::TreasuryCap<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN>`,
-  }
-)
 
 export function isFaucet(type: Type): boolean {
   type = compressSuiType(type)
@@ -79,6 +70,13 @@ export class Faucet {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('Faucet', {
+      id: UID.bcs,
+      cap: TreasuryCap.bcs,
+    })
+  }
 
   readonly id: string
   readonly cap: TreasuryCap
@@ -108,8 +106,8 @@ export class Faucet {
     })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): Faucet {
-    return Faucet.fromFields(bcs.de([Faucet.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): Faucet {
+    return Faucet.fromFields(Faucet.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {

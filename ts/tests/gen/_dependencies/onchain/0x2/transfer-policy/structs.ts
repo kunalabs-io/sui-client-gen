@@ -1,19 +1,12 @@
-import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
 import { TypeName } from '../../0x1/type-name/structs'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { VecSet } from '../vec-set/structs'
+import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== TransferRequest =============================== */
-
-bcs.registerStructType('0x2::transfer_policy::TransferRequest<T0>', {
-  item: `0x2::object::ID`,
-  paid: `u64`,
-  from: `0x2::object::ID`,
-  receipts: `0x2::vec_set::VecSet<0x1::type_name::TypeName>`,
-})
 
 export function isTransferRequest(type: Type): boolean {
   type = compressSuiType(type)
@@ -30,6 +23,15 @@ export interface TransferRequestFields {
 export class TransferRequest {
   static readonly $typeName = '0x2::transfer_policy::TransferRequest'
   static readonly $numTypeParams = 1
+
+  static get bcs() {
+    return bcs.struct('TransferRequest', {
+      item: ID.bcs,
+      paid: bcs.u64(),
+      from: ID.bcs,
+      receipts: VecSet.bcs(TypeName.bcs),
+    })
+  }
 
   readonly $typeArg: Type
 
@@ -70,21 +72,12 @@ export class TransferRequest {
     })
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): TransferRequest {
-    return TransferRequest.fromFields(
-      typeArg,
-      bcs.de([TransferRequest.$typeName, typeArg], data, encoding)
-    )
+  static fromBcs(typeArg: Type, data: Uint8Array): TransferRequest {
+    return TransferRequest.fromFields(typeArg, TransferRequest.bcs.parse(data))
   }
 }
 
 /* ============================== TransferPolicy =============================== */
-
-bcs.registerStructType('0x2::transfer_policy::TransferPolicy<T0>', {
-  id: `0x2::object::UID`,
-  balance: `0x2::balance::Balance<0x2::sui::SUI>`,
-  rules: `0x2::vec_set::VecSet<0x1::type_name::TypeName>`,
-})
 
 export function isTransferPolicy(type: Type): boolean {
   type = compressSuiType(type)
@@ -100,6 +93,14 @@ export interface TransferPolicyFields {
 export class TransferPolicy {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicy'
   static readonly $numTypeParams = 1
+
+  static get bcs() {
+    return bcs.struct('TransferPolicy', {
+      id: UID.bcs,
+      balance: Balance.bcs,
+      rules: VecSet.bcs(TypeName.bcs),
+    })
+  }
 
   readonly $typeArg: Type
 
@@ -136,11 +137,8 @@ export class TransferPolicy {
     })
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): TransferPolicy {
-    return TransferPolicy.fromFields(
-      typeArg,
-      bcs.de([TransferPolicy.$typeName, typeArg], data, encoding)
-    )
+  static fromBcs(typeArg: Type, data: Uint8Array): TransferPolicy {
+    return TransferPolicy.fromFields(typeArg, TransferPolicy.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -167,11 +165,6 @@ export class TransferPolicy {
 
 /* ============================== TransferPolicyCap =============================== */
 
-bcs.registerStructType('0x2::transfer_policy::TransferPolicyCap<T0>', {
-  id: `0x2::object::UID`,
-  policy_id: `0x2::object::ID`,
-})
-
 export function isTransferPolicyCap(type: Type): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::transfer_policy::TransferPolicyCap<')
@@ -185,6 +178,13 @@ export interface TransferPolicyCapFields {
 export class TransferPolicyCap {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyCap'
   static readonly $numTypeParams = 1
+
+  static get bcs() {
+    return bcs.struct('TransferPolicyCap', {
+      id: UID.bcs,
+      policy_id: ID.bcs,
+    })
+  }
 
   readonly $typeArg: Type
 
@@ -217,11 +217,8 @@ export class TransferPolicyCap {
     })
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): TransferPolicyCap {
-    return TransferPolicyCap.fromFields(
-      typeArg,
-      bcs.de([TransferPolicyCap.$typeName, typeArg], data, encoding)
-    )
+  static fromBcs(typeArg: Type, data: Uint8Array): TransferPolicyCap {
+    return TransferPolicyCap.fromFields(typeArg, TransferPolicyCap.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -251,10 +248,6 @@ export class TransferPolicyCap {
 
 /* ============================== TransferPolicyCreated =============================== */
 
-bcs.registerStructType('0x2::transfer_policy::TransferPolicyCreated<T0>', {
-  id: `0x2::object::ID`,
-})
-
 export function isTransferPolicyCreated(type: Type): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::transfer_policy::TransferPolicyCreated<')
@@ -267,6 +260,12 @@ export interface TransferPolicyCreatedFields {
 export class TransferPolicyCreated {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyCreated'
   static readonly $numTypeParams = 1
+
+  static get bcs() {
+    return bcs.struct('TransferPolicyCreated', {
+      id: ID.bcs,
+    })
+  }
 
   readonly $typeArg: Type
 
@@ -291,23 +290,12 @@ export class TransferPolicyCreated {
     return new TransferPolicyCreated(typeArgs[0], item.fields.id)
   }
 
-  static fromBcs(
-    typeArg: Type,
-    data: Uint8Array | string,
-    encoding?: Encoding
-  ): TransferPolicyCreated {
-    return TransferPolicyCreated.fromFields(
-      typeArg,
-      bcs.de([TransferPolicyCreated.$typeName, typeArg], data, encoding)
-    )
+  static fromBcs(typeArg: Type, data: Uint8Array): TransferPolicyCreated {
+    return TransferPolicyCreated.fromFields(typeArg, TransferPolicyCreated.bcs.parse(data))
   }
 }
 
 /* ============================== RuleKey =============================== */
-
-bcs.registerStructType('0x2::transfer_policy::RuleKey<T0>', {
-  dummy_field: `bool`,
-})
 
 export function isRuleKey(type: Type): boolean {
   type = compressSuiType(type)
@@ -321,6 +309,12 @@ export interface RuleKeyFields {
 export class RuleKey {
   static readonly $typeName = '0x2::transfer_policy::RuleKey'
   static readonly $numTypeParams = 1
+
+  static get bcs() {
+    return bcs.struct('RuleKey', {
+      dummy_field: bcs.bool(),
+    })
+  }
 
   readonly $typeArg: Type
 
@@ -345,7 +339,7 @@ export class RuleKey {
     return new RuleKey(typeArgs[0], item.fields.dummy_field)
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): RuleKey {
-    return RuleKey.fromFields(typeArg, bcs.de([RuleKey.$typeName, typeArg], data, encoding))
+  static fromBcs(typeArg: Type, data: Uint8Array): RuleKey {
+    return RuleKey.fromFields(typeArg, RuleKey.bcs.parse(data))
   }
 }

@@ -1,11 +1,7 @@
-import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
+import { bcs } from '@mysten/bcs'
 
 /* ============================== BCS =============================== */
-
-bcs.registerStructType('0x2::bcs::BCS', {
-  bytes: `vector<u8>`,
-})
 
 export function isBCS(type: Type): boolean {
   type = compressSuiType(type)
@@ -19,6 +15,12 @@ export interface BCSFields {
 export class BCS {
   static readonly $typeName = '0x2::bcs::BCS'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('BCS', {
+      bytes: bcs.vector(bcs.u8()),
+    })
+  }
 
   readonly bytes: Array<number>
 
@@ -37,7 +39,7 @@ export class BCS {
     return new BCS(item.fields.bytes.map((item: any) => item))
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): BCS {
-    return BCS.fromFields(bcs.de([BCS.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): BCS {
+    return BCS.fromFields(BCS.bcs.parse(data))
   }
 }

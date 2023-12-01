@@ -1,12 +1,8 @@
-import { Encoding, bcsSource as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
 import { String } from '../ascii/structs'
+import { bcs } from '@mysten/bcs'
 
 /* ============================== TypeName =============================== */
-
-bcs.registerStructType('0x1::type_name::TypeName', {
-  name: `0x1::ascii::String`,
-})
 
 export function isTypeName(type: Type): boolean {
   type = compressSuiType(type)
@@ -20,6 +16,12 @@ export interface TypeNameFields {
 export class TypeName {
   static readonly $typeName = '0x1::type_name::TypeName'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('TypeName', {
+      name: String.bcs,
+    })
+  }
 
   readonly name: string
 
@@ -40,7 +42,7 @@ export class TypeName {
     return new TypeName(item.fields.name)
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): TypeName {
-    return TypeName.fromFields(bcs.de([TypeName.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): TypeName {
+    return TypeName.fromFields(TypeName.bcs.parse(data))
   }
 }

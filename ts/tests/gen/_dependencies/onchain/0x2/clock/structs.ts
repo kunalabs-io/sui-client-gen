@@ -1,14 +1,9 @@
-import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
 import { UID } from '../object/structs'
+import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Clock =============================== */
-
-bcs.registerStructType('0x2::clock::Clock', {
-  id: `0x2::object::UID`,
-  timestamp_ms: `u64`,
-})
 
 export function isClock(type: Type): boolean {
   type = compressSuiType(type)
@@ -23,6 +18,13 @@ export interface ClockFields {
 export class Clock {
   static readonly $typeName = '0x2::clock::Clock'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('Clock', {
+      id: UID.bcs,
+      timestamp_ms: bcs.u64(),
+    })
+  }
 
   readonly id: string
   readonly timestampMs: bigint
@@ -43,8 +45,8 @@ export class Clock {
     return new Clock({ id: item.fields.id.id, timestampMs: BigInt(item.fields.timestamp_ms) })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): Clock {
-    return Clock.fromFields(bcs.de([Clock.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): Clock {
+    return Clock.fromFields(Clock.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {

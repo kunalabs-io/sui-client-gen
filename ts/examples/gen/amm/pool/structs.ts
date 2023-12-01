@@ -1,19 +1,12 @@
 import { TypeName } from '../../_dependencies/source/0x1/type-name/structs'
-import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
 import { Balance, Supply } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
+import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== AdminCap =============================== */
-
-bcs.registerStructType(
-  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap',
-  {
-    id: `0x2::object::UID`,
-  }
-)
 
 export function isAdminCap(type: Type): boolean {
   type = compressSuiType(type)
@@ -30,6 +23,12 @@ export class AdminCap {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('AdminCap', {
+      id: UID.bcs,
+    })
+  }
 
   readonly id: string
 
@@ -48,8 +47,8 @@ export class AdminCap {
     return new AdminCap(item.fields.id.id)
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): AdminCap {
-    return AdminCap.fromFields(bcs.de([AdminCap.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): AdminCap {
+    return AdminCap.fromFields(AdminCap.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -76,13 +75,6 @@ export class AdminCap {
 
 /* ============================== LP =============================== */
 
-bcs.registerStructType(
-  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<A, B>',
-  {
-    dummy_field: `bool`,
-  }
-)
-
 export function isLP(type: Type): boolean {
   type = compressSuiType(type)
   return type.startsWith(
@@ -98,6 +90,12 @@ export class LP {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP'
   static readonly $numTypeParams = 2
+
+  static get bcs() {
+    return bcs.struct('LP', {
+      dummy_field: bcs.bool(),
+    })
+  }
 
   readonly $typeArgs: [Type, Type]
 
@@ -122,25 +120,12 @@ export class LP {
     return new LP([typeArgs[0], typeArgs[1]], item.fields.dummy_field)
   }
 
-  static fromBcs(typeArgs: [Type, Type], data: Uint8Array | string, encoding?: Encoding): LP {
-    return LP.fromFields(typeArgs, bcs.de([LP.$typeName, ...typeArgs], data, encoding))
+  static fromBcs(typeArgs: [Type, Type], data: Uint8Array): LP {
+    return LP.fromFields(typeArgs, LP.bcs.parse(data))
   }
 }
 
 /* ============================== Pool =============================== */
-
-bcs.registerStructType(
-  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<A, B>',
-  {
-    id: `0x2::object::UID`,
-    balance_a: `0x2::balance::Balance<A>`,
-    balance_b: `0x2::balance::Balance<B>`,
-    lp_supply: `0x2::balance::Supply<0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<A, B>>`,
-    lp_fee_bps: `u64`,
-    admin_fee_pct: `u64`,
-    admin_fee_balance: `0x2::balance::Balance<0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<A, B>>`,
-  }
-)
 
 export function isPool(type: Type): boolean {
   type = compressSuiType(type)
@@ -163,6 +148,18 @@ export class Pool {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool'
   static readonly $numTypeParams = 2
+
+  static get bcs() {
+    return bcs.struct('Pool', {
+      id: UID.bcs,
+      balance_a: Balance.bcs,
+      balance_b: Balance.bcs,
+      lp_supply: Supply.bcs,
+      lp_fee_bps: bcs.u64(),
+      admin_fee_pct: bcs.u64(),
+      admin_fee_balance: Balance.bcs,
+    })
+  }
 
   readonly $typeArgs: [Type, Type]
 
@@ -224,8 +221,8 @@ export class Pool {
     })
   }
 
-  static fromBcs(typeArgs: [Type, Type], data: Uint8Array | string, encoding?: Encoding): Pool {
-    return Pool.fromFields(typeArgs, bcs.de([Pool.$typeName, ...typeArgs], data, encoding))
+  static fromBcs(typeArgs: [Type, Type], data: Uint8Array): Pool {
+    return Pool.fromFields(typeArgs, Pool.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -252,13 +249,6 @@ export class Pool {
 
 /* ============================== PoolCreationEvent =============================== */
 
-bcs.registerStructType(
-  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent',
-  {
-    pool_id: `0x2::object::ID`,
-  }
-)
-
 export function isPoolCreationEvent(type: Type): boolean {
   type = compressSuiType(type)
   return (
@@ -275,6 +265,12 @@ export class PoolCreationEvent {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('PoolCreationEvent', {
+      pool_id: ID.bcs,
+    })
+  }
 
   readonly poolId: string
 
@@ -293,20 +289,12 @@ export class PoolCreationEvent {
     return new PoolCreationEvent(item.fields.pool_id)
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): PoolCreationEvent {
-    return PoolCreationEvent.fromFields(bcs.de([PoolCreationEvent.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): PoolCreationEvent {
+    return PoolCreationEvent.fromFields(PoolCreationEvent.bcs.parse(data))
   }
 }
 
 /* ============================== PoolRegistry =============================== */
-
-bcs.registerStructType(
-  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry',
-  {
-    id: `0x2::object::UID`,
-    table: `0x2::table::Table<0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem, bool>`,
-  }
-)
 
 export function isPoolRegistry(type: Type): boolean {
   type = compressSuiType(type)
@@ -325,6 +313,13 @@ export class PoolRegistry {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('PoolRegistry', {
+      id: UID.bcs,
+      table: Table.bcs,
+    })
+  }
 
   readonly id: string
   readonly table: Table
@@ -357,8 +352,8 @@ export class PoolRegistry {
     })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): PoolRegistry {
-    return PoolRegistry.fromFields(bcs.de([PoolRegistry.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): PoolRegistry {
+    return PoolRegistry.fromFields(PoolRegistry.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -385,14 +380,6 @@ export class PoolRegistry {
 
 /* ============================== PoolRegistryItem =============================== */
 
-bcs.registerStructType(
-  '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem',
-  {
-    a: `0x1::type_name::TypeName`,
-    b: `0x1::type_name::TypeName`,
-  }
-)
-
 export function isPoolRegistryItem(type: Type): boolean {
   type = compressSuiType(type)
   return (
@@ -410,6 +397,13 @@ export class PoolRegistryItem {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('PoolRegistryItem', {
+      a: TypeName.bcs,
+      b: TypeName.bcs,
+    })
+  }
 
   readonly a: TypeName
   readonly b: TypeName
@@ -436,7 +430,7 @@ export class PoolRegistryItem {
     })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): PoolRegistryItem {
-    return PoolRegistryItem.fromFields(bcs.de([PoolRegistryItem.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): PoolRegistryItem {
+    return PoolRegistryItem.fromFields(PoolRegistryItem.bcs.parse(data))
   }
 }

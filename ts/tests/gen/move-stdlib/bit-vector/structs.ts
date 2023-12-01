@@ -1,12 +1,7 @@
-import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { bcs } from '@mysten/bcs'
 
 /* ============================== BitVector =============================== */
-
-bcs.registerStructType('0x1::bit_vector::BitVector', {
-  length: `u64`,
-  bit_field: `vector<bool>`,
-})
 
 export function isBitVector(type: Type): boolean {
   type = compressSuiType(type)
@@ -21,6 +16,13 @@ export interface BitVectorFields {
 export class BitVector {
   static readonly $typeName = '0x1::bit_vector::BitVector'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('BitVector', {
+      length: bcs.u64(),
+      bit_field: bcs.vector(bcs.bool()),
+    })
+  }
 
   readonly length: bigint
   readonly bitField: Array<boolean>
@@ -47,7 +49,7 @@ export class BitVector {
     })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): BitVector {
-    return BitVector.fromFields(bcs.de([BitVector.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): BitVector {
+    return BitVector.fromFields(BitVector.bcs.parse(data))
   }
 }

@@ -20,7 +20,6 @@ import {
   createSpecialInVectors,
   createWithTwoGenerics,
 } from './gen/examples/fixture/functions'
-import { bcsSource as bcs } from './gen/_framework/bcs'
 import { StructFromOtherModule } from './gen/examples/other-module/structs'
 import { string } from './gen/move-stdlib/ascii/functions'
 import { utf8 } from './gen/move-stdlib/string/functions'
@@ -194,9 +193,9 @@ it('creates and decodes an object with object as type param', async () => {
     other: new StructFromOtherModule(false),
   })
 
-  const de = bcs.de(`${Foo.$typeName}<${T}>`, foo.data.bcs.bcsBytes, 'base64')
+  const de = Foo.fromBcs(T, fromB64(foo.data.bcs.bcsBytes))
 
-  expect(Foo.fromFields(T, de)).toEqual(exp)
+  expect(de).toEqual(exp)
   expect(Foo.fromFieldsWithTypes(foo.data.content)).toEqual(exp)
   expect(Foo.fromSuiParsedData(foo.data.content)).toEqual(exp)
   expect(await Foo.fetch(client, id)).toEqual(exp)
@@ -365,19 +364,21 @@ it('creates and decodes Foo with vector of objects as type param', async () => {
     other: new StructFromOtherModule(false),
   })
 
-  const de = bcs.de(`${Foo.$typeName}<${T}>`, foo.data.bcs.bcsBytes, 'base64')
+  const de = Foo.fromBcs(T, fromB64(foo.data.bcs.bcsBytes))
 
-  expect(Foo.fromFields(T, de)).toEqual(exp)
+  expect(de).toEqual(exp)
 
   expect(Foo.fromFieldsWithTypes(foo.data.content)).toEqual(exp)
 })
 
-it('decodes special-cased types correctly with fromFieldsWithTypes', async () => {
+it('decodes special-cased types correctly', async () => {
   const txb = new TransactionBlock()
 
   const encoder = new TextEncoder()
 
-  createSpecial(txb, ['0x2::sui::SUI', 'u64'], {
+  const typeArgs = ['0x2::sui::SUI', 'u64'] as [string, string]
+
+  createSpecial(txb, typeArgs, {
     string: utf8(txb, Array.from(encoder.encode('string'))),
     asciiString: string(txb, Array.from(encoder.encode('ascii'))),
     url: newUnsafeFromBytes(txb, Array.from(encoder.encode('https://example.com'))),
@@ -414,58 +415,57 @@ it('decodes special-cased types correctly with fromFieldsWithTypes', async () =>
     throw new Error(`not a moveObject`)
   }
 
+  const fromBcs = WithSpecialTypes.fromBcs(typeArgs, fromB64(obj.data.bcs.bcsBytes))
+  const fromFieldsWithTypes = WithSpecialTypes.fromFieldsWithTypes(obj.data.content)
+
   const uid = (obj.data.content.fields as { uid: { id: string } }).uid.id
 
-  expect(WithSpecialTypes.fromFieldsWithTypes(obj.data.content)).toEqual(
-    new WithSpecialTypes(['0x2::sui::SUI', 'u64'], {
-      id,
-      string: 'string',
-      asciiString: 'ascii',
-      url: 'https://example.com',
-      idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
-      uid,
-      balance: new Balance('0x2::sui::SUI', 0n),
-      option: 100n,
-      optionObj: new Bar(100n),
-      optionNone: null,
-      balanceGeneric: new Balance('0x2::sui::SUI', 0n),
-      optionGeneric: 200n,
-      optionGenericNone: null,
-    })
-  )
+  const exp = new WithSpecialTypes(['0x2::sui::SUI', 'u64'], {
+    id,
+    string: 'string',
+    asciiString: 'ascii',
+    url: 'https://example.com',
+    idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
+    uid,
+    balance: new Balance('0x2::sui::SUI', 0n),
+    option: 100n,
+    optionObj: new Bar(100n),
+    optionNone: null,
+    balanceGeneric: new Balance('0x2::sui::SUI', 0n),
+    optionGeneric: 200n,
+    optionGenericNone: null,
+  })
+
+  expect(fromFieldsWithTypes).toEqual(exp)
+  expect(fromBcs).toEqual(exp)
 })
 
-it('decodes special-cased types as generics correctly with fromFieldsWithTypes', async () => {
+it('decodes special-cased types as generics correctly', async () => {
   const txb = new TransactionBlock()
 
   const encoder = new TextEncoder()
 
-  createSpecialAsGenerics(
-    txb,
-    [
-      '0x1::string::String',
-      '0x1::ascii::String',
-      '0x2::url::Url',
-      '0x2::object::ID',
-      '0x2::object::UID',
-      '0x2::balance::Balance<0x2::sui::SUI>',
-      '0x1::option::Option<u64>',
-      '0x1::option::Option<u64>',
-    ],
-    {
-      string: utf8(txb, Array.from(encoder.encode('string'))),
-      asciiString: string(txb, Array.from(encoder.encode('ascii'))),
-      url: newUnsafeFromBytes(txb, Array.from(encoder.encode('https://example.com'))),
-      idField: idFromAddress(
-        txb,
-        'faf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5'
-      ),
-      uid: newUid(txb),
-      balance: zero(txb, '0x2::sui::SUI'),
-      option: some(txb, 'u64', 100n),
-      optionNone: none(txb, 'u64'),
-    }
-  )
+  const typeArgs = [
+    '0x1::string::String',
+    '0x1::ascii::String',
+    '0x2::url::Url',
+    '0x2::object::ID',
+    '0x2::object::UID',
+    '0x2::balance::Balance<0x2::sui::SUI>',
+    '0x1::option::Option<u64>',
+    '0x1::option::Option<u64>',
+  ] as [string, string, string, string, string, string, string, string]
+
+  createSpecialAsGenerics(txb, typeArgs, {
+    string: utf8(txb, Array.from(encoder.encode('string'))),
+    asciiString: string(txb, Array.from(encoder.encode('ascii'))),
+    url: newUnsafeFromBytes(txb, Array.from(encoder.encode('https://example.com'))),
+    idField: idFromAddress(txb, 'faf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5'),
+    uid: newUid(txb),
+    balance: zero(txb, '0x2::sui::SUI'),
+    option: some(txb, 'u64', 100n),
+    optionNone: none(txb, 'u64'),
+  })
 
   const res = await client.signAndExecuteTransactionBlock({
     signer: keypair,
@@ -491,31 +491,23 @@ it('decodes special-cased types as generics correctly with fromFieldsWithTypes',
 
   const uid = (obj.data.content.fields as { uid: { id: string } }).uid.id
 
-  expect(WithSpecialTypesAsGenerics.fromFieldsWithTypes(obj.data.content)).toEqual(
-    new WithSpecialTypesAsGenerics(
-      [
-        '0x1::string::String',
-        '0x1::ascii::String',
-        '0x2::url::Url',
-        '0x2::object::ID',
-        '0x2::object::UID',
-        '0x2::balance::Balance<0x2::sui::SUI>',
-        '0x1::option::Option<u64>',
-        '0x1::option::Option<u64>',
-      ],
-      {
-        id,
-        string: 'string',
-        asciiString: 'ascii',
-        url: 'https://example.com',
-        idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
-        uid,
-        balance: new Balance('0x2::sui::SUI', 0n),
-        option: 100n,
-        optionNone: null,
-      }
-    )
-  )
+  const fromBcs = WithSpecialTypesAsGenerics.fromBcs(typeArgs, fromB64(obj.data.bcs.bcsBytes))
+  const fromFieldsWithTypes = WithSpecialTypesAsGenerics.fromFieldsWithTypes(obj.data.content)
+
+  const exp = new WithSpecialTypesAsGenerics(typeArgs, {
+    id,
+    string: 'string',
+    asciiString: 'ascii',
+    url: 'https://example.com',
+    idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
+    uid,
+    balance: new Balance('0x2::sui::SUI', 0n),
+    option: 100n,
+    optionNone: null,
+  })
+
+  expect(fromBcs).toEqual(exp)
+  expect(fromFieldsWithTypes).toEqual(exp)
 })
 
 it('calls function correctly when special types are used', async () => {

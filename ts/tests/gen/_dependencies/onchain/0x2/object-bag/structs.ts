@@ -1,14 +1,9 @@
-import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
 import { UID } from '../object/structs'
+import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== ObjectBag =============================== */
-
-bcs.registerStructType('0x2::object_bag::ObjectBag', {
-  id: `0x2::object::UID`,
-  size: `u64`,
-})
 
 export function isObjectBag(type: Type): boolean {
   type = compressSuiType(type)
@@ -23,6 +18,13 @@ export interface ObjectBagFields {
 export class ObjectBag {
   static readonly $typeName = '0x2::object_bag::ObjectBag'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('ObjectBag', {
+      id: UID.bcs,
+      size: bcs.u64(),
+    })
+  }
 
   readonly id: string
   readonly size: bigint
@@ -43,8 +45,8 @@ export class ObjectBag {
     return new ObjectBag({ id: item.fields.id.id, size: BigInt(item.fields.size) })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): ObjectBag {
-    return ObjectBag.fromFields(bcs.de([ObjectBag.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): ObjectBag {
+    return ObjectBag.fromFields(ObjectBag.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {

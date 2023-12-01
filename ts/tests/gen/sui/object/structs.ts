@@ -1,14 +1,10 @@
-import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../_framework/init-source'
 import { structClassLoaderSource } from '../../_framework/loader'
 import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
+import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== DynamicFields =============================== */
-
-bcs.registerStructType('0x2::object::DynamicFields<K>', {
-  names: `vector<K>`,
-})
 
 export function isDynamicFields(type: Type): boolean {
   type = compressSuiType(type)
@@ -22,6 +18,14 @@ export interface DynamicFieldsFields<K> {
 export class DynamicFields<K> {
   static readonly $typeName = '0x2::object::DynamicFields'
   static readonly $numTypeParams = 1
+
+  static get bcs(): (k: BcsType<any>) => BcsType<any> {
+    return bcs.generic(['K'], K =>
+      bcs.struct('DynamicFields<K>', {
+        names: bcs.vector(K),
+      })
+    )
+  }
 
   readonly $typeArg: Type
 
@@ -58,14 +62,14 @@ export class DynamicFields<K> {
     )
   }
 
-  static fromBcs<K>(
-    typeArg: Type,
-    data: Uint8Array | string,
-    encoding?: Encoding
-  ): DynamicFields<K> {
+  static fromBcs<K>(typeArg: Type, data: Uint8Array): DynamicFields<K> {
+    initLoaderIfNeeded()
+
+    const typeArgs = [typeArg]
+
     return DynamicFields.fromFields(
       typeArg,
-      bcs.de([DynamicFields.$typeName, typeArg], data, encoding)
+      DynamicFields.bcs(structClassLoaderSource.getBcsType(typeArgs[0])).parse(data)
     )
   }
 
@@ -93,10 +97,6 @@ export class DynamicFields<K> {
 
 /* ============================== ID =============================== */
 
-bcs.registerStructType('0x2::object::ID', {
-  bytes: `address`,
-})
-
 export function isID(type: Type): boolean {
   type = compressSuiType(type)
   return type === '0x2::object::ID'
@@ -109,6 +109,15 @@ export interface IDFields {
 export class ID {
   static readonly $typeName = '0x2::object::ID'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('ID', {
+      bytes: bcs.bytes(32).transform({
+        input: (val: string) => fromHEX(val),
+        output: (val: Uint8Array) => toHEX(val),
+      }),
+    })
+  }
 
   readonly bytes: string
 
@@ -127,17 +136,12 @@ export class ID {
     return new ID(`0x${item.fields.bytes}`)
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): ID {
-    return ID.fromFields(bcs.de([ID.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): ID {
+    return ID.fromFields(ID.bcs.parse(data))
   }
 }
 
 /* ============================== Ownership =============================== */
-
-bcs.registerStructType('0x2::object::Ownership', {
-  owner: `address`,
-  status: `u64`,
-})
 
 export function isOwnership(type: Type): boolean {
   type = compressSuiType(type)
@@ -152,6 +156,16 @@ export interface OwnershipFields {
 export class Ownership {
   static readonly $typeName = '0x2::object::Ownership'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('Ownership', {
+      owner: bcs.bytes(32).transform({
+        input: (val: string) => fromHEX(val),
+        output: (val: Uint8Array) => toHEX(val),
+      }),
+      status: bcs.u64(),
+    })
+  }
 
   readonly owner: string
   readonly status: bigint
@@ -172,8 +186,8 @@ export class Ownership {
     return new Ownership({ owner: `0x${item.fields.owner}`, status: BigInt(item.fields.status) })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): Ownership {
-    return Ownership.fromFields(bcs.de([Ownership.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): Ownership {
+    return Ownership.fromFields(Ownership.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -200,10 +214,6 @@ export class Ownership {
 
 /* ============================== UID =============================== */
 
-bcs.registerStructType('0x2::object::UID', {
-  id: `0x2::object::ID`,
-})
-
 export function isUID(type: Type): boolean {
   type = compressSuiType(type)
   return type === '0x2::object::UID'
@@ -216,6 +226,12 @@ export interface UIDFields {
 export class UID {
   static readonly $typeName = '0x2::object::UID'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('UID', {
+      id: ID.bcs,
+    })
+  }
 
   readonly id: string
 
@@ -234,7 +250,7 @@ export class UID {
     return new UID(item.fields.id)
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): UID {
-    return UID.fromFields(bcs.de([UID.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): UID {
+    return UID.fromFields(UID.bcs.parse(data))
   }
 }

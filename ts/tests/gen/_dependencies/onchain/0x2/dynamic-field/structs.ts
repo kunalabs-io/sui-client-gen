@@ -1,17 +1,11 @@
-import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../../../_framework/init-onchain'
 import { structClassLoaderOnchain } from '../../../../_framework/loader'
 import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
 import { UID } from '../object/structs'
+import { BcsType, bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Field =============================== */
-
-bcs.registerStructType('0x2::dynamic_field::Field<T0, T1>', {
-  id: `0x2::object::UID`,
-  name: `T0`,
-  value: `T1`,
-})
 
 export function isField(type: Type): boolean {
   type = compressSuiType(type)
@@ -27,6 +21,16 @@ export interface FieldFields<T0, T1> {
 export class Field<T0, T1> {
   static readonly $typeName = '0x2::dynamic_field::Field'
   static readonly $numTypeParams = 2
+
+  static get bcs(): (t0: BcsType<any>, t1: BcsType<any>) => BcsType<any> {
+    return bcs.generic(['T0', 'T1'], (T0, T1) =>
+      bcs.struct('Field<T0, T1>', {
+        id: UID.bcs,
+        name: T0,
+        value: T1,
+      })
+    )
+  }
 
   readonly $typeArgs: [Type, Type]
 
@@ -67,12 +71,16 @@ export class Field<T0, T1> {
     })
   }
 
-  static fromBcs<T0, T1>(
-    typeArgs: [Type, Type],
-    data: Uint8Array | string,
-    encoding?: Encoding
-  ): Field<T0, T1> {
-    return Field.fromFields(typeArgs, bcs.de([Field.$typeName, ...typeArgs], data, encoding))
+  static fromBcs<T0, T1>(typeArgs: [Type, Type], data: Uint8Array): Field<T0, T1> {
+    initLoaderIfNeeded()
+
+    return Field.fromFields(
+      typeArgs,
+      Field.bcs(
+        structClassLoaderOnchain.getBcsType(typeArgs[0]),
+        structClassLoaderOnchain.getBcsType(typeArgs[1])
+      ).parse(data)
+    )
   }
 
   static fromSuiParsedData(content: SuiParsedData) {

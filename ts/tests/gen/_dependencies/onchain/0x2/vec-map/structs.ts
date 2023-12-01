@@ -1,14 +1,9 @@
-import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../../../_framework/init-onchain'
 import { structClassLoaderOnchain } from '../../../../_framework/loader'
 import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
+import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== Entry =============================== */
-
-bcs.registerStructType('0x2::vec_map::Entry<T0, T1>', {
-  key: `T0`,
-  value: `T1`,
-})
 
 export function isEntry(type: Type): boolean {
   type = compressSuiType(type)
@@ -23,6 +18,15 @@ export interface EntryFields<T0, T1> {
 export class Entry<T0, T1> {
   static readonly $typeName = '0x2::vec_map::Entry'
   static readonly $numTypeParams = 2
+
+  static get bcs(): (t0: BcsType<any>, t1: BcsType<any>) => BcsType<any> {
+    return bcs.generic(['T0', 'T1'], (T0, T1) =>
+      bcs.struct('Entry<T0, T1>', {
+        key: T0,
+        value: T1,
+      })
+    )
+  }
 
   readonly $typeArgs: [Type, Type]
 
@@ -59,20 +63,20 @@ export class Entry<T0, T1> {
     })
   }
 
-  static fromBcs<T0, T1>(
-    typeArgs: [Type, Type],
-    data: Uint8Array | string,
-    encoding?: Encoding
-  ): Entry<T0, T1> {
-    return Entry.fromFields(typeArgs, bcs.de([Entry.$typeName, ...typeArgs], data, encoding))
+  static fromBcs<T0, T1>(typeArgs: [Type, Type], data: Uint8Array): Entry<T0, T1> {
+    initLoaderIfNeeded()
+
+    return Entry.fromFields(
+      typeArgs,
+      Entry.bcs(
+        structClassLoaderOnchain.getBcsType(typeArgs[0]),
+        structClassLoaderOnchain.getBcsType(typeArgs[1])
+      ).parse(data)
+    )
   }
 }
 
 /* ============================== VecMap =============================== */
-
-bcs.registerStructType('0x2::vec_map::VecMap<T0, T1>', {
-  contents: `vector<0x2::vec_map::Entry<T0, T1>>`,
-})
 
 export function isVecMap(type: Type): boolean {
   type = compressSuiType(type)
@@ -86,6 +90,14 @@ export interface VecMapFields<T0, T1> {
 export class VecMap<T0, T1> {
   static readonly $typeName = '0x2::vec_map::VecMap'
   static readonly $numTypeParams = 2
+
+  static get bcs(): (t0: BcsType<any>, t1: BcsType<any>) => BcsType<any> {
+    return bcs.generic(['T0', 'T1'], (T0, T1) =>
+      bcs.struct('VecMap<T0, T1>', {
+        contents: bcs.vector(Entry.bcs(T0, T1)),
+      })
+    )
+  }
 
   readonly $typeArgs: [Type, Type]
 
@@ -122,11 +134,15 @@ export class VecMap<T0, T1> {
     )
   }
 
-  static fromBcs<T0, T1>(
-    typeArgs: [Type, Type],
-    data: Uint8Array | string,
-    encoding?: Encoding
-  ): VecMap<T0, T1> {
-    return VecMap.fromFields(typeArgs, bcs.de([VecMap.$typeName, ...typeArgs], data, encoding))
+  static fromBcs<T0, T1>(typeArgs: [Type, Type], data: Uint8Array): VecMap<T0, T1> {
+    initLoaderIfNeeded()
+
+    return VecMap.fromFields(
+      typeArgs,
+      VecMap.bcs(
+        structClassLoaderOnchain.getBcsType(typeArgs[0]),
+        structClassLoaderOnchain.getBcsType(typeArgs[1])
+      ).parse(data)
+    )
   }
 }

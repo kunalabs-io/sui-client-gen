@@ -1,15 +1,11 @@
-import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../../../_framework/init-onchain'
+import { structClassLoaderOnchain } from '../../../../_framework/loader'
 import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
 import { Option } from '../../0x1/option/structs'
 import { ID } from '../object/structs'
+import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
 
 /* ============================== Referent =============================== */
-
-bcs.registerStructType('0x2::borrow::Referent<T0>', {
-  id: `address`,
-  value: `0x1::option::Option<T0>`,
-})
 
 export function isReferent(type: Type): boolean {
   type = compressSuiType(type)
@@ -24,6 +20,18 @@ export interface ReferentFields<T0> {
 export class Referent<T0> {
   static readonly $typeName = '0x2::borrow::Referent'
   static readonly $numTypeParams = 1
+
+  static get bcs(): (t0: BcsType<any>) => BcsType<any> {
+    return bcs.generic(['T0'], T0 =>
+      bcs.struct('Referent<T0>', {
+        id: bcs.bytes(32).transform({
+          input: (val: string) => fromHEX(val),
+          output: (val: Uint8Array) => toHEX(val),
+        }),
+        value: Option.bcs(T0),
+      })
+    )
+  }
 
   readonly $typeArg: Type
 
@@ -66,17 +74,19 @@ export class Referent<T0> {
     })
   }
 
-  static fromBcs<T0>(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): Referent<T0> {
-    return Referent.fromFields(typeArg, bcs.de([Referent.$typeName, typeArg], data, encoding))
+  static fromBcs<T0>(typeArg: Type, data: Uint8Array): Referent<T0> {
+    initLoaderIfNeeded()
+
+    const typeArgs = [typeArg]
+
+    return Referent.fromFields(
+      typeArg,
+      Referent.bcs(structClassLoaderOnchain.getBcsType(typeArgs[0])).parse(data)
+    )
   }
 }
 
 /* ============================== Borrow =============================== */
-
-bcs.registerStructType('0x2::borrow::Borrow', {
-  ref: `address`,
-  obj: `0x2::object::ID`,
-})
 
 export function isBorrow(type: Type): boolean {
   type = compressSuiType(type)
@@ -91,6 +101,16 @@ export interface BorrowFields {
 export class Borrow {
   static readonly $typeName = '0x2::borrow::Borrow'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('Borrow', {
+      ref: bcs.bytes(32).transform({
+        input: (val: string) => fromHEX(val),
+        output: (val: Uint8Array) => toHEX(val),
+      }),
+      obj: ID.bcs,
+    })
+  }
 
   readonly ref: string
   readonly obj: string
@@ -111,7 +131,7 @@ export class Borrow {
     return new Borrow({ ref: `0x${item.fields.ref}`, obj: item.fields.obj })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): Borrow {
-    return Borrow.fromFields(bcs.de([Borrow.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): Borrow {
+    return Borrow.fromFields(Borrow.bcs.parse(data))
   }
 }

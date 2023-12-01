@@ -1,16 +1,10 @@
-import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
 import { String } from '../../0x1/string/structs'
 import { UID } from '../object/structs'
+import { bcs, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== VerifiedIssuer =============================== */
-
-bcs.registerStructType('0x2::zklogin_verified_issuer::VerifiedIssuer', {
-  id: `0x2::object::UID`,
-  owner: `address`,
-  issuer: `0x1::string::String`,
-})
 
 export function isVerifiedIssuer(type: Type): boolean {
   type = compressSuiType(type)
@@ -26,6 +20,17 @@ export interface VerifiedIssuerFields {
 export class VerifiedIssuer {
   static readonly $typeName = '0x2::zklogin_verified_issuer::VerifiedIssuer'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('VerifiedIssuer', {
+      id: UID.bcs,
+      owner: bcs.bytes(32).transform({
+        input: (val: string) => fromHEX(val),
+        output: (val: Uint8Array) => toHEX(val),
+      }),
+      issuer: String.bcs,
+    })
+  }
 
   readonly id: string
   readonly owner: string
@@ -58,8 +63,8 @@ export class VerifiedIssuer {
     })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): VerifiedIssuer {
-    return VerifiedIssuer.fromFields(bcs.de([VerifiedIssuer.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): VerifiedIssuer {
+    return VerifiedIssuer.fromFields(VerifiedIssuer.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {

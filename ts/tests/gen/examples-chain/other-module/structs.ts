@@ -1,14 +1,7 @@
-import { Encoding, bcsOnchain as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { bcs } from '@mysten/bcs'
 
 /* ============================== StructFromOtherModule =============================== */
-
-bcs.registerStructType(
-  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule',
-  {
-    dummy_field: `bool`,
-  }
-)
 
 export function isStructFromOtherModule(type: Type): boolean {
   type = compressSuiType(type)
@@ -27,6 +20,12 @@ export class StructFromOtherModule {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
   static readonly $numTypeParams = 0
 
+  static get bcs() {
+    return bcs.struct('StructFromOtherModule', {
+      dummy_field: bcs.bool(),
+    })
+  }
+
   readonly dummyField: boolean
 
   constructor(dummyField: boolean) {
@@ -44,9 +43,7 @@ export class StructFromOtherModule {
     return new StructFromOtherModule(item.fields.dummy_field)
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): StructFromOtherModule {
-    return StructFromOtherModule.fromFields(
-      bcs.de([StructFromOtherModule.$typeName], data, encoding)
-    )
+  static fromBcs(data: Uint8Array): StructFromOtherModule {
+    return StructFromOtherModule.fromFields(StructFromOtherModule.bcs.parse(data))
   }
 }

@@ -1,11 +1,7 @@
-import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
+import { bcs } from '@mysten/bcs'
 
 /* ============================== FixedPoint32 =============================== */
-
-bcs.registerStructType('0x1::fixed_point32::FixedPoint32', {
-  value: `u64`,
-})
 
 export function isFixedPoint32(type: Type): boolean {
   type = compressSuiType(type)
@@ -19,6 +15,12 @@ export interface FixedPoint32Fields {
 export class FixedPoint32 {
   static readonly $typeName = '0x1::fixed_point32::FixedPoint32'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('FixedPoint32', {
+      value: bcs.u64(),
+    })
+  }
 
   readonly value: bigint
 
@@ -37,7 +39,7 @@ export class FixedPoint32 {
     return new FixedPoint32(BigInt(item.fields.value))
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): FixedPoint32 {
-    return FixedPoint32.fromFields(bcs.de([FixedPoint32.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): FixedPoint32 {
+    return FixedPoint32.fromFields(FixedPoint32.bcs.parse(data))
   }
 }

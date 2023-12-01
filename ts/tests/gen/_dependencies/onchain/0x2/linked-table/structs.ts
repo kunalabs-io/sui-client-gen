@@ -1,19 +1,12 @@
-import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../../../_framework/init-onchain'
 import { structClassLoaderOnchain } from '../../../../_framework/loader'
 import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
 import { Option } from '../../0x1/option/structs'
 import { UID } from '../object/structs'
+import { BcsType, bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== LinkedTable =============================== */
-
-bcs.registerStructType('0x2::linked_table::LinkedTable<T0, T1>', {
-  id: `0x2::object::UID`,
-  size: `u64`,
-  head: `0x1::option::Option<T0>`,
-  tail: `0x1::option::Option<T0>`,
-})
 
 export function isLinkedTable(type: Type): boolean {
   type = compressSuiType(type)
@@ -30,6 +23,17 @@ export interface LinkedTableFields<T0> {
 export class LinkedTable<T0> {
   static readonly $typeName = '0x2::linked_table::LinkedTable'
   static readonly $numTypeParams = 2
+
+  static get bcs(): (t0: BcsType<any>) => BcsType<any> {
+    return bcs.generic(['T0'], T0 =>
+      bcs.struct('LinkedTable<T0>', {
+        id: UID.bcs,
+        size: bcs.u64(),
+        head: Option.bcs(T0),
+        tail: Option.bcs(T0),
+      })
+    )
+  }
 
   readonly $typeArgs: [Type, Type]
 
@@ -86,14 +90,12 @@ export class LinkedTable<T0> {
     })
   }
 
-  static fromBcs<T0>(
-    typeArgs: [Type, Type],
-    data: Uint8Array | string,
-    encoding?: Encoding
-  ): LinkedTable<T0> {
+  static fromBcs<T0>(typeArgs: [Type, Type], data: Uint8Array): LinkedTable<T0> {
+    initLoaderIfNeeded()
+
     return LinkedTable.fromFields(
       typeArgs,
-      bcs.de([LinkedTable.$typeName, ...typeArgs], data, encoding)
+      LinkedTable.bcs(structClassLoaderOnchain.getBcsType(typeArgs[0])).parse(data)
     )
   }
 
@@ -121,12 +123,6 @@ export class LinkedTable<T0> {
 
 /* ============================== Node =============================== */
 
-bcs.registerStructType('0x2::linked_table::Node<T0, T1>', {
-  prev: `0x1::option::Option<T0>`,
-  next: `0x1::option::Option<T0>`,
-  value: `T1`,
-})
-
 export function isNode(type: Type): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::linked_table::Node<')
@@ -141,6 +137,16 @@ export interface NodeFields<T0, T1> {
 export class Node<T0, T1> {
   static readonly $typeName = '0x2::linked_table::Node'
   static readonly $numTypeParams = 2
+
+  static get bcs(): (t0: BcsType<any>, t1: BcsType<any>) => BcsType<any> {
+    return bcs.generic(['T0', 'T1'], (T0, T1) =>
+      bcs.struct('Node<T0, T1>', {
+        prev: Option.bcs(T0),
+        next: Option.bcs(T0),
+        value: T1,
+      })
+    )
+  }
 
   readonly $typeArgs: [Type, Type]
 
@@ -193,11 +199,15 @@ export class Node<T0, T1> {
     })
   }
 
-  static fromBcs<T0, T1>(
-    typeArgs: [Type, Type],
-    data: Uint8Array | string,
-    encoding?: Encoding
-  ): Node<T0, T1> {
-    return Node.fromFields(typeArgs, bcs.de([Node.$typeName, ...typeArgs], data, encoding))
+  static fromBcs<T0, T1>(typeArgs: [Type, Type], data: Uint8Array): Node<T0, T1> {
+    initLoaderIfNeeded()
+
+    return Node.fromFields(
+      typeArgs,
+      Node.bcs(
+        structClassLoaderOnchain.getBcsType(typeArgs[0]),
+        structClassLoaderOnchain.getBcsType(typeArgs[1])
+      ).parse(data)
+    )
   }
 }

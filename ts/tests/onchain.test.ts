@@ -20,7 +20,6 @@ import {
   createSpecialInVectors,
   createWithTwoGenerics,
 } from './gen/examples-chain/fixture/functions'
-import { bcsOnchain as bcs } from './gen/_framework/bcs'
 import { StructFromOtherModule } from './gen/examples-chain/other-module/structs'
 import { string } from './gen/move-stdlib/ascii/functions'
 import { utf8 } from './gen/move-stdlib/string/functions'
@@ -194,9 +193,9 @@ it('creates and decodes an object with object as type param', async () => {
     other: new StructFromOtherModule(false),
   })
 
-  const de = bcs.de(`${Foo.$typeName}<${T}>`, foo.data.bcs.bcsBytes, 'base64')
+  const de = Foo.fromBcs(T, fromB64(foo.data.bcs.bcsBytes))
 
-  expect(Foo.fromFields(T, de)).toEqual(exp)
+  expect(de).toEqual(exp)
   expect(Foo.fromFieldsWithTypes(foo.data.content)).toEqual(exp)
   expect(Foo.fromSuiParsedData(foo.data.content)).toEqual(exp)
   expect(await Foo.fetch(client, id)).toEqual(exp)
@@ -365,9 +364,9 @@ it('creates and decodes Foo with vector of objects as type param', async () => {
     other: new StructFromOtherModule(false),
   })
 
-  const de = bcs.de(`${Foo.$typeName}<${T}>`, foo.data.bcs.bcsBytes, 'base64')
+  const de = Foo.fromBcs(T, fromB64(foo.data.bcs.bcsBytes))
 
-  expect(Foo.fromFields(T, de)).toEqual(exp)
+  expect(de).toEqual(exp)
 
   expect(Foo.fromFieldsWithTypes(foo.data.content)).toEqual(exp)
 })

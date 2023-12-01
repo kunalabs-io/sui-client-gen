@@ -1,12 +1,8 @@
-import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib/ascii/structs'
+import { bcs } from '@mysten/bcs'
 
 /* ============================== Url =============================== */
-
-bcs.registerStructType('0x2::url::Url', {
-  url: `0x1::ascii::String`,
-})
 
 export function isUrl(type: Type): boolean {
   type = compressSuiType(type)
@@ -20,6 +16,12 @@ export interface UrlFields {
 export class Url {
   static readonly $typeName = '0x2::url::Url'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('Url', {
+      url: String.bcs,
+    })
+  }
 
   readonly url: string
 
@@ -40,7 +42,7 @@ export class Url {
     return new Url(item.fields.url)
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): Url {
-    return Url.fromFields(bcs.de([Url.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): Url {
+    return Url.fromFields(Url.bcs.parse(data))
   }
 }

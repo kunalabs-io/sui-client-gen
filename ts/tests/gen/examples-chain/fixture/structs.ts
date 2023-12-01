@@ -4,21 +4,14 @@ import { String } from '../../_dependencies/onchain/0x1/string/structs'
 import { Balance } from '../../_dependencies/onchain/0x2/balance/structs'
 import { ID, UID } from '../../_dependencies/onchain/0x2/object/structs'
 import { Url } from '../../_dependencies/onchain/0x2/url/structs'
-import { Encoding, bcsOnchain as bcs } from '../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../_framework/init-onchain'
 import { structClassLoaderOnchain } from '../../_framework/loader'
 import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
 import { StructFromOtherModule } from '../other-module/structs'
+import { BcsType, bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Dummy =============================== */
-
-bcs.registerStructType(
-  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy',
-  {
-    dummy_field: `bool`,
-  }
-)
 
 export function isDummy(type: Type): boolean {
   type = compressSuiType(type)
@@ -35,6 +28,12 @@ export class Dummy {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('Dummy', {
+      dummy_field: bcs.bool(),
+    })
+  }
 
   readonly dummyField: boolean
 
@@ -53,20 +52,12 @@ export class Dummy {
     return new Dummy(item.fields.dummy_field)
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): Dummy {
-    return Dummy.fromFields(bcs.de([Dummy.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): Dummy {
+    return Dummy.fromFields(Dummy.bcs.parse(data))
   }
 }
 
 /* ============================== WithGenericField =============================== */
-
-bcs.registerStructType(
-  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<T0>',
-  {
-    id: `0x2::object::UID`,
-    generic_field: `T0`,
-  }
-)
 
 export function isWithGenericField(type: Type): boolean {
   type = compressSuiType(type)
@@ -84,6 +75,15 @@ export class WithGenericField<T0> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField'
   static readonly $numTypeParams = 1
+
+  static get bcs(): (t0: BcsType<any>) => BcsType<any> {
+    return bcs.generic(['T0'], T0 =>
+      bcs.struct('WithGenericField<T0>', {
+        id: UID.bcs,
+        generic_field: T0,
+      })
+    )
+  }
 
   readonly $typeArg: Type
 
@@ -123,14 +123,14 @@ export class WithGenericField<T0> {
     })
   }
 
-  static fromBcs<T0>(
-    typeArg: Type,
-    data: Uint8Array | string,
-    encoding?: Encoding
-  ): WithGenericField<T0> {
+  static fromBcs<T0>(typeArg: Type, data: Uint8Array): WithGenericField<T0> {
+    initLoaderIfNeeded()
+
+    const typeArgs = [typeArg]
+
     return WithGenericField.fromFields(
       typeArg,
-      bcs.de([WithGenericField.$typeName, typeArg], data, encoding)
+      WithGenericField.bcs(structClassLoaderOnchain.getBcsType(typeArgs[0])).parse(data)
     )
   }
 
@@ -161,13 +161,6 @@ export class WithGenericField<T0> {
 
 /* ============================== Bar =============================== */
 
-bcs.registerStructType(
-  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar',
-  {
-    value: `u64`,
-  }
-)
-
 export function isBar(type: Type): boolean {
   type = compressSuiType(type)
   return type === '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
@@ -181,6 +174,12 @@ export class Bar {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('Bar', {
+      value: bcs.u64(),
+    })
+  }
 
   readonly value: bigint
 
@@ -199,20 +198,12 @@ export class Bar {
     return new Bar(BigInt(item.fields.value))
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): Bar {
-    return Bar.fromFields(bcs.de([Bar.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): Bar {
+    return Bar.fromFields(Bar.bcs.parse(data))
   }
 }
 
 /* ============================== WithTwoGenerics =============================== */
-
-bcs.registerStructType(
-  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<T0, T1>',
-  {
-    generic_field_1: `T0`,
-    generic_field_2: `T1`,
-  }
-)
 
 export function isWithTwoGenerics(type: Type): boolean {
   type = compressSuiType(type)
@@ -230,6 +221,15 @@ export class WithTwoGenerics<T0, T1> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics'
   static readonly $numTypeParams = 2
+
+  static get bcs(): (t0: BcsType<any>, t1: BcsType<any>) => BcsType<any> {
+    return bcs.generic(['T0', 'T1'], (T0, T1) =>
+      bcs.struct('WithTwoGenerics<T0, T1>', {
+        generic_field_1: T0,
+        generic_field_2: T1,
+      })
+    )
+  }
 
   readonly $typeArgs: [Type, Type]
 
@@ -275,39 +275,20 @@ export class WithTwoGenerics<T0, T1> {
     })
   }
 
-  static fromBcs<T0, T1>(
-    typeArgs: [Type, Type],
-    data: Uint8Array | string,
-    encoding?: Encoding
-  ): WithTwoGenerics<T0, T1> {
+  static fromBcs<T0, T1>(typeArgs: [Type, Type], data: Uint8Array): WithTwoGenerics<T0, T1> {
+    initLoaderIfNeeded()
+
     return WithTwoGenerics.fromFields(
       typeArgs,
-      bcs.de([WithTwoGenerics.$typeName, ...typeArgs], data, encoding)
+      WithTwoGenerics.bcs(
+        structClassLoaderOnchain.getBcsType(typeArgs[0]),
+        structClassLoaderOnchain.getBcsType(typeArgs[1])
+      ).parse(data)
     )
   }
 }
 
 /* ============================== Foo =============================== */
-
-bcs.registerStructType(
-  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<T0>',
-  {
-    id: `0x2::object::UID`,
-    generic: `T0`,
-    reified_primitive_vec: `vector<u64>`,
-    reified_object_vec: `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
-    generic_vec: `vector<T0>`,
-    generic_vec_nested: `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<T0, u8>>`,
-    two_generics: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<T0, 0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
-    two_generics_reified_primitive: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<u16, u64>`,
-    two_generics_reified_object: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, 0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
-    two_generics_nested: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<T0, 0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<u8, u8>>`,
-    two_generics_reified_nested: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, 0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<u8, u8>>`,
-    two_generics_nested_vec: `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<T0, u8>>>>`,
-    dummy: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy`,
-    other: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule`,
-  }
-)
 
 export function isFoo(type: Type): boolean {
   type = compressSuiType(type)
@@ -337,6 +318,32 @@ export class Foo<T0> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo'
   static readonly $numTypeParams = 1
+
+  static get bcs(): (t0: BcsType<any>) => BcsType<any> {
+    return bcs.generic(['T0'], T0 =>
+      bcs.struct('Foo<T0>', {
+        id: UID.bcs,
+        generic: T0,
+        reified_primitive_vec: bcs.vector(bcs.u64()),
+        reified_object_vec: bcs.vector(Bar.bcs),
+        generic_vec: bcs.vector(T0),
+        generic_vec_nested: bcs.vector(WithTwoGenerics.bcs(T0, bcs.u8())),
+        two_generics: WithTwoGenerics.bcs(T0, Bar.bcs),
+        two_generics_reified_primitive: WithTwoGenerics.bcs(bcs.u16(), bcs.u64()),
+        two_generics_reified_object: WithTwoGenerics.bcs(Bar.bcs, Bar.bcs),
+        two_generics_nested: WithTwoGenerics.bcs(T0, WithTwoGenerics.bcs(bcs.u8(), bcs.u8())),
+        two_generics_reified_nested: WithTwoGenerics.bcs(
+          Bar.bcs,
+          WithTwoGenerics.bcs(bcs.u8(), bcs.u8())
+        ),
+        two_generics_nested_vec: bcs.vector(
+          WithTwoGenerics.bcs(Bar.bcs, bcs.vector(WithTwoGenerics.bcs(T0, bcs.u8())))
+        ),
+        dummy: Dummy.bcs,
+        other: StructFromOtherModule.bcs,
+      })
+    )
+  }
 
   readonly $typeArg: Type
 
@@ -477,8 +484,15 @@ export class Foo<T0> {
     })
   }
 
-  static fromBcs<T0>(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): Foo<T0> {
-    return Foo.fromFields(typeArg, bcs.de([Foo.$typeName, typeArg], data, encoding))
+  static fromBcs<T0>(typeArg: Type, data: Uint8Array): Foo<T0> {
+    initLoaderIfNeeded()
+
+    const typeArgs = [typeArg]
+
+    return Foo.fromFields(
+      typeArg,
+      Foo.bcs(structClassLoaderOnchain.getBcsType(typeArgs[0])).parse(data)
+    )
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -504,25 +518,6 @@ export class Foo<T0> {
 }
 
 /* ============================== WithSpecialTypes =============================== */
-
-bcs.registerStructType(
-  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<T0, T1>',
-  {
-    id: `0x2::object::UID`,
-    string: `0x1::string::String`,
-    ascii_string: `0x1::ascii::String`,
-    url: `0x2::url::Url`,
-    id_field: `0x2::object::ID`,
-    uid: `0x2::object::UID`,
-    balance: `0x2::balance::Balance<0x2::sui::SUI>`,
-    option: `0x1::option::Option<u64>`,
-    option_obj: `0x1::option::Option<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
-    option_none: `0x1::option::Option<u64>`,
-    balance_generic: `0x2::balance::Balance<T0>`,
-    option_generic: `0x1::option::Option<T1>`,
-    option_generic_none: `0x1::option::Option<T1>`,
-  }
-)
 
 export function isWithSpecialTypes(type: Type): boolean {
   type = compressSuiType(type)
@@ -551,6 +546,26 @@ export class WithSpecialTypes<T1> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes'
   static readonly $numTypeParams = 2
+
+  static get bcs(): (t1: BcsType<any>) => BcsType<any> {
+    return bcs.generic(['T1'], T1 =>
+      bcs.struct('WithSpecialTypes<T1>', {
+        id: UID.bcs,
+        string: String.bcs,
+        ascii_string: String1.bcs,
+        url: Url.bcs,
+        id_field: ID.bcs,
+        uid: UID.bcs,
+        balance: Balance.bcs,
+        option: Option.bcs(bcs.u64()),
+        option_obj: Option.bcs(Bar.bcs),
+        option_none: Option.bcs(bcs.u64()),
+        balance_generic: Balance.bcs,
+        option_generic: Option.bcs(T1),
+        option_generic_none: Option.bcs(T1),
+      })
+    )
+  }
 
   readonly $typeArgs: [Type, Type]
 
@@ -673,14 +688,12 @@ export class WithSpecialTypes<T1> {
     })
   }
 
-  static fromBcs<T1>(
-    typeArgs: [Type, Type],
-    data: Uint8Array | string,
-    encoding?: Encoding
-  ): WithSpecialTypes<T1> {
+  static fromBcs<T1>(typeArgs: [Type, Type], data: Uint8Array): WithSpecialTypes<T1> {
+    initLoaderIfNeeded()
+
     return WithSpecialTypes.fromFields(
       typeArgs,
-      bcs.de([WithSpecialTypes.$typeName, ...typeArgs], data, encoding)
+      WithSpecialTypes.bcs(structClassLoaderOnchain.getBcsType(typeArgs[1])).parse(data)
     )
   }
 
@@ -711,21 +724,6 @@ export class WithSpecialTypes<T1> {
 
 /* ============================== WithSpecialTypesAsGenerics =============================== */
 
-bcs.registerStructType(
-  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7>',
-  {
-    id: `0x2::object::UID`,
-    string: `T0`,
-    ascii_string: `T1`,
-    url: `T2`,
-    id_field: `T3`,
-    uid: `T4`,
-    balance: `T5`,
-    option: `T6`,
-    option_none: `T7`,
-  }
-)
-
 export function isWithSpecialTypesAsGenerics(type: Type): boolean {
   type = compressSuiType(type)
   return type.startsWith(
@@ -749,6 +747,33 @@ export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics'
   static readonly $numTypeParams = 8
+
+  static get bcs(): (
+    t0: BcsType<any>,
+    t1: BcsType<any>,
+    t2: BcsType<any>,
+    t3: BcsType<any>,
+    t4: BcsType<any>,
+    t5: BcsType<any>,
+    t6: BcsType<any>,
+    t7: BcsType<any>
+  ) => BcsType<any> {
+    return bcs.generic(
+      ['T0', 'T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+      (T0, T1, T2, T3, T4, T5, T6, T7) =>
+        bcs.struct('WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7>', {
+          id: UID.bcs,
+          string: T0,
+          ascii_string: T1,
+          url: T2,
+          id_field: T3,
+          uid: T4,
+          balance: T5,
+          option: T6,
+          option_none: T7,
+        })
+    )
+  }
 
   readonly $typeArgs: [Type, Type, Type, Type, Type, Type, Type, Type]
 
@@ -841,12 +866,22 @@ export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
 
   static fromBcs<T0, T1, T2, T3, T4, T5, T6, T7>(
     typeArgs: [Type, Type, Type, Type, Type, Type, Type, Type],
-    data: Uint8Array | string,
-    encoding?: Encoding
+    data: Uint8Array
   ): WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
+    initLoaderIfNeeded()
+
     return WithSpecialTypesAsGenerics.fromFields(
       typeArgs,
-      bcs.de([WithSpecialTypesAsGenerics.$typeName, ...typeArgs], data, encoding)
+      WithSpecialTypesAsGenerics.bcs(
+        structClassLoaderOnchain.getBcsType(typeArgs[0]),
+        structClassLoaderOnchain.getBcsType(typeArgs[1]),
+        structClassLoaderOnchain.getBcsType(typeArgs[2]),
+        structClassLoaderOnchain.getBcsType(typeArgs[3]),
+        structClassLoaderOnchain.getBcsType(typeArgs[4]),
+        structClassLoaderOnchain.getBcsType(typeArgs[5]),
+        structClassLoaderOnchain.getBcsType(typeArgs[6]),
+        structClassLoaderOnchain.getBcsType(typeArgs[7])
+      ).parse(data)
     )
   }
 
@@ -884,19 +919,6 @@ export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
 
 /* ============================== WithSpecialTypesInVectors =============================== */
 
-bcs.registerStructType(
-  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<T0>',
-  {
-    id: `0x2::object::UID`,
-    string: `vector<0x1::string::String>`,
-    ascii_string: `vector<0x1::ascii::String>`,
-    id_field: `vector<0x2::object::ID>`,
-    bar: `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
-    option: `vector<0x1::option::Option<u64>>`,
-    option_generic: `vector<0x1::option::Option<T0>>`,
-  }
-)
-
 export function isWithSpecialTypesInVectors(type: Type): boolean {
   type = compressSuiType(type)
   return type.startsWith(
@@ -918,6 +940,20 @@ export class WithSpecialTypesInVectors<T0> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors'
   static readonly $numTypeParams = 1
+
+  static get bcs(): (t0: BcsType<any>) => BcsType<any> {
+    return bcs.generic(['T0'], T0 =>
+      bcs.struct('WithSpecialTypesInVectors<T0>', {
+        id: UID.bcs,
+        string: bcs.vector(String.bcs),
+        ascii_string: bcs.vector(String1.bcs),
+        id_field: bcs.vector(ID.bcs),
+        bar: bcs.vector(Bar.bcs),
+        option: bcs.vector(Option.bcs(bcs.u64())),
+        option_generic: bcs.vector(Option.bcs(T0)),
+      })
+    )
+  }
 
   readonly $typeArg: Type
 
@@ -996,14 +1032,14 @@ export class WithSpecialTypesInVectors<T0> {
     })
   }
 
-  static fromBcs<T0>(
-    typeArg: Type,
-    data: Uint8Array | string,
-    encoding?: Encoding
-  ): WithSpecialTypesInVectors<T0> {
+  static fromBcs<T0>(typeArg: Type, data: Uint8Array): WithSpecialTypesInVectors<T0> {
+    initLoaderIfNeeded()
+
+    const typeArgs = [typeArg]
+
     return WithSpecialTypesInVectors.fromFields(
       typeArg,
-      bcs.de([WithSpecialTypesInVectors.$typeName, typeArg], data, encoding)
+      WithSpecialTypesInVectors.bcs(structClassLoaderOnchain.getBcsType(typeArgs[0])).parse(data)
     )
   }
 

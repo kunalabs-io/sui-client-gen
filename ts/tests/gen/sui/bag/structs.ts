@@ -1,14 +1,9 @@
-import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
+import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Bag =============================== */
-
-bcs.registerStructType('0x2::bag::Bag', {
-  id: `0x2::object::UID`,
-  size: `u64`,
-})
 
 export function isBag(type: Type): boolean {
   type = compressSuiType(type)
@@ -23,6 +18,13 @@ export interface BagFields {
 export class Bag {
   static readonly $typeName = '0x2::bag::Bag'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('Bag', {
+      id: UID.bcs,
+      size: bcs.u64(),
+    })
+  }
 
   readonly id: string
   readonly size: bigint
@@ -43,8 +45,8 @@ export class Bag {
     return new Bag({ id: item.fields.id.id, size: BigInt(item.fields.size) })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): Bag {
-    return Bag.fromFields(bcs.de([Bag.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): Bag {
+    return Bag.fromFields(Bag.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {

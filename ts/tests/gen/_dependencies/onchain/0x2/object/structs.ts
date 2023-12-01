@@ -1,11 +1,7 @@
-import { Encoding, bcsOnchain as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
+import { bcs, fromHEX, toHEX } from '@mysten/bcs'
 
 /* ============================== ID =============================== */
-
-bcs.registerStructType('0x2::object::ID', {
-  bytes: `address`,
-})
 
 export function isID(type: Type): boolean {
   type = compressSuiType(type)
@@ -19,6 +15,15 @@ export interface IDFields {
 export class ID {
   static readonly $typeName = '0x2::object::ID'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('ID', {
+      bytes: bcs.bytes(32).transform({
+        input: (val: string) => fromHEX(val),
+        output: (val: Uint8Array) => toHEX(val),
+      }),
+    })
+  }
 
   readonly bytes: string
 
@@ -37,16 +42,12 @@ export class ID {
     return new ID(`0x${item.fields.bytes}`)
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): ID {
-    return ID.fromFields(bcs.de([ID.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): ID {
+    return ID.fromFields(ID.bcs.parse(data))
   }
 }
 
 /* ============================== UID =============================== */
-
-bcs.registerStructType('0x2::object::UID', {
-  id: `0x2::object::ID`,
-})
 
 export function isUID(type: Type): boolean {
   type = compressSuiType(type)
@@ -60,6 +61,12 @@ export interface UIDFields {
 export class UID {
   static readonly $typeName = '0x2::object::UID'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('UID', {
+      id: ID.bcs,
+    })
+  }
 
   readonly id: string
 
@@ -78,7 +85,7 @@ export class UID {
     return new UID(item.fields.id)
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): UID {
-    return UID.fromFields(bcs.de([UID.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): UID {
+    return UID.fromFields(UID.bcs.parse(data))
   }
 }

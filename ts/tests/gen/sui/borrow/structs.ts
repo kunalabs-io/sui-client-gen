@@ -1,15 +1,11 @@
-import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { initLoaderIfNeeded } from '../../_framework/init-source'
+import { structClassLoaderSource } from '../../_framework/loader'
 import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
 import { Option } from '../../move-stdlib/option/structs'
 import { ID } from '../object/structs'
+import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
 
 /* ============================== Borrow =============================== */
-
-bcs.registerStructType('0x2::borrow::Borrow', {
-  ref: `address`,
-  obj: `0x2::object::ID`,
-})
 
 export function isBorrow(type: Type): boolean {
   type = compressSuiType(type)
@@ -24,6 +20,16 @@ export interface BorrowFields {
 export class Borrow {
   static readonly $typeName = '0x2::borrow::Borrow'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('Borrow', {
+      ref: bcs.bytes(32).transform({
+        input: (val: string) => fromHEX(val),
+        output: (val: Uint8Array) => toHEX(val),
+      }),
+      obj: ID.bcs,
+    })
+  }
 
   readonly ref: string
   readonly obj: string
@@ -44,17 +50,12 @@ export class Borrow {
     return new Borrow({ ref: `0x${item.fields.ref}`, obj: item.fields.obj })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): Borrow {
-    return Borrow.fromFields(bcs.de([Borrow.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): Borrow {
+    return Borrow.fromFields(Borrow.bcs.parse(data))
   }
 }
 
 /* ============================== Referent =============================== */
-
-bcs.registerStructType('0x2::borrow::Referent<T>', {
-  id: `address`,
-  value: `0x1::option::Option<T>`,
-})
 
 export function isReferent(type: Type): boolean {
   type = compressSuiType(type)
@@ -69,6 +70,18 @@ export interface ReferentFields<T> {
 export class Referent<T> {
   static readonly $typeName = '0x2::borrow::Referent'
   static readonly $numTypeParams = 1
+
+  static get bcs(): (t: BcsType<any>) => BcsType<any> {
+    return bcs.generic(['T'], T =>
+      bcs.struct('Referent<T>', {
+        id: bcs.bytes(32).transform({
+          input: (val: string) => fromHEX(val),
+          output: (val: Uint8Array) => toHEX(val),
+        }),
+        value: Option.bcs(T),
+      })
+    )
+  }
 
   readonly $typeArg: Type
 
@@ -111,7 +124,14 @@ export class Referent<T> {
     })
   }
 
-  static fromBcs<T>(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): Referent<T> {
-    return Referent.fromFields(typeArg, bcs.de([Referent.$typeName, typeArg], data, encoding))
+  static fromBcs<T>(typeArg: Type, data: Uint8Array): Referent<T> {
+    initLoaderIfNeeded()
+
+    const typeArgs = [typeArg]
+
+    return Referent.fromFields(
+      typeArg,
+      Referent.bcs(structClassLoaderSource.getBcsType(typeArgs[0])).parse(data)
+    )
   }
 }

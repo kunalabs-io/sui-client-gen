@@ -1,12 +1,8 @@
-import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
 import { Table } from '../table/structs'
+import { bcs } from '@mysten/bcs'
 
 /* ============================== TableVec =============================== */
-
-bcs.registerStructType('0x2::table_vec::TableVec<Element>', {
-  contents: `0x2::table::Table<u64, Element>`,
-})
 
 export function isTableVec(type: Type): boolean {
   type = compressSuiType(type)
@@ -20,6 +16,12 @@ export interface TableVecFields {
 export class TableVec {
   static readonly $typeName = '0x2::table_vec::TableVec'
   static readonly $numTypeParams = 1
+
+  static get bcs() {
+    return bcs.struct('TableVec', {
+      contents: Table.bcs,
+    })
+  }
 
   readonly $typeArg: Type
 
@@ -44,7 +46,7 @@ export class TableVec {
     return new TableVec(typeArgs[0], Table.fromFieldsWithTypes(item.fields.contents))
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array | string, encoding?: Encoding): TableVec {
-    return TableVec.fromFields(typeArg, bcs.de([TableVec.$typeName, typeArg], data, encoding))
+  static fromBcs(typeArg: Type, data: Uint8Array): TableVec {
+    return TableVec.fromFields(typeArg, TableVec.bcs.parse(data))
   }
 }

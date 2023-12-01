@@ -1,19 +1,12 @@
-import { Encoding, bcsSource as bcs } from '../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib/ascii/structs'
 import { Option } from '../../move-stdlib/option/structs'
 import { String as String1 } from '../../move-stdlib/string/structs'
 import { ID, UID } from '../../sui/object/structs'
+import { bcs, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== ExampleStruct =============================== */
-
-bcs.registerStructType(
-  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct',
-  {
-    dummy_field: `bool`,
-  }
-)
 
 export function isExampleStruct(type: Type): boolean {
   type = compressSuiType(type)
@@ -32,6 +25,12 @@ export class ExampleStruct {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
   static readonly $numTypeParams = 0
 
+  static get bcs() {
+    return bcs.struct('ExampleStruct', {
+      dummy_field: bcs.bool(),
+    })
+  }
+
   readonly dummyField: boolean
 
   constructor(dummyField: boolean) {
@@ -49,27 +48,12 @@ export class ExampleStruct {
     return new ExampleStruct(item.fields.dummy_field)
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): ExampleStruct {
-    return ExampleStruct.fromFields(bcs.de([ExampleStruct.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): ExampleStruct {
+    return ExampleStruct.fromFields(ExampleStruct.bcs.parse(data))
   }
 }
 
 /* ============================== SpecialTypesStruct =============================== */
-
-bcs.registerStructType(
-  '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct',
-  {
-    id: `0x2::object::UID`,
-    ascii_string: `0x1::ascii::String`,
-    utf8_string: `0x1::string::String`,
-    vector_of_u64: `vector<u64>`,
-    vector_of_objects: `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct>`,
-    id_field: `0x2::object::ID`,
-    address: `address`,
-    option_some: `0x1::option::Option<u64>`,
-    option_none: `0x1::option::Option<u64>`,
-  }
-)
 
 export function isSpecialTypesStruct(type: Type): boolean {
   type = compressSuiType(type)
@@ -95,6 +79,23 @@ export class SpecialTypesStruct {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('SpecialTypesStruct', {
+      id: UID.bcs,
+      ascii_string: String.bcs,
+      utf8_string: String1.bcs,
+      vector_of_u64: bcs.vector(bcs.u64()),
+      vector_of_objects: bcs.vector(ExampleStruct.bcs),
+      id_field: ID.bcs,
+      address: bcs.bytes(32).transform({
+        input: (val: string) => fromHEX(val),
+        output: (val: Uint8Array) => toHEX(val),
+      }),
+      option_some: Option.bcs(bcs.u64()),
+      option_none: Option.bcs(bcs.u64()),
+    })
+  }
 
   readonly id: string
   readonly asciiString: string
@@ -167,8 +168,8 @@ export class SpecialTypesStruct {
     })
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): SpecialTypesStruct {
-    return SpecialTypesStruct.fromFields(bcs.de([SpecialTypesStruct.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): SpecialTypesStruct {
+    return SpecialTypesStruct.fromFields(SpecialTypesStruct.bcs.parse(data))
   }
 
   static fromSuiParsedData(content: SuiParsedData) {

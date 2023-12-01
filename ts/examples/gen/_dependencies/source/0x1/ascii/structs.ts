@@ -1,11 +1,7 @@
-import { Encoding, bcsSource as bcs } from '../../../../_framework/bcs'
 import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
+import { bcs } from '@mysten/bcs'
 
 /* ============================== Char =============================== */
-
-bcs.registerStructType('0x1::ascii::Char', {
-  byte: `u8`,
-})
 
 export function isChar(type: Type): boolean {
   type = compressSuiType(type)
@@ -19,6 +15,12 @@ export interface CharFields {
 export class Char {
   static readonly $typeName = '0x1::ascii::Char'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('Char', {
+      byte: bcs.u8(),
+    })
+  }
 
   readonly byte: number
 
@@ -37,16 +39,12 @@ export class Char {
     return new Char(item.fields.byte)
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): Char {
-    return Char.fromFields(bcs.de([Char.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): Char {
+    return Char.fromFields(Char.bcs.parse(data))
   }
 }
 
 /* ============================== String =============================== */
-
-bcs.registerStructType('0x1::ascii::String', {
-  bytes: `vector<u8>`,
-})
 
 export function isString(type: Type): boolean {
   type = compressSuiType(type)
@@ -60,6 +58,12 @@ export interface StringFields {
 export class String {
   static readonly $typeName = '0x1::ascii::String'
   static readonly $numTypeParams = 0
+
+  static get bcs() {
+    return bcs.struct('String', {
+      bytes: bcs.vector(bcs.u8()),
+    })
+  }
 
   readonly bytes: Array<number>
 
@@ -78,7 +82,7 @@ export class String {
     return new String(item.fields.bytes.map((item: any) => item))
   }
 
-  static fromBcs(data: Uint8Array | string, encoding?: Encoding): String {
-    return String.fromFields(bcs.de([String.$typeName], data, encoding))
+  static fromBcs(data: Uint8Array): String {
+    return String.fromFields(String.bcs.parse(data))
   }
 }
