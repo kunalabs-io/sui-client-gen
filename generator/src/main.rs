@@ -100,10 +100,6 @@ async fn main() -> Result<()> {
 
     std::fs::create_dir_all(out_root.join("_framework"))?;
     write_str_to_file(
-        framework_sources::BCS,
-        out_root.join("_framework").join("bcs.ts").as_ref(),
-    )?;
-    write_str_to_file(
         framework_sources::LOADER,
         out_root.join("_framework").join("loader.ts").as_ref(),
     )?;
@@ -339,9 +335,6 @@ fn gen_packages_for_model(
 
             for strct in module.get_structs() {
                 structs_gen.gen_struct_sep_comment(&mut tokens, &strct);
-
-                // bcs.registerStruct
-                structs_gen.gen_bcs_register_struct_type(&mut tokens, &strct);
 
                 // type check function
                 structs_gen.gen_is_type_func(&mut tokens, &strct);

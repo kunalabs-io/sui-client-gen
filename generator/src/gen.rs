@@ -353,6 +353,7 @@ fn gen_type_args_param(
 
 enum QuoteItem {
     Interpolated(Tokens<JavaScript>),
+    #[allow(dead_code)]
     Literal(String),
 }
 
@@ -1152,53 +1153,53 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         }
     }
 
-    /// Generates the `bcs.registerStructType` call for a struct.
-    pub fn gen_bcs_register_struct_type(&self, tokens: &mut js::Tokens, strct: &StructEnv) {
-        let bcs = &self.framework.import_bcs();
+    pub fn gen_struct_bcs_def_field_value(
+        &mut self,
+        ty: &Type,
+        type_param_names: Vec<Symbol>,
+    ) -> js::Tokens {
+        let bcs = &js::import("@mysten/bcs", "bcs");
+        let from_hex = &js::import("@mysten/bcs", "fromHEX");
+        let to_hex = &js::import("@mysten/bcs", "toHEX");
+        match ty {
+            Type::Primitive(ty) => match ty {
+                PrimitiveType::U8 => quote!($bcs.u8()),
+                PrimitiveType::U16 => quote!($bcs.u16()),
+                PrimitiveType::U32 => quote!($bcs.u32()),
+                PrimitiveType::U64 => quote!($bcs.u64()),
+                PrimitiveType::U128 => quote!($bcs.u128()),
+                PrimitiveType::U256 => quote!($bcs.u256()),
+                PrimitiveType::Bool => quote!($bcs.bool()),
+                PrimitiveType::Address => quote!($bcs.bytes(32).transform({
+                    input: (val: string) => $from_hex(val),
+                    output: (val: Uint8Array) => $to_hex(val),
+                })),
+                PrimitiveType::Signer => quote!($bcs.bytes(32)),
+                _ => panic!("unexpected primitive type: {:?}", ty),
+            },
+            Type::Vector(ty) => {
+                quote!($bcs.vector($(self.gen_struct_bcs_def_field_value(ty, type_param_names))))
+            }
+            Type::Struct(mid, sid, ts) => {
+                let field_module = self.env.get_module(*mid);
+                let field_strct = field_module.get_struct(*sid);
 
-        let type_params = self.strct_type_param_names(strct);
-        let type_params_str = type_params
-            .iter()
-            .map(|param| param.display(self.symbol_pool()).to_string())
-            .collect::<Vec<_>>();
+                let class = self.import_ctx.get_class(&field_strct);
+                let non_phantom_param_idxs = (0..ts.len())
+                    .filter(|idx| !field_strct.is_phantom_parameter(*idx))
+                    .collect::<Vec<_>>();
 
-        let mut struct_bcs_def = strct.get_full_name_with_address();
-        if !type_params_str.is_empty() {
-            struct_bcs_def.push('<');
-            struct_bcs_def.push_str(&type_params_str.join(", "));
-            struct_bcs_def.push('>');
+                quote!($class.bcs$(if !non_phantom_param_idxs.is_empty() {
+                    ($(for idx in non_phantom_param_idxs join (, ) =>
+                        $(self.gen_struct_bcs_def_field_value(&ts[idx], type_param_names.clone()))
+                    ))
+                }))
+            }
+            Type::TypeParameter(idx) => {
+                quote!($(type_param_names[*idx as usize].display(self.symbol_pool()).to_string()))
+            }
+            _ => panic!("unexpected type: {:?}", ty),
         }
-
-        quote_in! { *tokens =>
-            $bcs.registerStructType(
-                $[str]($[const](struct_bcs_def))$(ref toks {
-                    if strct.get_field_count() > 0 {
-                        toks.append(", {");
-                        toks.push();
-                        for field in strct.get_fields() {
-                            let name = field
-                                .get_name()
-                                .display(self.symbol_pool())
-                                .to_string();
-                            let type_param_names = type_params_str
-                                .clone()
-                                .into_iter()
-                                .map(QuoteItem::Literal)
-                                .collect::<Vec<_>>();
-                            let ty =
-                                gen_bcs_def_for_type(&field.get_type(), self.env, &type_param_names);
-
-                            quote_in! { *toks =>
-                                $(name): $ty,
-                            }
-                            toks.push()
-                        }
-                        toks.append("}");
-                    }
-                })
-            )
-        }
-        tokens.line();
     }
 
     /// Generates the `is<StructName>` function for a struct.
@@ -1272,11 +1273,13 @@ impl<'env, 'a> StructsGen<'env, 'a> {
     /// Generates the struct class for a struct.
     pub fn gen_struct_class(&mut self, tokens: &mut js::Tokens, strct: &StructEnv) {
         let init_loader_if_needed = &self.framework.import_init_loader_if_needed();
+        let struct_class_loader = &self.framework.import_struct_class_loader();
         let fields_with_types = &self.framework.import("util", "FieldsWithTypes");
         let parse_type_name = &self.framework.import("util", "parseTypeName");
-        let encoding = &self.framework.import("bcs", "Encoding");
         let sui_parsed_data = &js::import("@mysten/sui.js/client", "SuiParsedData");
         let sui_client = &js::import("@mysten/sui.js/client", "SuiClient");
+        let bcs = &js::import("@mysten/bcs", "bcs");
+        let bcs_type = &js::import("@mysten/bcs", "BcsType");
 
         strct.get_abilities().has_key();
 
@@ -1284,11 +1287,43 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let type_params = self.strct_type_param_names(strct);
         let fields = strct.get_fields().collect::<Vec<_>>();
         let non_phantom_params = self.strct_non_phantom_type_param_names(strct);
+        let non_phantom_param_idxs = (0..type_params.len())
+            .filter(|idx| !strct.is_phantom_parameter(*idx))
+            .collect::<Vec<_>>();
+
+        let bcs_def_name = quote!($(&struct_name)$(self.gen_params_toks(strct)));
 
         quote_in! { *tokens =>
             export class $(&struct_name)$(self.gen_params_toks(strct)) {
                 static readonly $$typeName = $[str]($[const](strct.get_full_name_with_address()));
                 static readonly $$numTypeParams = $(type_params.len());$['\n']
+
+                $(if !non_phantom_params.is_empty() {
+                    static get bcs(): ($(for idx in non_phantom_param_idxs.iter() join (, ) =>
+                        $(type_params[*idx].display(self.symbol_pool()).to_string().to_case(Case::Camel)): $bcs_type<any>
+                    )) => $bcs_type<any> $("{")
+                        return $bcs.generic$("(")
+                            [$(for param in &non_phantom_params join (, ) => $[str](
+                                $[const](param.display(self.symbol_pool()).to_string()))
+                            )],
+                            ($(for param in &non_phantom_params join (, ) =>
+                                $(param.display(self.symbol_pool()).to_string())
+                            )) =>
+
+                } else {
+                    static get bcs() $("{")
+                        return
+                })
+                    $bcs.struct($[str]($[const](bcs_def_name)), {$['\n']
+                        $(for field in strct.get_fields() join (, ) =>
+                            $(field.get_name().display(self.symbol_pool()).to_string()):
+                                $(self.gen_struct_bcs_def_field_value(&field.get_type(), self.strct_type_param_names(strct)))
+                        )$['\n']
+                    $['\n']})
+                    $(if !non_phantom_params.is_empty() {
+                        $(")")
+                    })
+                $("}");$['\n']
 
                 $(gen_type_args_param(type_params.len(), "readonly $", quote!(;$['\n']), &self.framework));
 
@@ -1384,20 +1419,28 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
                 static fromBcs$(self.gen_params_toks(strct))(
                     $(gen_type_args_param(type_params.len(), "", ",", &self.framework))
-                    data: Uint8Array | string,
-                    encoding?: $encoding
+                    data: Uint8Array
                 ): $(&struct_name)$(self.gen_params_toks(strct)) {
+                    $(if !non_phantom_params.is_empty() {
+                        $init_loader_if_needed();$['\n']
+                    })
+
+                    $(if type_params.len() == 1 && !non_phantom_params.is_empty() {
+                        const typeArgs = [typeArg];$['\n']
+                    })
+
                     return $(&struct_name).fromFields(
                         $(match type_params.len() {
                             0 => (),
                             1 => { typeArg, },
                             _ => { typeArgs, },
                         })
-                        bcs.de([$(&struct_name).$$typeName, $(match type_params.len() {
-                            0 => (),
-                            1 => { typeArg, },
-                            _ => { ...typeArgs, },
-                        })], data, encoding)
+                        $(match non_phantom_params.len() {
+                            0 => $(&struct_name).bcs.parse(data),
+                            len => $(&struct_name).bcs(
+                                    $(for i in 0..len join (, ) => $(struct_class_loader).getBcsType(typeArgs[$(non_phantom_param_idxs[i])]))
+                                ).parse(data),
+                        })
                     )
                 }$['\n']
 
