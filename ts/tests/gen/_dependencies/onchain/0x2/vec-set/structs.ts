@@ -18,12 +18,11 @@ export class VecSet<T0> {
   static readonly $typeName = '0x2::vec_set::VecSet'
   static readonly $numTypeParams = 1
 
-  static get bcs(): (t0: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['T0'], T0 =>
-      bcs.struct('VecSet<T0>', {
+  static get bcs() {
+    return <T0 extends BcsType<any>>(T0: T0) =>
+      bcs.struct(`VecSet<${T0.name}>`, {
         contents: bcs.vector(T0),
       })
-    )
   }
 
   readonly $typeArg: Type

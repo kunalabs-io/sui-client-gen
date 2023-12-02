@@ -71,16 +71,15 @@ export class Referent<T> {
   static readonly $typeName = '0x2::borrow::Referent'
   static readonly $numTypeParams = 1
 
-  static get bcs(): (t: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['T'], T =>
-      bcs.struct('Referent<T>', {
+  static get bcs() {
+    return <T extends BcsType<any>>(T: T) =>
+      bcs.struct(`Referent<${T.name}>`, {
         id: bcs.bytes(32).transform({
           input: (val: string) => fromHEX(val),
           output: (val: Uint8Array) => toHEX(val),
         }),
         value: Option.bcs(T),
       })
-    )
   }
 
   readonly $typeArg: Type

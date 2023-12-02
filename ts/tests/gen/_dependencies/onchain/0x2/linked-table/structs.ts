@@ -24,15 +24,14 @@ export class LinkedTable<T0> {
   static readonly $typeName = '0x2::linked_table::LinkedTable'
   static readonly $numTypeParams = 2
 
-  static get bcs(): (t0: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['T0'], T0 =>
-      bcs.struct('LinkedTable<T0>', {
+  static get bcs() {
+    return <T0 extends BcsType<any>>(T0: T0) =>
+      bcs.struct(`LinkedTable<${T0.name}>`, {
         id: UID.bcs,
         size: bcs.u64(),
         head: Option.bcs(T0),
         tail: Option.bcs(T0),
       })
-    )
   }
 
   readonly $typeArgs: [Type, Type]
@@ -138,14 +137,13 @@ export class Node<T0, T1> {
   static readonly $typeName = '0x2::linked_table::Node'
   static readonly $numTypeParams = 2
 
-  static get bcs(): (t0: BcsType<any>, t1: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['T0', 'T1'], (T0, T1) =>
-      bcs.struct('Node<T0, T1>', {
+  static get bcs() {
+    return <T0 extends BcsType<any>, T1 extends BcsType<any>>(T0: T0, T1: T1) =>
+      bcs.struct(`Node<${T0.name}, ${T1.name}>`, {
         prev: Option.bcs(T0),
         next: Option.bcs(T0),
         value: T1,
       })
-    )
   }
 
   readonly $typeArgs: [Type, Type]

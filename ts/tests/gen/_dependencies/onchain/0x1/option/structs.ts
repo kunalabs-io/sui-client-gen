@@ -18,12 +18,11 @@ export class Option<T0> {
   static readonly $typeName = '0x1::option::Option'
   static readonly $numTypeParams = 1
 
-  static get bcs(): (t0: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['T0'], T0 =>
-      bcs.struct('Option<T0>', {
+  static get bcs() {
+    return <T0 extends BcsType<any>>(T0: T0) =>
+      bcs.struct(`Option<${T0.name}>`, {
         vec: bcs.vector(T0),
       })
-    )
   }
 
   readonly $typeArg: Type

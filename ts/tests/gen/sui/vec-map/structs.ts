@@ -19,13 +19,12 @@ export class Entry<K, V> {
   static readonly $typeName = '0x2::vec_map::Entry'
   static readonly $numTypeParams = 2
 
-  static get bcs(): (k: BcsType<any>, v: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['K', 'V'], (K, V) =>
-      bcs.struct('Entry<K, V>', {
+  static get bcs() {
+    return <K extends BcsType<any>, V extends BcsType<any>>(K: K, V: V) =>
+      bcs.struct(`Entry<${K.name}, ${V.name}>`, {
         key: K,
         value: V,
       })
-    )
   }
 
   readonly $typeArgs: [Type, Type]
@@ -91,12 +90,11 @@ export class VecMap<K, V> {
   static readonly $typeName = '0x2::vec_map::VecMap'
   static readonly $numTypeParams = 2
 
-  static get bcs(): (k: BcsType<any>, v: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['K', 'V'], (K, V) =>
-      bcs.struct('VecMap<K, V>', {
+  static get bcs() {
+    return <K extends BcsType<any>, V extends BcsType<any>>(K: K, V: V) =>
+      bcs.struct(`VecMap<${K.name}, ${V.name}>`, {
         contents: bcs.vector(Entry.bcs(K, V)),
       })
-    )
   }
 
   readonly $typeArgs: [Type, Type]

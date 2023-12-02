@@ -18,12 +18,11 @@ export class PriorityQueue<T0> {
   static readonly $typeName = '0x2::priority_queue::PriorityQueue'
   static readonly $numTypeParams = 1
 
-  static get bcs(): (t0: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['T0'], T0 =>
-      bcs.struct('PriorityQueue<T0>', {
+  static get bcs() {
+    return <T0 extends BcsType<any>>(T0: T0) =>
+      bcs.struct(`PriorityQueue<${T0.name}>`, {
         entries: bcs.vector(Entry.bcs(T0)),
       })
-    )
   }
 
   readonly $typeArg: Type
@@ -87,13 +86,12 @@ export class Entry<T0> {
   static readonly $typeName = '0x2::priority_queue::Entry'
   static readonly $numTypeParams = 1
 
-  static get bcs(): (t0: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['T0'], T0 =>
-      bcs.struct('Entry<T0>', {
+  static get bcs() {
+    return <T0 extends BcsType<any>>(T0: T0) =>
+      bcs.struct(`Entry<${T0.name}>`, {
         priority: bcs.u64(),
         value: T0,
       })
-    )
   }
 
   readonly $typeArg: Type

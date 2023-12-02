@@ -22,14 +22,13 @@ export class Field<Name, Value> {
   static readonly $typeName = '0x2::dynamic_field::Field'
   static readonly $numTypeParams = 2
 
-  static get bcs(): (name: BcsType<any>, value: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['Name', 'Value'], (Name, Value) =>
-      bcs.struct('Field<Name, Value>', {
+  static get bcs() {
+    return <Name extends BcsType<any>, Value extends BcsType<any>>(Name: Name, Value: Value) =>
+      bcs.struct(`Field<${Name.name}, ${Value.name}>`, {
         id: UID.bcs,
         name: Name,
         value: Value,
       })
-    )
   }
 
   readonly $typeArgs: [Type, Type]

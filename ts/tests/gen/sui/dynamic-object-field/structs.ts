@@ -18,12 +18,11 @@ export class Wrapper<Name> {
   static readonly $typeName = '0x2::dynamic_object_field::Wrapper'
   static readonly $numTypeParams = 1
 
-  static get bcs(): (name: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['Name'], Name =>
-      bcs.struct('Wrapper<Name>', {
+  static get bcs() {
+    return <Name extends BcsType<any>>(Name: Name) =>
+      bcs.struct(`Wrapper<${Name.name}>`, {
         name: Name,
       })
-    )
   }
 
   readonly $typeArg: Type

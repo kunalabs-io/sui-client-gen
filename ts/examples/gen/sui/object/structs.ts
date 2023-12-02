@@ -19,12 +19,11 @@ export class DynamicFields<K> {
   static readonly $typeName = '0x2::object::DynamicFields'
   static readonly $numTypeParams = 1
 
-  static get bcs(): (k: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['K'], K =>
-      bcs.struct('DynamicFields<K>', {
+  static get bcs() {
+    return <K extends BcsType<any>>(K: K) =>
+      bcs.struct(`DynamicFields<${K.name}>`, {
         names: bcs.vector(K),
       })
-    )
   }
 
   readonly $typeArg: Type

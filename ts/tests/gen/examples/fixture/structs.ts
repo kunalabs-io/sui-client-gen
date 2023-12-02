@@ -132,9 +132,9 @@ export class Foo<T> {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo'
   static readonly $numTypeParams = 1
 
-  static get bcs(): (t: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['T'], T =>
-      bcs.struct('Foo<T>', {
+  static get bcs() {
+    return <T extends BcsType<any>>(T: T) =>
+      bcs.struct(`Foo<${T.name}>`, {
         id: UID.bcs,
         generic: T,
         reified_primitive_vec: bcs.vector(bcs.u64()),
@@ -155,7 +155,6 @@ export class Foo<T> {
         dummy: Dummy.bcs,
         other: StructFromOtherModule.bcs,
       })
-    )
   }
 
   readonly $typeArg: Type
@@ -349,13 +348,12 @@ export class WithGenericField<T> {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField'
   static readonly $numTypeParams = 1
 
-  static get bcs(): (t: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['T'], T =>
-      bcs.struct('WithGenericField<T>', {
+  static get bcs() {
+    return <T extends BcsType<any>>(T: T) =>
+      bcs.struct(`WithGenericField<${T.name}>`, {
         id: UID.bcs,
         generic_field: T,
       })
-    )
   }
 
   readonly $typeArg: Type
@@ -462,9 +460,9 @@ export class WithSpecialTypes<U> {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes'
   static readonly $numTypeParams = 2
 
-  static get bcs(): (u: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['U'], U =>
-      bcs.struct('WithSpecialTypes<U>', {
+  static get bcs() {
+    return <U extends BcsType<any>>(U: U) =>
+      bcs.struct(`WithSpecialTypes<${U.name}>`, {
         id: UID.bcs,
         string: String.bcs,
         ascii_string: String1.bcs,
@@ -479,7 +477,6 @@ export class WithSpecialTypes<U> {
         option_generic: Option.bcs(U),
         option_generic_none: Option.bcs(U),
       })
-    )
   }
 
   readonly $typeArgs: [Type, Type]
@@ -663,20 +660,29 @@ export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics'
   static readonly $numTypeParams = 8
 
-  static get bcs(): (
-    t0: BcsType<any>,
-    t1: BcsType<any>,
-    t2: BcsType<any>,
-    t3: BcsType<any>,
-    t4: BcsType<any>,
-    t5: BcsType<any>,
-    t6: BcsType<any>,
-    t7: BcsType<any>
-  ) => BcsType<any> {
-    return bcs.generic(
-      ['T0', 'T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
-      (T0, T1, T2, T3, T4, T5, T6, T7) =>
-        bcs.struct('WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7>', {
+  static get bcs() {
+    return <
+      T0 extends BcsType<any>,
+      T1 extends BcsType<any>,
+      T2 extends BcsType<any>,
+      T3 extends BcsType<any>,
+      T4 extends BcsType<any>,
+      T5 extends BcsType<any>,
+      T6 extends BcsType<any>,
+      T7 extends BcsType<any>,
+    >(
+      T0: T0,
+      T1: T1,
+      T2: T2,
+      T3: T3,
+      T4: T4,
+      T5: T5,
+      T6: T6,
+      T7: T7
+    ) =>
+      bcs.struct(
+        `WithSpecialTypesAsGenerics<${T0.name}, ${T1.name}, ${T2.name}, ${T3.name}, ${T4.name}, ${T5.name}, ${T6.name}, ${T7.name}>`,
+        {
           id: UID.bcs,
           string: T0,
           ascii_string: T1,
@@ -686,8 +692,8 @@ export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
           balance: T5,
           option: T6,
           option_none: T7,
-        })
-    )
+        }
+      )
   }
 
   readonly $typeArgs: [Type, Type, Type, Type, Type, Type, Type, Type]
@@ -856,9 +862,9 @@ export class WithSpecialTypesInVectors<T> {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors'
   static readonly $numTypeParams = 1
 
-  static get bcs(): (t: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['T'], T =>
-      bcs.struct('WithSpecialTypesInVectors<T>', {
+  static get bcs() {
+    return <T extends BcsType<any>>(T: T) =>
+      bcs.struct(`WithSpecialTypesInVectors<${T.name}>`, {
         id: UID.bcs,
         string: bcs.vector(String.bcs),
         ascii_string: bcs.vector(String1.bcs),
@@ -867,7 +873,6 @@ export class WithSpecialTypesInVectors<T> {
         option: bcs.vector(Option.bcs(bcs.u64())),
         option_generic: bcs.vector(Option.bcs(T)),
       })
-    )
   }
 
   readonly $typeArg: Type
@@ -1006,13 +1011,12 @@ export class WithTwoGenerics<T, U> {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics'
   static readonly $numTypeParams = 2
 
-  static get bcs(): (t: BcsType<any>, u: BcsType<any>) => BcsType<any> {
-    return bcs.generic(['T', 'U'], (T, U) =>
-      bcs.struct('WithTwoGenerics<T, U>', {
+  static get bcs() {
+    return <T extends BcsType<any>, U extends BcsType<any>>(T: T, U: U) =>
+      bcs.struct(`WithTwoGenerics<${T.name}, ${U.name}>`, {
         generic_field_1: T,
         generic_field_2: U,
       })
-    )
   }
 
   readonly $typeArgs: [Type, Type]
