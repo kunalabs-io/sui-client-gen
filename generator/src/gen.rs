@@ -1287,43 +1287,48 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let type_params = self.strct_type_param_names(strct);
         let fields = strct.get_fields().collect::<Vec<_>>();
         let non_phantom_params = self.strct_non_phantom_type_param_names(strct);
+        let non_phantom_param_strs = non_phantom_params
+            .iter()
+            .map(|param| param.display(self.symbol_pool()).to_string())
+            .collect::<Vec<_>>();
         let non_phantom_param_idxs = (0..type_params.len())
             .filter(|idx| !strct.is_phantom_parameter(*idx))
             .collect::<Vec<_>>();
 
-        let bcs_def_name = quote!($(&struct_name)$(self.gen_params_toks(strct)));
+        let bcs_def_name = if non_phantom_params.is_empty() {
+            quote!($[str]($[const](&struct_name)))
+        } else {
+            self.interpolate(format!(
+                "{}<{}>",
+                &struct_name,
+                non_phantom_param_strs
+                    .iter()
+                    .map(|param| format!("${{{}.name}}", param))
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ))
+        };
 
         quote_in! { *tokens =>
             export class $(&struct_name)$(self.gen_params_toks(strct)) {
                 static readonly $$typeName = $[str]($[const](strct.get_full_name_with_address()));
                 static readonly $$numTypeParams = $(type_params.len());$['\n']
 
-                $(if !non_phantom_params.is_empty() {
-                    static get bcs(): ($(for idx in non_phantom_param_idxs.iter() join (, ) =>
-                        $(type_params[*idx].display(self.symbol_pool()).to_string().to_case(Case::Camel)): $bcs_type<any>
-                    )) => $bcs_type<any> $("{")
-                        return $bcs.generic$("(")
-                            [$(for param in &non_phantom_params join (, ) => $[str](
-                                $[const](param.display(self.symbol_pool()).to_string()))
-                            )],
-                            ($(for param in &non_phantom_params join (, ) =>
-                                $(param.display(self.symbol_pool()).to_string())
-                            )) =>
-
-                } else {
-                    static get bcs() $("{")
-                        return
-                })
-                    $bcs.struct($[str]($[const](bcs_def_name)), {$['\n']
+                static get bcs() {
+                    return $(if !non_phantom_params.is_empty() {
+                        <$(for param in non_phantom_param_strs.iter() join (, ) =>
+                            $param extends $bcs_type<any>
+                        )>($(for param in non_phantom_param_strs.iter() join (, ) =>
+                            $param: $param
+                        )) =>
+                    })
+                    $bcs.struct($bcs_def_name, {$['\n']
                         $(for field in strct.get_fields() join (, ) =>
                             $(field.get_name().display(self.symbol_pool()).to_string()):
                                 $(self.gen_struct_bcs_def_field_value(&field.get_type(), self.strct_type_param_names(strct)))
                         )$['\n']
                     $['\n']})
-                    $(if !non_phantom_params.is_empty() {
-                        $(")")
-                    })
-                $("}");$['\n']
+                };$['\n']
 
                 $(gen_type_args_param(type_params.len(), "readonly $", quote!(;$['\n']), &self.framework));
 
