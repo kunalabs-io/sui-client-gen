@@ -11,7 +11,7 @@ A tool for generating TS SDKs for Sui Move smart contracts. Supports code genera
 ## Quick Start
 
 1) Install the generator by either:
-   - `cargo install --locked --git https://github.com/kunalabs-io/sui-client-gen.git` (you might have to install some [build dependencies](https://docs.sui.io/build/install#linux-prerequisites))
+   - `cargo install --locked --git https://github.com/kunalabs-io/sui-client-gen.git` (you might have to install some [build dependencies](https://docs.sui.io/guides/developer/getting-started/sui-install#all-linux-prerequisites))
    - or downloading a binary from https://github.com/kunalabs-io/sui-client-gen/releases/
 
 3) Create a new directory and in it a `gen.toml` file like so:
