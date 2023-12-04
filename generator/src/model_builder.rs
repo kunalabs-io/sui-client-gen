@@ -502,7 +502,7 @@ impl<'a> fmt::Display for SubstTOML<'a> {
                 }
 
                 PM::SubstOrRename::Assign(account) => {
-                    f.write_str(&str_escape(&account.to_canonical_string())?)?;
+                    f.write_str(&str_escape(&account.to_canonical_string(true))?)?;
                 }
             }
 
@@ -512,7 +512,7 @@ impl<'a> fmt::Display for SubstTOML<'a> {
         let mut substs = self.0.iter();
 
         let Some((addr, subst)) = substs.next() else {
-            return f.write_str("{}")
+            return f.write_str("{}");
         };
 
         f.write_str("{ ")?;

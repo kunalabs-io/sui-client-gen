@@ -1,34 +1,32 @@
 [package]
 name = "sui-client-gen"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 [dependencies]
 tokio = "1.28.1"
-anyhow = "1.0.69"
+anyhow = "1.0.71"
 futures = "0.3.25"
 tempfile = "3.5.0"
 toml = "0.5.8"
 regex = "1.8.1"
-genco = "0.17.5"
-clap = "4.3.4"
+genco = "0.17.8"
+clap = "4.4"
 codespan-reporting = "0.11.1"
 convert_case = "0.6.0"
 colored = "2.0.0"
 
-sui-move-build = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.2.0-release" }
-sui-move = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.2.0-release", features = [
+sui-move-build = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.14.0-release" }
+sui-move = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.14.0-release", features = [
     "build",
 ] }
-sui-sdk = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.2.0-release" }
-sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.2.0-release" }
-move-model = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.2.0-release" }
-move-core-types = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.2.0-release", features = [
-    "address32",
-] }
-move-binary-format = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.2.0-release" }
-move-symbol-pool = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.2.0-release" }
-move-bytecode-utils = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.2.0-release" }
-move-compiler = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.2.0-release" }
-move-package = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.2.0-release" }
-move-command-line-common = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.2.0-release" }
+sui-sdk = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.14.0-release" }
+sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.14.0-release" }
+move-model = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.14.0-release" }
+move-core-types = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.14.0-release" }
+move-binary-format = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.14.0-release" }
+move-symbol-pool = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.14.0-release" }
+move-bytecode-utils = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.14.0-release" }
+move-compiler = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.14.0-release" }
+move-package = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.14.0-release" }
+move-command-line-common = { git = "https://github.com/MystenLabs/sui", branch = "releases/sui-v1.14.0-release" }
