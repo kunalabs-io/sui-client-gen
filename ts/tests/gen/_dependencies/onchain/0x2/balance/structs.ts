@@ -48,6 +48,13 @@ export class Supply {
   static fromBcs(typeArg: Type, data: Uint8Array): Supply {
     return Supply.fromFields(typeArg, Supply.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      value: this.value.toString(),
+    }
+  }
 }
 
 /* ============================== Balance =============================== */
@@ -96,5 +103,12 @@ export class Balance {
 
   static fromBcs(typeArg: Type, data: Uint8Array): Balance {
     return Balance.fromFields(typeArg, Balance.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      value: this.value.toString(),
+    }
   }
 }

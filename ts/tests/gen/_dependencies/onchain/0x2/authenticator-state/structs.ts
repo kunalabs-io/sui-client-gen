@@ -1,4 +1,4 @@
-import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../../../_framework/util'
 import { String } from '../../0x1/string/structs'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -51,6 +51,13 @@ export class AuthenticatorState {
 
   static fromBcs(data: Uint8Array): AuthenticatorState {
     return AuthenticatorState.fromFields(AuthenticatorState.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      version: this.version.toString(),
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -129,6 +136,13 @@ export class AuthenticatorStateInner {
   static fromBcs(data: Uint8Array): AuthenticatorStateInner {
     return AuthenticatorStateInner.fromFields(AuthenticatorStateInner.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      version: this.version.toString(),
+      activeJwks: genericToJSON(`vector<0x2::authenticator_state::ActiveJwk>`, this.activeJwks),
+    }
+  }
 }
 
 /* ============================== JWK =============================== */
@@ -198,6 +212,15 @@ export class JWK {
   static fromBcs(data: Uint8Array): JWK {
     return JWK.fromFields(JWK.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      kty: this.kty,
+      e: this.e,
+      n: this.n,
+      alg: this.alg,
+    }
+  }
 }
 
 /* ============================== JwkId =============================== */
@@ -251,6 +274,13 @@ export class JwkId {
 
   static fromBcs(data: Uint8Array): JwkId {
     return JwkId.fromFields(JwkId.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      iss: this.iss,
+      kid: this.kid,
+    }
   }
 }
 
@@ -310,5 +340,13 @@ export class ActiveJwk {
 
   static fromBcs(data: Uint8Array): ActiveJwk {
     return ActiveJwk.fromFields(ActiveJwk.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      jwkId: this.jwkId.toJSON(),
+      jwk: this.jwk.toJSON(),
+      epoch: this.epoch.toString(),
+    }
   }
 }

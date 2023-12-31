@@ -1,4 +1,10 @@
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
+import {
+  FieldsWithTypes,
+  Type,
+  compressSuiType,
+  genericToJSON,
+  parseTypeName,
+} from '../../../../_framework/util'
 import { String as String1 } from '../../0x1/ascii/structs'
 import { Option } from '../../0x1/option/structs'
 import { String } from '../../0x1/string/structs'
@@ -64,6 +70,14 @@ export class Coin {
 
   static fromBcs(typeArg: Type, data: Uint8Array): Coin {
     return Coin.fromFields(typeArg, Coin.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      balance: this.balance.toJSON(),
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -182,6 +196,18 @@ export class CoinMetadata {
     return CoinMetadata.fromFields(typeArg, CoinMetadata.bcs.parse(data))
   }
 
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      decimals: this.decimals,
+      name: this.name,
+      symbol: this.symbol,
+      description: this.description,
+      iconUrl: genericToJSON(`0x1::option::Option<0x2::url::Url>`, this.iconUrl),
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -262,6 +288,14 @@ export class TreasuryCap {
     return TreasuryCap.fromFields(typeArg, TreasuryCap.bcs.parse(data))
   }
 
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      totalSupply: this.totalSupply.toJSON(),
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -330,5 +364,12 @@ export class CurrencyCreated {
 
   static fromBcs(typeArg: Type, data: Uint8Array): CurrencyCreated {
     return CurrencyCreated.fromFields(typeArg, CurrencyCreated.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      decimals: this.decimals,
+    }
   }
 }

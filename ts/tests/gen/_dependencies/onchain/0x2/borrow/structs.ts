@@ -1,6 +1,12 @@
 import { initLoaderIfNeeded } from '../../../../_framework/init-onchain'
 import { structClassLoaderOnchain } from '../../../../_framework/loader'
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
+import {
+  FieldsWithTypes,
+  Type,
+  compressSuiType,
+  genericToJSON,
+  parseTypeName,
+} from '../../../../_framework/util'
 import { Option } from '../../0x1/option/structs'
 import { ID } from '../object/structs'
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
@@ -83,6 +89,14 @@ export class Referent<T0> {
       Referent.bcs(structClassLoaderOnchain.getBcsType(typeArgs[0])).parse(data)
     )
   }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      value: genericToJSON(`0x1::option::Option<${this.$typeArg}>`, this.value),
+    }
+  }
 }
 
 /* ============================== Borrow =============================== */
@@ -132,5 +146,12 @@ export class Borrow {
 
   static fromBcs(data: Uint8Array): Borrow {
     return Borrow.fromFields(Borrow.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      ref: this.ref,
+      obj: this.obj,
+    }
   }
 }

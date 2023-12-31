@@ -1,6 +1,12 @@
 import { initLoaderIfNeeded } from '../../_framework/init-source'
 import { structClassLoaderSource } from '../../_framework/loader'
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  Type,
+  compressSuiType,
+  genericToJSON,
+  parseTypeName,
+} from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== Entry =============================== */
@@ -73,6 +79,14 @@ export class Entry<K, V> {
       ).parse(data)
     )
   }
+
+  toJSON() {
+    return {
+      $typeArgs: this.$typeArgs,
+      key: genericToJSON(this.$typeArgs[0], this.key),
+      value: genericToJSON(this.$typeArgs[1], this.value),
+    }
+  }
 }
 
 /* ============================== VecMap =============================== */
@@ -142,5 +156,15 @@ export class VecMap<K, V> {
         structClassLoaderSource.getBcsType(typeArgs[1])
       ).parse(data)
     )
+  }
+
+  toJSON() {
+    return {
+      $typeArgs: this.$typeArgs,
+      contents: genericToJSON(
+        `vector<0x2::vec_map::Entry<${this.$typeArgs[0]}, ${this.$typeArgs[1]}>>`,
+        this.contents
+      ),
+    }
   }
 }

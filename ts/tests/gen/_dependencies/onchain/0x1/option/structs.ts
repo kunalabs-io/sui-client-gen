@@ -1,6 +1,12 @@
 import { initLoaderIfNeeded } from '../../../../_framework/init-onchain'
 import { structClassLoaderOnchain } from '../../../../_framework/loader'
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
+import {
+  FieldsWithTypes,
+  Type,
+  compressSuiType,
+  genericToJSON,
+  parseTypeName,
+} from '../../../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== Option =============================== */
@@ -69,5 +75,12 @@ export class Option<T0> {
       typeArg,
       Option.bcs(structClassLoaderOnchain.getBcsType(typeArgs[0])).parse(data)
     )
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      vec: genericToJSON(`vector<${this.$typeArg}>`, this.vec),
+    }
   }
 }

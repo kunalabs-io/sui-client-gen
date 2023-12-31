@@ -91,6 +91,17 @@ export class VerifiedID {
     return VerifiedID.fromFields(VerifiedID.bcs.parse(data))
   }
 
+  toJSON() {
+    return {
+      id: this.id,
+      owner: this.owner,
+      keyClaimName: this.keyClaimName,
+      keyClaimValue: this.keyClaimValue,
+      issuer: this.issuer,
+      audience: this.audience,
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')

@@ -1,4 +1,4 @@
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
 import { String } from '../../move-stdlib/ascii/structs'
 import { Option } from '../../move-stdlib/option/structs'
 import { String as String1 } from '../../move-stdlib/string/structs'
@@ -50,6 +50,12 @@ export class ExampleStruct {
 
   static fromBcs(data: Uint8Array): ExampleStruct {
     return ExampleStruct.fromFields(ExampleStruct.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      dummyField: this.dummyField,
+    }
   }
 }
 
@@ -170,6 +176,23 @@ export class SpecialTypesStruct {
 
   static fromBcs(data: Uint8Array): SpecialTypesStruct {
     return SpecialTypesStruct.fromFields(SpecialTypesStruct.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      asciiString: this.asciiString,
+      utf8String: this.utf8String,
+      vectorOfU64: genericToJSON(`vector<u64>`, this.vectorOfU64),
+      vectorOfObjects: genericToJSON(
+        `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct>`,
+        this.vectorOfObjects
+      ),
+      idField: this.idField,
+      address: this.address,
+      optionSome: genericToJSON(`0x1::option::Option<u64>`, this.optionSome),
+      optionNone: genericToJSON(`0x1::option::Option<u64>`, this.optionNone),
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {

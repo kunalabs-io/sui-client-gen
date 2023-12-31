@@ -49,4 +49,11 @@ export class TableVec {
   static fromBcs(typeArg: Type, data: Uint8Array): TableVec {
     return TableVec.fromFields(typeArg, TableVec.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      contents: this.contents.toJSON(),
+    }
+  }
 }

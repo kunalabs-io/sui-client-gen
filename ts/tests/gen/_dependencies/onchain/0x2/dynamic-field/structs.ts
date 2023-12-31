@@ -1,6 +1,12 @@
 import { initLoaderIfNeeded } from '../../../../_framework/init-onchain'
 import { structClassLoaderOnchain } from '../../../../_framework/loader'
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
+import {
+  FieldsWithTypes,
+  Type,
+  compressSuiType,
+  genericToJSON,
+  parseTypeName,
+} from '../../../../_framework/util'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -80,6 +86,15 @@ export class Field<T0, T1> {
         structClassLoaderOnchain.getBcsType(typeArgs[1])
       ).parse(data)
     )
+  }
+
+  toJSON() {
+    return {
+      $typeArgs: this.$typeArgs,
+      id: this.id,
+      name: genericToJSON(this.$typeArgs[0], this.name),
+      value: genericToJSON(this.$typeArgs[1], this.value),
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {

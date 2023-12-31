@@ -45,4 +45,10 @@ export class TypeName {
   static fromBcs(data: Uint8Array): TypeName {
     return TypeName.fromFields(TypeName.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      name: this.name,
+    }
+  }
 }

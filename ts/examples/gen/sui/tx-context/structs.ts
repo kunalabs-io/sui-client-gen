@@ -1,4 +1,4 @@
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
 import { bcs, fromHEX, toHEX } from '@mysten/bcs'
 
 /* ============================== TxContext =============================== */
@@ -72,5 +72,15 @@ export class TxContext {
 
   static fromBcs(data: Uint8Array): TxContext {
     return TxContext.fromFields(TxContext.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      sender: this.sender,
+      txHash: genericToJSON(`vector<u8>`, this.txHash),
+      epoch: this.epoch.toString(),
+      epochTimestampMs: this.epochTimestampMs.toString(),
+      idsCreated: this.idsCreated.toString(),
+    }
   }
 }

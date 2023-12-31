@@ -45,4 +45,10 @@ export class Url {
   static fromBcs(data: Uint8Array): Url {
     return Url.fromFields(Url.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      url: this.url,
+    }
+  }
 }

@@ -46,4 +46,10 @@ export class StructFromOtherModule {
   static fromBcs(data: Uint8Array): StructFromOtherModule {
     return StructFromOtherModule.fromFields(StructFromOtherModule.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      dummyField: this.dummyField,
+    }
+  }
 }

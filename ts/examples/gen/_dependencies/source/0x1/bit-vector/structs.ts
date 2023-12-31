@@ -1,4 +1,4 @@
-import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== BitVector =============================== */
@@ -51,5 +51,12 @@ export class BitVector {
 
   static fromBcs(data: Uint8Array): BitVector {
     return BitVector.fromFields(BitVector.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      length: this.length.toString(),
+      bitField: genericToJSON(`vector<bool>`, this.bitField),
+    }
   }
 }

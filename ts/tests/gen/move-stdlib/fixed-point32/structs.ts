@@ -42,4 +42,10 @@ export class FixedPoint32 {
   static fromBcs(data: Uint8Array): FixedPoint32 {
     return FixedPoint32.fromFields(FixedPoint32.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      value: this.value.toString(),
+    }
+  }
 }

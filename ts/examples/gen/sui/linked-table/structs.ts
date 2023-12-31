@@ -1,7 +1,13 @@
 import { Option } from '../../_dependencies/source/0x1/option/structs'
 import { initLoaderIfNeeded } from '../../_framework/init-source'
 import { structClassLoaderSource } from '../../_framework/loader'
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  Type,
+  compressSuiType,
+  genericToJSON,
+  parseTypeName,
+} from '../../_framework/util'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -96,6 +102,16 @@ export class LinkedTable<K> {
       typeArgs,
       LinkedTable.bcs(structClassLoaderSource.getBcsType(typeArgs[0])).parse(data)
     )
+  }
+
+  toJSON() {
+    return {
+      $typeArgs: this.$typeArgs,
+      id: this.id,
+      size: this.size.toString(),
+      head: genericToJSON(`0x1::option::Option<${this.$typeArgs[0]}>`, this.head),
+      tail: genericToJSON(`0x1::option::Option<${this.$typeArgs[0]}>`, this.tail),
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -207,5 +223,14 @@ export class Node<K, V> {
         structClassLoaderSource.getBcsType(typeArgs[1])
       ).parse(data)
     )
+  }
+
+  toJSON() {
+    return {
+      $typeArgs: this.$typeArgs,
+      prev: genericToJSON(`0x1::option::Option<${this.$typeArgs[0]}>`, this.prev),
+      next: genericToJSON(`0x1::option::Option<${this.$typeArgs[0]}>`, this.next),
+      value: genericToJSON(this.$typeArgs[1], this.value),
+    }
   }
 }

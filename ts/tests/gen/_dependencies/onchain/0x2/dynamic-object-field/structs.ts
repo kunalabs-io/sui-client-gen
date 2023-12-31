@@ -1,6 +1,12 @@
 import { initLoaderIfNeeded } from '../../../../_framework/init-onchain'
 import { structClassLoaderOnchain } from '../../../../_framework/loader'
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
+import {
+  FieldsWithTypes,
+  Type,
+  compressSuiType,
+  genericToJSON,
+  parseTypeName,
+} from '../../../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== Wrapper =============================== */
@@ -64,5 +70,12 @@ export class Wrapper<T0> {
       typeArg,
       Wrapper.bcs(structClassLoaderOnchain.getBcsType(typeArgs[0])).parse(data)
     )
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      name: genericToJSON(this.$typeArg, this.name),
+    }
   }
 }

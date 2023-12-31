@@ -1,6 +1,12 @@
 import { initLoaderIfNeeded } from '../../_framework/init-source'
 import { structClassLoaderSource } from '../../_framework/loader'
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  Type,
+  compressSuiType,
+  genericToJSON,
+  parseTypeName,
+} from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== VecSet =============================== */
@@ -69,5 +75,12 @@ export class VecSet<K> {
       typeArg,
       VecSet.bcs(structClassLoaderSource.getBcsType(typeArgs[0])).parse(data)
     )
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      contents: genericToJSON(`vector<${this.$typeArg}>`, this.contents),
+    }
   }
 }

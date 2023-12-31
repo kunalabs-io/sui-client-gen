@@ -49,6 +49,13 @@ export class Clock {
     return Clock.fromFields(Clock.bcs.parse(data))
   }
 
+  toJSON() {
+    return {
+      id: this.id,
+      timestampMs: this.timestampMs.toString(),
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')

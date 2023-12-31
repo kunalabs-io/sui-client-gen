@@ -54,6 +54,13 @@ export class VersionChangeCap {
   static fromBcs(data: Uint8Array): VersionChangeCap {
     return VersionChangeCap.fromFields(VersionChangeCap.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      versionedId: this.versionedId,
+      oldVersion: this.oldVersion.toString(),
+    }
+  }
 }
 
 /* ============================== Versioned =============================== */
@@ -100,6 +107,13 @@ export class Versioned {
 
   static fromBcs(data: Uint8Array): Versioned {
     return Versioned.fromFields(Versioned.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      version: this.version.toString(),
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {

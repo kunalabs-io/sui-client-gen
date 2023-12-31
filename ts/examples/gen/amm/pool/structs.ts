@@ -51,6 +51,12 @@ export class AdminCap {
     return AdminCap.fromFields(AdminCap.bcs.parse(data))
   }
 
+  toJSON() {
+    return {
+      id: this.id,
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -122,6 +128,13 @@ export class LP {
 
   static fromBcs(typeArgs: [Type, Type], data: Uint8Array): LP {
     return LP.fromFields(typeArgs, LP.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      $typeArgs: this.$typeArgs,
+      dummyField: this.dummyField,
+    }
   }
 }
 
@@ -225,6 +238,19 @@ export class Pool {
     return Pool.fromFields(typeArgs, Pool.bcs.parse(data))
   }
 
+  toJSON() {
+    return {
+      $typeArgs: this.$typeArgs,
+      id: this.id,
+      balanceA: this.balanceA.toJSON(),
+      balanceB: this.balanceB.toJSON(),
+      lpSupply: this.lpSupply.toJSON(),
+      lpFeeBps: this.lpFeeBps.toString(),
+      adminFeePct: this.adminFeePct.toString(),
+      adminFeeBalance: this.adminFeeBalance.toJSON(),
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -292,6 +318,12 @@ export class PoolCreationEvent {
   static fromBcs(data: Uint8Array): PoolCreationEvent {
     return PoolCreationEvent.fromFields(PoolCreationEvent.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      poolId: this.poolId,
+    }
+  }
 }
 
 /* ============================== PoolRegistry =============================== */
@@ -354,6 +386,13 @@ export class PoolRegistry {
 
   static fromBcs(data: Uint8Array): PoolRegistry {
     return PoolRegistry.fromFields(PoolRegistry.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      table: this.table.toJSON(),
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -432,5 +471,12 @@ export class PoolRegistryItem {
 
   static fromBcs(data: Uint8Array): PoolRegistryItem {
     return PoolRegistryItem.fromFields(PoolRegistryItem.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      a: this.a.toJSON(),
+      b: this.b.toJSON(),
+    }
   }
 }

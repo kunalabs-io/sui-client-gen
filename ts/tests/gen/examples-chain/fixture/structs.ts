@@ -6,7 +6,13 @@ import { ID, UID } from '../../_dependencies/onchain/0x2/object/structs'
 import { Url } from '../../_dependencies/onchain/0x2/url/structs'
 import { initLoaderIfNeeded } from '../../_framework/init-onchain'
 import { structClassLoaderOnchain } from '../../_framework/loader'
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  Type,
+  compressSuiType,
+  genericToJSON,
+  parseTypeName,
+} from '../../_framework/util'
 import { StructFromOtherModule } from '../other-module/structs'
 import { BcsType, bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -54,6 +60,12 @@ export class Dummy {
 
   static fromBcs(data: Uint8Array): Dummy {
     return Dummy.fromFields(Dummy.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      dummyField: this.dummyField,
+    }
   }
 }
 
@@ -133,6 +145,14 @@ export class WithGenericField<T0> {
     )
   }
 
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      genericField: genericToJSON(this.$typeArg, this.genericField),
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -199,6 +219,12 @@ export class Bar {
 
   static fromBcs(data: Uint8Array): Bar {
     return Bar.fromFields(Bar.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      value: this.value.toString(),
+    }
   }
 }
 
@@ -283,6 +309,14 @@ export class WithTwoGenerics<T0, T1> {
         structClassLoaderOnchain.getBcsType(typeArgs[1])
       ).parse(data)
     )
+  }
+
+  toJSON() {
+    return {
+      $typeArgs: this.$typeArgs,
+      genericField1: genericToJSON(this.$typeArgs[0], this.genericField1),
+      genericField2: genericToJSON(this.$typeArgs[1], this.genericField2),
+    }
   }
 }
 
@@ -492,6 +526,35 @@ export class Foo<T0> {
     )
   }
 
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      generic: genericToJSON(this.$typeArg, this.generic),
+      reifiedPrimitiveVec: genericToJSON(`vector<u64>`, this.reifiedPrimitiveVec),
+      reifiedObjectVec: genericToJSON(
+        `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
+        this.reifiedObjectVec
+      ),
+      genericVec: genericToJSON(`vector<${this.$typeArg}>`, this.genericVec),
+      genericVecNested: genericToJSON(
+        `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${this.$typeArg}, u8>>`,
+        this.genericVecNested
+      ),
+      twoGenerics: this.twoGenerics.toJSON(),
+      twoGenericsReifiedPrimitive: this.twoGenericsReifiedPrimitive.toJSON(),
+      twoGenericsReifiedObject: this.twoGenericsReifiedObject.toJSON(),
+      twoGenericsNested: this.twoGenericsNested.toJSON(),
+      twoGenericsReifiedNested: this.twoGenericsReifiedNested.toJSON(),
+      twoGenericsNestedVec: genericToJSON(
+        `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${this.$typeArg}, u8>>>>`,
+        this.twoGenericsNestedVec
+      ),
+      dummy: this.dummy.toJSON(),
+      other: this.other.toJSON(),
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -693,6 +756,31 @@ export class WithSpecialTypes<T1> {
     )
   }
 
+  toJSON() {
+    return {
+      $typeArgs: this.$typeArgs,
+      id: this.id,
+      string: this.string,
+      asciiString: this.asciiString,
+      url: this.url,
+      idField: this.idField,
+      uid: this.uid,
+      balance: this.balance.toJSON(),
+      option: genericToJSON(`0x1::option::Option<u64>`, this.option),
+      optionObj: genericToJSON(
+        `0x1::option::Option<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
+        this.optionObj
+      ),
+      optionNone: genericToJSON(`0x1::option::Option<u64>`, this.optionNone),
+      balanceGeneric: this.balanceGeneric.toJSON(),
+      optionGeneric: genericToJSON(`0x1::option::Option<${this.$typeArgs[1]}>`, this.optionGeneric),
+      optionGenericNone: genericToJSON(
+        `0x1::option::Option<${this.$typeArgs[1]}>`,
+        this.optionGenericNone
+      ),
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -890,6 +978,21 @@ export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
     )
   }
 
+  toJSON() {
+    return {
+      $typeArgs: this.$typeArgs,
+      id: this.id,
+      string: genericToJSON(this.$typeArgs[0], this.string),
+      asciiString: genericToJSON(this.$typeArgs[1], this.asciiString),
+      url: genericToJSON(this.$typeArgs[2], this.url),
+      idField: genericToJSON(this.$typeArgs[3], this.idField),
+      uid: genericToJSON(this.$typeArgs[4], this.uid),
+      balance: genericToJSON(this.$typeArgs[5], this.balance),
+      option: genericToJSON(this.$typeArgs[6], this.option),
+      optionNone: genericToJSON(this.$typeArgs[7], this.optionNone),
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -1045,6 +1148,25 @@ export class WithSpecialTypesInVectors<T0> {
       typeArg,
       WithSpecialTypesInVectors.bcs(structClassLoaderOnchain.getBcsType(typeArgs[0])).parse(data)
     )
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      string: genericToJSON(`vector<0x1::string::String>`, this.string),
+      asciiString: genericToJSON(`vector<0x1::ascii::String>`, this.asciiString),
+      idField: genericToJSON(`vector<0x2::object::ID>`, this.idField),
+      bar: genericToJSON(
+        `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
+        this.bar
+      ),
+      option: genericToJSON(`vector<0x1::option::Option<u64>>`, this.option),
+      optionGeneric: genericToJSON(
+        `vector<0x1::option::Option<${this.$typeArg}>>`,
+        this.optionGeneric
+      ),
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {

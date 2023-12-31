@@ -49,6 +49,12 @@ export class EXAMPLE_COIN {
   static fromBcs(data: Uint8Array): EXAMPLE_COIN {
     return EXAMPLE_COIN.fromFields(EXAMPLE_COIN.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      dummyField: this.dummyField,
+    }
+  }
 }
 
 /* ============================== Faucet =============================== */
@@ -108,6 +114,13 @@ export class Faucet {
 
   static fromBcs(data: Uint8Array): Faucet {
     return Faucet.fromFields(Faucet.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      cap: this.cap.toJSON(),
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {

@@ -72,6 +72,15 @@ export class Display {
     return Display.fromFields(typeArg, Display.bcs.parse(data))
   }
 
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      fields: this.fields.toJSON(),
+      version: this.version,
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -141,6 +150,13 @@ export class DisplayCreated {
   static fromBcs(typeArg: Type, data: Uint8Array): DisplayCreated {
     return DisplayCreated.fromFields(typeArg, DisplayCreated.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+    }
+  }
 }
 
 /* ============================== VersionUpdated =============================== */
@@ -208,5 +224,14 @@ export class VersionUpdated {
 
   static fromBcs(typeArg: Type, data: Uint8Array): VersionUpdated {
     return VersionUpdated.fromFields(typeArg, VersionUpdated.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      version: this.version,
+      fields: this.fields.toJSON(),
+    }
   }
 }

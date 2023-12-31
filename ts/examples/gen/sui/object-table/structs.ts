@@ -61,6 +61,14 @@ export class ObjectTable {
     return ObjectTable.fromFields(typeArgs, ObjectTable.bcs.parse(data))
   }
 
+  toJSON() {
+    return {
+      $typeArgs: this.$typeArgs,
+      id: this.id,
+      size: this.size.toString(),
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')

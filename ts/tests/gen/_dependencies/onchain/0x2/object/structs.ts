@@ -45,6 +45,12 @@ export class ID {
   static fromBcs(data: Uint8Array): ID {
     return ID.fromFields(ID.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      bytes: this.bytes,
+    }
+  }
 }
 
 /* ============================== UID =============================== */
@@ -87,5 +93,11 @@ export class UID {
 
   static fromBcs(data: Uint8Array): UID {
     return UID.fromFields(UID.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+    }
   }
 }

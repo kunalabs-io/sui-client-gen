@@ -1,4 +1,4 @@
-import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../../../_framework/util'
 import { String } from '../../0x1/ascii/structs'
 import { ID, UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -64,6 +64,14 @@ export class Publisher {
 
   static fromBcs(data: Uint8Array): Publisher {
     return Publisher.fromFields(Publisher.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      package: this.package,
+      moduleName: this.moduleName,
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -152,6 +160,15 @@ export class UpgradeCap {
     return UpgradeCap.fromFields(UpgradeCap.bcs.parse(data))
   }
 
+  toJSON() {
+    return {
+      id: this.id,
+      package: this.package,
+      version: this.version.toString(),
+      policy: this.policy,
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -237,6 +254,15 @@ export class UpgradeTicket {
   static fromBcs(data: Uint8Array): UpgradeTicket {
     return UpgradeTicket.fromFields(UpgradeTicket.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      cap: this.cap,
+      package: this.package,
+      policy: this.policy,
+      digest: genericToJSON(`vector<u8>`, this.digest),
+    }
+  }
 }
 
 /* ============================== UpgradeReceipt =============================== */
@@ -286,5 +312,12 @@ export class UpgradeReceipt {
 
   static fromBcs(data: Uint8Array): UpgradeReceipt {
     return UpgradeReceipt.fromFields(UpgradeReceipt.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      cap: this.cap,
+      package: this.package,
+    }
   }
 }

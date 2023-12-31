@@ -1,4 +1,4 @@
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== BCS =============================== */
@@ -41,5 +41,11 @@ export class BCS {
 
   static fromBcs(data: Uint8Array): BCS {
     return BCS.fromFields(BCS.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      bytes: genericToJSON(`vector<u8>`, this.bytes),
+    }
   }
 }

@@ -49,6 +49,13 @@ export class Versioned {
     return Versioned.fromFields(Versioned.bcs.parse(data))
   }
 
+  toJSON() {
+    return {
+      id: this.id,
+      version: this.version.toString(),
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -121,5 +128,12 @@ export class VersionChangeCap {
 
   static fromBcs(data: Uint8Array): VersionChangeCap {
     return VersionChangeCap.fromFields(VersionChangeCap.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      versionedId: this.versionedId,
+      oldVersion: this.oldVersion.toString(),
+    }
   }
 }

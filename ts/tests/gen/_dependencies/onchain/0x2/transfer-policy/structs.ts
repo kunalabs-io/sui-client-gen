@@ -53,6 +53,13 @@ export class RuleKey {
   static fromBcs(typeArg: Type, data: Uint8Array): RuleKey {
     return RuleKey.fromFields(typeArg, RuleKey.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      dummyField: this.dummyField,
+    }
+  }
 }
 
 /* ============================== TransferRequest =============================== */
@@ -124,6 +131,16 @@ export class TransferRequest {
   static fromBcs(typeArg: Type, data: Uint8Array): TransferRequest {
     return TransferRequest.fromFields(typeArg, TransferRequest.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      item: this.item,
+      paid: this.paid.toString(),
+      from: this.from,
+      receipts: this.receipts.toJSON(),
+    }
+  }
 }
 
 /* ============================== TransferPolicy =============================== */
@@ -188,6 +205,15 @@ export class TransferPolicy {
 
   static fromBcs(typeArg: Type, data: Uint8Array): TransferPolicy {
     return TransferPolicy.fromFields(typeArg, TransferPolicy.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      balance: this.balance.toJSON(),
+      rules: this.rules.toJSON(),
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -270,6 +296,14 @@ export class TransferPolicyCap {
     return TransferPolicyCap.fromFields(typeArg, TransferPolicyCap.bcs.parse(data))
   }
 
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      policyId: this.policyId,
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -342,6 +376,13 @@ export class TransferPolicyCreated {
   static fromBcs(typeArg: Type, data: Uint8Array): TransferPolicyCreated {
     return TransferPolicyCreated.fromFields(typeArg, TransferPolicyCreated.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+    }
+  }
 }
 
 /* ============================== TransferPolicyDestroyed =============================== */
@@ -390,5 +431,12 @@ export class TransferPolicyDestroyed {
 
   static fromBcs(typeArg: Type, data: Uint8Array): TransferPolicyDestroyed {
     return TransferPolicyDestroyed.fromFields(typeArg, TransferPolicyDestroyed.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+    }
   }
 }

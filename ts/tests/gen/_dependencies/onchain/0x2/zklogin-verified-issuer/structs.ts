@@ -67,6 +67,14 @@ export class VerifiedIssuer {
     return VerifiedIssuer.fromFields(VerifiedIssuer.bcs.parse(data))
   }
 
+  toJSON() {
+    return {
+      id: this.id,
+      owner: this.owner,
+      issuer: this.issuer,
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')

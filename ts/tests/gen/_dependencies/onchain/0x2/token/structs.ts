@@ -1,4 +1,10 @@
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
+import {
+  FieldsWithTypes,
+  Type,
+  compressSuiType,
+  genericToJSON,
+  parseTypeName,
+} from '../../../../_framework/util'
 import { Option } from '../../0x1/option/structs'
 import { String } from '../../0x1/string/structs'
 import { TypeName } from '../../0x1/type-name/structs'
@@ -65,6 +71,14 @@ export class Token {
 
   static fromBcs(typeArg: Type, data: Uint8Array): Token {
     return Token.fromFields(typeArg, Token.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      balance: this.balance.toJSON(),
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -142,6 +156,14 @@ export class TokenPolicyCap {
 
   static fromBcs(typeArg: Type, data: Uint8Array): TokenPolicyCap {
     return TokenPolicyCap.fromFields(typeArg, TokenPolicyCap.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      for: this.for,
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -231,6 +253,15 @@ export class TokenPolicy {
 
   static fromBcs(typeArg: Type, data: Uint8Array): TokenPolicy {
     return TokenPolicy.fromFields(typeArg, TokenPolicy.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      spentBalance: this.spentBalance.toJSON(),
+      rules: this.rules.toJSON(),
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -338,7 +369,7 @@ export class ActionRequest {
     return new ActionRequest(typeArgs[0], {
       name: item.fields.name,
       amount: BigInt(item.fields.amount),
-      sender: item.fields.sender,
+      sender: `0x${item.fields.sender}`,
       recipient:
         item.fields.recipient !== null
           ? Option.fromFieldsWithTypes<string>({
@@ -359,6 +390,21 @@ export class ActionRequest {
 
   static fromBcs(typeArg: Type, data: Uint8Array): ActionRequest {
     return ActionRequest.fromFields(typeArg, ActionRequest.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      name: this.name,
+      amount: this.amount.toString(),
+      sender: this.sender,
+      recipient: genericToJSON(`0x1::option::Option<address>`, this.recipient),
+      spentBalance: genericToJSON(
+        `0x1::option::Option<0x2::balance::Balance<${this.$typeArg}>>`,
+        this.spentBalance
+      ),
+      approvals: this.approvals.toJSON(),
+    }
   }
 }
 
@@ -408,6 +454,13 @@ export class RuleKey {
 
   static fromBcs(typeArg: Type, data: Uint8Array): RuleKey {
     return RuleKey.fromFields(typeArg, RuleKey.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      isProtected: this.isProtected,
+    }
   }
 }
 
@@ -467,5 +520,13 @@ export class TokenPolicyCreated {
 
   static fromBcs(typeArg: Type, data: Uint8Array): TokenPolicyCreated {
     return TokenPolicyCreated.fromFields(typeArg, TokenPolicyCreated.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      isMutable: this.isMutable,
+    }
   }
 }

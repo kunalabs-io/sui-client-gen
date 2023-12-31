@@ -56,4 +56,12 @@ export class Receiving {
   static fromBcs(typeArg: Type, data: Uint8Array): Receiving {
     return Receiving.fromFields(typeArg, Receiving.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      version: this.version.toString(),
+    }
+  }
 }

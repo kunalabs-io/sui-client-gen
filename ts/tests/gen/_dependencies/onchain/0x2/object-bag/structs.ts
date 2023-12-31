@@ -49,6 +49,13 @@ export class ObjectBag {
     return ObjectBag.fromFields(ObjectBag.bcs.parse(data))
   }
 
+  toJSON() {
+    return {
+      id: this.id,
+      size: this.size.toString(),
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')

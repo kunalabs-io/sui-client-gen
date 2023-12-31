@@ -42,4 +42,10 @@ export class SUI {
   static fromBcs(data: Uint8Array): SUI {
     return SUI.fromFields(SUI.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      dummyField: this.dummyField,
+    }
+  }
 }

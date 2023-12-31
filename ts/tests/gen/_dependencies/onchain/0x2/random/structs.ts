@@ -1,4 +1,4 @@
-import { FieldsWithTypes, Type, compressSuiType } from '../../../../_framework/util'
+import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../../../_framework/util'
 import { UID } from '../object/structs'
 import { Versioned } from '../versioned/structs'
 import { bcs } from '@mysten/bcs'
@@ -54,6 +54,13 @@ export class Random {
 
   static fromBcs(data: Uint8Array): Random {
     return Random.fromFields(Random.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      inner: this.inner.toJSON(),
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -140,5 +147,14 @@ export class RandomInner {
 
   static fromBcs(data: Uint8Array): RandomInner {
     return RandomInner.fromFields(RandomInner.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      version: this.version.toString(),
+      epoch: this.epoch.toString(),
+      randomnessRound: this.randomnessRound.toString(),
+      randomBytes: genericToJSON(`vector<u8>`, this.randomBytes),
+    }
   }
 }

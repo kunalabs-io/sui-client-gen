@@ -52,6 +52,13 @@ export class Borrow {
   static fromBcs(data: Uint8Array): Borrow {
     return Borrow.fromFields(Borrow.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      kioskId: this.kioskId,
+      itemId: this.itemId,
+    }
+  }
 }
 
 /* ============================== Kiosk =============================== */
@@ -127,6 +134,16 @@ export class Kiosk {
     return Kiosk.fromFields(Kiosk.bcs.parse(data))
   }
 
+  toJSON() {
+    return {
+      id: this.id,
+      profits: this.profits.toJSON(),
+      owner: this.owner,
+      itemCount: this.itemCount,
+      allowExtensions: this.allowExtensions,
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -196,6 +213,13 @@ export class KioskOwnerCap {
 
   static fromBcs(data: Uint8Array): KioskOwnerCap {
     return KioskOwnerCap.fromFields(KioskOwnerCap.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      for: this.for,
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -290,6 +314,16 @@ export class PurchaseCap {
     return PurchaseCap.fromFields(typeArg, PurchaseCap.bcs.parse(data))
   }
 
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+      kioskId: this.kioskId,
+      itemId: this.itemId,
+      minPrice: this.minPrice.toString(),
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -353,6 +387,12 @@ export class Item {
   static fromBcs(data: Uint8Array): Item {
     return Item.fromFields(Item.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      id: this.id,
+    }
+  }
 }
 
 /* ============================== Listing =============================== */
@@ -400,6 +440,13 @@ export class Listing {
   static fromBcs(data: Uint8Array): Listing {
     return Listing.fromFields(Listing.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      id: this.id,
+      isExclusive: this.isExclusive,
+    }
+  }
 }
 
 /* ============================== Lock =============================== */
@@ -442,6 +489,12 @@ export class Lock {
 
   static fromBcs(data: Uint8Array): Lock {
     return Lock.fromFields(Lock.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+    }
   }
 }
 
@@ -508,6 +561,15 @@ export class ItemListed {
   static fromBcs(typeArg: Type, data: Uint8Array): ItemListed {
     return ItemListed.fromFields(typeArg, ItemListed.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      kiosk: this.kiosk,
+      id: this.id,
+      price: this.price.toString(),
+    }
+  }
 }
 
 /* ============================== ItemPurchased =============================== */
@@ -573,6 +635,15 @@ export class ItemPurchased {
   static fromBcs(typeArg: Type, data: Uint8Array): ItemPurchased {
     return ItemPurchased.fromFields(typeArg, ItemPurchased.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      kiosk: this.kiosk,
+      id: this.id,
+      price: this.price.toString(),
+    }
+  }
 }
 
 /* ============================== ItemDelisted =============================== */
@@ -628,5 +699,13 @@ export class ItemDelisted {
 
   static fromBcs(typeArg: Type, data: Uint8Array): ItemDelisted {
     return ItemDelisted.fromFields(typeArg, ItemDelisted.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      kiosk: this.kiosk,
+      id: this.id,
+    }
   }
 }

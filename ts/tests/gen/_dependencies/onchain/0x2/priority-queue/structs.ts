@@ -1,6 +1,12 @@
 import { initLoaderIfNeeded } from '../../../../_framework/init-onchain'
 import { structClassLoaderOnchain } from '../../../../_framework/loader'
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../../../_framework/util'
+import {
+  FieldsWithTypes,
+  Type,
+  compressSuiType,
+  genericToJSON,
+  parseTypeName,
+} from '../../../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== PriorityQueue =============================== */
@@ -67,6 +73,13 @@ export class PriorityQueue<T0> {
       typeArg,
       PriorityQueue.bcs(structClassLoaderOnchain.getBcsType(typeArgs[0])).parse(data)
     )
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      entries: genericToJSON(`vector<0x2::priority_queue::Entry<${this.$typeArg}>>`, this.entries),
+    }
   }
 }
 
@@ -138,5 +151,13 @@ export class Entry<T0> {
       typeArg,
       Entry.bcs(structClassLoaderOnchain.getBcsType(typeArgs[0])).parse(data)
     )
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      priority: this.priority.toString(),
+      value: genericToJSON(this.$typeArg, this.value),
+    }
   }
 }

@@ -1,6 +1,12 @@
 import { initLoaderIfNeeded } from '../../_framework/init-source'
 import { structClassLoaderSource } from '../../_framework/loader'
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  Type,
+  compressSuiType,
+  genericToJSON,
+  parseTypeName,
+} from '../../_framework/util'
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
@@ -72,6 +78,13 @@ export class DynamicFields<K> {
     )
   }
 
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      names: genericToJSON(`vector<${this.$typeArg}>`, this.names),
+    }
+  }
+
   static fromSuiParsedData(content: SuiParsedData) {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -138,6 +151,12 @@ export class ID {
   static fromBcs(data: Uint8Array): ID {
     return ID.fromFields(ID.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      bytes: this.bytes,
+    }
+  }
 }
 
 /* ============================== Ownership =============================== */
@@ -187,6 +206,13 @@ export class Ownership {
 
   static fromBcs(data: Uint8Array): Ownership {
     return Ownership.fromFields(Ownership.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      owner: this.owner,
+      status: this.status.toString(),
+    }
   }
 
   static fromSuiParsedData(content: SuiParsedData) {
@@ -251,5 +277,11 @@ export class UID {
 
   static fromBcs(data: Uint8Array): UID {
     return UID.fromFields(UID.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+    }
   }
 }

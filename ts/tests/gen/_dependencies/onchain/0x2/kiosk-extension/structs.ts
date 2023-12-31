@@ -59,6 +59,14 @@ export class Extension {
   static fromBcs(data: Uint8Array): Extension {
     return Extension.fromFields(Extension.bcs.parse(data))
   }
+
+  toJSON() {
+    return {
+      storage: this.storage.toJSON(),
+      permissions: this.permissions.toString(),
+      isEnabled: this.isEnabled,
+    }
+  }
 }
 
 /* ============================== ExtensionKey =============================== */
@@ -107,5 +115,12 @@ export class ExtensionKey {
 
   static fromBcs(typeArg: Type, data: Uint8Array): ExtensionKey {
     return ExtensionKey.fromFields(typeArg, ExtensionKey.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      dummyField: this.dummyField,
+    }
   }
 }
