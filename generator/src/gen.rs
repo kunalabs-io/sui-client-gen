@@ -1274,6 +1274,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let struct_class_loader = &self.framework.import_struct_class_loader();
         let fields_with_types = &self.framework.import("util", "FieldsWithTypes");
         let parse_type_name = &self.framework.import("util", "parseTypeName");
+        let generic_to_json = &self.framework.import("util", "genericToJSON");
         let sui_parsed_data = &js::import("@mysten/sui.js/client", "SuiParsedData");
         let sui_client = &js::import("@mysten/sui.js/client", "SuiClient");
         let bcs = &js::import("@mysten/bcs", "bcs");
@@ -1445,6 +1446,84 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             ).parse(data),
                         })
                     )
+                }$['\n']
+
+                toJSON()/*: $(&struct_name)JSON */{
+                    return {$['\n']
+                        $(match type_params.len() {
+                            0 => (),
+                            1 => { $$typeArg: this.$$typeArg, },
+                            _ => { $$typeArgs: this.$$typeArgs, },
+                        })
+                        $(ref toks {
+                            let this_type_arg_or_args = |idx: usize| {
+                                match type_params.len() {
+                                    0 => quote!(""),
+                                    1 => quote!(this.$$typeArg),
+                                    _ => quote!(this.$$typeArgs[$idx])
+                                }
+                            };
+                            let type_param_names = (0..strct.get_type_parameters().len())
+                                .map(|idx| QuoteItem::Interpolated(this_type_arg_or_args(idx)))
+                                .collect::<Vec<_>>();
+
+                            for field in fields {
+                                let name = self.gen_field_name(&field);
+                                let this_name = quote!(this.$(self.gen_field_name(&field)));
+
+                                match field.get_type() {
+                                    Type::Struct(mid, sid, _) => {
+                                        let field_module = self.env.get_module(mid);
+                                        let field_strct = field_module.get_struct(sid);
+
+                                        // handle special types
+                                        match field_strct.get_full_name_with_address().as_ref() {
+                                            "0x1::string::String" | "0x1::ascii::String" => {
+                                                quote_in!(*toks => $name: $this_name,)
+                                            }
+                                            "0x2::url::Url" => {
+                                                quote_in!(*toks => $name: $this_name,)
+                                            }
+                                            "0x2::object::ID" => {
+                                                quote_in!(*toks => $name: $this_name,)
+                                            }
+                                            "0x2::object::UID" => {
+                                                quote_in!(*toks => $name: $this_name, )
+                                            }
+                                            "0x1::option::Option" => {
+                                                let type_name = gen_bcs_def_for_type(&field.get_type(), self.env, &type_param_names);
+                                                quote_in!(*toks => $name: $generic_to_json($type_name, $this_name),)
+                                            }
+                                            _ => {
+                                                quote_in!(*toks => $name: $this_name.toJSON(),)
+                                            }
+                                        }
+                                    }
+                                    Type::Primitive(ty) => match ty {
+                                        PrimitiveType::U64 | PrimitiveType::U128 | PrimitiveType::U256 => {
+                                            quote_in!(*toks => $name: $this_name.toString(),)
+                                        }
+                                        _ => {
+                                            quote_in!(*toks => $name: $this_name,)
+                                        }
+                                    },
+                                    Type::Vector(_) => {
+                                        let type_name = gen_bcs_def_for_type(&field.get_type(), self.env, &type_param_names);
+
+                                        quote_in!(*toks => $name: $generic_to_json($type_name, $this_name),)
+                                    }
+                                    Type::TypeParameter(i) => {
+                                        quote_in!(*toks => $name: $generic_to_json($(this_type_arg_or_args(i as usize)), $this_name),)
+                                    }
+                                    _ => {
+                                        let name = self.gen_field_name(&field);
+                                        quote_in!(*toks => $name: $this_name.toJSON(),)
+                                    },
+
+                                }
+                            }
+                        })
+                    $['\n']}
                 }$['\n']
 
                 $(if strct.get_abilities().has_key() {
