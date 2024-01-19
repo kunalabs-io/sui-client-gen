@@ -333,20 +333,17 @@ pub fn gen_init_ts(
 }
 
 /// Generates `typeArgs` param for a function that takes type arguments.
-/// E.g. `typeArgs: [Type, Type]` or `typeArg: Type`.
+/// E.g. `typeArgs: [string, string]` or `typeArg: string`.
 fn gen_type_args_param(
     count: usize,
     prefix: impl FormatInto<JavaScript>,
     suffix: impl FormatInto<JavaScript>,
-    framework: &FrameworkImportCtx,
 ) -> impl FormatInto<JavaScript> {
-    let type_ = &framework.import("util", "Type");
-
     quote! {
         $(match count {
             0 => (),
-            1 => $(prefix)typeArg: $type_$suffix,
-            _ => $(prefix)typeArgs: [$(for _ in 0..count join (, ) => $type_)]$suffix
+            1 => $(prefix)typeArg: string$suffix,
+            _ => $(prefix)typeArgs: [$(for _ in 0..count join (, ) => string)]$suffix
         })
     }
 }
@@ -813,7 +810,7 @@ impl<'env> FunctionsGen<'env> {
         quote_in! { *tokens =>
             export function $(FunctionsGen::fun_name(func))(
                 txb: $transaction_block,
-                $(gen_type_args_param(type_arg_count, None::<&str>, ",", &self.framework))
+                $(gen_type_args_param(type_arg_count, None::<&str>, ","))
                 $(match param_field_names.len() {
                     0 => (),
                     1 => $(&param_field_names[0].0): $(self.param_type_to_field_type(&param_field_names[0].1)),
@@ -1185,14 +1182,13 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
     /// Generates the `is<StructName>` function for a struct.
     pub fn gen_is_type_func(&self, tokens: &mut js::Tokens, strct: &StructEnv) {
-        let type_ = &self.framework.import("util", "Type");
         let compress_sui_type = &self.framework.import("util", "compressSuiType");
 
         let struct_name = strct.get_name().display(self.symbol_pool()).to_string();
         let type_params = self.strct_type_param_names(strct);
 
         quote_in! { *tokens =>
-            export function is$(&struct_name)(type: $type_): boolean {
+            export function is$(&struct_name)(type: string): boolean {
                 type = $compress_sui_type(type);
                 $(if type_params.is_empty() {
                     return type === $[str]($[const](strct.get_full_name_with_address()))
