@@ -121,7 +121,12 @@ pub fn parse_package(pkg_name: &str, tval: TV) -> Result<Package> {
     };
 
     if table.contains_key("id") {
-        let Some(Ok(id)) = table.get("id").unwrap().as_str().map(AccountAddress::from_hex_literal) else {
+        let Some(Ok(id)) = table
+            .get("id")
+            .unwrap()
+            .as_str()
+            .map(AccountAddress::from_hex_literal)
+        else {
             bail!("Invalid address");
         };
         Ok(Package::OnChain(OnChainPackage { id }))
@@ -162,7 +167,6 @@ mod tests {
                     Package::Dependency(PM::Dependency::Internal(PM::InternalDependency {
                         kind: PM::DependencyKind::Local("../move/amm".into()),
                         subst: None,
-                        version: None,
                         digest: None,
                         dep_override: false,
                     })),
@@ -178,7 +182,6 @@ mod tests {
                     Package::Dependency(PM::Dependency::Internal(PM::InternalDependency {
                         kind: PM::DependencyKind::Local("../move/fixture".into()),
                         subst: None,
-                        version: None,
                         digest: None,
                         dep_override: false,
                     })),
@@ -192,7 +195,6 @@ mod tests {
                             subdir: "crates/sui-framework/packages/sui-framework".into(),
                         }),
                         subst: None,
-                        version: None,
                         digest: None,
                         dep_override: false,
                     })),
