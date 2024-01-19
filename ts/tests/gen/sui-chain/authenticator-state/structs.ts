@@ -3,6 +3,7 @@ import {
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
@@ -56,6 +57,7 @@ export class AuthenticatorState {
       fromFieldsWithTypes: (item: FieldsWithTypes) => AuthenticatorState.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => AuthenticatorState.fromBcs(data),
       bcs: AuthenticatorState.bcs,
+      fromJSONField: (field: any) => AuthenticatorState.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof AuthenticatorState.new>,
     }
   }
@@ -91,6 +93,21 @@ export class AuthenticatorState {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): AuthenticatorState {
+    return AuthenticatorState.new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      version: decodeFromJSONField('u64', field.version),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): AuthenticatorState {
+    if (json.$typeName !== AuthenticatorState.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return AuthenticatorState.fromJSONField(json)
   }
 
   static fromSuiParsedData(content: SuiParsedData): AuthenticatorState {
@@ -164,6 +181,7 @@ export class AuthenticatorStateInner {
         AuthenticatorStateInner.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => AuthenticatorStateInner.fromBcs(data),
       bcs: AuthenticatorStateInner.bcs,
+      fromJSONField: (field: any) => AuthenticatorStateInner.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof AuthenticatorStateInner.new>,
     }
   }
@@ -205,6 +223,21 @@ export class AuthenticatorStateInner {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): AuthenticatorStateInner {
+    return AuthenticatorStateInner.new({
+      version: decodeFromJSONField('u64', field.version),
+      activeJwks: decodeFromJSONField(reified.vector(ActiveJwk.reified()), field.activeJwks),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): AuthenticatorStateInner {
+    if (json.$typeName !== AuthenticatorStateInner.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return AuthenticatorStateInner.fromJSONField(json)
   }
 }
 
@@ -261,6 +294,7 @@ export class JWK {
       fromFieldsWithTypes: (item: FieldsWithTypes) => JWK.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => JWK.fromBcs(data),
       bcs: JWK.bcs,
+      fromJSONField: (field: any) => JWK.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof JWK.new>,
     }
   }
@@ -302,6 +336,23 @@ export class JWK {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): JWK {
+    return JWK.new({
+      kty: decodeFromJSONField(String.reified(), field.kty),
+      e: decodeFromJSONField(String.reified(), field.e),
+      n: decodeFromJSONField(String.reified(), field.n),
+      alg: decodeFromJSONField(String.reified(), field.alg),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): JWK {
+    if (json.$typeName !== JWK.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return JWK.fromJSONField(json)
   }
 }
 
@@ -350,6 +401,7 @@ export class JwkId {
       fromFieldsWithTypes: (item: FieldsWithTypes) => JwkId.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => JwkId.fromBcs(data),
       bcs: JwkId.bcs,
+      fromJSONField: (field: any) => JwkId.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof JwkId.new>,
     }
   }
@@ -385,6 +437,21 @@ export class JwkId {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): JwkId {
+    return JwkId.new({
+      iss: decodeFromJSONField(String.reified(), field.iss),
+      kid: decodeFromJSONField(String.reified(), field.kid),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): JwkId {
+    if (json.$typeName !== JwkId.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return JwkId.fromJSONField(json)
   }
 }
 
@@ -437,6 +504,7 @@ export class ActiveJwk {
       fromFieldsWithTypes: (item: FieldsWithTypes) => ActiveJwk.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ActiveJwk.fromBcs(data),
       bcs: ActiveJwk.bcs,
+      fromJSONField: (field: any) => ActiveJwk.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof ActiveJwk.new>,
     }
   }
@@ -475,5 +543,21 @@ export class ActiveJwk {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): ActiveJwk {
+    return ActiveJwk.new({
+      jwkId: decodeFromJSONField(JwkId.reified(), field.jwkId),
+      jwk: decodeFromJSONField(JWK.reified(), field.jwk),
+      epoch: decodeFromJSONField('u64', field.epoch),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): ActiveJwk {
+    if (json.$typeName !== ActiveJwk.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return ActiveJwk.fromJSONField(json)
   }
 }

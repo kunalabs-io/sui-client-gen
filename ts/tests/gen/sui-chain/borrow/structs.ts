@@ -4,13 +4,15 @@ import {
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
   fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { ID } from '../object/structs'
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
@@ -71,6 +73,7 @@ export class Referent<T0 extends TypeArgument> {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Referent.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => Referent.fromBcs(T0, data),
       bcs: Referent.bcs(toBcs(T0)),
+      fromJSONField: (field: any) => Referent.fromJSONField(T0, field),
       __class: null as unknown as ReturnType<typeof Referent.new<ToTypeArgument<T0>>>,
     }
   }
@@ -118,6 +121,32 @@ export class Referent<T0 extends TypeArgument> {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField<T0 extends ReifiedTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): Referent<ToTypeArgument<T0>> {
+    return Referent.new(typeArg, {
+      id: decodeFromJSONField('address', field.id),
+      value: decodeFromJSONField(Option.reified(typeArg), field.value),
+    })
+  }
+
+  static fromJSON<T0 extends ReifiedTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): Referent<ToTypeArgument<T0>> {
+    if (json.$typeName !== Referent.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Referent.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return Referent.fromJSONField(typeArg, json)
   }
 }
 
@@ -169,6 +198,7 @@ export class Borrow {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Borrow.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Borrow.fromBcs(data),
       bcs: Borrow.bcs,
+      fromJSONField: (field: any) => Borrow.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof Borrow.new>,
     }
   }
@@ -204,5 +234,20 @@ export class Borrow {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Borrow {
+    return Borrow.new({
+      ref: decodeFromJSONField('address', field.ref),
+      obj: decodeFromJSONField(ID.reified(), field.obj),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): Borrow {
+    if (json.$typeName !== Borrow.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Borrow.fromJSONField(json)
   }
 }

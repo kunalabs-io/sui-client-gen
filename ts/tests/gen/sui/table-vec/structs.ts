@@ -2,11 +2,13 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Table } from '../table/structs'
 import { bcs } from '@mysten/bcs'
 
@@ -55,6 +57,7 @@ export class TableVec {
       fromFieldsWithTypes: (item: FieldsWithTypes) => TableVec.fromFieldsWithTypes(Element, item),
       fromBcs: (data: Uint8Array) => TableVec.fromBcs(Element, data),
       bcs: TableVec.bcs,
+      fromJSONField: (field: any) => TableVec.fromJSONField(Element, field),
       __class: null as unknown as ReturnType<typeof TableVec.new>,
     }
   }
@@ -87,5 +90,22 @@ export class TableVec {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): TableVec {
+    return TableVec.new(typeArg, decodeFromJSONField(Table.reified('u64', typeArg), field.contents))
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): TableVec {
+    if (json.$typeName !== TableVec.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(TableVec.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return TableVec.fromJSONField(typeArg, json)
   }
 }

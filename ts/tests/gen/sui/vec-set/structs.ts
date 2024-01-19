@@ -5,13 +5,15 @@ import {
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
   fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== VecSet =============================== */
@@ -63,6 +65,7 @@ export class VecSet<K extends TypeArgument> {
       fromFieldsWithTypes: (item: FieldsWithTypes) => VecSet.fromFieldsWithTypes(K, item),
       fromBcs: (data: Uint8Array) => VecSet.fromBcs(K, data),
       bcs: VecSet.bcs(toBcs(K)),
+      fromJSONField: (field: any) => VecSet.fromJSONField(K, field),
       __class: null as unknown as ReturnType<typeof VecSet.new<ToTypeArgument<K>>>,
     }
   }
@@ -106,5 +109,28 @@ export class VecSet<K extends TypeArgument> {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField<K extends ReifiedTypeArgument>(
+    typeArg: K,
+    field: any
+  ): VecSet<ToTypeArgument<K>> {
+    return VecSet.new(typeArg, decodeFromJSONField(reified.vector(typeArg), field.contents))
+  }
+
+  static fromJSON<K extends ReifiedTypeArgument>(
+    typeArg: K,
+    json: Record<string, any>
+  ): VecSet<ToTypeArgument<K>> {
+    if (json.$typeName !== VecSet.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(VecSet.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return VecSet.fromJSONField(typeArg, json)
   }
 }

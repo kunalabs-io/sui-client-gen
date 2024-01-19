@@ -1,4 +1,9 @@
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -49,6 +54,7 @@ export class Clock {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Clock.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Clock.fromBcs(data),
       bcs: Clock.bcs,
+      fromJSONField: (field: any) => Clock.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof Clock.new>,
     }
   }
@@ -84,6 +90,21 @@ export class Clock {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Clock {
+    return Clock.new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      timestampMs: decodeFromJSONField('u64', field.timestampMs),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): Clock {
+    if (json.$typeName !== Clock.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Clock.fromJSONField(json)
   }
 
   static fromSuiParsedData(content: SuiParsedData): Clock {

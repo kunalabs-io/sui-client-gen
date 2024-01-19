@@ -5,13 +5,15 @@ import {
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
   fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -77,6 +79,7 @@ export class LinkedTable<K extends TypeArgument> {
       fromFieldsWithTypes: (item: FieldsWithTypes) => LinkedTable.fromFieldsWithTypes([K, V], item),
       fromBcs: (data: Uint8Array) => LinkedTable.fromBcs([K, V], data),
       bcs: LinkedTable.bcs(toBcs(K)),
+      fromJSONField: (field: any) => LinkedTable.fromJSONField([K, V], field),
       __class: null as unknown as ReturnType<typeof LinkedTable.new<ToTypeArgument<K>>>,
     }
   }
@@ -128,6 +131,34 @@ export class LinkedTable<K extends TypeArgument> {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField<K extends ReifiedTypeArgument>(
+    typeArgs: [K, ReifiedTypeArgument],
+    field: any
+  ): LinkedTable<ToTypeArgument<K>> {
+    return LinkedTable.new(typeArgs, {
+      id: decodeFromJSONField(UID.reified(), field.id),
+      size: decodeFromJSONField('u64', field.size),
+      head: decodeFromJSONField(Option.reified(typeArgs[0]), field.head),
+      tail: decodeFromJSONField(Option.reified(typeArgs[0]), field.tail),
+    })
+  }
+
+  static fromJSON<K extends ReifiedTypeArgument>(
+    typeArgs: [K, ReifiedTypeArgument],
+    json: Record<string, any>
+  ): LinkedTable<ToTypeArgument<K>> {
+    if (json.$typeName !== LinkedTable.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(LinkedTable.$typeName, ...typeArgs.map(extractType)),
+      json.$typeArgs,
+      typeArgs
+    )
+
+    return LinkedTable.fromJSONField(typeArgs, json)
   }
 
   static fromSuiParsedData<K extends ReifiedTypeArgument>(
@@ -216,6 +247,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Node.fromFieldsWithTypes([K, V], item),
       fromBcs: (data: Uint8Array) => Node.fromBcs([K, V], data),
       bcs: Node.bcs(toBcs(K), toBcs(V)),
+      fromJSONField: (field: any) => Node.fromJSONField([K, V], field),
       __class: null as unknown as ReturnType<typeof Node.new<ToTypeArgument<K>, ToTypeArgument<V>>>,
     }
   }
@@ -264,5 +296,32 @@ export class Node<K extends TypeArgument, V extends TypeArgument> {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField<K extends ReifiedTypeArgument, V extends ReifiedTypeArgument>(
+    typeArgs: [K, V],
+    field: any
+  ): Node<ToTypeArgument<K>, ToTypeArgument<V>> {
+    return Node.new(typeArgs, {
+      prev: decodeFromJSONField(Option.reified(typeArgs[0]), field.prev),
+      next: decodeFromJSONField(Option.reified(typeArgs[0]), field.next),
+      value: decodeFromJSONField(typeArgs[1], field.value),
+    })
+  }
+
+  static fromJSON<K extends ReifiedTypeArgument, V extends ReifiedTypeArgument>(
+    typeArgs: [K, V],
+    json: Record<string, any>
+  ): Node<ToTypeArgument<K>, ToTypeArgument<V>> {
+    if (json.$typeName !== Node.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Node.$typeName, ...typeArgs.map(extractType)),
+      json.$typeArgs,
+      typeArgs
+    )
+
+    return Node.fromJSONField(typeArgs, json)
   }
 }

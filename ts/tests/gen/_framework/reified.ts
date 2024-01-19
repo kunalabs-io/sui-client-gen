@@ -8,6 +8,7 @@ export interface StructClassReified {
   fromFields(fields: Record<string, any>): any
   fromFieldsWithTypes(item: FieldsWithTypes): any
   fromBcs: (data: Uint8Array) => any
+  fromJSONField: (field: any) => any
   __class: any
 }
 
@@ -17,6 +18,7 @@ export interface VectorReified {
   fromFields(fields: any[]): any[]
   fromFieldsWithTypes(item: any[]): any[]
   fromBcs(data: Uint8Array): any[]
+  fromJSONField: (field: any) => any
   __vectorItem: any
 }
 
@@ -196,25 +198,33 @@ export function decodeFromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: an
   }
 }
 
-export function assertFieldsWithTypesArgsMatch(
-  item: FieldsWithTypes,
-  typeArgs: ReifiedTypeArgument[]
+export function assertReifiedTypeArgsMatch(
+  fullType: string,
+  typeArgs: string[],
+  reifiedTypeArgs: ReifiedTypeArgument[]
 ) {
-  const { typeArgs: itemTypeArgs } = parseTypeName(item.type)
-  const reifiedTypeArgs = typeArgs.map(extractType)
-
-  if (itemTypeArgs.length !== reifiedTypeArgs.length) {
+  if (reifiedTypeArgs.length !== typeArgs.length) {
     throw new Error(
-      `provided item has mismatching number of type argments ${item.type} (expected ${reifiedTypeArgs.length}, got ${itemTypeArgs.length}))`
+      `provided item has mismatching number of type argments ${fullType} (expected ${reifiedTypeArgs.length}, got ${typeArgs.length}))`
     )
   }
-  for (let i = 0; i < itemTypeArgs.length; i++) {
-    if (compressSuiType(itemTypeArgs[i]) !== compressSuiType(reifiedTypeArgs[i])) {
+  for (let i = 0; i < typeArgs.length; i++) {
+    if (compressSuiType(typeArgs[i]) !== compressSuiType(extractType(reifiedTypeArgs[i]))) {
       throw new Error(
-        `provided item has mismatching type argments ${item.type} (expected ${reifiedTypeArgs[i]}, got ${itemTypeArgs[i]}))`
+        `provided item has mismatching type argments ${fullType} (expected ${extractType(
+          reifiedTypeArgs[i]
+        )}, got ${typeArgs[i]}))`
       )
     }
   }
+}
+
+export function assertFieldsWithTypesArgsMatch(
+  item: FieldsWithTypes,
+  reifiedTypeArgs: ReifiedTypeArgument[]
+) {
+  const { typeArgs: itemTypeArgs } = parseTypeName(item.type)
+  assertReifiedTypeArgsMatch(item.type, itemTypeArgs, reifiedTypeArgs)
 }
 
 export type ToJSON<T extends TypeArgument> = T extends 'bool'
@@ -298,6 +308,42 @@ export function vector<T extends ReifiedTypeArgument>(typeArg: T) {
     fromFieldsWithTypes: (item: any[]) =>
       item.map(field => decodeFromFieldsWithTypes(typeArg, field)),
     fromBcs: (data: Uint8Array) => bcs.vector(toBcs(typeArg)).parse(data),
+    fromJSONField: (json: any[]) => json.map(field => decodeFromJSONField(typeArg, field)),
     __vectorItem: null as unknown as ToField<ToTypeArgument<T>>,
+  }
+}
+
+export function decodeFromJSONField(typeArg: ReifiedTypeArgument, field: any) {
+  switch (typeArg) {
+    case 'bool':
+    case 'u8':
+    case 'u16':
+    case 'u32':
+      return field
+    case 'u64':
+    case 'u128':
+    case 'u256':
+      return BigInt(field)
+    case 'address':
+      return field
+  }
+  if ('__vectorItem' in typeArg) {
+    return typeArg.fromJSONField(field)
+  }
+  switch (typeArg.typeName) {
+    case '0x1::string::String':
+    case '0x1::ascii::String':
+    case '0x2::url::Url':
+    case '0x2::object::ID':
+    case '0x2::object::UID':
+      return field
+    case '0x1::option::Option': {
+      if (field === null) {
+        return null
+      }
+      return decodeFromJSONField(typeArg.typeArgs[0], field)
+    }
+    default:
+      return typeArg.fromJSONField(field)
   }
 }

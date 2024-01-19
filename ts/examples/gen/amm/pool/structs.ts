@@ -3,11 +3,13 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Balance, Supply } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
@@ -58,6 +60,7 @@ export class AdminCap {
       fromFieldsWithTypes: (item: FieldsWithTypes) => AdminCap.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => AdminCap.fromBcs(data),
       bcs: AdminCap.bcs,
+      fromJSONField: (field: any) => AdminCap.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof AdminCap.new>,
     }
   }
@@ -86,6 +89,18 @@ export class AdminCap {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): AdminCap {
+    return AdminCap.new(decodeFromJSONField(UID.reified(), field.id))
+  }
+
+  static fromJSON(json: Record<string, any>): AdminCap {
+    if (json.$typeName !== AdminCap.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return AdminCap.fromJSONField(json)
   }
 
   static fromSuiParsedData(content: SuiParsedData): AdminCap {
@@ -161,6 +176,7 @@ export class LP {
       fromFieldsWithTypes: (item: FieldsWithTypes) => LP.fromFieldsWithTypes([A, B], item),
       fromBcs: (data: Uint8Array) => LP.fromBcs([A, B], data),
       bcs: LP.bcs,
+      fromJSONField: (field: any) => LP.fromJSONField([A, B], field),
       __class: null as unknown as ReturnType<typeof LP.new>,
     }
   }
@@ -196,6 +212,26 @@ export class LP {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument], field: any): LP {
+    return LP.new(typeArgs, decodeFromJSONField('bool', field.dummyField))
+  }
+
+  static fromJSON(
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    json: Record<string, any>
+  ): LP {
+    if (json.$typeName !== LP.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(LP.$typeName, ...typeArgs.map(extractType)),
+      json.$typeArgs,
+      typeArgs
+    )
+
+    return LP.fromJSONField(typeArgs, json)
   }
 }
 
@@ -271,6 +307,7 @@ export class Pool {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Pool.fromFieldsWithTypes([A, B], item),
       fromBcs: (data: Uint8Array) => Pool.fromBcs([A, B], data),
       bcs: Pool.bcs,
+      fromJSONField: (field: any) => Pool.fromJSONField([A, B], field),
       __class: null as unknown as ReturnType<typeof Pool.new>,
     }
   }
@@ -340,6 +377,40 @@ export class Pool {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument], field: any): Pool {
+    return Pool.new(typeArgs, {
+      id: decodeFromJSONField(UID.reified(), field.id),
+      balanceA: decodeFromJSONField(Balance.reified(typeArgs[0]), field.balanceA),
+      balanceB: decodeFromJSONField(Balance.reified(typeArgs[1]), field.balanceB),
+      lpSupply: decodeFromJSONField(
+        Supply.reified(LP.reified(typeArgs[0], typeArgs[1])),
+        field.lpSupply
+      ),
+      lpFeeBps: decodeFromJSONField('u64', field.lpFeeBps),
+      adminFeePct: decodeFromJSONField('u64', field.adminFeePct),
+      adminFeeBalance: decodeFromJSONField(
+        Balance.reified(LP.reified(typeArgs[0], typeArgs[1])),
+        field.adminFeeBalance
+      ),
+    })
+  }
+
+  static fromJSON(
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    json: Record<string, any>
+  ): Pool {
+    if (json.$typeName !== Pool.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Pool.$typeName, ...typeArgs.map(extractType)),
+      json.$typeArgs,
+      typeArgs
+    )
+
+    return Pool.fromJSONField(typeArgs, json)
   }
 
   static fromSuiParsedData(
@@ -416,6 +487,7 @@ export class PoolCreationEvent {
       fromFieldsWithTypes: (item: FieldsWithTypes) => PoolCreationEvent.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PoolCreationEvent.fromBcs(data),
       bcs: PoolCreationEvent.bcs,
+      fromJSONField: (field: any) => PoolCreationEvent.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof PoolCreationEvent.new>,
     }
   }
@@ -444,6 +516,18 @@ export class PoolCreationEvent {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): PoolCreationEvent {
+    return PoolCreationEvent.new(decodeFromJSONField(ID.reified(), field.poolId))
+  }
+
+  static fromJSON(json: Record<string, any>): PoolCreationEvent {
+    if (json.$typeName !== PoolCreationEvent.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return PoolCreationEvent.fromJSONField(json)
   }
 }
 
@@ -496,6 +580,7 @@ export class PoolRegistry {
       fromFieldsWithTypes: (item: FieldsWithTypes) => PoolRegistry.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PoolRegistry.fromBcs(data),
       bcs: PoolRegistry.bcs,
+      fromJSONField: (field: any) => PoolRegistry.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof PoolRegistry.new>,
     }
   }
@@ -534,6 +619,21 @@ export class PoolRegistry {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): PoolRegistry {
+    return PoolRegistry.new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      table: decodeFromJSONField(Table.reified(PoolRegistryItem.reified(), 'bool'), field.table),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): PoolRegistry {
+    if (json.$typeName !== PoolRegistry.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return PoolRegistry.fromJSONField(json)
   }
 
   static fromSuiParsedData(content: SuiParsedData): PoolRegistry {
@@ -607,6 +707,7 @@ export class PoolRegistryItem {
       fromFieldsWithTypes: (item: FieldsWithTypes) => PoolRegistryItem.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PoolRegistryItem.fromBcs(data),
       bcs: PoolRegistryItem.bcs,
+      fromJSONField: (field: any) => PoolRegistryItem.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof PoolRegistryItem.new>,
     }
   }
@@ -642,5 +743,20 @@ export class PoolRegistryItem {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): PoolRegistryItem {
+    return PoolRegistryItem.new({
+      a: decodeFromJSONField(TypeName.reified(), field.a),
+      b: decodeFromJSONField(TypeName.reified(), field.b),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): PoolRegistryItem {
+    if (json.$typeName !== PoolRegistryItem.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return PoolRegistryItem.fromJSONField(json)
   }
 }

@@ -2,11 +2,13 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== Balance =============================== */
@@ -54,6 +56,7 @@ export class Balance {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Balance.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Balance.fromBcs(T, data),
       bcs: Balance.bcs,
+      fromJSONField: (field: any) => Balance.fromJSONField(T, field),
       __class: null as unknown as ReturnType<typeof Balance.new>,
     }
   }
@@ -83,6 +86,23 @@ export class Balance {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): Balance {
+    return Balance.new(typeArg, decodeFromJSONField('u64', field.value))
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): Balance {
+    if (json.$typeName !== Balance.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Balance.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return Balance.fromJSONField(typeArg, json)
   }
 }
 
@@ -131,6 +151,7 @@ export class Supply {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Supply.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Supply.fromBcs(T, data),
       bcs: Supply.bcs,
+      fromJSONField: (field: any) => Supply.fromJSONField(T, field),
       __class: null as unknown as ReturnType<typeof Supply.new>,
     }
   }
@@ -160,5 +181,22 @@ export class Supply {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): Supply {
+    return Supply.new(typeArg, decodeFromJSONField('u64', field.value))
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): Supply {
+    if (json.$typeName !== Supply.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Supply.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return Supply.fromJSONField(typeArg, json)
   }
 }

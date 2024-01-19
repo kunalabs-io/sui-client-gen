@@ -2,11 +2,13 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { SUI } from '../sui/structs'
@@ -58,6 +60,7 @@ export class Borrow {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Borrow.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Borrow.fromBcs(data),
       bcs: Borrow.bcs,
+      fromJSONField: (field: any) => Borrow.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof Borrow.new>,
     }
   }
@@ -93,6 +96,21 @@ export class Borrow {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Borrow {
+    return Borrow.new({
+      kioskId: decodeFromJSONField(ID.reified(), field.kioskId),
+      itemId: decodeFromJSONField(ID.reified(), field.itemId),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): Borrow {
+    if (json.$typeName !== Borrow.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Borrow.fromJSONField(json)
   }
 }
 
@@ -137,6 +155,7 @@ export class Item {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Item.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Item.fromBcs(data),
       bcs: Item.bcs,
+      fromJSONField: (field: any) => Item.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof Item.new>,
     }
   }
@@ -165,6 +184,18 @@ export class Item {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Item {
+    return Item.new(decodeFromJSONField(ID.reified(), field.id))
+  }
+
+  static fromJSON(json: Record<string, any>): Item {
+    if (json.$typeName !== Item.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Item.fromJSONField(json)
   }
 }
 
@@ -217,6 +248,7 @@ export class ItemDelisted {
       fromFieldsWithTypes: (item: FieldsWithTypes) => ItemDelisted.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => ItemDelisted.fromBcs(T, data),
       bcs: ItemDelisted.bcs,
+      fromJSONField: (field: any) => ItemDelisted.fromJSONField(T, field),
       __class: null as unknown as ReturnType<typeof ItemDelisted.new>,
     }
   }
@@ -253,6 +285,26 @@ export class ItemDelisted {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): ItemDelisted {
+    return ItemDelisted.new(typeArg, {
+      kiosk: decodeFromJSONField(ID.reified(), field.kiosk),
+      id: decodeFromJSONField(ID.reified(), field.id),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): ItemDelisted {
+    if (json.$typeName !== ItemDelisted.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(ItemDelisted.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return ItemDelisted.fromJSONField(typeArg, json)
   }
 }
 
@@ -309,6 +361,7 @@ export class ItemListed {
       fromFieldsWithTypes: (item: FieldsWithTypes) => ItemListed.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => ItemListed.fromBcs(T, data),
       bcs: ItemListed.bcs,
+      fromJSONField: (field: any) => ItemListed.fromJSONField(T, field),
       __class: null as unknown as ReturnType<typeof ItemListed.new>,
     }
   }
@@ -348,6 +401,27 @@ export class ItemListed {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): ItemListed {
+    return ItemListed.new(typeArg, {
+      kiosk: decodeFromJSONField(ID.reified(), field.kiosk),
+      id: decodeFromJSONField(ID.reified(), field.id),
+      price: decodeFromJSONField('u64', field.price),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): ItemListed {
+    if (json.$typeName !== ItemListed.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(ItemListed.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return ItemListed.fromJSONField(typeArg, json)
   }
 }
 
@@ -404,6 +478,7 @@ export class ItemPurchased {
       fromFieldsWithTypes: (item: FieldsWithTypes) => ItemPurchased.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => ItemPurchased.fromBcs(T, data),
       bcs: ItemPurchased.bcs,
+      fromJSONField: (field: any) => ItemPurchased.fromJSONField(T, field),
       __class: null as unknown as ReturnType<typeof ItemPurchased.new>,
     }
   }
@@ -443,6 +518,27 @@ export class ItemPurchased {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): ItemPurchased {
+    return ItemPurchased.new(typeArg, {
+      kiosk: decodeFromJSONField(ID.reified(), field.kiosk),
+      id: decodeFromJSONField(ID.reified(), field.id),
+      price: decodeFromJSONField('u64', field.price),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): ItemPurchased {
+    if (json.$typeName !== ItemPurchased.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(ItemPurchased.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return ItemPurchased.fromJSONField(typeArg, json)
   }
 }
 
@@ -506,6 +602,7 @@ export class Kiosk {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Kiosk.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Kiosk.fromBcs(data),
       bcs: Kiosk.bcs,
+      fromJSONField: (field: any) => Kiosk.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof Kiosk.new>,
     }
   }
@@ -550,6 +647,24 @@ export class Kiosk {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Kiosk {
+    return Kiosk.new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      profits: decodeFromJSONField(Balance.reified(SUI.reified()), field.profits),
+      owner: decodeFromJSONField('address', field.owner),
+      itemCount: decodeFromJSONField('u32', field.itemCount),
+      allowExtensions: decodeFromJSONField('bool', field.allowExtensions),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): Kiosk {
+    if (json.$typeName !== Kiosk.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Kiosk.fromJSONField(json)
   }
 
   static fromSuiParsedData(content: SuiParsedData): Kiosk {
@@ -619,6 +734,7 @@ export class KioskOwnerCap {
       fromFieldsWithTypes: (item: FieldsWithTypes) => KioskOwnerCap.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => KioskOwnerCap.fromBcs(data),
       bcs: KioskOwnerCap.bcs,
+      fromJSONField: (field: any) => KioskOwnerCap.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof KioskOwnerCap.new>,
     }
   }
@@ -654,6 +770,21 @@ export class KioskOwnerCap {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): KioskOwnerCap {
+    return KioskOwnerCap.new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      for: decodeFromJSONField(ID.reified(), field.for),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): KioskOwnerCap {
+    if (json.$typeName !== KioskOwnerCap.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return KioskOwnerCap.fromJSONField(json)
   }
 
   static fromSuiParsedData(content: SuiParsedData): KioskOwnerCap {
@@ -723,6 +854,7 @@ export class Listing {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Listing.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Listing.fromBcs(data),
       bcs: Listing.bcs,
+      fromJSONField: (field: any) => Listing.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof Listing.new>,
     }
   }
@@ -758,6 +890,21 @@ export class Listing {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Listing {
+    return Listing.new({
+      id: decodeFromJSONField(ID.reified(), field.id),
+      isExclusive: decodeFromJSONField('bool', field.isExclusive),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): Listing {
+    if (json.$typeName !== Listing.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Listing.fromJSONField(json)
   }
 }
 
@@ -802,6 +949,7 @@ export class Lock {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Lock.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Lock.fromBcs(data),
       bcs: Lock.bcs,
+      fromJSONField: (field: any) => Lock.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof Lock.new>,
     }
   }
@@ -830,6 +978,18 @@ export class Lock {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Lock {
+    return Lock.new(decodeFromJSONField(ID.reified(), field.id))
+  }
+
+  static fromJSON(json: Record<string, any>): Lock {
+    if (json.$typeName !== Lock.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Lock.fromJSONField(json)
   }
 }
 
@@ -890,6 +1050,7 @@ export class PurchaseCap {
       fromFieldsWithTypes: (item: FieldsWithTypes) => PurchaseCap.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => PurchaseCap.fromBcs(T, data),
       bcs: PurchaseCap.bcs,
+      fromJSONField: (field: any) => PurchaseCap.fromJSONField(T, field),
       __class: null as unknown as ReturnType<typeof PurchaseCap.new>,
     }
   }
@@ -932,6 +1093,28 @@ export class PurchaseCap {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): PurchaseCap {
+    return PurchaseCap.new(typeArg, {
+      id: decodeFromJSONField(UID.reified(), field.id),
+      kioskId: decodeFromJSONField(ID.reified(), field.kioskId),
+      itemId: decodeFromJSONField(ID.reified(), field.itemId),
+      minPrice: decodeFromJSONField('u64', field.minPrice),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): PurchaseCap {
+    if (json.$typeName !== PurchaseCap.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(PurchaseCap.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return PurchaseCap.fromJSONField(typeArg, json)
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): PurchaseCap {

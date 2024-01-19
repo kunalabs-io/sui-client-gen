@@ -1,4 +1,9 @@
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -49,6 +54,7 @@ export class Bag {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Bag.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Bag.fromBcs(data),
       bcs: Bag.bcs,
+      fromJSONField: (field: any) => Bag.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof Bag.new>,
     }
   }
@@ -84,6 +90,21 @@ export class Bag {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Bag {
+    return Bag.new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      size: decodeFromJSONField('u64', field.size),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): Bag {
+    if (json.$typeName !== Bag.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Bag.fromJSONField(json)
   }
 
   static fromSuiParsedData(content: SuiParsedData): Bag {

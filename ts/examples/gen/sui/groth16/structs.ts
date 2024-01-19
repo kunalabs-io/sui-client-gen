@@ -3,6 +3,7 @@ import {
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
@@ -49,6 +50,7 @@ export class Curve {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Curve.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Curve.fromBcs(data),
       bcs: Curve.bcs,
+      fromJSONField: (field: any) => Curve.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof Curve.new>,
     }
   }
@@ -77,6 +79,18 @@ export class Curve {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Curve {
+    return Curve.new(decodeFromJSONField('u8', field.id))
+  }
+
+  static fromJSON(json: Record<string, any>): Curve {
+    if (json.$typeName !== Curve.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Curve.fromJSONField(json)
   }
 }
 
@@ -134,6 +148,7 @@ export class PreparedVerifyingKey {
         PreparedVerifyingKey.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PreparedVerifyingKey.fromBcs(data),
       bcs: PreparedVerifyingKey.bcs,
+      fromJSONField: (field: any) => PreparedVerifyingKey.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof PreparedVerifyingKey.new>,
     }
   }
@@ -188,6 +203,23 @@ export class PreparedVerifyingKey {
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
   }
+
+  static fromJSONField(field: any): PreparedVerifyingKey {
+    return PreparedVerifyingKey.new({
+      vkGammaAbcG1Bytes: decodeFromJSONField(reified.vector('u8'), field.vkGammaAbcG1Bytes),
+      alphaG1BetaG2Bytes: decodeFromJSONField(reified.vector('u8'), field.alphaG1BetaG2Bytes),
+      gammaG2NegPcBytes: decodeFromJSONField(reified.vector('u8'), field.gammaG2NegPcBytes),
+      deltaG2NegPcBytes: decodeFromJSONField(reified.vector('u8'), field.deltaG2NegPcBytes),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): PreparedVerifyingKey {
+    if (json.$typeName !== PreparedVerifyingKey.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return PreparedVerifyingKey.fromJSONField(json)
+  }
 }
 
 /* ============================== ProofPoints =============================== */
@@ -231,6 +263,7 @@ export class ProofPoints {
       fromFieldsWithTypes: (item: FieldsWithTypes) => ProofPoints.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ProofPoints.fromBcs(data),
       bcs: ProofPoints.bcs,
+      fromJSONField: (field: any) => ProofPoints.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof ProofPoints.new>,
     }
   }
@@ -259,6 +292,18 @@ export class ProofPoints {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): ProofPoints {
+    return ProofPoints.new(decodeFromJSONField(reified.vector('u8'), field.bytes))
+  }
+
+  static fromJSON(json: Record<string, any>): ProofPoints {
+    if (json.$typeName !== ProofPoints.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return ProofPoints.fromJSONField(json)
   }
 }
 
@@ -303,6 +348,7 @@ export class PublicProofInputs {
       fromFieldsWithTypes: (item: FieldsWithTypes) => PublicProofInputs.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PublicProofInputs.fromBcs(data),
       bcs: PublicProofInputs.bcs,
+      fromJSONField: (field: any) => PublicProofInputs.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof PublicProofInputs.new>,
     }
   }
@@ -331,5 +377,17 @@ export class PublicProofInputs {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): PublicProofInputs {
+    return PublicProofInputs.new(decodeFromJSONField(reified.vector('u8'), field.bytes))
+  }
+
+  static fromJSON(json: Record<string, any>): PublicProofInputs {
+    if (json.$typeName !== PublicProofInputs.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return PublicProofInputs.fromJSONField(json)
   }
 }

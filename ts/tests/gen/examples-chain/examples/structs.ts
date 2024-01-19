@@ -3,6 +3,7 @@ import {
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
@@ -58,6 +59,7 @@ export class ExampleStruct {
       fromFieldsWithTypes: (item: FieldsWithTypes) => ExampleStruct.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ExampleStruct.fromBcs(data),
       bcs: ExampleStruct.bcs,
+      fromJSONField: (field: any) => ExampleStruct.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof ExampleStruct.new>,
     }
   }
@@ -86,6 +88,18 @@ export class ExampleStruct {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): ExampleStruct {
+    return ExampleStruct.new(decodeFromJSONField('bool', field.dummyField))
+  }
+
+  static fromJSON(json: Record<string, any>): ExampleStruct {
+    if (json.$typeName !== ExampleStruct.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return ExampleStruct.fromJSONField(json)
   }
 }
 
@@ -169,6 +183,7 @@ export class SpecialTypesStruct {
       fromFieldsWithTypes: (item: FieldsWithTypes) => SpecialTypesStruct.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => SpecialTypesStruct.fromBcs(data),
       bcs: SpecialTypesStruct.bcs,
+      fromJSONField: (field: any) => SpecialTypesStruct.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof SpecialTypesStruct.new>,
     }
   }
@@ -234,6 +249,31 @@ export class SpecialTypesStruct {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): SpecialTypesStruct {
+    return SpecialTypesStruct.new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      asciiString: decodeFromJSONField(String.reified(), field.asciiString),
+      utf8String: decodeFromJSONField(String1.reified(), field.utf8String),
+      vectorOfU64: decodeFromJSONField(reified.vector('u64'), field.vectorOfU64),
+      vectorOfObjects: decodeFromJSONField(
+        reified.vector(ExampleStruct.reified()),
+        field.vectorOfObjects
+      ),
+      idField: decodeFromJSONField(ID.reified(), field.idField),
+      address: decodeFromJSONField('address', field.address),
+      optionSome: decodeFromJSONField(Option.reified('u64'), field.optionSome),
+      optionNone: decodeFromJSONField(Option.reified('u64'), field.optionNone),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): SpecialTypesStruct {
+    if (json.$typeName !== SpecialTypesStruct.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return SpecialTypesStruct.fromJSONField(json)
   }
 
   static fromSuiParsedData(content: SuiParsedData): SpecialTypesStruct {

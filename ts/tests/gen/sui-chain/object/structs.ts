@@ -1,4 +1,9 @@
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs, fromHEX, toHEX } from '@mysten/bcs'
 
@@ -46,6 +51,7 @@ export class ID {
       fromFieldsWithTypes: (item: FieldsWithTypes) => ID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ID.fromBcs(data),
       bcs: ID.bcs,
+      fromJSONField: (field: any) => ID.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof ID.new>,
     }
   }
@@ -74,6 +80,18 @@ export class ID {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): ID {
+    return ID.new(decodeFromJSONField('address', field.bytes))
+  }
+
+  static fromJSON(json: Record<string, any>): ID {
+    if (json.$typeName !== ID.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return ID.fromJSONField(json)
   }
 }
 
@@ -118,6 +136,7 @@ export class UID {
       fromFieldsWithTypes: (item: FieldsWithTypes) => UID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UID.fromBcs(data),
       bcs: UID.bcs,
+      fromJSONField: (field: any) => UID.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof UID.new>,
     }
   }
@@ -146,5 +165,17 @@ export class UID {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): UID {
+    return UID.new(decodeFromJSONField(ID.reified(), field.id))
+  }
+
+  static fromJSON(json: Record<string, any>): UID {
+    if (json.$typeName !== UID.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return UID.fromJSONField(json)
   }
 }

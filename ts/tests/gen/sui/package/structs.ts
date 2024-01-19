@@ -3,6 +3,7 @@ import {
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
@@ -60,6 +61,7 @@ export class Publisher {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Publisher.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Publisher.fromBcs(data),
       bcs: Publisher.bcs,
+      fromJSONField: (field: any) => Publisher.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof Publisher.new>,
     }
   }
@@ -98,6 +100,22 @@ export class Publisher {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Publisher {
+    return Publisher.new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      package: decodeFromJSONField(String.reified(), field.package),
+      moduleName: decodeFromJSONField(String.reified(), field.moduleName),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): Publisher {
+    if (json.$typeName !== Publisher.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Publisher.fromJSONField(json)
   }
 
   static fromSuiParsedData(content: SuiParsedData): Publisher {
@@ -175,6 +193,7 @@ export class UpgradeCap {
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeCap.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UpgradeCap.fromBcs(data),
       bcs: UpgradeCap.bcs,
+      fromJSONField: (field: any) => UpgradeCap.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof UpgradeCap.new>,
     }
   }
@@ -216,6 +235,23 @@ export class UpgradeCap {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): UpgradeCap {
+    return UpgradeCap.new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      package: decodeFromJSONField(ID.reified(), field.package),
+      version: decodeFromJSONField('u64', field.version),
+      policy: decodeFromJSONField('u8', field.policy),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): UpgradeCap {
+    if (json.$typeName !== UpgradeCap.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return UpgradeCap.fromJSONField(json)
   }
 
   static fromSuiParsedData(content: SuiParsedData): UpgradeCap {
@@ -285,6 +321,7 @@ export class UpgradeReceipt {
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeReceipt.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UpgradeReceipt.fromBcs(data),
       bcs: UpgradeReceipt.bcs,
+      fromJSONField: (field: any) => UpgradeReceipt.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof UpgradeReceipt.new>,
     }
   }
@@ -320,6 +357,21 @@ export class UpgradeReceipt {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): UpgradeReceipt {
+    return UpgradeReceipt.new({
+      cap: decodeFromJSONField(ID.reified(), field.cap),
+      package: decodeFromJSONField(ID.reified(), field.package),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): UpgradeReceipt {
+    if (json.$typeName !== UpgradeReceipt.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return UpgradeReceipt.fromJSONField(json)
   }
 }
 
@@ -376,6 +428,7 @@ export class UpgradeTicket {
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeTicket.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UpgradeTicket.fromBcs(data),
       bcs: UpgradeTicket.bcs,
+      fromJSONField: (field: any) => UpgradeTicket.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof UpgradeTicket.new>,
     }
   }
@@ -417,5 +470,22 @@ export class UpgradeTicket {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): UpgradeTicket {
+    return UpgradeTicket.new({
+      cap: decodeFromJSONField(ID.reified(), field.cap),
+      package: decodeFromJSONField(ID.reified(), field.package),
+      policy: decodeFromJSONField('u8', field.policy),
+      digest: decodeFromJSONField(reified.vector('u8'), field.digest),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): UpgradeTicket {
+    if (json.$typeName !== UpgradeTicket.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return UpgradeTicket.fromJSONField(json)
   }
 }

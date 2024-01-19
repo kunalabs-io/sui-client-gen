@@ -3,6 +3,7 @@ import {
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
@@ -68,6 +69,7 @@ export class TxContext {
       fromFieldsWithTypes: (item: FieldsWithTypes) => TxContext.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => TxContext.fromBcs(data),
       bcs: TxContext.bcs,
+      fromJSONField: (field: any) => TxContext.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof TxContext.new>,
     }
   }
@@ -112,5 +114,23 @@ export class TxContext {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): TxContext {
+    return TxContext.new({
+      sender: decodeFromJSONField('address', field.sender),
+      txHash: decodeFromJSONField(reified.vector('u8'), field.txHash),
+      epoch: decodeFromJSONField('u64', field.epoch),
+      epochTimestampMs: decodeFromJSONField('u64', field.epochTimestampMs),
+      idsCreated: decodeFromJSONField('u64', field.idsCreated),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): TxContext {
+    if (json.$typeName !== TxContext.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return TxContext.fromJSONField(json)
   }
 }

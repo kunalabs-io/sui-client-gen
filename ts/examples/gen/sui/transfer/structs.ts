@@ -2,11 +2,13 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { ID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
 
@@ -59,6 +61,7 @@ export class Receiving {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Receiving.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Receiving.fromBcs(T, data),
       bcs: Receiving.bcs,
+      fromJSONField: (field: any) => Receiving.fromJSONField(T, field),
       __class: null as unknown as ReturnType<typeof Receiving.new>,
     }
   }
@@ -95,5 +98,25 @@ export class Receiving {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): Receiving {
+    return Receiving.new(typeArg, {
+      id: decodeFromJSONField(ID.reified(), field.id),
+      version: decodeFromJSONField('u64', field.version),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): Receiving {
+    if (json.$typeName !== Receiving.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Receiving.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return Receiving.fromJSONField(typeArg, json)
   }
 }

@@ -1,4 +1,9 @@
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { TreasuryCap } from '../../sui/coin/structs'
 import { UID } from '../../sui/object/structs'
@@ -50,6 +55,7 @@ export class EXAMPLE_COIN {
       fromFieldsWithTypes: (item: FieldsWithTypes) => EXAMPLE_COIN.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => EXAMPLE_COIN.fromBcs(data),
       bcs: EXAMPLE_COIN.bcs,
+      fromJSONField: (field: any) => EXAMPLE_COIN.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof EXAMPLE_COIN.new>,
     }
   }
@@ -78,6 +84,18 @@ export class EXAMPLE_COIN {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): EXAMPLE_COIN {
+    return EXAMPLE_COIN.new(decodeFromJSONField('bool', field.dummyField))
+  }
+
+  static fromJSON(json: Record<string, any>): EXAMPLE_COIN {
+    if (json.$typeName !== EXAMPLE_COIN.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return EXAMPLE_COIN.fromJSONField(json)
   }
 }
 
@@ -130,6 +148,7 @@ export class Faucet {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Faucet.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Faucet.fromBcs(data),
       bcs: Faucet.bcs,
+      fromJSONField: (field: any) => Faucet.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof Faucet.new>,
     }
   }
@@ -165,6 +184,21 @@ export class Faucet {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Faucet {
+    return Faucet.new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      cap: decodeFromJSONField(TreasuryCap.reified(EXAMPLE_COIN.reified()), field.cap),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): Faucet {
+    if (json.$typeName !== Faucet.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Faucet.fromJSONField(json)
   }
 
   static fromSuiParsedData(content: SuiParsedData): Faucet {

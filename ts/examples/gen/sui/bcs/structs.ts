@@ -3,6 +3,7 @@ import {
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
@@ -49,6 +50,7 @@ export class BCS {
       fromFieldsWithTypes: (item: FieldsWithTypes) => BCS.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => BCS.fromBcs(data),
       bcs: BCS.bcs,
+      fromJSONField: (field: any) => BCS.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof BCS.new>,
     }
   }
@@ -77,5 +79,17 @@ export class BCS {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): BCS {
+    return BCS.new(decodeFromJSONField(reified.vector('u8'), field.bytes))
+  }
+
+  static fromJSON(json: Record<string, any>): BCS {
+    if (json.$typeName !== BCS.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return BCS.fromJSONField(json)
   }
 }

@@ -4,13 +4,15 @@ import {
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
   fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== Wrapper =============================== */
@@ -62,6 +64,7 @@ export class Wrapper<T0 extends TypeArgument> {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Wrapper.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => Wrapper.fromBcs(T0, data),
       bcs: Wrapper.bcs(toBcs(T0)),
+      fromJSONField: (field: any) => Wrapper.fromJSONField(T0, field),
       __class: null as unknown as ReturnType<typeof Wrapper.new<ToTypeArgument<T0>>>,
     }
   }
@@ -102,5 +105,28 @@ export class Wrapper<T0 extends TypeArgument> {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField<T0 extends ReifiedTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): Wrapper<ToTypeArgument<T0>> {
+    return Wrapper.new(typeArg, decodeFromJSONField(typeArg, field.name))
+  }
+
+  static fromJSON<T0 extends ReifiedTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): Wrapper<ToTypeArgument<T0>> {
+    if (json.$typeName !== Wrapper.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Wrapper.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return Wrapper.fromJSONField(typeArg, json)
   }
 }

@@ -1,4 +1,9 @@
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { ID, UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -49,6 +54,7 @@ export class Versioned {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Versioned.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Versioned.fromBcs(data),
       bcs: Versioned.bcs,
+      fromJSONField: (field: any) => Versioned.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof Versioned.new>,
     }
   }
@@ -84,6 +90,21 @@ export class Versioned {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Versioned {
+    return Versioned.new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      version: decodeFromJSONField('u64', field.version),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): Versioned {
+    if (json.$typeName !== Versioned.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Versioned.fromJSONField(json)
   }
 
   static fromSuiParsedData(content: SuiParsedData): Versioned {
@@ -153,6 +174,7 @@ export class VersionChangeCap {
       fromFieldsWithTypes: (item: FieldsWithTypes) => VersionChangeCap.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => VersionChangeCap.fromBcs(data),
       bcs: VersionChangeCap.bcs,
+      fromJSONField: (field: any) => VersionChangeCap.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof VersionChangeCap.new>,
     }
   }
@@ -188,5 +210,20 @@ export class VersionChangeCap {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): VersionChangeCap {
+    return VersionChangeCap.new({
+      versionedId: decodeFromJSONField(ID.reified(), field.versionedId),
+      oldVersion: decodeFromJSONField('u64', field.oldVersion),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): VersionChangeCap {
+    if (json.$typeName !== VersionChangeCap.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return VersionChangeCap.fromJSONField(json)
   }
 }

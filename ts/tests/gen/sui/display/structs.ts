@@ -2,11 +2,13 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib/string/structs'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
@@ -66,6 +68,7 @@ export class Display {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Display.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Display.fromBcs(T, data),
       bcs: Display.bcs,
+      fromJSONField: (field: any) => Display.fromJSONField(T, field),
       __class: null as unknown as ReturnType<typeof Display.new>,
     }
   }
@@ -108,6 +111,27 @@ export class Display {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): Display {
+    return Display.new(typeArg, {
+      id: decodeFromJSONField(UID.reified(), field.id),
+      fields: decodeFromJSONField(VecMap.reified(String.reified(), String.reified()), field.fields),
+      version: decodeFromJSONField('u16', field.version),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): Display {
+    if (json.$typeName !== Display.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Display.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return Display.fromJSONField(typeArg, json)
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): Display {
@@ -181,6 +205,7 @@ export class DisplayCreated {
       fromFieldsWithTypes: (item: FieldsWithTypes) => DisplayCreated.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => DisplayCreated.fromBcs(T, data),
       bcs: DisplayCreated.bcs,
+      fromJSONField: (field: any) => DisplayCreated.fromJSONField(T, field),
       __class: null as unknown as ReturnType<typeof DisplayCreated.new>,
     }
   }
@@ -210,6 +235,23 @@ export class DisplayCreated {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): DisplayCreated {
+    return DisplayCreated.new(typeArg, decodeFromJSONField(ID.reified(), field.id))
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): DisplayCreated {
+    if (json.$typeName !== DisplayCreated.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(DisplayCreated.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return DisplayCreated.fromJSONField(typeArg, json)
   }
 }
 
@@ -266,6 +308,7 @@ export class VersionUpdated {
       fromFieldsWithTypes: (item: FieldsWithTypes) => VersionUpdated.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => VersionUpdated.fromBcs(T, data),
       bcs: VersionUpdated.bcs,
+      fromJSONField: (field: any) => VersionUpdated.fromJSONField(T, field),
       __class: null as unknown as ReturnType<typeof VersionUpdated.new>,
     }
   }
@@ -308,5 +351,26 @@ export class VersionUpdated {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): VersionUpdated {
+    return VersionUpdated.new(typeArg, {
+      id: decodeFromJSONField(ID.reified(), field.id),
+      version: decodeFromJSONField('u16', field.version),
+      fields: decodeFromJSONField(VecMap.reified(String.reified(), String.reified()), field.fields),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): VersionUpdated {
+    if (json.$typeName !== VersionUpdated.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(VersionUpdated.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return VersionUpdated.fromJSONField(typeArg, json)
   }
 }

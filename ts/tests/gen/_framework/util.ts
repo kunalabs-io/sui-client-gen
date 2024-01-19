@@ -249,6 +249,8 @@ export function compressSuiAddress(addr: string): string {
   return '0x0'
 }
 
+// Recursively removes leading zeros from a type.
+// e.g. `0x00000002::module::Name<0x00001::a::C>` -> `0x2::module::Name<0x1::a::C>`
 export function compressSuiType(type: string): string {
   const { typeName, typeArgs } = parseTypeName(type)
   switch (typeName) {
@@ -274,5 +276,13 @@ export function compressSuiType(type: string): string {
         return compressedName
       }
     }
+  }
+}
+
+export function composeSuiType(typeName: string, ...typeArgs: string[]): string {
+  if (typeArgs.length > 0) {
+    return `${typeName}<${typeArgs.join(', ')}>`
+  } else {
+    return typeName
   }
 }

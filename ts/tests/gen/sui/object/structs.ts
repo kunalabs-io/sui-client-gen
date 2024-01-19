@@ -5,13 +5,15 @@ import {
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
   fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
@@ -64,6 +66,7 @@ export class DynamicFields<K extends TypeArgument> {
       fromFieldsWithTypes: (item: FieldsWithTypes) => DynamicFields.fromFieldsWithTypes(K, item),
       fromBcs: (data: Uint8Array) => DynamicFields.fromBcs(K, data),
       bcs: DynamicFields.bcs(toBcs(K)),
+      fromJSONField: (field: any) => DynamicFields.fromJSONField(K, field),
       __class: null as unknown as ReturnType<typeof DynamicFields.new<ToTypeArgument<K>>>,
     }
   }
@@ -107,6 +110,29 @@ export class DynamicFields<K extends TypeArgument> {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField<K extends ReifiedTypeArgument>(
+    typeArg: K,
+    field: any
+  ): DynamicFields<ToTypeArgument<K>> {
+    return DynamicFields.new(typeArg, decodeFromJSONField(reified.vector(typeArg), field.names))
+  }
+
+  static fromJSON<K extends ReifiedTypeArgument>(
+    typeArg: K,
+    json: Record<string, any>
+  ): DynamicFields<ToTypeArgument<K>> {
+    if (json.$typeName !== DynamicFields.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(DynamicFields.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return DynamicFields.fromJSONField(typeArg, json)
   }
 
   static fromSuiParsedData<K extends ReifiedTypeArgument>(
@@ -182,6 +208,7 @@ export class ID {
       fromFieldsWithTypes: (item: FieldsWithTypes) => ID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ID.fromBcs(data),
       bcs: ID.bcs,
+      fromJSONField: (field: any) => ID.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof ID.new>,
     }
   }
@@ -210,6 +237,18 @@ export class ID {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): ID {
+    return ID.new(decodeFromJSONField('address', field.bytes))
+  }
+
+  static fromJSON(json: Record<string, any>): ID {
+    if (json.$typeName !== ID.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return ID.fromJSONField(json)
   }
 }
 
@@ -261,6 +300,7 @@ export class Ownership {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Ownership.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Ownership.fromBcs(data),
       bcs: Ownership.bcs,
+      fromJSONField: (field: any) => Ownership.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof Ownership.new>,
     }
   }
@@ -296,6 +336,21 @@ export class Ownership {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Ownership {
+    return Ownership.new({
+      owner: decodeFromJSONField('address', field.owner),
+      status: decodeFromJSONField('u64', field.status),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): Ownership {
+    if (json.$typeName !== Ownership.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Ownership.fromJSONField(json)
   }
 
   static fromSuiParsedData(content: SuiParsedData): Ownership {
@@ -361,6 +416,7 @@ export class UID {
       fromFieldsWithTypes: (item: FieldsWithTypes) => UID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UID.fromBcs(data),
       bcs: UID.bcs,
+      fromJSONField: (field: any) => UID.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof UID.new>,
     }
   }
@@ -389,5 +445,17 @@ export class UID {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): UID {
+    return UID.new(decodeFromJSONField(ID.reified(), field.id))
+  }
+
+  static fromJSON(json: Record<string, any>): UID {
+    if (json.$typeName !== UID.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return UID.fromJSONField(json)
   }
 }

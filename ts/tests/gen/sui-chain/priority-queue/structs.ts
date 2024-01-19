@@ -5,13 +5,15 @@ import {
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
   fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== PriorityQueue =============================== */
@@ -63,6 +65,7 @@ export class PriorityQueue<T0 extends TypeArgument> {
       fromFieldsWithTypes: (item: FieldsWithTypes) => PriorityQueue.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => PriorityQueue.fromBcs(T0, data),
       bcs: PriorityQueue.bcs(toBcs(T0)),
+      fromJSONField: (field: any) => PriorityQueue.fromJSONField(T0, field),
       __class: null as unknown as ReturnType<typeof PriorityQueue.new<ToTypeArgument<T0>>>,
     }
   }
@@ -112,6 +115,32 @@ export class PriorityQueue<T0 extends TypeArgument> {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField<T0 extends ReifiedTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): PriorityQueue<ToTypeArgument<T0>> {
+    return PriorityQueue.new(
+      typeArg,
+      decodeFromJSONField(reified.vector(Entry.reified(typeArg)), field.entries)
+    )
+  }
+
+  static fromJSON<T0 extends ReifiedTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): PriorityQueue<ToTypeArgument<T0>> {
+    if (json.$typeName !== PriorityQueue.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(PriorityQueue.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return PriorityQueue.fromJSONField(typeArg, json)
   }
 }
 
@@ -168,6 +197,7 @@ export class Entry<T0 extends TypeArgument> {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Entry.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => Entry.fromBcs(T0, data),
       bcs: Entry.bcs(toBcs(T0)),
+      fromJSONField: (field: any) => Entry.fromJSONField(T0, field),
       __class: null as unknown as ReturnType<typeof Entry.new<ToTypeArgument<T0>>>,
     }
   }
@@ -215,5 +245,31 @@ export class Entry<T0 extends TypeArgument> {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField<T0 extends ReifiedTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): Entry<ToTypeArgument<T0>> {
+    return Entry.new(typeArg, {
+      priority: decodeFromJSONField('u64', field.priority),
+      value: decodeFromJSONField(typeArg, field.value),
+    })
+  }
+
+  static fromJSON<T0 extends ReifiedTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): Entry<ToTypeArgument<T0>> {
+    if (json.$typeName !== Entry.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Entry.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return Entry.fromJSONField(typeArg, json)
   }
 }

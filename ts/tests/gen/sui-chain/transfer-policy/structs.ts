@@ -2,11 +2,13 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { TypeName } from '../../move-stdlib-chain/type-name/structs'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
@@ -60,6 +62,7 @@ export class RuleKey {
       fromFieldsWithTypes: (item: FieldsWithTypes) => RuleKey.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => RuleKey.fromBcs(T0, data),
       bcs: RuleKey.bcs,
+      fromJSONField: (field: any) => RuleKey.fromJSONField(T0, field),
       __class: null as unknown as ReturnType<typeof RuleKey.new>,
     }
   }
@@ -89,6 +92,23 @@ export class RuleKey {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): RuleKey {
+    return RuleKey.new(typeArg, decodeFromJSONField('bool', field.dummyField))
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): RuleKey {
+    if (json.$typeName !== RuleKey.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(RuleKey.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return RuleKey.fromJSONField(typeArg, json)
   }
 }
 
@@ -149,6 +169,7 @@ export class TransferRequest {
       fromFieldsWithTypes: (item: FieldsWithTypes) => TransferRequest.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => TransferRequest.fromBcs(T0, data),
       bcs: TransferRequest.bcs,
+      fromJSONField: (field: any) => TransferRequest.fromJSONField(T0, field),
       __class: null as unknown as ReturnType<typeof TransferRequest.new>,
     }
   }
@@ -191,6 +212,28 @@ export class TransferRequest {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): TransferRequest {
+    return TransferRequest.new(typeArg, {
+      item: decodeFromJSONField(ID.reified(), field.item),
+      paid: decodeFromJSONField('u64', field.paid),
+      from: decodeFromJSONField(ID.reified(), field.from),
+      receipts: decodeFromJSONField(VecSet.reified(TypeName.reified()), field.receipts),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): TransferRequest {
+    if (json.$typeName !== TransferRequest.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(TransferRequest.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return TransferRequest.fromJSONField(typeArg, json)
   }
 }
 
@@ -247,6 +290,7 @@ export class TransferPolicy {
       fromFieldsWithTypes: (item: FieldsWithTypes) => TransferPolicy.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => TransferPolicy.fromBcs(T0, data),
       bcs: TransferPolicy.bcs,
+      fromJSONField: (field: any) => TransferPolicy.fromJSONField(T0, field),
       __class: null as unknown as ReturnType<typeof TransferPolicy.new>,
     }
   }
@@ -286,6 +330,27 @@ export class TransferPolicy {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): TransferPolicy {
+    return TransferPolicy.new(typeArg, {
+      id: decodeFromJSONField(UID.reified(), field.id),
+      balance: decodeFromJSONField(Balance.reified(SUI.reified()), field.balance),
+      rules: decodeFromJSONField(VecSet.reified(TypeName.reified()), field.rules),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): TransferPolicy {
+    if (json.$typeName !== TransferPolicy.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(TransferPolicy.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return TransferPolicy.fromJSONField(typeArg, json)
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): TransferPolicy {
@@ -364,6 +429,7 @@ export class TransferPolicyCap {
         TransferPolicyCap.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => TransferPolicyCap.fromBcs(T0, data),
       bcs: TransferPolicyCap.bcs,
+      fromJSONField: (field: any) => TransferPolicyCap.fromJSONField(T0, field),
       __class: null as unknown as ReturnType<typeof TransferPolicyCap.new>,
     }
   }
@@ -403,6 +469,26 @@ export class TransferPolicyCap {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): TransferPolicyCap {
+    return TransferPolicyCap.new(typeArg, {
+      id: decodeFromJSONField(UID.reified(), field.id),
+      policyId: decodeFromJSONField(ID.reified(), field.policyId),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): TransferPolicyCap {
+    if (json.$typeName !== TransferPolicyCap.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(TransferPolicyCap.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return TransferPolicyCap.fromJSONField(typeArg, json)
   }
 
   static fromSuiParsedData(
@@ -483,6 +569,7 @@ export class TransferPolicyCreated {
         TransferPolicyCreated.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => TransferPolicyCreated.fromBcs(T0, data),
       bcs: TransferPolicyCreated.bcs,
+      fromJSONField: (field: any) => TransferPolicyCreated.fromJSONField(T0, field),
       __class: null as unknown as ReturnType<typeof TransferPolicyCreated.new>,
     }
   }
@@ -521,6 +608,23 @@ export class TransferPolicyCreated {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): TransferPolicyCreated {
+    return TransferPolicyCreated.new(typeArg, decodeFromJSONField(ID.reified(), field.id))
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): TransferPolicyCreated {
+    if (json.$typeName !== TransferPolicyCreated.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(TransferPolicyCreated.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return TransferPolicyCreated.fromJSONField(typeArg, json)
   }
 }
 
@@ -570,6 +674,7 @@ export class TransferPolicyDestroyed {
         TransferPolicyDestroyed.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => TransferPolicyDestroyed.fromBcs(T0, data),
       bcs: TransferPolicyDestroyed.bcs,
+      fromJSONField: (field: any) => TransferPolicyDestroyed.fromJSONField(T0, field),
       __class: null as unknown as ReturnType<typeof TransferPolicyDestroyed.new>,
     }
   }
@@ -608,5 +713,25 @@ export class TransferPolicyDestroyed {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): TransferPolicyDestroyed {
+    return TransferPolicyDestroyed.new(typeArg, decodeFromJSONField(ID.reified(), field.id))
+  }
+
+  static fromJSON(
+    typeArg: ReifiedTypeArgument,
+    json: Record<string, any>
+  ): TransferPolicyDestroyed {
+    if (json.$typeName !== TransferPolicyDestroyed.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(TransferPolicyDestroyed.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return TransferPolicyDestroyed.fromJSONField(typeArg, json)
   }
 }

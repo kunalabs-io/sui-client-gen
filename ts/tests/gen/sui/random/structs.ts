@@ -3,6 +3,7 @@ import {
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
@@ -56,6 +57,7 @@ export class Random {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Random.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Random.fromBcs(data),
       bcs: Random.bcs,
+      fromJSONField: (field: any) => Random.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof Random.new>,
     }
   }
@@ -91,6 +93,21 @@ export class Random {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Random {
+    return Random.new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      inner: decodeFromJSONField(Versioned.reified(), field.inner),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): Random {
+    if (json.$typeName !== Random.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Random.fromJSONField(json)
   }
 
   static fromSuiParsedData(content: SuiParsedData): Random {
@@ -168,6 +185,7 @@ export class RandomInner {
       fromFieldsWithTypes: (item: FieldsWithTypes) => RandomInner.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => RandomInner.fromBcs(data),
       bcs: RandomInner.bcs,
+      fromJSONField: (field: any) => RandomInner.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof RandomInner.new>,
     }
   }
@@ -209,5 +227,22 @@ export class RandomInner {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): RandomInner {
+    return RandomInner.new({
+      version: decodeFromJSONField('u64', field.version),
+      epoch: decodeFromJSONField('u64', field.epoch),
+      randomnessRound: decodeFromJSONField('u64', field.randomnessRound),
+      randomBytes: decodeFromJSONField(reified.vector('u8'), field.randomBytes),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): RandomInner {
+    if (json.$typeName !== RandomInner.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return RandomInner.fromJSONField(json)
   }
 }

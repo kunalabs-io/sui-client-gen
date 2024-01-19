@@ -1,4 +1,9 @@
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
@@ -43,6 +48,7 @@ export class SUI {
       fromFieldsWithTypes: (item: FieldsWithTypes) => SUI.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => SUI.fromBcs(data),
       bcs: SUI.bcs,
+      fromJSONField: (field: any) => SUI.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof SUI.new>,
     }
   }
@@ -71,5 +77,17 @@ export class SUI {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): SUI {
+    return SUI.new(decodeFromJSONField('bool', field.dummyField))
+  }
+
+  static fromJSON(json: Record<string, any>): SUI {
+    if (json.$typeName !== SUI.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return SUI.fromJSONField(json)
   }
 }

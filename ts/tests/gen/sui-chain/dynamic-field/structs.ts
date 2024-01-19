@@ -4,13 +4,15 @@ import {
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
   fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -72,6 +74,7 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Field.fromFieldsWithTypes([T0, T1], item),
       fromBcs: (data: Uint8Array) => Field.fromBcs([T0, T1], data),
       bcs: Field.bcs(toBcs(T0), toBcs(T1)),
+      fromJSONField: (field: any) => Field.fromJSONField([T0, T1], field),
       __class: null as unknown as ReturnType<
         typeof Field.new<ToTypeArgument<T0>, ToTypeArgument<T1>>
       >,
@@ -122,6 +125,33 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField<T0 extends ReifiedTypeArgument, T1 extends ReifiedTypeArgument>(
+    typeArgs: [T0, T1],
+    field: any
+  ): Field<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    return Field.new(typeArgs, {
+      id: decodeFromJSONField(UID.reified(), field.id),
+      name: decodeFromJSONField(typeArgs[0], field.name),
+      value: decodeFromJSONField(typeArgs[1], field.value),
+    })
+  }
+
+  static fromJSON<T0 extends ReifiedTypeArgument, T1 extends ReifiedTypeArgument>(
+    typeArgs: [T0, T1],
+    json: Record<string, any>
+  ): Field<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    if (json.$typeName !== Field.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Field.$typeName, ...typeArgs.map(extractType)),
+      json.$typeArgs,
+      typeArgs
+    )
+
+    return Field.fromJSONField(typeArgs, json)
   }
 
   static fromSuiParsedData<T0 extends ReifiedTypeArgument, T1 extends ReifiedTypeArgument>(

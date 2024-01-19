@@ -5,13 +5,15 @@ import {
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
   fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== Entry =============================== */
@@ -67,6 +69,7 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Entry.fromFieldsWithTypes([T0, T1], item),
       fromBcs: (data: Uint8Array) => Entry.fromBcs([T0, T1], data),
       bcs: Entry.bcs(toBcs(T0), toBcs(T1)),
+      fromJSONField: (field: any) => Entry.fromJSONField([T0, T1], field),
       __class: null as unknown as ReturnType<
         typeof Entry.new<ToTypeArgument<T0>, ToTypeArgument<T1>>
       >,
@@ -114,6 +117,32 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField<T0 extends ReifiedTypeArgument, T1 extends ReifiedTypeArgument>(
+    typeArgs: [T0, T1],
+    field: any
+  ): Entry<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    return Entry.new(typeArgs, {
+      key: decodeFromJSONField(typeArgs[0], field.key),
+      value: decodeFromJSONField(typeArgs[1], field.value),
+    })
+  }
+
+  static fromJSON<T0 extends ReifiedTypeArgument, T1 extends ReifiedTypeArgument>(
+    typeArgs: [T0, T1],
+    json: Record<string, any>
+  ): Entry<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    if (json.$typeName !== Entry.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Entry.$typeName, ...typeArgs.map(extractType)),
+      json.$typeArgs,
+      typeArgs
+    )
+
+    return Entry.fromJSONField(typeArgs, json)
   }
 }
 
@@ -166,6 +195,7 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> {
       fromFieldsWithTypes: (item: FieldsWithTypes) => VecMap.fromFieldsWithTypes([T0, T1], item),
       fromBcs: (data: Uint8Array) => VecMap.fromBcs([T0, T1], data),
       bcs: VecMap.bcs(toBcs(T0), toBcs(T1)),
+      fromJSONField: (field: any) => VecMap.fromJSONField([T0, T1], field),
       __class: null as unknown as ReturnType<
         typeof VecMap.new<ToTypeArgument<T0>, ToTypeArgument<T1>>
       >,
@@ -221,5 +251,31 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField<T0 extends ReifiedTypeArgument, T1 extends ReifiedTypeArgument>(
+    typeArgs: [T0, T1],
+    field: any
+  ): VecMap<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    return VecMap.new(
+      typeArgs,
+      decodeFromJSONField(reified.vector(Entry.reified(typeArgs[0], typeArgs[1])), field.contents)
+    )
+  }
+
+  static fromJSON<T0 extends ReifiedTypeArgument, T1 extends ReifiedTypeArgument>(
+    typeArgs: [T0, T1],
+    json: Record<string, any>
+  ): VecMap<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    if (json.$typeName !== VecMap.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(VecMap.$typeName, ...typeArgs.map(extractType)),
+      json.$typeArgs,
+      typeArgs
+    )
+
+    return VecMap.fromJSONField(typeArgs, json)
   }
 }

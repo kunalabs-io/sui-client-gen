@@ -2,11 +2,13 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -63,6 +65,7 @@ export class ObjectTable {
       fromFieldsWithTypes: (item: FieldsWithTypes) => ObjectTable.fromFieldsWithTypes([K, V], item),
       fromBcs: (data: Uint8Array) => ObjectTable.fromBcs([K, V], data),
       bcs: ObjectTable.bcs,
+      fromJSONField: (field: any) => ObjectTable.fromJSONField([K, V], field),
       __class: null as unknown as ReturnType<typeof ObjectTable.new>,
     }
   }
@@ -108,6 +111,32 @@ export class ObjectTable {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField(
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    field: any
+  ): ObjectTable {
+    return ObjectTable.new(typeArgs, {
+      id: decodeFromJSONField(UID.reified(), field.id),
+      size: decodeFromJSONField('u64', field.size),
+    })
+  }
+
+  static fromJSON(
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    json: Record<string, any>
+  ): ObjectTable {
+    if (json.$typeName !== ObjectTable.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(ObjectTable.$typeName, ...typeArgs.map(extractType)),
+      json.$typeArgs,
+      typeArgs
+    )
+
+    return ObjectTable.fromJSONField(typeArgs, json)
   }
 
   static fromSuiParsedData(

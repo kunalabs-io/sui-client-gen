@@ -2,11 +2,13 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Bag } from '../bag/structs'
 import { bcs } from '@mysten/bcs'
 
@@ -59,6 +61,7 @@ export class Extension {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Extension.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Extension.fromBcs(data),
       bcs: Extension.bcs,
+      fromJSONField: (field: any) => Extension.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof Extension.new>,
     }
   }
@@ -97,6 +100,22 @@ export class Extension {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Extension {
+    return Extension.new({
+      storage: decodeFromJSONField(Bag.reified(), field.storage),
+      permissions: decodeFromJSONField('u128', field.permissions),
+      isEnabled: decodeFromJSONField('bool', field.isEnabled),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): Extension {
+    if (json.$typeName !== Extension.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Extension.fromJSONField(json)
   }
 }
 
@@ -145,6 +164,7 @@ export class ExtensionKey {
       fromFieldsWithTypes: (item: FieldsWithTypes) => ExtensionKey.fromFieldsWithTypes(Ext, item),
       fromBcs: (data: Uint8Array) => ExtensionKey.fromBcs(Ext, data),
       bcs: ExtensionKey.bcs,
+      fromJSONField: (field: any) => ExtensionKey.fromJSONField(Ext, field),
       __class: null as unknown as ReturnType<typeof ExtensionKey.new>,
     }
   }
@@ -174,5 +194,22 @@ export class ExtensionKey {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): ExtensionKey {
+    return ExtensionKey.new(typeArg, decodeFromJSONField('bool', field.dummyField))
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): ExtensionKey {
+    if (json.$typeName !== ExtensionKey.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(ExtensionKey.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return ExtensionKey.fromJSONField(typeArg, json)
   }
 }

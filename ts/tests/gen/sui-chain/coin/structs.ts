@@ -2,12 +2,14 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
   fieldToJSON,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String as String1 } from '../../move-stdlib-chain/ascii/structs'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { String } from '../../move-stdlib-chain/string/structs'
@@ -66,6 +68,7 @@ export class Coin {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Coin.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => Coin.fromBcs(T0, data),
       bcs: Coin.bcs,
+      fromJSONField: (field: any) => Coin.fromJSONField(T0, field),
       __class: null as unknown as ReturnType<typeof Coin.new>,
     }
   }
@@ -102,6 +105,26 @@ export class Coin {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): Coin {
+    return Coin.new(typeArg, {
+      id: decodeFromJSONField(UID.reified(), field.id),
+      balance: decodeFromJSONField(Balance.reified(typeArg), field.balance),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): Coin {
+    if (json.$typeName !== Coin.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Coin.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return Coin.fromJSONField(typeArg, json)
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): Coin {
@@ -191,6 +214,7 @@ export class CoinMetadata {
       fromFieldsWithTypes: (item: FieldsWithTypes) => CoinMetadata.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => CoinMetadata.fromBcs(T0, data),
       bcs: CoinMetadata.bcs,
+      fromJSONField: (field: any) => CoinMetadata.fromJSONField(T0, field),
       __class: null as unknown as ReturnType<typeof CoinMetadata.new>,
     }
   }
@@ -239,6 +263,30 @@ export class CoinMetadata {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): CoinMetadata {
+    return CoinMetadata.new(typeArg, {
+      id: decodeFromJSONField(UID.reified(), field.id),
+      decimals: decodeFromJSONField('u8', field.decimals),
+      name: decodeFromJSONField(String.reified(), field.name),
+      symbol: decodeFromJSONField(String1.reified(), field.symbol),
+      description: decodeFromJSONField(String.reified(), field.description),
+      iconUrl: decodeFromJSONField(Option.reified(Url.reified()), field.iconUrl),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): CoinMetadata {
+    if (json.$typeName !== CoinMetadata.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(CoinMetadata.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return CoinMetadata.fromJSONField(typeArg, json)
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): CoinMetadata {
@@ -316,6 +364,7 @@ export class TreasuryCap {
       fromFieldsWithTypes: (item: FieldsWithTypes) => TreasuryCap.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => TreasuryCap.fromBcs(T0, data),
       bcs: TreasuryCap.bcs,
+      fromJSONField: (field: any) => TreasuryCap.fromJSONField(T0, field),
       __class: null as unknown as ReturnType<typeof TreasuryCap.new>,
     }
   }
@@ -352,6 +401,26 @@ export class TreasuryCap {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): TreasuryCap {
+    return TreasuryCap.new(typeArg, {
+      id: decodeFromJSONField(UID.reified(), field.id),
+      totalSupply: decodeFromJSONField(Supply.reified(typeArg), field.totalSupply),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): TreasuryCap {
+    if (json.$typeName !== TreasuryCap.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(TreasuryCap.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return TreasuryCap.fromJSONField(typeArg, json)
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): TreasuryCap {
@@ -425,6 +494,7 @@ export class CurrencyCreated {
       fromFieldsWithTypes: (item: FieldsWithTypes) => CurrencyCreated.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => CurrencyCreated.fromBcs(T0, data),
       bcs: CurrencyCreated.bcs,
+      fromJSONField: (field: any) => CurrencyCreated.fromJSONField(T0, field),
       __class: null as unknown as ReturnType<typeof CurrencyCreated.new>,
     }
   }
@@ -454,5 +524,22 @@ export class CurrencyCreated {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): CurrencyCreated {
+    return CurrencyCreated.new(typeArg, decodeFromJSONField('u8', field.decimals))
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): CurrencyCreated {
+    if (json.$typeName !== CurrencyCreated.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(CurrencyCreated.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return CurrencyCreated.fromJSONField(typeArg, json)
   }
 }

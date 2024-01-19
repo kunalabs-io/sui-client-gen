@@ -5,12 +5,14 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   extractType,
   fieldToJSON,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
@@ -63,6 +65,7 @@ export class RuleKey {
       fromFieldsWithTypes: (item: FieldsWithTypes) => RuleKey.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => RuleKey.fromBcs(T, data),
       bcs: RuleKey.bcs,
+      fromJSONField: (field: any) => RuleKey.fromJSONField(T, field),
       __class: null as unknown as ReturnType<typeof RuleKey.new>,
     }
   }
@@ -92,6 +95,23 @@ export class RuleKey {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): RuleKey {
+    return RuleKey.new(typeArg, decodeFromJSONField('bool', field.isProtected))
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): RuleKey {
+    if (json.$typeName !== RuleKey.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(RuleKey.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return RuleKey.fromJSONField(typeArg, json)
   }
 }
 
@@ -168,6 +188,7 @@ export class ActionRequest {
       fromFieldsWithTypes: (item: FieldsWithTypes) => ActionRequest.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => ActionRequest.fromBcs(T, data),
       bcs: ActionRequest.bcs,
+      fromJSONField: (field: any) => ActionRequest.fromJSONField(T, field),
       __class: null as unknown as ReturnType<typeof ActionRequest.new>,
     }
   }
@@ -229,6 +250,33 @@ export class ActionRequest {
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): ActionRequest {
+    return ActionRequest.new(typeArg, {
+      name: decodeFromJSONField(String.reified(), field.name),
+      amount: decodeFromJSONField('u64', field.amount),
+      sender: decodeFromJSONField('address', field.sender),
+      recipient: decodeFromJSONField(Option.reified('address'), field.recipient),
+      spentBalance: decodeFromJSONField(
+        Option.reified(Balance.reified(typeArg)),
+        field.spentBalance
+      ),
+      approvals: decodeFromJSONField(VecSet.reified(TypeName.reified()), field.approvals),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): ActionRequest {
+    if (json.$typeName !== ActionRequest.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(ActionRequest.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return ActionRequest.fromJSONField(typeArg, json)
+  }
 }
 
 /* ============================== Token =============================== */
@@ -280,6 +328,7 @@ export class Token {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Token.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Token.fromBcs(T, data),
       bcs: Token.bcs,
+      fromJSONField: (field: any) => Token.fromJSONField(T, field),
       __class: null as unknown as ReturnType<typeof Token.new>,
     }
   }
@@ -316,6 +365,26 @@ export class Token {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): Token {
+    return Token.new(typeArg, {
+      id: decodeFromJSONField(UID.reified(), field.id),
+      balance: decodeFromJSONField(Balance.reified(typeArg), field.balance),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): Token {
+    if (json.$typeName !== Token.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Token.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return Token.fromJSONField(typeArg, json)
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): Token {
@@ -393,6 +462,7 @@ export class TokenPolicy {
       fromFieldsWithTypes: (item: FieldsWithTypes) => TokenPolicy.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => TokenPolicy.fromBcs(T, data),
       bcs: TokenPolicy.bcs,
+      fromJSONField: (field: any) => TokenPolicy.fromJSONField(T, field),
       __class: null as unknown as ReturnType<typeof TokenPolicy.new>,
     }
   }
@@ -438,6 +508,30 @@ export class TokenPolicy {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): TokenPolicy {
+    return TokenPolicy.new(typeArg, {
+      id: decodeFromJSONField(UID.reified(), field.id),
+      spentBalance: decodeFromJSONField(Balance.reified(typeArg), field.spentBalance),
+      rules: decodeFromJSONField(
+        VecMap.reified(String.reified(), VecSet.reified(TypeName.reified())),
+        field.rules
+      ),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): TokenPolicy {
+    if (json.$typeName !== TokenPolicy.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(TokenPolicy.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return TokenPolicy.fromJSONField(typeArg, json)
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): TokenPolicy {
@@ -515,6 +609,7 @@ export class TokenPolicyCap {
       fromFieldsWithTypes: (item: FieldsWithTypes) => TokenPolicyCap.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => TokenPolicyCap.fromBcs(T, data),
       bcs: TokenPolicyCap.bcs,
+      fromJSONField: (field: any) => TokenPolicyCap.fromJSONField(T, field),
       __class: null as unknown as ReturnType<typeof TokenPolicyCap.new>,
     }
   }
@@ -551,6 +646,26 @@ export class TokenPolicyCap {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): TokenPolicyCap {
+    return TokenPolicyCap.new(typeArg, {
+      id: decodeFromJSONField(UID.reified(), field.id),
+      for: decodeFromJSONField(ID.reified(), field.for),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): TokenPolicyCap {
+    if (json.$typeName !== TokenPolicyCap.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(TokenPolicyCap.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return TokenPolicyCap.fromJSONField(typeArg, json)
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): TokenPolicyCap {
@@ -629,6 +744,7 @@ export class TokenPolicyCreated {
         TokenPolicyCreated.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => TokenPolicyCreated.fromBcs(T, data),
       bcs: TokenPolicyCreated.bcs,
+      fromJSONField: (field: any) => TokenPolicyCreated.fromJSONField(T, field),
       __class: null as unknown as ReturnType<typeof TokenPolicyCreated.new>,
     }
   }
@@ -668,5 +784,25 @@ export class TokenPolicyCreated {
 
   toJSON() {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+  }
+
+  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): TokenPolicyCreated {
+    return TokenPolicyCreated.new(typeArg, {
+      id: decodeFromJSONField(ID.reified(), field.id),
+      isMutable: decodeFromJSONField('bool', field.isMutable),
+    })
+  }
+
+  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): TokenPolicyCreated {
+    if (json.$typeName !== TokenPolicyCreated.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(TokenPolicyCreated.$typeName, extractType(typeArg)),
+      [json.$typeArg],
+      [typeArg]
+    )
+
+    return TokenPolicyCreated.fromJSONField(typeArg, json)
   }
 }

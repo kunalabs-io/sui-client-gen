@@ -3,6 +3,7 @@ import {
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
@@ -53,6 +54,7 @@ export class BitVector {
       fromFieldsWithTypes: (item: FieldsWithTypes) => BitVector.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => BitVector.fromBcs(data),
       bcs: BitVector.bcs,
+      fromJSONField: (field: any) => BitVector.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof BitVector.new>,
     }
   }
@@ -88,5 +90,20 @@ export class BitVector {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): BitVector {
+    return BitVector.new({
+      length: decodeFromJSONField('u64', field.length),
+      bitField: decodeFromJSONField(reified.vector('bool'), field.bitField),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): BitVector {
+    if (json.$typeName !== BitVector.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return BitVector.fromJSONField(json)
   }
 }

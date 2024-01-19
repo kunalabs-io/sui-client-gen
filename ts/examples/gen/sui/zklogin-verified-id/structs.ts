@@ -1,5 +1,10 @@
 import { String } from '../../_dependencies/source/0x1/string/structs'
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs, fromHEX, toHEX } from '@mysten/bcs'
@@ -69,6 +74,7 @@ export class VerifiedID {
       fromFieldsWithTypes: (item: FieldsWithTypes) => VerifiedID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => VerifiedID.fromBcs(data),
       bcs: VerifiedID.bcs,
+      fromJSONField: (field: any) => VerifiedID.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof VerifiedID.new>,
     }
   }
@@ -116,6 +122,25 @@ export class VerifiedID {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): VerifiedID {
+    return VerifiedID.new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      owner: decodeFromJSONField('address', field.owner),
+      keyClaimName: decodeFromJSONField(String.reified(), field.keyClaimName),
+      keyClaimValue: decodeFromJSONField(String.reified(), field.keyClaimValue),
+      issuer: decodeFromJSONField(String.reified(), field.issuer),
+      audience: decodeFromJSONField(String.reified(), field.audience),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): VerifiedID {
+    if (json.$typeName !== VerifiedID.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return VerifiedID.fromJSONField(json)
   }
 
   static fromSuiParsedData(content: SuiParsedData): VerifiedID {

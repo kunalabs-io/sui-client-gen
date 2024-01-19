@@ -1,4 +1,9 @@
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
@@ -43,6 +48,7 @@ export class FixedPoint32 {
       fromFieldsWithTypes: (item: FieldsWithTypes) => FixedPoint32.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => FixedPoint32.fromBcs(data),
       bcs: FixedPoint32.bcs,
+      fromJSONField: (field: any) => FixedPoint32.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof FixedPoint32.new>,
     }
   }
@@ -71,5 +77,17 @@ export class FixedPoint32 {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): FixedPoint32 {
+    return FixedPoint32.new(decodeFromJSONField('u64', field.value))
+  }
+
+  static fromJSON(json: Record<string, any>): FixedPoint32 {
+    if (json.$typeName !== FixedPoint32.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return FixedPoint32.fromJSONField(json)
   }
 }

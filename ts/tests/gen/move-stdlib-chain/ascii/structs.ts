@@ -3,6 +3,7 @@ import {
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
@@ -49,6 +50,7 @@ export class String {
       fromFieldsWithTypes: (item: FieldsWithTypes) => String.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => String.fromBcs(data),
       bcs: String.bcs,
+      fromJSONField: (field: any) => String.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof String.new>,
     }
   }
@@ -77,6 +79,18 @@ export class String {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): String {
+    return String.new(decodeFromJSONField(reified.vector('u8'), field.bytes))
+  }
+
+  static fromJSON(json: Record<string, any>): String {
+    if (json.$typeName !== String.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return String.fromJSONField(json)
   }
 }
 
@@ -121,6 +135,7 @@ export class Char {
       fromFieldsWithTypes: (item: FieldsWithTypes) => Char.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Char.fromBcs(data),
       bcs: Char.bcs,
+      fromJSONField: (field: any) => Char.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof Char.new>,
     }
   }
@@ -149,5 +164,17 @@ export class Char {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Char {
+    return Char.new(decodeFromJSONField('u8', field.byte))
+  }
+
+  static fromJSON(json: Record<string, any>): Char {
+    if (json.$typeName !== Char.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Char.fromJSONField(json)
   }
 }

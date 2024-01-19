@@ -1,4 +1,9 @@
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { String } from '../ascii/structs'
 import { bcs } from '@mysten/bcs'
@@ -44,6 +49,7 @@ export class TypeName {
       fromFieldsWithTypes: (item: FieldsWithTypes) => TypeName.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => TypeName.fromBcs(data),
       bcs: TypeName.bcs,
+      fromJSONField: (field: any) => TypeName.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof TypeName.new>,
     }
   }
@@ -72,5 +78,17 @@ export class TypeName {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): TypeName {
+    return TypeName.new(decodeFromJSONField(String.reified(), field.name))
+  }
+
+  static fromJSON(json: Record<string, any>): TypeName {
+    if (json.$typeName !== TypeName.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return TypeName.fromJSONField(json)
   }
 }

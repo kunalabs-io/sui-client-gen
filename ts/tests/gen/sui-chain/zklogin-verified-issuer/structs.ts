@@ -1,4 +1,9 @@
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/string/structs'
 import { UID } from '../object/structs'
@@ -57,6 +62,7 @@ export class VerifiedIssuer {
       fromFieldsWithTypes: (item: FieldsWithTypes) => VerifiedIssuer.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => VerifiedIssuer.fromBcs(data),
       bcs: VerifiedIssuer.bcs,
+      fromJSONField: (field: any) => VerifiedIssuer.fromJSONField(field),
       __class: null as unknown as ReturnType<typeof VerifiedIssuer.new>,
     }
   }
@@ -95,6 +101,22 @@ export class VerifiedIssuer {
 
   toJSON() {
     return { $typeName: this.$typeName, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): VerifiedIssuer {
+    return VerifiedIssuer.new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      owner: decodeFromJSONField('address', field.owner),
+      issuer: decodeFromJSONField(String.reified(), field.issuer),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): VerifiedIssuer {
+    if (json.$typeName !== VerifiedIssuer.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return VerifiedIssuer.fromJSONField(json)
   }
 
   static fromSuiParsedData(content: SuiParsedData): VerifiedIssuer {
