@@ -107,6 +107,10 @@ async fn main() -> Result<()> {
         framework_sources::UTIL,
         out_root.join("_framework").join("util.ts").as_ref(),
     )?;
+    write_str_to_file(
+        framework_sources::TYPES,
+        out_root.join("_framework").join("types.ts").as_ref(),
+    )?;
 
     // gen top-level packages and dependencies
     let (source_top_level_addr_map, on_chain_top_level_addr_map) =
