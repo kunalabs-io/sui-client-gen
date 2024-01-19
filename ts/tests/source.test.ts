@@ -204,6 +204,7 @@ it('creates and decodes an object with object as type param', async () => {
   expect(Foo.fromFieldsWithTypes(Bar.reified(), foo.data.content)).toEqual(exp)
   expect(Foo.fromSuiParsedData(Bar.reified(), foo.data.content)).toEqual(exp)
   expect(await Foo.fetch(client, Bar.reified(), id)).toEqual(exp)
+  expect(Foo.fromJSON(Bar.reified(), de.toJSON())).toEqual(exp)
 })
 
 it('creates and decodes Foo with vector of objects as type param', async () => {
@@ -369,6 +370,7 @@ it('creates and decodes Foo with vector of objects as type param', async () => {
   expect(de).toEqual(exp)
 
   expect(Foo.fromFieldsWithTypes(reifiedT, foo.data.content)).toEqual(exp)
+  expect(Foo.fromJSON(reifiedT, de.toJSON())).toEqual(exp)
 })
 
 it('decodes special-cased types correctly', async () => {
@@ -439,6 +441,7 @@ it('decodes special-cased types correctly', async () => {
 
   expect(fromFieldsWithTypes).toEqual(exp)
   expect(fromBcs).toEqual(exp)
+  expect(WithSpecialTypes.fromJSON(reifiedArgs, exp.toJSON())).toEqual(exp)
 })
 
 it('decodes special-cased types as generics correctly', async () => {
@@ -531,6 +534,7 @@ it('decodes special-cased types as generics correctly', async () => {
 
   expect(fromBcs).toEqual(exp)
   expect(fromFieldsWithTypes).toEqual(exp)
+  expect(WithSpecialTypesAsGenerics.fromJSON(reifiedArgs, exp.toJSON())).toEqual(exp)
 })
 
 it('calls function correctly when special types are used', async () => {
@@ -833,13 +837,12 @@ it('loads with loader correctly', async () => {
   )
 })
 
-it.only('converts to json correctly', () => {
-  const U = WithSpecialTypes.reified(Bar.reified(), 'u64')
+it('converts to json correctly', () => {
+  const U = WithSpecialTypes.reified(SUI.reified(), 'u64')
   const V = vector(WithTwoGenerics.reified(Bar.reified(), 'u8'))
-  const reified = WithTwoGenerics.reified(U, V)
 
   const obj = WithTwoGenerics.new([U, V], {
-    genericField1: WithSpecialTypes.new([Bar.reified(), 'u64'], {
+    genericField1: WithSpecialTypes.new([SUI.reified(), 'u64'], {
       id: '0x1',
       string: 'string',
       asciiString: 'ascii',
@@ -862,11 +865,11 @@ it.only('converts to json correctly', () => {
     ],
   })
 
-  const exp = {
+  const exp: ReturnType<typeof obj.toJSON> = {
     $typeName:
       '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics',
     $typeArgs: [
-      '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, u64>',
+      '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<0x2::sui::SUI, u64>',
       'vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, u8>>',
     ],
     genericField1: {
@@ -900,5 +903,9 @@ it.only('converts to json correctly', () => {
     ],
   }
 
-  expect(obj.toJSON()).toEqual(exp)
+  const resJSON = obj.toJSON()
+  expect(resJSON).toEqual(exp)
+
+  const fromJSON = WithTwoGenerics.fromJSON([U, V], resJSON)
+  expect(fromJSON).toEqual(obj)
 })
