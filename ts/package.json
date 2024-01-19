@@ -4,7 +4,7 @@
   "private": true,
   "main": "dist/main.js",
   "scripts": {
-    "build:example": "rm -rf dist && tsup examples/main.ts --format esm",
+    "build:example": "rm -rf dist && tsup examples/main.ts --format esm --minify",
     "watch": "tsup examples/main.ts --watch --format esm",
     "check": "tsc --noEmit",
     "lint": "eslint examples/ tests/",
