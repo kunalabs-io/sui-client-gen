@@ -3,12 +3,12 @@ import {
   decodeFromFieldsGenericOrSpecial,
   decodeFromFieldsWithTypesGenericOrSpecial,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== StructFromOtherModule =============================== */
 
-export function isStructFromOtherModule(type: Type): boolean {
+export function isStructFromOtherModule(type: string): boolean {
   type = compressSuiType(type)
   return (
     type ===

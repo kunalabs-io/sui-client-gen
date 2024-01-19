@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj } from '../../_framework/util'
 import { TransactionBlock } from '@mysten/sui.js/transactions'
 
 export interface BorrowArgs {
@@ -7,7 +7,7 @@ export interface BorrowArgs {
   k: GenericArg
 }
 
-export function borrow(txb: TransactionBlock, typeArgs: [Type, Type], args: BorrowArgs) {
+export function borrow(txb: TransactionBlock, typeArgs: [string, string], args: BorrowArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::borrow`,
     typeArguments: typeArgs,
@@ -20,7 +20,7 @@ export interface BorrowMutArgs {
   k: GenericArg
 }
 
-export function borrowMut(txb: TransactionBlock, typeArgs: [Type, Type], args: BorrowMutArgs) {
+export function borrowMut(txb: TransactionBlock, typeArgs: [string, string], args: BorrowMutArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::borrow_mut`,
     typeArguments: typeArgs,
@@ -33,7 +33,7 @@ export interface ContainsArgs {
   k: GenericArg
 }
 
-export function contains(txb: TransactionBlock, typeArgs: [Type, Type], args: ContainsArgs) {
+export function contains(txb: TransactionBlock, typeArgs: [string, string], args: ContainsArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::contains`,
     typeArguments: typeArgs,
@@ -41,7 +41,7 @@ export function contains(txb: TransactionBlock, typeArgs: [Type, Type], args: Co
   })
 }
 
-export function destroyEmpty(txb: TransactionBlock, typeArgs: [Type, Type], table: ObjectArg) {
+export function destroyEmpty(txb: TransactionBlock, typeArgs: [string, string], table: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::destroy_empty`,
     typeArguments: typeArgs,
@@ -49,7 +49,7 @@ export function destroyEmpty(txb: TransactionBlock, typeArgs: [Type, Type], tabl
   })
 }
 
-export function isEmpty(txb: TransactionBlock, typeArgs: [Type, Type], table: ObjectArg) {
+export function isEmpty(txb: TransactionBlock, typeArgs: [string, string], table: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::is_empty`,
     typeArguments: typeArgs,
@@ -57,7 +57,7 @@ export function isEmpty(txb: TransactionBlock, typeArgs: [Type, Type], table: Ob
   })
 }
 
-export function length(txb: TransactionBlock, typeArgs: [Type, Type], table: ObjectArg) {
+export function length(txb: TransactionBlock, typeArgs: [string, string], table: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::length`,
     typeArguments: typeArgs,
@@ -65,7 +65,7 @@ export function length(txb: TransactionBlock, typeArgs: [Type, Type], table: Obj
   })
 }
 
-export function popBack(txb: TransactionBlock, typeArgs: [Type, Type], table: ObjectArg) {
+export function popBack(txb: TransactionBlock, typeArgs: [string, string], table: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::pop_back`,
     typeArguments: typeArgs,
@@ -79,7 +79,7 @@ export interface PushBackArgs {
   value: GenericArg
 }
 
-export function pushBack(txb: TransactionBlock, typeArgs: [Type, Type], args: PushBackArgs) {
+export function pushBack(txb: TransactionBlock, typeArgs: [string, string], args: PushBackArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::push_back`,
     typeArguments: typeArgs,
@@ -96,7 +96,7 @@ export interface RemoveArgs {
   k: GenericArg
 }
 
-export function remove(txb: TransactionBlock, typeArgs: [Type, Type], args: RemoveArgs) {
+export function remove(txb: TransactionBlock, typeArgs: [string, string], args: RemoveArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::remove`,
     typeArguments: typeArgs,
@@ -104,7 +104,7 @@ export function remove(txb: TransactionBlock, typeArgs: [Type, Type], args: Remo
   })
 }
 
-export function new_(txb: TransactionBlock, typeArgs: [Type, Type]) {
+export function new_(txb: TransactionBlock, typeArgs: [string, string]) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::new`,
     typeArguments: typeArgs,
@@ -112,7 +112,7 @@ export function new_(txb: TransactionBlock, typeArgs: [Type, Type]) {
   })
 }
 
-export function back(txb: TransactionBlock, typeArgs: [Type, Type], table: ObjectArg) {
+export function back(txb: TransactionBlock, typeArgs: [string, string], table: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::back`,
     typeArguments: typeArgs,
@@ -120,7 +120,7 @@ export function back(txb: TransactionBlock, typeArgs: [Type, Type], table: Objec
   })
 }
 
-export function drop(txb: TransactionBlock, typeArgs: [Type, Type], table: ObjectArg) {
+export function drop(txb: TransactionBlock, typeArgs: [string, string], table: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::drop`,
     typeArguments: typeArgs,
@@ -128,7 +128,7 @@ export function drop(txb: TransactionBlock, typeArgs: [Type, Type], table: Objec
   })
 }
 
-export function front(txb: TransactionBlock, typeArgs: [Type, Type], table: ObjectArg) {
+export function front(txb: TransactionBlock, typeArgs: [string, string], table: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::front`,
     typeArguments: typeArgs,
@@ -141,7 +141,7 @@ export interface NextArgs {
   k: GenericArg
 }
 
-export function next(txb: TransactionBlock, typeArgs: [Type, Type], args: NextArgs) {
+export function next(txb: TransactionBlock, typeArgs: [string, string], args: NextArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::next`,
     typeArguments: typeArgs,
@@ -149,7 +149,7 @@ export function next(txb: TransactionBlock, typeArgs: [Type, Type], args: NextAr
   })
 }
 
-export function popFront(txb: TransactionBlock, typeArgs: [Type, Type], table: ObjectArg) {
+export function popFront(txb: TransactionBlock, typeArgs: [string, string], table: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::pop_front`,
     typeArguments: typeArgs,
@@ -162,7 +162,7 @@ export interface PrevArgs {
   k: GenericArg
 }
 
-export function prev(txb: TransactionBlock, typeArgs: [Type, Type], args: PrevArgs) {
+export function prev(txb: TransactionBlock, typeArgs: [string, string], args: PrevArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::prev`,
     typeArguments: typeArgs,
@@ -176,7 +176,7 @@ export interface PushFrontArgs {
   value: GenericArg
 }
 
-export function pushFront(txb: TransactionBlock, typeArgs: [Type, Type], args: PushFrontArgs) {
+export function pushFront(txb: TransactionBlock, typeArgs: [string, string], args: PushFrontArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::push_front`,
     typeArguments: typeArgs,

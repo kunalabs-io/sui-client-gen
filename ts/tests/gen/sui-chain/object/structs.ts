@@ -3,12 +3,12 @@ import {
   decodeFromFieldsGenericOrSpecial,
   decodeFromFieldsWithTypesGenericOrSpecial,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs, fromHEX, toHEX } from '@mysten/bcs'
 
 /* ============================== ID =============================== */
 
-export function isID(type: Type): boolean {
+export function isID(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::object::ID'
 }
@@ -79,7 +79,7 @@ export class ID {
 
 /* ============================== UID =============================== */
 
-export function isUID(type: Type): boolean {
+export function isUID(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::object::UID'
 }

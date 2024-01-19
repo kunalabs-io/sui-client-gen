@@ -6,7 +6,7 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   extractType,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib/string/structs'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
@@ -15,7 +15,7 @@ import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Display =============================== */
 
-export function isDisplay(type: Type): boolean {
+export function isDisplay(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::display::Display<')
 }
@@ -138,7 +138,7 @@ export class Display {
 
 /* ============================== DisplayCreated =============================== */
 
-export function isDisplayCreated(type: Type): boolean {
+export function isDisplayCreated(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::display::DisplayCreated<')
 }
@@ -215,7 +215,7 @@ export class DisplayCreated {
 
 /* ============================== VersionUpdated =============================== */
 
-export function isVersionUpdated(type: Type): boolean {
+export function isVersionUpdated(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::display::VersionUpdated<')
 }

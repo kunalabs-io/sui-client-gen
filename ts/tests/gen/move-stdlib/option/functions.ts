@@ -1,10 +1,10 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, Type, generic, option } from '../../_framework/util'
+import { GenericArg, generic, option } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export function borrow(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   t: GenericArg | TransactionArgument | null
 ) {
   return txb.moveCall({
@@ -16,7 +16,7 @@ export function borrow(
 
 export function borrowMut(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   t: GenericArg | TransactionArgument | null
 ) {
   return txb.moveCall({
@@ -31,7 +31,7 @@ export interface ContainsArgs {
   eRef: GenericArg
 }
 
-export function contains(txb: TransactionBlock, typeArg: Type, args: ContainsArgs) {
+export function contains(txb: TransactionBlock, typeArg: string, args: ContainsArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::option::contains`,
     typeArguments: [typeArg],
@@ -44,7 +44,7 @@ export interface SwapArgs {
   e: GenericArg
 }
 
-export function swap(txb: TransactionBlock, typeArg: Type, args: SwapArgs) {
+export function swap(txb: TransactionBlock, typeArg: string, args: SwapArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::option::swap`,
     typeArguments: [typeArg],
@@ -59,7 +59,7 @@ export interface BorrowWithDefaultArgs {
 
 export function borrowWithDefault(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: BorrowWithDefaultArgs
 ) {
   return txb.moveCall({
@@ -71,7 +71,7 @@ export function borrowWithDefault(
 
 export function destroyNone(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   t: GenericArg | TransactionArgument | null
 ) {
   return txb.moveCall({
@@ -83,7 +83,7 @@ export function destroyNone(
 
 export function destroySome(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   t: GenericArg | TransactionArgument | null
 ) {
   return txb.moveCall({
@@ -100,7 +100,7 @@ export interface DestroyWithDefaultArgs {
 
 export function destroyWithDefault(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: DestroyWithDefaultArgs
 ) {
   return txb.moveCall({
@@ -112,7 +112,7 @@ export function destroyWithDefault(
 
 export function extract(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   t: GenericArg | TransactionArgument | null
 ) {
   return txb.moveCall({
@@ -127,7 +127,7 @@ export interface FillArgs {
   e: GenericArg
 }
 
-export function fill(txb: TransactionBlock, typeArg: Type, args: FillArgs) {
+export function fill(txb: TransactionBlock, typeArg: string, args: FillArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::option::fill`,
     typeArguments: [typeArg],
@@ -140,7 +140,7 @@ export interface GetWithDefaultArgs {
   default: GenericArg
 }
 
-export function getWithDefault(txb: TransactionBlock, typeArg: Type, args: GetWithDefaultArgs) {
+export function getWithDefault(txb: TransactionBlock, typeArg: string, args: GetWithDefaultArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::option::get_with_default`,
     typeArguments: [typeArg],
@@ -150,7 +150,7 @@ export function getWithDefault(txb: TransactionBlock, typeArg: Type, args: GetWi
 
 export function isNone(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   t: GenericArg | TransactionArgument | null
 ) {
   return txb.moveCall({
@@ -162,7 +162,7 @@ export function isNone(
 
 export function isSome(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   t: GenericArg | TransactionArgument | null
 ) {
   return txb.moveCall({
@@ -172,7 +172,7 @@ export function isSome(
   })
 }
 
-export function none(txb: TransactionBlock, typeArg: Type) {
+export function none(txb: TransactionBlock, typeArg: string) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::option::none`,
     typeArguments: [typeArg],
@@ -180,7 +180,7 @@ export function none(txb: TransactionBlock, typeArg: Type) {
   })
 }
 
-export function some(txb: TransactionBlock, typeArg: Type, e: GenericArg) {
+export function some(txb: TransactionBlock, typeArg: string, e: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::option::some`,
     typeArguments: [typeArg],
@@ -193,7 +193,7 @@ export interface SwapOrFillArgs {
   e: GenericArg
 }
 
-export function swapOrFill(txb: TransactionBlock, typeArg: Type, args: SwapOrFillArgs) {
+export function swapOrFill(txb: TransactionBlock, typeArg: string, args: SwapOrFillArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::option::swap_or_fill`,
     typeArguments: [typeArg],
@@ -203,7 +203,7 @@ export function swapOrFill(txb: TransactionBlock, typeArg: Type, args: SwapOrFil
 
 export function toVec(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   t: GenericArg | TransactionArgument | null
 ) {
   return txb.moveCall({

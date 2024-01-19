@@ -10,12 +10,12 @@ import {
   reified,
   toBcs,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== Option =============================== */
 
-export function isOption(type: Type): boolean {
+export function isOption(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x1::option::Option<')
 }

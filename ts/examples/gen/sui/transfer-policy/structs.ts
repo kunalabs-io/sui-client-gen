@@ -7,7 +7,7 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   extractType,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { SUI } from '../sui/structs'
@@ -17,7 +17,7 @@ import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== RuleKey =============================== */
 
-export function isRuleKey(type: Type): boolean {
+export function isRuleKey(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::transfer_policy::RuleKey<')
 }
@@ -94,7 +94,7 @@ export class RuleKey {
 
 /* ============================== TransferPolicy =============================== */
 
-export function isTransferPolicy(type: Type): boolean {
+export function isTransferPolicy(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::transfer_policy::TransferPolicy<')
 }
@@ -217,7 +217,7 @@ export class TransferPolicy {
 
 /* ============================== TransferPolicyCap =============================== */
 
-export function isTransferPolicyCap(type: Type): boolean {
+export function isTransferPolicyCap(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::transfer_policy::TransferPolicyCap<')
 }
@@ -337,7 +337,7 @@ export class TransferPolicyCap {
 
 /* ============================== TransferPolicyCreated =============================== */
 
-export function isTransferPolicyCreated(type: Type): boolean {
+export function isTransferPolicyCreated(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::transfer_policy::TransferPolicyCreated<')
 }
@@ -424,7 +424,7 @@ export class TransferPolicyCreated {
 
 /* ============================== TransferPolicyDestroyed =============================== */
 
-export function isTransferPolicyDestroyed(type: Type): boolean {
+export function isTransferPolicyDestroyed(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::transfer_policy::TransferPolicyDestroyed<')
 }
@@ -511,7 +511,7 @@ export class TransferPolicyDestroyed {
 
 /* ============================== TransferRequest =============================== */
 
-export function isTransferRequest(type: Type): boolean {
+export function isTransferRequest(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::transfer_policy::TransferRequest<')
 }

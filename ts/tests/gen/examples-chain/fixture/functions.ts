@@ -1,17 +1,8 @@
 import { PUBLISHED_AT } from '..'
-import {
-  GenericArg,
-  ObjectArg,
-  Type,
-  generic,
-  obj,
-  option,
-  pure,
-  vector,
-} from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj, option, pure, vector } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
-export function createWithGenericField(txb: TransactionBlock, typeArg: Type, t0: GenericArg) {
+export function createWithGenericField(txb: TransactionBlock, typeArg: string, t0: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::fixture::create_with_generic_field`,
     typeArguments: [typeArg],
@@ -33,7 +24,7 @@ export interface CreateWithTwoGenericsArgs {
 
 export function createWithTwoGenerics(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: CreateWithTwoGenericsArgs
 ) {
   return txb.moveCall({
@@ -58,7 +49,7 @@ export interface CreateFooArgs {
   bar: ObjectArg
 }
 
-export function createFoo(txb: TransactionBlock, typeArgs: [Type, Type], args: CreateFooArgs) {
+export function createFoo(txb: TransactionBlock, typeArgs: [string, string], args: CreateFooArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::fixture::create_foo`,
     typeArguments: typeArgs,
@@ -108,7 +99,7 @@ export interface CreateSpecialArgs {
 
 export function createSpecial(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: CreateSpecialArgs
 ) {
   return txb.moveCall({
@@ -148,7 +139,7 @@ export interface CreateSpecialAsGenericsArgs {
 
 export function createSpecialAsGenerics(
   txb: TransactionBlock,
-  typeArgs: [Type, Type, Type, Type, Type, Type, Type, Type],
+  typeArgs: [string, string, string, string, string, string, string, string],
   args: CreateSpecialAsGenericsArgs
 ) {
   return txb.moveCall({
@@ -178,7 +169,7 @@ export interface CreateSpecialInVectorsArgs {
 
 export function createSpecialInVectors(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: CreateSpecialInVectorsArgs
 ) {
   return txb.moveCall({

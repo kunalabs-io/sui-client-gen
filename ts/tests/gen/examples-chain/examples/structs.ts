@@ -4,7 +4,7 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   reified,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/ascii/structs'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { String as String1 } from '../../move-stdlib-chain/string/structs'
@@ -14,7 +14,7 @@ import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== ExampleStruct =============================== */
 
-export function isExampleStruct(type: Type): boolean {
+export function isExampleStruct(type: string): boolean {
   type = compressSuiType(type)
   return (
     type ===
@@ -88,7 +88,7 @@ export class ExampleStruct {
 
 /* ============================== SpecialTypesStruct =============================== */
 
-export function isSpecialTypesStruct(type: Type): boolean {
+export function isSpecialTypesStruct(type: string): boolean {
   type = compressSuiType(type)
   return (
     type ===

@@ -6,7 +6,7 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   extractType,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { SUI } from '../sui/structs'
@@ -15,7 +15,7 @@ import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Borrow =============================== */
 
-export function isBorrow(type: Type): boolean {
+export function isBorrow(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::kiosk::Borrow'
 }
@@ -94,7 +94,7 @@ export class Borrow {
 
 /* ============================== Kiosk =============================== */
 
-export function isKiosk(type: Type): boolean {
+export function isKiosk(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::kiosk::Kiosk'
 }
@@ -224,7 +224,7 @@ export class Kiosk {
 
 /* ============================== KioskOwnerCap =============================== */
 
-export function isKioskOwnerCap(type: Type): boolean {
+export function isKioskOwnerCap(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::kiosk::KioskOwnerCap'
 }
@@ -324,7 +324,7 @@ export class KioskOwnerCap {
 
 /* ============================== PurchaseCap =============================== */
 
-export function isPurchaseCap(type: Type): boolean {
+export function isPurchaseCap(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::kiosk::PurchaseCap<')
 }
@@ -448,7 +448,7 @@ export class PurchaseCap {
 
 /* ============================== Item =============================== */
 
-export function isItem(type: Type): boolean {
+export function isItem(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::kiosk::Item'
 }
@@ -516,7 +516,7 @@ export class Item {
 
 /* ============================== Listing =============================== */
 
-export function isListing(type: Type): boolean {
+export function isListing(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::kiosk::Listing'
 }
@@ -595,7 +595,7 @@ export class Listing {
 
 /* ============================== Lock =============================== */
 
-export function isLock(type: Type): boolean {
+export function isLock(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::kiosk::Lock'
 }
@@ -663,7 +663,7 @@ export class Lock {
 
 /* ============================== ItemListed =============================== */
 
-export function isItemListed(type: Type): boolean {
+export function isItemListed(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::kiosk::ItemListed<')
 }
@@ -755,7 +755,7 @@ export class ItemListed {
 
 /* ============================== ItemPurchased =============================== */
 
-export function isItemPurchased(type: Type): boolean {
+export function isItemPurchased(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::kiosk::ItemPurchased<')
 }
@@ -847,7 +847,7 @@ export class ItemPurchased {
 
 /* ============================== ItemDelisted =============================== */
 
-export function isItemDelisted(type: Type): boolean {
+export function isItemDelisted(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::kiosk::ItemDelisted<')
 }

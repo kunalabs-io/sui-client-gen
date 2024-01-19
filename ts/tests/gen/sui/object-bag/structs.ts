@@ -3,14 +3,14 @@ import {
   decodeFromFieldsGenericOrSpecial,
   decodeFromFieldsWithTypesGenericOrSpecial,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== ObjectBag =============================== */
 
-export function isObjectBag(type: Type): boolean {
+export function isObjectBag(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::object_bag::ObjectBag'
 }

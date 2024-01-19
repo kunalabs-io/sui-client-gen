@@ -3,7 +3,7 @@ import {
   decodeFromFieldsGenericOrSpecial,
   decodeFromFieldsWithTypesGenericOrSpecial,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib/string/structs'
 import { UID } from '../object/structs'
 import { bcs, fromHEX, toHEX } from '@mysten/bcs'
@@ -11,7 +11,7 @@ import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== VerifiedID =============================== */
 
-export function isVerifiedID(type: Type): boolean {
+export function isVerifiedID(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::zklogin_verified_id::VerifiedID'
 }

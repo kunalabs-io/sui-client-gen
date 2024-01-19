@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export interface RemoveArgs {
@@ -7,7 +7,7 @@ export interface RemoveArgs {
   kioskOwnerCap: ObjectArg
 }
 
-export function remove(txb: TransactionBlock, typeArg: Type, args: RemoveArgs) {
+export function remove(txb: TransactionBlock, typeArg: string, args: RemoveArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::remove`,
     typeArguments: [typeArg],
@@ -22,7 +22,7 @@ export interface AddArgs {
   u128: bigint | TransactionArgument
 }
 
-export function add(txb: TransactionBlock, typeArg: Type, args: AddArgs) {
+export function add(txb: TransactionBlock, typeArg: string, args: AddArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::add`,
     typeArguments: [typeArg],
@@ -42,7 +42,7 @@ export interface PlaceArgs {
   transferPolicy: ObjectArg
 }
 
-export function place(txb: TransactionBlock, typeArgs: [Type, Type], args: PlaceArgs) {
+export function place(txb: TransactionBlock, typeArgs: [string, string], args: PlaceArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::place`,
     typeArguments: typeArgs,
@@ -62,7 +62,7 @@ export interface LockArgs {
   transferPolicy: ObjectArg
 }
 
-export function lock(txb: TransactionBlock, typeArgs: [Type, Type], args: LockArgs) {
+export function lock(txb: TransactionBlock, typeArgs: [string, string], args: LockArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::lock`,
     typeArguments: typeArgs,
@@ -80,7 +80,7 @@ export interface DisableArgs {
   kioskOwnerCap: ObjectArg
 }
 
-export function disable(txb: TransactionBlock, typeArg: Type, args: DisableArgs) {
+export function disable(txb: TransactionBlock, typeArg: string, args: DisableArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::disable`,
     typeArguments: [typeArg],
@@ -93,7 +93,7 @@ export interface EnableArgs {
   kioskOwnerCap: ObjectArg
 }
 
-export function enable(txb: TransactionBlock, typeArg: Type, args: EnableArgs) {
+export function enable(txb: TransactionBlock, typeArg: string, args: EnableArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::enable`,
     typeArguments: [typeArg],
@@ -106,7 +106,7 @@ export interface StorageArgs {
   kiosk: ObjectArg
 }
 
-export function storage(txb: TransactionBlock, typeArg: Type, args: StorageArgs) {
+export function storage(txb: TransactionBlock, typeArg: string, args: StorageArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::storage`,
     typeArguments: [typeArg],
@@ -119,7 +119,7 @@ export interface StorageMutArgs {
   kiosk: ObjectArg
 }
 
-export function storageMut(txb: TransactionBlock, typeArg: Type, args: StorageMutArgs) {
+export function storageMut(txb: TransactionBlock, typeArg: string, args: StorageMutArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::storage_mut`,
     typeArguments: [typeArg],
@@ -127,7 +127,7 @@ export function storageMut(txb: TransactionBlock, typeArg: Type, args: StorageMu
   })
 }
 
-export function isInstalled(txb: TransactionBlock, typeArg: Type, kiosk: ObjectArg) {
+export function isInstalled(txb: TransactionBlock, typeArg: string, kiosk: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::is_installed`,
     typeArguments: [typeArg],
@@ -135,7 +135,7 @@ export function isInstalled(txb: TransactionBlock, typeArg: Type, kiosk: ObjectA
   })
 }
 
-export function isEnabled(txb: TransactionBlock, typeArg: Type, kiosk: ObjectArg) {
+export function isEnabled(txb: TransactionBlock, typeArg: string, kiosk: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::is_enabled`,
     typeArguments: [typeArg],
@@ -143,7 +143,7 @@ export function isEnabled(txb: TransactionBlock, typeArg: Type, kiosk: ObjectArg
   })
 }
 
-export function canPlace(txb: TransactionBlock, typeArg: Type, kiosk: ObjectArg) {
+export function canPlace(txb: TransactionBlock, typeArg: string, kiosk: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::can_place`,
     typeArguments: [typeArg],
@@ -151,7 +151,7 @@ export function canPlace(txb: TransactionBlock, typeArg: Type, kiosk: ObjectArg)
   })
 }
 
-export function canLock(txb: TransactionBlock, typeArg: Type, kiosk: ObjectArg) {
+export function canLock(txb: TransactionBlock, typeArg: string, kiosk: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::can_lock`,
     typeArguments: [typeArg],
@@ -159,7 +159,7 @@ export function canLock(txb: TransactionBlock, typeArg: Type, kiosk: ObjectArg) 
   })
 }
 
-export function extension(txb: TransactionBlock, typeArg: Type, kiosk: ObjectArg) {
+export function extension(txb: TransactionBlock, typeArg: string, kiosk: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::extension`,
     typeArguments: [typeArg],
@@ -167,7 +167,7 @@ export function extension(txb: TransactionBlock, typeArg: Type, kiosk: ObjectArg
   })
 }
 
-export function extensionMut(txb: TransactionBlock, typeArg: Type, kiosk: ObjectArg) {
+export function extensionMut(txb: TransactionBlock, typeArg: string, kiosk: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::extension_mut`,
     typeArguments: [typeArg],

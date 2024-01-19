@@ -1,8 +1,8 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
-export function value(txb: TransactionBlock, typeArg: Type, balance: ObjectArg) {
+export function value(txb: TransactionBlock, typeArg: string, balance: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::balance::value`,
     typeArguments: [typeArg],
@@ -10,7 +10,7 @@ export function value(txb: TransactionBlock, typeArg: Type, balance: ObjectArg) 
   })
 }
 
-export function supplyValue(txb: TransactionBlock, typeArg: Type, supply: ObjectArg) {
+export function supplyValue(txb: TransactionBlock, typeArg: string, supply: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::balance::supply_value`,
     typeArguments: [typeArg],
@@ -18,7 +18,7 @@ export function supplyValue(txb: TransactionBlock, typeArg: Type, supply: Object
   })
 }
 
-export function createSupply(txb: TransactionBlock, typeArg: Type, t0: GenericArg) {
+export function createSupply(txb: TransactionBlock, typeArg: string, t0: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::balance::create_supply`,
     typeArguments: [typeArg],
@@ -31,7 +31,7 @@ export interface IncreaseSupplyArgs {
   u64: bigint | TransactionArgument
 }
 
-export function increaseSupply(txb: TransactionBlock, typeArg: Type, args: IncreaseSupplyArgs) {
+export function increaseSupply(txb: TransactionBlock, typeArg: string, args: IncreaseSupplyArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::balance::increase_supply`,
     typeArguments: [typeArg],
@@ -44,7 +44,7 @@ export interface DecreaseSupplyArgs {
   balance: ObjectArg
 }
 
-export function decreaseSupply(txb: TransactionBlock, typeArg: Type, args: DecreaseSupplyArgs) {
+export function decreaseSupply(txb: TransactionBlock, typeArg: string, args: DecreaseSupplyArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::balance::decrease_supply`,
     typeArguments: [typeArg],
@@ -52,7 +52,7 @@ export function decreaseSupply(txb: TransactionBlock, typeArg: Type, args: Decre
   })
 }
 
-export function zero(txb: TransactionBlock, typeArg: Type) {
+export function zero(txb: TransactionBlock, typeArg: string) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::balance::zero`,
     typeArguments: [typeArg],
@@ -65,7 +65,7 @@ export interface JoinArgs {
   balance2: ObjectArg
 }
 
-export function join(txb: TransactionBlock, typeArg: Type, args: JoinArgs) {
+export function join(txb: TransactionBlock, typeArg: string, args: JoinArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::balance::join`,
     typeArguments: [typeArg],
@@ -78,7 +78,7 @@ export interface SplitArgs {
   u64: bigint | TransactionArgument
 }
 
-export function split(txb: TransactionBlock, typeArg: Type, args: SplitArgs) {
+export function split(txb: TransactionBlock, typeArg: string, args: SplitArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::balance::split`,
     typeArguments: [typeArg],
@@ -86,7 +86,7 @@ export function split(txb: TransactionBlock, typeArg: Type, args: SplitArgs) {
   })
 }
 
-export function withdrawAll(txb: TransactionBlock, typeArg: Type, balance: ObjectArg) {
+export function withdrawAll(txb: TransactionBlock, typeArg: string, balance: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::balance::withdraw_all`,
     typeArguments: [typeArg],
@@ -94,7 +94,7 @@ export function withdrawAll(txb: TransactionBlock, typeArg: Type, balance: Objec
   })
 }
 
-export function destroyZero(txb: TransactionBlock, typeArg: Type, balance: ObjectArg) {
+export function destroyZero(txb: TransactionBlock, typeArg: string, balance: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::balance::destroy_zero`,
     typeArguments: [typeArg],
@@ -104,7 +104,7 @@ export function destroyZero(txb: TransactionBlock, typeArg: Type, balance: Objec
 
 export function createStakingRewards(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   u64: bigint | TransactionArgument
 ) {
   return txb.moveCall({
@@ -114,7 +114,7 @@ export function createStakingRewards(
   })
 }
 
-export function destroyStorageRebates(txb: TransactionBlock, typeArg: Type, balance: ObjectArg) {
+export function destroyStorageRebates(txb: TransactionBlock, typeArg: string, balance: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::balance::destroy_storage_rebates`,
     typeArguments: [typeArg],
@@ -122,7 +122,7 @@ export function destroyStorageRebates(txb: TransactionBlock, typeArg: Type, bala
   })
 }
 
-export function destroySupply(txb: TransactionBlock, typeArg: Type, supply: ObjectArg) {
+export function destroySupply(txb: TransactionBlock, typeArg: string, supply: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::balance::destroy_supply`,
     typeArguments: [typeArg],

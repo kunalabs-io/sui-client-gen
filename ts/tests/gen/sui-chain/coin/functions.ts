@@ -1,8 +1,8 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj, option, pure } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj, option, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
-export function balance(txb: TransactionBlock, typeArg: Type, coin: ObjectArg) {
+export function balance(txb: TransactionBlock, typeArg: string, coin: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::balance`,
     typeArguments: [typeArg],
@@ -10,7 +10,7 @@ export function balance(txb: TransactionBlock, typeArg: Type, coin: ObjectArg) {
   })
 }
 
-export function value(txb: TransactionBlock, typeArg: Type, coin: ObjectArg) {
+export function value(txb: TransactionBlock, typeArg: string, coin: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::value`,
     typeArguments: [typeArg],
@@ -18,7 +18,7 @@ export function value(txb: TransactionBlock, typeArg: Type, coin: ObjectArg) {
   })
 }
 
-export function zero(txb: TransactionBlock, typeArg: Type) {
+export function zero(txb: TransactionBlock, typeArg: string) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::zero`,
     typeArguments: [typeArg],
@@ -31,7 +31,7 @@ export interface JoinArgs {
   coin2: ObjectArg
 }
 
-export function join(txb: TransactionBlock, typeArg: Type, args: JoinArgs) {
+export function join(txb: TransactionBlock, typeArg: string, args: JoinArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::join`,
     typeArguments: [typeArg],
@@ -44,7 +44,7 @@ export interface SplitArgs {
   u64: bigint | TransactionArgument
 }
 
-export function split(txb: TransactionBlock, typeArg: Type, args: SplitArgs) {
+export function split(txb: TransactionBlock, typeArg: string, args: SplitArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::split`,
     typeArguments: [typeArg],
@@ -52,7 +52,7 @@ export function split(txb: TransactionBlock, typeArg: Type, args: SplitArgs) {
   })
 }
 
-export function destroyZero(txb: TransactionBlock, typeArg: Type, coin: ObjectArg) {
+export function destroyZero(txb: TransactionBlock, typeArg: string, coin: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::destroy_zero`,
     typeArguments: [typeArg],
@@ -60,7 +60,7 @@ export function destroyZero(txb: TransactionBlock, typeArg: Type, coin: ObjectAr
   })
 }
 
-export function totalSupply(txb: TransactionBlock, typeArg: Type, treasuryCap: ObjectArg) {
+export function totalSupply(txb: TransactionBlock, typeArg: string, treasuryCap: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::total_supply`,
     typeArguments: [typeArg],
@@ -68,7 +68,7 @@ export function totalSupply(txb: TransactionBlock, typeArg: Type, treasuryCap: O
   })
 }
 
-export function treasuryIntoSupply(txb: TransactionBlock, typeArg: Type, treasuryCap: ObjectArg) {
+export function treasuryIntoSupply(txb: TransactionBlock, typeArg: string, treasuryCap: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::treasury_into_supply`,
     typeArguments: [typeArg],
@@ -76,7 +76,7 @@ export function treasuryIntoSupply(txb: TransactionBlock, typeArg: Type, treasur
   })
 }
 
-export function supplyImmut(txb: TransactionBlock, typeArg: Type, treasuryCap: ObjectArg) {
+export function supplyImmut(txb: TransactionBlock, typeArg: string, treasuryCap: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::supply_immut`,
     typeArguments: [typeArg],
@@ -84,7 +84,7 @@ export function supplyImmut(txb: TransactionBlock, typeArg: Type, treasuryCap: O
   })
 }
 
-export function supplyMut(txb: TransactionBlock, typeArg: Type, treasuryCap: ObjectArg) {
+export function supplyMut(txb: TransactionBlock, typeArg: string, treasuryCap: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::supply_mut`,
     typeArguments: [typeArg],
@@ -92,7 +92,7 @@ export function supplyMut(txb: TransactionBlock, typeArg: Type, treasuryCap: Obj
   })
 }
 
-export function balanceMut(txb: TransactionBlock, typeArg: Type, coin: ObjectArg) {
+export function balanceMut(txb: TransactionBlock, typeArg: string, coin: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::balance_mut`,
     typeArguments: [typeArg],
@@ -100,7 +100,7 @@ export function balanceMut(txb: TransactionBlock, typeArg: Type, coin: ObjectArg
   })
 }
 
-export function fromBalance(txb: TransactionBlock, typeArg: Type, balance: ObjectArg) {
+export function fromBalance(txb: TransactionBlock, typeArg: string, balance: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::from_balance`,
     typeArguments: [typeArg],
@@ -108,7 +108,7 @@ export function fromBalance(txb: TransactionBlock, typeArg: Type, balance: Objec
   })
 }
 
-export function intoBalance(txb: TransactionBlock, typeArg: Type, coin: ObjectArg) {
+export function intoBalance(txb: TransactionBlock, typeArg: string, coin: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::into_balance`,
     typeArguments: [typeArg],
@@ -121,7 +121,7 @@ export interface TakeArgs {
   u64: bigint | TransactionArgument
 }
 
-export function take(txb: TransactionBlock, typeArg: Type, args: TakeArgs) {
+export function take(txb: TransactionBlock, typeArg: string, args: TakeArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::take`,
     typeArguments: [typeArg],
@@ -134,7 +134,7 @@ export interface PutArgs {
   coin: ObjectArg
 }
 
-export function put(txb: TransactionBlock, typeArg: Type, args: PutArgs) {
+export function put(txb: TransactionBlock, typeArg: string, args: PutArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::put`,
     typeArguments: [typeArg],
@@ -147,7 +147,7 @@ export interface DivideIntoNArgs {
   u64: bigint | TransactionArgument
 }
 
-export function divideIntoN(txb: TransactionBlock, typeArg: Type, args: DivideIntoNArgs) {
+export function divideIntoN(txb: TransactionBlock, typeArg: string, args: DivideIntoNArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::divide_into_n`,
     typeArguments: [typeArg],
@@ -164,7 +164,7 @@ export interface CreateCurrencyArgs {
   option: ObjectArg | TransactionArgument | null
 }
 
-export function createCurrency(txb: TransactionBlock, typeArg: Type, args: CreateCurrencyArgs) {
+export function createCurrency(txb: TransactionBlock, typeArg: string, args: CreateCurrencyArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::create_currency`,
     typeArguments: [typeArg],
@@ -184,7 +184,7 @@ export interface MintArgs {
   u64: bigint | TransactionArgument
 }
 
-export function mint(txb: TransactionBlock, typeArg: Type, args: MintArgs) {
+export function mint(txb: TransactionBlock, typeArg: string, args: MintArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::mint`,
     typeArguments: [typeArg],
@@ -197,7 +197,7 @@ export interface MintBalanceArgs {
   u64: bigint | TransactionArgument
 }
 
-export function mintBalance(txb: TransactionBlock, typeArg: Type, args: MintBalanceArgs) {
+export function mintBalance(txb: TransactionBlock, typeArg: string, args: MintBalanceArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::mint_balance`,
     typeArguments: [typeArg],
@@ -210,7 +210,7 @@ export interface BurnArgs {
   coin: ObjectArg
 }
 
-export function burn(txb: TransactionBlock, typeArg: Type, args: BurnArgs) {
+export function burn(txb: TransactionBlock, typeArg: string, args: BurnArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::burn`,
     typeArguments: [typeArg],
@@ -224,7 +224,7 @@ export interface MintAndTransferArgs {
   address: string | TransactionArgument
 }
 
-export function mintAndTransfer(txb: TransactionBlock, typeArg: Type, args: MintAndTransferArgs) {
+export function mintAndTransfer(txb: TransactionBlock, typeArg: string, args: MintAndTransferArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::mint_and_transfer`,
     typeArguments: [typeArg],
@@ -242,7 +242,7 @@ export interface UpdateNameArgs {
   string: string | TransactionArgument
 }
 
-export function updateName(txb: TransactionBlock, typeArg: Type, args: UpdateNameArgs) {
+export function updateName(txb: TransactionBlock, typeArg: string, args: UpdateNameArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::update_name`,
     typeArguments: [typeArg],
@@ -260,7 +260,7 @@ export interface UpdateSymbolArgs {
   string: string | TransactionArgument
 }
 
-export function updateSymbol(txb: TransactionBlock, typeArg: Type, args: UpdateSymbolArgs) {
+export function updateSymbol(txb: TransactionBlock, typeArg: string, args: UpdateSymbolArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::update_symbol`,
     typeArguments: [typeArg],
@@ -280,7 +280,7 @@ export interface UpdateDescriptionArgs {
 
 export function updateDescription(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: UpdateDescriptionArgs
 ) {
   return txb.moveCall({
@@ -300,7 +300,7 @@ export interface UpdateIconUrlArgs {
   string: string | TransactionArgument
 }
 
-export function updateIconUrl(txb: TransactionBlock, typeArg: Type, args: UpdateIconUrlArgs) {
+export function updateIconUrl(txb: TransactionBlock, typeArg: string, args: UpdateIconUrlArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::update_icon_url`,
     typeArguments: [typeArg],
@@ -312,7 +312,7 @@ export function updateIconUrl(txb: TransactionBlock, typeArg: Type, args: Update
   })
 }
 
-export function getDecimals(txb: TransactionBlock, typeArg: Type, coinMetadata: ObjectArg) {
+export function getDecimals(txb: TransactionBlock, typeArg: string, coinMetadata: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::get_decimals`,
     typeArguments: [typeArg],
@@ -320,7 +320,7 @@ export function getDecimals(txb: TransactionBlock, typeArg: Type, coinMetadata: 
   })
 }
 
-export function getName(txb: TransactionBlock, typeArg: Type, coinMetadata: ObjectArg) {
+export function getName(txb: TransactionBlock, typeArg: string, coinMetadata: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::get_name`,
     typeArguments: [typeArg],
@@ -328,7 +328,7 @@ export function getName(txb: TransactionBlock, typeArg: Type, coinMetadata: Obje
   })
 }
 
-export function getSymbol(txb: TransactionBlock, typeArg: Type, coinMetadata: ObjectArg) {
+export function getSymbol(txb: TransactionBlock, typeArg: string, coinMetadata: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::get_symbol`,
     typeArguments: [typeArg],
@@ -336,7 +336,7 @@ export function getSymbol(txb: TransactionBlock, typeArg: Type, coinMetadata: Ob
   })
 }
 
-export function getDescription(txb: TransactionBlock, typeArg: Type, coinMetadata: ObjectArg) {
+export function getDescription(txb: TransactionBlock, typeArg: string, coinMetadata: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::get_description`,
     typeArguments: [typeArg],
@@ -344,7 +344,7 @@ export function getDescription(txb: TransactionBlock, typeArg: Type, coinMetadat
   })
 }
 
-export function getIconUrl(txb: TransactionBlock, typeArg: Type, coinMetadata: ObjectArg) {
+export function getIconUrl(txb: TransactionBlock, typeArg: string, coinMetadata: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::get_icon_url`,
     typeArguments: [typeArg],
@@ -352,7 +352,7 @@ export function getIconUrl(txb: TransactionBlock, typeArg: Type, coinMetadata: O
   })
 }
 
-export function supply(txb: TransactionBlock, typeArg: Type, treasuryCap: ObjectArg) {
+export function supply(txb: TransactionBlock, typeArg: string, treasuryCap: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::coin::supply`,
     typeArguments: [typeArg],

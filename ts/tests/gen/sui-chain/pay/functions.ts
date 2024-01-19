@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, Type, obj, pure, vector } from '../../_framework/util'
+import { ObjectArg, obj, pure, vector } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export interface JoinArgs {
@@ -7,7 +7,7 @@ export interface JoinArgs {
   coin2: ObjectArg
 }
 
-export function join(txb: TransactionBlock, typeArg: Type, args: JoinArgs) {
+export function join(txb: TransactionBlock, typeArg: string, args: JoinArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pay::join`,
     typeArguments: [typeArg],
@@ -20,7 +20,7 @@ export interface SplitArgs {
   u64: bigint | TransactionArgument
 }
 
-export function split(txb: TransactionBlock, typeArg: Type, args: SplitArgs) {
+export function split(txb: TransactionBlock, typeArg: string, args: SplitArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pay::split`,
     typeArguments: [typeArg],
@@ -28,7 +28,7 @@ export function split(txb: TransactionBlock, typeArg: Type, args: SplitArgs) {
   })
 }
 
-export function keep(txb: TransactionBlock, typeArg: Type, coin: ObjectArg) {
+export function keep(txb: TransactionBlock, typeArg: string, coin: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pay::keep`,
     typeArguments: [typeArg],
@@ -41,7 +41,7 @@ export interface SplitVecArgs {
   vecU64: Array<bigint | TransactionArgument> | TransactionArgument
 }
 
-export function splitVec(txb: TransactionBlock, typeArg: Type, args: SplitVecArgs) {
+export function splitVec(txb: TransactionBlock, typeArg: string, args: SplitVecArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pay::split_vec`,
     typeArguments: [typeArg],
@@ -55,7 +55,11 @@ export interface SplitAndTransferArgs {
   address: string | TransactionArgument
 }
 
-export function splitAndTransfer(txb: TransactionBlock, typeArg: Type, args: SplitAndTransferArgs) {
+export function splitAndTransfer(
+  txb: TransactionBlock,
+  typeArg: string,
+  args: SplitAndTransferArgs
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pay::split_and_transfer`,
     typeArguments: [typeArg],
@@ -72,7 +76,7 @@ export interface DivideAndKeepArgs {
   u64: bigint | TransactionArgument
 }
 
-export function divideAndKeep(txb: TransactionBlock, typeArg: Type, args: DivideAndKeepArgs) {
+export function divideAndKeep(txb: TransactionBlock, typeArg: string, args: DivideAndKeepArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pay::divide_and_keep`,
     typeArguments: [typeArg],
@@ -85,7 +89,7 @@ export interface JoinVecArgs {
   vecCoin: Array<ObjectArg> | TransactionArgument
 }
 
-export function joinVec(txb: TransactionBlock, typeArg: Type, args: JoinVecArgs) {
+export function joinVec(txb: TransactionBlock, typeArg: string, args: JoinVecArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pay::join_vec`,
     typeArguments: [typeArg],
@@ -100,7 +104,7 @@ export interface JoinVecAndTransferArgs {
 
 export function joinVecAndTransfer(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: JoinVecAndTransferArgs
 ) {
   return txb.moveCall({

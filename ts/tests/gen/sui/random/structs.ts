@@ -4,7 +4,7 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   reified,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { Versioned } from '../versioned/structs'
 import { bcs } from '@mysten/bcs'
@@ -12,7 +12,7 @@ import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Random =============================== */
 
-export function isRandom(type: Type): boolean {
+export function isRandom(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::random::Random'
 }
@@ -112,7 +112,7 @@ export class Random {
 
 /* ============================== RandomInner =============================== */
 
-export function isRandomInner(type: Type): boolean {
+export function isRandomInner(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::random::RandomInner'
 }

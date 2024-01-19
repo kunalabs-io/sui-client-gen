@@ -3,14 +3,14 @@ import {
   decodeFromFieldsGenericOrSpecial,
   decodeFromFieldsWithTypesGenericOrSpecial,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { ID, UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== VersionChangeCap =============================== */
 
-export function isVersionChangeCap(type: Type): boolean {
+export function isVersionChangeCap(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::versioned::VersionChangeCap'
 }
@@ -92,7 +92,7 @@ export class VersionChangeCap {
 
 /* ============================== Versioned =============================== */
 
-export function isVersioned(type: Type): boolean {
+export function isVersioned(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::versioned::Versioned'
 }

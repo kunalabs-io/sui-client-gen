@@ -4,7 +4,7 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   reified,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { String } from '../../move-stdlib/string/structs'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -12,7 +12,7 @@ import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== ActiveJwk =============================== */
 
-export function isActiveJwk(type: Type): boolean {
+export function isActiveJwk(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::authenticator_state::ActiveJwk'
 }
@@ -98,7 +98,7 @@ export class ActiveJwk {
 
 /* ============================== AuthenticatorState =============================== */
 
-export function isAuthenticatorState(type: Type): boolean {
+export function isAuthenticatorState(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::authenticator_state::AuthenticatorState'
 }
@@ -201,7 +201,7 @@ export class AuthenticatorState {
 
 /* ============================== AuthenticatorStateInner =============================== */
 
-export function isAuthenticatorStateInner(type: Type): boolean {
+export function isAuthenticatorStateInner(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::authenticator_state::AuthenticatorStateInner'
 }
@@ -287,7 +287,7 @@ export class AuthenticatorStateInner {
 
 /* ============================== JWK =============================== */
 
-export function isJWK(type: Type): boolean {
+export function isJWK(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::authenticator_state::JWK'
 }
@@ -380,7 +380,7 @@ export class JWK {
 
 /* ============================== JwkId =============================== */
 
-export function isJwkId(type: Type): boolean {
+export function isJwkId(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::authenticator_state::JwkId'
 }

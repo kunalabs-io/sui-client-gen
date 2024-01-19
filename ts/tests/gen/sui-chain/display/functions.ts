@@ -1,8 +1,8 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, Type, obj, pure } from '../../_framework/util'
+import { ObjectArg, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
-export function new_(txb: TransactionBlock, typeArg: Type, publisher: ObjectArg) {
+export function new_(txb: TransactionBlock, typeArg: string, publisher: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::display::new`,
     typeArguments: [typeArg],
@@ -15,7 +15,7 @@ export interface RemoveArgs {
   string: string | TransactionArgument
 }
 
-export function remove(txb: TransactionBlock, typeArg: Type, args: RemoveArgs) {
+export function remove(txb: TransactionBlock, typeArg: string, args: RemoveArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::display::remove`,
     typeArguments: [typeArg],
@@ -23,7 +23,7 @@ export function remove(txb: TransactionBlock, typeArg: Type, args: RemoveArgs) {
   })
 }
 
-export function version(txb: TransactionBlock, typeArg: Type, display: ObjectArg) {
+export function version(txb: TransactionBlock, typeArg: string, display: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::display::version`,
     typeArguments: [typeArg],
@@ -37,7 +37,7 @@ export interface AddArgs {
   string2: string | TransactionArgument
 }
 
-export function add(txb: TransactionBlock, typeArg: Type, args: AddArgs) {
+export function add(txb: TransactionBlock, typeArg: string, args: AddArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::display::add`,
     typeArguments: [typeArg],
@@ -55,7 +55,7 @@ export interface NewWithFieldsArgs {
   vecString2: Array<string | TransactionArgument> | TransactionArgument
 }
 
-export function newWithFields(txb: TransactionBlock, typeArg: Type, args: NewWithFieldsArgs) {
+export function newWithFields(txb: TransactionBlock, typeArg: string, args: NewWithFieldsArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::display::new_with_fields`,
     typeArguments: [typeArg],
@@ -67,7 +67,7 @@ export function newWithFields(txb: TransactionBlock, typeArg: Type, args: NewWit
   })
 }
 
-export function createAndKeep(txb: TransactionBlock, typeArg: Type, publisher: ObjectArg) {
+export function createAndKeep(txb: TransactionBlock, typeArg: string, publisher: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::display::create_and_keep`,
     typeArguments: [typeArg],
@@ -75,7 +75,7 @@ export function createAndKeep(txb: TransactionBlock, typeArg: Type, publisher: O
   })
 }
 
-export function updateVersion(txb: TransactionBlock, typeArg: Type, display: ObjectArg) {
+export function updateVersion(txb: TransactionBlock, typeArg: string, display: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::display::update_version`,
     typeArguments: [typeArg],
@@ -89,7 +89,7 @@ export interface AddMultipleArgs {
   vecString2: Array<string | TransactionArgument> | TransactionArgument
 }
 
-export function addMultiple(txb: TransactionBlock, typeArg: Type, args: AddMultipleArgs) {
+export function addMultiple(txb: TransactionBlock, typeArg: string, args: AddMultipleArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::display::add_multiple`,
     typeArguments: [typeArg],
@@ -107,7 +107,7 @@ export interface EditArgs {
   string2: string | TransactionArgument
 }
 
-export function edit(txb: TransactionBlock, typeArg: Type, args: EditArgs) {
+export function edit(txb: TransactionBlock, typeArg: string, args: EditArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::display::edit`,
     typeArguments: [typeArg],
@@ -119,7 +119,7 @@ export function edit(txb: TransactionBlock, typeArg: Type, args: EditArgs) {
   })
 }
 
-export function isAuthorized(txb: TransactionBlock, typeArg: Type, publisher: ObjectArg) {
+export function isAuthorized(txb: TransactionBlock, typeArg: string, publisher: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::display::is_authorized`,
     typeArguments: [typeArg],
@@ -127,7 +127,7 @@ export function isAuthorized(txb: TransactionBlock, typeArg: Type, publisher: Ob
   })
 }
 
-export function fields(txb: TransactionBlock, typeArg: Type, display: ObjectArg) {
+export function fields(txb: TransactionBlock, typeArg: string, display: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::display::fields`,
     typeArguments: [typeArg],
@@ -135,7 +135,7 @@ export function fields(txb: TransactionBlock, typeArg: Type, display: ObjectArg)
   })
 }
 
-export function createInternal(txb: TransactionBlock, typeArg: Type) {
+export function createInternal(txb: TransactionBlock, typeArg: string) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::display::create_internal`,
     typeArguments: [typeArg],
@@ -149,7 +149,7 @@ export interface AddInternalArgs {
   string2: string | TransactionArgument
 }
 
-export function addInternal(txb: TransactionBlock, typeArg: Type, args: AddInternalArgs) {
+export function addInternal(txb: TransactionBlock, typeArg: string, args: AddInternalArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::display::add_internal`,
     typeArguments: [typeArg],

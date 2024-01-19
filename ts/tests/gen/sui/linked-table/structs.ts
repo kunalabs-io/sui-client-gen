@@ -9,7 +9,7 @@ import {
   extractType,
   toBcs,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { Option } from '../../move-stdlib/option/structs'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/bcs'
@@ -17,7 +17,7 @@ import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== LinkedTable =============================== */
 
-export function isLinkedTable(type: Type): boolean {
+export function isLinkedTable(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::linked_table::LinkedTable<')
 }
@@ -163,7 +163,7 @@ export class LinkedTable<K extends TypeArgument> {
 
 /* ============================== Node =============================== */
 
-export function isNode(type: Type): boolean {
+export function isNode(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::linked_table::Node<')
 }

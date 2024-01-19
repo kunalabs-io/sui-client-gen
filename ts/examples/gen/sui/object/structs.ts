@@ -10,13 +10,13 @@ import {
   reified,
   toBcs,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== DynamicFields =============================== */
 
-export function isDynamicFields(type: Type): boolean {
+export function isDynamicFields(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::object::DynamicFields<')
 }
@@ -139,7 +139,7 @@ export class DynamicFields<K extends TypeArgument> {
 
 /* ============================== ID =============================== */
 
-export function isID(type: Type): boolean {
+export function isID(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::object::ID'
 }
@@ -210,7 +210,7 @@ export class ID {
 
 /* ============================== Ownership =============================== */
 
-export function isOwnership(type: Type): boolean {
+export function isOwnership(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::object::Ownership'
 }
@@ -313,7 +313,7 @@ export class Ownership {
 
 /* ============================== UID =============================== */
 
-export function isUID(type: Type): boolean {
+export function isUID(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::object::UID'
 }

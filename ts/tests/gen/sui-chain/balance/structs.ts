@@ -6,12 +6,12 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   extractType,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== Supply =============================== */
 
-export function isSupply(type: Type): boolean {
+export function isSupply(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::balance::Supply<')
 }
@@ -85,7 +85,7 @@ export class Supply {
 
 /* ============================== Balance =============================== */
 
-export function isBalance(type: Type): boolean {
+export function isBalance(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::balance::Balance<')
 }

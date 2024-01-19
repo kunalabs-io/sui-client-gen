@@ -6,13 +6,13 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   extractType,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { Bag } from '../bag/structs'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== Extension =============================== */
 
-export function isExtension(type: Type): boolean {
+export function isExtension(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::kiosk_extension::Extension'
 }
@@ -98,7 +98,7 @@ export class Extension {
 
 /* ============================== ExtensionKey =============================== */
 
-export function isExtensionKey(type: Type): boolean {
+export function isExtensionKey(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::kiosk_extension::ExtensionKey<')
 }

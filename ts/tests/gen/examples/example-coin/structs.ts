@@ -3,7 +3,7 @@ import {
   decodeFromFieldsGenericOrSpecial,
   decodeFromFieldsWithTypesGenericOrSpecial,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { TreasuryCap } from '../../sui/coin/structs'
 import { UID } from '../../sui/object/structs'
 import { bcs } from '@mysten/bcs'
@@ -11,7 +11,7 @@ import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== EXAMPLE_COIN =============================== */
 
-export function isEXAMPLE_COIN(type: Type): boolean {
+export function isEXAMPLE_COIN(type: string): boolean {
   type = compressSuiType(type)
   return (
     type ===
@@ -85,7 +85,7 @@ export class EXAMPLE_COIN {
 
 /* ============================== Faucet =============================== */
 
-export function isFaucet(type: Type): boolean {
+export function isFaucet(type: string): boolean {
   type = compressSuiType(type)
   return (
     type ===

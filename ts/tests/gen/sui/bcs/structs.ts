@@ -4,12 +4,12 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   reified,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== BCS =============================== */
 
-export function isBCS(type: Type): boolean {
+export function isBCS(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::bcs::BCS'
 }

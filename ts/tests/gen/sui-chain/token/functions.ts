@@ -1,8 +1,8 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj, option, pure } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj, option, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
-export function sender(txb: TransactionBlock, typeArg: Type, actionRequest: ObjectArg) {
+export function sender(txb: TransactionBlock, typeArg: string, actionRequest: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::sender`,
     typeArguments: [typeArg],
@@ -10,7 +10,7 @@ export function sender(txb: TransactionBlock, typeArg: Type, actionRequest: Obje
   })
 }
 
-export function value(txb: TransactionBlock, typeArg: Type, token: ObjectArg) {
+export function value(txb: TransactionBlock, typeArg: string, token: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::value`,
     typeArguments: [typeArg],
@@ -18,7 +18,7 @@ export function value(txb: TransactionBlock, typeArg: Type, token: ObjectArg) {
   })
 }
 
-export function zero(txb: TransactionBlock, typeArg: Type) {
+export function zero(txb: TransactionBlock, typeArg: string) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::zero`,
     typeArguments: [typeArg],
@@ -31,7 +31,7 @@ export interface JoinArgs {
   token2: ObjectArg
 }
 
-export function join(txb: TransactionBlock, typeArg: Type, args: JoinArgs) {
+export function join(txb: TransactionBlock, typeArg: string, args: JoinArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::join`,
     typeArguments: [typeArg],
@@ -44,7 +44,7 @@ export interface SplitArgs {
   u64: bigint | TransactionArgument
 }
 
-export function split(txb: TransactionBlock, typeArg: Type, args: SplitArgs) {
+export function split(txb: TransactionBlock, typeArg: string, args: SplitArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::split`,
     typeArguments: [typeArg],
@@ -52,7 +52,7 @@ export function split(txb: TransactionBlock, typeArg: Type, args: SplitArgs) {
   })
 }
 
-export function destroyZero(txb: TransactionBlock, typeArg: Type, token: ObjectArg) {
+export function destroyZero(txb: TransactionBlock, typeArg: string, token: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::destroy_zero`,
     typeArguments: [typeArg],
@@ -65,7 +65,7 @@ export interface TransferArgs {
   address: string | TransactionArgument
 }
 
-export function transfer(txb: TransactionBlock, typeArg: Type, args: TransferArgs) {
+export function transfer(txb: TransactionBlock, typeArg: string, args: TransferArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::transfer`,
     typeArguments: [typeArg],
@@ -78,7 +78,7 @@ export interface MintArgs {
   u64: bigint | TransactionArgument
 }
 
-export function mint(txb: TransactionBlock, typeArg: Type, args: MintArgs) {
+export function mint(txb: TransactionBlock, typeArg: string, args: MintArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::mint`,
     typeArguments: [typeArg],
@@ -91,7 +91,7 @@ export interface BurnArgs {
   token: ObjectArg
 }
 
-export function burn(txb: TransactionBlock, typeArg: Type, args: BurnArgs) {
+export function burn(txb: TransactionBlock, typeArg: string, args: BurnArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::burn`,
     typeArguments: [typeArg],
@@ -99,7 +99,7 @@ export function burn(txb: TransactionBlock, typeArg: Type, args: BurnArgs) {
   })
 }
 
-export function keep(txb: TransactionBlock, typeArg: Type, token: ObjectArg) {
+export function keep(txb: TransactionBlock, typeArg: string, token: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::keep`,
     typeArguments: [typeArg],
@@ -107,7 +107,7 @@ export function keep(txb: TransactionBlock, typeArg: Type, token: ObjectArg) {
   })
 }
 
-export function key(txb: TransactionBlock, typeArg: Type) {
+export function key(txb: TransactionBlock, typeArg: string) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::key`,
     typeArguments: [typeArg],
@@ -115,7 +115,7 @@ export function key(txb: TransactionBlock, typeArg: Type) {
   })
 }
 
-export function newPolicy(txb: TransactionBlock, typeArg: Type, treasuryCap: ObjectArg) {
+export function newPolicy(txb: TransactionBlock, typeArg: string, treasuryCap: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::new_policy`,
     typeArguments: [typeArg],
@@ -123,7 +123,7 @@ export function newPolicy(txb: TransactionBlock, typeArg: Type, treasuryCap: Obj
   })
 }
 
-export function sharePolicy(txb: TransactionBlock, typeArg: Type, tokenPolicy: ObjectArg) {
+export function sharePolicy(txb: TransactionBlock, typeArg: string, tokenPolicy: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::share_policy`,
     typeArguments: [typeArg],
@@ -131,7 +131,7 @@ export function sharePolicy(txb: TransactionBlock, typeArg: Type, tokenPolicy: O
   })
 }
 
-export function spend(txb: TransactionBlock, typeArg: Type, token: ObjectArg) {
+export function spend(txb: TransactionBlock, typeArg: string, token: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::spend`,
     typeArguments: [typeArg],
@@ -139,7 +139,7 @@ export function spend(txb: TransactionBlock, typeArg: Type, token: ObjectArg) {
   })
 }
 
-export function toCoin(txb: TransactionBlock, typeArg: Type, token: ObjectArg) {
+export function toCoin(txb: TransactionBlock, typeArg: string, token: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::to_coin`,
     typeArguments: [typeArg],
@@ -147,7 +147,7 @@ export function toCoin(txb: TransactionBlock, typeArg: Type, token: ObjectArg) {
   })
 }
 
-export function fromCoin(txb: TransactionBlock, typeArg: Type, coin: ObjectArg) {
+export function fromCoin(txb: TransactionBlock, typeArg: string, coin: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::from_coin`,
     typeArguments: [typeArg],
@@ -162,7 +162,7 @@ export interface NewRequestArgs {
   option2: ObjectArg | TransactionArgument | null
 }
 
-export function newRequest(txb: TransactionBlock, typeArg: Type, args: NewRequestArgs) {
+export function newRequest(txb: TransactionBlock, typeArg: string, args: NewRequestArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::new_request`,
     typeArguments: [typeArg],
@@ -180,7 +180,7 @@ export interface ConfirmRequestArgs {
   actionRequest: ObjectArg
 }
 
-export function confirmRequest(txb: TransactionBlock, typeArg: Type, args: ConfirmRequestArgs) {
+export function confirmRequest(txb: TransactionBlock, typeArg: string, args: ConfirmRequestArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::confirm_request`,
     typeArguments: [typeArg],
@@ -195,7 +195,7 @@ export interface ConfirmRequestMutArgs {
 
 export function confirmRequestMut(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: ConfirmRequestMutArgs
 ) {
   return txb.moveCall({
@@ -212,7 +212,7 @@ export interface ConfirmWithPolicyCapArgs {
 
 export function confirmWithPolicyCap(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: ConfirmWithPolicyCapArgs
 ) {
   return txb.moveCall({
@@ -229,7 +229,7 @@ export interface ConfirmWithTreasuryCapArgs {
 
 export function confirmWithTreasuryCap(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: ConfirmWithTreasuryCapArgs
 ) {
   return txb.moveCall({
@@ -244,7 +244,11 @@ export interface AddApprovalArgs {
   actionRequest: ObjectArg
 }
 
-export function addApproval(txb: TransactionBlock, typeArgs: [Type, Type], args: AddApprovalArgs) {
+export function addApproval(
+  txb: TransactionBlock,
+  typeArgs: [string, string],
+  args: AddApprovalArgs
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::add_approval`,
     typeArguments: typeArgs,
@@ -261,7 +265,7 @@ export interface AddRuleConfigArgs {
 
 export function addRuleConfig(
   txb: TransactionBlock,
-  typeArgs: [Type, Type, Type],
+  typeArgs: [string, string, string],
   args: AddRuleConfigArgs
 ) {
   return txb.moveCall({
@@ -283,7 +287,7 @@ export interface RuleConfigArgs {
 
 export function ruleConfig(
   txb: TransactionBlock,
-  typeArgs: [Type, Type, Type],
+  typeArgs: [string, string, string],
   args: RuleConfigArgs
 ) {
   return txb.moveCall({
@@ -301,7 +305,7 @@ export interface RuleConfigMutArgs {
 
 export function ruleConfigMut(
   txb: TransactionBlock,
-  typeArgs: [Type, Type, Type],
+  typeArgs: [string, string, string],
   args: RuleConfigMutArgs
 ) {
   return txb.moveCall({
@@ -322,7 +326,7 @@ export interface RemoveRuleConfigArgs {
 
 export function removeRuleConfig(
   txb: TransactionBlock,
-  typeArgs: [Type, Type, Type],
+  typeArgs: [string, string, string],
   args: RemoveRuleConfigArgs
 ) {
   return txb.moveCall({
@@ -334,7 +338,7 @@ export function removeRuleConfig(
 
 export function hasRuleConfig(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   tokenPolicy: ObjectArg
 ) {
   return txb.moveCall({
@@ -346,7 +350,7 @@ export function hasRuleConfig(
 
 export function hasRuleConfigWithType(
   txb: TransactionBlock,
-  typeArgs: [Type, Type, Type],
+  typeArgs: [string, string, string],
   tokenPolicy: ObjectArg
 ) {
   return txb.moveCall({
@@ -362,7 +366,7 @@ export interface AllowArgs {
   string: string | TransactionArgument
 }
 
-export function allow(txb: TransactionBlock, typeArg: Type, args: AllowArgs) {
+export function allow(txb: TransactionBlock, typeArg: string, args: AllowArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::allow`,
     typeArguments: [typeArg],
@@ -380,7 +384,7 @@ export interface DisallowArgs {
   string: string | TransactionArgument
 }
 
-export function disallow(txb: TransactionBlock, typeArg: Type, args: DisallowArgs) {
+export function disallow(txb: TransactionBlock, typeArg: string, args: DisallowArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::disallow`,
     typeArguments: [typeArg],
@@ -400,7 +404,7 @@ export interface AddRuleForActionArgs {
 
 export function addRuleForAction(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: AddRuleForActionArgs
 ) {
   return txb.moveCall({
@@ -422,7 +426,7 @@ export interface RemoveRuleForActionArgs {
 
 export function removeRuleForAction(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: RemoveRuleForActionArgs
 ) {
   return txb.moveCall({
@@ -441,7 +445,7 @@ export interface FlushArgs {
   treasuryCap: ObjectArg
 }
 
-export function flush(txb: TransactionBlock, typeArg: Type, args: FlushArgs) {
+export function flush(txb: TransactionBlock, typeArg: string, args: FlushArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::flush`,
     typeArguments: [typeArg],
@@ -454,7 +458,7 @@ export interface IsAllowedArgs {
   string: string | TransactionArgument
 }
 
-export function isAllowed(txb: TransactionBlock, typeArg: Type, args: IsAllowedArgs) {
+export function isAllowed(txb: TransactionBlock, typeArg: string, args: IsAllowedArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::is_allowed`,
     typeArguments: [typeArg],
@@ -467,7 +471,7 @@ export interface RulesArgs {
   string: string | TransactionArgument
 }
 
-export function rules(txb: TransactionBlock, typeArg: Type, args: RulesArgs) {
+export function rules(txb: TransactionBlock, typeArg: string, args: RulesArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::rules`,
     typeArguments: [typeArg],
@@ -475,7 +479,7 @@ export function rules(txb: TransactionBlock, typeArg: Type, args: RulesArgs) {
   })
 }
 
-export function spentBalance(txb: TransactionBlock, typeArg: Type, tokenPolicy: ObjectArg) {
+export function spentBalance(txb: TransactionBlock, typeArg: string, tokenPolicy: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::spent_balance`,
     typeArguments: [typeArg],
@@ -499,7 +503,7 @@ export function fromCoinAction(txb: TransactionBlock) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::token::from_coin_action`, arguments: [] })
 }
 
-export function action(txb: TransactionBlock, typeArg: Type, actionRequest: ObjectArg) {
+export function action(txb: TransactionBlock, typeArg: string, actionRequest: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::action`,
     typeArguments: [typeArg],
@@ -507,7 +511,7 @@ export function action(txb: TransactionBlock, typeArg: Type, actionRequest: Obje
   })
 }
 
-export function amount(txb: TransactionBlock, typeArg: Type, actionRequest: ObjectArg) {
+export function amount(txb: TransactionBlock, typeArg: string, actionRequest: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::amount`,
     typeArguments: [typeArg],
@@ -515,7 +519,7 @@ export function amount(txb: TransactionBlock, typeArg: Type, actionRequest: Obje
   })
 }
 
-export function recipient(txb: TransactionBlock, typeArg: Type, actionRequest: ObjectArg) {
+export function recipient(txb: TransactionBlock, typeArg: string, actionRequest: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::recipient`,
     typeArguments: [typeArg],
@@ -523,7 +527,7 @@ export function recipient(txb: TransactionBlock, typeArg: Type, actionRequest: O
   })
 }
 
-export function approvals(txb: TransactionBlock, typeArg: Type, actionRequest: ObjectArg) {
+export function approvals(txb: TransactionBlock, typeArg: string, actionRequest: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::approvals`,
     typeArguments: [typeArg],
@@ -531,7 +535,7 @@ export function approvals(txb: TransactionBlock, typeArg: Type, actionRequest: O
   })
 }
 
-export function spent(txb: TransactionBlock, typeArg: Type, actionRequest: ObjectArg) {
+export function spent(txb: TransactionBlock, typeArg: string, actionRequest: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::spent`,
     typeArguments: [typeArg],

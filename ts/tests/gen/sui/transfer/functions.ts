@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export interface TransferArgs {
@@ -7,7 +7,7 @@ export interface TransferArgs {
   recipient: string | TransactionArgument
 }
 
-export function transfer(txb: TransactionBlock, typeArg: Type, args: TransferArgs) {
+export function transfer(txb: TransactionBlock, typeArg: string, args: TransferArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer::transfer`,
     typeArguments: [typeArg],
@@ -15,7 +15,7 @@ export function transfer(txb: TransactionBlock, typeArg: Type, args: TransferArg
   })
 }
 
-export function freezeObject(txb: TransactionBlock, typeArg: Type, obj: GenericArg) {
+export function freezeObject(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer::freeze_object`,
     typeArguments: [typeArg],
@@ -23,7 +23,7 @@ export function freezeObject(txb: TransactionBlock, typeArg: Type, obj: GenericA
   })
 }
 
-export function freezeObjectImpl(txb: TransactionBlock, typeArg: Type, obj: GenericArg) {
+export function freezeObjectImpl(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer::freeze_object_impl`,
     typeArguments: [typeArg],
@@ -31,7 +31,7 @@ export function freezeObjectImpl(txb: TransactionBlock, typeArg: Type, obj: Gene
   })
 }
 
-export function publicFreezeObject(txb: TransactionBlock, typeArg: Type, obj: GenericArg) {
+export function publicFreezeObject(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer::public_freeze_object`,
     typeArguments: [typeArg],
@@ -44,7 +44,7 @@ export interface PublicReceiveArgs {
   toReceive: ObjectArg
 }
 
-export function publicReceive(txb: TransactionBlock, typeArg: Type, args: PublicReceiveArgs) {
+export function publicReceive(txb: TransactionBlock, typeArg: string, args: PublicReceiveArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer::public_receive`,
     typeArguments: [typeArg],
@@ -52,7 +52,7 @@ export function publicReceive(txb: TransactionBlock, typeArg: Type, args: Public
   })
 }
 
-export function publicShareObject(txb: TransactionBlock, typeArg: Type, obj: GenericArg) {
+export function publicShareObject(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer::public_share_object`,
     typeArguments: [typeArg],
@@ -65,7 +65,7 @@ export interface PublicTransferArgs {
   recipient: string | TransactionArgument
 }
 
-export function publicTransfer(txb: TransactionBlock, typeArg: Type, args: PublicTransferArgs) {
+export function publicTransfer(txb: TransactionBlock, typeArg: string, args: PublicTransferArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer::public_transfer`,
     typeArguments: [typeArg],
@@ -78,7 +78,7 @@ export interface ReceiveArgs {
   toReceive: ObjectArg
 }
 
-export function receive(txb: TransactionBlock, typeArg: Type, args: ReceiveArgs) {
+export function receive(txb: TransactionBlock, typeArg: string, args: ReceiveArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer::receive`,
     typeArguments: [typeArg],
@@ -92,7 +92,7 @@ export interface ReceiveImplArgs {
   version: bigint | TransactionArgument
 }
 
-export function receiveImpl(txb: TransactionBlock, typeArg: Type, args: ReceiveImplArgs) {
+export function receiveImpl(txb: TransactionBlock, typeArg: string, args: ReceiveImplArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer::receive_impl`,
     typeArguments: [typeArg],
@@ -104,7 +104,7 @@ export function receiveImpl(txb: TransactionBlock, typeArg: Type, args: ReceiveI
   })
 }
 
-export function receivingObjectId(txb: TransactionBlock, typeArg: Type, receiving: ObjectArg) {
+export function receivingObjectId(txb: TransactionBlock, typeArg: string, receiving: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer::receiving_object_id`,
     typeArguments: [typeArg],
@@ -112,7 +112,7 @@ export function receivingObjectId(txb: TransactionBlock, typeArg: Type, receivin
   })
 }
 
-export function shareObject(txb: TransactionBlock, typeArg: Type, obj: GenericArg) {
+export function shareObject(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer::share_object`,
     typeArguments: [typeArg],
@@ -120,7 +120,7 @@ export function shareObject(txb: TransactionBlock, typeArg: Type, obj: GenericAr
   })
 }
 
-export function shareObjectImpl(txb: TransactionBlock, typeArg: Type, obj: GenericArg) {
+export function shareObjectImpl(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer::share_object_impl`,
     typeArguments: [typeArg],
@@ -133,7 +133,7 @@ export interface TransferImplArgs {
   recipient: string | TransactionArgument
 }
 
-export function transferImpl(txb: TransactionBlock, typeArg: Type, args: TransferImplArgs) {
+export function transferImpl(txb: TransactionBlock, typeArg: string, args: TransferImplArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer::transfer_impl`,
     typeArguments: [typeArg],

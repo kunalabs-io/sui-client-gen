@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj, pure, vector } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj, pure, vector } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export interface InsertArgs {
@@ -8,7 +8,7 @@ export interface InsertArgs {
   value: GenericArg
 }
 
-export function insert(txb: TransactionBlock, typeArg: Type, args: InsertArgs) {
+export function insert(txb: TransactionBlock, typeArg: string, args: InsertArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::priority_queue::insert`,
     typeArguments: [typeArg],
@@ -22,7 +22,7 @@ export function insert(txb: TransactionBlock, typeArg: Type, args: InsertArgs) {
 
 export function new_(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   entries: Array<ObjectArg> | TransactionArgument
 ) {
   return txb.moveCall({
@@ -37,7 +37,7 @@ export interface CreateEntriesArgs {
   v: Array<GenericArg> | TransactionArgument
 }
 
-export function createEntries(txb: TransactionBlock, typeArg: Type, args: CreateEntriesArgs) {
+export function createEntries(txb: TransactionBlock, typeArg: string, args: CreateEntriesArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::priority_queue::create_entries`,
     typeArguments: [typeArg],
@@ -53,7 +53,7 @@ export interface MaxHeapifyRecursiveArgs {
 
 export function maxHeapifyRecursive(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: MaxHeapifyRecursiveArgs
 ) {
   return txb.moveCall({
@@ -72,7 +72,7 @@ export interface NewEntryArgs {
   value: GenericArg
 }
 
-export function newEntry(txb: TransactionBlock, typeArg: Type, args: NewEntryArgs) {
+export function newEntry(txb: TransactionBlock, typeArg: string, args: NewEntryArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::priority_queue::new_entry`,
     typeArguments: [typeArg],
@@ -80,7 +80,7 @@ export function newEntry(txb: TransactionBlock, typeArg: Type, args: NewEntryArg
   })
 }
 
-export function popMax(txb: TransactionBlock, typeArg: Type, pq: ObjectArg) {
+export function popMax(txb: TransactionBlock, typeArg: string, pq: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::priority_queue::pop_max`,
     typeArguments: [typeArg],
@@ -88,7 +88,7 @@ export function popMax(txb: TransactionBlock, typeArg: Type, pq: ObjectArg) {
   })
 }
 
-export function priorities(txb: TransactionBlock, typeArg: Type, pq: ObjectArg) {
+export function priorities(txb: TransactionBlock, typeArg: string, pq: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::priority_queue::priorities`,
     typeArguments: [typeArg],
@@ -103,7 +103,7 @@ export interface RestoreHeapRecursiveArgs {
 
 export function restoreHeapRecursive(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: RestoreHeapRecursiveArgs
 ) {
   return txb.moveCall({

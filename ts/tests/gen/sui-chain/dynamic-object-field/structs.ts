@@ -9,12 +9,12 @@ import {
   extractType,
   toBcs,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== Wrapper =============================== */
 
-export function isWrapper(type: Type): boolean {
+export function isWrapper(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::dynamic_object_field::Wrapper<')
 }

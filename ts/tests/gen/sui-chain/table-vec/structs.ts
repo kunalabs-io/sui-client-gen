@@ -6,13 +6,13 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   extractType,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { Table } from '../table/structs'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== TableVec =============================== */
 
-export function isTableVec(type: Type): boolean {
+export function isTableVec(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::table_vec::TableVec<')
 }

@@ -4,7 +4,7 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   reified,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { String } from '../../move-stdlib/ascii/structs'
 import { ID, UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -12,7 +12,7 @@ import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Publisher =============================== */
 
-export function isPublisher(type: Type): boolean {
+export function isPublisher(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::package::Publisher'
 }
@@ -122,7 +122,7 @@ export class Publisher {
 
 /* ============================== UpgradeCap =============================== */
 
-export function isUpgradeCap(type: Type): boolean {
+export function isUpgradeCap(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::package::UpgradeCap'
 }
@@ -236,7 +236,7 @@ export class UpgradeCap {
 
 /* ============================== UpgradeReceipt =============================== */
 
-export function isUpgradeReceipt(type: Type): boolean {
+export function isUpgradeReceipt(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::package::UpgradeReceipt'
 }
@@ -315,7 +315,7 @@ export class UpgradeReceipt {
 
 /* ============================== UpgradeTicket =============================== */
 
-export function isUpgradeTicket(type: Type): boolean {
+export function isUpgradeTicket(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::package::UpgradeTicket'
 }

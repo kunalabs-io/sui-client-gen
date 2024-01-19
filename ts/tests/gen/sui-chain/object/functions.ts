@@ -1,12 +1,12 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export function new_(txb: TransactionBlock) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::object::new`, arguments: [] })
 }
 
-export function id(txb: TransactionBlock, typeArg: Type, t0: GenericArg) {
+export function id(txb: TransactionBlock, typeArg: string, t0: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object::id`,
     typeArguments: [typeArg],
@@ -93,7 +93,7 @@ export function delete_(txb: TransactionBlock, uid: ObjectArg) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::object::delete`, arguments: [obj(txb, uid)] })
 }
 
-export function borrowId(txb: TransactionBlock, typeArg: Type, t0: GenericArg) {
+export function borrowId(txb: TransactionBlock, typeArg: string, t0: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object::borrow_id`,
     typeArguments: [typeArg],
@@ -101,7 +101,7 @@ export function borrowId(txb: TransactionBlock, typeArg: Type, t0: GenericArg) {
   })
 }
 
-export function idBytes(txb: TransactionBlock, typeArg: Type, t0: GenericArg) {
+export function idBytes(txb: TransactionBlock, typeArg: string, t0: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object::id_bytes`,
     typeArguments: [typeArg],
@@ -109,7 +109,7 @@ export function idBytes(txb: TransactionBlock, typeArg: Type, t0: GenericArg) {
   })
 }
 
-export function idAddress(txb: TransactionBlock, typeArg: Type, t0: GenericArg) {
+export function idAddress(txb: TransactionBlock, typeArg: string, t0: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object::id_address`,
     typeArguments: [typeArg],
@@ -117,7 +117,7 @@ export function idAddress(txb: TransactionBlock, typeArg: Type, t0: GenericArg) 
   })
 }
 
-export function borrowUid(txb: TransactionBlock, typeArg: Type, t0: GenericArg) {
+export function borrowUid(txb: TransactionBlock, typeArg: string, t0: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object::borrow_uid`,
     typeArguments: [typeArg],

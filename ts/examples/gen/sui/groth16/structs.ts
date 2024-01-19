@@ -4,12 +4,12 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   reified,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== Curve =============================== */
 
-export function isCurve(type: Type): boolean {
+export function isCurve(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::groth16::Curve'
 }
@@ -77,7 +77,7 @@ export class Curve {
 
 /* ============================== PreparedVerifyingKey =============================== */
 
-export function isPreparedVerifyingKey(type: Type): boolean {
+export function isPreparedVerifyingKey(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::groth16::PreparedVerifyingKey'
 }
@@ -195,7 +195,7 @@ export class PreparedVerifyingKey {
 
 /* ============================== ProofPoints =============================== */
 
-export function isProofPoints(type: Type): boolean {
+export function isProofPoints(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::groth16::ProofPoints'
 }
@@ -265,7 +265,7 @@ export class ProofPoints {
 
 /* ============================== PublicProofInputs =============================== */
 
-export function isPublicProofInputs(type: Type): boolean {
+export function isPublicProofInputs(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::groth16::PublicProofInputs'
 }

@@ -1,8 +1,8 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
-export function new_(txb: TransactionBlock, typeArg: Type, publisher: ObjectArg) {
+export function new_(txb: TransactionBlock, typeArg: string, publisher: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::new`,
     typeArguments: [typeArg],
@@ -10,7 +10,7 @@ export function new_(txb: TransactionBlock, typeArg: Type, publisher: ObjectArg)
   })
 }
 
-export function uid(txb: TransactionBlock, typeArg: Type, transferPolicy: ObjectArg) {
+export function uid(txb: TransactionBlock, typeArg: string, transferPolicy: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::uid`,
     typeArguments: [typeArg],
@@ -24,7 +24,7 @@ export interface NewRequestArgs {
   id2: string | TransactionArgument
 }
 
-export function newRequest(txb: TransactionBlock, typeArg: Type, args: NewRequestArgs) {
+export function newRequest(txb: TransactionBlock, typeArg: string, args: NewRequestArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::new_request`,
     typeArguments: [typeArg],
@@ -41,7 +41,7 @@ export interface ConfirmRequestArgs {
   transferRequest: ObjectArg
 }
 
-export function confirmRequest(txb: TransactionBlock, typeArg: Type, args: ConfirmRequestArgs) {
+export function confirmRequest(txb: TransactionBlock, typeArg: string, args: ConfirmRequestArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::confirm_request`,
     typeArguments: [typeArg],
@@ -49,7 +49,7 @@ export function confirmRequest(txb: TransactionBlock, typeArg: Type, args: Confi
   })
 }
 
-export function rules(txb: TransactionBlock, typeArg: Type, transferPolicy: ObjectArg) {
+export function rules(txb: TransactionBlock, typeArg: string, transferPolicy: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::rules`,
     typeArguments: [typeArg],
@@ -57,7 +57,7 @@ export function rules(txb: TransactionBlock, typeArg: Type, transferPolicy: Obje
   })
 }
 
-export function default_(txb: TransactionBlock, typeArg: Type, publisher: ObjectArg) {
+export function default_(txb: TransactionBlock, typeArg: string, publisher: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::default`,
     typeArguments: [typeArg],
@@ -71,7 +71,7 @@ export interface WithdrawArgs {
   option: bigint | TransactionArgument | TransactionArgument | null
 }
 
-export function withdraw(txb: TransactionBlock, typeArg: Type, args: WithdrawArgs) {
+export function withdraw(txb: TransactionBlock, typeArg: string, args: WithdrawArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::withdraw`,
     typeArguments: [typeArg],
@@ -90,7 +90,7 @@ export interface DestroyAndWithdrawArgs {
 
 export function destroyAndWithdraw(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: DestroyAndWithdrawArgs
 ) {
   return txb.moveCall({
@@ -107,7 +107,11 @@ export interface AddRuleArgs {
   t2: GenericArg
 }
 
-export function addRule(txb: TransactionBlock, typeArgs: [Type, Type, Type], args: AddRuleArgs) {
+export function addRule(
+  txb: TransactionBlock,
+  typeArgs: [string, string, string],
+  args: AddRuleArgs
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::add_rule`,
     typeArguments: typeArgs,
@@ -125,7 +129,11 @@ export interface GetRuleArgs {
   transferPolicy: ObjectArg
 }
 
-export function getRule(txb: TransactionBlock, typeArgs: [Type, Type, Type], args: GetRuleArgs) {
+export function getRule(
+  txb: TransactionBlock,
+  typeArgs: [string, string, string],
+  args: GetRuleArgs
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::get_rule`,
     typeArguments: typeArgs,
@@ -141,7 +149,7 @@ export interface AddToBalanceArgs {
 
 export function addToBalance(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: AddToBalanceArgs
 ) {
   return txb.moveCall({
@@ -160,7 +168,11 @@ export interface AddReceiptArgs {
   transferRequest: ObjectArg
 }
 
-export function addReceipt(txb: TransactionBlock, typeArgs: [Type, Type], args: AddReceiptArgs) {
+export function addReceipt(
+  txb: TransactionBlock,
+  typeArgs: [string, string],
+  args: AddReceiptArgs
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::add_receipt`,
     typeArguments: typeArgs,
@@ -168,7 +180,11 @@ export function addReceipt(txb: TransactionBlock, typeArgs: [Type, Type], args: 
   })
 }
 
-export function hasRule(txb: TransactionBlock, typeArgs: [Type, Type], transferPolicy: ObjectArg) {
+export function hasRule(
+  txb: TransactionBlock,
+  typeArgs: [string, string],
+  transferPolicy: ObjectArg
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::has_rule`,
     typeArguments: typeArgs,
@@ -183,7 +199,7 @@ export interface RemoveRuleArgs {
 
 export function removeRule(
   txb: TransactionBlock,
-  typeArgs: [Type, Type, Type],
+  typeArgs: [string, string, string],
   args: RemoveRuleArgs
 ) {
   return txb.moveCall({
@@ -198,7 +214,7 @@ export interface UidMutAsOwnerArgs {
   transferPolicyCap: ObjectArg
 }
 
-export function uidMutAsOwner(txb: TransactionBlock, typeArg: Type, args: UidMutAsOwnerArgs) {
+export function uidMutAsOwner(txb: TransactionBlock, typeArg: string, args: UidMutAsOwnerArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::uid_mut_as_owner`,
     typeArguments: [typeArg],
@@ -206,7 +222,7 @@ export function uidMutAsOwner(txb: TransactionBlock, typeArg: Type, args: UidMut
   })
 }
 
-export function item(txb: TransactionBlock, typeArg: Type, transferRequest: ObjectArg) {
+export function item(txb: TransactionBlock, typeArg: string, transferRequest: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::item`,
     typeArguments: [typeArg],
@@ -214,7 +230,7 @@ export function item(txb: TransactionBlock, typeArg: Type, transferRequest: Obje
   })
 }
 
-export function paid(txb: TransactionBlock, typeArg: Type, transferRequest: ObjectArg) {
+export function paid(txb: TransactionBlock, typeArg: string, transferRequest: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::paid`,
     typeArguments: [typeArg],
@@ -222,7 +238,7 @@ export function paid(txb: TransactionBlock, typeArg: Type, transferRequest: Obje
   })
 }
 
-export function from(txb: TransactionBlock, typeArg: Type, transferRequest: ObjectArg) {
+export function from(txb: TransactionBlock, typeArg: string, transferRequest: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::from`,
     typeArguments: [typeArg],

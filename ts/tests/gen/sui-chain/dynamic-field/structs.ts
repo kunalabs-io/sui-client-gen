@@ -9,14 +9,14 @@ import {
   extractType,
   toBcs,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Field =============================== */
 
-export function isField(type: Type): boolean {
+export function isField(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::dynamic_field::Field<')
 }

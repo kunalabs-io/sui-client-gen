@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export interface BorrowArgs {
@@ -8,7 +8,7 @@ export interface BorrowArgs {
   id: string | TransactionArgument
 }
 
-export function borrow(txb: TransactionBlock, typeArg: Type, args: BorrowArgs) {
+export function borrow(txb: TransactionBlock, typeArg: string, args: BorrowArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::borrow`,
     typeArguments: [typeArg],
@@ -22,7 +22,7 @@ export interface BorrowMutArgs {
   id: string | TransactionArgument
 }
 
-export function borrowMut(txb: TransactionBlock, typeArg: Type, args: BorrowMutArgs) {
+export function borrowMut(txb: TransactionBlock, typeArg: string, args: BorrowMutArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::borrow_mut`,
     typeArguments: [typeArg],
@@ -52,7 +52,7 @@ export interface TakeArgs {
   id: string | TransactionArgument
 }
 
-export function take(txb: TransactionBlock, typeArg: Type, args: TakeArgs) {
+export function take(txb: TransactionBlock, typeArg: string, args: TakeArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::take`,
     typeArguments: [typeArg],
@@ -95,7 +95,7 @@ export interface BorrowValArgs {
   id: string | TransactionArgument
 }
 
-export function borrowVal(txb: TransactionBlock, typeArg: Type, args: BorrowValArgs) {
+export function borrowVal(txb: TransactionBlock, typeArg: string, args: BorrowValArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::borrow_val`,
     typeArguments: [typeArg],
@@ -121,7 +121,7 @@ export interface DelistArgs {
   id: string | TransactionArgument
 }
 
-export function delist(txb: TransactionBlock, typeArg: Type, args: DelistArgs) {
+export function delist(txb: TransactionBlock, typeArg: string, args: DelistArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::delist`,
     typeArguments: [typeArg],
@@ -158,7 +158,7 @@ export interface HasItemWithTypeArgs {
   id: string | TransactionArgument
 }
 
-export function hasItemWithType(txb: TransactionBlock, typeArg: Type, args: HasItemWithTypeArgs) {
+export function hasItemWithType(txb: TransactionBlock, typeArg: string, args: HasItemWithTypeArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::has_item_with_type`,
     typeArguments: [typeArg],
@@ -220,7 +220,7 @@ export interface ListArgs {
   price: bigint | TransactionArgument
 }
 
-export function list(txb: TransactionBlock, typeArg: Type, args: ListArgs) {
+export function list(txb: TransactionBlock, typeArg: string, args: ListArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::list`,
     typeArguments: [typeArg],
@@ -242,7 +242,7 @@ export interface ListWithPurchaseCapArgs {
 
 export function listWithPurchaseCap(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: ListWithPurchaseCapArgs
 ) {
   return txb.moveCall({
@@ -264,7 +264,7 @@ export interface LockArgs {
   item: GenericArg
 }
 
-export function lock(txb: TransactionBlock, typeArg: Type, args: LockArgs) {
+export function lock(txb: TransactionBlock, typeArg: string, args: LockArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::lock`,
     typeArguments: [typeArg],
@@ -282,7 +282,7 @@ export interface LockInternalArgs {
   item: GenericArg
 }
 
-export function lockInternal(txb: TransactionBlock, typeArg: Type, args: LockInternalArgs) {
+export function lockInternal(txb: TransactionBlock, typeArg: string, args: LockInternalArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::lock_internal`,
     typeArguments: [typeArg],
@@ -296,7 +296,7 @@ export interface PlaceArgs {
   item: GenericArg
 }
 
-export function place(txb: TransactionBlock, typeArg: Type, args: PlaceArgs) {
+export function place(txb: TransactionBlock, typeArg: string, args: PlaceArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::place`,
     typeArguments: [typeArg],
@@ -311,7 +311,7 @@ export interface PlaceAndListArgs {
   price: bigint | TransactionArgument
 }
 
-export function placeAndList(txb: TransactionBlock, typeArg: Type, args: PlaceAndListArgs) {
+export function placeAndList(txb: TransactionBlock, typeArg: string, args: PlaceAndListArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::place_and_list`,
     typeArguments: [typeArg],
@@ -329,7 +329,7 @@ export interface PlaceInternalArgs {
   item: GenericArg
 }
 
-export function placeInternal(txb: TransactionBlock, typeArg: Type, args: PlaceInternalArgs) {
+export function placeInternal(txb: TransactionBlock, typeArg: string, args: PlaceInternalArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::place_internal`,
     typeArguments: [typeArg],
@@ -362,7 +362,7 @@ export interface PurchaseArgs {
   payment: ObjectArg
 }
 
-export function purchase(txb: TransactionBlock, typeArg: Type, args: PurchaseArgs) {
+export function purchase(txb: TransactionBlock, typeArg: string, args: PurchaseArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::purchase`,
     typeArguments: [typeArg],
@@ -370,7 +370,7 @@ export function purchase(txb: TransactionBlock, typeArg: Type, args: PurchaseArg
   })
 }
 
-export function purchaseCapItem(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
+export function purchaseCapItem(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::purchase_cap_item`,
     typeArguments: [typeArg],
@@ -378,7 +378,7 @@ export function purchaseCapItem(txb: TransactionBlock, typeArg: Type, self: Obje
   })
 }
 
-export function purchaseCapKiosk(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
+export function purchaseCapKiosk(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::purchase_cap_kiosk`,
     typeArguments: [typeArg],
@@ -386,7 +386,7 @@ export function purchaseCapKiosk(txb: TransactionBlock, typeArg: Type, self: Obj
   })
 }
 
-export function purchaseCapMinPrice(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
+export function purchaseCapMinPrice(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::purchase_cap_min_price`,
     typeArguments: [typeArg],
@@ -400,7 +400,7 @@ export interface PurchaseWithCapArgs {
   payment: ObjectArg
 }
 
-export function purchaseWithCap(txb: TransactionBlock, typeArg: Type, args: PurchaseWithCapArgs) {
+export function purchaseWithCap(txb: TransactionBlock, typeArg: string, args: PurchaseWithCapArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::purchase_with_cap`,
     typeArguments: [typeArg],
@@ -415,7 +415,7 @@ export interface ReturnPurchaseCapArgs {
 
 export function returnPurchaseCap(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: ReturnPurchaseCapArgs
 ) {
   return txb.moveCall({
@@ -431,7 +431,7 @@ export interface ReturnValArgs {
   borrow: ObjectArg
 }
 
-export function returnVal(txb: TransactionBlock, typeArg: Type, args: ReturnValArgs) {
+export function returnVal(txb: TransactionBlock, typeArg: string, args: ReturnValArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::kiosk::return_val`,
     typeArguments: [typeArg],

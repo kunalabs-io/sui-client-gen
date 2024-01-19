@@ -3,12 +3,12 @@ import {
   decodeFromFieldsGenericOrSpecial,
   decodeFromFieldsWithTypesGenericOrSpecial,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== SUI =============================== */
 
-export function isSUI(type: Type): boolean {
+export function isSUI(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::sui::SUI'
 }

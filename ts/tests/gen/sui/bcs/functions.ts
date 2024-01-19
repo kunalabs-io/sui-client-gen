@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export function new_(
@@ -12,7 +12,7 @@ export function new_(
   })
 }
 
-export function toBytes(txb: TransactionBlock, typeArg: Type, value: GenericArg) {
+export function toBytes(txb: TransactionBlock, typeArg: string, value: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::bcs::to_bytes`,
     typeArguments: [typeArg],

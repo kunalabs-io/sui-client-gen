@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj } from '../../_framework/util'
 import { TransactionBlock } from '@mysten/sui.js/transactions'
 
 export interface ContainsArgs {
@@ -7,7 +7,7 @@ export interface ContainsArgs {
   key: GenericArg
 }
 
-export function contains(txb: TransactionBlock, typeArg: Type, args: ContainsArgs) {
+export function contains(txb: TransactionBlock, typeArg: string, args: ContainsArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_set::contains`,
     typeArguments: [typeArg],
@@ -15,7 +15,7 @@ export function contains(txb: TransactionBlock, typeArg: Type, args: ContainsArg
   })
 }
 
-export function empty(txb: TransactionBlock, typeArg: Type) {
+export function empty(txb: TransactionBlock, typeArg: string) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_set::empty`,
     typeArguments: [typeArg],
@@ -28,7 +28,7 @@ export interface InsertArgs {
   key: GenericArg
 }
 
-export function insert(txb: TransactionBlock, typeArg: Type, args: InsertArgs) {
+export function insert(txb: TransactionBlock, typeArg: string, args: InsertArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_set::insert`,
     typeArguments: [typeArg],
@@ -36,7 +36,7 @@ export function insert(txb: TransactionBlock, typeArg: Type, args: InsertArgs) {
   })
 }
 
-export function isEmpty(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
+export function isEmpty(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_set::is_empty`,
     typeArguments: [typeArg],
@@ -49,7 +49,7 @@ export interface RemoveArgs {
   key: GenericArg
 }
 
-export function remove(txb: TransactionBlock, typeArg: Type, args: RemoveArgs) {
+export function remove(txb: TransactionBlock, typeArg: string, args: RemoveArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_set::remove`,
     typeArguments: [typeArg],
@@ -57,7 +57,7 @@ export function remove(txb: TransactionBlock, typeArg: Type, args: RemoveArgs) {
   })
 }
 
-export function singleton(txb: TransactionBlock, typeArg: Type, key: GenericArg) {
+export function singleton(txb: TransactionBlock, typeArg: string, key: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_set::singleton`,
     typeArguments: [typeArg],
@@ -65,7 +65,7 @@ export function singleton(txb: TransactionBlock, typeArg: Type, key: GenericArg)
   })
 }
 
-export function size(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
+export function size(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_set::size`,
     typeArguments: [typeArg],
@@ -78,7 +78,7 @@ export interface GetIdxArgs {
   key: GenericArg
 }
 
-export function getIdx(txb: TransactionBlock, typeArg: Type, args: GetIdxArgs) {
+export function getIdx(txb: TransactionBlock, typeArg: string, args: GetIdxArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_set::get_idx`,
     typeArguments: [typeArg],
@@ -91,7 +91,7 @@ export interface GetIdxOptArgs {
   key: GenericArg
 }
 
-export function getIdxOpt(txb: TransactionBlock, typeArg: Type, args: GetIdxOptArgs) {
+export function getIdxOpt(txb: TransactionBlock, typeArg: string, args: GetIdxOptArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_set::get_idx_opt`,
     typeArguments: [typeArg],
@@ -99,7 +99,7 @@ export function getIdxOpt(txb: TransactionBlock, typeArg: Type, args: GetIdxOptA
   })
 }
 
-export function keys(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
+export function keys(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_set::keys`,
     typeArguments: [typeArg],
@@ -107,7 +107,7 @@ export function keys(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
   })
 }
 
-export function intoKeys(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
+export function intoKeys(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_set::into_keys`,
     typeArguments: [typeArg],

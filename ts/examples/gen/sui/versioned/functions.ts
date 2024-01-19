@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export function version(txb: TransactionBlock, self: ObjectArg) {
@@ -14,7 +14,7 @@ export interface CreateArgs {
   initValue: GenericArg
 }
 
-export function create(txb: TransactionBlock, typeArg: Type, args: CreateArgs) {
+export function create(txb: TransactionBlock, typeArg: string, args: CreateArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::versioned::create`,
     typeArguments: [typeArg],
@@ -22,7 +22,7 @@ export function create(txb: TransactionBlock, typeArg: Type, args: CreateArgs) {
   })
 }
 
-export function destroy(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
+export function destroy(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::versioned::destroy`,
     typeArguments: [typeArg],
@@ -30,7 +30,7 @@ export function destroy(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
   })
 }
 
-export function loadValue(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
+export function loadValue(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::versioned::load_value`,
     typeArguments: [typeArg],
@@ -38,7 +38,7 @@ export function loadValue(txb: TransactionBlock, typeArg: Type, self: ObjectArg)
   })
 }
 
-export function loadValueMut(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
+export function loadValueMut(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::versioned::load_value_mut`,
     typeArguments: [typeArg],
@@ -46,7 +46,7 @@ export function loadValueMut(txb: TransactionBlock, typeArg: Type, self: ObjectA
   })
 }
 
-export function removeValueForUpgrade(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
+export function removeValueForUpgrade(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::versioned::remove_value_for_upgrade`,
     typeArguments: [typeArg],
@@ -61,7 +61,7 @@ export interface UpgradeArgs {
   cap: ObjectArg
 }
 
-export function upgrade(txb: TransactionBlock, typeArg: Type, args: UpgradeArgs) {
+export function upgrade(txb: TransactionBlock, typeArg: string, args: UpgradeArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::versioned::upgrade`,
     typeArguments: [typeArg],

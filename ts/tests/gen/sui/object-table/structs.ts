@@ -6,14 +6,14 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   extractType,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== ObjectTable =============================== */
 
-export function isObjectTable(type: Type): boolean {
+export function isObjectTable(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::object_table::ObjectTable<')
 }

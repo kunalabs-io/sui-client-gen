@@ -7,7 +7,7 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   extractType,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { Balance, Supply } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
@@ -16,7 +16,7 @@ import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== AdminCap =============================== */
 
-export function isAdminCap(type: Type): boolean {
+export function isAdminCap(type: string): boolean {
   type = compressSuiType(type)
   return (
     type === '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
@@ -108,7 +108,7 @@ export class AdminCap {
 
 /* ============================== LP =============================== */
 
-export function isLP(type: Type): boolean {
+export function isLP(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith(
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<'
@@ -197,7 +197,7 @@ export class LP {
 
 /* ============================== Pool =============================== */
 
-export function isPool(type: Type): boolean {
+export function isPool(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith(
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<'
@@ -372,7 +372,7 @@ export class Pool {
 
 /* ============================== PoolCreationEvent =============================== */
 
-export function isPoolCreationEvent(type: Type): boolean {
+export function isPoolCreationEvent(type: string): boolean {
   type = compressSuiType(type)
   return (
     type ===
@@ -446,7 +446,7 @@ export class PoolCreationEvent {
 
 /* ============================== PoolRegistry =============================== */
 
-export function isPoolRegistry(type: Type): boolean {
+export function isPoolRegistry(type: string): boolean {
   type = compressSuiType(type)
   return (
     type ===
@@ -556,7 +556,7 @@ export class PoolRegistry {
 
 /* ============================== PoolRegistryItem =============================== */
 
-export function isPoolRegistryItem(type: Type): boolean {
+export function isPoolRegistryItem(type: string): boolean {
   type = compressSuiType(type)
   return (
     type ===

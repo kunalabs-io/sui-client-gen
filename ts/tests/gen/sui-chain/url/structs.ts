@@ -3,13 +3,13 @@ import {
   decodeFromFieldsGenericOrSpecial,
   decodeFromFieldsWithTypesGenericOrSpecial,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/ascii/structs'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== Url =============================== */
 
-export function isUrl(type: Type): boolean {
+export function isUrl(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::url::Url'
 }

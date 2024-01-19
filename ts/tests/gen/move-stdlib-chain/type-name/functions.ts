@@ -1,8 +1,8 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, Type, obj } from '../../_framework/util'
+import { ObjectArg, obj } from '../../_framework/util'
 import { TransactionBlock } from '@mysten/sui.js/transactions'
 
-export function get(txb: TransactionBlock, typeArg: Type) {
+export function get(txb: TransactionBlock, typeArg: string) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::type_name::get`,
     typeArguments: [typeArg],
@@ -10,7 +10,7 @@ export function get(txb: TransactionBlock, typeArg: Type) {
   })
 }
 
-export function getWithOriginalIds(txb: TransactionBlock, typeArg: Type) {
+export function getWithOriginalIds(txb: TransactionBlock, typeArg: string) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::type_name::get_with_original_ids`,
     typeArguments: [typeArg],

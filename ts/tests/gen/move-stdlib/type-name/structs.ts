@@ -3,13 +3,13 @@ import {
   decodeFromFieldsGenericOrSpecial,
   decodeFromFieldsWithTypesGenericOrSpecial,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { String } from '../ascii/structs'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== TypeName =============================== */
 
-export function isTypeName(type: Type): boolean {
+export function isTypeName(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x1::type_name::TypeName'
 }

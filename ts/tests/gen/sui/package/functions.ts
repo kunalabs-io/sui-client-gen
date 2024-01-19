@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export function version(txb: TransactionBlock, cap: ObjectArg) {
@@ -34,7 +34,7 @@ export function burnPublisher(txb: TransactionBlock, self: ObjectArg) {
   })
 }
 
-export function claim(txb: TransactionBlock, typeArg: Type, otw: GenericArg) {
+export function claim(txb: TransactionBlock, typeArg: string, otw: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::package::claim`,
     typeArguments: [typeArg],
@@ -42,7 +42,7 @@ export function claim(txb: TransactionBlock, typeArg: Type, otw: GenericArg) {
   })
 }
 
-export function claimAndKeep(txb: TransactionBlock, typeArg: Type, otw: GenericArg) {
+export function claimAndKeep(txb: TransactionBlock, typeArg: string, otw: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::package::claim_and_keep`,
     typeArguments: [typeArg],
@@ -70,7 +70,7 @@ export function depOnlyPolicy(txb: TransactionBlock) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::package::dep_only_policy`, arguments: [] })
 }
 
-export function fromModule(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
+export function fromModule(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::package::from_module`,
     typeArguments: [typeArg],
@@ -78,7 +78,7 @@ export function fromModule(txb: TransactionBlock, typeArg: Type, self: ObjectArg
   })
 }
 
-export function fromPackage(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
+export function fromPackage(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::package::from_package`,
     typeArguments: [typeArg],

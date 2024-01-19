@@ -10,12 +10,12 @@ import {
   reified,
   toBcs,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== Entry =============================== */
 
-export function isEntry(type: Type): boolean {
+export function isEntry(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::vec_map::Entry<')
 }
@@ -115,7 +115,7 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> {
 
 /* ============================== VecMap =============================== */
 
-export function isVecMap(type: Type): boolean {
+export function isVecMap(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::vec_map::VecMap<')
 }

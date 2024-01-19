@@ -1,8 +1,8 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj } from '../../_framework/util'
 import { TransactionBlock } from '@mysten/sui.js/transactions'
 
-export function new_(txb: TransactionBlock, typeArgs: [Type, Type]) {
+export function new_(txb: TransactionBlock, typeArgs: [string, string]) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object_table::new`,
     typeArguments: typeArgs,
@@ -10,7 +10,7 @@ export function new_(txb: TransactionBlock, typeArgs: [Type, Type]) {
   })
 }
 
-export function length(txb: TransactionBlock, typeArgs: [Type, Type], objectTable: ObjectArg) {
+export function length(txb: TransactionBlock, typeArgs: [string, string], objectTable: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object_table::length`,
     typeArguments: typeArgs,
@@ -23,7 +23,7 @@ export interface BorrowArgs {
   t0: GenericArg
 }
 
-export function borrow(txb: TransactionBlock, typeArgs: [Type, Type], args: BorrowArgs) {
+export function borrow(txb: TransactionBlock, typeArgs: [string, string], args: BorrowArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object_table::borrow`,
     typeArguments: typeArgs,
@@ -36,7 +36,7 @@ export interface BorrowMutArgs {
   t0: GenericArg
 }
 
-export function borrowMut(txb: TransactionBlock, typeArgs: [Type, Type], args: BorrowMutArgs) {
+export function borrowMut(txb: TransactionBlock, typeArgs: [string, string], args: BorrowMutArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object_table::borrow_mut`,
     typeArguments: typeArgs,
@@ -46,7 +46,7 @@ export function borrowMut(txb: TransactionBlock, typeArgs: [Type, Type], args: B
 
 export function destroyEmpty(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   objectTable: ObjectArg
 ) {
   return txb.moveCall({
@@ -56,7 +56,7 @@ export function destroyEmpty(
   })
 }
 
-export function isEmpty(txb: TransactionBlock, typeArgs: [Type, Type], objectTable: ObjectArg) {
+export function isEmpty(txb: TransactionBlock, typeArgs: [string, string], objectTable: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object_table::is_empty`,
     typeArguments: typeArgs,
@@ -69,7 +69,7 @@ export interface ContainsArgs {
   t0: GenericArg
 }
 
-export function contains(txb: TransactionBlock, typeArgs: [Type, Type], args: ContainsArgs) {
+export function contains(txb: TransactionBlock, typeArgs: [string, string], args: ContainsArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object_table::contains`,
     typeArguments: typeArgs,
@@ -82,7 +82,7 @@ export interface RemoveArgs {
   t0: GenericArg
 }
 
-export function remove(txb: TransactionBlock, typeArgs: [Type, Type], args: RemoveArgs) {
+export function remove(txb: TransactionBlock, typeArgs: [string, string], args: RemoveArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object_table::remove`,
     typeArguments: typeArgs,
@@ -96,7 +96,7 @@ export interface AddArgs {
   t1: GenericArg
 }
 
-export function add(txb: TransactionBlock, typeArgs: [Type, Type], args: AddArgs) {
+export function add(txb: TransactionBlock, typeArgs: [string, string], args: AddArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object_table::add`,
     typeArguments: typeArgs,
@@ -113,7 +113,7 @@ export interface ValueIdArgs {
   t0: GenericArg
 }
 
-export function valueId(txb: TransactionBlock, typeArgs: [Type, Type], args: ValueIdArgs) {
+export function valueId(txb: TransactionBlock, typeArgs: [string, string], args: ValueIdArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object_table::value_id`,
     typeArguments: typeArgs,

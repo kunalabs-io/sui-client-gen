@@ -10,12 +10,12 @@ import {
   reified,
   toBcs,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== PriorityQueue =============================== */
 
-export function isPriorityQueue(type: Type): boolean {
+export function isPriorityQueue(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::priority_queue::PriorityQueue<')
 }
@@ -113,7 +113,7 @@ export class PriorityQueue<T0 extends TypeArgument> {
 
 /* ============================== Entry =============================== */
 
-export function isEntry(type: Type): boolean {
+export function isEntry(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::priority_queue::Entry<')
 }

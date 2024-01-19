@@ -10,7 +10,7 @@ import {
   reified,
   toBcs,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { String as String1 } from '../../move-stdlib/ascii/structs'
 import { Option } from '../../move-stdlib/option/structs'
 import { String } from '../../move-stdlib/string/structs'
@@ -24,7 +24,7 @@ import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Bar =============================== */
 
-export function isBar(type: Type): boolean {
+export function isBar(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
 }
@@ -93,7 +93,7 @@ export class Bar {
 
 /* ============================== Dummy =============================== */
 
-export function isDummy(type: Type): boolean {
+export function isDummy(type: string): boolean {
   type = compressSuiType(type)
   return (
     type === '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
@@ -164,7 +164,7 @@ export class Dummy {
 
 /* ============================== Foo =============================== */
 
-export function isFoo(type: Type): boolean {
+export function isFoo(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith(
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<'
@@ -465,7 +465,7 @@ export class Foo<T extends TypeArgument> {
 
 /* ============================== WithGenericField =============================== */
 
-export function isWithGenericField(type: Type): boolean {
+export function isWithGenericField(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith(
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<'
@@ -602,7 +602,7 @@ export class WithGenericField<T extends TypeArgument> {
 
 /* ============================== WithSpecialTypes =============================== */
 
-export function isWithSpecialTypes(type: Type): boolean {
+export function isWithSpecialTypes(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith(
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<'
@@ -851,7 +851,7 @@ export class WithSpecialTypes<U extends TypeArgument> {
 
 /* ============================== WithSpecialTypesAsGenerics =============================== */
 
-export function isWithSpecialTypesAsGenerics(type: Type): boolean {
+export function isWithSpecialTypesAsGenerics(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith(
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<'
@@ -1244,7 +1244,7 @@ export class WithSpecialTypesAsGenerics<
 
 /* ============================== WithSpecialTypesInVectors =============================== */
 
-export function isWithSpecialTypesInVectors(type: Type): boolean {
+export function isWithSpecialTypesInVectors(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith(
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<'
@@ -1456,7 +1456,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> {
 
 /* ============================== WithTwoGenerics =============================== */
 
-export function isWithTwoGenerics(type: Type): boolean {
+export function isWithTwoGenerics(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith(
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<'

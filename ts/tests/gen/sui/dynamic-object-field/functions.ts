@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj } from '../../_framework/util'
 import { TransactionBlock } from '@mysten/sui.js/transactions'
 
 export interface BorrowArgs {
@@ -7,7 +7,7 @@ export interface BorrowArgs {
   name: GenericArg
 }
 
-export function borrow(txb: TransactionBlock, typeArgs: [Type, Type], args: BorrowArgs) {
+export function borrow(txb: TransactionBlock, typeArgs: [string, string], args: BorrowArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::dynamic_object_field::borrow`,
     typeArguments: typeArgs,
@@ -20,7 +20,7 @@ export interface BorrowMutArgs {
   name: GenericArg
 }
 
-export function borrowMut(txb: TransactionBlock, typeArgs: [Type, Type], args: BorrowMutArgs) {
+export function borrowMut(txb: TransactionBlock, typeArgs: [string, string], args: BorrowMutArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::dynamic_object_field::borrow_mut`,
     typeArguments: typeArgs,
@@ -33,7 +33,7 @@ export interface RemoveArgs {
   name: GenericArg
 }
 
-export function remove(txb: TransactionBlock, typeArgs: [Type, Type], args: RemoveArgs) {
+export function remove(txb: TransactionBlock, typeArgs: [string, string], args: RemoveArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::dynamic_object_field::remove`,
     typeArguments: typeArgs,
@@ -46,7 +46,7 @@ export interface IdArgs {
   name: GenericArg
 }
 
-export function id(txb: TransactionBlock, typeArg: Type, args: IdArgs) {
+export function id(txb: TransactionBlock, typeArg: string, args: IdArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::dynamic_object_field::id`,
     typeArguments: [typeArg],
@@ -60,7 +60,7 @@ export interface AddArgs {
   value: GenericArg
 }
 
-export function add(txb: TransactionBlock, typeArgs: [Type, Type], args: AddArgs) {
+export function add(txb: TransactionBlock, typeArgs: [string, string], args: AddArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::dynamic_object_field::add`,
     typeArguments: typeArgs,
@@ -77,7 +77,7 @@ export interface Exists_Args {
   name: GenericArg
 }
 
-export function exists_(txb: TransactionBlock, typeArg: Type, args: Exists_Args) {
+export function exists_(txb: TransactionBlock, typeArg: string, args: Exists_Args) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::dynamic_object_field::exists_`,
     typeArguments: [typeArg],
@@ -92,7 +92,7 @@ export interface ExistsWithTypeArgs {
 
 export function existsWithType(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: ExistsWithTypeArgs
 ) {
   return txb.moveCall({

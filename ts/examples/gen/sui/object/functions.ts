@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export function new_(txb: TransactionBlock) {
@@ -10,7 +10,7 @@ export function authenticatorState(txb: TransactionBlock) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::object::authenticator_state`, arguments: [] })
 }
 
-export function borrowId(txb: TransactionBlock, typeArg: Type, obj: GenericArg) {
+export function borrowId(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object::borrow_id`,
     typeArguments: [typeArg],
@@ -18,7 +18,7 @@ export function borrowId(txb: TransactionBlock, typeArg: Type, obj: GenericArg) 
   })
 }
 
-export function borrowUid(txb: TransactionBlock, typeArg: Type, obj: GenericArg) {
+export function borrowUid(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object::borrow_uid`,
     typeArguments: [typeArg],
@@ -34,7 +34,7 @@ export function delete_(txb: TransactionBlock, id: ObjectArg) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::object::delete`, arguments: [obj(txb, id)] })
 }
 
-export function id(txb: TransactionBlock, typeArg: Type, obj: GenericArg) {
+export function id(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object::id`,
     typeArguments: [typeArg],
@@ -49,7 +49,7 @@ export function deleteImpl(txb: TransactionBlock, id: string | TransactionArgume
   })
 }
 
-export function idAddress(txb: TransactionBlock, typeArg: Type, obj: GenericArg) {
+export function idAddress(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object::id_address`,
     typeArguments: [typeArg],
@@ -57,7 +57,7 @@ export function idAddress(txb: TransactionBlock, typeArg: Type, obj: GenericArg)
   })
 }
 
-export function idBytes(txb: TransactionBlock, typeArg: Type, obj: GenericArg) {
+export function idBytes(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object::id_bytes`,
     typeArguments: [typeArg],

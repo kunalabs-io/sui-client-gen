@@ -1,8 +1,8 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj } from '../../_framework/util'
 import { TransactionBlock } from '@mysten/sui.js/transactions'
 
-export function borrow(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
+export function borrow(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::borrow::borrow`,
     typeArguments: [typeArg],
@@ -10,7 +10,7 @@ export function borrow(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
   })
 }
 
-export function new_(txb: TransactionBlock, typeArg: Type, value: GenericArg) {
+export function new_(txb: TransactionBlock, typeArg: string, value: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::borrow::new`,
     typeArguments: [typeArg],
@@ -18,7 +18,7 @@ export function new_(txb: TransactionBlock, typeArg: Type, value: GenericArg) {
   })
 }
 
-export function destroy(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
+export function destroy(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::borrow::destroy`,
     typeArguments: [typeArg],
@@ -32,7 +32,7 @@ export interface PutBackArgs {
   borrow: ObjectArg
 }
 
-export function putBack(txb: TransactionBlock, typeArg: Type, args: PutBackArgs) {
+export function putBack(txb: TransactionBlock, typeArg: string, args: PutBackArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::borrow::put_back`,
     typeArguments: [typeArg],

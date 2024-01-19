@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj } from '../../_framework/util'
 import { TransactionBlock } from '@mysten/sui.js/transactions'
 
 export interface BorrowArgs {
@@ -7,7 +7,7 @@ export interface BorrowArgs {
   k: GenericArg
 }
 
-export function borrow(txb: TransactionBlock, typeArgs: [Type, Type], args: BorrowArgs) {
+export function borrow(txb: TransactionBlock, typeArgs: [string, string], args: BorrowArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object_bag::borrow`,
     typeArguments: typeArgs,
@@ -20,7 +20,7 @@ export interface BorrowMutArgs {
   k: GenericArg
 }
 
-export function borrowMut(txb: TransactionBlock, typeArgs: [Type, Type], args: BorrowMutArgs) {
+export function borrowMut(txb: TransactionBlock, typeArgs: [string, string], args: BorrowMutArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object_bag::borrow_mut`,
     typeArguments: typeArgs,
@@ -33,7 +33,7 @@ export interface ContainsArgs {
   k: GenericArg
 }
 
-export function contains(txb: TransactionBlock, typeArg: Type, args: ContainsArgs) {
+export function contains(txb: TransactionBlock, typeArg: string, args: ContainsArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object_bag::contains`,
     typeArguments: [typeArg],
@@ -64,7 +64,7 @@ export interface RemoveArgs {
   k: GenericArg
 }
 
-export function remove(txb: TransactionBlock, typeArgs: [Type, Type], args: RemoveArgs) {
+export function remove(txb: TransactionBlock, typeArgs: [string, string], args: RemoveArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object_bag::remove`,
     typeArguments: typeArgs,
@@ -82,7 +82,7 @@ export interface AddArgs {
   v: GenericArg
 }
 
-export function add(txb: TransactionBlock, typeArgs: [Type, Type], args: AddArgs) {
+export function add(txb: TransactionBlock, typeArgs: [string, string], args: AddArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object_bag::add`,
     typeArguments: typeArgs,
@@ -101,7 +101,7 @@ export interface ContainsWithTypeArgs {
 
 export function containsWithType(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: ContainsWithTypeArgs
 ) {
   return txb.moveCall({
@@ -116,7 +116,7 @@ export interface ValueIdArgs {
   k: GenericArg
 }
 
-export function valueId(txb: TransactionBlock, typeArg: Type, args: ValueIdArgs) {
+export function valueId(txb: TransactionBlock, typeArg: string, args: ValueIdArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object_bag::value_id`,
     typeArguments: [typeArg],

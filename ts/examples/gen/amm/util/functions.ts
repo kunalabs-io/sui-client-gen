@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, Type, obj, pure } from '../../_framework/util'
+import { ObjectArg, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export interface AdminWithdrawFeesAndTransferToSenderArgs {
@@ -10,7 +10,7 @@ export interface AdminWithdrawFeesAndTransferToSenderArgs {
 
 export function adminWithdrawFeesAndTransferToSender(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: AdminWithdrawFeesAndTransferToSenderArgs
 ) {
   return txb.moveCall({
@@ -28,7 +28,7 @@ export interface AdminWithdrawFeesCoinArgs {
 
 export function adminWithdrawFeesCoin(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: AdminWithdrawFeesCoinArgs
 ) {
   return txb.moveCall({
@@ -48,7 +48,7 @@ export interface CreatePoolAndTransferLpToSenderArgs {
 
 export function createPoolAndTransferLpToSender(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: CreatePoolAndTransferLpToSenderArgs
 ) {
   return txb.moveCall({
@@ -74,7 +74,7 @@ export interface CreatePoolWithCoinsArgs {
 
 export function createPoolWithCoins(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: CreatePoolWithCoinsArgs
 ) {
   return txb.moveCall({
@@ -99,7 +99,7 @@ export interface DepositAndTransferToSenderArgs {
 
 export function depositAndTransferToSender(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: DepositAndTransferToSenderArgs
 ) {
   return txb.moveCall({
@@ -123,7 +123,7 @@ export interface DepositCoinsArgs {
 
 export function depositCoins(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: DepositCoinsArgs
 ) {
   return txb.moveCall({
@@ -145,7 +145,7 @@ export interface DestroyOrTransferBalanceArgs {
 
 export function destroyOrTransferBalance(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: DestroyOrTransferBalanceArgs
 ) {
   return txb.moveCall({
@@ -162,7 +162,7 @@ export interface DestroyOrTransferCoinArgs {
 
 export function destroyOrTransferCoin(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: DestroyOrTransferCoinArgs
 ) {
   return txb.moveCall({
@@ -180,7 +180,7 @@ export interface SwapAAndTransferToSenderArgs {
 
 export function swapAAndTransferToSender(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: SwapAAndTransferToSenderArgs
 ) {
   return txb.moveCall({
@@ -196,7 +196,7 @@ export interface SwapACoinArgs {
   minOut: bigint | TransactionArgument
 }
 
-export function swapACoin(txb: TransactionBlock, typeArgs: [Type, Type], args: SwapACoinArgs) {
+export function swapACoin(txb: TransactionBlock, typeArgs: [string, string], args: SwapACoinArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::util::swap_a_coin`,
     typeArguments: typeArgs,
@@ -212,7 +212,7 @@ export interface SwapBAndTransferToSenderArgs {
 
 export function swapBAndTransferToSender(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: SwapBAndTransferToSenderArgs
 ) {
   return txb.moveCall({
@@ -228,7 +228,7 @@ export interface SwapBCoinArgs {
   minOut: bigint | TransactionArgument
 }
 
-export function swapBCoin(txb: TransactionBlock, typeArgs: [Type, Type], args: SwapBCoinArgs) {
+export function swapBCoin(txb: TransactionBlock, typeArgs: [string, string], args: SwapBCoinArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::util::swap_b_coin`,
     typeArguments: typeArgs,
@@ -245,7 +245,7 @@ export interface WithdrawAndTransferToSenderArgs {
 
 export function withdrawAndTransferToSender(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: WithdrawAndTransferToSenderArgs
 ) {
   return txb.moveCall({
@@ -269,7 +269,7 @@ export interface WithdrawCoinsArgs {
 
 export function withdrawCoins(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: WithdrawCoinsArgs
 ) {
   return txb.moveCall({

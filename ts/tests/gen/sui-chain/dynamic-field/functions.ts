@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export interface BorrowArgs {
@@ -7,7 +7,7 @@ export interface BorrowArgs {
   t0: GenericArg
 }
 
-export function borrow(txb: TransactionBlock, typeArgs: [Type, Type], args: BorrowArgs) {
+export function borrow(txb: TransactionBlock, typeArgs: [string, string], args: BorrowArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::dynamic_field::borrow`,
     typeArguments: typeArgs,
@@ -20,7 +20,7 @@ export interface BorrowMutArgs {
   t0: GenericArg
 }
 
-export function borrowMut(txb: TransactionBlock, typeArgs: [Type, Type], args: BorrowMutArgs) {
+export function borrowMut(txb: TransactionBlock, typeArgs: [string, string], args: BorrowMutArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::dynamic_field::borrow_mut`,
     typeArguments: typeArgs,
@@ -33,7 +33,7 @@ export interface RemoveArgs {
   t0: GenericArg
 }
 
-export function remove(txb: TransactionBlock, typeArgs: [Type, Type], args: RemoveArgs) {
+export function remove(txb: TransactionBlock, typeArgs: [string, string], args: RemoveArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::dynamic_field::remove`,
     typeArguments: typeArgs,
@@ -47,7 +47,7 @@ export interface AddArgs {
   t1: GenericArg
 }
 
-export function add(txb: TransactionBlock, typeArgs: [Type, Type], args: AddArgs) {
+export function add(txb: TransactionBlock, typeArgs: [string, string], args: AddArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::dynamic_field::add`,
     typeArguments: typeArgs,
@@ -64,7 +64,7 @@ export interface Exists_Args {
   t0: GenericArg
 }
 
-export function exists_(txb: TransactionBlock, typeArg: Type, args: Exists_Args) {
+export function exists_(txb: TransactionBlock, typeArg: string, args: Exists_Args) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::dynamic_field::exists_`,
     typeArguments: [typeArg],
@@ -79,7 +79,7 @@ export interface RemoveIfExistsArgs {
 
 export function removeIfExists(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: RemoveIfExistsArgs
 ) {
   return txb.moveCall({
@@ -96,7 +96,7 @@ export interface ExistsWithTypeArgs {
 
 export function existsWithType(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: ExistsWithTypeArgs
 ) {
   return txb.moveCall({
@@ -111,7 +111,7 @@ export interface FieldInfoArgs {
   t0: GenericArg
 }
 
-export function fieldInfo(txb: TransactionBlock, typeArg: Type, args: FieldInfoArgs) {
+export function fieldInfo(txb: TransactionBlock, typeArg: string, args: FieldInfoArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::dynamic_field::field_info`,
     typeArguments: [typeArg],
@@ -124,7 +124,7 @@ export interface FieldInfoMutArgs {
   t0: GenericArg
 }
 
-export function fieldInfoMut(txb: TransactionBlock, typeArg: Type, args: FieldInfoMutArgs) {
+export function fieldInfoMut(txb: TransactionBlock, typeArg: string, args: FieldInfoMutArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::dynamic_field::field_info_mut`,
     typeArguments: [typeArg],
@@ -137,7 +137,7 @@ export interface HashTypeAndKeyArgs {
   t0: GenericArg
 }
 
-export function hashTypeAndKey(txb: TransactionBlock, typeArg: Type, args: HashTypeAndKeyArgs) {
+export function hashTypeAndKey(txb: TransactionBlock, typeArg: string, args: HashTypeAndKeyArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::dynamic_field::hash_type_and_key`,
     typeArguments: [typeArg],
@@ -150,7 +150,7 @@ export interface AddChildObjectArgs {
   t0: GenericArg
 }
 
-export function addChildObject(txb: TransactionBlock, typeArg: Type, args: AddChildObjectArgs) {
+export function addChildObject(txb: TransactionBlock, typeArg: string, args: AddChildObjectArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::dynamic_field::add_child_object`,
     typeArguments: [typeArg],
@@ -165,7 +165,7 @@ export interface BorrowChildObjectArgs {
 
 export function borrowChildObject(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: BorrowChildObjectArgs
 ) {
   return txb.moveCall({
@@ -182,7 +182,7 @@ export interface BorrowChildObjectMutArgs {
 
 export function borrowChildObjectMut(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: BorrowChildObjectMutArgs
 ) {
   return txb.moveCall({
@@ -199,7 +199,7 @@ export interface RemoveChildObjectArgs {
 
 export function removeChildObject(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: RemoveChildObjectArgs
 ) {
   return txb.moveCall({
@@ -228,7 +228,7 @@ export interface HasChildObjectWithTyArgs {
 
 export function hasChildObjectWithTy(
   txb: TransactionBlock,
-  typeArg: Type,
+  typeArg: string,
   args: HasChildObjectWithTyArgs
 ) {
   return txb.moveCall({

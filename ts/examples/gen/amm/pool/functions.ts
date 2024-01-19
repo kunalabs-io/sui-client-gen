@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, Type, obj, pure } from '../../_framework/util'
+import { ObjectArg, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export interface CreateArgs {
@@ -10,7 +10,7 @@ export interface CreateArgs {
   adminFeePct: bigint | TransactionArgument
 }
 
-export function create(txb: TransactionBlock, typeArgs: [Type, Type], args: CreateArgs) {
+export function create(txb: TransactionBlock, typeArgs: [string, string], args: CreateArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pool::create`,
     typeArguments: typeArgs,
@@ -31,7 +31,7 @@ export interface WithdrawArgs {
   minBOut: bigint | TransactionArgument
 }
 
-export function withdraw(txb: TransactionBlock, typeArgs: [Type, Type], args: WithdrawArgs) {
+export function withdraw(txb: TransactionBlock, typeArgs: [string, string], args: WithdrawArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pool::withdraw`,
     typeArguments: typeArgs,
@@ -56,7 +56,7 @@ export interface AdminWithdrawFeesArgs {
 
 export function adminWithdrawFees(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: AdminWithdrawFeesArgs
 ) {
   return txb.moveCall({
@@ -133,7 +133,7 @@ export interface DepositArgs {
   minLpOut: bigint | TransactionArgument
 }
 
-export function deposit(txb: TransactionBlock, typeArgs: [Type, Type], args: DepositArgs) {
+export function deposit(txb: TransactionBlock, typeArgs: [string, string], args: DepositArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pool::deposit`,
     typeArguments: typeArgs,
@@ -188,7 +188,11 @@ export function newRegistry(txb: TransactionBlock) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::pool::new_registry`, arguments: [] })
 }
 
-export function poolAdminFeeValue(txb: TransactionBlock, typeArgs: [Type, Type], pool: ObjectArg) {
+export function poolAdminFeeValue(
+  txb: TransactionBlock,
+  typeArgs: [string, string],
+  pool: ObjectArg
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pool::pool_admin_fee_value`,
     typeArguments: typeArgs,
@@ -196,7 +200,7 @@ export function poolAdminFeeValue(txb: TransactionBlock, typeArgs: [Type, Type],
   })
 }
 
-export function poolFees(txb: TransactionBlock, typeArgs: [Type, Type], pool: ObjectArg) {
+export function poolFees(txb: TransactionBlock, typeArgs: [string, string], pool: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pool::pool_fees`,
     typeArguments: typeArgs,
@@ -204,7 +208,7 @@ export function poolFees(txb: TransactionBlock, typeArgs: [Type, Type], pool: Ob
   })
 }
 
-export function poolValues(txb: TransactionBlock, typeArgs: [Type, Type], pool: ObjectArg) {
+export function poolValues(txb: TransactionBlock, typeArgs: [string, string], pool: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pool::pool_values`,
     typeArguments: typeArgs,
@@ -212,7 +216,7 @@ export function poolValues(txb: TransactionBlock, typeArgs: [Type, Type], pool: 
   })
 }
 
-export function registryAdd(txb: TransactionBlock, typeArgs: [Type, Type], self: ObjectArg) {
+export function registryAdd(txb: TransactionBlock, typeArgs: [string, string], self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pool::registry_add`,
     typeArguments: typeArgs,
@@ -226,7 +230,7 @@ export interface SwapAArgs {
   minOut: bigint | TransactionArgument
 }
 
-export function swapA(txb: TransactionBlock, typeArgs: [Type, Type], args: SwapAArgs) {
+export function swapA(txb: TransactionBlock, typeArgs: [string, string], args: SwapAArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pool::swap_a`,
     typeArguments: typeArgs,
@@ -240,7 +244,7 @@ export interface SwapBArgs {
   minOut: bigint | TransactionArgument
 }
 
-export function swapB(txb: TransactionBlock, typeArgs: [Type, Type], args: SwapBArgs) {
+export function swapB(txb: TransactionBlock, typeArgs: [string, string], args: SwapBArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pool::swap_b`,
     typeArguments: typeArgs,

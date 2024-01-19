@@ -6,13 +6,13 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   extractType,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { ID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== Receiving =============================== */
 
-export function isReceiving(type: Type): boolean {
+export function isReceiving(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::transfer::Receiving<')
 }

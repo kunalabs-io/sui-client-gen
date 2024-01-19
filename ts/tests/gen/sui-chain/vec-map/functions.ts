@@ -1,8 +1,8 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
+import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
-export function empty(txb: TransactionBlock, typeArgs: [Type, Type]) {
+export function empty(txb: TransactionBlock, typeArgs: [string, string]) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_map::empty`,
     typeArguments: typeArgs,
@@ -10,7 +10,7 @@ export function empty(txb: TransactionBlock, typeArgs: [Type, Type]) {
   })
 }
 
-export function destroyEmpty(txb: TransactionBlock, typeArgs: [Type, Type], vecMap: ObjectArg) {
+export function destroyEmpty(txb: TransactionBlock, typeArgs: [string, string], vecMap: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_map::destroy_empty`,
     typeArguments: typeArgs,
@@ -18,7 +18,7 @@ export function destroyEmpty(txb: TransactionBlock, typeArgs: [Type, Type], vecM
   })
 }
 
-export function isEmpty(txb: TransactionBlock, typeArgs: [Type, Type], vecMap: ObjectArg) {
+export function isEmpty(txb: TransactionBlock, typeArgs: [string, string], vecMap: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_map::is_empty`,
     typeArguments: typeArgs,
@@ -31,7 +31,7 @@ export interface ContainsArgs {
   t0: GenericArg
 }
 
-export function contains(txb: TransactionBlock, typeArgs: [Type, Type], args: ContainsArgs) {
+export function contains(txb: TransactionBlock, typeArgs: [string, string], args: ContainsArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_map::contains`,
     typeArguments: typeArgs,
@@ -44,7 +44,7 @@ export interface RemoveArgs {
   t0: GenericArg
 }
 
-export function remove(txb: TransactionBlock, typeArgs: [Type, Type], args: RemoveArgs) {
+export function remove(txb: TransactionBlock, typeArgs: [string, string], args: RemoveArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_map::remove`,
     typeArguments: typeArgs,
@@ -58,7 +58,7 @@ export interface InsertArgs {
   t1: GenericArg
 }
 
-export function insert(txb: TransactionBlock, typeArgs: [Type, Type], args: InsertArgs) {
+export function insert(txb: TransactionBlock, typeArgs: [string, string], args: InsertArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_map::insert`,
     typeArguments: typeArgs,
@@ -70,7 +70,7 @@ export function insert(txb: TransactionBlock, typeArgs: [Type, Type], args: Inse
   })
 }
 
-export function size(txb: TransactionBlock, typeArgs: [Type, Type], vecMap: ObjectArg) {
+export function size(txb: TransactionBlock, typeArgs: [string, string], vecMap: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_map::size`,
     typeArguments: typeArgs,
@@ -78,7 +78,7 @@ export function size(txb: TransactionBlock, typeArgs: [Type, Type], vecMap: Obje
   })
 }
 
-export function pop(txb: TransactionBlock, typeArgs: [Type, Type], vecMap: ObjectArg) {
+export function pop(txb: TransactionBlock, typeArgs: [string, string], vecMap: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_map::pop`,
     typeArguments: typeArgs,
@@ -91,7 +91,7 @@ export interface GetMutArgs {
   t0: GenericArg
 }
 
-export function getMut(txb: TransactionBlock, typeArgs: [Type, Type], args: GetMutArgs) {
+export function getMut(txb: TransactionBlock, typeArgs: [string, string], args: GetMutArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_map::get_mut`,
     typeArguments: typeArgs,
@@ -104,7 +104,7 @@ export interface GetArgs {
   t0: GenericArg
 }
 
-export function get(txb: TransactionBlock, typeArgs: [Type, Type], args: GetArgs) {
+export function get(txb: TransactionBlock, typeArgs: [string, string], args: GetArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_map::get`,
     typeArguments: typeArgs,
@@ -117,7 +117,7 @@ export interface TryGetArgs {
   t0: GenericArg
 }
 
-export function tryGet(txb: TransactionBlock, typeArgs: [Type, Type], args: TryGetArgs) {
+export function tryGet(txb: TransactionBlock, typeArgs: [string, string], args: TryGetArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_map::try_get`,
     typeArguments: typeArgs,
@@ -125,7 +125,11 @@ export function tryGet(txb: TransactionBlock, typeArgs: [Type, Type], args: TryG
   })
 }
 
-export function intoKeysValues(txb: TransactionBlock, typeArgs: [Type, Type], vecMap: ObjectArg) {
+export function intoKeysValues(
+  txb: TransactionBlock,
+  typeArgs: [string, string],
+  vecMap: ObjectArg
+) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_map::into_keys_values`,
     typeArguments: typeArgs,
@@ -133,7 +137,7 @@ export function intoKeysValues(txb: TransactionBlock, typeArgs: [Type, Type], ve
   })
 }
 
-export function keys(txb: TransactionBlock, typeArgs: [Type, Type], vecMap: ObjectArg) {
+export function keys(txb: TransactionBlock, typeArgs: [string, string], vecMap: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_map::keys`,
     typeArguments: typeArgs,
@@ -146,7 +150,7 @@ export interface GetIdxOptArgs {
   t0: GenericArg
 }
 
-export function getIdxOpt(txb: TransactionBlock, typeArgs: [Type, Type], args: GetIdxOptArgs) {
+export function getIdxOpt(txb: TransactionBlock, typeArgs: [string, string], args: GetIdxOptArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_map::get_idx_opt`,
     typeArguments: typeArgs,
@@ -159,7 +163,7 @@ export interface GetIdxArgs {
   t0: GenericArg
 }
 
-export function getIdx(txb: TransactionBlock, typeArgs: [Type, Type], args: GetIdxArgs) {
+export function getIdx(txb: TransactionBlock, typeArgs: [string, string], args: GetIdxArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_map::get_idx`,
     typeArguments: typeArgs,
@@ -174,7 +178,7 @@ export interface GetEntryByIdxArgs {
 
 export function getEntryByIdx(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: GetEntryByIdxArgs
 ) {
   return txb.moveCall({
@@ -191,7 +195,7 @@ export interface GetEntryByIdxMutArgs {
 
 export function getEntryByIdxMut(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: GetEntryByIdxMutArgs
 ) {
   return txb.moveCall({
@@ -208,7 +212,7 @@ export interface RemoveEntryByIdxArgs {
 
 export function removeEntryByIdx(
   txb: TransactionBlock,
-  typeArgs: [Type, Type],
+  typeArgs: [string, string],
   args: RemoveEntryByIdxArgs
 ) {
   return txb.moveCall({

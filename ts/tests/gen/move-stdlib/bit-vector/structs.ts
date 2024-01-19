@@ -4,12 +4,12 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   reified,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== BitVector =============================== */
 
-export function isBitVector(type: Type): boolean {
+export function isBitVector(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x1::bit_vector::BitVector'
 }

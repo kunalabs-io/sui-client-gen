@@ -6,7 +6,7 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   extractType,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { String as String1 } from '../../move-stdlib/ascii/structs'
 import { Option } from '../../move-stdlib/option/structs'
 import { String } from '../../move-stdlib/string/structs'
@@ -18,7 +18,7 @@ import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Coin =============================== */
 
-export function isCoin(type: Type): boolean {
+export function isCoin(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::coin::Coin<')
 }
@@ -127,7 +127,7 @@ export class Coin {
 
 /* ============================== CoinMetadata =============================== */
 
-export function isCoinMetadata(type: Type): boolean {
+export function isCoinMetadata(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::coin::CoinMetadata<')
 }
@@ -271,7 +271,7 @@ export class CoinMetadata {
 
 /* ============================== CurrencyCreated =============================== */
 
-export function isCurrencyCreated(type: Type): boolean {
+export function isCurrencyCreated(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::coin::CurrencyCreated<')
 }
@@ -348,7 +348,7 @@ export class CurrencyCreated {
 
 /* ============================== TreasuryCap =============================== */
 
-export function isTreasuryCap(type: Type): boolean {
+export function isTreasuryCap(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::coin::TreasuryCap<')
 }

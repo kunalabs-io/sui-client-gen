@@ -9,14 +9,14 @@ import {
   extractType,
   toBcs,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { ID } from '../object/structs'
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
 
 /* ============================== Referent =============================== */
 
-export function isReferent(type: Type): boolean {
+export function isReferent(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::borrow::Referent<')
 }
@@ -119,7 +119,7 @@ export class Referent<T0 extends TypeArgument> {
 
 /* ============================== Borrow =============================== */
 
-export function isBorrow(type: Type): boolean {
+export function isBorrow(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::borrow::Borrow'
 }

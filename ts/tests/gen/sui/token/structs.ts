@@ -6,7 +6,7 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   extractType,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { Option } from '../../move-stdlib/option/structs'
 import { String } from '../../move-stdlib/string/structs'
 import { TypeName } from '../../move-stdlib/type-name/structs'
@@ -19,7 +19,7 @@ import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== RuleKey =============================== */
 
-export function isRuleKey(type: Type): boolean {
+export function isRuleKey(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::token::RuleKey<')
 }
@@ -96,7 +96,7 @@ export class RuleKey {
 
 /* ============================== ActionRequest =============================== */
 
-export function isActionRequest(type: Type): boolean {
+export function isActionRequest(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::token::ActionRequest<')
 }
@@ -235,7 +235,7 @@ export class ActionRequest {
 
 /* ============================== Token =============================== */
 
-export function isToken(type: Type): boolean {
+export function isToken(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::token::Token<')
 }
@@ -344,7 +344,7 @@ export class Token {
 
 /* ============================== TokenPolicy =============================== */
 
-export function isTokenPolicy(type: Type): boolean {
+export function isTokenPolicy(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::token::TokenPolicy<')
 }
@@ -473,7 +473,7 @@ export class TokenPolicy {
 
 /* ============================== TokenPolicyCap =============================== */
 
-export function isTokenPolicyCap(type: Type): boolean {
+export function isTokenPolicyCap(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::token::TokenPolicyCap<')
 }
@@ -583,7 +583,7 @@ export class TokenPolicyCap {
 
 /* ============================== TokenPolicyCreated =============================== */
 
-export function isTokenPolicyCreated(type: Type): boolean {
+export function isTokenPolicyCreated(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith('0x2::token::TokenPolicyCreated<')
 }

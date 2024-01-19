@@ -4,12 +4,12 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   reified,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== String =============================== */
 
-export function isString(type: Type): boolean {
+export function isString(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x1::ascii::String'
 }
@@ -79,7 +79,7 @@ export class String {
 
 /* ============================== Char =============================== */
 
-export function isChar(type: Type): boolean {
+export function isChar(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x1::ascii::Char'
 }

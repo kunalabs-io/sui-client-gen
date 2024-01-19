@@ -7,9 +7,6 @@ import {
 import { bcs, ObjectArg as SuiObjectArg } from '@mysten/sui.js/bcs'
 import { BCS } from '@mysten/bcs'
 
-/** A Move type, e.g., `address`, `bool`, `u64`, `vector<u64>`, `0x2::sui::SUI`... */
-export type Type = string
-
 export interface FieldsWithTypes {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   fields: Record<string, any>
@@ -32,7 +29,7 @@ export type PureArg =
   | Array<PureArg>
 export type GenericArg = ObjectArg | PureArg | Array<ObjectArg> | Array<PureArg> | Array<GenericArg>
 
-export function parseTypeName(name: Type): { typeName: string; typeArgs: Type[] } {
+export function parseTypeName(name: string): { typeName: string; typeArgs: string[] } {
   const parsed = bcs.parseTypeName(name)
   return { typeName: parsed.name, typeArgs: parsed.params as string[] }
 }
@@ -61,12 +58,12 @@ export function obj(txb: TransactionBlock, arg: ObjectArg) {
   return isTransactionArgument(arg) ? arg : txb.object(arg)
 }
 
-export function pure(txb: TransactionBlock, arg: PureArg, type: Type) {
+export function pure(txb: TransactionBlock, arg: PureArg, type: string) {
   if (isTransactionArgument(arg)) {
     return obj(txb, arg)
   }
 
-  function convertType(type: Type): string {
+  function convertType(type: string): string {
     const { typeName, typeArgs } = parseTypeName(type)
     switch (typeName) {
       case '0x1::string::String':
@@ -90,7 +87,7 @@ export function pure(txb: TransactionBlock, arg: PureArg, type: Type) {
     return isTransactionArgument(arg)
   }
 
-  function convertArg(arg: PureArg, type: Type): PureArg {
+  function convertArg(arg: PureArg, type: string): PureArg {
     const { typeName, typeArgs } = parseTypeName(type)
     if (typeName === '0x1::option::Option') {
       if (arg === null) {
@@ -145,7 +142,7 @@ export function pure(txb: TransactionBlock, arg: PureArg, type: Type) {
   return txb.pure(convertArg(arg, type), convertType(type))
 }
 
-export function option(txb: TransactionBlock, type: Type, arg: GenericArg | null) {
+export function option(txb: TransactionBlock, type: string, arg: GenericArg | null) {
   if (arg === null) {
     return pure(txb, arg, `0x1::option::Option<${type}>`)
   }
@@ -169,7 +166,7 @@ export function option(txb: TransactionBlock, type: Type, arg: GenericArg | null
   }
 }
 
-export function generic(txb: TransactionBlock, type: Type, arg: GenericArg) {
+export function generic(txb: TransactionBlock, type: string, arg: GenericArg) {
   if (typeArgIsPure(type)) {
     return pure(txb, arg as PureArg | TransactionArgument, type)
   } else {
@@ -189,7 +186,7 @@ export function generic(txb: TransactionBlock, type: Type, arg: GenericArg) {
 
 export function vector(
   txb: TransactionBlock,
-  itemType: Type,
+  itemType: string,
   items: Array<GenericArg> | TransactionArgument
 ) {
   if (typeArgIsPure(itemType)) {
@@ -215,7 +212,7 @@ export function vector(
   }
 }
 
-export function typeArgIsPure(type: Type): boolean {
+export function typeArgIsPure(type: string): boolean {
   const { typeName, typeArgs } = parseTypeName(type)
   switch (typeName) {
     case 'bool':

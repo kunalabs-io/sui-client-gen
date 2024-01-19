@@ -4,12 +4,12 @@ import {
   decodeFromFieldsWithTypesGenericOrSpecial,
   reified,
 } from '../../_framework/types'
-import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { bcs, fromHEX, toHEX } from '@mysten/bcs'
 
 /* ============================== TxContext =============================== */
 
-export function isTxContext(type: Type): boolean {
+export function isTxContext(type: string): boolean {
   type = compressSuiType(type)
   return type === '0x2::tx_context::TxContext'
 }
