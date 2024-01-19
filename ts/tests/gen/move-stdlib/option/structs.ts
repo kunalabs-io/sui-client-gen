@@ -97,7 +97,7 @@ export class Option<Element extends TypeArgument> {
 
   toJSONField() {
     return {
-      vec: fieldToJSON(`vector<${this.$typeArg}>`, this.vec),
+      vec: fieldToJSON<Array<Element>>(`vector<${this.$typeArg}>`, this.vec),
     }
   }
 

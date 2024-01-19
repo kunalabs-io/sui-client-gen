@@ -196,7 +196,10 @@ export class AuthenticatorStateInner {
   toJSONField() {
     return {
       version: this.version.toString(),
-      activeJwks: fieldToJSON(`vector<0x2::authenticator_state::ActiveJwk>`, this.activeJwks),
+      activeJwks: fieldToJSON<Array<ActiveJwk>>(
+        `vector<0x2::authenticator_state::ActiveJwk>`,
+        this.activeJwks
+      ),
     }
   }
 

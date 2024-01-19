@@ -96,7 +96,7 @@ export class Wrapper<T0 extends TypeArgument> {
 
   toJSONField() {
     return {
-      name: fieldToJSON(this.$typeArg, this.name),
+      name: fieldToJSON<T0>(this.$typeArg, this.name),
     }
   }
 

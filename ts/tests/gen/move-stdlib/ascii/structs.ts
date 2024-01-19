@@ -143,7 +143,7 @@ export class String {
 
   toJSONField() {
     return {
-      bytes: fieldToJSON(`vector<u8>`, this.bytes),
+      bytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 

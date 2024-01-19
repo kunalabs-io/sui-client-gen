@@ -107,8 +107,8 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> {
 
   toJSONField() {
     return {
-      key: fieldToJSON(this.$typeArgs[0], this.key),
-      value: fieldToJSON(this.$typeArgs[1], this.value),
+      key: fieldToJSON<T0>(this.$typeArgs[0], this.key),
+      value: fieldToJSON<T1>(this.$typeArgs[1], this.value),
     }
   }
 
@@ -212,7 +212,7 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> {
 
   toJSONField() {
     return {
-      contents: fieldToJSON(
+      contents: fieldToJSON<Array<Entry<T0, T1>>>(
         `vector<0x2::vec_map::Entry<${this.$typeArgs[0]}, ${this.$typeArgs[1]}>>`,
         this.contents
       ),

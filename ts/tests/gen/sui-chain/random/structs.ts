@@ -203,7 +203,7 @@ export class RandomInner {
       version: this.version.toString(),
       epoch: this.epoch.toString(),
       randomnessRound: this.randomnessRound.toString(),
-      randomBytes: fieldToJSON(`vector<u8>`, this.randomBytes),
+      randomBytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.randomBytes),
     }
   }
 

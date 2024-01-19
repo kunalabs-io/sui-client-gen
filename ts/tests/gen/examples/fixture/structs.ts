@@ -405,14 +405,14 @@ export class Foo<T extends TypeArgument> {
   toJSONField() {
     return {
       id: this.id,
-      generic: fieldToJSON(this.$typeArg, this.generic),
-      reifiedPrimitiveVec: fieldToJSON(`vector<u64>`, this.reifiedPrimitiveVec),
-      reifiedObjectVec: fieldToJSON(
+      generic: fieldToJSON<T>(this.$typeArg, this.generic),
+      reifiedPrimitiveVec: fieldToJSON<Array<'u64'>>(`vector<u64>`, this.reifiedPrimitiveVec),
+      reifiedObjectVec: fieldToJSON<Array<Bar>>(
         `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
         this.reifiedObjectVec
       ),
-      genericVec: fieldToJSON(`vector<${this.$typeArg}>`, this.genericVec),
-      genericVecNested: fieldToJSON(
+      genericVec: fieldToJSON<Array<T>>(`vector<${this.$typeArg}>`, this.genericVec),
+      genericVecNested: fieldToJSON<Array<WithTwoGenerics<T, 'u8'>>>(
         `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${this.$typeArg}, u8>>`,
         this.genericVecNested
       ),
@@ -421,7 +421,9 @@ export class Foo<T extends TypeArgument> {
       twoGenericsReifiedObject: this.twoGenericsReifiedObject.toJSONField(),
       twoGenericsNested: this.twoGenericsNested.toJSONField(),
       twoGenericsReifiedNested: this.twoGenericsReifiedNested.toJSONField(),
-      twoGenericsNestedVec: fieldToJSON(
+      twoGenericsNestedVec: fieldToJSON<
+        Array<WithTwoGenerics<Bar, Array<WithTwoGenerics<T, 'u8'>>>>
+      >(
         `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${this.$typeArg}, u8>>>>`,
         this.twoGenericsNestedVec
       ),
@@ -563,7 +565,7 @@ export class WithGenericField<T extends TypeArgument> {
   toJSONField() {
     return {
       id: this.id,
-      genericField: fieldToJSON(this.$typeArg, this.genericField),
+      genericField: fieldToJSON<T>(this.$typeArg, this.genericField),
     }
   }
 
@@ -783,15 +785,18 @@ export class WithSpecialTypes<U extends TypeArgument> {
       idField: this.idField,
       uid: this.uid,
       balance: this.balance.toJSONField(),
-      option: fieldToJSON(`0x1::option::Option<u64>`, this.option),
-      optionObj: fieldToJSON(
+      option: fieldToJSON<Option<'u64'>>(`0x1::option::Option<u64>`, this.option),
+      optionObj: fieldToJSON<Option<Bar>>(
         `0x1::option::Option<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
         this.optionObj
       ),
-      optionNone: fieldToJSON(`0x1::option::Option<u64>`, this.optionNone),
+      optionNone: fieldToJSON<Option<'u64'>>(`0x1::option::Option<u64>`, this.optionNone),
       balanceGeneric: this.balanceGeneric.toJSONField(),
-      optionGeneric: fieldToJSON(`0x1::option::Option<${this.$typeArgs[1]}>`, this.optionGeneric),
-      optionGenericNone: fieldToJSON(
+      optionGeneric: fieldToJSON<Option<U>>(
+        `0x1::option::Option<${this.$typeArgs[1]}>`,
+        this.optionGeneric
+      ),
+      optionGenericNone: fieldToJSON<Option<U>>(
         `0x1::option::Option<${this.$typeArgs[1]}>`,
         this.optionGenericNone
       ),
@@ -1141,14 +1146,14 @@ export class WithSpecialTypesAsGenerics<
   toJSONField() {
     return {
       id: this.id,
-      string: fieldToJSON(this.$typeArgs[0], this.string),
-      asciiString: fieldToJSON(this.$typeArgs[1], this.asciiString),
-      url: fieldToJSON(this.$typeArgs[2], this.url),
-      idField: fieldToJSON(this.$typeArgs[3], this.idField),
-      uid: fieldToJSON(this.$typeArgs[4], this.uid),
-      balance: fieldToJSON(this.$typeArgs[5], this.balance),
-      option: fieldToJSON(this.$typeArgs[6], this.option),
-      optionNone: fieldToJSON(this.$typeArgs[7], this.optionNone),
+      string: fieldToJSON<T0>(this.$typeArgs[0], this.string),
+      asciiString: fieldToJSON<T1>(this.$typeArgs[1], this.asciiString),
+      url: fieldToJSON<T2>(this.$typeArgs[2], this.url),
+      idField: fieldToJSON<T3>(this.$typeArgs[3], this.idField),
+      uid: fieldToJSON<T4>(this.$typeArgs[4], this.uid),
+      balance: fieldToJSON<T5>(this.$typeArgs[5], this.balance),
+      option: fieldToJSON<T6>(this.$typeArgs[6], this.option),
+      optionNone: fieldToJSON<T7>(this.$typeArgs[7], this.optionNone),
     }
   }
 
@@ -1372,15 +1377,15 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> {
   toJSONField() {
     return {
       id: this.id,
-      string: fieldToJSON(`vector<0x1::string::String>`, this.string),
-      asciiString: fieldToJSON(`vector<0x1::ascii::String>`, this.asciiString),
-      idField: fieldToJSON(`vector<0x2::object::ID>`, this.idField),
-      bar: fieldToJSON(
+      string: fieldToJSON<Array<String>>(`vector<0x1::string::String>`, this.string),
+      asciiString: fieldToJSON<Array<String1>>(`vector<0x1::ascii::String>`, this.asciiString),
+      idField: fieldToJSON<Array<ID>>(`vector<0x2::object::ID>`, this.idField),
+      bar: fieldToJSON<Array<Bar>>(
         `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
         this.bar
       ),
-      option: fieldToJSON(`vector<0x1::option::Option<u64>>`, this.option),
-      optionGeneric: fieldToJSON(
+      option: fieldToJSON<Array<Option<'u64'>>>(`vector<0x1::option::Option<u64>>`, this.option),
+      optionGeneric: fieldToJSON<Array<Option<T>>>(
         `vector<0x1::option::Option<${this.$typeArg}>>`,
         this.optionGeneric
       ),
@@ -1527,8 +1532,8 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> {
 
   toJSONField() {
     return {
-      genericField1: fieldToJSON(this.$typeArgs[0], this.genericField1),
-      genericField2: fieldToJSON(this.$typeArgs[1], this.genericField2),
+      genericField1: fieldToJSON<T>(this.$typeArgs[0], this.genericField1),
+      genericField2: fieldToJSON<U>(this.$typeArgs[1], this.genericField2),
     }
   }
 

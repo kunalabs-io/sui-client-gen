@@ -217,8 +217,8 @@ export class ActionRequest {
       name: this.name,
       amount: this.amount.toString(),
       sender: this.sender,
-      recipient: fieldToJSON(`0x1::option::Option<address>`, this.recipient),
-      spentBalance: fieldToJSON(
+      recipient: fieldToJSON<Option<'address'>>(`0x1::option::Option<address>`, this.recipient),
+      spentBalance: fieldToJSON<Option<Balance>>(
         `0x1::option::Option<0x2::balance::Balance<${this.$typeArg}>>`,
         this.spentBalance
       ),

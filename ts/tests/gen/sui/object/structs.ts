@@ -101,7 +101,7 @@ export class DynamicFields<K extends TypeArgument> {
 
   toJSONField() {
     return {
-      names: fieldToJSON(`vector<${this.$typeArg}>`, this.names),
+      names: fieldToJSON<Array<K>>(`vector<${this.$typeArg}>`, this.names),
     }
   }
 

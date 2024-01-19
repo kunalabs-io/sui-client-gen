@@ -82,7 +82,7 @@ export class BitVector {
   toJSONField() {
     return {
       length: this.length.toString(),
-      bitField: fieldToJSON(`vector<bool>`, this.bitField),
+      bitField: fieldToJSON<Array<'bool'>>(`vector<bool>`, this.bitField),
     }
   }
 

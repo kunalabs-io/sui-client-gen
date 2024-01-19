@@ -112,7 +112,7 @@ export class Referent<T0 extends TypeArgument> {
   toJSONField() {
     return {
       id: this.id,
-      value: fieldToJSON(`0x1::option::Option<${this.$typeArg}>`, this.value),
+      value: fieldToJSON<Option<T0>>(`0x1::option::Option<${this.$typeArg}>`, this.value),
     }
   }
 

@@ -100,7 +100,7 @@ export class VecSet<K extends TypeArgument> {
 
   toJSONField() {
     return {
-      contents: fieldToJSON(`vector<${this.$typeArg}>`, this.contents),
+      contents: fieldToJSON<Array<K>>(`vector<${this.$typeArg}>`, this.contents),
     }
   }
 

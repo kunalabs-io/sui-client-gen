@@ -122,8 +122,8 @@ export class LinkedTable<T0 extends TypeArgument> {
     return {
       id: this.id,
       size: this.size.toString(),
-      head: fieldToJSON(`0x1::option::Option<${this.$typeArgs[0]}>`, this.head),
-      tail: fieldToJSON(`0x1::option::Option<${this.$typeArgs[0]}>`, this.tail),
+      head: fieldToJSON<Option<T0>>(`0x1::option::Option<${this.$typeArgs[0]}>`, this.head),
+      tail: fieldToJSON<Option<T0>>(`0x1::option::Option<${this.$typeArgs[0]}>`, this.tail),
     }
   }
 
@@ -259,9 +259,9 @@ export class Node<T0 extends TypeArgument, T1 extends TypeArgument> {
 
   toJSONField() {
     return {
-      prev: fieldToJSON(`0x1::option::Option<${this.$typeArgs[0]}>`, this.prev),
-      next: fieldToJSON(`0x1::option::Option<${this.$typeArgs[0]}>`, this.next),
-      value: fieldToJSON(this.$typeArgs[1], this.value),
+      prev: fieldToJSON<Option<T0>>(`0x1::option::Option<${this.$typeArgs[0]}>`, this.prev),
+      next: fieldToJSON<Option<T0>>(`0x1::option::Option<${this.$typeArgs[0]}>`, this.next),
+      value: fieldToJSON<T1>(this.$typeArgs[1], this.value),
     }
   }
 

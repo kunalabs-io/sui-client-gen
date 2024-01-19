@@ -108,7 +108,7 @@ export class Entry<T extends TypeArgument> {
   toJSONField() {
     return {
       priority: this.priority.toString(),
-      value: fieldToJSON(this.$typeArg, this.value),
+      value: fieldToJSON<T>(this.$typeArg, this.value),
     }
   }
 
@@ -206,7 +206,10 @@ export class PriorityQueue<T extends TypeArgument> {
 
   toJSONField() {
     return {
-      entries: fieldToJSON(`vector<0x2::priority_queue::Entry<${this.$typeArg}>>`, this.entries),
+      entries: fieldToJSON<Array<Entry<T>>>(
+        `vector<0x2::priority_queue::Entry<${this.$typeArg}>>`,
+        this.entries
+      ),
     }
   }
 

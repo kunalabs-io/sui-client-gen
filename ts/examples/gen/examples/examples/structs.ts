@@ -220,15 +220,15 @@ export class SpecialTypesStruct {
       id: this.id,
       asciiString: this.asciiString,
       utf8String: this.utf8String,
-      vectorOfU64: fieldToJSON(`vector<u64>`, this.vectorOfU64),
-      vectorOfObjects: fieldToJSON(
+      vectorOfU64: fieldToJSON<Array<'u64'>>(`vector<u64>`, this.vectorOfU64),
+      vectorOfObjects: fieldToJSON<Array<ExampleStruct>>(
         `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct>`,
         this.vectorOfObjects
       ),
       idField: this.idField,
       address: this.address,
-      optionSome: fieldToJSON(`0x1::option::Option<u64>`, this.optionSome),
-      optionNone: fieldToJSON(`0x1::option::Option<u64>`, this.optionNone),
+      optionSome: fieldToJSON<Option<'u64'>>(`0x1::option::Option<u64>`, this.optionSome),
+      optionNone: fieldToJSON<Option<'u64'>>(`0x1::option::Option<u64>`, this.optionNone),
     }
   }
 

@@ -103,7 +103,7 @@ export class TxContext {
   toJSONField() {
     return {
       sender: this.sender,
-      txHash: fieldToJSON(`vector<u8>`, this.txHash),
+      txHash: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.txHash),
       epoch: this.epoch.toString(),
       epochTimestampMs: this.epochTimestampMs.toString(),
       idsCreated: this.idsCreated.toString(),

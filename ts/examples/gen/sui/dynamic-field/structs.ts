@@ -119,8 +119,8 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> {
   toJSONField() {
     return {
       id: this.id,
-      name: fieldToJSON(this.$typeArgs[0], this.name),
-      value: fieldToJSON(this.$typeArgs[1], this.value),
+      name: fieldToJSON<Name>(this.$typeArgs[0], this.name),
+      value: fieldToJSON<Value>(this.$typeArgs[1], this.value),
     }
   }
 

@@ -328,7 +328,7 @@ export class UpgradeTicket {
       cap: this.cap,
       package: this.package,
       policy: this.policy,
-      digest: fieldToJSON(`vector<u8>`, this.digest),
+      digest: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.digest),
     }
   }
 

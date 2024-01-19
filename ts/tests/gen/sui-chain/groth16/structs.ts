@@ -178,10 +178,10 @@ export class PreparedVerifyingKey {
 
   toJSONField() {
     return {
-      vkGammaAbcG1Bytes: fieldToJSON(`vector<u8>`, this.vkGammaAbcG1Bytes),
-      alphaG1BetaG2Bytes: fieldToJSON(`vector<u8>`, this.alphaG1BetaG2Bytes),
-      gammaG2NegPcBytes: fieldToJSON(`vector<u8>`, this.gammaG2NegPcBytes),
-      deltaG2NegPcBytes: fieldToJSON(`vector<u8>`, this.deltaG2NegPcBytes),
+      vkGammaAbcG1Bytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.vkGammaAbcG1Bytes),
+      alphaG1BetaG2Bytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.alphaG1BetaG2Bytes),
+      gammaG2NegPcBytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.gammaG2NegPcBytes),
+      deltaG2NegPcBytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.deltaG2NegPcBytes),
     }
   }
 
@@ -253,7 +253,7 @@ export class PublicProofInputs {
 
   toJSONField() {
     return {
-      bytes: fieldToJSON(`vector<u8>`, this.bytes),
+      bytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 
@@ -325,7 +325,7 @@ export class ProofPoints {
 
   toJSONField() {
     return {
-      bytes: fieldToJSON(`vector<u8>`, this.bytes),
+      bytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 

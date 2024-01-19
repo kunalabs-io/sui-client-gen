@@ -233,7 +233,7 @@ export class CoinMetadata {
       name: this.name,
       symbol: this.symbol,
       description: this.description,
-      iconUrl: fieldToJSON(`0x1::option::Option<0x2::url::Url>`, this.iconUrl),
+      iconUrl: fieldToJSON<Option<Url>>(`0x1::option::Option<0x2::url::Url>`, this.iconUrl),
     }
   }
 
