@@ -2,10 +2,10 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { String } from '../../move-stdlib-chain/string/structs'
@@ -72,8 +72,8 @@ export class Token {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): Token {
     return Token.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      balance: decodeFromFieldsGenericOrSpecial(Balance.reified(typeArg), fields.balance),
+      id: decodeFromFields(UID.reified(), fields.id),
+      balance: decodeFromFields(Balance.reified(typeArg), fields.balance),
     })
   }
 
@@ -84,11 +84,8 @@ export class Token {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return Token.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      balance: decodeFromFieldsWithTypesGenericOrSpecial(
-        Balance.reified(typeArg),
-        item.fields.balance
-      ),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      balance: decodeFromFieldsWithTypes(Balance.reified(typeArg), item.fields.balance),
     })
   }
 
@@ -181,8 +178,8 @@ export class TokenPolicyCap {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): TokenPolicyCap {
     return TokenPolicyCap.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      for: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.for),
+      id: decodeFromFields(UID.reified(), fields.id),
+      for: decodeFromFields(ID.reified(), fields.for),
     })
   }
 
@@ -193,8 +190,8 @@ export class TokenPolicyCap {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return TokenPolicyCap.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      for: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.for),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      for: decodeFromFieldsWithTypes(ID.reified(), item.fields.for),
     })
   }
 
@@ -295,12 +292,9 @@ export class TokenPolicy {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): TokenPolicy {
     return TokenPolicy.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      spentBalance: decodeFromFieldsGenericOrSpecial(
-        Balance.reified(typeArg),
-        fields.spent_balance
-      ),
-      rules: decodeFromFieldsGenericOrSpecial(
+      id: decodeFromFields(UID.reified(), fields.id),
+      spentBalance: decodeFromFields(Balance.reified(typeArg), fields.spent_balance),
+      rules: decodeFromFields(
         VecMap.reified(String.reified(), VecSet.reified(TypeName.reified())),
         fields.rules
       ),
@@ -314,12 +308,9 @@ export class TokenPolicy {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return TokenPolicy.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      spentBalance: decodeFromFieldsWithTypesGenericOrSpecial(
-        Balance.reified(typeArg),
-        item.fields.spent_balance
-      ),
-      rules: decodeFromFieldsWithTypesGenericOrSpecial(
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      spentBalance: decodeFromFieldsWithTypes(Balance.reified(typeArg), item.fields.spent_balance),
+      rules: decodeFromFieldsWithTypes(
         VecMap.reified(String.reified(), VecSet.reified(TypeName.reified())),
         item.fields.rules
       ),
@@ -444,18 +435,15 @@ export class ActionRequest {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): ActionRequest {
     return ActionRequest.new(typeArg, {
-      name: decodeFromFieldsGenericOrSpecial(String.reified(), fields.name),
-      amount: decodeFromFieldsGenericOrSpecial('u64', fields.amount),
-      sender: decodeFromFieldsGenericOrSpecial('address', fields.sender),
-      recipient: decodeFromFieldsGenericOrSpecial(Option.reified('address'), fields.recipient),
-      spentBalance: decodeFromFieldsGenericOrSpecial(
+      name: decodeFromFields(String.reified(), fields.name),
+      amount: decodeFromFields('u64', fields.amount),
+      sender: decodeFromFields('address', fields.sender),
+      recipient: decodeFromFields(Option.reified('address'), fields.recipient),
+      spentBalance: decodeFromFields(
         Option.reified(Balance.reified(typeArg)),
         fields.spent_balance
       ),
-      approvals: decodeFromFieldsGenericOrSpecial(
-        VecSet.reified(TypeName.reified()),
-        fields.approvals
-      ),
+      approvals: decodeFromFields(VecSet.reified(TypeName.reified()), fields.approvals),
     })
   }
 
@@ -466,18 +454,15 @@ export class ActionRequest {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return ActionRequest.new(typeArg, {
-      name: decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.name),
-      amount: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.amount),
-      sender: decodeFromFieldsWithTypesGenericOrSpecial('address', item.fields.sender),
-      recipient: decodeFromFieldsWithTypesGenericOrSpecial(
-        Option.reified('address'),
-        item.fields.recipient
-      ),
-      spentBalance: decodeFromFieldsWithTypesGenericOrSpecial(
+      name: decodeFromFieldsWithTypes(String.reified(), item.fields.name),
+      amount: decodeFromFieldsWithTypes('u64', item.fields.amount),
+      sender: decodeFromFieldsWithTypes('address', item.fields.sender),
+      recipient: decodeFromFieldsWithTypes(Option.reified('address'), item.fields.recipient),
+      spentBalance: decodeFromFieldsWithTypes(
         Option.reified(Balance.reified(typeArg)),
         item.fields.spent_balance
       ),
-      approvals: decodeFromFieldsWithTypesGenericOrSpecial(
+      approvals: decodeFromFieldsWithTypes(
         VecSet.reified(TypeName.reified()),
         item.fields.approvals
       ),
@@ -554,7 +539,7 @@ export class RuleKey {
   }
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): RuleKey {
-    return RuleKey.new(typeArg, decodeFromFieldsGenericOrSpecial('bool', fields.is_protected))
+    return RuleKey.new(typeArg, decodeFromFields('bool', fields.is_protected))
   }
 
   static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): RuleKey {
@@ -563,10 +548,7 @@ export class RuleKey {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return RuleKey.new(
-      typeArg,
-      decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.is_protected)
-    )
+    return RuleKey.new(typeArg, decodeFromFieldsWithTypes('bool', item.fields.is_protected))
   }
 
   static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): RuleKey {
@@ -637,8 +619,8 @@ export class TokenPolicyCreated {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): TokenPolicyCreated {
     return TokenPolicyCreated.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id),
-      isMutable: decodeFromFieldsGenericOrSpecial('bool', fields.is_mutable),
+      id: decodeFromFields(ID.reified(), fields.id),
+      isMutable: decodeFromFields('bool', fields.is_mutable),
     })
   }
 
@@ -652,8 +634,8 @@ export class TokenPolicyCreated {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return TokenPolicyCreated.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id),
-      isMutable: decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.is_mutable),
+      id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
+      isMutable: decodeFromFieldsWithTypes('bool', item.fields.is_mutable),
     })
   }
 

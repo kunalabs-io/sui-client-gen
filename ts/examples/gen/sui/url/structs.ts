@@ -1,9 +1,5 @@
 import { String } from '../../_dependencies/source/0x1/ascii/structs'
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-} from '../../_framework/types'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
@@ -53,7 +49,7 @@ export class Url {
   }
 
   static fromFields(fields: Record<string, any>): Url {
-    return Url.new(decodeFromFieldsGenericOrSpecial(String.reified(), fields.url))
+    return Url.new(decodeFromFields(String.reified(), fields.url))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Url {
@@ -61,7 +57,7 @@ export class Url {
       throw new Error('not a Url type')
     }
 
-    return Url.new(decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.url))
+    return Url.new(decodeFromFieldsWithTypes(String.reified(), item.fields.url))
   }
 
   static fromBcs(data: Uint8Array): Url {

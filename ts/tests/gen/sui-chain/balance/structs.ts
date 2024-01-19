@@ -2,10 +2,10 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
@@ -59,7 +59,7 @@ export class Supply {
   }
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): Supply {
-    return Supply.new(typeArg, decodeFromFieldsGenericOrSpecial('u64', fields.value))
+    return Supply.new(typeArg, decodeFromFields('u64', fields.value))
   }
 
   static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): Supply {
@@ -68,7 +68,7 @@ export class Supply {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return Supply.new(typeArg, decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.value))
+    return Supply.new(typeArg, decodeFromFieldsWithTypes('u64', item.fields.value))
   }
 
   static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): Supply {
@@ -133,7 +133,7 @@ export class Balance {
   }
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): Balance {
-    return Balance.new(typeArg, decodeFromFieldsGenericOrSpecial('u64', fields.value))
+    return Balance.new(typeArg, decodeFromFields('u64', fields.value))
   }
 
   static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): Balance {
@@ -142,7 +142,7 @@ export class Balance {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return Balance.new(typeArg, decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.value))
+    return Balance.new(typeArg, decodeFromFieldsWithTypes('u64', item.fields.value))
   }
 
   static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): Balance {

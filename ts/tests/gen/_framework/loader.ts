@@ -1,5 +1,11 @@
 import { compressSuiType, parseTypeName } from './util'
-import { Primitive, ReifiedTypeArgument, StructClassReified, VectorReified, reified } from './types'
+import {
+  Primitive,
+  ReifiedTypeArgument,
+  StructClassReified,
+  VectorReified,
+  vector,
+} from './reified'
 
 export type PrimitiveValue = string | number | boolean | bigint
 
@@ -37,7 +43,7 @@ export class StructClassLoader {
         if (typeArgs.length !== 1) {
           throw new Error(`Vector expects 1 type argument, but got ${typeArgs.length}`)
         }
-        return reified.vector(this.reified(typeArgs[0]))
+        return vector(this.reified(typeArgs[0]))
       }
     }
 

@@ -4,11 +4,11 @@ import {
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
   toBcs,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { ID } from '../object/structs'
@@ -79,8 +79,8 @@ export class Referent<T0 extends TypeArgument> {
     fields: Record<string, any>
   ): Referent<ToTypeArgument<T0>> {
     return Referent.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial('address', fields.id),
-      value: decodeFromFieldsGenericOrSpecial(Option.reified(typeArg), fields.value),
+      id: decodeFromFields('address', fields.id),
+      value: decodeFromFields(Option.reified(typeArg), fields.value),
     })
   }
 
@@ -94,8 +94,8 @@ export class Referent<T0 extends TypeArgument> {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return Referent.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial('address', item.fields.id),
-      value: decodeFromFieldsWithTypesGenericOrSpecial(Option.reified(typeArg), item.fields.value),
+      id: decodeFromFieldsWithTypes('address', item.fields.id),
+      value: decodeFromFieldsWithTypes(Option.reified(typeArg), item.fields.value),
     })
   }
 
@@ -171,8 +171,8 @@ export class Borrow {
 
   static fromFields(fields: Record<string, any>): Borrow {
     return Borrow.new({
-      ref: decodeFromFieldsGenericOrSpecial('address', fields.ref),
-      obj: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.obj),
+      ref: decodeFromFields('address', fields.ref),
+      obj: decodeFromFields(ID.reified(), fields.obj),
     })
   }
 
@@ -182,8 +182,8 @@ export class Borrow {
     }
 
     return Borrow.new({
-      ref: decodeFromFieldsWithTypesGenericOrSpecial('address', item.fields.ref),
-      obj: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.obj),
+      ref: decodeFromFieldsWithTypes('address', item.fields.ref),
+      obj: decodeFromFieldsWithTypes(ID.reified(), item.fields.obj),
     })
   }
 

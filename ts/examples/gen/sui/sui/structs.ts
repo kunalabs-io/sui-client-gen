@@ -1,8 +1,4 @@
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-} from '../../_framework/types'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
@@ -52,7 +48,7 @@ export class SUI {
   }
 
   static fromFields(fields: Record<string, any>): SUI {
-    return SUI.new(decodeFromFieldsGenericOrSpecial('bool', fields.dummy_field))
+    return SUI.new(decodeFromFields('bool', fields.dummy_field))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): SUI {
@@ -60,7 +56,7 @@ export class SUI {
       throw new Error('not a SUI type')
     }
 
-    return SUI.new(decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.dummy_field))
+    return SUI.new(decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
   }
 
   static fromBcs(data: Uint8Array): SUI {

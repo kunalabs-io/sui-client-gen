@@ -117,7 +117,7 @@ export function extractType(generic: ReifiedTypeArgument): string {
   }
 }
 
-export function decodeFromFieldsGenericOrSpecial(typeArg: ReifiedTypeArgument, field: any) {
+export function decodeFromFields(typeArg: ReifiedTypeArgument, field: any) {
   switch (typeArg) {
     case 'bool':
     case 'u8':
@@ -148,14 +148,14 @@ export function decodeFromFieldsGenericOrSpecial(typeArg: ReifiedTypeArgument, f
       if (field.vec.length === 0) {
         return null
       }
-      return decodeFromFieldsGenericOrSpecial(typeArg.typeArgs[0], field.vec[0])
+      return decodeFromFields(typeArg.typeArgs[0], field.vec[0])
     }
     default:
       return typeArg.fromFields(field)
   }
 }
 
-export function decodeFromFieldsWithTypesGenericOrSpecial(typeArg: ReifiedTypeArgument, item: any) {
+export function decodeFromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: any) {
   switch (typeArg) {
     case 'bool':
     case 'u8':
@@ -186,24 +186,11 @@ export function decodeFromFieldsWithTypesGenericOrSpecial(typeArg: ReifiedTypeAr
       if (item === null) {
         return null
       }
-      return decodeFromFieldsWithTypesGenericOrSpecial(typeArg.typeArgs[0], item)
+      return decodeFromFieldsWithTypes(typeArg.typeArgs[0], item)
     }
     default:
       return typeArg.fromFieldsWithTypes(item)
   }
-}
-
-export const reified = {
-  vector: <T extends ReifiedTypeArgument>(typeArg: T) => ({
-    typeArg,
-    bcs: bcs.vector(toBcs(typeArg)),
-    fromFields: (fields: any[]) =>
-      fields.map(field => decodeFromFieldsGenericOrSpecial(typeArg, field)),
-    fromFieldsWithTypes: (item: any[]) =>
-      item.map(field => decodeFromFieldsWithTypesGenericOrSpecial(typeArg, field)),
-    fromBcs: (data: Uint8Array) => bcs.vector(toBcs(typeArg)).parse(data),
-    __vectorItem: null as unknown as ToField<ToTypeArgument<T>>,
-  }),
 }
 
 export function assertFieldsWithTypesArgsMatch(
@@ -224,5 +211,17 @@ export function assertFieldsWithTypesArgsMatch(
         `provided item has mismatching type argments ${item.type} (expected ${reifiedTypeArgs[i]}, got ${itemTypeArgs[i]}))`
       )
     }
+  }
+}
+
+export function vector<T extends ReifiedTypeArgument>(typeArg: T) {
+  return {
+    typeArg,
+    bcs: bcs.vector(toBcs(typeArg)),
+    fromFields: (fields: any[]) => fields.map(field => decodeFromFields(typeArg, field)),
+    fromFieldsWithTypes: (item: any[]) =>
+      item.map(field => decodeFromFieldsWithTypes(typeArg, field)),
+    fromBcs: (data: Uint8Array) => bcs.vector(toBcs(typeArg)).parse(data),
+    __vectorItem: null as unknown as ToField<ToTypeArgument<T>>,
   }
 }

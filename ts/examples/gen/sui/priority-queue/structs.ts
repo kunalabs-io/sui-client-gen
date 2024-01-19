@@ -1,15 +1,15 @@
+import * as reified from '../../_framework/reified'
 import {
   ReifiedTypeArgument,
   ToField,
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
-  reified,
   toBcs,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
@@ -75,8 +75,8 @@ export class Entry<T extends TypeArgument> {
     fields: Record<string, any>
   ): Entry<ToTypeArgument<T>> {
     return Entry.new(typeArg, {
-      priority: decodeFromFieldsGenericOrSpecial('u64', fields.priority),
-      value: decodeFromFieldsGenericOrSpecial(typeArg, fields.value),
+      priority: decodeFromFields('u64', fields.priority),
+      value: decodeFromFields(typeArg, fields.value),
     })
   }
 
@@ -90,8 +90,8 @@ export class Entry<T extends TypeArgument> {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return Entry.new(typeArg, {
-      priority: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.priority),
-      value: decodeFromFieldsWithTypesGenericOrSpecial(typeArg, item.fields.value),
+      priority: decodeFromFieldsWithTypes('u64', item.fields.priority),
+      value: decodeFromFieldsWithTypes(typeArg, item.fields.value),
     })
   }
 
@@ -172,7 +172,7 @@ export class PriorityQueue<T extends TypeArgument> {
   ): PriorityQueue<ToTypeArgument<T>> {
     return PriorityQueue.new(
       typeArg,
-      decodeFromFieldsGenericOrSpecial(reified.vector(Entry.reified(typeArg)), fields.entries)
+      decodeFromFields(reified.vector(Entry.reified(typeArg)), fields.entries)
     )
   }
 
@@ -187,10 +187,7 @@ export class PriorityQueue<T extends TypeArgument> {
 
     return PriorityQueue.new(
       typeArg,
-      decodeFromFieldsWithTypesGenericOrSpecial(
-        reified.vector(Entry.reified(typeArg)),
-        item.fields.entries
-      )
+      decodeFromFieldsWithTypes(reified.vector(Entry.reified(typeArg)), item.fields.entries)
     )
   }
 

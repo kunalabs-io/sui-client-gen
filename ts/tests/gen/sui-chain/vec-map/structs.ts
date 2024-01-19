@@ -1,15 +1,15 @@
+import * as reified from '../../_framework/reified'
 import {
   ReifiedTypeArgument,
   ToField,
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
-  reified,
   toBcs,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
@@ -77,8 +77,8 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> {
     fields: Record<string, any>
   ): Entry<ToTypeArgument<T0>, ToTypeArgument<T1>> {
     return Entry.new(typeArgs, {
-      key: decodeFromFieldsGenericOrSpecial(typeArgs[0], fields.key),
-      value: decodeFromFieldsGenericOrSpecial(typeArgs[1], fields.value),
+      key: decodeFromFields(typeArgs[0], fields.key),
+      value: decodeFromFields(typeArgs[1], fields.value),
     })
   }
 
@@ -92,8 +92,8 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> {
     assertFieldsWithTypesArgsMatch(item, typeArgs)
 
     return Entry.new(typeArgs, {
-      key: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[0], item.fields.key),
-      value: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[1], item.fields.value),
+      key: decodeFromFieldsWithTypes(typeArgs[0], item.fields.key),
+      value: decodeFromFieldsWithTypes(typeArgs[1], item.fields.value),
     })
   }
 
@@ -174,10 +174,7 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> {
   ): VecMap<ToTypeArgument<T0>, ToTypeArgument<T1>> {
     return VecMap.new(
       typeArgs,
-      decodeFromFieldsGenericOrSpecial(
-        reified.vector(Entry.reified(typeArgs[0], typeArgs[1])),
-        fields.contents
-      )
+      decodeFromFields(reified.vector(Entry.reified(typeArgs[0], typeArgs[1])), fields.contents)
     )
   }
 
@@ -192,7 +189,7 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> {
 
     return VecMap.new(
       typeArgs,
-      decodeFromFieldsWithTypesGenericOrSpecial(
+      decodeFromFieldsWithTypes(
         reified.vector(Entry.reified(typeArgs[0], typeArgs[1])),
         item.fields.contents
       )

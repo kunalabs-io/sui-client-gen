@@ -1,9 +1,5 @@
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-  reified,
-} from '../../_framework/types'
+import * as reified from '../../_framework/reified'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
@@ -53,7 +49,7 @@ export class String {
   }
 
   static fromFields(fields: Record<string, any>): String {
-    return String.new(decodeFromFieldsGenericOrSpecial(reified.vector('u8'), fields.bytes))
+    return String.new(decodeFromFields(reified.vector('u8'), fields.bytes))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): String {
@@ -61,9 +57,7 @@ export class String {
       throw new Error('not a String type')
     }
 
-    return String.new(
-      decodeFromFieldsWithTypesGenericOrSpecial(reified.vector('u8'), item.fields.bytes)
-    )
+    return String.new(decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.bytes))
   }
 
   static fromBcs(data: Uint8Array): String {

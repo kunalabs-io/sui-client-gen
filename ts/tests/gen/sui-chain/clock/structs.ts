@@ -1,8 +1,4 @@
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-} from '../../_framework/types'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -59,8 +55,8 @@ export class Clock {
 
   static fromFields(fields: Record<string, any>): Clock {
     return Clock.new({
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      timestampMs: decodeFromFieldsGenericOrSpecial('u64', fields.timestamp_ms),
+      id: decodeFromFields(UID.reified(), fields.id),
+      timestampMs: decodeFromFields('u64', fields.timestamp_ms),
     })
   }
 
@@ -70,8 +66,8 @@ export class Clock {
     }
 
     return Clock.new({
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      timestampMs: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.timestamp_ms),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      timestampMs: decodeFromFieldsWithTypes('u64', item.fields.timestamp_ms),
     })
   }
 

@@ -2,10 +2,10 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { ID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -65,8 +65,8 @@ export class Receiving {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): Receiving {
     return Receiving.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id),
-      version: decodeFromFieldsGenericOrSpecial('u64', fields.version),
+      id: decodeFromFields(ID.reified(), fields.id),
+      version: decodeFromFields('u64', fields.version),
     })
   }
 
@@ -77,8 +77,8 @@ export class Receiving {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return Receiving.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id),
-      version: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.version),
+      id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
+      version: decodeFromFieldsWithTypes('u64', item.fields.version),
     })
   }
 

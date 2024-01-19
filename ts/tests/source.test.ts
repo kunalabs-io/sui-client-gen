@@ -30,7 +30,7 @@ import { newUnsafeFromBytes } from './gen/sui/url/functions'
 import { new_ as newUid, idFromAddress } from './gen/sui/object/functions'
 import { zero } from './gen/sui/balance/functions'
 import { Balance } from './gen/sui/balance/structs'
-import { extractType, reified } from './gen/_framework/types'
+import { extractType, vector } from './gen/_framework/reified'
 import { SUI } from './gen/sui/sui/structs'
 import { Option } from './gen/move-stdlib/option/structs'
 import { String } from './gen/move-stdlib/string/structs'
@@ -184,18 +184,15 @@ it('creates and decodes an object with object as type param', async () => {
       }
     ),
     twoGenericsNestedVec: [
-      WithTwoGenerics.new(
-        [Bar.reified(), reified.vector(WithTwoGenerics.reified(Bar.reified(), 'u8'))],
-        {
-          genericField1: Bar.new(100n),
-          genericField2: [
-            WithTwoGenerics.new([Bar.reified(), 'u8'], {
-              genericField1: Bar.new(100n),
-              genericField2: 1,
-            }),
-          ],
-        }
-      ),
+      WithTwoGenerics.new([Bar.reified(), vector(WithTwoGenerics.reified(Bar.reified(), 'u8'))], {
+        genericField1: Bar.new(100n),
+        genericField2: [
+          WithTwoGenerics.new([Bar.reified(), 'u8'], {
+            genericField1: Bar.new(100n),
+            genericField2: 1,
+          }),
+        ],
+      }),
     ],
     dummy: Dummy.new(false),
     other: StructFromOtherModule.new(false),
@@ -213,7 +210,7 @@ it('creates and decodes Foo with vector of objects as type param', async () => {
   const txb = new TransactionBlock()
 
   const T = `vector<${Bar.$typeName}>`
-  const reifiedT = reified.vector(Bar.reified())
+  const reifiedT = vector(Bar.reified())
 
   function createT(txb: TransactionBlock, value: bigint) {
     return txb.makeMoveVec({
@@ -353,18 +350,15 @@ it('creates and decodes Foo with vector of objects as type param', async () => {
       }
     ),
     twoGenericsNestedVec: [
-      WithTwoGenerics.new(
-        [Bar.reified(), reified.vector(WithTwoGenerics.reified(reifiedT, 'u8'))],
-        {
-          genericField1: Bar.new(100n),
-          genericField2: [
-            WithTwoGenerics.new([reifiedT, 'u8'], {
-              genericField1: [Bar.new(100n)],
-              genericField2: 1,
-            }),
-          ],
-        }
-      ),
+      WithTwoGenerics.new([Bar.reified(), vector(WithTwoGenerics.reified(reifiedT, 'u8'))], {
+        genericField1: Bar.new(100n),
+        genericField2: [
+          WithTwoGenerics.new([reifiedT, 'u8'], {
+            genericField1: [Bar.new(100n)],
+            genericField2: 1,
+          }),
+        ],
+      }),
     ],
     dummy: Dummy.new(false),
     other: StructFromOtherModule.new(false),
@@ -546,17 +540,15 @@ it('calls function correctly when special types are used', async () => {
 
   const reifiedArgs = [
     SUI.reified(),
-    reified.vector(Option.reified(Option.reified(reified.vector(reified.vector('u64'))))),
+    vector(Option.reified(Option.reified(vector(vector('u64'))))),
   ] as [
     ReturnType<typeof SUI.reified>,
     ReturnType<
-      typeof reified.vector<
+      typeof vector<
         ReturnType<
           typeof Option.reified<
             ReturnType<
-              typeof Option.reified<
-                ReturnType<typeof reified.vector<ReturnType<typeof reified.vector<'u64'>>>>
-              >
+              typeof Option.reified<ReturnType<typeof vector<ReturnType<typeof vector<'u64'>>>>>
             >
           >
         >
@@ -639,7 +631,7 @@ it('calls function correctly when special types are used as generics', async () 
     ID.reified(),
     UID.reified(),
     Balance.reified(SUI.reified()),
-    Option.reified(reified.vector(Option.reified('u64'))),
+    Option.reified(vector(Option.reified('u64'))),
     Option.reified('u64'),
   ] as [
     ReturnType<typeof String.reified>,
@@ -649,9 +641,7 @@ it('calls function correctly when special types are used as generics', async () 
     ReturnType<typeof UID.reified>,
     ReturnType<typeof Balance.reified>,
     ReturnType<
-      typeof Option.reified<
-        ReturnType<typeof reified.vector<ReturnType<typeof Option.reified<'u64'>>>>
-      >
+      typeof Option.reified<ReturnType<typeof vector<ReturnType<typeof Option.reified<'u64'>>>>>
     >,
     ReturnType<typeof Option.reified<'u64'>>,
   ]
@@ -754,10 +744,8 @@ it('calls function correctly when special types are used as as vectors', async (
     throw new Error(`not a moveObject`)
   }
 
-  expect(
-    WithSpecialTypesInVectors.fromFieldsWithTypes(reified.vector('u64'), obj.data.content)
-  ).toEqual(
-    WithSpecialTypesInVectors.new(reified.vector('u64'), {
+  expect(WithSpecialTypesInVectors.fromFieldsWithTypes(vector('u64'), obj.data.content)).toEqual(
+    WithSpecialTypesInVectors.new(vector('u64'), {
       id,
       string: ['string'],
       asciiString: ['ascii'],
@@ -778,7 +766,7 @@ it('loads with loader correctly', async () => {
   const T = `${WithTwoGenerics.$typeName}<${Bar.$typeName}, vector<${WithTwoGenerics.$typeName}<${Bar.$typeName}, u8>>>`
   const tReified = WithTwoGenerics.reified(
     Bar.reified(),
-    reified.vector(WithTwoGenerics.reified(Bar.reified(), 'u8'))
+    vector(WithTwoGenerics.reified(Bar.reified(), 'u8'))
   )
 
   const withTwoGenerics = createWithTwoGenerics(
@@ -830,7 +818,7 @@ it('loads with loader correctly', async () => {
     WithGenericField.new(tReified, {
       id,
       genericField: WithTwoGenerics.new(
-        [Bar.reified(), reified.vector(WithTwoGenerics.reified(Bar.reified(), 'u8'))],
+        [Bar.reified(), vector(WithTwoGenerics.reified(Bar.reified(), 'u8'))],
         {
           genericField1: Bar.new(100n),
           genericField2: [

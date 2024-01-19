@@ -1,8 +1,4 @@
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-} from '../../_framework/types'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs, fromHEX, toHEX } from '@mysten/bcs'
 
@@ -55,7 +51,7 @@ export class ID {
   }
 
   static fromFields(fields: Record<string, any>): ID {
-    return ID.new(decodeFromFieldsGenericOrSpecial('address', fields.bytes))
+    return ID.new(decodeFromFields('address', fields.bytes))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): ID {
@@ -63,7 +59,7 @@ export class ID {
       throw new Error('not a ID type')
     }
 
-    return ID.new(decodeFromFieldsWithTypesGenericOrSpecial('address', item.fields.bytes))
+    return ID.new(decodeFromFieldsWithTypes('address', item.fields.bytes))
   }
 
   static fromBcs(data: Uint8Array): ID {
@@ -123,7 +119,7 @@ export class UID {
   }
 
   static fromFields(fields: Record<string, any>): UID {
-    return UID.new(decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id))
+    return UID.new(decodeFromFields(ID.reified(), fields.id))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): UID {
@@ -131,7 +127,7 @@ export class UID {
       throw new Error('not a UID type')
     }
 
-    return UID.new(decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id))
+    return UID.new(decodeFromFieldsWithTypes(ID.reified(), item.fields.id))
   }
 
   static fromBcs(data: Uint8Array): UID {

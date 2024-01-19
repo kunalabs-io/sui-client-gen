@@ -2,10 +2,10 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { Bag } from '../bag/structs'
 import { bcs } from '@mysten/bcs'
@@ -65,9 +65,9 @@ export class Extension {
 
   static fromFields(fields: Record<string, any>): Extension {
     return Extension.new({
-      storage: decodeFromFieldsGenericOrSpecial(Bag.reified(), fields.storage),
-      permissions: decodeFromFieldsGenericOrSpecial('u128', fields.permissions),
-      isEnabled: decodeFromFieldsGenericOrSpecial('bool', fields.is_enabled),
+      storage: decodeFromFields(Bag.reified(), fields.storage),
+      permissions: decodeFromFields('u128', fields.permissions),
+      isEnabled: decodeFromFields('bool', fields.is_enabled),
     })
   }
 
@@ -77,9 +77,9 @@ export class Extension {
     }
 
     return Extension.new({
-      storage: decodeFromFieldsWithTypesGenericOrSpecial(Bag.reified(), item.fields.storage),
-      permissions: decodeFromFieldsWithTypesGenericOrSpecial('u128', item.fields.permissions),
-      isEnabled: decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.is_enabled),
+      storage: decodeFromFieldsWithTypes(Bag.reified(), item.fields.storage),
+      permissions: decodeFromFieldsWithTypes('u128', item.fields.permissions),
+      isEnabled: decodeFromFieldsWithTypes('bool', item.fields.is_enabled),
     })
   }
 
@@ -146,7 +146,7 @@ export class ExtensionKey {
   }
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): ExtensionKey {
-    return ExtensionKey.new(typeArg, decodeFromFieldsGenericOrSpecial('bool', fields.dummy_field))
+    return ExtensionKey.new(typeArg, decodeFromFields('bool', fields.dummy_field))
   }
 
   static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): ExtensionKey {
@@ -155,10 +155,7 @@ export class ExtensionKey {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return ExtensionKey.new(
-      typeArg,
-      decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.dummy_field)
-    )
+    return ExtensionKey.new(typeArg, decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
   }
 
   static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): ExtensionKey {

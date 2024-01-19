@@ -2,10 +2,10 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/string/structs'
 import { ID, UID } from '../object/structs'
@@ -72,12 +72,9 @@ export class Display {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): Display {
     return Display.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      fields: decodeFromFieldsGenericOrSpecial(
-        VecMap.reified(String.reified(), String.reified()),
-        fields.fields
-      ),
-      version: decodeFromFieldsGenericOrSpecial('u16', fields.version),
+      id: decodeFromFields(UID.reified(), fields.id),
+      fields: decodeFromFields(VecMap.reified(String.reified(), String.reified()), fields.fields),
+      version: decodeFromFields('u16', fields.version),
     })
   }
 
@@ -88,12 +85,12 @@ export class Display {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return Display.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      fields: decodeFromFieldsWithTypesGenericOrSpecial(
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      fields: decodeFromFieldsWithTypes(
         VecMap.reified(String.reified(), String.reified()),
         item.fields.fields
       ),
-      version: decodeFromFieldsWithTypesGenericOrSpecial('u16', item.fields.version),
+      version: decodeFromFieldsWithTypes('u16', item.fields.version),
     })
   }
 
@@ -186,7 +183,7 @@ export class DisplayCreated {
   }
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): DisplayCreated {
-    return DisplayCreated.new(typeArg, decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id))
+    return DisplayCreated.new(typeArg, decodeFromFields(ID.reified(), fields.id))
   }
 
   static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): DisplayCreated {
@@ -195,10 +192,7 @@ export class DisplayCreated {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return DisplayCreated.new(
-      typeArg,
-      decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id)
-    )
+    return DisplayCreated.new(typeArg, decodeFromFieldsWithTypes(ID.reified(), item.fields.id))
   }
 
   static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): DisplayCreated {
@@ -272,12 +266,9 @@ export class VersionUpdated {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): VersionUpdated {
     return VersionUpdated.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id),
-      version: decodeFromFieldsGenericOrSpecial('u16', fields.version),
-      fields: decodeFromFieldsGenericOrSpecial(
-        VecMap.reified(String.reified(), String.reified()),
-        fields.fields
-      ),
+      id: decodeFromFields(ID.reified(), fields.id),
+      version: decodeFromFields('u16', fields.version),
+      fields: decodeFromFields(VecMap.reified(String.reified(), String.reified()), fields.fields),
     })
   }
 
@@ -288,9 +279,9 @@ export class VersionUpdated {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return VersionUpdated.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id),
-      version: decodeFromFieldsWithTypesGenericOrSpecial('u16', item.fields.version),
-      fields: decodeFromFieldsWithTypesGenericOrSpecial(
+      id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
+      version: decodeFromFieldsWithTypes('u16', item.fields.version),
+      fields: decodeFromFieldsWithTypes(
         VecMap.reified(String.reified(), String.reified()),
         item.fields.fields
       ),

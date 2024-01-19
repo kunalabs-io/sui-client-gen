@@ -1,9 +1,5 @@
 import { String } from '../../_dependencies/source/0x1/string/structs'
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-} from '../../_framework/types'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs, fromHEX, toHEX } from '@mysten/bcs'
@@ -79,12 +75,12 @@ export class VerifiedID {
 
   static fromFields(fields: Record<string, any>): VerifiedID {
     return VerifiedID.new({
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      owner: decodeFromFieldsGenericOrSpecial('address', fields.owner),
-      keyClaimName: decodeFromFieldsGenericOrSpecial(String.reified(), fields.key_claim_name),
-      keyClaimValue: decodeFromFieldsGenericOrSpecial(String.reified(), fields.key_claim_value),
-      issuer: decodeFromFieldsGenericOrSpecial(String.reified(), fields.issuer),
-      audience: decodeFromFieldsGenericOrSpecial(String.reified(), fields.audience),
+      id: decodeFromFields(UID.reified(), fields.id),
+      owner: decodeFromFields('address', fields.owner),
+      keyClaimName: decodeFromFields(String.reified(), fields.key_claim_name),
+      keyClaimValue: decodeFromFields(String.reified(), fields.key_claim_value),
+      issuer: decodeFromFields(String.reified(), fields.issuer),
+      audience: decodeFromFields(String.reified(), fields.audience),
     })
   }
 
@@ -94,18 +90,12 @@ export class VerifiedID {
     }
 
     return VerifiedID.new({
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      owner: decodeFromFieldsWithTypesGenericOrSpecial('address', item.fields.owner),
-      keyClaimName: decodeFromFieldsWithTypesGenericOrSpecial(
-        String.reified(),
-        item.fields.key_claim_name
-      ),
-      keyClaimValue: decodeFromFieldsWithTypesGenericOrSpecial(
-        String.reified(),
-        item.fields.key_claim_value
-      ),
-      issuer: decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.issuer),
-      audience: decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.audience),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      owner: decodeFromFieldsWithTypes('address', item.fields.owner),
+      keyClaimName: decodeFromFieldsWithTypes(String.reified(), item.fields.key_claim_name),
+      keyClaimValue: decodeFromFieldsWithTypes(String.reified(), item.fields.key_claim_value),
+      issuer: decodeFromFieldsWithTypes(String.reified(), item.fields.issuer),
+      audience: decodeFromFieldsWithTypes(String.reified(), item.fields.audience),
     })
   }
 

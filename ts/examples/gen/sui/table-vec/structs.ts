@@ -2,10 +2,10 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { Table } from '../table/structs'
 import { bcs } from '@mysten/bcs'
@@ -60,10 +60,7 @@ export class TableVec {
   }
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): TableVec {
-    return TableVec.new(
-      typeArg,
-      decodeFromFieldsGenericOrSpecial(Table.reified('u64', typeArg), fields.contents)
-    )
+    return TableVec.new(typeArg, decodeFromFields(Table.reified('u64', typeArg), fields.contents))
   }
 
   static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): TableVec {
@@ -74,7 +71,7 @@ export class TableVec {
 
     return TableVec.new(
       typeArg,
-      decodeFromFieldsWithTypesGenericOrSpecial(Table.reified('u64', typeArg), item.fields.contents)
+      decodeFromFieldsWithTypes(Table.reified('u64', typeArg), item.fields.contents)
     )
   }
 

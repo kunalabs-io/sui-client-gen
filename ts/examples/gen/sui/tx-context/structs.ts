@@ -1,9 +1,5 @@
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-  reified,
-} from '../../_framework/types'
+import * as reified from '../../_framework/reified'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { bcs, fromHEX, toHEX } from '@mysten/bcs'
 
@@ -73,11 +69,11 @@ export class TxContext {
 
   static fromFields(fields: Record<string, any>): TxContext {
     return TxContext.new({
-      sender: decodeFromFieldsGenericOrSpecial('address', fields.sender),
-      txHash: decodeFromFieldsGenericOrSpecial(reified.vector('u8'), fields.tx_hash),
-      epoch: decodeFromFieldsGenericOrSpecial('u64', fields.epoch),
-      epochTimestampMs: decodeFromFieldsGenericOrSpecial('u64', fields.epoch_timestamp_ms),
-      idsCreated: decodeFromFieldsGenericOrSpecial('u64', fields.ids_created),
+      sender: decodeFromFields('address', fields.sender),
+      txHash: decodeFromFields(reified.vector('u8'), fields.tx_hash),
+      epoch: decodeFromFields('u64', fields.epoch),
+      epochTimestampMs: decodeFromFields('u64', fields.epoch_timestamp_ms),
+      idsCreated: decodeFromFields('u64', fields.ids_created),
     })
   }
 
@@ -87,14 +83,11 @@ export class TxContext {
     }
 
     return TxContext.new({
-      sender: decodeFromFieldsWithTypesGenericOrSpecial('address', item.fields.sender),
-      txHash: decodeFromFieldsWithTypesGenericOrSpecial(reified.vector('u8'), item.fields.tx_hash),
-      epoch: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.epoch),
-      epochTimestampMs: decodeFromFieldsWithTypesGenericOrSpecial(
-        'u64',
-        item.fields.epoch_timestamp_ms
-      ),
-      idsCreated: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.ids_created),
+      sender: decodeFromFieldsWithTypes('address', item.fields.sender),
+      txHash: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.tx_hash),
+      epoch: decodeFromFieldsWithTypes('u64', item.fields.epoch),
+      epochTimestampMs: decodeFromFieldsWithTypes('u64', item.fields.epoch_timestamp_ms),
+      idsCreated: decodeFromFieldsWithTypes('u64', item.fields.ids_created),
     })
   }
 

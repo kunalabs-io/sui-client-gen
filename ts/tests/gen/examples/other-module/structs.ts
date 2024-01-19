@@ -1,8 +1,4 @@
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-} from '../../_framework/types'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
@@ -57,7 +53,7 @@ export class StructFromOtherModule {
   }
 
   static fromFields(fields: Record<string, any>): StructFromOtherModule {
-    return StructFromOtherModule.new(decodeFromFieldsGenericOrSpecial('bool', fields.dummy_field))
+    return StructFromOtherModule.new(decodeFromFields('bool', fields.dummy_field))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): StructFromOtherModule {
@@ -65,9 +61,7 @@ export class StructFromOtherModule {
       throw new Error('not a StructFromOtherModule type')
     }
 
-    return StructFromOtherModule.new(
-      decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.dummy_field)
-    )
+    return StructFromOtherModule.new(decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
   }
 
   static fromBcs(data: Uint8Array): StructFromOtherModule {

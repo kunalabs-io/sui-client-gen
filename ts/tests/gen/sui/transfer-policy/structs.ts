@@ -2,10 +2,10 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { TypeName } from '../../move-stdlib/type-name/structs'
 import { Balance } from '../balance/structs'
@@ -65,7 +65,7 @@ export class RuleKey {
   }
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): RuleKey {
-    return RuleKey.new(typeArg, decodeFromFieldsGenericOrSpecial('bool', fields.dummy_field))
+    return RuleKey.new(typeArg, decodeFromFields('bool', fields.dummy_field))
   }
 
   static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): RuleKey {
@@ -74,10 +74,7 @@ export class RuleKey {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return RuleKey.new(
-      typeArg,
-      decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.dummy_field)
-    )
+    return RuleKey.new(typeArg, decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
   }
 
   static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): RuleKey {
@@ -151,9 +148,9 @@ export class TransferPolicy {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): TransferPolicy {
     return TransferPolicy.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      balance: decodeFromFieldsGenericOrSpecial(Balance.reified(SUI.reified()), fields.balance),
-      rules: decodeFromFieldsGenericOrSpecial(VecSet.reified(TypeName.reified()), fields.rules),
+      id: decodeFromFields(UID.reified(), fields.id),
+      balance: decodeFromFields(Balance.reified(SUI.reified()), fields.balance),
+      rules: decodeFromFields(VecSet.reified(TypeName.reified()), fields.rules),
     })
   }
 
@@ -164,15 +161,9 @@ export class TransferPolicy {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return TransferPolicy.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      balance: decodeFromFieldsWithTypesGenericOrSpecial(
-        Balance.reified(SUI.reified()),
-        item.fields.balance
-      ),
-      rules: decodeFromFieldsWithTypesGenericOrSpecial(
-        VecSet.reified(TypeName.reified()),
-        item.fields.rules
-      ),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      balance: decodeFromFieldsWithTypes(Balance.reified(SUI.reified()), item.fields.balance),
+      rules: decodeFromFieldsWithTypes(VecSet.reified(TypeName.reified()), item.fields.rules),
     })
   }
 
@@ -271,8 +262,8 @@ export class TransferPolicyCap {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): TransferPolicyCap {
     return TransferPolicyCap.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      policyId: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.policy_id),
+      id: decodeFromFields(UID.reified(), fields.id),
+      policyId: decodeFromFields(ID.reified(), fields.policy_id),
     })
   }
 
@@ -286,8 +277,8 @@ export class TransferPolicyCap {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return TransferPolicyCap.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      policyId: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.policy_id),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      policyId: decodeFromFieldsWithTypes(ID.reified(), item.fields.policy_id),
     })
   }
 
@@ -389,10 +380,7 @@ export class TransferPolicyCreated {
     typeArg: ReifiedTypeArgument,
     fields: Record<string, any>
   ): TransferPolicyCreated {
-    return TransferPolicyCreated.new(
-      typeArg,
-      decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id)
-    )
+    return TransferPolicyCreated.new(typeArg, decodeFromFields(ID.reified(), fields.id))
   }
 
   static fromFieldsWithTypes(
@@ -406,7 +394,7 @@ export class TransferPolicyCreated {
 
     return TransferPolicyCreated.new(
       typeArg,
-      decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id)
+      decodeFromFieldsWithTypes(ID.reified(), item.fields.id)
     )
   }
 
@@ -476,10 +464,7 @@ export class TransferPolicyDestroyed {
     typeArg: ReifiedTypeArgument,
     fields: Record<string, any>
   ): TransferPolicyDestroyed {
-    return TransferPolicyDestroyed.new(
-      typeArg,
-      decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id)
-    )
+    return TransferPolicyDestroyed.new(typeArg, decodeFromFields(ID.reified(), fields.id))
   }
 
   static fromFieldsWithTypes(
@@ -493,7 +478,7 @@ export class TransferPolicyDestroyed {
 
     return TransferPolicyDestroyed.new(
       typeArg,
-      decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id)
+      decodeFromFieldsWithTypes(ID.reified(), item.fields.id)
     )
   }
 
@@ -572,13 +557,10 @@ export class TransferRequest {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): TransferRequest {
     return TransferRequest.new(typeArg, {
-      item: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.item),
-      paid: decodeFromFieldsGenericOrSpecial('u64', fields.paid),
-      from: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.from),
-      receipts: decodeFromFieldsGenericOrSpecial(
-        VecSet.reified(TypeName.reified()),
-        fields.receipts
-      ),
+      item: decodeFromFields(ID.reified(), fields.item),
+      paid: decodeFromFields('u64', fields.paid),
+      from: decodeFromFields(ID.reified(), fields.from),
+      receipts: decodeFromFields(VecSet.reified(TypeName.reified()), fields.receipts),
     })
   }
 
@@ -589,13 +571,10 @@ export class TransferRequest {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return TransferRequest.new(typeArg, {
-      item: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.item),
-      paid: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.paid),
-      from: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.from),
-      receipts: decodeFromFieldsWithTypesGenericOrSpecial(
-        VecSet.reified(TypeName.reified()),
-        item.fields.receipts
-      ),
+      item: decodeFromFieldsWithTypes(ID.reified(), item.fields.item),
+      paid: decodeFromFieldsWithTypes('u64', item.fields.paid),
+      from: decodeFromFieldsWithTypes(ID.reified(), item.fields.from),
+      receipts: decodeFromFieldsWithTypes(VecSet.reified(TypeName.reified()), item.fields.receipts),
     })
   }
 

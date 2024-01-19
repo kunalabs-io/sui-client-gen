@@ -1,8 +1,4 @@
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-} from '../../_framework/types'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { TreasuryCap } from '../../sui-chain/coin/structs'
 import { UID } from '../../sui-chain/object/structs'
@@ -59,7 +55,7 @@ export class EXAMPLE_COIN {
   }
 
   static fromFields(fields: Record<string, any>): EXAMPLE_COIN {
-    return EXAMPLE_COIN.new(decodeFromFieldsGenericOrSpecial('bool', fields.dummy_field))
+    return EXAMPLE_COIN.new(decodeFromFields('bool', fields.dummy_field))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): EXAMPLE_COIN {
@@ -67,9 +63,7 @@ export class EXAMPLE_COIN {
       throw new Error('not a EXAMPLE_COIN type')
     }
 
-    return EXAMPLE_COIN.new(
-      decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.dummy_field)
-    )
+    return EXAMPLE_COIN.new(decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
   }
 
   static fromBcs(data: Uint8Array): EXAMPLE_COIN {
@@ -138,11 +132,8 @@ export class Faucet {
 
   static fromFields(fields: Record<string, any>): Faucet {
     return Faucet.new({
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      cap: decodeFromFieldsGenericOrSpecial(
-        TreasuryCap.reified(EXAMPLE_COIN.reified()),
-        fields.cap
-      ),
+      id: decodeFromFields(UID.reified(), fields.id),
+      cap: decodeFromFields(TreasuryCap.reified(EXAMPLE_COIN.reified()), fields.cap),
     })
   }
 
@@ -152,11 +143,8 @@ export class Faucet {
     }
 
     return Faucet.new({
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      cap: decodeFromFieldsWithTypesGenericOrSpecial(
-        TreasuryCap.reified(EXAMPLE_COIN.reified()),
-        item.fields.cap
-      ),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      cap: decodeFromFieldsWithTypes(TreasuryCap.reified(EXAMPLE_COIN.reified()), item.fields.cap),
     })
   }
 

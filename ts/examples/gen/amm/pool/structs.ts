@@ -3,10 +3,10 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { Balance, Supply } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
@@ -63,7 +63,7 @@ export class AdminCap {
   }
 
   static fromFields(fields: Record<string, any>): AdminCap {
-    return AdminCap.new(decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id))
+    return AdminCap.new(decodeFromFields(UID.reified(), fields.id))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): AdminCap {
@@ -71,7 +71,7 @@ export class AdminCap {
       throw new Error('not a AdminCap type')
     }
 
-    return AdminCap.new(decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id))
+    return AdminCap.new(decodeFromFieldsWithTypes(UID.reified(), item.fields.id))
   }
 
   static fromBcs(data: Uint8Array): AdminCap {
@@ -165,7 +165,7 @@ export class LP {
     typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
     fields: Record<string, any>
   ): LP {
-    return LP.new(typeArgs, decodeFromFieldsGenericOrSpecial('bool', fields.dummy_field))
+    return LP.new(typeArgs, decodeFromFields('bool', fields.dummy_field))
   }
 
   static fromFieldsWithTypes(
@@ -177,10 +177,7 @@ export class LP {
     }
     assertFieldsWithTypesArgsMatch(item, typeArgs)
 
-    return LP.new(
-      typeArgs,
-      decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.dummy_field)
-    )
+    return LP.new(typeArgs, decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
   }
 
   static fromBcs(typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument], data: Uint8Array): LP {
@@ -276,16 +273,16 @@ export class Pool {
     fields: Record<string, any>
   ): Pool {
     return Pool.new(typeArgs, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      balanceA: decodeFromFieldsGenericOrSpecial(Balance.reified(typeArgs[0]), fields.balance_a),
-      balanceB: decodeFromFieldsGenericOrSpecial(Balance.reified(typeArgs[1]), fields.balance_b),
-      lpSupply: decodeFromFieldsGenericOrSpecial(
+      id: decodeFromFields(UID.reified(), fields.id),
+      balanceA: decodeFromFields(Balance.reified(typeArgs[0]), fields.balance_a),
+      balanceB: decodeFromFields(Balance.reified(typeArgs[1]), fields.balance_b),
+      lpSupply: decodeFromFields(
         Supply.reified(LP.reified(typeArgs[0], typeArgs[1])),
         fields.lp_supply
       ),
-      lpFeeBps: decodeFromFieldsGenericOrSpecial('u64', fields.lp_fee_bps),
-      adminFeePct: decodeFromFieldsGenericOrSpecial('u64', fields.admin_fee_pct),
-      adminFeeBalance: decodeFromFieldsGenericOrSpecial(
+      lpFeeBps: decodeFromFields('u64', fields.lp_fee_bps),
+      adminFeePct: decodeFromFields('u64', fields.admin_fee_pct),
+      adminFeeBalance: decodeFromFields(
         Balance.reified(LP.reified(typeArgs[0], typeArgs[1])),
         fields.admin_fee_balance
       ),
@@ -302,22 +299,16 @@ export class Pool {
     assertFieldsWithTypesArgsMatch(item, typeArgs)
 
     return Pool.new(typeArgs, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      balanceA: decodeFromFieldsWithTypesGenericOrSpecial(
-        Balance.reified(typeArgs[0]),
-        item.fields.balance_a
-      ),
-      balanceB: decodeFromFieldsWithTypesGenericOrSpecial(
-        Balance.reified(typeArgs[1]),
-        item.fields.balance_b
-      ),
-      lpSupply: decodeFromFieldsWithTypesGenericOrSpecial(
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      balanceA: decodeFromFieldsWithTypes(Balance.reified(typeArgs[0]), item.fields.balance_a),
+      balanceB: decodeFromFieldsWithTypes(Balance.reified(typeArgs[1]), item.fields.balance_b),
+      lpSupply: decodeFromFieldsWithTypes(
         Supply.reified(LP.reified(typeArgs[0], typeArgs[1])),
         item.fields.lp_supply
       ),
-      lpFeeBps: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.lp_fee_bps),
-      adminFeePct: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.admin_fee_pct),
-      adminFeeBalance: decodeFromFieldsWithTypesGenericOrSpecial(
+      lpFeeBps: decodeFromFieldsWithTypes('u64', item.fields.lp_fee_bps),
+      adminFeePct: decodeFromFieldsWithTypes('u64', item.fields.admin_fee_pct),
+      adminFeeBalance: decodeFromFieldsWithTypes(
         Balance.reified(LP.reified(typeArgs[0], typeArgs[1])),
         item.fields.admin_fee_balance
       ),
@@ -420,7 +411,7 @@ export class PoolCreationEvent {
   }
 
   static fromFields(fields: Record<string, any>): PoolCreationEvent {
-    return PoolCreationEvent.new(decodeFromFieldsGenericOrSpecial(ID.reified(), fields.pool_id))
+    return PoolCreationEvent.new(decodeFromFields(ID.reified(), fields.pool_id))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): PoolCreationEvent {
@@ -428,9 +419,7 @@ export class PoolCreationEvent {
       throw new Error('not a PoolCreationEvent type')
     }
 
-    return PoolCreationEvent.new(
-      decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.pool_id)
-    )
+    return PoolCreationEvent.new(decodeFromFieldsWithTypes(ID.reified(), item.fields.pool_id))
   }
 
   static fromBcs(data: Uint8Array): PoolCreationEvent {
@@ -499,11 +488,8 @@ export class PoolRegistry {
 
   static fromFields(fields: Record<string, any>): PoolRegistry {
     return PoolRegistry.new({
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      table: decodeFromFieldsGenericOrSpecial(
-        Table.reified(PoolRegistryItem.reified(), 'bool'),
-        fields.table
-      ),
+      id: decodeFromFields(UID.reified(), fields.id),
+      table: decodeFromFields(Table.reified(PoolRegistryItem.reified(), 'bool'), fields.table),
     })
   }
 
@@ -513,8 +499,8 @@ export class PoolRegistry {
     }
 
     return PoolRegistry.new({
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      table: decodeFromFieldsWithTypesGenericOrSpecial(
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      table: decodeFromFieldsWithTypes(
         Table.reified(PoolRegistryItem.reified(), 'bool'),
         item.fields.table
       ),
@@ -609,8 +595,8 @@ export class PoolRegistryItem {
 
   static fromFields(fields: Record<string, any>): PoolRegistryItem {
     return PoolRegistryItem.new({
-      a: decodeFromFieldsGenericOrSpecial(TypeName.reified(), fields.a),
-      b: decodeFromFieldsGenericOrSpecial(TypeName.reified(), fields.b),
+      a: decodeFromFields(TypeName.reified(), fields.a),
+      b: decodeFromFields(TypeName.reified(), fields.b),
     })
   }
 
@@ -620,8 +606,8 @@ export class PoolRegistryItem {
     }
 
     return PoolRegistryItem.new({
-      a: decodeFromFieldsWithTypesGenericOrSpecial(TypeName.reified(), item.fields.a),
-      b: decodeFromFieldsWithTypesGenericOrSpecial(TypeName.reified(), item.fields.b),
+      a: decodeFromFieldsWithTypes(TypeName.reified(), item.fields.a),
+      b: decodeFromFieldsWithTypes(TypeName.reified(), item.fields.b),
     })
   }
 

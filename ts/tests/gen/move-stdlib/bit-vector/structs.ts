@@ -1,9 +1,5 @@
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-  reified,
-} from '../../_framework/types'
+import * as reified from '../../_framework/reified'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
@@ -58,8 +54,8 @@ export class BitVector {
 
   static fromFields(fields: Record<string, any>): BitVector {
     return BitVector.new({
-      length: decodeFromFieldsGenericOrSpecial('u64', fields.length),
-      bitField: decodeFromFieldsGenericOrSpecial(reified.vector('bool'), fields.bit_field),
+      length: decodeFromFields('u64', fields.length),
+      bitField: decodeFromFields(reified.vector('bool'), fields.bit_field),
     })
   }
 
@@ -69,11 +65,8 @@ export class BitVector {
     }
 
     return BitVector.new({
-      length: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.length),
-      bitField: decodeFromFieldsWithTypesGenericOrSpecial(
-        reified.vector('bool'),
-        item.fields.bit_field
-      ),
+      length: decodeFromFieldsWithTypes('u64', item.fields.length),
+      bitField: decodeFromFieldsWithTypes(reified.vector('bool'), item.fields.bit_field),
     })
   }
 

@@ -1,15 +1,15 @@
+import * as reified from '../../_framework/reified'
 import {
   ReifiedTypeArgument,
   ToField,
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
-  reified,
   toBcs,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -71,10 +71,7 @@ export class DynamicFields<K extends TypeArgument> {
     typeArg: K,
     fields: Record<string, any>
   ): DynamicFields<ToTypeArgument<K>> {
-    return DynamicFields.new(
-      typeArg,
-      decodeFromFieldsGenericOrSpecial(reified.vector(typeArg), fields.names)
-    )
+    return DynamicFields.new(typeArg, decodeFromFields(reified.vector(typeArg), fields.names))
   }
 
   static fromFieldsWithTypes<K extends ReifiedTypeArgument>(
@@ -88,7 +85,7 @@ export class DynamicFields<K extends TypeArgument> {
 
     return DynamicFields.new(
       typeArg,
-      decodeFromFieldsWithTypesGenericOrSpecial(reified.vector(typeArg), item.fields.names)
+      decodeFromFieldsWithTypes(reified.vector(typeArg), item.fields.names)
     )
   }
 
@@ -186,7 +183,7 @@ export class ID {
   }
 
   static fromFields(fields: Record<string, any>): ID {
-    return ID.new(decodeFromFieldsGenericOrSpecial('address', fields.bytes))
+    return ID.new(decodeFromFields('address', fields.bytes))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): ID {
@@ -194,7 +191,7 @@ export class ID {
       throw new Error('not a ID type')
     }
 
-    return ID.new(decodeFromFieldsWithTypesGenericOrSpecial('address', item.fields.bytes))
+    return ID.new(decodeFromFieldsWithTypes('address', item.fields.bytes))
   }
 
   static fromBcs(data: Uint8Array): ID {
@@ -262,8 +259,8 @@ export class Ownership {
 
   static fromFields(fields: Record<string, any>): Ownership {
     return Ownership.new({
-      owner: decodeFromFieldsGenericOrSpecial('address', fields.owner),
-      status: decodeFromFieldsGenericOrSpecial('u64', fields.status),
+      owner: decodeFromFields('address', fields.owner),
+      status: decodeFromFields('u64', fields.status),
     })
   }
 
@@ -273,8 +270,8 @@ export class Ownership {
     }
 
     return Ownership.new({
-      owner: decodeFromFieldsWithTypesGenericOrSpecial('address', item.fields.owner),
-      status: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.status),
+      owner: decodeFromFieldsWithTypes('address', item.fields.owner),
+      status: decodeFromFieldsWithTypes('u64', item.fields.status),
     })
   }
 
@@ -357,7 +354,7 @@ export class UID {
   }
 
   static fromFields(fields: Record<string, any>): UID {
-    return UID.new(decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id))
+    return UID.new(decodeFromFields(ID.reified(), fields.id))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): UID {
@@ -365,7 +362,7 @@ export class UID {
       throw new Error('not a UID type')
     }
 
-    return UID.new(decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id))
+    return UID.new(decodeFromFieldsWithTypes(ID.reified(), item.fields.id))
   }
 
   static fromBcs(data: Uint8Array): UID {

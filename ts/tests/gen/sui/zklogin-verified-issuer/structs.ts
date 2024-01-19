@@ -1,8 +1,4 @@
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-} from '../../_framework/types'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib/string/structs'
 import { UID } from '../object/structs'
@@ -67,9 +63,9 @@ export class VerifiedIssuer {
 
   static fromFields(fields: Record<string, any>): VerifiedIssuer {
     return VerifiedIssuer.new({
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      owner: decodeFromFieldsGenericOrSpecial('address', fields.owner),
-      issuer: decodeFromFieldsGenericOrSpecial(String.reified(), fields.issuer),
+      id: decodeFromFields(UID.reified(), fields.id),
+      owner: decodeFromFields('address', fields.owner),
+      issuer: decodeFromFields(String.reified(), fields.issuer),
     })
   }
 
@@ -79,9 +75,9 @@ export class VerifiedIssuer {
     }
 
     return VerifiedIssuer.new({
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      owner: decodeFromFieldsWithTypesGenericOrSpecial('address', item.fields.owner),
-      issuer: decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.issuer),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      owner: decodeFromFieldsWithTypes('address', item.fields.owner),
+      issuer: decodeFromFieldsWithTypes(String.reified(), item.fields.issuer),
     })
   }
 

@@ -1,9 +1,5 @@
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-  reified,
-} from '../../_framework/types'
+import * as reified from '../../_framework/reified'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { Versioned } from '../versioned/structs'
@@ -61,8 +57,8 @@ export class Random {
 
   static fromFields(fields: Record<string, any>): Random {
     return Random.new({
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      inner: decodeFromFieldsGenericOrSpecial(Versioned.reified(), fields.inner),
+      id: decodeFromFields(UID.reified(), fields.id),
+      inner: decodeFromFields(Versioned.reified(), fields.inner),
     })
   }
 
@@ -72,8 +68,8 @@ export class Random {
     }
 
     return Random.new({
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      inner: decodeFromFieldsWithTypesGenericOrSpecial(Versioned.reified(), item.fields.inner),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      inner: decodeFromFieldsWithTypes(Versioned.reified(), item.fields.inner),
     })
   }
 
@@ -169,10 +165,10 @@ export class RandomInner {
 
   static fromFields(fields: Record<string, any>): RandomInner {
     return RandomInner.new({
-      version: decodeFromFieldsGenericOrSpecial('u64', fields.version),
-      epoch: decodeFromFieldsGenericOrSpecial('u64', fields.epoch),
-      randomnessRound: decodeFromFieldsGenericOrSpecial('u64', fields.randomness_round),
-      randomBytes: decodeFromFieldsGenericOrSpecial(reified.vector('u8'), fields.random_bytes),
+      version: decodeFromFields('u64', fields.version),
+      epoch: decodeFromFields('u64', fields.epoch),
+      randomnessRound: decodeFromFields('u64', fields.randomness_round),
+      randomBytes: decodeFromFields(reified.vector('u8'), fields.random_bytes),
     })
   }
 
@@ -182,16 +178,10 @@ export class RandomInner {
     }
 
     return RandomInner.new({
-      version: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.version),
-      epoch: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.epoch),
-      randomnessRound: decodeFromFieldsWithTypesGenericOrSpecial(
-        'u64',
-        item.fields.randomness_round
-      ),
-      randomBytes: decodeFromFieldsWithTypesGenericOrSpecial(
-        reified.vector('u8'),
-        item.fields.random_bytes
-      ),
+      version: decodeFromFieldsWithTypes('u64', item.fields.version),
+      epoch: decodeFromFieldsWithTypes('u64', item.fields.epoch),
+      randomnessRound: decodeFromFieldsWithTypes('u64', item.fields.randomness_round),
+      randomBytes: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.random_bytes),
     })
   }
 

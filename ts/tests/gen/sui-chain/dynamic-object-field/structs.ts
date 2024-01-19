@@ -4,11 +4,11 @@ import {
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
   toBcs,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
@@ -69,7 +69,7 @@ export class Wrapper<T0 extends TypeArgument> {
     typeArg: T0,
     fields: Record<string, any>
   ): Wrapper<ToTypeArgument<T0>> {
-    return Wrapper.new(typeArg, decodeFromFieldsGenericOrSpecial(typeArg, fields.name))
+    return Wrapper.new(typeArg, decodeFromFields(typeArg, fields.name))
   }
 
   static fromFieldsWithTypes<T0 extends ReifiedTypeArgument>(
@@ -81,10 +81,7 @@ export class Wrapper<T0 extends TypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return Wrapper.new(
-      typeArg,
-      decodeFromFieldsWithTypesGenericOrSpecial(typeArg, item.fields.name)
-    )
+    return Wrapper.new(typeArg, decodeFromFieldsWithTypes(typeArg, item.fields.name))
   }
 
   static fromBcs<T0 extends ReifiedTypeArgument>(

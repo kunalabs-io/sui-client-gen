@@ -1,9 +1,5 @@
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-  reified,
-} from '../../_framework/types'
+import * as reified from '../../_framework/reified'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/ascii/structs'
 import { Option } from '../../move-stdlib-chain/option/structs'
@@ -62,7 +58,7 @@ export class ExampleStruct {
   }
 
   static fromFields(fields: Record<string, any>): ExampleStruct {
-    return ExampleStruct.new(decodeFromFieldsGenericOrSpecial('bool', fields.dummy_field))
+    return ExampleStruct.new(decodeFromFields('bool', fields.dummy_field))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): ExampleStruct {
@@ -70,9 +66,7 @@ export class ExampleStruct {
       throw new Error('not a ExampleStruct type')
     }
 
-    return ExampleStruct.new(
-      decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.dummy_field)
-    )
+    return ExampleStruct.new(decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
   }
 
   static fromBcs(data: Uint8Array): ExampleStruct {
@@ -172,18 +166,18 @@ export class SpecialTypesStruct {
 
   static fromFields(fields: Record<string, any>): SpecialTypesStruct {
     return SpecialTypesStruct.new({
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      asciiString: decodeFromFieldsGenericOrSpecial(String.reified(), fields.ascii_string),
-      utf8String: decodeFromFieldsGenericOrSpecial(String1.reified(), fields.utf8_string),
-      vectorOfU64: decodeFromFieldsGenericOrSpecial(reified.vector('u64'), fields.vector_of_u64),
-      vectorOfObjects: decodeFromFieldsGenericOrSpecial(
+      id: decodeFromFields(UID.reified(), fields.id),
+      asciiString: decodeFromFields(String.reified(), fields.ascii_string),
+      utf8String: decodeFromFields(String1.reified(), fields.utf8_string),
+      vectorOfU64: decodeFromFields(reified.vector('u64'), fields.vector_of_u64),
+      vectorOfObjects: decodeFromFields(
         reified.vector(ExampleStruct.reified()),
         fields.vector_of_objects
       ),
-      idField: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id_field),
-      address: decodeFromFieldsGenericOrSpecial('address', fields.address),
-      optionSome: decodeFromFieldsGenericOrSpecial(Option.reified('u64'), fields.option_some),
-      optionNone: decodeFromFieldsGenericOrSpecial(Option.reified('u64'), fields.option_none),
+      idField: decodeFromFields(ID.reified(), fields.id_field),
+      address: decodeFromFields('address', fields.address),
+      optionSome: decodeFromFields(Option.reified('u64'), fields.option_some),
+      optionNone: decodeFromFields(Option.reified('u64'), fields.option_none),
     })
   }
 
@@ -193,33 +187,18 @@ export class SpecialTypesStruct {
     }
 
     return SpecialTypesStruct.new({
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      asciiString: decodeFromFieldsWithTypesGenericOrSpecial(
-        String.reified(),
-        item.fields.ascii_string
-      ),
-      utf8String: decodeFromFieldsWithTypesGenericOrSpecial(
-        String1.reified(),
-        item.fields.utf8_string
-      ),
-      vectorOfU64: decodeFromFieldsWithTypesGenericOrSpecial(
-        reified.vector('u64'),
-        item.fields.vector_of_u64
-      ),
-      vectorOfObjects: decodeFromFieldsWithTypesGenericOrSpecial(
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      asciiString: decodeFromFieldsWithTypes(String.reified(), item.fields.ascii_string),
+      utf8String: decodeFromFieldsWithTypes(String1.reified(), item.fields.utf8_string),
+      vectorOfU64: decodeFromFieldsWithTypes(reified.vector('u64'), item.fields.vector_of_u64),
+      vectorOfObjects: decodeFromFieldsWithTypes(
         reified.vector(ExampleStruct.reified()),
         item.fields.vector_of_objects
       ),
-      idField: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id_field),
-      address: decodeFromFieldsWithTypesGenericOrSpecial('address', item.fields.address),
-      optionSome: decodeFromFieldsWithTypesGenericOrSpecial(
-        Option.reified('u64'),
-        item.fields.option_some
-      ),
-      optionNone: decodeFromFieldsWithTypesGenericOrSpecial(
-        Option.reified('u64'),
-        item.fields.option_none
-      ),
+      idField: decodeFromFieldsWithTypes(ID.reified(), item.fields.id_field),
+      address: decodeFromFieldsWithTypes('address', item.fields.address),
+      optionSome: decodeFromFieldsWithTypes(Option.reified('u64'), item.fields.option_some),
+      optionNone: decodeFromFieldsWithTypes(Option.reified('u64'), item.fields.option_none),
     })
   }
 

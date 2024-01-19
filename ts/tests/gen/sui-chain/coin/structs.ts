@@ -2,10 +2,10 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { String as String1 } from '../../move-stdlib-chain/ascii/structs'
 import { Option } from '../../move-stdlib-chain/option/structs'
@@ -71,8 +71,8 @@ export class Coin {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): Coin {
     return Coin.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      balance: decodeFromFieldsGenericOrSpecial(Balance.reified(typeArg), fields.balance),
+      id: decodeFromFields(UID.reified(), fields.id),
+      balance: decodeFromFields(Balance.reified(typeArg), fields.balance),
     })
   }
 
@@ -83,11 +83,8 @@ export class Coin {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return Coin.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      balance: decodeFromFieldsWithTypesGenericOrSpecial(
-        Balance.reified(typeArg),
-        item.fields.balance
-      ),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      balance: decodeFromFieldsWithTypes(Balance.reified(typeArg), item.fields.balance),
     })
   }
 
@@ -196,12 +193,12 @@ export class CoinMetadata {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): CoinMetadata {
     return CoinMetadata.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      decimals: decodeFromFieldsGenericOrSpecial('u8', fields.decimals),
-      name: decodeFromFieldsGenericOrSpecial(String.reified(), fields.name),
-      symbol: decodeFromFieldsGenericOrSpecial(String1.reified(), fields.symbol),
-      description: decodeFromFieldsGenericOrSpecial(String.reified(), fields.description),
-      iconUrl: decodeFromFieldsGenericOrSpecial(Option.reified(Url.reified()), fields.icon_url),
+      id: decodeFromFields(UID.reified(), fields.id),
+      decimals: decodeFromFields('u8', fields.decimals),
+      name: decodeFromFields(String.reified(), fields.name),
+      symbol: decodeFromFields(String1.reified(), fields.symbol),
+      description: decodeFromFields(String.reified(), fields.description),
+      iconUrl: decodeFromFields(Option.reified(Url.reified()), fields.icon_url),
     })
   }
 
@@ -212,18 +209,12 @@ export class CoinMetadata {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return CoinMetadata.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      decimals: decodeFromFieldsWithTypesGenericOrSpecial('u8', item.fields.decimals),
-      name: decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.name),
-      symbol: decodeFromFieldsWithTypesGenericOrSpecial(String1.reified(), item.fields.symbol),
-      description: decodeFromFieldsWithTypesGenericOrSpecial(
-        String.reified(),
-        item.fields.description
-      ),
-      iconUrl: decodeFromFieldsWithTypesGenericOrSpecial(
-        Option.reified(Url.reified()),
-        item.fields.icon_url
-      ),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      decimals: decodeFromFieldsWithTypes('u8', item.fields.decimals),
+      name: decodeFromFieldsWithTypes(String.reified(), item.fields.name),
+      symbol: decodeFromFieldsWithTypes(String1.reified(), item.fields.symbol),
+      description: decodeFromFieldsWithTypes(String.reified(), item.fields.description),
+      iconUrl: decodeFromFieldsWithTypes(Option.reified(Url.reified()), item.fields.icon_url),
     })
   }
 
@@ -324,8 +315,8 @@ export class TreasuryCap {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): TreasuryCap {
     return TreasuryCap.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      totalSupply: decodeFromFieldsGenericOrSpecial(Supply.reified(typeArg), fields.total_supply),
+      id: decodeFromFields(UID.reified(), fields.id),
+      totalSupply: decodeFromFields(Supply.reified(typeArg), fields.total_supply),
     })
   }
 
@@ -336,11 +327,8 @@ export class TreasuryCap {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return TreasuryCap.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      totalSupply: decodeFromFieldsWithTypesGenericOrSpecial(
-        Supply.reified(typeArg),
-        item.fields.total_supply
-      ),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      totalSupply: decodeFromFieldsWithTypes(Supply.reified(typeArg), item.fields.total_supply),
     })
   }
 
@@ -432,7 +420,7 @@ export class CurrencyCreated {
   }
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): CurrencyCreated {
-    return CurrencyCreated.new(typeArg, decodeFromFieldsGenericOrSpecial('u8', fields.decimals))
+    return CurrencyCreated.new(typeArg, decodeFromFields('u8', fields.decimals))
   }
 
   static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): CurrencyCreated {
@@ -441,10 +429,7 @@ export class CurrencyCreated {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return CurrencyCreated.new(
-      typeArg,
-      decodeFromFieldsWithTypesGenericOrSpecial('u8', item.fields.decimals)
-    )
+    return CurrencyCreated.new(typeArg, decodeFromFieldsWithTypes('u8', item.fields.decimals))
   }
 
   static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): CurrencyCreated {

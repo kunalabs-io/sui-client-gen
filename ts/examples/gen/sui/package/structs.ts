@@ -1,10 +1,6 @@
+import * as reified from '../../_framework/reified'
 import { String } from '../../_dependencies/source/0x1/ascii/structs'
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-  reified,
-} from '../../_framework/types'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { ID, UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -65,9 +61,9 @@ export class Publisher {
 
   static fromFields(fields: Record<string, any>): Publisher {
     return Publisher.new({
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      package: decodeFromFieldsGenericOrSpecial(String.reified(), fields.package),
-      moduleName: decodeFromFieldsGenericOrSpecial(String.reified(), fields.module_name),
+      id: decodeFromFields(UID.reified(), fields.id),
+      package: decodeFromFields(String.reified(), fields.package),
+      moduleName: decodeFromFields(String.reified(), fields.module_name),
     })
   }
 
@@ -77,12 +73,9 @@ export class Publisher {
     }
 
     return Publisher.new({
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      package: decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.package),
-      moduleName: decodeFromFieldsWithTypesGenericOrSpecial(
-        String.reified(),
-        item.fields.module_name
-      ),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      package: decodeFromFieldsWithTypes(String.reified(), item.fields.package),
+      moduleName: decodeFromFieldsWithTypes(String.reified(), item.fields.module_name),
     })
   }
 
@@ -179,10 +172,10 @@ export class UpgradeCap {
 
   static fromFields(fields: Record<string, any>): UpgradeCap {
     return UpgradeCap.new({
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      package: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.package),
-      version: decodeFromFieldsGenericOrSpecial('u64', fields.version),
-      policy: decodeFromFieldsGenericOrSpecial('u8', fields.policy),
+      id: decodeFromFields(UID.reified(), fields.id),
+      package: decodeFromFields(ID.reified(), fields.package),
+      version: decodeFromFields('u64', fields.version),
+      policy: decodeFromFields('u8', fields.policy),
     })
   }
 
@@ -192,10 +185,10 @@ export class UpgradeCap {
     }
 
     return UpgradeCap.new({
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      package: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.package),
-      version: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.version),
-      policy: decodeFromFieldsWithTypesGenericOrSpecial('u8', item.fields.policy),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      package: decodeFromFieldsWithTypes(ID.reified(), item.fields.package),
+      version: decodeFromFieldsWithTypes('u64', item.fields.version),
+      policy: decodeFromFieldsWithTypes('u8', item.fields.policy),
     })
   }
 
@@ -285,8 +278,8 @@ export class UpgradeReceipt {
 
   static fromFields(fields: Record<string, any>): UpgradeReceipt {
     return UpgradeReceipt.new({
-      cap: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.cap),
-      package: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.package),
+      cap: decodeFromFields(ID.reified(), fields.cap),
+      package: decodeFromFields(ID.reified(), fields.package),
     })
   }
 
@@ -296,8 +289,8 @@ export class UpgradeReceipt {
     }
 
     return UpgradeReceipt.new({
-      cap: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.cap),
-      package: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.package),
+      cap: decodeFromFieldsWithTypes(ID.reified(), item.fields.cap),
+      package: decodeFromFieldsWithTypes(ID.reified(), item.fields.package),
     })
   }
 
@@ -372,10 +365,10 @@ export class UpgradeTicket {
 
   static fromFields(fields: Record<string, any>): UpgradeTicket {
     return UpgradeTicket.new({
-      cap: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.cap),
-      package: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.package),
-      policy: decodeFromFieldsGenericOrSpecial('u8', fields.policy),
-      digest: decodeFromFieldsGenericOrSpecial(reified.vector('u8'), fields.digest),
+      cap: decodeFromFields(ID.reified(), fields.cap),
+      package: decodeFromFields(ID.reified(), fields.package),
+      policy: decodeFromFields('u8', fields.policy),
+      digest: decodeFromFields(reified.vector('u8'), fields.digest),
     })
   }
 
@@ -385,10 +378,10 @@ export class UpgradeTicket {
     }
 
     return UpgradeTicket.new({
-      cap: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.cap),
-      package: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.package),
-      policy: decodeFromFieldsWithTypesGenericOrSpecial('u8', item.fields.policy),
-      digest: decodeFromFieldsWithTypesGenericOrSpecial(reified.vector('u8'), item.fields.digest),
+      cap: decodeFromFieldsWithTypes(ID.reified(), item.fields.cap),
+      package: decodeFromFieldsWithTypes(ID.reified(), item.fields.package),
+      policy: decodeFromFieldsWithTypes('u8', item.fields.policy),
+      digest: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.digest),
     })
   }
 

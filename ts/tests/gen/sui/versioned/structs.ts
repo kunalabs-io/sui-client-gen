@@ -1,8 +1,4 @@
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-} from '../../_framework/types'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { ID, UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -59,8 +55,8 @@ export class VersionChangeCap {
 
   static fromFields(fields: Record<string, any>): VersionChangeCap {
     return VersionChangeCap.new({
-      versionedId: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.versioned_id),
-      oldVersion: decodeFromFieldsGenericOrSpecial('u64', fields.old_version),
+      versionedId: decodeFromFields(ID.reified(), fields.versioned_id),
+      oldVersion: decodeFromFields('u64', fields.old_version),
     })
   }
 
@@ -70,11 +66,8 @@ export class VersionChangeCap {
     }
 
     return VersionChangeCap.new({
-      versionedId: decodeFromFieldsWithTypesGenericOrSpecial(
-        ID.reified(),
-        item.fields.versioned_id
-      ),
-      oldVersion: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.old_version),
+      versionedId: decodeFromFieldsWithTypes(ID.reified(), item.fields.versioned_id),
+      oldVersion: decodeFromFieldsWithTypes('u64', item.fields.old_version),
     })
   }
 
@@ -141,8 +134,8 @@ export class Versioned {
 
   static fromFields(fields: Record<string, any>): Versioned {
     return Versioned.new({
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      version: decodeFromFieldsGenericOrSpecial('u64', fields.version),
+      id: decodeFromFields(UID.reified(), fields.id),
+      version: decodeFromFields('u64', fields.version),
     })
   }
 
@@ -152,8 +145,8 @@ export class Versioned {
     }
 
     return Versioned.new({
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      version: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.version),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      version: decodeFromFieldsWithTypes('u64', item.fields.version),
     })
   }
 

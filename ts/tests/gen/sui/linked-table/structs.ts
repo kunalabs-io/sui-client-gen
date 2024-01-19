@@ -4,11 +4,11 @@ import {
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
   toBcs,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { Option } from '../../move-stdlib/option/structs'
 import { UID } from '../object/structs'
@@ -85,10 +85,10 @@ export class LinkedTable<K extends TypeArgument> {
     fields: Record<string, any>
   ): LinkedTable<ToTypeArgument<K>> {
     return LinkedTable.new(typeArgs, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      size: decodeFromFieldsGenericOrSpecial('u64', fields.size),
-      head: decodeFromFieldsGenericOrSpecial(Option.reified(typeArgs[0]), fields.head),
-      tail: decodeFromFieldsGenericOrSpecial(Option.reified(typeArgs[0]), fields.tail),
+      id: decodeFromFields(UID.reified(), fields.id),
+      size: decodeFromFields('u64', fields.size),
+      head: decodeFromFields(Option.reified(typeArgs[0]), fields.head),
+      tail: decodeFromFields(Option.reified(typeArgs[0]), fields.tail),
     })
   }
 
@@ -102,16 +102,10 @@ export class LinkedTable<K extends TypeArgument> {
     assertFieldsWithTypesArgsMatch(item, typeArgs)
 
     return LinkedTable.new(typeArgs, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      size: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.size),
-      head: decodeFromFieldsWithTypesGenericOrSpecial(
-        Option.reified(typeArgs[0]),
-        item.fields.head
-      ),
-      tail: decodeFromFieldsWithTypesGenericOrSpecial(
-        Option.reified(typeArgs[0]),
-        item.fields.tail
-      ),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      size: decodeFromFieldsWithTypes('u64', item.fields.size),
+      head: decodeFromFieldsWithTypes(Option.reified(typeArgs[0]), item.fields.head),
+      tail: decodeFromFieldsWithTypes(Option.reified(typeArgs[0]), item.fields.tail),
     })
   }
 
@@ -227,9 +221,9 @@ export class Node<K extends TypeArgument, V extends TypeArgument> {
     fields: Record<string, any>
   ): Node<ToTypeArgument<K>, ToTypeArgument<V>> {
     return Node.new(typeArgs, {
-      prev: decodeFromFieldsGenericOrSpecial(Option.reified(typeArgs[0]), fields.prev),
-      next: decodeFromFieldsGenericOrSpecial(Option.reified(typeArgs[0]), fields.next),
-      value: decodeFromFieldsGenericOrSpecial(typeArgs[1], fields.value),
+      prev: decodeFromFields(Option.reified(typeArgs[0]), fields.prev),
+      next: decodeFromFields(Option.reified(typeArgs[0]), fields.next),
+      value: decodeFromFields(typeArgs[1], fields.value),
     })
   }
 
@@ -243,15 +237,9 @@ export class Node<K extends TypeArgument, V extends TypeArgument> {
     assertFieldsWithTypesArgsMatch(item, typeArgs)
 
     return Node.new(typeArgs, {
-      prev: decodeFromFieldsWithTypesGenericOrSpecial(
-        Option.reified(typeArgs[0]),
-        item.fields.prev
-      ),
-      next: decodeFromFieldsWithTypesGenericOrSpecial(
-        Option.reified(typeArgs[0]),
-        item.fields.next
-      ),
-      value: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[1], item.fields.value),
+      prev: decodeFromFieldsWithTypes(Option.reified(typeArgs[0]), item.fields.prev),
+      next: decodeFromFieldsWithTypes(Option.reified(typeArgs[0]), item.fields.next),
+      value: decodeFromFieldsWithTypes(typeArgs[1], item.fields.value),
     })
   }
 

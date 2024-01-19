@@ -15,7 +15,7 @@ import { createExampleStruct, specialTypes } from './gen/examples/examples/funct
 import { BCS } from '@mysten/bcs'
 import { ExampleStruct } from './gen/examples/examples/structs'
 import { SUI } from './gen/sui/sui/structs'
-import { reified } from './gen/_framework/types'
+import { vector } from './gen/_framework/reified'
 
 const EXAMPLE_COIN_FAUCET_ID = '0x23a00d64a785280a794d0bdd2f641dfabf117c78e07cb682550ed3c2b41dd760'
 const AMM_POOL_REGISTRY_ID = '0xe3e05313eff4f6f44206982e42fa1219c972113f3a651abe168123abc0202411'
@@ -123,7 +123,7 @@ async function createStructWithVector() {
 async function fetchWithGenericField() {
   const field = await WithGenericField.fetch(
     client,
-    reified.vector(EXAMPLE_COIN.reified()),
+    vector(EXAMPLE_COIN.reified()),
     WITH_GENERIC_FIELD_ID
   )
   console.log(field)

@@ -1,8 +1,4 @@
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-} from '../../_framework/types'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -59,8 +55,8 @@ export class ObjectBag {
 
   static fromFields(fields: Record<string, any>): ObjectBag {
     return ObjectBag.new({
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      size: decodeFromFieldsGenericOrSpecial('u64', fields.size),
+      id: decodeFromFields(UID.reified(), fields.id),
+      size: decodeFromFields('u64', fields.size),
     })
   }
 
@@ -70,8 +66,8 @@ export class ObjectBag {
     }
 
     return ObjectBag.new({
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      size: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.size),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      size: decodeFromFieldsWithTypes('u64', item.fields.size),
     })
   }
 

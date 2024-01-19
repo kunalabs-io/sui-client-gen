@@ -1,10 +1,6 @@
+import * as reified from '../../_framework/reified'
 import { String } from '../../_dependencies/source/0x1/string/structs'
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-  reified,
-} from '../../_framework/types'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -65,9 +61,9 @@ export class ActiveJwk {
 
   static fromFields(fields: Record<string, any>): ActiveJwk {
     return ActiveJwk.new({
-      jwkId: decodeFromFieldsGenericOrSpecial(JwkId.reified(), fields.jwk_id),
-      jwk: decodeFromFieldsGenericOrSpecial(JWK.reified(), fields.jwk),
-      epoch: decodeFromFieldsGenericOrSpecial('u64', fields.epoch),
+      jwkId: decodeFromFields(JwkId.reified(), fields.jwk_id),
+      jwk: decodeFromFields(JWK.reified(), fields.jwk),
+      epoch: decodeFromFields('u64', fields.epoch),
     })
   }
 
@@ -77,9 +73,9 @@ export class ActiveJwk {
     }
 
     return ActiveJwk.new({
-      jwkId: decodeFromFieldsWithTypesGenericOrSpecial(JwkId.reified(), item.fields.jwk_id),
-      jwk: decodeFromFieldsWithTypesGenericOrSpecial(JWK.reified(), item.fields.jwk),
-      epoch: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.epoch),
+      jwkId: decodeFromFieldsWithTypes(JwkId.reified(), item.fields.jwk_id),
+      jwk: decodeFromFieldsWithTypes(JWK.reified(), item.fields.jwk),
+      epoch: decodeFromFieldsWithTypes('u64', item.fields.epoch),
     })
   }
 
@@ -147,8 +143,8 @@ export class AuthenticatorState {
 
   static fromFields(fields: Record<string, any>): AuthenticatorState {
     return AuthenticatorState.new({
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      version: decodeFromFieldsGenericOrSpecial('u64', fields.version),
+      id: decodeFromFields(UID.reified(), fields.id),
+      version: decodeFromFields('u64', fields.version),
     })
   }
 
@@ -158,8 +154,8 @@ export class AuthenticatorState {
     }
 
     return AuthenticatorState.new({
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      version: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.version),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      version: decodeFromFieldsWithTypes('u64', item.fields.version),
     })
   }
 
@@ -251,11 +247,8 @@ export class AuthenticatorStateInner {
 
   static fromFields(fields: Record<string, any>): AuthenticatorStateInner {
     return AuthenticatorStateInner.new({
-      version: decodeFromFieldsGenericOrSpecial('u64', fields.version),
-      activeJwks: decodeFromFieldsGenericOrSpecial(
-        reified.vector(ActiveJwk.reified()),
-        fields.active_jwks
-      ),
+      version: decodeFromFields('u64', fields.version),
+      activeJwks: decodeFromFields(reified.vector(ActiveJwk.reified()), fields.active_jwks),
     })
   }
 
@@ -265,8 +258,8 @@ export class AuthenticatorStateInner {
     }
 
     return AuthenticatorStateInner.new({
-      version: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.version),
-      activeJwks: decodeFromFieldsWithTypesGenericOrSpecial(
+      version: decodeFromFieldsWithTypes('u64', item.fields.version),
+      activeJwks: decodeFromFieldsWithTypes(
         reified.vector(ActiveJwk.reified()),
         item.fields.active_jwks
       ),
@@ -344,10 +337,10 @@ export class JWK {
 
   static fromFields(fields: Record<string, any>): JWK {
     return JWK.new({
-      kty: decodeFromFieldsGenericOrSpecial(String.reified(), fields.kty),
-      e: decodeFromFieldsGenericOrSpecial(String.reified(), fields.e),
-      n: decodeFromFieldsGenericOrSpecial(String.reified(), fields.n),
-      alg: decodeFromFieldsGenericOrSpecial(String.reified(), fields.alg),
+      kty: decodeFromFields(String.reified(), fields.kty),
+      e: decodeFromFields(String.reified(), fields.e),
+      n: decodeFromFields(String.reified(), fields.n),
+      alg: decodeFromFields(String.reified(), fields.alg),
     })
   }
 
@@ -357,10 +350,10 @@ export class JWK {
     }
 
     return JWK.new({
-      kty: decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.kty),
-      e: decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.e),
-      n: decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.n),
-      alg: decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.alg),
+      kty: decodeFromFieldsWithTypes(String.reified(), item.fields.kty),
+      e: decodeFromFieldsWithTypes(String.reified(), item.fields.e),
+      n: decodeFromFieldsWithTypes(String.reified(), item.fields.n),
+      alg: decodeFromFieldsWithTypes(String.reified(), item.fields.alg),
     })
   }
 
@@ -429,8 +422,8 @@ export class JwkId {
 
   static fromFields(fields: Record<string, any>): JwkId {
     return JwkId.new({
-      iss: decodeFromFieldsGenericOrSpecial(String.reified(), fields.iss),
-      kid: decodeFromFieldsGenericOrSpecial(String.reified(), fields.kid),
+      iss: decodeFromFields(String.reified(), fields.iss),
+      kid: decodeFromFields(String.reified(), fields.kid),
     })
   }
 
@@ -440,8 +433,8 @@ export class JwkId {
     }
 
     return JwkId.new({
-      iss: decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.iss),
-      kid: decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.kid),
+      iss: decodeFromFieldsWithTypes(String.reified(), item.fields.iss),
+      kid: decodeFromFieldsWithTypes(String.reified(), item.fields.kid),
     })
   }
 

@@ -4,11 +4,11 @@ import {
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
   toBcs,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/bcs'
@@ -82,9 +82,9 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> {
     fields: Record<string, any>
   ): Field<ToTypeArgument<T0>, ToTypeArgument<T1>> {
     return Field.new(typeArgs, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      name: decodeFromFieldsGenericOrSpecial(typeArgs[0], fields.name),
-      value: decodeFromFieldsGenericOrSpecial(typeArgs[1], fields.value),
+      id: decodeFromFields(UID.reified(), fields.id),
+      name: decodeFromFields(typeArgs[0], fields.name),
+      value: decodeFromFields(typeArgs[1], fields.value),
     })
   }
 
@@ -98,9 +98,9 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> {
     assertFieldsWithTypesArgsMatch(item, typeArgs)
 
     return Field.new(typeArgs, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      name: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[0], item.fields.name),
-      value: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[1], item.fields.value),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      name: decodeFromFieldsWithTypes(typeArgs[0], item.fields.name),
+      value: decodeFromFieldsWithTypes(typeArgs[1], item.fields.value),
     })
   }
 

@@ -1,8 +1,4 @@
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-} from '../../_framework/types'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
@@ -52,7 +48,7 @@ export class FixedPoint32 {
   }
 
   static fromFields(fields: Record<string, any>): FixedPoint32 {
-    return FixedPoint32.new(decodeFromFieldsGenericOrSpecial('u64', fields.value))
+    return FixedPoint32.new(decodeFromFields('u64', fields.value))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): FixedPoint32 {
@@ -60,7 +56,7 @@ export class FixedPoint32 {
       throw new Error('not a FixedPoint32 type')
     }
 
-    return FixedPoint32.new(decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.value))
+    return FixedPoint32.new(decodeFromFieldsWithTypes('u64', item.fields.value))
   }
 
   static fromBcs(data: Uint8Array): FixedPoint32 {

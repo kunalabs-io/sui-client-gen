@@ -1,15 +1,15 @@
+import * as reified from '../../_framework/reified'
 import {
   ReifiedTypeArgument,
   ToField,
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
-  reified,
   toBcs,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { String as String1 } from '../../move-stdlib/ascii/structs'
 import { Option } from '../../move-stdlib/option/structs'
@@ -69,7 +69,7 @@ export class Bar {
   }
 
   static fromFields(fields: Record<string, any>): Bar {
-    return Bar.new(decodeFromFieldsGenericOrSpecial('u64', fields.value))
+    return Bar.new(decodeFromFields('u64', fields.value))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Bar {
@@ -77,7 +77,7 @@ export class Bar {
       throw new Error('not a Bar type')
     }
 
-    return Bar.new(decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.value))
+    return Bar.new(decodeFromFieldsWithTypes('u64', item.fields.value))
   }
 
   static fromBcs(data: Uint8Array): Bar {
@@ -140,7 +140,7 @@ export class Dummy {
   }
 
   static fromFields(fields: Record<string, any>): Dummy {
-    return Dummy.new(decodeFromFieldsGenericOrSpecial('bool', fields.dummy_field))
+    return Dummy.new(decodeFromFields('bool', fields.dummy_field))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Dummy {
@@ -148,7 +148,7 @@ export class Dummy {
       throw new Error('not a Dummy type')
     }
 
-    return Dummy.new(decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.dummy_field))
+    return Dummy.new(decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
   }
 
   static fromBcs(data: Uint8Array): Dummy {
@@ -282,42 +282,36 @@ export class Foo<T extends TypeArgument> {
     fields: Record<string, any>
   ): Foo<ToTypeArgument<T>> {
     return Foo.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      generic: decodeFromFieldsGenericOrSpecial(typeArg, fields.generic),
-      reifiedPrimitiveVec: decodeFromFieldsGenericOrSpecial(
-        reified.vector('u64'),
-        fields.reified_primitive_vec
-      ),
-      reifiedObjectVec: decodeFromFieldsGenericOrSpecial(
-        reified.vector(Bar.reified()),
-        fields.reified_object_vec
-      ),
-      genericVec: decodeFromFieldsGenericOrSpecial(reified.vector(typeArg), fields.generic_vec),
-      genericVecNested: decodeFromFieldsGenericOrSpecial(
+      id: decodeFromFields(UID.reified(), fields.id),
+      generic: decodeFromFields(typeArg, fields.generic),
+      reifiedPrimitiveVec: decodeFromFields(reified.vector('u64'), fields.reified_primitive_vec),
+      reifiedObjectVec: decodeFromFields(reified.vector(Bar.reified()), fields.reified_object_vec),
+      genericVec: decodeFromFields(reified.vector(typeArg), fields.generic_vec),
+      genericVecNested: decodeFromFields(
         reified.vector(WithTwoGenerics.reified(typeArg, 'u8')),
         fields.generic_vec_nested
       ),
-      twoGenerics: decodeFromFieldsGenericOrSpecial(
+      twoGenerics: decodeFromFields(
         WithTwoGenerics.reified(typeArg, Bar.reified()),
         fields.two_generics
       ),
-      twoGenericsReifiedPrimitive: decodeFromFieldsGenericOrSpecial(
+      twoGenericsReifiedPrimitive: decodeFromFields(
         WithTwoGenerics.reified('u16', 'u64'),
         fields.two_generics_reified_primitive
       ),
-      twoGenericsReifiedObject: decodeFromFieldsGenericOrSpecial(
+      twoGenericsReifiedObject: decodeFromFields(
         WithTwoGenerics.reified(Bar.reified(), Bar.reified()),
         fields.two_generics_reified_object
       ),
-      twoGenericsNested: decodeFromFieldsGenericOrSpecial(
+      twoGenericsNested: decodeFromFields(
         WithTwoGenerics.reified(typeArg, WithTwoGenerics.reified('u8', 'u8')),
         fields.two_generics_nested
       ),
-      twoGenericsReifiedNested: decodeFromFieldsGenericOrSpecial(
+      twoGenericsReifiedNested: decodeFromFields(
         WithTwoGenerics.reified(Bar.reified(), WithTwoGenerics.reified('u8', 'u8')),
         fields.two_generics_reified_nested
       ),
-      twoGenericsNestedVec: decodeFromFieldsGenericOrSpecial(
+      twoGenericsNestedVec: decodeFromFields(
         reified.vector(
           WithTwoGenerics.reified(
             Bar.reified(),
@@ -326,8 +320,8 @@ export class Foo<T extends TypeArgument> {
         ),
         fields.two_generics_nested_vec
       ),
-      dummy: decodeFromFieldsGenericOrSpecial(Dummy.reified(), fields.dummy),
-      other: decodeFromFieldsGenericOrSpecial(StructFromOtherModule.reified(), fields.other),
+      dummy: decodeFromFields(Dummy.reified(), fields.dummy),
+      other: decodeFromFields(StructFromOtherModule.reified(), fields.other),
     })
   }
 
@@ -341,45 +335,42 @@ export class Foo<T extends TypeArgument> {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return Foo.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      generic: decodeFromFieldsWithTypesGenericOrSpecial(typeArg, item.fields.generic),
-      reifiedPrimitiveVec: decodeFromFieldsWithTypesGenericOrSpecial(
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      generic: decodeFromFieldsWithTypes(typeArg, item.fields.generic),
+      reifiedPrimitiveVec: decodeFromFieldsWithTypes(
         reified.vector('u64'),
         item.fields.reified_primitive_vec
       ),
-      reifiedObjectVec: decodeFromFieldsWithTypesGenericOrSpecial(
+      reifiedObjectVec: decodeFromFieldsWithTypes(
         reified.vector(Bar.reified()),
         item.fields.reified_object_vec
       ),
-      genericVec: decodeFromFieldsWithTypesGenericOrSpecial(
-        reified.vector(typeArg),
-        item.fields.generic_vec
-      ),
-      genericVecNested: decodeFromFieldsWithTypesGenericOrSpecial(
+      genericVec: decodeFromFieldsWithTypes(reified.vector(typeArg), item.fields.generic_vec),
+      genericVecNested: decodeFromFieldsWithTypes(
         reified.vector(WithTwoGenerics.reified(typeArg, 'u8')),
         item.fields.generic_vec_nested
       ),
-      twoGenerics: decodeFromFieldsWithTypesGenericOrSpecial(
+      twoGenerics: decodeFromFieldsWithTypes(
         WithTwoGenerics.reified(typeArg, Bar.reified()),
         item.fields.two_generics
       ),
-      twoGenericsReifiedPrimitive: decodeFromFieldsWithTypesGenericOrSpecial(
+      twoGenericsReifiedPrimitive: decodeFromFieldsWithTypes(
         WithTwoGenerics.reified('u16', 'u64'),
         item.fields.two_generics_reified_primitive
       ),
-      twoGenericsReifiedObject: decodeFromFieldsWithTypesGenericOrSpecial(
+      twoGenericsReifiedObject: decodeFromFieldsWithTypes(
         WithTwoGenerics.reified(Bar.reified(), Bar.reified()),
         item.fields.two_generics_reified_object
       ),
-      twoGenericsNested: decodeFromFieldsWithTypesGenericOrSpecial(
+      twoGenericsNested: decodeFromFieldsWithTypes(
         WithTwoGenerics.reified(typeArg, WithTwoGenerics.reified('u8', 'u8')),
         item.fields.two_generics_nested
       ),
-      twoGenericsReifiedNested: decodeFromFieldsWithTypesGenericOrSpecial(
+      twoGenericsReifiedNested: decodeFromFieldsWithTypes(
         WithTwoGenerics.reified(Bar.reified(), WithTwoGenerics.reified('u8', 'u8')),
         item.fields.two_generics_reified_nested
       ),
-      twoGenericsNestedVec: decodeFromFieldsWithTypesGenericOrSpecial(
+      twoGenericsNestedVec: decodeFromFieldsWithTypes(
         reified.vector(
           WithTwoGenerics.reified(
             Bar.reified(),
@@ -388,11 +379,8 @@ export class Foo<T extends TypeArgument> {
         ),
         item.fields.two_generics_nested_vec
       ),
-      dummy: decodeFromFieldsWithTypesGenericOrSpecial(Dummy.reified(), item.fields.dummy),
-      other: decodeFromFieldsWithTypesGenericOrSpecial(
-        StructFromOtherModule.reified(),
-        item.fields.other
-      ),
+      dummy: decodeFromFieldsWithTypes(Dummy.reified(), item.fields.dummy),
+      other: decodeFromFieldsWithTypes(StructFromOtherModule.reified(), item.fields.other),
     })
   }
 
@@ -528,8 +516,8 @@ export class WithGenericField<T extends TypeArgument> {
     fields: Record<string, any>
   ): WithGenericField<ToTypeArgument<T>> {
     return WithGenericField.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      genericField: decodeFromFieldsGenericOrSpecial(typeArg, fields.generic_field),
+      id: decodeFromFields(UID.reified(), fields.id),
+      genericField: decodeFromFields(typeArg, fields.generic_field),
     })
   }
 
@@ -543,8 +531,8 @@ export class WithGenericField<T extends TypeArgument> {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return WithGenericField.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      genericField: decodeFromFieldsWithTypesGenericOrSpecial(typeArg, item.fields.generic_field),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      genericField: decodeFromFieldsWithTypes(typeArg, item.fields.generic_field),
     })
   }
 
@@ -710,28 +698,19 @@ export class WithSpecialTypes<U extends TypeArgument> {
     fields: Record<string, any>
   ): WithSpecialTypes<ToTypeArgument<U>> {
     return WithSpecialTypes.new(typeArgs, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      string: decodeFromFieldsGenericOrSpecial(String.reified(), fields.string),
-      asciiString: decodeFromFieldsGenericOrSpecial(String1.reified(), fields.ascii_string),
-      url: decodeFromFieldsGenericOrSpecial(Url.reified(), fields.url),
-      idField: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id_field),
-      uid: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.uid),
-      balance: decodeFromFieldsGenericOrSpecial(Balance.reified(SUI.reified()), fields.balance),
-      option: decodeFromFieldsGenericOrSpecial(Option.reified('u64'), fields.option),
-      optionObj: decodeFromFieldsGenericOrSpecial(Option.reified(Bar.reified()), fields.option_obj),
-      optionNone: decodeFromFieldsGenericOrSpecial(Option.reified('u64'), fields.option_none),
-      balanceGeneric: decodeFromFieldsGenericOrSpecial(
-        Balance.reified(typeArgs[0]),
-        fields.balance_generic
-      ),
-      optionGeneric: decodeFromFieldsGenericOrSpecial(
-        Option.reified(typeArgs[1]),
-        fields.option_generic
-      ),
-      optionGenericNone: decodeFromFieldsGenericOrSpecial(
-        Option.reified(typeArgs[1]),
-        fields.option_generic_none
-      ),
+      id: decodeFromFields(UID.reified(), fields.id),
+      string: decodeFromFields(String.reified(), fields.string),
+      asciiString: decodeFromFields(String1.reified(), fields.ascii_string),
+      url: decodeFromFields(Url.reified(), fields.url),
+      idField: decodeFromFields(ID.reified(), fields.id_field),
+      uid: decodeFromFields(UID.reified(), fields.uid),
+      balance: decodeFromFields(Balance.reified(SUI.reified()), fields.balance),
+      option: decodeFromFields(Option.reified('u64'), fields.option),
+      optionObj: decodeFromFields(Option.reified(Bar.reified()), fields.option_obj),
+      optionNone: decodeFromFields(Option.reified('u64'), fields.option_none),
+      balanceGeneric: decodeFromFields(Balance.reified(typeArgs[0]), fields.balance_generic),
+      optionGeneric: decodeFromFields(Option.reified(typeArgs[1]), fields.option_generic),
+      optionGenericNone: decodeFromFields(Option.reified(typeArgs[1]), fields.option_generic_none),
     })
   }
 
@@ -745,37 +724,25 @@ export class WithSpecialTypes<U extends TypeArgument> {
     assertFieldsWithTypesArgsMatch(item, typeArgs)
 
     return WithSpecialTypes.new(typeArgs, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      string: decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.string),
-      asciiString: decodeFromFieldsWithTypesGenericOrSpecial(
-        String1.reified(),
-        item.fields.ascii_string
-      ),
-      url: decodeFromFieldsWithTypesGenericOrSpecial(Url.reified(), item.fields.url),
-      idField: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id_field),
-      uid: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.uid),
-      balance: decodeFromFieldsWithTypesGenericOrSpecial(
-        Balance.reified(SUI.reified()),
-        item.fields.balance
-      ),
-      option: decodeFromFieldsWithTypesGenericOrSpecial(Option.reified('u64'), item.fields.option),
-      optionObj: decodeFromFieldsWithTypesGenericOrSpecial(
-        Option.reified(Bar.reified()),
-        item.fields.option_obj
-      ),
-      optionNone: decodeFromFieldsWithTypesGenericOrSpecial(
-        Option.reified('u64'),
-        item.fields.option_none
-      ),
-      balanceGeneric: decodeFromFieldsWithTypesGenericOrSpecial(
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      string: decodeFromFieldsWithTypes(String.reified(), item.fields.string),
+      asciiString: decodeFromFieldsWithTypes(String1.reified(), item.fields.ascii_string),
+      url: decodeFromFieldsWithTypes(Url.reified(), item.fields.url),
+      idField: decodeFromFieldsWithTypes(ID.reified(), item.fields.id_field),
+      uid: decodeFromFieldsWithTypes(UID.reified(), item.fields.uid),
+      balance: decodeFromFieldsWithTypes(Balance.reified(SUI.reified()), item.fields.balance),
+      option: decodeFromFieldsWithTypes(Option.reified('u64'), item.fields.option),
+      optionObj: decodeFromFieldsWithTypes(Option.reified(Bar.reified()), item.fields.option_obj),
+      optionNone: decodeFromFieldsWithTypes(Option.reified('u64'), item.fields.option_none),
+      balanceGeneric: decodeFromFieldsWithTypes(
         Balance.reified(typeArgs[0]),
         item.fields.balance_generic
       ),
-      optionGeneric: decodeFromFieldsWithTypesGenericOrSpecial(
+      optionGeneric: decodeFromFieldsWithTypes(
         Option.reified(typeArgs[1]),
         item.fields.option_generic
       ),
-      optionGenericNone: decodeFromFieldsWithTypesGenericOrSpecial(
+      optionGenericNone: decodeFromFieldsWithTypes(
         Option.reified(typeArgs[1]),
         item.fields.option_generic_none
       ),
@@ -1064,15 +1031,15 @@ export class WithSpecialTypesAsGenerics<
     ToTypeArgument<T7>
   > {
     return WithSpecialTypesAsGenerics.new(typeArgs, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      string: decodeFromFieldsGenericOrSpecial(typeArgs[0], fields.string),
-      asciiString: decodeFromFieldsGenericOrSpecial(typeArgs[1], fields.ascii_string),
-      url: decodeFromFieldsGenericOrSpecial(typeArgs[2], fields.url),
-      idField: decodeFromFieldsGenericOrSpecial(typeArgs[3], fields.id_field),
-      uid: decodeFromFieldsGenericOrSpecial(typeArgs[4], fields.uid),
-      balance: decodeFromFieldsGenericOrSpecial(typeArgs[5], fields.balance),
-      option: decodeFromFieldsGenericOrSpecial(typeArgs[6], fields.option),
-      optionNone: decodeFromFieldsGenericOrSpecial(typeArgs[7], fields.option_none),
+      id: decodeFromFields(UID.reified(), fields.id),
+      string: decodeFromFields(typeArgs[0], fields.string),
+      asciiString: decodeFromFields(typeArgs[1], fields.ascii_string),
+      url: decodeFromFields(typeArgs[2], fields.url),
+      idField: decodeFromFields(typeArgs[3], fields.id_field),
+      uid: decodeFromFields(typeArgs[4], fields.uid),
+      balance: decodeFromFields(typeArgs[5], fields.balance),
+      option: decodeFromFields(typeArgs[6], fields.option),
+      optionNone: decodeFromFields(typeArgs[7], fields.option_none),
     })
   }
 
@@ -1104,15 +1071,15 @@ export class WithSpecialTypesAsGenerics<
     assertFieldsWithTypesArgsMatch(item, typeArgs)
 
     return WithSpecialTypesAsGenerics.new(typeArgs, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      string: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[0], item.fields.string),
-      asciiString: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[1], item.fields.ascii_string),
-      url: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[2], item.fields.url),
-      idField: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[3], item.fields.id_field),
-      uid: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[4], item.fields.uid),
-      balance: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[5], item.fields.balance),
-      option: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[6], item.fields.option),
-      optionNone: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[7], item.fields.option_none),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      string: decodeFromFieldsWithTypes(typeArgs[0], item.fields.string),
+      asciiString: decodeFromFieldsWithTypes(typeArgs[1], item.fields.ascii_string),
+      url: decodeFromFieldsWithTypes(typeArgs[2], item.fields.url),
+      idField: decodeFromFieldsWithTypes(typeArgs[3], item.fields.id_field),
+      uid: decodeFromFieldsWithTypes(typeArgs[4], item.fields.uid),
+      balance: decodeFromFieldsWithTypes(typeArgs[5], item.fields.balance),
+      option: decodeFromFieldsWithTypes(typeArgs[6], item.fields.option),
+      optionNone: decodeFromFieldsWithTypes(typeArgs[7], item.fields.option_none),
     })
   }
 
@@ -1330,19 +1297,13 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> {
     fields: Record<string, any>
   ): WithSpecialTypesInVectors<ToTypeArgument<T>> {
     return WithSpecialTypesInVectors.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      string: decodeFromFieldsGenericOrSpecial(reified.vector(String.reified()), fields.string),
-      asciiString: decodeFromFieldsGenericOrSpecial(
-        reified.vector(String1.reified()),
-        fields.ascii_string
-      ),
-      idField: decodeFromFieldsGenericOrSpecial(reified.vector(ID.reified()), fields.id_field),
-      bar: decodeFromFieldsGenericOrSpecial(reified.vector(Bar.reified()), fields.bar),
-      option: decodeFromFieldsGenericOrSpecial(
-        reified.vector(Option.reified('u64')),
-        fields.option
-      ),
-      optionGeneric: decodeFromFieldsGenericOrSpecial(
+      id: decodeFromFields(UID.reified(), fields.id),
+      string: decodeFromFields(reified.vector(String.reified()), fields.string),
+      asciiString: decodeFromFields(reified.vector(String1.reified()), fields.ascii_string),
+      idField: decodeFromFields(reified.vector(ID.reified()), fields.id_field),
+      bar: decodeFromFields(reified.vector(Bar.reified()), fields.bar),
+      option: decodeFromFields(reified.vector(Option.reified('u64')), fields.option),
+      optionGeneric: decodeFromFields(
         reified.vector(Option.reified(typeArg)),
         fields.option_generic
       ),
@@ -1359,28 +1320,16 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return WithSpecialTypesInVectors.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      string: decodeFromFieldsWithTypesGenericOrSpecial(
-        reified.vector(String.reified()),
-        item.fields.string
-      ),
-      asciiString: decodeFromFieldsWithTypesGenericOrSpecial(
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      string: decodeFromFieldsWithTypes(reified.vector(String.reified()), item.fields.string),
+      asciiString: decodeFromFieldsWithTypes(
         reified.vector(String1.reified()),
         item.fields.ascii_string
       ),
-      idField: decodeFromFieldsWithTypesGenericOrSpecial(
-        reified.vector(ID.reified()),
-        item.fields.id_field
-      ),
-      bar: decodeFromFieldsWithTypesGenericOrSpecial(
-        reified.vector(Bar.reified()),
-        item.fields.bar
-      ),
-      option: decodeFromFieldsWithTypesGenericOrSpecial(
-        reified.vector(Option.reified('u64')),
-        item.fields.option
-      ),
-      optionGeneric: decodeFromFieldsWithTypesGenericOrSpecial(
+      idField: decodeFromFieldsWithTypes(reified.vector(ID.reified()), item.fields.id_field),
+      bar: decodeFromFieldsWithTypes(reified.vector(Bar.reified()), item.fields.bar),
+      option: decodeFromFieldsWithTypes(reified.vector(Option.reified('u64')), item.fields.option),
+      optionGeneric: decodeFromFieldsWithTypes(
         reified.vector(Option.reified(typeArg)),
         item.fields.option_generic
       ),
@@ -1522,8 +1471,8 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> {
     fields: Record<string, any>
   ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
     return WithTwoGenerics.new(typeArgs, {
-      genericField1: decodeFromFieldsGenericOrSpecial(typeArgs[0], fields.generic_field_1),
-      genericField2: decodeFromFieldsGenericOrSpecial(typeArgs[1], fields.generic_field_2),
+      genericField1: decodeFromFields(typeArgs[0], fields.generic_field_1),
+      genericField2: decodeFromFields(typeArgs[1], fields.generic_field_2),
     })
   }
 
@@ -1537,14 +1486,8 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> {
     assertFieldsWithTypesArgsMatch(item, typeArgs)
 
     return WithTwoGenerics.new(typeArgs, {
-      genericField1: decodeFromFieldsWithTypesGenericOrSpecial(
-        typeArgs[0],
-        item.fields.generic_field_1
-      ),
-      genericField2: decodeFromFieldsWithTypesGenericOrSpecial(
-        typeArgs[1],
-        item.fields.generic_field_2
-      ),
+      genericField1: decodeFromFieldsWithTypes(typeArgs[0], item.fields.generic_field_1),
+      genericField2: decodeFromFieldsWithTypes(typeArgs[1], item.fields.generic_field_2),
     })
   }
 

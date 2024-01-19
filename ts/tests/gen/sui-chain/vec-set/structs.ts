@@ -1,15 +1,15 @@
+import * as reified from '../../_framework/reified'
 import {
   ReifiedTypeArgument,
   ToField,
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
-  reified,
   toBcs,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
@@ -70,10 +70,7 @@ export class VecSet<T0 extends TypeArgument> {
     typeArg: T0,
     fields: Record<string, any>
   ): VecSet<ToTypeArgument<T0>> {
-    return VecSet.new(
-      typeArg,
-      decodeFromFieldsGenericOrSpecial(reified.vector(typeArg), fields.contents)
-    )
+    return VecSet.new(typeArg, decodeFromFields(reified.vector(typeArg), fields.contents))
   }
 
   static fromFieldsWithTypes<T0 extends ReifiedTypeArgument>(
@@ -87,7 +84,7 @@ export class VecSet<T0 extends TypeArgument> {
 
     return VecSet.new(
       typeArg,
-      decodeFromFieldsWithTypesGenericOrSpecial(reified.vector(typeArg), item.fields.contents)
+      decodeFromFieldsWithTypes(reified.vector(typeArg), item.fields.contents)
     )
   }
 

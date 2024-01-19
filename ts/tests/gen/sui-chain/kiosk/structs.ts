@@ -2,10 +2,10 @@ import {
   ReifiedTypeArgument,
   ToField,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
@@ -64,8 +64,8 @@ export class Borrow {
 
   static fromFields(fields: Record<string, any>): Borrow {
     return Borrow.new({
-      kioskId: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.kiosk_id),
-      itemId: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.item_id),
+      kioskId: decodeFromFields(ID.reified(), fields.kiosk_id),
+      itemId: decodeFromFields(ID.reified(), fields.item_id),
     })
   }
 
@@ -75,8 +75,8 @@ export class Borrow {
     }
 
     return Borrow.new({
-      kioskId: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.kiosk_id),
-      itemId: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.item_id),
+      kioskId: decodeFromFieldsWithTypes(ID.reified(), item.fields.kiosk_id),
+      itemId: decodeFromFieldsWithTypes(ID.reified(), item.fields.item_id),
     })
   }
 
@@ -158,11 +158,11 @@ export class Kiosk {
 
   static fromFields(fields: Record<string, any>): Kiosk {
     return Kiosk.new({
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      profits: decodeFromFieldsGenericOrSpecial(Balance.reified(SUI.reified()), fields.profits),
-      owner: decodeFromFieldsGenericOrSpecial('address', fields.owner),
-      itemCount: decodeFromFieldsGenericOrSpecial('u32', fields.item_count),
-      allowExtensions: decodeFromFieldsGenericOrSpecial('bool', fields.allow_extensions),
+      id: decodeFromFields(UID.reified(), fields.id),
+      profits: decodeFromFields(Balance.reified(SUI.reified()), fields.profits),
+      owner: decodeFromFields('address', fields.owner),
+      itemCount: decodeFromFields('u32', fields.item_count),
+      allowExtensions: decodeFromFields('bool', fields.allow_extensions),
     })
   }
 
@@ -172,17 +172,11 @@ export class Kiosk {
     }
 
     return Kiosk.new({
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      profits: decodeFromFieldsWithTypesGenericOrSpecial(
-        Balance.reified(SUI.reified()),
-        item.fields.profits
-      ),
-      owner: decodeFromFieldsWithTypesGenericOrSpecial('address', item.fields.owner),
-      itemCount: decodeFromFieldsWithTypesGenericOrSpecial('u32', item.fields.item_count),
-      allowExtensions: decodeFromFieldsWithTypesGenericOrSpecial(
-        'bool',
-        item.fields.allow_extensions
-      ),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      profits: decodeFromFieldsWithTypes(Balance.reified(SUI.reified()), item.fields.profits),
+      owner: decodeFromFieldsWithTypes('address', item.fields.owner),
+      itemCount: decodeFromFieldsWithTypes('u32', item.fields.item_count),
+      allowExtensions: decodeFromFieldsWithTypes('bool', item.fields.allow_extensions),
     })
   }
 
@@ -273,8 +267,8 @@ export class KioskOwnerCap {
 
   static fromFields(fields: Record<string, any>): KioskOwnerCap {
     return KioskOwnerCap.new({
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      for: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.for),
+      id: decodeFromFields(UID.reified(), fields.id),
+      for: decodeFromFields(ID.reified(), fields.for),
     })
   }
 
@@ -284,8 +278,8 @@ export class KioskOwnerCap {
     }
 
     return KioskOwnerCap.new({
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      for: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.for),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      for: decodeFromFieldsWithTypes(ID.reified(), item.fields.for),
     })
   }
 
@@ -385,10 +379,10 @@ export class PurchaseCap {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): PurchaseCap {
     return PurchaseCap.new(typeArg, {
-      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
-      kioskId: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.kiosk_id),
-      itemId: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.item_id),
-      minPrice: decodeFromFieldsGenericOrSpecial('u64', fields.min_price),
+      id: decodeFromFields(UID.reified(), fields.id),
+      kioskId: decodeFromFields(ID.reified(), fields.kiosk_id),
+      itemId: decodeFromFields(ID.reified(), fields.item_id),
+      minPrice: decodeFromFields('u64', fields.min_price),
     })
   }
 
@@ -399,10 +393,10 @@ export class PurchaseCap {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return PurchaseCap.new(typeArg, {
-      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
-      kioskId: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.kiosk_id),
-      itemId: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.item_id),
-      minPrice: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.min_price),
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      kioskId: decodeFromFieldsWithTypes(ID.reified(), item.fields.kiosk_id),
+      itemId: decodeFromFieldsWithTypes(ID.reified(), item.fields.item_id),
+      minPrice: decodeFromFieldsWithTypes('u64', item.fields.min_price),
     })
   }
 
@@ -492,7 +486,7 @@ export class Item {
   }
 
   static fromFields(fields: Record<string, any>): Item {
-    return Item.new(decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id))
+    return Item.new(decodeFromFields(ID.reified(), fields.id))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Item {
@@ -500,7 +494,7 @@ export class Item {
       throw new Error('not a Item type')
     }
 
-    return Item.new(decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id))
+    return Item.new(decodeFromFieldsWithTypes(ID.reified(), item.fields.id))
   }
 
   static fromBcs(data: Uint8Array): Item {
@@ -565,8 +559,8 @@ export class Listing {
 
   static fromFields(fields: Record<string, any>): Listing {
     return Listing.new({
-      id: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id),
-      isExclusive: decodeFromFieldsGenericOrSpecial('bool', fields.is_exclusive),
+      id: decodeFromFields(ID.reified(), fields.id),
+      isExclusive: decodeFromFields('bool', fields.is_exclusive),
     })
   }
 
@@ -576,8 +570,8 @@ export class Listing {
     }
 
     return Listing.new({
-      id: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id),
-      isExclusive: decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.is_exclusive),
+      id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
+      isExclusive: decodeFromFieldsWithTypes('bool', item.fields.is_exclusive),
     })
   }
 
@@ -639,7 +633,7 @@ export class Lock {
   }
 
   static fromFields(fields: Record<string, any>): Lock {
-    return Lock.new(decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id))
+    return Lock.new(decodeFromFields(ID.reified(), fields.id))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Lock {
@@ -647,7 +641,7 @@ export class Lock {
       throw new Error('not a Lock type')
     }
 
-    return Lock.new(decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id))
+    return Lock.new(decodeFromFieldsWithTypes(ID.reified(), item.fields.id))
   }
 
   static fromBcs(data: Uint8Array): Lock {
@@ -720,9 +714,9 @@ export class ItemListed {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): ItemListed {
     return ItemListed.new(typeArg, {
-      kiosk: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.kiosk),
-      id: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id),
-      price: decodeFromFieldsGenericOrSpecial('u64', fields.price),
+      kiosk: decodeFromFields(ID.reified(), fields.kiosk),
+      id: decodeFromFields(ID.reified(), fields.id),
+      price: decodeFromFields('u64', fields.price),
     })
   }
 
@@ -733,9 +727,9 @@ export class ItemListed {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return ItemListed.new(typeArg, {
-      kiosk: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.kiosk),
-      id: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id),
-      price: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.price),
+      kiosk: decodeFromFieldsWithTypes(ID.reified(), item.fields.kiosk),
+      id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
+      price: decodeFromFieldsWithTypes('u64', item.fields.price),
     })
   }
 
@@ -812,9 +806,9 @@ export class ItemPurchased {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): ItemPurchased {
     return ItemPurchased.new(typeArg, {
-      kiosk: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.kiosk),
-      id: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id),
-      price: decodeFromFieldsGenericOrSpecial('u64', fields.price),
+      kiosk: decodeFromFields(ID.reified(), fields.kiosk),
+      id: decodeFromFields(ID.reified(), fields.id),
+      price: decodeFromFields('u64', fields.price),
     })
   }
 
@@ -825,9 +819,9 @@ export class ItemPurchased {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return ItemPurchased.new(typeArg, {
-      kiosk: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.kiosk),
-      id: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id),
-      price: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.price),
+      kiosk: decodeFromFieldsWithTypes(ID.reified(), item.fields.kiosk),
+      id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
+      price: decodeFromFieldsWithTypes('u64', item.fields.price),
     })
   }
 
@@ -900,8 +894,8 @@ export class ItemDelisted {
 
   static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): ItemDelisted {
     return ItemDelisted.new(typeArg, {
-      kiosk: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.kiosk),
-      id: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id),
+      kiosk: decodeFromFields(ID.reified(), fields.kiosk),
+      id: decodeFromFields(ID.reified(), fields.id),
     })
   }
 
@@ -912,8 +906,8 @@ export class ItemDelisted {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return ItemDelisted.new(typeArg, {
-      kiosk: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.kiosk),
-      id: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id),
+      kiosk: decodeFromFieldsWithTypes(ID.reified(), item.fields.kiosk),
+      id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
     })
   }
 

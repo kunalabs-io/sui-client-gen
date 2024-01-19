@@ -1,9 +1,5 @@
-import {
-  ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-  reified,
-} from '../../_framework/types'
+import * as reified from '../../_framework/reified'
+import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
@@ -53,7 +49,7 @@ export class Curve {
   }
 
   static fromFields(fields: Record<string, any>): Curve {
-    return Curve.new(decodeFromFieldsGenericOrSpecial('u8', fields.id))
+    return Curve.new(decodeFromFields('u8', fields.id))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Curve {
@@ -61,7 +57,7 @@ export class Curve {
       throw new Error('not a Curve type')
     }
 
-    return Curve.new(decodeFromFieldsWithTypesGenericOrSpecial('u8', item.fields.id))
+    return Curve.new(decodeFromFieldsWithTypes('u8', item.fields.id))
   }
 
   static fromBcs(data: Uint8Array): Curve {
@@ -135,22 +131,10 @@ export class PreparedVerifyingKey {
 
   static fromFields(fields: Record<string, any>): PreparedVerifyingKey {
     return PreparedVerifyingKey.new({
-      vkGammaAbcG1Bytes: decodeFromFieldsGenericOrSpecial(
-        reified.vector('u8'),
-        fields.vk_gamma_abc_g1_bytes
-      ),
-      alphaG1BetaG2Bytes: decodeFromFieldsGenericOrSpecial(
-        reified.vector('u8'),
-        fields.alpha_g1_beta_g2_bytes
-      ),
-      gammaG2NegPcBytes: decodeFromFieldsGenericOrSpecial(
-        reified.vector('u8'),
-        fields.gamma_g2_neg_pc_bytes
-      ),
-      deltaG2NegPcBytes: decodeFromFieldsGenericOrSpecial(
-        reified.vector('u8'),
-        fields.delta_g2_neg_pc_bytes
-      ),
+      vkGammaAbcG1Bytes: decodeFromFields(reified.vector('u8'), fields.vk_gamma_abc_g1_bytes),
+      alphaG1BetaG2Bytes: decodeFromFields(reified.vector('u8'), fields.alpha_g1_beta_g2_bytes),
+      gammaG2NegPcBytes: decodeFromFields(reified.vector('u8'), fields.gamma_g2_neg_pc_bytes),
+      deltaG2NegPcBytes: decodeFromFields(reified.vector('u8'), fields.delta_g2_neg_pc_bytes),
     })
   }
 
@@ -160,19 +144,19 @@ export class PreparedVerifyingKey {
     }
 
     return PreparedVerifyingKey.new({
-      vkGammaAbcG1Bytes: decodeFromFieldsWithTypesGenericOrSpecial(
+      vkGammaAbcG1Bytes: decodeFromFieldsWithTypes(
         reified.vector('u8'),
         item.fields.vk_gamma_abc_g1_bytes
       ),
-      alphaG1BetaG2Bytes: decodeFromFieldsWithTypesGenericOrSpecial(
+      alphaG1BetaG2Bytes: decodeFromFieldsWithTypes(
         reified.vector('u8'),
         item.fields.alpha_g1_beta_g2_bytes
       ),
-      gammaG2NegPcBytes: decodeFromFieldsWithTypesGenericOrSpecial(
+      gammaG2NegPcBytes: decodeFromFieldsWithTypes(
         reified.vector('u8'),
         item.fields.gamma_g2_neg_pc_bytes
       ),
-      deltaG2NegPcBytes: decodeFromFieldsWithTypesGenericOrSpecial(
+      deltaG2NegPcBytes: decodeFromFieldsWithTypes(
         reified.vector('u8'),
         item.fields.delta_g2_neg_pc_bytes
       ),
@@ -239,7 +223,7 @@ export class ProofPoints {
   }
 
   static fromFields(fields: Record<string, any>): ProofPoints {
-    return ProofPoints.new(decodeFromFieldsGenericOrSpecial(reified.vector('u8'), fields.bytes))
+    return ProofPoints.new(decodeFromFields(reified.vector('u8'), fields.bytes))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): ProofPoints {
@@ -247,9 +231,7 @@ export class ProofPoints {
       throw new Error('not a ProofPoints type')
     }
 
-    return ProofPoints.new(
-      decodeFromFieldsWithTypesGenericOrSpecial(reified.vector('u8'), item.fields.bytes)
-    )
+    return ProofPoints.new(decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.bytes))
   }
 
   static fromBcs(data: Uint8Array): ProofPoints {
@@ -309,9 +291,7 @@ export class PublicProofInputs {
   }
 
   static fromFields(fields: Record<string, any>): PublicProofInputs {
-    return PublicProofInputs.new(
-      decodeFromFieldsGenericOrSpecial(reified.vector('u8'), fields.bytes)
-    )
+    return PublicProofInputs.new(decodeFromFields(reified.vector('u8'), fields.bytes))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): PublicProofInputs {
@@ -319,9 +299,7 @@ export class PublicProofInputs {
       throw new Error('not a PublicProofInputs type')
     }
 
-    return PublicProofInputs.new(
-      decodeFromFieldsWithTypesGenericOrSpecial(reified.vector('u8'), item.fields.bytes)
-    )
+    return PublicProofInputs.new(decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.bytes))
   }
 
   static fromBcs(data: Uint8Array): PublicProofInputs {

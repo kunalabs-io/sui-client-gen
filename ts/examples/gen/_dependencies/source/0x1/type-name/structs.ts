@@ -1,8 +1,8 @@
 import {
   ToField,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
-} from '../../../../_framework/types'
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+} from '../../../../_framework/reified'
 import { FieldsWithTypes, compressSuiType } from '../../../../_framework/util'
 import { String } from '../ascii/structs'
 import { bcs } from '@mysten/bcs'
@@ -53,7 +53,7 @@ export class TypeName {
   }
 
   static fromFields(fields: Record<string, any>): TypeName {
-    return TypeName.new(decodeFromFieldsGenericOrSpecial(String.reified(), fields.name))
+    return TypeName.new(decodeFromFields(String.reified(), fields.name))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): TypeName {
@@ -61,9 +61,7 @@ export class TypeName {
       throw new Error('not a TypeName type')
     }
 
-    return TypeName.new(
-      decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.name)
-    )
+    return TypeName.new(decodeFromFieldsWithTypes(String.reified(), item.fields.name))
   }
 
   static fromBcs(data: Uint8Array): TypeName {

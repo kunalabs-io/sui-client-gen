@@ -1,15 +1,15 @@
+import * as reified from '../../_framework/reified'
 import {
   ReifiedTypeArgument,
   ToField,
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
-  decodeFromFieldsGenericOrSpecial,
-  decodeFromFieldsWithTypesGenericOrSpecial,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
   extractType,
-  reified,
   toBcs,
-} from '../../_framework/types'
+} from '../../_framework/reified'
 import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
@@ -70,10 +70,7 @@ export class Option<T0 extends TypeArgument> {
     typeArg: T0,
     fields: Record<string, any>
   ): Option<ToTypeArgument<T0>> {
-    return Option.new(
-      typeArg,
-      decodeFromFieldsGenericOrSpecial(reified.vector(typeArg), fields.vec)
-    )
+    return Option.new(typeArg, decodeFromFields(reified.vector(typeArg), fields.vec))
   }
 
   static fromFieldsWithTypes<T0 extends ReifiedTypeArgument>(
@@ -85,10 +82,7 @@ export class Option<T0 extends TypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return Option.new(
-      typeArg,
-      decodeFromFieldsWithTypesGenericOrSpecial(reified.vector(typeArg), item.fields.vec)
-    )
+    return Option.new(typeArg, decodeFromFieldsWithTypes(reified.vector(typeArg), item.fields.vec))
   }
 
   static fromBcs<T0 extends ReifiedTypeArgument>(
