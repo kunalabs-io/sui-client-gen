@@ -832,3 +832,73 @@ it('loads with loader correctly', async () => {
     })
   )
 })
+
+it.only('converts to json correctly', () => {
+  const U = WithSpecialTypes.reified(Bar.reified(), 'u64')
+  const V = vector(WithTwoGenerics.reified(Bar.reified(), 'u8'))
+  const reified = WithTwoGenerics.reified(U, V)
+
+  const obj = WithTwoGenerics.new([U, V], {
+    genericField1: WithSpecialTypes.new([Bar.reified(), 'u64'], {
+      id: '0x1',
+      string: 'string',
+      asciiString: 'ascii',
+      url: 'https://example.com',
+      idField: '0x2',
+      uid: '0x3',
+      balance: Balance.new(SUI.reified(), 0n),
+      option: 100n,
+      optionObj: Bar.new(100n),
+      optionNone: null,
+      balanceGeneric: Balance.new(SUI.reified(), 0n),
+      optionGeneric: 200n,
+      optionGenericNone: null,
+    }),
+    genericField2: [
+      WithTwoGenerics.new([Bar.reified(), 'u8'], {
+        genericField1: Bar.new(100n),
+        genericField2: 1,
+      }),
+    ],
+  })
+
+  const exp = {
+    $typeName:
+      '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics',
+    $typeArgs: [
+      '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, u64>',
+      'vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, u8>>',
+    ],
+    genericField1: {
+      id: '0x1',
+      string: 'string',
+      asciiString: 'ascii',
+      url: 'https://example.com',
+      idField: '0x2',
+      uid: '0x3',
+      balance: {
+        value: '0',
+      },
+      option: '100',
+      optionObj: {
+        value: '100',
+      },
+      optionNone: null,
+      balanceGeneric: {
+        value: '0',
+      },
+      optionGeneric: '200',
+      optionGenericNone: null,
+    },
+    genericField2: [
+      {
+        genericField1: {
+          value: '100',
+        },
+        genericField2: 1,
+      },
+    ],
+  }
+
+  expect(obj.toJSON()).toEqual(exp)
+})
