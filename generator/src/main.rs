@@ -108,8 +108,8 @@ async fn main() -> Result<()> {
         out_root.join("_framework").join("util.ts").as_ref(),
     )?;
     write_str_to_file(
-        framework_sources::TYPES,
-        out_root.join("_framework").join("types.ts").as_ref(),
+        framework_sources::REIFIED,
+        out_root.join("_framework").join("reified.ts").as_ref(),
     )?;
 
     // gen top-level packages and dependencies

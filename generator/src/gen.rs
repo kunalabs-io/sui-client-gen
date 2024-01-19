@@ -927,7 +927,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         wrap_type_parameter: Option<js::Tokens>,
         is_top_level: bool,
     ) -> js::Tokens {
-        let to_field = &self.framework.import("types", "ToField");
+        let to_field = &self.framework.import("reified", "ToField");
 
         let to_field_if_top_level = |ty| if is_top_level {
             quote!($to_field<$ty>)
@@ -1093,7 +1093,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         ty: &Type,
         type_param_names: &Vec<Tokens<JavaScript>>,
     ) -> js::Tokens {
-        let reified = &self.framework.import("types", "reified");
+        let reified = &self.framework.import("reified", "reified").into_wildcard();
         match ty {
             Type::Primitive(ty) => match ty {
                 PrimitiveType::U8 => quote!($[str](u8)),
@@ -1131,7 +1131,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
     fn gen_from_fields_field_decode(&mut self, field: &FieldEnv) -> js::Tokens {
         let decode_from_fields_generic_or_special = &self
             .framework
-            .import("types", "decodeFromFieldsGenericOrSpecial");
+            .import("reified", "decodeFromFields");
 
         let strct = &field.struct_env;
 
@@ -1157,7 +1157,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
     fn gen_from_fields_with_types_field_decode(&mut self, field: &FieldEnv) -> js::Tokens {
         let decode_from_fields_with_types_generic_or_special = &self
             .framework
-            .import("types", "decodeFromFieldsWithTypesGenericOrSpecial");
+            .import("reified", "decodeFromFieldsWithTypes");
 
         let strct = &field.struct_env;
 
@@ -1242,7 +1242,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
     /// Generates the `<StructName>Fields` interface.
     pub fn gen_fields_if(&mut self, tokens: &mut js::Tokens, strct: &StructEnv) {
-        let type_argument = &self.framework.import("types", "TypeArgument");
+        let type_argument = &self.framework.import("reified", "TypeArgument");
         let extends = ExtendsOrWraps::Extends(quote!($type_argument));
 
         quote_in! { *tokens =>
@@ -1270,14 +1270,14 @@ impl<'env, 'a> StructsGen<'env, 'a> {
     pub fn gen_struct_class(&mut self, tokens: &mut js::Tokens, strct: &StructEnv) {
         let fields_with_types = &self.framework.import("util", "FieldsWithTypes");
         let generic_to_json = &self.framework.import("util", "genericToJSON");
-        let type_argument = &self.framework.import("types", "TypeArgument");
-        let reified_type_argument = &self.framework.import("types", "ReifiedTypeArgument");
-        let to_type_argument = &self.framework.import("types", "ToTypeArgument");
-        let to_bcs = &self.framework.import("types", "toBcs");
-        let extract_type = &self.framework.import("types", "extractType");
+        let type_argument = &self.framework.import("reified", "TypeArgument");
+        let reified_type_argument = &self.framework.import("reified", "ReifiedTypeArgument");
+        let to_type_argument = &self.framework.import("reified", "ToTypeArgument");
+        let to_bcs = &self.framework.import("reified", "toBcs");
+        let extract_type = &self.framework.import("reified", "extractType");
         let assert_fields_with_types_args_match = &self
             .framework
-            .import("types", "assertFieldsWithTypesArgsMatch");
+            .import("reified", "assertFieldsWithTypesArgsMatch");
         let sui_parsed_data = &js::import("@mysten/sui.js/client", "SuiParsedData");
         let sui_client = &js::import("@mysten/sui.js/client", "SuiClient");
         let bcs = &js::import("@mysten/bcs", "bcs");
