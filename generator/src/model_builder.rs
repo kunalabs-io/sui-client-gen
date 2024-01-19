@@ -14,7 +14,7 @@ use move_binary_format::file_format::{
 };
 use move_bytecode_utils::Modules;
 use move_core_types::account_address::AccountAddress;
-use move_model::ast::{ModuleName, Spec};
+use move_model::ast::ModuleName;
 use move_model::model::{FunId, FunctionData, GlobalEnv, Loc, ModuleData, ModuleId, StructId};
 use move_model::{self, addr_to_big_uint};
 use move_package::compilation::model_builder::ModelBuilder;
@@ -412,14 +412,8 @@ fn add_modules_to_model<'a>(
             let name = m.identifier_at(m.struct_handle_at(def.struct_handle).name);
             let symbol = env.symbol_pool().make(name.as_str());
             let struct_id = StructId::new(symbol);
-            let data = env.create_move_struct_data(
-                m,
-                def_idx,
-                symbol,
-                Loc::default(),
-                Vec::default(),
-                Spec::default(),
-            );
+            let data =
+                env.create_move_struct_data(m, def_idx, symbol, Loc::default(), Vec::default());
             module_data.struct_data.insert(struct_id, data);
             module_data.struct_idx_to_id.insert(def_idx, struct_id);
         }
@@ -437,7 +431,6 @@ impl<'a> fmt::Display for DependencyTOML<'a> {
             PM::InternalDependency {
                 kind,
                 subst,
-                version: _,
                 digest,
                 dep_override: _,
             },
