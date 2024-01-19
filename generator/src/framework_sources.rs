@@ -350,42 +350,6 @@ export function compressSuiType(type: string): string {
   }
 }
 
-export function genericToJSON(type: string, field: any): any {
-  const { typeName, typeArgs } = parseTypeName(type)
-  switch (typeName) {
-    case 'bool':
-      return field
-    case 'u8':
-    case 'u16':
-    case 'u32':
-      return field
-    case 'u64':
-    case 'u128':
-    case 'u256':
-      return field.toString()
-    case 'address':
-    case 'signer':
-      return field
-    case 'vector':
-      return field.map((item: any) => genericToJSON(typeArgs[0], item))
-    // handle special types
-    case '0x1::string::String':
-    case '0x1::ascii::String':
-    case '0x2::url::Url':
-    case '0x2::object::ID':
-    case '0x2::object::UID':
-      return field
-    case '0x1::option::Option': {
-      if (field === null) {
-        return null
-      }
-      return genericToJSON(typeArgs[0], field)
-    }
-    default:
-      return field.toJSON()
-  }
-}
-
 "#;
 
 pub static REIFIED: &str = r#"
@@ -602,6 +566,42 @@ export function assertFieldsWithTypesArgsMatch(
         `provided item has mismatching type argments ${item.type} (expected ${reifiedTypeArgs[i]}, got ${itemTypeArgs[i]}))`
       )
     }
+  }
+}
+
+export function toJSON(type: string, field: any): any {
+  const { typeName, typeArgs } = parseTypeName(type)
+  switch (typeName) {
+    case 'bool':
+      return field
+    case 'u8':
+    case 'u16':
+    case 'u32':
+      return field
+    case 'u64':
+    case 'u128':
+    case 'u256':
+      return field.toString()
+    case 'address':
+    case 'signer':
+      return field
+    case 'vector':
+      return field.map((item: any) => toJSON(typeArgs[0], item))
+    // handle special types
+    case '0x1::string::String':
+    case '0x1::ascii::String':
+    case '0x2::url::Url':
+    case '0x2::object::ID':
+    case '0x2::object::UID':
+      return field
+    case '0x1::option::Option': {
+      if (field === null) {
+        return null
+      }
+      return toJSON(typeArgs[0], field)
+    }
+    default:
+      return field.toJSON()
   }
 }
 
