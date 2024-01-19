@@ -1,5 +1,13 @@
 import { TypeName } from '../../_dependencies/source/0x1/type-name/structs'
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
+import {
+  ReifiedTypeArgument,
+  ToField,
+  assertFieldsWithTypesArgsMatch,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+  extractType,
+} from '../../_framework/types'
+import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { Balance, Supply } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
@@ -16,7 +24,7 @@ export function isAdminCap(type: Type): boolean {
 }
 
 export interface AdminCapFields {
-  id: string
+  id: ToField<UID>
 }
 
 export class AdminCap {
@@ -24,27 +32,46 @@ export class AdminCap {
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
   static readonly $numTypeParams = 0
 
+  readonly $typeName = AdminCap.$typeName
+
   static get bcs() {
     return bcs.struct('AdminCap', {
       id: UID.bcs,
     })
   }
 
-  readonly id: string
+  readonly id: ToField<UID>
 
-  constructor(id: string) {
+  private constructor(id: ToField<UID>) {
     this.id = id
   }
 
+  static new(id: ToField<UID>): AdminCap {
+    return new AdminCap(id)
+  }
+
+  static reified() {
+    return {
+      typeName: AdminCap.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => AdminCap.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => AdminCap.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => AdminCap.fromBcs(data),
+      bcs: AdminCap.bcs,
+      __class: null as unknown as ReturnType<typeof AdminCap.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): AdminCap {
-    return new AdminCap(UID.fromFields(fields.id).id)
+    return AdminCap.new(decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): AdminCap {
     if (!isAdminCap(item.type)) {
       throw new Error('not a AdminCap type')
     }
-    return new AdminCap(item.fields.id.id)
+
+    return AdminCap.new(decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id))
   }
 
   static fromBcs(data: Uint8Array): AdminCap {
@@ -57,7 +84,7 @@ export class AdminCap {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData(content: SuiParsedData): AdminCap {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -89,7 +116,7 @@ export function isLP(type: Type): boolean {
 }
 
 export interface LPFields {
-  dummyField: boolean
+  dummyField: ToField<'bool'>
 }
 
 export class LP {
@@ -97,36 +124,66 @@ export class LP {
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP'
   static readonly $numTypeParams = 2
 
+  readonly $typeName = LP.$typeName
+
   static get bcs() {
     return bcs.struct('LP', {
       dummy_field: bcs.bool(),
     })
   }
 
-  readonly $typeArgs: [Type, Type]
+  readonly $typeArgs: [string, string]
 
-  readonly dummyField: boolean
+  readonly dummyField: ToField<'bool'>
 
-  constructor(typeArgs: [Type, Type], dummyField: boolean) {
+  private constructor(typeArgs: [string, string], dummyField: ToField<'bool'>) {
     this.$typeArgs = typeArgs
 
     this.dummyField = dummyField
   }
 
-  static fromFields(typeArgs: [Type, Type], fields: Record<string, any>): LP {
-    return new LP(typeArgs, fields.dummy_field)
+  static new(
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    dummyField: ToField<'bool'>
+  ): LP {
+    return new LP(typeArgs.map(extractType) as [string, string], dummyField)
   }
 
-  static fromFieldsWithTypes(item: FieldsWithTypes): LP {
+  static reified(A: ReifiedTypeArgument, B: ReifiedTypeArgument) {
+    return {
+      typeName: LP.$typeName,
+      typeArgs: [A, B],
+      fromFields: (fields: Record<string, any>) => LP.fromFields([A, B], fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => LP.fromFieldsWithTypes([A, B], item),
+      fromBcs: (data: Uint8Array) => LP.fromBcs([A, B], data),
+      bcs: LP.bcs,
+      __class: null as unknown as ReturnType<typeof LP.new>,
+    }
+  }
+
+  static fromFields(
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    fields: Record<string, any>
+  ): LP {
+    return LP.new(typeArgs, decodeFromFieldsGenericOrSpecial('bool', fields.dummy_field))
+  }
+
+  static fromFieldsWithTypes(
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    item: FieldsWithTypes
+  ): LP {
     if (!isLP(item.type)) {
       throw new Error('not a LP type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, typeArgs)
 
-    return new LP([typeArgs[0], typeArgs[1]], item.fields.dummy_field)
+    return LP.new(
+      typeArgs,
+      decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.dummy_field)
+    )
   }
 
-  static fromBcs(typeArgs: [Type, Type], data: Uint8Array): LP {
+  static fromBcs(typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument], data: Uint8Array): LP {
     return LP.fromFields(typeArgs, LP.bcs.parse(data))
   }
 
@@ -148,19 +205,21 @@ export function isPool(type: Type): boolean {
 }
 
 export interface PoolFields {
-  id: string
-  balanceA: Balance
-  balanceB: Balance
-  lpSupply: Supply
-  lpFeeBps: bigint
-  adminFeePct: bigint
-  adminFeeBalance: Balance
+  id: ToField<UID>
+  balanceA: ToField<Balance>
+  balanceB: ToField<Balance>
+  lpSupply: ToField<Supply>
+  lpFeeBps: ToField<'u64'>
+  adminFeePct: ToField<'u64'>
+  adminFeeBalance: ToField<Balance>
 }
 
 export class Pool {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool'
   static readonly $numTypeParams = 2
+
+  readonly $typeName = Pool.$typeName
 
   static get bcs() {
     return bcs.struct('Pool', {
@@ -174,17 +233,17 @@ export class Pool {
     })
   }
 
-  readonly $typeArgs: [Type, Type]
+  readonly $typeArgs: [string, string]
 
-  readonly id: string
-  readonly balanceA: Balance
-  readonly balanceB: Balance
-  readonly lpSupply: Supply
-  readonly lpFeeBps: bigint
-  readonly adminFeePct: bigint
-  readonly adminFeeBalance: Balance
+  readonly id: ToField<UID>
+  readonly balanceA: ToField<Balance>
+  readonly balanceB: ToField<Balance>
+  readonly lpSupply: ToField<Supply>
+  readonly lpFeeBps: ToField<'u64'>
+  readonly adminFeePct: ToField<'u64'>
+  readonly adminFeeBalance: ToField<Balance>
 
-  constructor(typeArgs: [Type, Type], fields: PoolFields) {
+  private constructor(typeArgs: [string, string], fields: PoolFields) {
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -196,45 +255,76 @@ export class Pool {
     this.adminFeeBalance = fields.adminFeeBalance
   }
 
-  static fromFields(typeArgs: [Type, Type], fields: Record<string, any>): Pool {
-    return new Pool(typeArgs, {
-      id: UID.fromFields(fields.id).id,
-      balanceA: Balance.fromFields(`${typeArgs[0]}`, fields.balance_a),
-      balanceB: Balance.fromFields(`${typeArgs[1]}`, fields.balance_b),
-      lpSupply: Supply.fromFields(
-        `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${typeArgs[0]}, ${typeArgs[1]}>`,
+  static new(typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument], fields: PoolFields): Pool {
+    return new Pool(typeArgs.map(extractType) as [string, string], fields)
+  }
+
+  static reified(A: ReifiedTypeArgument, B: ReifiedTypeArgument) {
+    return {
+      typeName: Pool.$typeName,
+      typeArgs: [A, B],
+      fromFields: (fields: Record<string, any>) => Pool.fromFields([A, B], fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Pool.fromFieldsWithTypes([A, B], item),
+      fromBcs: (data: Uint8Array) => Pool.fromBcs([A, B], data),
+      bcs: Pool.bcs,
+      __class: null as unknown as ReturnType<typeof Pool.new>,
+    }
+  }
+
+  static fromFields(
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    fields: Record<string, any>
+  ): Pool {
+    return Pool.new(typeArgs, {
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      balanceA: decodeFromFieldsGenericOrSpecial(Balance.reified(typeArgs[0]), fields.balance_a),
+      balanceB: decodeFromFieldsGenericOrSpecial(Balance.reified(typeArgs[1]), fields.balance_b),
+      lpSupply: decodeFromFieldsGenericOrSpecial(
+        Supply.reified(LP.reified(typeArgs[0], typeArgs[1])),
         fields.lp_supply
       ),
-      lpFeeBps: BigInt(fields.lp_fee_bps),
-      adminFeePct: BigInt(fields.admin_fee_pct),
-      adminFeeBalance: Balance.fromFields(
-        `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${typeArgs[0]}, ${typeArgs[1]}>`,
+      lpFeeBps: decodeFromFieldsGenericOrSpecial('u64', fields.lp_fee_bps),
+      adminFeePct: decodeFromFieldsGenericOrSpecial('u64', fields.admin_fee_pct),
+      adminFeeBalance: decodeFromFieldsGenericOrSpecial(
+        Balance.reified(LP.reified(typeArgs[0], typeArgs[1])),
         fields.admin_fee_balance
       ),
     })
   }
 
-  static fromFieldsWithTypes(item: FieldsWithTypes): Pool {
+  static fromFieldsWithTypes(
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    item: FieldsWithTypes
+  ): Pool {
     if (!isPool(item.type)) {
       throw new Error('not a Pool type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, typeArgs)
 
-    return new Pool([typeArgs[0], typeArgs[1]], {
-      id: item.fields.id.id,
-      balanceA: new Balance(`${typeArgs[0]}`, BigInt(item.fields.balance_a)),
-      balanceB: new Balance(`${typeArgs[1]}`, BigInt(item.fields.balance_b)),
-      lpSupply: Supply.fromFieldsWithTypes(item.fields.lp_supply),
-      lpFeeBps: BigInt(item.fields.lp_fee_bps),
-      adminFeePct: BigInt(item.fields.admin_fee_pct),
-      adminFeeBalance: new Balance(
-        `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${typeArgs[0]}, ${typeArgs[1]}>`,
-        BigInt(item.fields.admin_fee_balance)
+    return Pool.new(typeArgs, {
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      balanceA: decodeFromFieldsWithTypesGenericOrSpecial(
+        Balance.reified(typeArgs[0]),
+        item.fields.balance_a
+      ),
+      balanceB: decodeFromFieldsWithTypesGenericOrSpecial(
+        Balance.reified(typeArgs[1]),
+        item.fields.balance_b
+      ),
+      lpSupply: decodeFromFieldsWithTypesGenericOrSpecial(
+        Supply.reified(LP.reified(typeArgs[0], typeArgs[1])),
+        item.fields.lp_supply
+      ),
+      lpFeeBps: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.lp_fee_bps),
+      adminFeePct: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.admin_fee_pct),
+      adminFeeBalance: decodeFromFieldsWithTypesGenericOrSpecial(
+        Balance.reified(LP.reified(typeArgs[0], typeArgs[1])),
+        item.fields.admin_fee_balance
       ),
     })
   }
 
-  static fromBcs(typeArgs: [Type, Type], data: Uint8Array): Pool {
+  static fromBcs(typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument], data: Uint8Array): Pool {
     return Pool.fromFields(typeArgs, Pool.bcs.parse(data))
   }
 
@@ -251,17 +341,24 @@ export class Pool {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData(
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    content: SuiParsedData
+  ): Pool {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
     if (!isPool(content.type)) {
       throw new Error(`object at ${(content.fields as any).id} is not a Pool object`)
     }
-    return Pool.fromFieldsWithTypes(content)
+    return Pool.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Pool> {
+  static async fetch(
+    client: SuiClient,
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    id: string
+  ): Promise<Pool> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Pool object at id ${id}: ${res.error.code}`)
@@ -269,7 +366,7 @@ export class Pool {
     if (res.data?.content?.dataType !== 'moveObject' || !isPool(res.data.content.type)) {
       throw new Error(`object at id ${id} is not a Pool object`)
     }
-    return Pool.fromFieldsWithTypes(res.data.content)
+    return Pool.fromFieldsWithTypes(typeArgs, res.data.content)
   }
 }
 
@@ -284,7 +381,7 @@ export function isPoolCreationEvent(type: Type): boolean {
 }
 
 export interface PoolCreationEventFields {
-  poolId: string
+  poolId: ToField<ID>
 }
 
 export class PoolCreationEvent {
@@ -292,27 +389,48 @@ export class PoolCreationEvent {
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
   static readonly $numTypeParams = 0
 
+  readonly $typeName = PoolCreationEvent.$typeName
+
   static get bcs() {
     return bcs.struct('PoolCreationEvent', {
       pool_id: ID.bcs,
     })
   }
 
-  readonly poolId: string
+  readonly poolId: ToField<ID>
 
-  constructor(poolId: string) {
+  private constructor(poolId: ToField<ID>) {
     this.poolId = poolId
   }
 
+  static new(poolId: ToField<ID>): PoolCreationEvent {
+    return new PoolCreationEvent(poolId)
+  }
+
+  static reified() {
+    return {
+      typeName: PoolCreationEvent.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => PoolCreationEvent.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => PoolCreationEvent.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => PoolCreationEvent.fromBcs(data),
+      bcs: PoolCreationEvent.bcs,
+      __class: null as unknown as ReturnType<typeof PoolCreationEvent.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): PoolCreationEvent {
-    return new PoolCreationEvent(ID.fromFields(fields.pool_id).bytes)
+    return PoolCreationEvent.new(decodeFromFieldsGenericOrSpecial(ID.reified(), fields.pool_id))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): PoolCreationEvent {
     if (!isPoolCreationEvent(item.type)) {
       throw new Error('not a PoolCreationEvent type')
     }
-    return new PoolCreationEvent(item.fields.pool_id)
+
+    return PoolCreationEvent.new(
+      decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.pool_id)
+    )
   }
 
   static fromBcs(data: Uint8Array): PoolCreationEvent {
@@ -337,14 +455,16 @@ export function isPoolRegistry(type: Type): boolean {
 }
 
 export interface PoolRegistryFields {
-  id: string
-  table: Table
+  id: ToField<UID>
+  table: ToField<Table>
 }
 
 export class PoolRegistry {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = PoolRegistry.$typeName
 
   static get bcs() {
     return bcs.struct('PoolRegistry', {
@@ -353,22 +473,35 @@ export class PoolRegistry {
     })
   }
 
-  readonly id: string
-  readonly table: Table
+  readonly id: ToField<UID>
+  readonly table: ToField<Table>
 
-  constructor(fields: PoolRegistryFields) {
+  private constructor(fields: PoolRegistryFields) {
     this.id = fields.id
     this.table = fields.table
   }
 
+  static new(fields: PoolRegistryFields): PoolRegistry {
+    return new PoolRegistry(fields)
+  }
+
+  static reified() {
+    return {
+      typeName: PoolRegistry.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => PoolRegistry.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => PoolRegistry.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => PoolRegistry.fromBcs(data),
+      bcs: PoolRegistry.bcs,
+      __class: null as unknown as ReturnType<typeof PoolRegistry.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): PoolRegistry {
-    return new PoolRegistry({
-      id: UID.fromFields(fields.id).id,
-      table: Table.fromFields(
-        [
-          `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem`,
-          `bool`,
-        ],
+    return PoolRegistry.new({
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      table: decodeFromFieldsGenericOrSpecial(
+        Table.reified(PoolRegistryItem.reified(), 'bool'),
         fields.table
       ),
     })
@@ -378,9 +511,13 @@ export class PoolRegistry {
     if (!isPoolRegistry(item.type)) {
       throw new Error('not a PoolRegistry type')
     }
-    return new PoolRegistry({
-      id: item.fields.id.id,
-      table: Table.fromFieldsWithTypes(item.fields.table),
+
+    return PoolRegistry.new({
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      table: decodeFromFieldsWithTypesGenericOrSpecial(
+        Table.reified(PoolRegistryItem.reified(), 'bool'),
+        item.fields.table
+      ),
     })
   }
 
@@ -395,7 +532,7 @@ export class PoolRegistry {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData(content: SuiParsedData): PoolRegistry {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -428,14 +565,16 @@ export function isPoolRegistryItem(type: Type): boolean {
 }
 
 export interface PoolRegistryItemFields {
-  a: TypeName
-  b: TypeName
+  a: ToField<TypeName>
+  b: ToField<TypeName>
 }
 
 export class PoolRegistryItem {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = PoolRegistryItem.$typeName
 
   static get bcs() {
     return bcs.struct('PoolRegistryItem', {
@@ -444,18 +583,34 @@ export class PoolRegistryItem {
     })
   }
 
-  readonly a: TypeName
-  readonly b: TypeName
+  readonly a: ToField<TypeName>
+  readonly b: ToField<TypeName>
 
-  constructor(fields: PoolRegistryItemFields) {
+  private constructor(fields: PoolRegistryItemFields) {
     this.a = fields.a
     this.b = fields.b
   }
 
+  static new(fields: PoolRegistryItemFields): PoolRegistryItem {
+    return new PoolRegistryItem(fields)
+  }
+
+  static reified() {
+    return {
+      typeName: PoolRegistryItem.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => PoolRegistryItem.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => PoolRegistryItem.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => PoolRegistryItem.fromBcs(data),
+      bcs: PoolRegistryItem.bcs,
+      __class: null as unknown as ReturnType<typeof PoolRegistryItem.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): PoolRegistryItem {
-    return new PoolRegistryItem({
-      a: TypeName.fromFields(fields.a),
-      b: TypeName.fromFields(fields.b),
+    return PoolRegistryItem.new({
+      a: decodeFromFieldsGenericOrSpecial(TypeName.reified(), fields.a),
+      b: decodeFromFieldsGenericOrSpecial(TypeName.reified(), fields.b),
     })
   }
 
@@ -463,9 +618,10 @@ export class PoolRegistryItem {
     if (!isPoolRegistryItem(item.type)) {
       throw new Error('not a PoolRegistryItem type')
     }
-    return new PoolRegistryItem({
-      a: TypeName.fromFieldsWithTypes(item.fields.a),
-      b: TypeName.fromFieldsWithTypes(item.fields.b),
+
+    return PoolRegistryItem.new({
+      a: decodeFromFieldsWithTypesGenericOrSpecial(TypeName.reified(), item.fields.a),
+      b: decodeFromFieldsWithTypesGenericOrSpecial(TypeName.reified(), item.fields.b),
     })
   }
 

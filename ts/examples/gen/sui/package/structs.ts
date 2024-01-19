@@ -1,4 +1,10 @@
 import { String } from '../../_dependencies/source/0x1/ascii/structs'
+import {
+  ToField,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+  reified,
+} from '../../_framework/types'
 import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
 import { ID, UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -12,14 +18,16 @@ export function isPublisher(type: Type): boolean {
 }
 
 export interface PublisherFields {
-  id: string
-  package: string
-  moduleName: string
+  id: ToField<UID>
+  package: ToField<String>
+  moduleName: ToField<String>
 }
 
 export class Publisher {
   static readonly $typeName = '0x2::package::Publisher'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = Publisher.$typeName
 
   static get bcs() {
     return bcs.struct('Publisher', {
@@ -29,25 +37,37 @@ export class Publisher {
     })
   }
 
-  readonly id: string
-  readonly package: string
-  readonly moduleName: string
+  readonly id: ToField<UID>
+  readonly package: ToField<String>
+  readonly moduleName: ToField<String>
 
-  constructor(fields: PublisherFields) {
+  private constructor(fields: PublisherFields) {
     this.id = fields.id
     this.package = fields.package
     this.moduleName = fields.moduleName
   }
 
+  static new(fields: PublisherFields): Publisher {
+    return new Publisher(fields)
+  }
+
+  static reified() {
+    return {
+      typeName: Publisher.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => Publisher.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Publisher.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => Publisher.fromBcs(data),
+      bcs: Publisher.bcs,
+      __class: null as unknown as ReturnType<typeof Publisher.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): Publisher {
-    return new Publisher({
-      id: UID.fromFields(fields.id).id,
-      package: new TextDecoder()
-        .decode(Uint8Array.from(String.fromFields(fields.package).bytes))
-        .toString(),
-      moduleName: new TextDecoder()
-        .decode(Uint8Array.from(String.fromFields(fields.module_name).bytes))
-        .toString(),
+    return Publisher.new({
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      package: decodeFromFieldsGenericOrSpecial(String.reified(), fields.package),
+      moduleName: decodeFromFieldsGenericOrSpecial(String.reified(), fields.module_name),
     })
   }
 
@@ -55,10 +75,14 @@ export class Publisher {
     if (!isPublisher(item.type)) {
       throw new Error('not a Publisher type')
     }
-    return new Publisher({
-      id: item.fields.id.id,
-      package: item.fields.package,
-      moduleName: item.fields.module_name,
+
+    return Publisher.new({
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      package: decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.package),
+      moduleName: decodeFromFieldsWithTypesGenericOrSpecial(
+        String.reified(),
+        item.fields.module_name
+      ),
     })
   }
 
@@ -74,7 +98,7 @@ export class Publisher {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData(content: SuiParsedData): Publisher {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -104,15 +128,17 @@ export function isUpgradeCap(type: Type): boolean {
 }
 
 export interface UpgradeCapFields {
-  id: string
-  package: string
-  version: bigint
-  policy: number
+  id: ToField<UID>
+  package: ToField<ID>
+  version: ToField<'u64'>
+  policy: ToField<'u8'>
 }
 
 export class UpgradeCap {
   static readonly $typeName = '0x2::package::UpgradeCap'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = UpgradeCap.$typeName
 
   static get bcs() {
     return bcs.struct('UpgradeCap', {
@@ -123,24 +149,40 @@ export class UpgradeCap {
     })
   }
 
-  readonly id: string
-  readonly package: string
-  readonly version: bigint
-  readonly policy: number
+  readonly id: ToField<UID>
+  readonly package: ToField<ID>
+  readonly version: ToField<'u64'>
+  readonly policy: ToField<'u8'>
 
-  constructor(fields: UpgradeCapFields) {
+  private constructor(fields: UpgradeCapFields) {
     this.id = fields.id
     this.package = fields.package
     this.version = fields.version
     this.policy = fields.policy
   }
 
+  static new(fields: UpgradeCapFields): UpgradeCap {
+    return new UpgradeCap(fields)
+  }
+
+  static reified() {
+    return {
+      typeName: UpgradeCap.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => UpgradeCap.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeCap.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => UpgradeCap.fromBcs(data),
+      bcs: UpgradeCap.bcs,
+      __class: null as unknown as ReturnType<typeof UpgradeCap.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): UpgradeCap {
-    return new UpgradeCap({
-      id: UID.fromFields(fields.id).id,
-      package: ID.fromFields(fields.package).bytes,
-      version: BigInt(fields.version),
-      policy: fields.policy,
+    return UpgradeCap.new({
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      package: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.package),
+      version: decodeFromFieldsGenericOrSpecial('u64', fields.version),
+      policy: decodeFromFieldsGenericOrSpecial('u8', fields.policy),
     })
   }
 
@@ -148,11 +190,12 @@ export class UpgradeCap {
     if (!isUpgradeCap(item.type)) {
       throw new Error('not a UpgradeCap type')
     }
-    return new UpgradeCap({
-      id: item.fields.id.id,
-      package: item.fields.package,
-      version: BigInt(item.fields.version),
-      policy: item.fields.policy,
+
+    return UpgradeCap.new({
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      package: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.package),
+      version: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.version),
+      policy: decodeFromFieldsWithTypesGenericOrSpecial('u8', item.fields.policy),
     })
   }
 
@@ -169,7 +212,7 @@ export class UpgradeCap {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData(content: SuiParsedData): UpgradeCap {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -199,13 +242,15 @@ export function isUpgradeReceipt(type: Type): boolean {
 }
 
 export interface UpgradeReceiptFields {
-  cap: string
-  package: string
+  cap: ToField<ID>
+  package: ToField<ID>
 }
 
 export class UpgradeReceipt {
   static readonly $typeName = '0x2::package::UpgradeReceipt'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = UpgradeReceipt.$typeName
 
   static get bcs() {
     return bcs.struct('UpgradeReceipt', {
@@ -214,18 +259,34 @@ export class UpgradeReceipt {
     })
   }
 
-  readonly cap: string
-  readonly package: string
+  readonly cap: ToField<ID>
+  readonly package: ToField<ID>
 
-  constructor(fields: UpgradeReceiptFields) {
+  private constructor(fields: UpgradeReceiptFields) {
     this.cap = fields.cap
     this.package = fields.package
   }
 
+  static new(fields: UpgradeReceiptFields): UpgradeReceipt {
+    return new UpgradeReceipt(fields)
+  }
+
+  static reified() {
+    return {
+      typeName: UpgradeReceipt.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => UpgradeReceipt.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeReceipt.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => UpgradeReceipt.fromBcs(data),
+      bcs: UpgradeReceipt.bcs,
+      __class: null as unknown as ReturnType<typeof UpgradeReceipt.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): UpgradeReceipt {
-    return new UpgradeReceipt({
-      cap: ID.fromFields(fields.cap).bytes,
-      package: ID.fromFields(fields.package).bytes,
+    return UpgradeReceipt.new({
+      cap: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.cap),
+      package: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.package),
     })
   }
 
@@ -233,7 +294,11 @@ export class UpgradeReceipt {
     if (!isUpgradeReceipt(item.type)) {
       throw new Error('not a UpgradeReceipt type')
     }
-    return new UpgradeReceipt({ cap: item.fields.cap, package: item.fields.package })
+
+    return UpgradeReceipt.new({
+      cap: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.cap),
+      package: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.package),
+    })
   }
 
   static fromBcs(data: Uint8Array): UpgradeReceipt {
@@ -256,15 +321,17 @@ export function isUpgradeTicket(type: Type): boolean {
 }
 
 export interface UpgradeTicketFields {
-  cap: string
-  package: string
-  policy: number
-  digest: Array<number>
+  cap: ToField<ID>
+  package: ToField<ID>
+  policy: ToField<'u8'>
+  digest: Array<ToField<'u8'>>
 }
 
 export class UpgradeTicket {
   static readonly $typeName = '0x2::package::UpgradeTicket'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = UpgradeTicket.$typeName
 
   static get bcs() {
     return bcs.struct('UpgradeTicket', {
@@ -275,24 +342,40 @@ export class UpgradeTicket {
     })
   }
 
-  readonly cap: string
-  readonly package: string
-  readonly policy: number
-  readonly digest: Array<number>
+  readonly cap: ToField<ID>
+  readonly package: ToField<ID>
+  readonly policy: ToField<'u8'>
+  readonly digest: Array<ToField<'u8'>>
 
-  constructor(fields: UpgradeTicketFields) {
+  private constructor(fields: UpgradeTicketFields) {
     this.cap = fields.cap
     this.package = fields.package
     this.policy = fields.policy
     this.digest = fields.digest
   }
 
+  static new(fields: UpgradeTicketFields): UpgradeTicket {
+    return new UpgradeTicket(fields)
+  }
+
+  static reified() {
+    return {
+      typeName: UpgradeTicket.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => UpgradeTicket.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeTicket.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => UpgradeTicket.fromBcs(data),
+      bcs: UpgradeTicket.bcs,
+      __class: null as unknown as ReturnType<typeof UpgradeTicket.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): UpgradeTicket {
-    return new UpgradeTicket({
-      cap: ID.fromFields(fields.cap).bytes,
-      package: ID.fromFields(fields.package).bytes,
-      policy: fields.policy,
-      digest: fields.digest.map((item: any) => item),
+    return UpgradeTicket.new({
+      cap: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.cap),
+      package: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.package),
+      policy: decodeFromFieldsGenericOrSpecial('u8', fields.policy),
+      digest: decodeFromFieldsGenericOrSpecial(reified.vector('u8'), fields.digest),
     })
   }
 
@@ -300,11 +383,12 @@ export class UpgradeTicket {
     if (!isUpgradeTicket(item.type)) {
       throw new Error('not a UpgradeTicket type')
     }
-    return new UpgradeTicket({
-      cap: item.fields.cap,
-      package: item.fields.package,
-      policy: item.fields.policy,
-      digest: item.fields.digest.map((item: any) => item),
+
+    return UpgradeTicket.new({
+      cap: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.cap),
+      package: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.package),
+      policy: decodeFromFieldsWithTypesGenericOrSpecial('u8', item.fields.policy),
+      digest: decodeFromFieldsWithTypesGenericOrSpecial(reified.vector('u8'), item.fields.digest),
     })
   }
 

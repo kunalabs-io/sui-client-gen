@@ -1,0 +1,37 @@
+import { PUBLISHED_AT } from '..'
+import { pure } from '../../_framework/util'
+import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+
+export interface Bls12381MinSigVerifyArgs {
+  vecU81: Array<number | TransactionArgument> | TransactionArgument
+  vecU82: Array<number | TransactionArgument> | TransactionArgument
+  vecU83: Array<number | TransactionArgument> | TransactionArgument
+}
+
+export function bls12381MinSigVerify(txb: TransactionBlock, args: Bls12381MinSigVerifyArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::bls12381::bls12381_min_sig_verify`,
+    arguments: [
+      pure(txb, args.vecU81, `vector<u8>`),
+      pure(txb, args.vecU82, `vector<u8>`),
+      pure(txb, args.vecU83, `vector<u8>`),
+    ],
+  })
+}
+
+export interface Bls12381MinPkVerifyArgs {
+  vecU81: Array<number | TransactionArgument> | TransactionArgument
+  vecU82: Array<number | TransactionArgument> | TransactionArgument
+  vecU83: Array<number | TransactionArgument> | TransactionArgument
+}
+
+export function bls12381MinPkVerify(txb: TransactionBlock, args: Bls12381MinPkVerifyArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::bls12381::bls12381_min_pk_verify`,
+    arguments: [
+      pure(txb, args.vecU81, `vector<u8>`),
+      pure(txb, args.vecU82, `vector<u8>`),
+      pure(txb, args.vecU83, `vector<u8>`),
+    ],
+  })
+}

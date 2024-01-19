@@ -1,3 +1,9 @@
+import {
+  ToField,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+  reified,
+} from '../../_framework/types'
 import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
@@ -9,12 +15,14 @@ export function isCurve(type: Type): boolean {
 }
 
 export interface CurveFields {
-  id: number
+  id: ToField<'u8'>
 }
 
 export class Curve {
   static readonly $typeName = '0x2::groth16::Curve'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = Curve.$typeName
 
   static get bcs() {
     return bcs.struct('Curve', {
@@ -22,21 +30,38 @@ export class Curve {
     })
   }
 
-  readonly id: number
+  readonly id: ToField<'u8'>
 
-  constructor(id: number) {
+  private constructor(id: ToField<'u8'>) {
     this.id = id
   }
 
+  static new(id: ToField<'u8'>): Curve {
+    return new Curve(id)
+  }
+
+  static reified() {
+    return {
+      typeName: Curve.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => Curve.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Curve.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => Curve.fromBcs(data),
+      bcs: Curve.bcs,
+      __class: null as unknown as ReturnType<typeof Curve.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): Curve {
-    return new Curve(fields.id)
+    return Curve.new(decodeFromFieldsGenericOrSpecial('u8', fields.id))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Curve {
     if (!isCurve(item.type)) {
       throw new Error('not a Curve type')
     }
-    return new Curve(item.fields.id)
+
+    return Curve.new(decodeFromFieldsWithTypesGenericOrSpecial('u8', item.fields.id))
   }
 
   static fromBcs(data: Uint8Array): Curve {
@@ -58,15 +83,17 @@ export function isPreparedVerifyingKey(type: Type): boolean {
 }
 
 export interface PreparedVerifyingKeyFields {
-  vkGammaAbcG1Bytes: Array<number>
-  alphaG1BetaG2Bytes: Array<number>
-  gammaG2NegPcBytes: Array<number>
-  deltaG2NegPcBytes: Array<number>
+  vkGammaAbcG1Bytes: Array<ToField<'u8'>>
+  alphaG1BetaG2Bytes: Array<ToField<'u8'>>
+  gammaG2NegPcBytes: Array<ToField<'u8'>>
+  deltaG2NegPcBytes: Array<ToField<'u8'>>
 }
 
 export class PreparedVerifyingKey {
   static readonly $typeName = '0x2::groth16::PreparedVerifyingKey'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = PreparedVerifyingKey.$typeName
 
   static get bcs() {
     return bcs.struct('PreparedVerifyingKey', {
@@ -77,24 +104,53 @@ export class PreparedVerifyingKey {
     })
   }
 
-  readonly vkGammaAbcG1Bytes: Array<number>
-  readonly alphaG1BetaG2Bytes: Array<number>
-  readonly gammaG2NegPcBytes: Array<number>
-  readonly deltaG2NegPcBytes: Array<number>
+  readonly vkGammaAbcG1Bytes: Array<ToField<'u8'>>
+  readonly alphaG1BetaG2Bytes: Array<ToField<'u8'>>
+  readonly gammaG2NegPcBytes: Array<ToField<'u8'>>
+  readonly deltaG2NegPcBytes: Array<ToField<'u8'>>
 
-  constructor(fields: PreparedVerifyingKeyFields) {
+  private constructor(fields: PreparedVerifyingKeyFields) {
     this.vkGammaAbcG1Bytes = fields.vkGammaAbcG1Bytes
     this.alphaG1BetaG2Bytes = fields.alphaG1BetaG2Bytes
     this.gammaG2NegPcBytes = fields.gammaG2NegPcBytes
     this.deltaG2NegPcBytes = fields.deltaG2NegPcBytes
   }
 
+  static new(fields: PreparedVerifyingKeyFields): PreparedVerifyingKey {
+    return new PreparedVerifyingKey(fields)
+  }
+
+  static reified() {
+    return {
+      typeName: PreparedVerifyingKey.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => PreparedVerifyingKey.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) =>
+        PreparedVerifyingKey.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => PreparedVerifyingKey.fromBcs(data),
+      bcs: PreparedVerifyingKey.bcs,
+      __class: null as unknown as ReturnType<typeof PreparedVerifyingKey.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): PreparedVerifyingKey {
-    return new PreparedVerifyingKey({
-      vkGammaAbcG1Bytes: fields.vk_gamma_abc_g1_bytes.map((item: any) => item),
-      alphaG1BetaG2Bytes: fields.alpha_g1_beta_g2_bytes.map((item: any) => item),
-      gammaG2NegPcBytes: fields.gamma_g2_neg_pc_bytes.map((item: any) => item),
-      deltaG2NegPcBytes: fields.delta_g2_neg_pc_bytes.map((item: any) => item),
+    return PreparedVerifyingKey.new({
+      vkGammaAbcG1Bytes: decodeFromFieldsGenericOrSpecial(
+        reified.vector('u8'),
+        fields.vk_gamma_abc_g1_bytes
+      ),
+      alphaG1BetaG2Bytes: decodeFromFieldsGenericOrSpecial(
+        reified.vector('u8'),
+        fields.alpha_g1_beta_g2_bytes
+      ),
+      gammaG2NegPcBytes: decodeFromFieldsGenericOrSpecial(
+        reified.vector('u8'),
+        fields.gamma_g2_neg_pc_bytes
+      ),
+      deltaG2NegPcBytes: decodeFromFieldsGenericOrSpecial(
+        reified.vector('u8'),
+        fields.delta_g2_neg_pc_bytes
+      ),
     })
   }
 
@@ -102,11 +158,24 @@ export class PreparedVerifyingKey {
     if (!isPreparedVerifyingKey(item.type)) {
       throw new Error('not a PreparedVerifyingKey type')
     }
-    return new PreparedVerifyingKey({
-      vkGammaAbcG1Bytes: item.fields.vk_gamma_abc_g1_bytes.map((item: any) => item),
-      alphaG1BetaG2Bytes: item.fields.alpha_g1_beta_g2_bytes.map((item: any) => item),
-      gammaG2NegPcBytes: item.fields.gamma_g2_neg_pc_bytes.map((item: any) => item),
-      deltaG2NegPcBytes: item.fields.delta_g2_neg_pc_bytes.map((item: any) => item),
+
+    return PreparedVerifyingKey.new({
+      vkGammaAbcG1Bytes: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector('u8'),
+        item.fields.vk_gamma_abc_g1_bytes
+      ),
+      alphaG1BetaG2Bytes: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector('u8'),
+        item.fields.alpha_g1_beta_g2_bytes
+      ),
+      gammaG2NegPcBytes: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector('u8'),
+        item.fields.gamma_g2_neg_pc_bytes
+      ),
+      deltaG2NegPcBytes: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector('u8'),
+        item.fields.delta_g2_neg_pc_bytes
+      ),
     })
   }
 
@@ -132,12 +201,14 @@ export function isProofPoints(type: Type): boolean {
 }
 
 export interface ProofPointsFields {
-  bytes: Array<number>
+  bytes: Array<ToField<'u8'>>
 }
 
 export class ProofPoints {
   static readonly $typeName = '0x2::groth16::ProofPoints'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = ProofPoints.$typeName
 
   static get bcs() {
     return bcs.struct('ProofPoints', {
@@ -145,21 +216,40 @@ export class ProofPoints {
     })
   }
 
-  readonly bytes: Array<number>
+  readonly bytes: Array<ToField<'u8'>>
 
-  constructor(bytes: Array<number>) {
+  private constructor(bytes: Array<ToField<'u8'>>) {
     this.bytes = bytes
   }
 
+  static new(bytes: Array<ToField<'u8'>>): ProofPoints {
+    return new ProofPoints(bytes)
+  }
+
+  static reified() {
+    return {
+      typeName: ProofPoints.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => ProofPoints.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => ProofPoints.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => ProofPoints.fromBcs(data),
+      bcs: ProofPoints.bcs,
+      __class: null as unknown as ReturnType<typeof ProofPoints.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): ProofPoints {
-    return new ProofPoints(fields.bytes.map((item: any) => item))
+    return ProofPoints.new(decodeFromFieldsGenericOrSpecial(reified.vector('u8'), fields.bytes))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): ProofPoints {
     if (!isProofPoints(item.type)) {
       throw new Error('not a ProofPoints type')
     }
-    return new ProofPoints(item.fields.bytes.map((item: any) => item))
+
+    return ProofPoints.new(
+      decodeFromFieldsWithTypesGenericOrSpecial(reified.vector('u8'), item.fields.bytes)
+    )
   }
 
   static fromBcs(data: Uint8Array): ProofPoints {
@@ -181,12 +271,14 @@ export function isPublicProofInputs(type: Type): boolean {
 }
 
 export interface PublicProofInputsFields {
-  bytes: Array<number>
+  bytes: Array<ToField<'u8'>>
 }
 
 export class PublicProofInputs {
   static readonly $typeName = '0x2::groth16::PublicProofInputs'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = PublicProofInputs.$typeName
 
   static get bcs() {
     return bcs.struct('PublicProofInputs', {
@@ -194,21 +286,42 @@ export class PublicProofInputs {
     })
   }
 
-  readonly bytes: Array<number>
+  readonly bytes: Array<ToField<'u8'>>
 
-  constructor(bytes: Array<number>) {
+  private constructor(bytes: Array<ToField<'u8'>>) {
     this.bytes = bytes
   }
 
+  static new(bytes: Array<ToField<'u8'>>): PublicProofInputs {
+    return new PublicProofInputs(bytes)
+  }
+
+  static reified() {
+    return {
+      typeName: PublicProofInputs.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => PublicProofInputs.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => PublicProofInputs.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => PublicProofInputs.fromBcs(data),
+      bcs: PublicProofInputs.bcs,
+      __class: null as unknown as ReturnType<typeof PublicProofInputs.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): PublicProofInputs {
-    return new PublicProofInputs(fields.bytes.map((item: any) => item))
+    return PublicProofInputs.new(
+      decodeFromFieldsGenericOrSpecial(reified.vector('u8'), fields.bytes)
+    )
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): PublicProofInputs {
     if (!isPublicProofInputs(item.type)) {
       throw new Error('not a PublicProofInputs type')
     }
-    return new PublicProofInputs(item.fields.bytes.map((item: any) => item))
+
+    return PublicProofInputs.new(
+      decodeFromFieldsWithTypesGenericOrSpecial(reified.vector('u8'), item.fields.bytes)
+    )
   }
 
   static fromBcs(data: Uint8Array): PublicProofInputs {

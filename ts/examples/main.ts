@@ -6,7 +6,7 @@ import { createPoolWithCoins } from './gen/amm/util/functions'
 import { PACKAGE_ID as EXAMPLES_PACKAGE_ID } from './gen/examples'
 import { faucetMint } from './gen/examples/example-coin/functions'
 import { Command } from 'commander'
-import { Pool, PoolCreationEvent, PoolRegistry } from './gen/amm/pool/structs'
+import { Pool, PoolCreationEvent, PoolRegistry, PoolRegistryItem } from './gen/amm/pool/structs'
 import { createWithGenericField } from './gen/examples/fixture/functions'
 import { WithGenericField } from './gen/examples/fixture/structs'
 import { Field } from './gen/sui/dynamic-field/structs'
@@ -14,6 +14,8 @@ import { EXAMPLE_COIN } from './gen/examples/example-coin/structs'
 import { createExampleStruct, specialTypes } from './gen/examples/examples/functions'
 import { BCS } from '@mysten/bcs'
 import { ExampleStruct } from './gen/examples/examples/structs'
+import { SUI } from './gen/sui/sui/structs'
+import { reified } from './gen/_framework/types'
 
 const EXAMPLE_COIN_FAUCET_ID = '0x23a00d64a785280a794d0bdd2f641dfabf117c78e07cb682550ed3c2b41dd760'
 const AMM_POOL_REGISTRY_ID = '0xe3e05313eff4f6f44206982e42fa1219c972113f3a651abe168123abc0202411'
@@ -59,7 +61,7 @@ async function createPool() {
 
 /** An example for object fetching. Fetch and print the AMM pool at AMM_POOL_ID. */
 async function fetchPool() {
-  const pool = await Pool.fetch(client, AMM_POOL_ID)
+  const pool = await Pool.fetch(client, [SUI.reified(), EXAMPLE_COIN.reified()], AMM_POOL_ID)
   console.log(pool)
 }
 
@@ -85,7 +87,11 @@ async function fetchPoolRegistryItems() {
     parentId: registry.table.id,
   })
 
-  const item = await Field.fetch(client, fields.data[0].objectId)
+  const item = await Field.fetch(
+    client,
+    [PoolRegistryItem.reified(), 'bool'],
+    fields.data[0].objectId
+  )
   console.log(item)
 }
 
@@ -115,7 +121,11 @@ async function createStructWithVector() {
 
 /** An example for object fetching with generic fields. */
 async function fetchWithGenericField() {
-  const field = await WithGenericField.fetch(client, WITH_GENERIC_FIELD_ID)
+  const field = await WithGenericField.fetch(
+    client,
+    reified.vector(EXAMPLE_COIN.reified()),
+    WITH_GENERIC_FIELD_ID
+  )
   console.log(field)
 }
 

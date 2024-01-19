@@ -1,3 +1,8 @@
+import {
+  ToField,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+} from '../../_framework/types'
 import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib/ascii/structs'
 import { bcs } from '@mysten/bcs'
@@ -10,12 +15,14 @@ export function isUrl(type: Type): boolean {
 }
 
 export interface UrlFields {
-  url: string
+  url: ToField<String>
 }
 
 export class Url {
   static readonly $typeName = '0x2::url::Url'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = Url.$typeName
 
   static get bcs() {
     return bcs.struct('Url', {
@@ -23,23 +30,38 @@ export class Url {
     })
   }
 
-  readonly url: string
+  readonly url: ToField<String>
 
-  constructor(url: string) {
+  private constructor(url: ToField<String>) {
     this.url = url
   }
 
+  static new(url: ToField<String>): Url {
+    return new Url(url)
+  }
+
+  static reified() {
+    return {
+      typeName: Url.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => Url.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Url.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => Url.fromBcs(data),
+      bcs: Url.bcs,
+      __class: null as unknown as ReturnType<typeof Url.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): Url {
-    return new Url(
-      new TextDecoder().decode(Uint8Array.from(String.fromFields(fields.url).bytes)).toString()
-    )
+    return Url.new(decodeFromFieldsGenericOrSpecial(String.reified(), fields.url))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Url {
     if (!isUrl(item.type)) {
       throw new Error('not a Url type')
     }
-    return new Url(item.fields.url)
+
+    return Url.new(decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.url))
   }
 
   static fromBcs(data: Uint8Array): Url {

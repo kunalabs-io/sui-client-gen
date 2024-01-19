@@ -1,4 +1,12 @@
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
+import {
+  ReifiedTypeArgument,
+  ToField,
+  assertFieldsWithTypesArgsMatch,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+  extractType,
+} from '../../_framework/types'
+import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { Table } from '../table/structs'
 import { bcs } from '@mysten/bcs'
 
@@ -10,12 +18,14 @@ export function isTableVec(type: Type): boolean {
 }
 
 export interface TableVecFields {
-  contents: Table
+  contents: ToField<Table>
 }
 
 export class TableVec {
   static readonly $typeName = '0x2::table_vec::TableVec'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = TableVec.$typeName
 
   static get bcs() {
     return bcs.struct('TableVec', {
@@ -23,30 +33,52 @@ export class TableVec {
     })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly contents: Table
+  readonly contents: ToField<Table>
 
-  constructor(typeArg: Type, contents: Table) {
+  private constructor(typeArg: string, contents: ToField<Table>) {
     this.$typeArg = typeArg
 
     this.contents = contents
   }
 
-  static fromFields(typeArg: Type, fields: Record<string, any>): TableVec {
-    return new TableVec(typeArg, Table.fromFields([`u64`, `${typeArg}`], fields.contents))
+  static new(typeArg: ReifiedTypeArgument, contents: ToField<Table>): TableVec {
+    return new TableVec(extractType(typeArg), contents)
   }
 
-  static fromFieldsWithTypes(item: FieldsWithTypes): TableVec {
+  static reified(Element: ReifiedTypeArgument) {
+    return {
+      typeName: TableVec.$typeName,
+      typeArgs: [Element],
+      fromFields: (fields: Record<string, any>) => TableVec.fromFields(Element, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => TableVec.fromFieldsWithTypes(Element, item),
+      fromBcs: (data: Uint8Array) => TableVec.fromBcs(Element, data),
+      bcs: TableVec.bcs,
+      __class: null as unknown as ReturnType<typeof TableVec.new>,
+    }
+  }
+
+  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): TableVec {
+    return TableVec.new(
+      typeArg,
+      decodeFromFieldsGenericOrSpecial(Table.reified('u64', typeArg), fields.contents)
+    )
+  }
+
+  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): TableVec {
     if (!isTableVec(item.type)) {
       throw new Error('not a TableVec type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new TableVec(typeArgs[0], Table.fromFieldsWithTypes(item.fields.contents))
+    return TableVec.new(
+      typeArg,
+      decodeFromFieldsWithTypesGenericOrSpecial(Table.reified('u64', typeArg), item.fields.contents)
+    )
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array): TableVec {
+  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): TableVec {
     return TableVec.fromFields(typeArg, TableVec.bcs.parse(data))
   }
 

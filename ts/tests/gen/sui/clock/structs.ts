@@ -1,3 +1,8 @@
+import {
+  ToField,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+} from '../../_framework/types'
 import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -11,13 +16,15 @@ export function isClock(type: Type): boolean {
 }
 
 export interface ClockFields {
-  id: string
-  timestampMs: bigint
+  id: ToField<UID>
+  timestampMs: ToField<'u64'>
 }
 
 export class Clock {
   static readonly $typeName = '0x2::clock::Clock'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = Clock.$typeName
 
   static get bcs() {
     return bcs.struct('Clock', {
@@ -26,23 +33,46 @@ export class Clock {
     })
   }
 
-  readonly id: string
-  readonly timestampMs: bigint
+  readonly id: ToField<UID>
+  readonly timestampMs: ToField<'u64'>
 
-  constructor(fields: ClockFields) {
+  private constructor(fields: ClockFields) {
     this.id = fields.id
     this.timestampMs = fields.timestampMs
   }
 
+  static new(fields: ClockFields): Clock {
+    return new Clock(fields)
+  }
+
+  static reified() {
+    return {
+      typeName: Clock.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => Clock.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Clock.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => Clock.fromBcs(data),
+      bcs: Clock.bcs,
+      __class: null as unknown as ReturnType<typeof Clock.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): Clock {
-    return new Clock({ id: UID.fromFields(fields.id).id, timestampMs: BigInt(fields.timestamp_ms) })
+    return Clock.new({
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      timestampMs: decodeFromFieldsGenericOrSpecial('u64', fields.timestamp_ms),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Clock {
     if (!isClock(item.type)) {
       throw new Error('not a Clock type')
     }
-    return new Clock({ id: item.fields.id.id, timestampMs: BigInt(item.fields.timestamp_ms) })
+
+    return Clock.new({
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      timestampMs: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.timestamp_ms),
+    })
   }
 
   static fromBcs(data: Uint8Array): Clock {
@@ -56,7 +86,7 @@ export class Clock {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData(content: SuiParsedData): Clock {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }

@@ -1,3 +1,8 @@
+import {
+  ToField,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+} from '../../_framework/types'
 import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { TreasuryCap } from '../../sui/coin/structs'
 import { UID } from '../../sui/object/structs'
@@ -15,7 +20,7 @@ export function isEXAMPLE_COIN(type: Type): boolean {
 }
 
 export interface EXAMPLE_COINFields {
-  dummyField: boolean
+  dummyField: ToField<'bool'>
 }
 
 export class EXAMPLE_COIN {
@@ -23,27 +28,48 @@ export class EXAMPLE_COIN {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
   static readonly $numTypeParams = 0
 
+  readonly $typeName = EXAMPLE_COIN.$typeName
+
   static get bcs() {
     return bcs.struct('EXAMPLE_COIN', {
       dummy_field: bcs.bool(),
     })
   }
 
-  readonly dummyField: boolean
+  readonly dummyField: ToField<'bool'>
 
-  constructor(dummyField: boolean) {
+  private constructor(dummyField: ToField<'bool'>) {
     this.dummyField = dummyField
   }
 
+  static new(dummyField: ToField<'bool'>): EXAMPLE_COIN {
+    return new EXAMPLE_COIN(dummyField)
+  }
+
+  static reified() {
+    return {
+      typeName: EXAMPLE_COIN.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => EXAMPLE_COIN.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => EXAMPLE_COIN.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => EXAMPLE_COIN.fromBcs(data),
+      bcs: EXAMPLE_COIN.bcs,
+      __class: null as unknown as ReturnType<typeof EXAMPLE_COIN.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): EXAMPLE_COIN {
-    return new EXAMPLE_COIN(fields.dummy_field)
+    return EXAMPLE_COIN.new(decodeFromFieldsGenericOrSpecial('bool', fields.dummy_field))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): EXAMPLE_COIN {
     if (!isEXAMPLE_COIN(item.type)) {
       throw new Error('not a EXAMPLE_COIN type')
     }
-    return new EXAMPLE_COIN(item.fields.dummy_field)
+
+    return EXAMPLE_COIN.new(
+      decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.dummy_field)
+    )
   }
 
   static fromBcs(data: Uint8Array): EXAMPLE_COIN {
@@ -68,14 +94,16 @@ export function isFaucet(type: Type): boolean {
 }
 
 export interface FaucetFields {
-  id: string
-  cap: TreasuryCap
+  id: ToField<UID>
+  cap: ToField<TreasuryCap>
 }
 
 export class Faucet {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = Faucet.$typeName
 
   static get bcs() {
     return bcs.struct('Faucet', {
@@ -84,19 +112,35 @@ export class Faucet {
     })
   }
 
-  readonly id: string
-  readonly cap: TreasuryCap
+  readonly id: ToField<UID>
+  readonly cap: ToField<TreasuryCap>
 
-  constructor(fields: FaucetFields) {
+  private constructor(fields: FaucetFields) {
     this.id = fields.id
     this.cap = fields.cap
   }
 
+  static new(fields: FaucetFields): Faucet {
+    return new Faucet(fields)
+  }
+
+  static reified() {
+    return {
+      typeName: Faucet.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => Faucet.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Faucet.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => Faucet.fromBcs(data),
+      bcs: Faucet.bcs,
+      __class: null as unknown as ReturnType<typeof Faucet.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): Faucet {
-    return new Faucet({
-      id: UID.fromFields(fields.id).id,
-      cap: TreasuryCap.fromFields(
-        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN`,
+    return Faucet.new({
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      cap: decodeFromFieldsGenericOrSpecial(
+        TreasuryCap.reified(EXAMPLE_COIN.reified()),
         fields.cap
       ),
     })
@@ -106,9 +150,13 @@ export class Faucet {
     if (!isFaucet(item.type)) {
       throw new Error('not a Faucet type')
     }
-    return new Faucet({
-      id: item.fields.id.id,
-      cap: TreasuryCap.fromFieldsWithTypes(item.fields.cap),
+
+    return Faucet.new({
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      cap: decodeFromFieldsWithTypesGenericOrSpecial(
+        TreasuryCap.reified(EXAMPLE_COIN.reified()),
+        item.fields.cap
+      ),
     })
   }
 
@@ -123,7 +171,7 @@ export class Faucet {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData(content: SuiParsedData): Faucet {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }

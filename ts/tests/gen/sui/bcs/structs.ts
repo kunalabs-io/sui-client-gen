@@ -1,3 +1,9 @@
+import {
+  ToField,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+  reified,
+} from '../../_framework/types'
 import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
@@ -9,12 +15,14 @@ export function isBCS(type: Type): boolean {
 }
 
 export interface BCSFields {
-  bytes: Array<number>
+  bytes: Array<ToField<'u8'>>
 }
 
 export class BCS {
   static readonly $typeName = '0x2::bcs::BCS'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = BCS.$typeName
 
   static get bcs() {
     return bcs.struct('BCS', {
@@ -22,21 +30,40 @@ export class BCS {
     })
   }
 
-  readonly bytes: Array<number>
+  readonly bytes: Array<ToField<'u8'>>
 
-  constructor(bytes: Array<number>) {
+  private constructor(bytes: Array<ToField<'u8'>>) {
     this.bytes = bytes
   }
 
+  static new(bytes: Array<ToField<'u8'>>): BCS {
+    return new BCS(bytes)
+  }
+
+  static reified() {
+    return {
+      typeName: BCS.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => BCS.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => BCS.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => BCS.fromBcs(data),
+      bcs: BCS.bcs,
+      __class: null as unknown as ReturnType<typeof BCS.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): BCS {
-    return new BCS(fields.bytes.map((item: any) => item))
+    return BCS.new(decodeFromFieldsGenericOrSpecial(reified.vector('u8'), fields.bytes))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): BCS {
     if (!isBCS(item.type)) {
       throw new Error('not a BCS type')
     }
-    return new BCS(item.fields.bytes.map((item: any) => item))
+
+    return BCS.new(
+      decodeFromFieldsWithTypesGenericOrSpecial(reified.vector('u8'), item.fields.bytes)
+    )
   }
 
   static fromBcs(data: Uint8Array): BCS {

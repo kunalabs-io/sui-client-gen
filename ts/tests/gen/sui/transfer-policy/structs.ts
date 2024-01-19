@@ -1,7 +1,16 @@
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
+import {
+  ReifiedTypeArgument,
+  ToField,
+  assertFieldsWithTypesArgsMatch,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+  extractType,
+} from '../../_framework/types'
+import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { TypeName } from '../../move-stdlib/type-name/structs'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
+import { SUI } from '../sui/structs'
 import { VecSet } from '../vec-set/structs'
 import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -14,12 +23,14 @@ export function isRuleKey(type: Type): boolean {
 }
 
 export interface RuleKeyFields {
-  dummyField: boolean
+  dummyField: ToField<'bool'>
 }
 
 export class RuleKey {
   static readonly $typeName = '0x2::transfer_policy::RuleKey'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = RuleKey.$typeName
 
   static get bcs() {
     return bcs.struct('RuleKey', {
@@ -27,30 +38,49 @@ export class RuleKey {
     })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly dummyField: boolean
+  readonly dummyField: ToField<'bool'>
 
-  constructor(typeArg: Type, dummyField: boolean) {
+  private constructor(typeArg: string, dummyField: ToField<'bool'>) {
     this.$typeArg = typeArg
 
     this.dummyField = dummyField
   }
 
-  static fromFields(typeArg: Type, fields: Record<string, any>): RuleKey {
-    return new RuleKey(typeArg, fields.dummy_field)
+  static new(typeArg: ReifiedTypeArgument, dummyField: ToField<'bool'>): RuleKey {
+    return new RuleKey(extractType(typeArg), dummyField)
   }
 
-  static fromFieldsWithTypes(item: FieldsWithTypes): RuleKey {
+  static reified(T: ReifiedTypeArgument) {
+    return {
+      typeName: RuleKey.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => RuleKey.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => RuleKey.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => RuleKey.fromBcs(T, data),
+      bcs: RuleKey.bcs,
+      __class: null as unknown as ReturnType<typeof RuleKey.new>,
+    }
+  }
+
+  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): RuleKey {
+    return RuleKey.new(typeArg, decodeFromFieldsGenericOrSpecial('bool', fields.dummy_field))
+  }
+
+  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): RuleKey {
     if (!isRuleKey(item.type)) {
       throw new Error('not a RuleKey type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new RuleKey(typeArgs[0], item.fields.dummy_field)
+    return RuleKey.new(
+      typeArg,
+      decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.dummy_field)
+    )
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array): RuleKey {
+  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): RuleKey {
     return RuleKey.fromFields(typeArg, RuleKey.bcs.parse(data))
   }
 
@@ -70,14 +100,16 @@ export function isTransferPolicy(type: Type): boolean {
 }
 
 export interface TransferPolicyFields {
-  id: string
-  balance: Balance
-  rules: VecSet<TypeName>
+  id: ToField<UID>
+  balance: ToField<Balance>
+  rules: ToField<VecSet<TypeName>>
 }
 
 export class TransferPolicy {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicy'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = TransferPolicy.$typeName
 
   static get bcs() {
     return bcs.struct('TransferPolicy', {
@@ -87,13 +119,13 @@ export class TransferPolicy {
     })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly id: string
-  readonly balance: Balance
-  readonly rules: VecSet<TypeName>
+  readonly id: ToField<UID>
+  readonly balance: ToField<Balance>
+  readonly rules: ToField<VecSet<TypeName>>
 
-  constructor(typeArg: Type, fields: TransferPolicyFields) {
+  private constructor(typeArg: string, fields: TransferPolicyFields) {
     this.$typeArg = typeArg
 
     this.id = fields.id
@@ -101,28 +133,50 @@ export class TransferPolicy {
     this.rules = fields.rules
   }
 
-  static fromFields(typeArg: Type, fields: Record<string, any>): TransferPolicy {
-    return new TransferPolicy(typeArg, {
-      id: UID.fromFields(fields.id).id,
-      balance: Balance.fromFields(`0x2::sui::SUI`, fields.balance),
-      rules: VecSet.fromFields<TypeName>(`0x1::type_name::TypeName`, fields.rules),
+  static new(typeArg: ReifiedTypeArgument, fields: TransferPolicyFields): TransferPolicy {
+    return new TransferPolicy(extractType(typeArg), fields)
+  }
+
+  static reified(T: ReifiedTypeArgument) {
+    return {
+      typeName: TransferPolicy.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => TransferPolicy.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => TransferPolicy.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => TransferPolicy.fromBcs(T, data),
+      bcs: TransferPolicy.bcs,
+      __class: null as unknown as ReturnType<typeof TransferPolicy.new>,
+    }
+  }
+
+  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): TransferPolicy {
+    return TransferPolicy.new(typeArg, {
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      balance: decodeFromFieldsGenericOrSpecial(Balance.reified(SUI.reified()), fields.balance),
+      rules: decodeFromFieldsGenericOrSpecial(VecSet.reified(TypeName.reified()), fields.rules),
     })
   }
 
-  static fromFieldsWithTypes(item: FieldsWithTypes): TransferPolicy {
+  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): TransferPolicy {
     if (!isTransferPolicy(item.type)) {
       throw new Error('not a TransferPolicy type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new TransferPolicy(typeArgs[0], {
-      id: item.fields.id.id,
-      balance: new Balance(`0x2::sui::SUI`, BigInt(item.fields.balance)),
-      rules: VecSet.fromFieldsWithTypes<TypeName>(item.fields.rules),
+    return TransferPolicy.new(typeArg, {
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      balance: decodeFromFieldsWithTypesGenericOrSpecial(
+        Balance.reified(SUI.reified()),
+        item.fields.balance
+      ),
+      rules: decodeFromFieldsWithTypesGenericOrSpecial(
+        VecSet.reified(TypeName.reified()),
+        item.fields.rules
+      ),
     })
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array): TransferPolicy {
+  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): TransferPolicy {
     return TransferPolicy.fromFields(typeArg, TransferPolicy.bcs.parse(data))
   }
 
@@ -135,17 +189,21 @@ export class TransferPolicy {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): TransferPolicy {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
     if (!isTransferPolicy(content.type)) {
       throw new Error(`object at ${(content.fields as any).id} is not a TransferPolicy object`)
     }
-    return TransferPolicy.fromFieldsWithTypes(content)
+    return TransferPolicy.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<TransferPolicy> {
+  static async fetch(
+    client: SuiClient,
+    typeArg: ReifiedTypeArgument,
+    id: string
+  ): Promise<TransferPolicy> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching TransferPolicy object at id ${id}: ${res.error.code}`)
@@ -153,7 +211,7 @@ export class TransferPolicy {
     if (res.data?.content?.dataType !== 'moveObject' || !isTransferPolicy(res.data.content.type)) {
       throw new Error(`object at id ${id} is not a TransferPolicy object`)
     }
-    return TransferPolicy.fromFieldsWithTypes(res.data.content)
+    return TransferPolicy.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }
 
@@ -165,13 +223,15 @@ export function isTransferPolicyCap(type: Type): boolean {
 }
 
 export interface TransferPolicyCapFields {
-  id: string
-  policyId: string
+  id: ToField<UID>
+  policyId: ToField<ID>
 }
 
 export class TransferPolicyCap {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyCap'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = TransferPolicyCap.$typeName
 
   static get bcs() {
     return bcs.struct('TransferPolicyCap', {
@@ -180,38 +240,58 @@ export class TransferPolicyCap {
     })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly id: string
-  readonly policyId: string
+  readonly id: ToField<UID>
+  readonly policyId: ToField<ID>
 
-  constructor(typeArg: Type, fields: TransferPolicyCapFields) {
+  private constructor(typeArg: string, fields: TransferPolicyCapFields) {
     this.$typeArg = typeArg
 
     this.id = fields.id
     this.policyId = fields.policyId
   }
 
-  static fromFields(typeArg: Type, fields: Record<string, any>): TransferPolicyCap {
-    return new TransferPolicyCap(typeArg, {
-      id: UID.fromFields(fields.id).id,
-      policyId: ID.fromFields(fields.policy_id).bytes,
+  static new(typeArg: ReifiedTypeArgument, fields: TransferPolicyCapFields): TransferPolicyCap {
+    return new TransferPolicyCap(extractType(typeArg), fields)
+  }
+
+  static reified(T: ReifiedTypeArgument) {
+    return {
+      typeName: TransferPolicyCap.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => TransferPolicyCap.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) =>
+        TransferPolicyCap.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => TransferPolicyCap.fromBcs(T, data),
+      bcs: TransferPolicyCap.bcs,
+      __class: null as unknown as ReturnType<typeof TransferPolicyCap.new>,
+    }
+  }
+
+  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): TransferPolicyCap {
+    return TransferPolicyCap.new(typeArg, {
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      policyId: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.policy_id),
     })
   }
 
-  static fromFieldsWithTypes(item: FieldsWithTypes): TransferPolicyCap {
+  static fromFieldsWithTypes(
+    typeArg: ReifiedTypeArgument,
+    item: FieldsWithTypes
+  ): TransferPolicyCap {
     if (!isTransferPolicyCap(item.type)) {
       throw new Error('not a TransferPolicyCap type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new TransferPolicyCap(typeArgs[0], {
-      id: item.fields.id.id,
-      policyId: item.fields.policy_id,
+    return TransferPolicyCap.new(typeArg, {
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      policyId: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.policy_id),
     })
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array): TransferPolicyCap {
+  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): TransferPolicyCap {
     return TransferPolicyCap.fromFields(typeArg, TransferPolicyCap.bcs.parse(data))
   }
 
@@ -223,17 +303,24 @@ export class TransferPolicyCap {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData(
+    typeArg: ReifiedTypeArgument,
+    content: SuiParsedData
+  ): TransferPolicyCap {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
     if (!isTransferPolicyCap(content.type)) {
       throw new Error(`object at ${(content.fields as any).id} is not a TransferPolicyCap object`)
     }
-    return TransferPolicyCap.fromFieldsWithTypes(content)
+    return TransferPolicyCap.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<TransferPolicyCap> {
+  static async fetch(
+    client: SuiClient,
+    typeArg: ReifiedTypeArgument,
+    id: string
+  ): Promise<TransferPolicyCap> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching TransferPolicyCap object at id ${id}: ${res.error.code}`)
@@ -244,7 +331,7 @@ export class TransferPolicyCap {
     ) {
       throw new Error(`object at id ${id} is not a TransferPolicyCap object`)
     }
-    return TransferPolicyCap.fromFieldsWithTypes(res.data.content)
+    return TransferPolicyCap.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }
 
@@ -256,12 +343,14 @@ export function isTransferPolicyCreated(type: Type): boolean {
 }
 
 export interface TransferPolicyCreatedFields {
-  id: string
+  id: ToField<ID>
 }
 
 export class TransferPolicyCreated {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyCreated'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = TransferPolicyCreated.$typeName
 
   static get bcs() {
     return bcs.struct('TransferPolicyCreated', {
@@ -269,30 +358,59 @@ export class TransferPolicyCreated {
     })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly id: string
+  readonly id: ToField<ID>
 
-  constructor(typeArg: Type, id: string) {
+  private constructor(typeArg: string, id: ToField<ID>) {
     this.$typeArg = typeArg
 
     this.id = id
   }
 
-  static fromFields(typeArg: Type, fields: Record<string, any>): TransferPolicyCreated {
-    return new TransferPolicyCreated(typeArg, ID.fromFields(fields.id).bytes)
+  static new(typeArg: ReifiedTypeArgument, id: ToField<ID>): TransferPolicyCreated {
+    return new TransferPolicyCreated(extractType(typeArg), id)
   }
 
-  static fromFieldsWithTypes(item: FieldsWithTypes): TransferPolicyCreated {
+  static reified(T: ReifiedTypeArgument) {
+    return {
+      typeName: TransferPolicyCreated.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => TransferPolicyCreated.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) =>
+        TransferPolicyCreated.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => TransferPolicyCreated.fromBcs(T, data),
+      bcs: TransferPolicyCreated.bcs,
+      __class: null as unknown as ReturnType<typeof TransferPolicyCreated.new>,
+    }
+  }
+
+  static fromFields(
+    typeArg: ReifiedTypeArgument,
+    fields: Record<string, any>
+  ): TransferPolicyCreated {
+    return TransferPolicyCreated.new(
+      typeArg,
+      decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id)
+    )
+  }
+
+  static fromFieldsWithTypes(
+    typeArg: ReifiedTypeArgument,
+    item: FieldsWithTypes
+  ): TransferPolicyCreated {
     if (!isTransferPolicyCreated(item.type)) {
       throw new Error('not a TransferPolicyCreated type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new TransferPolicyCreated(typeArgs[0], item.fields.id)
+    return TransferPolicyCreated.new(
+      typeArg,
+      decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id)
+    )
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array): TransferPolicyCreated {
+  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): TransferPolicyCreated {
     return TransferPolicyCreated.fromFields(typeArg, TransferPolicyCreated.bcs.parse(data))
   }
 
@@ -312,15 +430,17 @@ export function isTransferRequest(type: Type): boolean {
 }
 
 export interface TransferRequestFields {
-  item: string
-  paid: bigint
-  from: string
-  receipts: VecSet<TypeName>
+  item: ToField<ID>
+  paid: ToField<'u64'>
+  from: ToField<ID>
+  receipts: ToField<VecSet<TypeName>>
 }
 
 export class TransferRequest {
   static readonly $typeName = '0x2::transfer_policy::TransferRequest'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = TransferRequest.$typeName
 
   static get bcs() {
     return bcs.struct('TransferRequest', {
@@ -331,14 +451,14 @@ export class TransferRequest {
     })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly item: string
-  readonly paid: bigint
-  readonly from: string
-  readonly receipts: VecSet<TypeName>
+  readonly item: ToField<ID>
+  readonly paid: ToField<'u64'>
+  readonly from: ToField<ID>
+  readonly receipts: ToField<VecSet<TypeName>>
 
-  constructor(typeArg: Type, fields: TransferRequestFields) {
+  private constructor(typeArg: string, fields: TransferRequestFields) {
     this.$typeArg = typeArg
 
     this.item = fields.item
@@ -347,30 +467,52 @@ export class TransferRequest {
     this.receipts = fields.receipts
   }
 
-  static fromFields(typeArg: Type, fields: Record<string, any>): TransferRequest {
-    return new TransferRequest(typeArg, {
-      item: ID.fromFields(fields.item).bytes,
-      paid: BigInt(fields.paid),
-      from: ID.fromFields(fields.from).bytes,
-      receipts: VecSet.fromFields<TypeName>(`0x1::type_name::TypeName`, fields.receipts),
+  static new(typeArg: ReifiedTypeArgument, fields: TransferRequestFields): TransferRequest {
+    return new TransferRequest(extractType(typeArg), fields)
+  }
+
+  static reified(T: ReifiedTypeArgument) {
+    return {
+      typeName: TransferRequest.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => TransferRequest.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => TransferRequest.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => TransferRequest.fromBcs(T, data),
+      bcs: TransferRequest.bcs,
+      __class: null as unknown as ReturnType<typeof TransferRequest.new>,
+    }
+  }
+
+  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): TransferRequest {
+    return TransferRequest.new(typeArg, {
+      item: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.item),
+      paid: decodeFromFieldsGenericOrSpecial('u64', fields.paid),
+      from: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.from),
+      receipts: decodeFromFieldsGenericOrSpecial(
+        VecSet.reified(TypeName.reified()),
+        fields.receipts
+      ),
     })
   }
 
-  static fromFieldsWithTypes(item: FieldsWithTypes): TransferRequest {
+  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): TransferRequest {
     if (!isTransferRequest(item.type)) {
       throw new Error('not a TransferRequest type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new TransferRequest(typeArgs[0], {
-      item: item.fields.item,
-      paid: BigInt(item.fields.paid),
-      from: item.fields.from,
-      receipts: VecSet.fromFieldsWithTypes<TypeName>(item.fields.receipts),
+    return TransferRequest.new(typeArg, {
+      item: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.item),
+      paid: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.paid),
+      from: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.from),
+      receipts: decodeFromFieldsWithTypesGenericOrSpecial(
+        VecSet.reified(TypeName.reified()),
+        item.fields.receipts
+      ),
     })
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array): TransferRequest {
+  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): TransferRequest {
     return TransferRequest.fromFields(typeArg, TransferRequest.bcs.parse(data))
   }
 

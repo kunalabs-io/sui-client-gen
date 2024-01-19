@@ -1,4 +1,12 @@
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
+import {
+  ReifiedTypeArgument,
+  ToField,
+  assertFieldsWithTypesArgsMatch,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+  extractType,
+} from '../../_framework/types'
+import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -11,13 +19,15 @@ export function isObjectTable(type: Type): boolean {
 }
 
 export interface ObjectTableFields {
-  id: string
-  size: bigint
+  id: ToField<UID>
+  size: ToField<'u64'>
 }
 
 export class ObjectTable {
   static readonly $typeName = '0x2::object_table::ObjectTable'
   static readonly $numTypeParams = 2
+
+  readonly $typeName = ObjectTable.$typeName
 
   static get bcs() {
     return bcs.struct('ObjectTable', {
@@ -26,38 +36,66 @@ export class ObjectTable {
     })
   }
 
-  readonly $typeArgs: [Type, Type]
+  readonly $typeArgs: [string, string]
 
-  readonly id: string
-  readonly size: bigint
+  readonly id: ToField<UID>
+  readonly size: ToField<'u64'>
 
-  constructor(typeArgs: [Type, Type], fields: ObjectTableFields) {
+  private constructor(typeArgs: [string, string], fields: ObjectTableFields) {
     this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.size = fields.size
   }
 
-  static fromFields(typeArgs: [Type, Type], fields: Record<string, any>): ObjectTable {
-    return new ObjectTable(typeArgs, {
-      id: UID.fromFields(fields.id).id,
-      size: BigInt(fields.size),
+  static new(
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    fields: ObjectTableFields
+  ): ObjectTable {
+    return new ObjectTable(typeArgs.map(extractType) as [string, string], fields)
+  }
+
+  static reified(K: ReifiedTypeArgument, V: ReifiedTypeArgument) {
+    return {
+      typeName: ObjectTable.$typeName,
+      typeArgs: [K, V],
+      fromFields: (fields: Record<string, any>) => ObjectTable.fromFields([K, V], fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => ObjectTable.fromFieldsWithTypes([K, V], item),
+      fromBcs: (data: Uint8Array) => ObjectTable.fromBcs([K, V], data),
+      bcs: ObjectTable.bcs,
+      __class: null as unknown as ReturnType<typeof ObjectTable.new>,
+    }
+  }
+
+  static fromFields(
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    fields: Record<string, any>
+  ): ObjectTable {
+    return ObjectTable.new(typeArgs, {
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      size: decodeFromFieldsGenericOrSpecial('u64', fields.size),
     })
   }
 
-  static fromFieldsWithTypes(item: FieldsWithTypes): ObjectTable {
+  static fromFieldsWithTypes(
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    item: FieldsWithTypes
+  ): ObjectTable {
     if (!isObjectTable(item.type)) {
       throw new Error('not a ObjectTable type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, typeArgs)
 
-    return new ObjectTable([typeArgs[0], typeArgs[1]], {
-      id: item.fields.id.id,
-      size: BigInt(item.fields.size),
+    return ObjectTable.new(typeArgs, {
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      size: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.size),
     })
   }
 
-  static fromBcs(typeArgs: [Type, Type], data: Uint8Array): ObjectTable {
+  static fromBcs(
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    data: Uint8Array
+  ): ObjectTable {
     return ObjectTable.fromFields(typeArgs, ObjectTable.bcs.parse(data))
   }
 
@@ -69,17 +107,24 @@ export class ObjectTable {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData(
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    content: SuiParsedData
+  ): ObjectTable {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
     if (!isObjectTable(content.type)) {
       throw new Error(`object at ${(content.fields as any).id} is not a ObjectTable object`)
     }
-    return ObjectTable.fromFieldsWithTypes(content)
+    return ObjectTable.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<ObjectTable> {
+  static async fetch(
+    client: SuiClient,
+    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    id: string
+  ): Promise<ObjectTable> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching ObjectTable object at id ${id}: ${res.error.code}`)
@@ -87,6 +132,6 @@ export class ObjectTable {
     if (res.data?.content?.dataType !== 'moveObject' || !isObjectTable(res.data.content.type)) {
       throw new Error(`object at id ${id} is not a ObjectTable object`)
     }
-    return ObjectTable.fromFieldsWithTypes(res.data.content)
+    return ObjectTable.fromFieldsWithTypes(typeArgs, res.data.content)
   }
 }

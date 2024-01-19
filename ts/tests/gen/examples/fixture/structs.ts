@@ -1,17 +1,22 @@
-import { initLoaderIfNeeded } from '../../_framework/init-source'
-import { structClassLoaderSource } from '../../_framework/loader'
 import {
-  FieldsWithTypes,
-  Type,
-  compressSuiType,
-  genericToJSON,
-  parseTypeName,
-} from '../../_framework/util'
+  ReifiedTypeArgument,
+  ToField,
+  ToTypeArgument,
+  TypeArgument,
+  assertFieldsWithTypesArgsMatch,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+  extractType,
+  reified,
+  toBcs,
+} from '../../_framework/types'
+import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
 import { String as String1 } from '../../move-stdlib/ascii/structs'
 import { Option } from '../../move-stdlib/option/structs'
 import { String } from '../../move-stdlib/string/structs'
 import { Balance } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
+import { SUI } from '../../sui/sui/structs'
 import { Url } from '../../sui/url/structs'
 import { StructFromOtherModule } from '../other-module/structs'
 import { BcsType, bcs } from '@mysten/bcs'
@@ -25,7 +30,7 @@ export function isBar(type: Type): boolean {
 }
 
 export interface BarFields {
-  value: bigint
+  value: ToField<'u64'>
 }
 
 export class Bar {
@@ -33,27 +38,46 @@ export class Bar {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
   static readonly $numTypeParams = 0
 
+  readonly $typeName = Bar.$typeName
+
   static get bcs() {
     return bcs.struct('Bar', {
       value: bcs.u64(),
     })
   }
 
-  readonly value: bigint
+  readonly value: ToField<'u64'>
 
-  constructor(value: bigint) {
+  private constructor(value: ToField<'u64'>) {
     this.value = value
   }
 
+  static new(value: ToField<'u64'>): Bar {
+    return new Bar(value)
+  }
+
+  static reified() {
+    return {
+      typeName: Bar.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => Bar.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Bar.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => Bar.fromBcs(data),
+      bcs: Bar.bcs,
+      __class: null as unknown as ReturnType<typeof Bar.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): Bar {
-    return new Bar(BigInt(fields.value))
+    return Bar.new(decodeFromFieldsGenericOrSpecial('u64', fields.value))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Bar {
     if (!isBar(item.type)) {
       throw new Error('not a Bar type')
     }
-    return new Bar(BigInt(item.fields.value))
+
+    return Bar.new(decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.value))
   }
 
   static fromBcs(data: Uint8Array): Bar {
@@ -77,7 +101,7 @@ export function isDummy(type: Type): boolean {
 }
 
 export interface DummyFields {
-  dummyField: boolean
+  dummyField: ToField<'bool'>
 }
 
 export class Dummy {
@@ -85,27 +109,46 @@ export class Dummy {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
   static readonly $numTypeParams = 0
 
+  readonly $typeName = Dummy.$typeName
+
   static get bcs() {
     return bcs.struct('Dummy', {
       dummy_field: bcs.bool(),
     })
   }
 
-  readonly dummyField: boolean
+  readonly dummyField: ToField<'bool'>
 
-  constructor(dummyField: boolean) {
+  private constructor(dummyField: ToField<'bool'>) {
     this.dummyField = dummyField
   }
 
+  static new(dummyField: ToField<'bool'>): Dummy {
+    return new Dummy(dummyField)
+  }
+
+  static reified() {
+    return {
+      typeName: Dummy.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => Dummy.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Dummy.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => Dummy.fromBcs(data),
+      bcs: Dummy.bcs,
+      __class: null as unknown as ReturnType<typeof Dummy.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): Dummy {
-    return new Dummy(fields.dummy_field)
+    return Dummy.new(decodeFromFieldsGenericOrSpecial('bool', fields.dummy_field))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Dummy {
     if (!isDummy(item.type)) {
       throw new Error('not a Dummy type')
     }
-    return new Dummy(item.fields.dummy_field)
+
+    return Dummy.new(decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.dummy_field))
   }
 
   static fromBcs(data: Uint8Array): Dummy {
@@ -128,27 +171,29 @@ export function isFoo(type: Type): boolean {
   )
 }
 
-export interface FooFields<T> {
-  id: string
-  generic: T
-  reifiedPrimitiveVec: Array<bigint>
-  reifiedObjectVec: Array<Bar>
-  genericVec: Array<T>
-  genericVecNested: Array<WithTwoGenerics<T, number>>
-  twoGenerics: WithTwoGenerics<T, Bar>
-  twoGenericsReifiedPrimitive: WithTwoGenerics<number, bigint>
-  twoGenericsReifiedObject: WithTwoGenerics<Bar, Bar>
-  twoGenericsNested: WithTwoGenerics<T, WithTwoGenerics<number, number>>
-  twoGenericsReifiedNested: WithTwoGenerics<Bar, WithTwoGenerics<number, number>>
-  twoGenericsNestedVec: Array<WithTwoGenerics<Bar, Array<WithTwoGenerics<T, number>>>>
-  dummy: Dummy
-  other: StructFromOtherModule
+export interface FooFields<T extends TypeArgument> {
+  id: ToField<UID>
+  generic: ToField<T>
+  reifiedPrimitiveVec: Array<ToField<'u64'>>
+  reifiedObjectVec: Array<ToField<Bar>>
+  genericVec: Array<ToField<T>>
+  genericVecNested: Array<ToField<WithTwoGenerics<T, 'u8'>>>
+  twoGenerics: ToField<WithTwoGenerics<T, Bar>>
+  twoGenericsReifiedPrimitive: ToField<WithTwoGenerics<'u16', 'u64'>>
+  twoGenericsReifiedObject: ToField<WithTwoGenerics<Bar, Bar>>
+  twoGenericsNested: ToField<WithTwoGenerics<T, WithTwoGenerics<'u8', 'u8'>>>
+  twoGenericsReifiedNested: ToField<WithTwoGenerics<Bar, WithTwoGenerics<'u8', 'u8'>>>
+  twoGenericsNestedVec: Array<ToField<WithTwoGenerics<Bar, Array<WithTwoGenerics<T, 'u8'>>>>>
+  dummy: ToField<Dummy>
+  other: ToField<StructFromOtherModule>
 }
 
-export class Foo<T> {
+export class Foo<T extends TypeArgument> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = Foo.$typeName
 
   static get bcs() {
     return <T extends BcsType<any>>(T: T) =>
@@ -175,24 +220,26 @@ export class Foo<T> {
       })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly id: string
-  readonly generic: T
-  readonly reifiedPrimitiveVec: Array<bigint>
-  readonly reifiedObjectVec: Array<Bar>
-  readonly genericVec: Array<T>
-  readonly genericVecNested: Array<WithTwoGenerics<T, number>>
-  readonly twoGenerics: WithTwoGenerics<T, Bar>
-  readonly twoGenericsReifiedPrimitive: WithTwoGenerics<number, bigint>
-  readonly twoGenericsReifiedObject: WithTwoGenerics<Bar, Bar>
-  readonly twoGenericsNested: WithTwoGenerics<T, WithTwoGenerics<number, number>>
-  readonly twoGenericsReifiedNested: WithTwoGenerics<Bar, WithTwoGenerics<number, number>>
-  readonly twoGenericsNestedVec: Array<WithTwoGenerics<Bar, Array<WithTwoGenerics<T, number>>>>
-  readonly dummy: Dummy
-  readonly other: StructFromOtherModule
+  readonly id: ToField<UID>
+  readonly generic: ToField<T>
+  readonly reifiedPrimitiveVec: Array<ToField<'u64'>>
+  readonly reifiedObjectVec: Array<ToField<Bar>>
+  readonly genericVec: Array<ToField<T>>
+  readonly genericVecNested: Array<ToField<WithTwoGenerics<T, 'u8'>>>
+  readonly twoGenerics: ToField<WithTwoGenerics<T, Bar>>
+  readonly twoGenericsReifiedPrimitive: ToField<WithTwoGenerics<'u16', 'u64'>>
+  readonly twoGenericsReifiedObject: ToField<WithTwoGenerics<Bar, Bar>>
+  readonly twoGenericsNested: ToField<WithTwoGenerics<T, WithTwoGenerics<'u8', 'u8'>>>
+  readonly twoGenericsReifiedNested: ToField<WithTwoGenerics<Bar, WithTwoGenerics<'u8', 'u8'>>>
+  readonly twoGenericsNestedVec: Array<
+    ToField<WithTwoGenerics<Bar, Array<WithTwoGenerics<T, 'u8'>>>>
+  >
+  readonly dummy: ToField<Dummy>
+  readonly other: ToField<StructFromOtherModule>
 
-  constructor(typeArg: Type, fields: FooFields<T>) {
+  private constructor(typeArg: string, fields: FooFields<T>) {
     this.$typeArg = typeArg
 
     this.id = fields.id
@@ -211,118 +258,151 @@ export class Foo<T> {
     this.other = fields.other
   }
 
-  static fromFields<T>(typeArg: Type, fields: Record<string, any>): Foo<T> {
-    initLoaderIfNeeded()
+  static new<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    fields: FooFields<ToTypeArgument<T>>
+  ): Foo<ToTypeArgument<T>> {
+    return new Foo(extractType(typeArg), fields)
+  }
 
-    return new Foo(typeArg, {
-      id: UID.fromFields(fields.id).id,
-      generic: structClassLoaderSource.fromFields(typeArg, fields.generic),
-      reifiedPrimitiveVec: fields.reified_primitive_vec.map((item: any) => BigInt(item)),
-      reifiedObjectVec: fields.reified_object_vec.map((item: any) => Bar.fromFields(item)),
-      genericVec: fields.generic_vec.map((item: any) =>
-        structClassLoaderSource.fromFields(typeArg, item)
+  static reified<T extends ReifiedTypeArgument>(T: T) {
+    return {
+      typeName: Foo.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => Foo.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Foo.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => Foo.fromBcs(T, data),
+      bcs: Foo.bcs(toBcs(T)),
+      __class: null as unknown as ReturnType<typeof Foo.new<ToTypeArgument<T>>>,
+    }
+  }
+
+  static fromFields<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    fields: Record<string, any>
+  ): Foo<ToTypeArgument<T>> {
+    return Foo.new(typeArg, {
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      generic: decodeFromFieldsGenericOrSpecial(typeArg, fields.generic),
+      reifiedPrimitiveVec: decodeFromFieldsGenericOrSpecial(
+        reified.vector('u64'),
+        fields.reified_primitive_vec
       ),
-      genericVecNested: fields.generic_vec_nested.map((item: any) =>
-        WithTwoGenerics.fromFields<T, number>([`${typeArg}`, `u8`], item)
+      reifiedObjectVec: decodeFromFieldsGenericOrSpecial(
+        reified.vector(Bar.reified()),
+        fields.reified_object_vec
       ),
-      twoGenerics: WithTwoGenerics.fromFields<T, Bar>(
-        [
-          `${typeArg}`,
-          `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
-        ],
+      genericVec: decodeFromFieldsGenericOrSpecial(reified.vector(typeArg), fields.generic_vec),
+      genericVecNested: decodeFromFieldsGenericOrSpecial(
+        reified.vector(WithTwoGenerics.reified(typeArg, 'u8')),
+        fields.generic_vec_nested
+      ),
+      twoGenerics: decodeFromFieldsGenericOrSpecial(
+        WithTwoGenerics.reified(typeArg, Bar.reified()),
         fields.two_generics
       ),
-      twoGenericsReifiedPrimitive: WithTwoGenerics.fromFields<number, bigint>(
-        [`u16`, `u64`],
+      twoGenericsReifiedPrimitive: decodeFromFieldsGenericOrSpecial(
+        WithTwoGenerics.reified('u16', 'u64'),
         fields.two_generics_reified_primitive
       ),
-      twoGenericsReifiedObject: WithTwoGenerics.fromFields<Bar, Bar>(
-        [
-          `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
-          `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
-        ],
+      twoGenericsReifiedObject: decodeFromFieldsGenericOrSpecial(
+        WithTwoGenerics.reified(Bar.reified(), Bar.reified()),
         fields.two_generics_reified_object
       ),
-      twoGenericsNested: WithTwoGenerics.fromFields<T, WithTwoGenerics<number, number>>(
-        [
-          `${typeArg}`,
-          `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<u8, u8>`,
-        ],
+      twoGenericsNested: decodeFromFieldsGenericOrSpecial(
+        WithTwoGenerics.reified(typeArg, WithTwoGenerics.reified('u8', 'u8')),
         fields.two_generics_nested
       ),
-      twoGenericsReifiedNested: WithTwoGenerics.fromFields<Bar, WithTwoGenerics<number, number>>(
-        [
-          `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
-          `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<u8, u8>`,
-        ],
+      twoGenericsReifiedNested: decodeFromFieldsGenericOrSpecial(
+        WithTwoGenerics.reified(Bar.reified(), WithTwoGenerics.reified('u8', 'u8')),
         fields.two_generics_reified_nested
       ),
-      twoGenericsNestedVec: fields.two_generics_nested_vec.map((item: any) =>
-        WithTwoGenerics.fromFields<Bar, Array<WithTwoGenerics<T, number>>>(
-          [
-            `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
-            `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${typeArg}, u8>>`,
-          ],
-          item
-        )
+      twoGenericsNestedVec: decodeFromFieldsGenericOrSpecial(
+        reified.vector(
+          WithTwoGenerics.reified(
+            Bar.reified(),
+            reified.vector(WithTwoGenerics.reified(typeArg, 'u8'))
+          )
+        ),
+        fields.two_generics_nested_vec
       ),
-      dummy: Dummy.fromFields(fields.dummy),
-      other: StructFromOtherModule.fromFields(fields.other),
+      dummy: decodeFromFieldsGenericOrSpecial(Dummy.reified(), fields.dummy),
+      other: decodeFromFieldsGenericOrSpecial(StructFromOtherModule.reified(), fields.other),
     })
   }
 
-  static fromFieldsWithTypes<T>(item: FieldsWithTypes): Foo<T> {
-    initLoaderIfNeeded()
-
+  static fromFieldsWithTypes<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    item: FieldsWithTypes
+  ): Foo<ToTypeArgument<T>> {
     if (!isFoo(item.type)) {
       throw new Error('not a Foo type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new Foo(typeArgs[0], {
-      id: item.fields.id.id,
-      generic: structClassLoaderSource.fromFieldsWithTypes(typeArgs[0], item.fields.generic),
-      reifiedPrimitiveVec: item.fields.reified_primitive_vec.map((item: any) => BigInt(item)),
-      reifiedObjectVec: item.fields.reified_object_vec.map((item: any) =>
-        Bar.fromFieldsWithTypes(item)
+    return Foo.new(typeArg, {
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      generic: decodeFromFieldsWithTypesGenericOrSpecial(typeArg, item.fields.generic),
+      reifiedPrimitiveVec: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector('u64'),
+        item.fields.reified_primitive_vec
       ),
-      genericVec: item.fields.generic_vec.map((item: any) =>
-        structClassLoaderSource.fromFieldsWithTypes(typeArgs[0], item)
+      reifiedObjectVec: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector(Bar.reified()),
+        item.fields.reified_object_vec
       ),
-      genericVecNested: item.fields.generic_vec_nested.map((item: any) =>
-        WithTwoGenerics.fromFieldsWithTypes<T, number>(item)
+      genericVec: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector(typeArg),
+        item.fields.generic_vec
       ),
-      twoGenerics: WithTwoGenerics.fromFieldsWithTypes<T, Bar>(item.fields.two_generics),
-      twoGenericsReifiedPrimitive: WithTwoGenerics.fromFieldsWithTypes<number, bigint>(
+      genericVecNested: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector(WithTwoGenerics.reified(typeArg, 'u8')),
+        item.fields.generic_vec_nested
+      ),
+      twoGenerics: decodeFromFieldsWithTypesGenericOrSpecial(
+        WithTwoGenerics.reified(typeArg, Bar.reified()),
+        item.fields.two_generics
+      ),
+      twoGenericsReifiedPrimitive: decodeFromFieldsWithTypesGenericOrSpecial(
+        WithTwoGenerics.reified('u16', 'u64'),
         item.fields.two_generics_reified_primitive
       ),
-      twoGenericsReifiedObject: WithTwoGenerics.fromFieldsWithTypes<Bar, Bar>(
+      twoGenericsReifiedObject: decodeFromFieldsWithTypesGenericOrSpecial(
+        WithTwoGenerics.reified(Bar.reified(), Bar.reified()),
         item.fields.two_generics_reified_object
       ),
-      twoGenericsNested: WithTwoGenerics.fromFieldsWithTypes<T, WithTwoGenerics<number, number>>(
+      twoGenericsNested: decodeFromFieldsWithTypesGenericOrSpecial(
+        WithTwoGenerics.reified(typeArg, WithTwoGenerics.reified('u8', 'u8')),
         item.fields.two_generics_nested
       ),
-      twoGenericsReifiedNested: WithTwoGenerics.fromFieldsWithTypes<
-        Bar,
-        WithTwoGenerics<number, number>
-      >(item.fields.two_generics_reified_nested),
-      twoGenericsNestedVec: item.fields.two_generics_nested_vec.map((item: any) =>
-        WithTwoGenerics.fromFieldsWithTypes<Bar, Array<WithTwoGenerics<T, number>>>(item)
+      twoGenericsReifiedNested: decodeFromFieldsWithTypesGenericOrSpecial(
+        WithTwoGenerics.reified(Bar.reified(), WithTwoGenerics.reified('u8', 'u8')),
+        item.fields.two_generics_reified_nested
       ),
-      dummy: Dummy.fromFieldsWithTypes(item.fields.dummy),
-      other: StructFromOtherModule.fromFieldsWithTypes(item.fields.other),
+      twoGenericsNestedVec: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector(
+          WithTwoGenerics.reified(
+            Bar.reified(),
+            reified.vector(WithTwoGenerics.reified(typeArg, 'u8'))
+          )
+        ),
+        item.fields.two_generics_nested_vec
+      ),
+      dummy: decodeFromFieldsWithTypesGenericOrSpecial(Dummy.reified(), item.fields.dummy),
+      other: decodeFromFieldsWithTypesGenericOrSpecial(
+        StructFromOtherModule.reified(),
+        item.fields.other
+      ),
     })
   }
 
-  static fromBcs<T>(typeArg: Type, data: Uint8Array): Foo<T> {
-    initLoaderIfNeeded()
-
+  static fromBcs<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    data: Uint8Array
+  ): Foo<ToTypeArgument<T>> {
     const typeArgs = [typeArg]
 
-    return Foo.fromFields(
-      typeArg,
-      Foo.bcs(structClassLoaderSource.getBcsType(typeArgs[0])).parse(data)
-    )
+    return Foo.fromFields(typeArg, Foo.bcs(toBcs(typeArgs[0])).parse(data))
   }
 
   toJSON() {
@@ -354,17 +434,24 @@ export class Foo<T> {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    content: SuiParsedData
+  ): Foo<ToTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
     if (!isFoo(content.type)) {
       throw new Error(`object at ${(content.fields as any).id} is not a Foo object`)
     }
-    return Foo.fromFieldsWithTypes(content)
+    return Foo.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T>(client: SuiClient, id: string): Promise<Foo<T>> {
+  static async fetch<T extends ReifiedTypeArgument>(
+    client: SuiClient,
+    typeArg: T,
+    id: string
+  ): Promise<Foo<ToTypeArgument<T>>> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Foo object at id ${id}: ${res.error.code}`)
@@ -372,7 +459,7 @@ export class Foo<T> {
     if (res.data?.content?.dataType !== 'moveObject' || !isFoo(res.data.content.type)) {
       throw new Error(`object at id ${id} is not a Foo object`)
     }
-    return Foo.fromFieldsWithTypes(res.data.content)
+    return Foo.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }
 
@@ -385,15 +472,17 @@ export function isWithGenericField(type: Type): boolean {
   )
 }
 
-export interface WithGenericFieldFields<T> {
-  id: string
-  genericField: T
+export interface WithGenericFieldFields<T extends TypeArgument> {
+  id: ToField<UID>
+  genericField: ToField<T>
 }
 
-export class WithGenericField<T> {
+export class WithGenericField<T extends TypeArgument> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = WithGenericField.$typeName
 
   static get bcs() {
     return <T extends BcsType<any>>(T: T) =>
@@ -403,52 +492,71 @@ export class WithGenericField<T> {
       })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly id: string
-  readonly genericField: T
+  readonly id: ToField<UID>
+  readonly genericField: ToField<T>
 
-  constructor(typeArg: Type, fields: WithGenericFieldFields<T>) {
+  private constructor(typeArg: string, fields: WithGenericFieldFields<T>) {
     this.$typeArg = typeArg
 
     this.id = fields.id
     this.genericField = fields.genericField
   }
 
-  static fromFields<T>(typeArg: Type, fields: Record<string, any>): WithGenericField<T> {
-    initLoaderIfNeeded()
+  static new<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    fields: WithGenericFieldFields<ToTypeArgument<T>>
+  ): WithGenericField<ToTypeArgument<T>> {
+    return new WithGenericField(extractType(typeArg), fields)
+  }
 
-    return new WithGenericField(typeArg, {
-      id: UID.fromFields(fields.id).id,
-      genericField: structClassLoaderSource.fromFields(typeArg, fields.generic_field),
+  static reified<T extends ReifiedTypeArgument>(T: T) {
+    return {
+      typeName: WithGenericField.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => WithGenericField.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => WithGenericField.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => WithGenericField.fromBcs(T, data),
+      bcs: WithGenericField.bcs(toBcs(T)),
+      __class: null as unknown as ReturnType<typeof WithGenericField.new<ToTypeArgument<T>>>,
+    }
+  }
+
+  static fromFields<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    fields: Record<string, any>
+  ): WithGenericField<ToTypeArgument<T>> {
+    return WithGenericField.new(typeArg, {
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      genericField: decodeFromFieldsGenericOrSpecial(typeArg, fields.generic_field),
     })
   }
 
-  static fromFieldsWithTypes<T>(item: FieldsWithTypes): WithGenericField<T> {
-    initLoaderIfNeeded()
-
+  static fromFieldsWithTypes<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    item: FieldsWithTypes
+  ): WithGenericField<ToTypeArgument<T>> {
     if (!isWithGenericField(item.type)) {
       throw new Error('not a WithGenericField type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new WithGenericField(typeArgs[0], {
-      id: item.fields.id.id,
-      genericField: structClassLoaderSource.fromFieldsWithTypes(
-        typeArgs[0],
-        item.fields.generic_field
-      ),
+    return WithGenericField.new(typeArg, {
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      genericField: decodeFromFieldsWithTypesGenericOrSpecial(typeArg, item.fields.generic_field),
     })
   }
 
-  static fromBcs<T>(typeArg: Type, data: Uint8Array): WithGenericField<T> {
-    initLoaderIfNeeded()
-
+  static fromBcs<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    data: Uint8Array
+  ): WithGenericField<ToTypeArgument<T>> {
     const typeArgs = [typeArg]
 
     return WithGenericField.fromFields(
       typeArg,
-      WithGenericField.bcs(structClassLoaderSource.getBcsType(typeArgs[0])).parse(data)
+      WithGenericField.bcs(toBcs(typeArgs[0])).parse(data)
     )
   }
 
@@ -460,17 +568,24 @@ export class WithGenericField<T> {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    content: SuiParsedData
+  ): WithGenericField<ToTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
     if (!isWithGenericField(content.type)) {
       throw new Error(`object at ${(content.fields as any).id} is not a WithGenericField object`)
     }
-    return WithGenericField.fromFieldsWithTypes(content)
+    return WithGenericField.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T>(client: SuiClient, id: string): Promise<WithGenericField<T>> {
+  static async fetch<T extends ReifiedTypeArgument>(
+    client: SuiClient,
+    typeArg: T,
+    id: string
+  ): Promise<WithGenericField<ToTypeArgument<T>>> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching WithGenericField object at id ${id}: ${res.error.code}`)
@@ -481,7 +596,7 @@ export class WithGenericField<T> {
     ) {
       throw new Error(`object at id ${id} is not a WithGenericField object`)
     }
-    return WithGenericField.fromFieldsWithTypes(res.data.content)
+    return WithGenericField.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }
 
@@ -494,26 +609,28 @@ export function isWithSpecialTypes(type: Type): boolean {
   )
 }
 
-export interface WithSpecialTypesFields<U> {
-  id: string
-  string: string
-  asciiString: string
-  url: string
-  idField: string
-  uid: string
-  balance: Balance
-  option: bigint | null
-  optionObj: Bar | null
-  optionNone: bigint | null
-  balanceGeneric: Balance
-  optionGeneric: U | null
-  optionGenericNone: U | null
+export interface WithSpecialTypesFields<U extends TypeArgument> {
+  id: ToField<UID>
+  string: ToField<String>
+  asciiString: ToField<String1>
+  url: ToField<Url>
+  idField: ToField<ID>
+  uid: ToField<UID>
+  balance: ToField<Balance>
+  option: ToField<Option<'u64'>>
+  optionObj: ToField<Option<Bar>>
+  optionNone: ToField<Option<'u64'>>
+  balanceGeneric: ToField<Balance>
+  optionGeneric: ToField<Option<U>>
+  optionGenericNone: ToField<Option<U>>
 }
 
-export class WithSpecialTypes<U> {
+export class WithSpecialTypes<U extends TypeArgument> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes'
   static readonly $numTypeParams = 2
+
+  readonly $typeName = WithSpecialTypes.$typeName
 
   static get bcs() {
     return <U extends BcsType<any>>(U: U) =>
@@ -534,23 +651,23 @@ export class WithSpecialTypes<U> {
       })
   }
 
-  readonly $typeArgs: [Type, Type]
+  readonly $typeArgs: [string, string]
 
-  readonly id: string
-  readonly string: string
-  readonly asciiString: string
-  readonly url: string
-  readonly idField: string
-  readonly uid: string
-  readonly balance: Balance
-  readonly option: bigint | null
-  readonly optionObj: Bar | null
-  readonly optionNone: bigint | null
-  readonly balanceGeneric: Balance
-  readonly optionGeneric: U | null
-  readonly optionGenericNone: U | null
+  readonly id: ToField<UID>
+  readonly string: ToField<String>
+  readonly asciiString: ToField<String1>
+  readonly url: ToField<Url>
+  readonly idField: ToField<ID>
+  readonly uid: ToField<UID>
+  readonly balance: ToField<Balance>
+  readonly option: ToField<Option<'u64'>>
+  readonly optionObj: ToField<Option<Bar>>
+  readonly optionNone: ToField<Option<'u64'>>
+  readonly balanceGeneric: ToField<Balance>
+  readonly optionGeneric: ToField<Option<U>>
+  readonly optionGenericNone: ToField<Option<U>>
 
-  constructor(typeArgs: [Type, Type], fields: WithSpecialTypesFields<U>) {
+  private constructor(typeArgs: [string, string], fields: WithSpecialTypesFields<U>) {
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -568,99 +685,110 @@ export class WithSpecialTypes<U> {
     this.optionGenericNone = fields.optionGenericNone
   }
 
-  static fromFields<U>(typeArgs: [Type, Type], fields: Record<string, any>): WithSpecialTypes<U> {
-    initLoaderIfNeeded()
+  static new<U extends ReifiedTypeArgument>(
+    typeArgs: [ReifiedTypeArgument, U],
+    fields: WithSpecialTypesFields<ToTypeArgument<U>>
+  ): WithSpecialTypes<ToTypeArgument<U>> {
+    return new WithSpecialTypes(typeArgs.map(extractType) as [string, string], fields)
+  }
 
-    return new WithSpecialTypes(typeArgs, {
-      id: UID.fromFields(fields.id).id,
-      string: new TextDecoder()
-        .decode(Uint8Array.from(String.fromFields(fields.string).bytes))
-        .toString(),
-      asciiString: new TextDecoder()
-        .decode(Uint8Array.from(String1.fromFields(fields.ascii_string).bytes))
-        .toString(),
-      url: Url.fromFields(fields.url).url,
-      idField: ID.fromFields(fields.id_field).bytes,
-      uid: UID.fromFields(fields.uid).id,
-      balance: Balance.fromFields(`0x2::sui::SUI`, fields.balance),
-      option: Option.fromFields<bigint>(`u64`, fields.option).vec[0] || null,
-      optionObj:
-        Option.fromFields<Bar>(
-          `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
-          fields.option_obj
-        ).vec[0] || null,
-      optionNone: Option.fromFields<bigint>(`u64`, fields.option_none).vec[0] || null,
-      balanceGeneric: Balance.fromFields(`${typeArgs[0]}`, fields.balance_generic),
-      optionGeneric: Option.fromFields<U>(`${typeArgs[1]}`, fields.option_generic).vec[0] || null,
-      optionGenericNone:
-        Option.fromFields<U>(`${typeArgs[1]}`, fields.option_generic_none).vec[0] || null,
+  static reified<U extends ReifiedTypeArgument>(T: ReifiedTypeArgument, U: U) {
+    return {
+      typeName: WithSpecialTypes.$typeName,
+      typeArgs: [T, U],
+      fromFields: (fields: Record<string, any>) => WithSpecialTypes.fromFields([T, U], fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) =>
+        WithSpecialTypes.fromFieldsWithTypes([T, U], item),
+      fromBcs: (data: Uint8Array) => WithSpecialTypes.fromBcs([T, U], data),
+      bcs: WithSpecialTypes.bcs(toBcs(U)),
+      __class: null as unknown as ReturnType<typeof WithSpecialTypes.new<ToTypeArgument<U>>>,
+    }
+  }
+
+  static fromFields<U extends ReifiedTypeArgument>(
+    typeArgs: [ReifiedTypeArgument, U],
+    fields: Record<string, any>
+  ): WithSpecialTypes<ToTypeArgument<U>> {
+    return WithSpecialTypes.new(typeArgs, {
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      string: decodeFromFieldsGenericOrSpecial(String.reified(), fields.string),
+      asciiString: decodeFromFieldsGenericOrSpecial(String1.reified(), fields.ascii_string),
+      url: decodeFromFieldsGenericOrSpecial(Url.reified(), fields.url),
+      idField: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id_field),
+      uid: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.uid),
+      balance: decodeFromFieldsGenericOrSpecial(Balance.reified(SUI.reified()), fields.balance),
+      option: decodeFromFieldsGenericOrSpecial(Option.reified('u64'), fields.option),
+      optionObj: decodeFromFieldsGenericOrSpecial(Option.reified(Bar.reified()), fields.option_obj),
+      optionNone: decodeFromFieldsGenericOrSpecial(Option.reified('u64'), fields.option_none),
+      balanceGeneric: decodeFromFieldsGenericOrSpecial(
+        Balance.reified(typeArgs[0]),
+        fields.balance_generic
+      ),
+      optionGeneric: decodeFromFieldsGenericOrSpecial(
+        Option.reified(typeArgs[1]),
+        fields.option_generic
+      ),
+      optionGenericNone: decodeFromFieldsGenericOrSpecial(
+        Option.reified(typeArgs[1]),
+        fields.option_generic_none
+      ),
     })
   }
 
-  static fromFieldsWithTypes<U>(item: FieldsWithTypes): WithSpecialTypes<U> {
-    initLoaderIfNeeded()
-
+  static fromFieldsWithTypes<U extends ReifiedTypeArgument>(
+    typeArgs: [ReifiedTypeArgument, U],
+    item: FieldsWithTypes
+  ): WithSpecialTypes<ToTypeArgument<U>> {
     if (!isWithSpecialTypes(item.type)) {
       throw new Error('not a WithSpecialTypes type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, typeArgs)
 
-    return new WithSpecialTypes([typeArgs[0], typeArgs[1]], {
-      id: item.fields.id.id,
-      string: item.fields.string,
-      asciiString: item.fields.ascii_string,
-      url: item.fields.url,
-      idField: item.fields.id_field,
-      uid: item.fields.uid.id,
-      balance: new Balance(`0x2::sui::SUI`, BigInt(item.fields.balance)),
-      option:
-        item.fields.option !== null
-          ? Option.fromFieldsWithTypes<bigint>({
-              type: '0x1::option::Option<' + `u64` + '>',
-              fields: { vec: [item.fields.option] },
-            }).vec[0]
-          : null,
-      optionObj:
-        item.fields.option_obj !== null
-          ? Option.fromFieldsWithTypes<Bar>({
-              type:
-                '0x1::option::Option<' +
-                `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar` +
-                '>',
-              fields: { vec: [item.fields.option_obj] },
-            }).vec[0]
-          : null,
-      optionNone:
-        item.fields.option_none !== null
-          ? Option.fromFieldsWithTypes<bigint>({
-              type: '0x1::option::Option<' + `u64` + '>',
-              fields: { vec: [item.fields.option_none] },
-            }).vec[0]
-          : null,
-      balanceGeneric: new Balance(`${typeArgs[0]}`, BigInt(item.fields.balance_generic)),
-      optionGeneric:
-        item.fields.option_generic !== null
-          ? Option.fromFieldsWithTypes<U>({
-              type: '0x1::option::Option<' + `${typeArgs[1]}` + '>',
-              fields: { vec: [item.fields.option_generic] },
-            }).vec[0]
-          : null,
-      optionGenericNone:
-        item.fields.option_generic_none !== null
-          ? Option.fromFieldsWithTypes<U>({
-              type: '0x1::option::Option<' + `${typeArgs[1]}` + '>',
-              fields: { vec: [item.fields.option_generic_none] },
-            }).vec[0]
-          : null,
+    return WithSpecialTypes.new(typeArgs, {
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      string: decodeFromFieldsWithTypesGenericOrSpecial(String.reified(), item.fields.string),
+      asciiString: decodeFromFieldsWithTypesGenericOrSpecial(
+        String1.reified(),
+        item.fields.ascii_string
+      ),
+      url: decodeFromFieldsWithTypesGenericOrSpecial(Url.reified(), item.fields.url),
+      idField: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id_field),
+      uid: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.uid),
+      balance: decodeFromFieldsWithTypesGenericOrSpecial(
+        Balance.reified(SUI.reified()),
+        item.fields.balance
+      ),
+      option: decodeFromFieldsWithTypesGenericOrSpecial(Option.reified('u64'), item.fields.option),
+      optionObj: decodeFromFieldsWithTypesGenericOrSpecial(
+        Option.reified(Bar.reified()),
+        item.fields.option_obj
+      ),
+      optionNone: decodeFromFieldsWithTypesGenericOrSpecial(
+        Option.reified('u64'),
+        item.fields.option_none
+      ),
+      balanceGeneric: decodeFromFieldsWithTypesGenericOrSpecial(
+        Balance.reified(typeArgs[0]),
+        item.fields.balance_generic
+      ),
+      optionGeneric: decodeFromFieldsWithTypesGenericOrSpecial(
+        Option.reified(typeArgs[1]),
+        item.fields.option_generic
+      ),
+      optionGenericNone: decodeFromFieldsWithTypesGenericOrSpecial(
+        Option.reified(typeArgs[1]),
+        item.fields.option_generic_none
+      ),
     })
   }
 
-  static fromBcs<U>(typeArgs: [Type, Type], data: Uint8Array): WithSpecialTypes<U> {
-    initLoaderIfNeeded()
-
+  static fromBcs<U extends ReifiedTypeArgument>(
+    typeArgs: [ReifiedTypeArgument, U],
+    data: Uint8Array
+  ): WithSpecialTypes<ToTypeArgument<U>> {
     return WithSpecialTypes.fromFields(
       typeArgs,
-      WithSpecialTypes.bcs(structClassLoaderSource.getBcsType(typeArgs[1])).parse(data)
+      WithSpecialTypes.bcs(toBcs(typeArgs[1])).parse(data)
     )
   }
 
@@ -689,17 +817,24 @@ export class WithSpecialTypes<U> {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData<U extends ReifiedTypeArgument>(
+    typeArgs: [ReifiedTypeArgument, U],
+    content: SuiParsedData
+  ): WithSpecialTypes<ToTypeArgument<U>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
     if (!isWithSpecialTypes(content.type)) {
       throw new Error(`object at ${(content.fields as any).id} is not a WithSpecialTypes object`)
     }
-    return WithSpecialTypes.fromFieldsWithTypes(content)
+    return WithSpecialTypes.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch<U>(client: SuiClient, id: string): Promise<WithSpecialTypes<U>> {
+  static async fetch<U extends ReifiedTypeArgument>(
+    client: SuiClient,
+    typeArgs: [ReifiedTypeArgument, U],
+    id: string
+  ): Promise<WithSpecialTypes<ToTypeArgument<U>>> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching WithSpecialTypes object at id ${id}: ${res.error.code}`)
@@ -710,7 +845,7 @@ export class WithSpecialTypes<U> {
     ) {
       throw new Error(`object at id ${id} is not a WithSpecialTypes object`)
     }
-    return WithSpecialTypes.fromFieldsWithTypes(res.data.content)
+    return WithSpecialTypes.fromFieldsWithTypes(typeArgs, res.data.content)
   }
 }
 
@@ -723,22 +858,42 @@ export function isWithSpecialTypesAsGenerics(type: Type): boolean {
   )
 }
 
-export interface WithSpecialTypesAsGenericsFields<T0, T1, T2, T3, T4, T5, T6, T7> {
-  id: string
-  string: T0
-  asciiString: T1
-  url: T2
-  idField: T3
-  uid: T4
-  balance: T5
-  option: T6
-  optionNone: T7
+export interface WithSpecialTypesAsGenericsFields<
+  T0 extends TypeArgument,
+  T1 extends TypeArgument,
+  T2 extends TypeArgument,
+  T3 extends TypeArgument,
+  T4 extends TypeArgument,
+  T5 extends TypeArgument,
+  T6 extends TypeArgument,
+  T7 extends TypeArgument,
+> {
+  id: ToField<UID>
+  string: ToField<T0>
+  asciiString: ToField<T1>
+  url: ToField<T2>
+  idField: ToField<T3>
+  uid: ToField<T4>
+  balance: ToField<T5>
+  option: ToField<T6>
+  optionNone: ToField<T7>
 }
 
-export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
+export class WithSpecialTypesAsGenerics<
+  T0 extends TypeArgument,
+  T1 extends TypeArgument,
+  T2 extends TypeArgument,
+  T3 extends TypeArgument,
+  T4 extends TypeArgument,
+  T5 extends TypeArgument,
+  T6 extends TypeArgument,
+  T7 extends TypeArgument,
+> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics'
   static readonly $numTypeParams = 8
+
+  readonly $typeName = WithSpecialTypesAsGenerics.$typeName
 
   static get bcs() {
     return <
@@ -776,20 +931,20 @@ export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
       )
   }
 
-  readonly $typeArgs: [Type, Type, Type, Type, Type, Type, Type, Type]
+  readonly $typeArgs: [string, string, string, string, string, string, string, string]
 
-  readonly id: string
-  readonly string: T0
-  readonly asciiString: T1
-  readonly url: T2
-  readonly idField: T3
-  readonly uid: T4
-  readonly balance: T5
-  readonly option: T6
-  readonly optionNone: T7
+  readonly id: ToField<UID>
+  readonly string: ToField<T0>
+  readonly asciiString: ToField<T1>
+  readonly url: ToField<T2>
+  readonly idField: ToField<T3>
+  readonly uid: ToField<T4>
+  readonly balance: ToField<T5>
+  readonly option: ToField<T6>
+  readonly optionNone: ToField<T7>
 
-  constructor(
-    typeArgs: [Type, Type, Type, Type, Type, Type, Type, Type],
+  private constructor(
+    typeArgs: [string, string, string, string, string, string, string, string],
     fields: WithSpecialTypesAsGenericsFields<T0, T1, T2, T3, T4, T5, T6, T7>
   ) {
     this.$typeArgs = typeArgs
@@ -805,83 +960,195 @@ export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
     this.optionNone = fields.optionNone
   }
 
-  static fromFields<T0, T1, T2, T3, T4, T5, T6, T7>(
-    typeArgs: [Type, Type, Type, Type, Type, Type, Type, Type],
-    fields: Record<string, any>
-  ): WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
-    initLoaderIfNeeded()
-
-    return new WithSpecialTypesAsGenerics(typeArgs, {
-      id: UID.fromFields(fields.id).id,
-      string: structClassLoaderSource.fromFields(typeArgs[0], fields.string),
-      asciiString: structClassLoaderSource.fromFields(typeArgs[1], fields.ascii_string),
-      url: structClassLoaderSource.fromFields(typeArgs[2], fields.url),
-      idField: structClassLoaderSource.fromFields(typeArgs[3], fields.id_field),
-      uid: structClassLoaderSource.fromFields(typeArgs[4], fields.uid),
-      balance: structClassLoaderSource.fromFields(typeArgs[5], fields.balance),
-      option: structClassLoaderSource.fromFields(typeArgs[6], fields.option),
-      optionNone: structClassLoaderSource.fromFields(typeArgs[7], fields.option_none),
-    })
-  }
-
-  static fromFieldsWithTypes<T0, T1, T2, T3, T4, T5, T6, T7>(
-    item: FieldsWithTypes
-  ): WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
-    initLoaderIfNeeded()
-
-    if (!isWithSpecialTypesAsGenerics(item.type)) {
-      throw new Error('not a WithSpecialTypesAsGenerics type')
-    }
-    const { typeArgs } = parseTypeName(item.type)
-
+  static new<
+    T0 extends ReifiedTypeArgument,
+    T1 extends ReifiedTypeArgument,
+    T2 extends ReifiedTypeArgument,
+    T3 extends ReifiedTypeArgument,
+    T4 extends ReifiedTypeArgument,
+    T5 extends ReifiedTypeArgument,
+    T6 extends ReifiedTypeArgument,
+    T7 extends ReifiedTypeArgument,
+  >(
+    typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
+    fields: WithSpecialTypesAsGenericsFields<
+      ToTypeArgument<T0>,
+      ToTypeArgument<T1>,
+      ToTypeArgument<T2>,
+      ToTypeArgument<T3>,
+      ToTypeArgument<T4>,
+      ToTypeArgument<T5>,
+      ToTypeArgument<T6>,
+      ToTypeArgument<T7>
+    >
+  ): WithSpecialTypesAsGenerics<
+    ToTypeArgument<T0>,
+    ToTypeArgument<T1>,
+    ToTypeArgument<T2>,
+    ToTypeArgument<T3>,
+    ToTypeArgument<T4>,
+    ToTypeArgument<T5>,
+    ToTypeArgument<T6>,
+    ToTypeArgument<T7>
+  > {
     return new WithSpecialTypesAsGenerics(
-      [
-        typeArgs[0],
-        typeArgs[1],
-        typeArgs[2],
-        typeArgs[3],
-        typeArgs[4],
-        typeArgs[5],
-        typeArgs[6],
-        typeArgs[7],
-      ],
-      {
-        id: item.fields.id.id,
-        string: structClassLoaderSource.fromFieldsWithTypes(typeArgs[0], item.fields.string),
-        asciiString: structClassLoaderSource.fromFieldsWithTypes(
-          typeArgs[1],
-          item.fields.ascii_string
-        ),
-        url: structClassLoaderSource.fromFieldsWithTypes(typeArgs[2], item.fields.url),
-        idField: structClassLoaderSource.fromFieldsWithTypes(typeArgs[3], item.fields.id_field),
-        uid: structClassLoaderSource.fromFieldsWithTypes(typeArgs[4], item.fields.uid),
-        balance: structClassLoaderSource.fromFieldsWithTypes(typeArgs[5], item.fields.balance),
-        option: structClassLoaderSource.fromFieldsWithTypes(typeArgs[6], item.fields.option),
-        optionNone: structClassLoaderSource.fromFieldsWithTypes(
-          typeArgs[7],
-          item.fields.option_none
-        ),
-      }
+      typeArgs.map(extractType) as [string, string, string, string, string, string, string, string],
+      fields
     )
   }
 
-  static fromBcs<T0, T1, T2, T3, T4, T5, T6, T7>(
-    typeArgs: [Type, Type, Type, Type, Type, Type, Type, Type],
-    data: Uint8Array
-  ): WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
-    initLoaderIfNeeded()
+  static reified<
+    T0 extends ReifiedTypeArgument,
+    T1 extends ReifiedTypeArgument,
+    T2 extends ReifiedTypeArgument,
+    T3 extends ReifiedTypeArgument,
+    T4 extends ReifiedTypeArgument,
+    T5 extends ReifiedTypeArgument,
+    T6 extends ReifiedTypeArgument,
+    T7 extends ReifiedTypeArgument,
+  >(T0: T0, T1: T1, T2: T2, T3: T3, T4: T4, T5: T5, T6: T6, T7: T7) {
+    return {
+      typeName: WithSpecialTypesAsGenerics.$typeName,
+      typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
+      fromFields: (fields: Record<string, any>) =>
+        WithSpecialTypesAsGenerics.fromFields([T0, T1, T2, T3, T4, T5, T6, T7], fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) =>
+        WithSpecialTypesAsGenerics.fromFieldsWithTypes([T0, T1, T2, T3, T4, T5, T6, T7], item),
+      fromBcs: (data: Uint8Array) =>
+        WithSpecialTypesAsGenerics.fromBcs([T0, T1, T2, T3, T4, T5, T6, T7], data),
+      bcs: WithSpecialTypesAsGenerics.bcs(
+        toBcs(T0),
+        toBcs(T1),
+        toBcs(T2),
+        toBcs(T3),
+        toBcs(T4),
+        toBcs(T5),
+        toBcs(T6),
+        toBcs(T7)
+      ),
+      __class: null as unknown as ReturnType<
+        typeof WithSpecialTypesAsGenerics.new<
+          ToTypeArgument<T0>,
+          ToTypeArgument<T1>,
+          ToTypeArgument<T2>,
+          ToTypeArgument<T3>,
+          ToTypeArgument<T4>,
+          ToTypeArgument<T5>,
+          ToTypeArgument<T6>,
+          ToTypeArgument<T7>
+        >
+      >,
+    }
+  }
 
+  static fromFields<
+    T0 extends ReifiedTypeArgument,
+    T1 extends ReifiedTypeArgument,
+    T2 extends ReifiedTypeArgument,
+    T3 extends ReifiedTypeArgument,
+    T4 extends ReifiedTypeArgument,
+    T5 extends ReifiedTypeArgument,
+    T6 extends ReifiedTypeArgument,
+    T7 extends ReifiedTypeArgument,
+  >(
+    typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
+    fields: Record<string, any>
+  ): WithSpecialTypesAsGenerics<
+    ToTypeArgument<T0>,
+    ToTypeArgument<T1>,
+    ToTypeArgument<T2>,
+    ToTypeArgument<T3>,
+    ToTypeArgument<T4>,
+    ToTypeArgument<T5>,
+    ToTypeArgument<T6>,
+    ToTypeArgument<T7>
+  > {
+    return WithSpecialTypesAsGenerics.new(typeArgs, {
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      string: decodeFromFieldsGenericOrSpecial(typeArgs[0], fields.string),
+      asciiString: decodeFromFieldsGenericOrSpecial(typeArgs[1], fields.ascii_string),
+      url: decodeFromFieldsGenericOrSpecial(typeArgs[2], fields.url),
+      idField: decodeFromFieldsGenericOrSpecial(typeArgs[3], fields.id_field),
+      uid: decodeFromFieldsGenericOrSpecial(typeArgs[4], fields.uid),
+      balance: decodeFromFieldsGenericOrSpecial(typeArgs[5], fields.balance),
+      option: decodeFromFieldsGenericOrSpecial(typeArgs[6], fields.option),
+      optionNone: decodeFromFieldsGenericOrSpecial(typeArgs[7], fields.option_none),
+    })
+  }
+
+  static fromFieldsWithTypes<
+    T0 extends ReifiedTypeArgument,
+    T1 extends ReifiedTypeArgument,
+    T2 extends ReifiedTypeArgument,
+    T3 extends ReifiedTypeArgument,
+    T4 extends ReifiedTypeArgument,
+    T5 extends ReifiedTypeArgument,
+    T6 extends ReifiedTypeArgument,
+    T7 extends ReifiedTypeArgument,
+  >(
+    typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
+    item: FieldsWithTypes
+  ): WithSpecialTypesAsGenerics<
+    ToTypeArgument<T0>,
+    ToTypeArgument<T1>,
+    ToTypeArgument<T2>,
+    ToTypeArgument<T3>,
+    ToTypeArgument<T4>,
+    ToTypeArgument<T5>,
+    ToTypeArgument<T6>,
+    ToTypeArgument<T7>
+  > {
+    if (!isWithSpecialTypesAsGenerics(item.type)) {
+      throw new Error('not a WithSpecialTypesAsGenerics type')
+    }
+    assertFieldsWithTypesArgsMatch(item, typeArgs)
+
+    return WithSpecialTypesAsGenerics.new(typeArgs, {
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      string: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[0], item.fields.string),
+      asciiString: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[1], item.fields.ascii_string),
+      url: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[2], item.fields.url),
+      idField: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[3], item.fields.id_field),
+      uid: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[4], item.fields.uid),
+      balance: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[5], item.fields.balance),
+      option: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[6], item.fields.option),
+      optionNone: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[7], item.fields.option_none),
+    })
+  }
+
+  static fromBcs<
+    T0 extends ReifiedTypeArgument,
+    T1 extends ReifiedTypeArgument,
+    T2 extends ReifiedTypeArgument,
+    T3 extends ReifiedTypeArgument,
+    T4 extends ReifiedTypeArgument,
+    T5 extends ReifiedTypeArgument,
+    T6 extends ReifiedTypeArgument,
+    T7 extends ReifiedTypeArgument,
+  >(
+    typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
+    data: Uint8Array
+  ): WithSpecialTypesAsGenerics<
+    ToTypeArgument<T0>,
+    ToTypeArgument<T1>,
+    ToTypeArgument<T2>,
+    ToTypeArgument<T3>,
+    ToTypeArgument<T4>,
+    ToTypeArgument<T5>,
+    ToTypeArgument<T6>,
+    ToTypeArgument<T7>
+  > {
     return WithSpecialTypesAsGenerics.fromFields(
       typeArgs,
       WithSpecialTypesAsGenerics.bcs(
-        structClassLoaderSource.getBcsType(typeArgs[0]),
-        structClassLoaderSource.getBcsType(typeArgs[1]),
-        structClassLoaderSource.getBcsType(typeArgs[2]),
-        structClassLoaderSource.getBcsType(typeArgs[3]),
-        structClassLoaderSource.getBcsType(typeArgs[4]),
-        structClassLoaderSource.getBcsType(typeArgs[5]),
-        structClassLoaderSource.getBcsType(typeArgs[6]),
-        structClassLoaderSource.getBcsType(typeArgs[7])
+        toBcs(typeArgs[0]),
+        toBcs(typeArgs[1]),
+        toBcs(typeArgs[2]),
+        toBcs(typeArgs[3]),
+        toBcs(typeArgs[4]),
+        toBcs(typeArgs[5]),
+        toBcs(typeArgs[6]),
+        toBcs(typeArgs[7])
       ).parse(data)
     )
   }
@@ -901,7 +1168,28 @@ export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData<
+    T0 extends ReifiedTypeArgument,
+    T1 extends ReifiedTypeArgument,
+    T2 extends ReifiedTypeArgument,
+    T3 extends ReifiedTypeArgument,
+    T4 extends ReifiedTypeArgument,
+    T5 extends ReifiedTypeArgument,
+    T6 extends ReifiedTypeArgument,
+    T7 extends ReifiedTypeArgument,
+  >(
+    typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
+    content: SuiParsedData
+  ): WithSpecialTypesAsGenerics<
+    ToTypeArgument<T0>,
+    ToTypeArgument<T1>,
+    ToTypeArgument<T2>,
+    ToTypeArgument<T3>,
+    ToTypeArgument<T4>,
+    ToTypeArgument<T5>,
+    ToTypeArgument<T6>,
+    ToTypeArgument<T7>
+  > {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -910,13 +1198,34 @@ export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
         `object at ${(content.fields as any).id} is not a WithSpecialTypesAsGenerics object`
       )
     }
-    return WithSpecialTypesAsGenerics.fromFieldsWithTypes(content)
+    return WithSpecialTypesAsGenerics.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch<T0, T1, T2, T3, T4, T5, T6, T7>(
+  static async fetch<
+    T0 extends ReifiedTypeArgument,
+    T1 extends ReifiedTypeArgument,
+    T2 extends ReifiedTypeArgument,
+    T3 extends ReifiedTypeArgument,
+    T4 extends ReifiedTypeArgument,
+    T5 extends ReifiedTypeArgument,
+    T6 extends ReifiedTypeArgument,
+    T7 extends ReifiedTypeArgument,
+  >(
     client: SuiClient,
+    typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
     id: string
-  ): Promise<WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7>> {
+  ): Promise<
+    WithSpecialTypesAsGenerics<
+      ToTypeArgument<T0>,
+      ToTypeArgument<T1>,
+      ToTypeArgument<T2>,
+      ToTypeArgument<T3>,
+      ToTypeArgument<T4>,
+      ToTypeArgument<T5>,
+      ToTypeArgument<T6>,
+      ToTypeArgument<T7>
+    >
+  > {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(
@@ -929,7 +1238,7 @@ export class WithSpecialTypesAsGenerics<T0, T1, T2, T3, T4, T5, T6, T7> {
     ) {
       throw new Error(`object at id ${id} is not a WithSpecialTypesAsGenerics object`)
     }
-    return WithSpecialTypesAsGenerics.fromFieldsWithTypes(res.data.content)
+    return WithSpecialTypesAsGenerics.fromFieldsWithTypes(typeArgs, res.data.content)
   }
 }
 
@@ -942,20 +1251,22 @@ export function isWithSpecialTypesInVectors(type: Type): boolean {
   )
 }
 
-export interface WithSpecialTypesInVectorsFields<T> {
-  id: string
-  string: Array<string>
-  asciiString: Array<string>
-  idField: Array<string>
-  bar: Array<Bar>
-  option: Array<bigint | null>
-  optionGeneric: Array<T | null>
+export interface WithSpecialTypesInVectorsFields<T extends TypeArgument> {
+  id: ToField<UID>
+  string: Array<ToField<String>>
+  asciiString: Array<ToField<String1>>
+  idField: Array<ToField<ID>>
+  bar: Array<ToField<Bar>>
+  option: Array<ToField<Option<'u64'>>>
+  optionGeneric: Array<ToField<Option<T>>>
 }
 
-export class WithSpecialTypesInVectors<T> {
+export class WithSpecialTypesInVectors<T extends TypeArgument> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = WithSpecialTypesInVectors.$typeName
 
   static get bcs() {
     return <T extends BcsType<any>>(T: T) =>
@@ -970,17 +1281,17 @@ export class WithSpecialTypesInVectors<T> {
       })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly id: string
-  readonly string: Array<string>
-  readonly asciiString: Array<string>
-  readonly idField: Array<string>
-  readonly bar: Array<Bar>
-  readonly option: Array<bigint | null>
-  readonly optionGeneric: Array<T | null>
+  readonly id: ToField<UID>
+  readonly string: Array<ToField<String>>
+  readonly asciiString: Array<ToField<String1>>
+  readonly idField: Array<ToField<ID>>
+  readonly bar: Array<ToField<Bar>>
+  readonly option: Array<ToField<Option<'u64'>>>
+  readonly optionGeneric: Array<ToField<Option<T>>>
 
-  constructor(typeArg: Type, fields: WithSpecialTypesInVectorsFields<T>) {
+  private constructor(typeArg: string, fields: WithSpecialTypesInVectorsFields<T>) {
     this.$typeArg = typeArg
 
     this.id = fields.id
@@ -992,69 +1303,99 @@ export class WithSpecialTypesInVectors<T> {
     this.optionGeneric = fields.optionGeneric
   }
 
-  static fromFields<T>(typeArg: Type, fields: Record<string, any>): WithSpecialTypesInVectors<T> {
-    initLoaderIfNeeded()
+  static new<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    fields: WithSpecialTypesInVectorsFields<ToTypeArgument<T>>
+  ): WithSpecialTypesInVectors<ToTypeArgument<T>> {
+    return new WithSpecialTypesInVectors(extractType(typeArg), fields)
+  }
 
-    return new WithSpecialTypesInVectors(typeArg, {
-      id: UID.fromFields(fields.id).id,
-      string: fields.string.map((item: any) =>
-        new TextDecoder().decode(Uint8Array.from(String.fromFields(item).bytes)).toString()
+  static reified<T extends ReifiedTypeArgument>(T: T) {
+    return {
+      typeName: WithSpecialTypesInVectors.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => WithSpecialTypesInVectors.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) =>
+        WithSpecialTypesInVectors.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => WithSpecialTypesInVectors.fromBcs(T, data),
+      bcs: WithSpecialTypesInVectors.bcs(toBcs(T)),
+      __class: null as unknown as ReturnType<
+        typeof WithSpecialTypesInVectors.new<ToTypeArgument<T>>
+      >,
+    }
+  }
+
+  static fromFields<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    fields: Record<string, any>
+  ): WithSpecialTypesInVectors<ToTypeArgument<T>> {
+    return WithSpecialTypesInVectors.new(typeArg, {
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      string: decodeFromFieldsGenericOrSpecial(reified.vector(String.reified()), fields.string),
+      asciiString: decodeFromFieldsGenericOrSpecial(
+        reified.vector(String1.reified()),
+        fields.ascii_string
       ),
-      asciiString: fields.ascii_string.map((item: any) =>
-        new TextDecoder().decode(Uint8Array.from(String1.fromFields(item).bytes)).toString()
+      idField: decodeFromFieldsGenericOrSpecial(reified.vector(ID.reified()), fields.id_field),
+      bar: decodeFromFieldsGenericOrSpecial(reified.vector(Bar.reified()), fields.bar),
+      option: decodeFromFieldsGenericOrSpecial(
+        reified.vector(Option.reified('u64')),
+        fields.option
       ),
-      idField: fields.id_field.map((item: any) => ID.fromFields(item).bytes),
-      bar: fields.bar.map((item: any) => Bar.fromFields(item)),
-      option: fields.option.map(
-        (item: any) => Option.fromFields<bigint>(`u64`, item).vec[0] || null
-      ),
-      optionGeneric: fields.option_generic.map(
-        (item: any) => Option.fromFields<T>(`${typeArg}`, item).vec[0] || null
+      optionGeneric: decodeFromFieldsGenericOrSpecial(
+        reified.vector(Option.reified(typeArg)),
+        fields.option_generic
       ),
     })
   }
 
-  static fromFieldsWithTypes<T>(item: FieldsWithTypes): WithSpecialTypesInVectors<T> {
-    initLoaderIfNeeded()
-
+  static fromFieldsWithTypes<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    item: FieldsWithTypes
+  ): WithSpecialTypesInVectors<ToTypeArgument<T>> {
     if (!isWithSpecialTypesInVectors(item.type)) {
       throw new Error('not a WithSpecialTypesInVectors type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new WithSpecialTypesInVectors(typeArgs[0], {
-      id: item.fields.id.id,
-      string: item.fields.string.map((item: any) => item),
-      asciiString: item.fields.ascii_string.map((item: any) => item),
-      idField: item.fields.id_field.map((item: any) => item),
-      bar: item.fields.bar.map((item: any) => Bar.fromFieldsWithTypes(item)),
-      option: item.fields.option.map((item: any) =>
-        item !== null
-          ? Option.fromFieldsWithTypes<bigint>({
-              type: '0x1::option::Option<' + `u64` + '>',
-              fields: { vec: [item] },
-            }).vec[0]
-          : null
+    return WithSpecialTypesInVectors.new(typeArg, {
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      string: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector(String.reified()),
+        item.fields.string
       ),
-      optionGeneric: item.fields.option_generic.map((item: any) =>
-        item !== null
-          ? Option.fromFieldsWithTypes<T>({
-              type: '0x1::option::Option<' + `${typeArgs[0]}` + '>',
-              fields: { vec: [item] },
-            }).vec[0]
-          : null
+      asciiString: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector(String1.reified()),
+        item.fields.ascii_string
+      ),
+      idField: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector(ID.reified()),
+        item.fields.id_field
+      ),
+      bar: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector(Bar.reified()),
+        item.fields.bar
+      ),
+      option: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector(Option.reified('u64')),
+        item.fields.option
+      ),
+      optionGeneric: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector(Option.reified(typeArg)),
+        item.fields.option_generic
       ),
     })
   }
 
-  static fromBcs<T>(typeArg: Type, data: Uint8Array): WithSpecialTypesInVectors<T> {
-    initLoaderIfNeeded()
-
+  static fromBcs<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    data: Uint8Array
+  ): WithSpecialTypesInVectors<ToTypeArgument<T>> {
     const typeArgs = [typeArg]
 
     return WithSpecialTypesInVectors.fromFields(
       typeArg,
-      WithSpecialTypesInVectors.bcs(structClassLoaderSource.getBcsType(typeArgs[0])).parse(data)
+      WithSpecialTypesInVectors.bcs(toBcs(typeArgs[0])).parse(data)
     )
   }
 
@@ -1077,7 +1418,10 @@ export class WithSpecialTypesInVectors<T> {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    content: SuiParsedData
+  ): WithSpecialTypesInVectors<ToTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -1086,10 +1430,14 @@ export class WithSpecialTypesInVectors<T> {
         `object at ${(content.fields as any).id} is not a WithSpecialTypesInVectors object`
       )
     }
-    return WithSpecialTypesInVectors.fromFieldsWithTypes(content)
+    return WithSpecialTypesInVectors.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T>(client: SuiClient, id: string): Promise<WithSpecialTypesInVectors<T>> {
+  static async fetch<T extends ReifiedTypeArgument>(
+    client: SuiClient,
+    typeArg: T,
+    id: string
+  ): Promise<WithSpecialTypesInVectors<ToTypeArgument<T>>> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(
@@ -1102,7 +1450,7 @@ export class WithSpecialTypesInVectors<T> {
     ) {
       throw new Error(`object at id ${id} is not a WithSpecialTypesInVectors object`)
     }
-    return WithSpecialTypesInVectors.fromFieldsWithTypes(res.data.content)
+    return WithSpecialTypesInVectors.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }
 
@@ -1115,15 +1463,17 @@ export function isWithTwoGenerics(type: Type): boolean {
   )
 }
 
-export interface WithTwoGenericsFields<T, U> {
-  genericField1: T
-  genericField2: U
+export interface WithTwoGenericsFields<T extends TypeArgument, U extends TypeArgument> {
+  genericField1: ToField<T>
+  genericField2: ToField<U>
 }
 
-export class WithTwoGenerics<T, U> {
+export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics'
   static readonly $numTypeParams = 2
+
+  readonly $typeName = WithTwoGenerics.$typeName
 
   static get bcs() {
     return <T extends BcsType<any>, U extends BcsType<any>>(T: T, U: U) =>
@@ -1133,59 +1483,78 @@ export class WithTwoGenerics<T, U> {
       })
   }
 
-  readonly $typeArgs: [Type, Type]
+  readonly $typeArgs: [string, string]
 
-  readonly genericField1: T
-  readonly genericField2: U
+  readonly genericField1: ToField<T>
+  readonly genericField2: ToField<U>
 
-  constructor(typeArgs: [Type, Type], fields: WithTwoGenericsFields<T, U>) {
+  private constructor(typeArgs: [string, string], fields: WithTwoGenericsFields<T, U>) {
     this.$typeArgs = typeArgs
 
     this.genericField1 = fields.genericField1
     this.genericField2 = fields.genericField2
   }
 
-  static fromFields<T, U>(
-    typeArgs: [Type, Type],
-    fields: Record<string, any>
-  ): WithTwoGenerics<T, U> {
-    initLoaderIfNeeded()
+  static new<T extends ReifiedTypeArgument, U extends ReifiedTypeArgument>(
+    typeArgs: [T, U],
+    fields: WithTwoGenericsFields<ToTypeArgument<T>, ToTypeArgument<U>>
+  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
+    return new WithTwoGenerics(typeArgs.map(extractType) as [string, string], fields)
+  }
 
-    return new WithTwoGenerics(typeArgs, {
-      genericField1: structClassLoaderSource.fromFields(typeArgs[0], fields.generic_field_1),
-      genericField2: structClassLoaderSource.fromFields(typeArgs[1], fields.generic_field_2),
+  static reified<T extends ReifiedTypeArgument, U extends ReifiedTypeArgument>(T: T, U: U) {
+    return {
+      typeName: WithTwoGenerics.$typeName,
+      typeArgs: [T, U],
+      fromFields: (fields: Record<string, any>) => WithTwoGenerics.fromFields([T, U], fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) =>
+        WithTwoGenerics.fromFieldsWithTypes([T, U], item),
+      fromBcs: (data: Uint8Array) => WithTwoGenerics.fromBcs([T, U], data),
+      bcs: WithTwoGenerics.bcs(toBcs(T), toBcs(U)),
+      __class: null as unknown as ReturnType<
+        typeof WithTwoGenerics.new<ToTypeArgument<T>, ToTypeArgument<U>>
+      >,
+    }
+  }
+
+  static fromFields<T extends ReifiedTypeArgument, U extends ReifiedTypeArgument>(
+    typeArgs: [T, U],
+    fields: Record<string, any>
+  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
+    return WithTwoGenerics.new(typeArgs, {
+      genericField1: decodeFromFieldsGenericOrSpecial(typeArgs[0], fields.generic_field_1),
+      genericField2: decodeFromFieldsGenericOrSpecial(typeArgs[1], fields.generic_field_2),
     })
   }
 
-  static fromFieldsWithTypes<T, U>(item: FieldsWithTypes): WithTwoGenerics<T, U> {
-    initLoaderIfNeeded()
-
+  static fromFieldsWithTypes<T extends ReifiedTypeArgument, U extends ReifiedTypeArgument>(
+    typeArgs: [T, U],
+    item: FieldsWithTypes
+  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
     if (!isWithTwoGenerics(item.type)) {
       throw new Error('not a WithTwoGenerics type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, typeArgs)
 
-    return new WithTwoGenerics([typeArgs[0], typeArgs[1]], {
-      genericField1: structClassLoaderSource.fromFieldsWithTypes(
+    return WithTwoGenerics.new(typeArgs, {
+      genericField1: decodeFromFieldsWithTypesGenericOrSpecial(
         typeArgs[0],
         item.fields.generic_field_1
       ),
-      genericField2: structClassLoaderSource.fromFieldsWithTypes(
+      genericField2: decodeFromFieldsWithTypesGenericOrSpecial(
         typeArgs[1],
         item.fields.generic_field_2
       ),
     })
   }
 
-  static fromBcs<T, U>(typeArgs: [Type, Type], data: Uint8Array): WithTwoGenerics<T, U> {
-    initLoaderIfNeeded()
-
+  static fromBcs<T extends ReifiedTypeArgument, U extends ReifiedTypeArgument>(
+    typeArgs: [T, U],
+    data: Uint8Array
+  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
     return WithTwoGenerics.fromFields(
       typeArgs,
-      WithTwoGenerics.bcs(
-        structClassLoaderSource.getBcsType(typeArgs[0]),
-        structClassLoaderSource.getBcsType(typeArgs[1])
-      ).parse(data)
+      WithTwoGenerics.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data)
     )
   }
 

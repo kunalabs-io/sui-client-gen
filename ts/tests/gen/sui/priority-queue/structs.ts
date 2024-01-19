@@ -1,12 +1,16 @@
-import { initLoaderIfNeeded } from '../../_framework/init-source'
-import { structClassLoaderSource } from '../../_framework/loader'
 import {
-  FieldsWithTypes,
-  Type,
-  compressSuiType,
-  genericToJSON,
-  parseTypeName,
-} from '../../_framework/util'
+  ReifiedTypeArgument,
+  ToField,
+  ToTypeArgument,
+  TypeArgument,
+  assertFieldsWithTypesArgsMatch,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+  extractType,
+  reified,
+  toBcs,
+} from '../../_framework/types'
+import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== Entry =============================== */
@@ -16,14 +20,16 @@ export function isEntry(type: Type): boolean {
   return type.startsWith('0x2::priority_queue::Entry<')
 }
 
-export interface EntryFields<T> {
-  priority: bigint
-  value: T
+export interface EntryFields<T extends TypeArgument> {
+  priority: ToField<'u64'>
+  value: ToField<T>
 }
 
-export class Entry<T> {
+export class Entry<T extends TypeArgument> {
   static readonly $typeName = '0x2::priority_queue::Entry'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = Entry.$typeName
 
   static get bcs() {
     return <T extends BcsType<any>>(T: T) =>
@@ -33,50 +39,69 @@ export class Entry<T> {
       })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly priority: bigint
-  readonly value: T
+  readonly priority: ToField<'u64'>
+  readonly value: ToField<T>
 
-  constructor(typeArg: Type, fields: EntryFields<T>) {
+  private constructor(typeArg: string, fields: EntryFields<T>) {
     this.$typeArg = typeArg
 
     this.priority = fields.priority
     this.value = fields.value
   }
 
-  static fromFields<T>(typeArg: Type, fields: Record<string, any>): Entry<T> {
-    initLoaderIfNeeded()
+  static new<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    fields: EntryFields<ToTypeArgument<T>>
+  ): Entry<ToTypeArgument<T>> {
+    return new Entry(extractType(typeArg), fields)
+  }
 
-    return new Entry(typeArg, {
-      priority: BigInt(fields.priority),
-      value: structClassLoaderSource.fromFields(typeArg, fields.value),
+  static reified<T extends ReifiedTypeArgument>(T: T) {
+    return {
+      typeName: Entry.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => Entry.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Entry.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => Entry.fromBcs(T, data),
+      bcs: Entry.bcs(toBcs(T)),
+      __class: null as unknown as ReturnType<typeof Entry.new<ToTypeArgument<T>>>,
+    }
+  }
+
+  static fromFields<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    fields: Record<string, any>
+  ): Entry<ToTypeArgument<T>> {
+    return Entry.new(typeArg, {
+      priority: decodeFromFieldsGenericOrSpecial('u64', fields.priority),
+      value: decodeFromFieldsGenericOrSpecial(typeArg, fields.value),
     })
   }
 
-  static fromFieldsWithTypes<T>(item: FieldsWithTypes): Entry<T> {
-    initLoaderIfNeeded()
-
+  static fromFieldsWithTypes<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    item: FieldsWithTypes
+  ): Entry<ToTypeArgument<T>> {
     if (!isEntry(item.type)) {
       throw new Error('not a Entry type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new Entry(typeArgs[0], {
-      priority: BigInt(item.fields.priority),
-      value: structClassLoaderSource.fromFieldsWithTypes(typeArgs[0], item.fields.value),
+    return Entry.new(typeArg, {
+      priority: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.priority),
+      value: decodeFromFieldsWithTypesGenericOrSpecial(typeArg, item.fields.value),
     })
   }
 
-  static fromBcs<T>(typeArg: Type, data: Uint8Array): Entry<T> {
-    initLoaderIfNeeded()
-
+  static fromBcs<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    data: Uint8Array
+  ): Entry<ToTypeArgument<T>> {
     const typeArgs = [typeArg]
 
-    return Entry.fromFields(
-      typeArg,
-      Entry.bcs(structClassLoaderSource.getBcsType(typeArgs[0])).parse(data)
-    )
+    return Entry.fromFields(typeArg, Entry.bcs(toBcs(typeArgs[0])).parse(data))
   }
 
   toJSON() {
@@ -95,13 +120,15 @@ export function isPriorityQueue(type: Type): boolean {
   return type.startsWith('0x2::priority_queue::PriorityQueue<')
 }
 
-export interface PriorityQueueFields<T> {
-  entries: Array<Entry<T>>
+export interface PriorityQueueFields<T extends TypeArgument> {
+  entries: Array<ToField<Entry<T>>>
 }
 
-export class PriorityQueue<T> {
+export class PriorityQueue<T extends TypeArgument> {
   static readonly $typeName = '0x2::priority_queue::PriorityQueue'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = PriorityQueue.$typeName
 
   static get bcs() {
     return <T extends BcsType<any>>(T: T) =>
@@ -110,48 +137,70 @@ export class PriorityQueue<T> {
       })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly entries: Array<Entry<T>>
+  readonly entries: Array<ToField<Entry<T>>>
 
-  constructor(typeArg: Type, entries: Array<Entry<T>>) {
+  private constructor(typeArg: string, entries: Array<ToField<Entry<T>>>) {
     this.$typeArg = typeArg
 
     this.entries = entries
   }
 
-  static fromFields<T>(typeArg: Type, fields: Record<string, any>): PriorityQueue<T> {
-    initLoaderIfNeeded()
+  static new<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    entries: Array<ToField<Entry<ToTypeArgument<T>>>>
+  ): PriorityQueue<ToTypeArgument<T>> {
+    return new PriorityQueue(extractType(typeArg), entries)
+  }
 
-    return new PriorityQueue(
+  static reified<T extends ReifiedTypeArgument>(T: T) {
+    return {
+      typeName: PriorityQueue.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => PriorityQueue.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => PriorityQueue.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => PriorityQueue.fromBcs(T, data),
+      bcs: PriorityQueue.bcs(toBcs(T)),
+      __class: null as unknown as ReturnType<typeof PriorityQueue.new<ToTypeArgument<T>>>,
+    }
+  }
+
+  static fromFields<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    fields: Record<string, any>
+  ): PriorityQueue<ToTypeArgument<T>> {
+    return PriorityQueue.new(
       typeArg,
-      fields.entries.map((item: any) => Entry.fromFields<T>(`${typeArg}`, item))
+      decodeFromFieldsGenericOrSpecial(reified.vector(Entry.reified(typeArg)), fields.entries)
     )
   }
 
-  static fromFieldsWithTypes<T>(item: FieldsWithTypes): PriorityQueue<T> {
-    initLoaderIfNeeded()
-
+  static fromFieldsWithTypes<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    item: FieldsWithTypes
+  ): PriorityQueue<ToTypeArgument<T>> {
     if (!isPriorityQueue(item.type)) {
       throw new Error('not a PriorityQueue type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new PriorityQueue(
-      typeArgs[0],
-      item.fields.entries.map((item: any) => Entry.fromFieldsWithTypes<T>(item))
+    return PriorityQueue.new(
+      typeArg,
+      decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector(Entry.reified(typeArg)),
+        item.fields.entries
+      )
     )
   }
 
-  static fromBcs<T>(typeArg: Type, data: Uint8Array): PriorityQueue<T> {
-    initLoaderIfNeeded()
-
+  static fromBcs<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    data: Uint8Array
+  ): PriorityQueue<ToTypeArgument<T>> {
     const typeArgs = [typeArg]
 
-    return PriorityQueue.fromFields(
-      typeArg,
-      PriorityQueue.bcs(structClassLoaderSource.getBcsType(typeArgs[0])).parse(data)
-    )
+    return PriorityQueue.fromFields(typeArg, PriorityQueue.bcs(toBcs(typeArgs[0])).parse(data))
   }
 
   toJSON() {

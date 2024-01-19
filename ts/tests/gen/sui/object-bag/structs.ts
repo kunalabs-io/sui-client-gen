@@ -1,3 +1,8 @@
+import {
+  ToField,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+} from '../../_framework/types'
 import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -11,13 +16,15 @@ export function isObjectBag(type: Type): boolean {
 }
 
 export interface ObjectBagFields {
-  id: string
-  size: bigint
+  id: ToField<UID>
+  size: ToField<'u64'>
 }
 
 export class ObjectBag {
   static readonly $typeName = '0x2::object_bag::ObjectBag'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = ObjectBag.$typeName
 
   static get bcs() {
     return bcs.struct('ObjectBag', {
@@ -26,23 +33,46 @@ export class ObjectBag {
     })
   }
 
-  readonly id: string
-  readonly size: bigint
+  readonly id: ToField<UID>
+  readonly size: ToField<'u64'>
 
-  constructor(fields: ObjectBagFields) {
+  private constructor(fields: ObjectBagFields) {
     this.id = fields.id
     this.size = fields.size
   }
 
+  static new(fields: ObjectBagFields): ObjectBag {
+    return new ObjectBag(fields)
+  }
+
+  static reified() {
+    return {
+      typeName: ObjectBag.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => ObjectBag.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => ObjectBag.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => ObjectBag.fromBcs(data),
+      bcs: ObjectBag.bcs,
+      __class: null as unknown as ReturnType<typeof ObjectBag.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): ObjectBag {
-    return new ObjectBag({ id: UID.fromFields(fields.id).id, size: BigInt(fields.size) })
+    return ObjectBag.new({
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      size: decodeFromFieldsGenericOrSpecial('u64', fields.size),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): ObjectBag {
     if (!isObjectBag(item.type)) {
       throw new Error('not a ObjectBag type')
     }
-    return new ObjectBag({ id: item.fields.id.id, size: BigInt(item.fields.size) })
+
+    return ObjectBag.new({
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      size: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.size),
+    })
   }
 
   static fromBcs(data: Uint8Array): ObjectBag {
@@ -56,7 +86,7 @@ export class ObjectBag {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData(content: SuiParsedData): ObjectBag {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }

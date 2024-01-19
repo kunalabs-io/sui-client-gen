@@ -3,6 +3,9 @@ rpc = "https://fullnode.testnet.sui.io:443"
 
 [packages]
 ExamplesChain = { id = "0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209" }
+SuiChain = { id = "0x2" }
+MoveStdlibChain = { id = "0x1" }
+
 Examples = { local = "../../../move/examples" }
 Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "releases/sui-v1.6.0-release" }
 MoveStdlib = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "releases/sui-v1.6.0-release" }

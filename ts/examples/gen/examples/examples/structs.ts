@@ -1,6 +1,12 @@
 import { String } from '../../_dependencies/source/0x1/ascii/structs'
 import { Option } from '../../_dependencies/source/0x1/option/structs'
 import { String as String1 } from '../../_dependencies/source/0x1/string/structs'
+import {
+  ToField,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+  reified,
+} from '../../_framework/types'
 import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
 import { ID, UID } from '../../sui/object/structs'
 import { bcs, fromHEX, toHEX } from '@mysten/bcs'
@@ -17,7 +23,7 @@ export function isExampleStruct(type: Type): boolean {
 }
 
 export interface ExampleStructFields {
-  dummyField: boolean
+  dummyField: ToField<'bool'>
 }
 
 export class ExampleStruct {
@@ -25,27 +31,48 @@ export class ExampleStruct {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
   static readonly $numTypeParams = 0
 
+  readonly $typeName = ExampleStruct.$typeName
+
   static get bcs() {
     return bcs.struct('ExampleStruct', {
       dummy_field: bcs.bool(),
     })
   }
 
-  readonly dummyField: boolean
+  readonly dummyField: ToField<'bool'>
 
-  constructor(dummyField: boolean) {
+  private constructor(dummyField: ToField<'bool'>) {
     this.dummyField = dummyField
   }
 
+  static new(dummyField: ToField<'bool'>): ExampleStruct {
+    return new ExampleStruct(dummyField)
+  }
+
+  static reified() {
+    return {
+      typeName: ExampleStruct.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => ExampleStruct.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => ExampleStruct.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => ExampleStruct.fromBcs(data),
+      bcs: ExampleStruct.bcs,
+      __class: null as unknown as ReturnType<typeof ExampleStruct.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): ExampleStruct {
-    return new ExampleStruct(fields.dummy_field)
+    return ExampleStruct.new(decodeFromFieldsGenericOrSpecial('bool', fields.dummy_field))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): ExampleStruct {
     if (!isExampleStruct(item.type)) {
       throw new Error('not a ExampleStruct type')
     }
-    return new ExampleStruct(item.fields.dummy_field)
+
+    return ExampleStruct.new(
+      decodeFromFieldsWithTypesGenericOrSpecial('bool', item.fields.dummy_field)
+    )
   }
 
   static fromBcs(data: Uint8Array): ExampleStruct {
@@ -70,21 +97,23 @@ export function isSpecialTypesStruct(type: Type): boolean {
 }
 
 export interface SpecialTypesStructFields {
-  id: string
-  asciiString: string
-  utf8String: string
-  vectorOfU64: Array<bigint>
-  vectorOfObjects: Array<ExampleStruct>
-  idField: string
-  address: string
-  optionSome: bigint | null
-  optionNone: bigint | null
+  id: ToField<UID>
+  asciiString: ToField<String>
+  utf8String: ToField<String1>
+  vectorOfU64: Array<ToField<'u64'>>
+  vectorOfObjects: Array<ToField<ExampleStruct>>
+  idField: ToField<ID>
+  address: ToField<'address'>
+  optionSome: ToField<Option<'u64'>>
+  optionNone: ToField<Option<'u64'>>
 }
 
 export class SpecialTypesStruct {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = SpecialTypesStruct.$typeName
 
   static get bcs() {
     return bcs.struct('SpecialTypesStruct', {
@@ -103,17 +132,17 @@ export class SpecialTypesStruct {
     })
   }
 
-  readonly id: string
-  readonly asciiString: string
-  readonly utf8String: string
-  readonly vectorOfU64: Array<bigint>
-  readonly vectorOfObjects: Array<ExampleStruct>
-  readonly idField: string
-  readonly address: string
-  readonly optionSome: bigint | null
-  readonly optionNone: bigint | null
+  readonly id: ToField<UID>
+  readonly asciiString: ToField<String>
+  readonly utf8String: ToField<String1>
+  readonly vectorOfU64: Array<ToField<'u64'>>
+  readonly vectorOfObjects: Array<ToField<ExampleStruct>>
+  readonly idField: ToField<ID>
+  readonly address: ToField<'address'>
+  readonly optionSome: ToField<Option<'u64'>>
+  readonly optionNone: ToField<Option<'u64'>>
 
-  constructor(fields: SpecialTypesStructFields) {
+  private constructor(fields: SpecialTypesStructFields) {
     this.id = fields.id
     this.asciiString = fields.asciiString
     this.utf8String = fields.utf8String
@@ -125,21 +154,36 @@ export class SpecialTypesStruct {
     this.optionNone = fields.optionNone
   }
 
+  static new(fields: SpecialTypesStructFields): SpecialTypesStruct {
+    return new SpecialTypesStruct(fields)
+  }
+
+  static reified() {
+    return {
+      typeName: SpecialTypesStruct.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => SpecialTypesStruct.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => SpecialTypesStruct.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => SpecialTypesStruct.fromBcs(data),
+      bcs: SpecialTypesStruct.bcs,
+      __class: null as unknown as ReturnType<typeof SpecialTypesStruct.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): SpecialTypesStruct {
-    return new SpecialTypesStruct({
-      id: UID.fromFields(fields.id).id,
-      asciiString: new TextDecoder()
-        .decode(Uint8Array.from(String.fromFields(fields.ascii_string).bytes))
-        .toString(),
-      utf8String: new TextDecoder()
-        .decode(Uint8Array.from(String1.fromFields(fields.utf8_string).bytes))
-        .toString(),
-      vectorOfU64: fields.vector_of_u64.map((item: any) => BigInt(item)),
-      vectorOfObjects: fields.vector_of_objects.map((item: any) => ExampleStruct.fromFields(item)),
-      idField: ID.fromFields(fields.id_field).bytes,
-      address: `0x${fields.address}`,
-      optionSome: Option.fromFields<bigint>(`u64`, fields.option_some).vec[0] || null,
-      optionNone: Option.fromFields<bigint>(`u64`, fields.option_none).vec[0] || null,
+    return SpecialTypesStruct.new({
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      asciiString: decodeFromFieldsGenericOrSpecial(String.reified(), fields.ascii_string),
+      utf8String: decodeFromFieldsGenericOrSpecial(String1.reified(), fields.utf8_string),
+      vectorOfU64: decodeFromFieldsGenericOrSpecial(reified.vector('u64'), fields.vector_of_u64),
+      vectorOfObjects: decodeFromFieldsGenericOrSpecial(
+        reified.vector(ExampleStruct.reified()),
+        fields.vector_of_objects
+      ),
+      idField: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id_field),
+      address: decodeFromFieldsGenericOrSpecial('address', fields.address),
+      optionSome: decodeFromFieldsGenericOrSpecial(Option.reified('u64'), fields.option_some),
+      optionNone: decodeFromFieldsGenericOrSpecial(Option.reified('u64'), fields.option_none),
     })
   }
 
@@ -147,30 +191,35 @@ export class SpecialTypesStruct {
     if (!isSpecialTypesStruct(item.type)) {
       throw new Error('not a SpecialTypesStruct type')
     }
-    return new SpecialTypesStruct({
-      id: item.fields.id.id,
-      asciiString: item.fields.ascii_string,
-      utf8String: item.fields.utf8_string,
-      vectorOfU64: item.fields.vector_of_u64.map((item: any) => BigInt(item)),
-      vectorOfObjects: item.fields.vector_of_objects.map((item: any) =>
-        ExampleStruct.fromFieldsWithTypes(item)
+
+    return SpecialTypesStruct.new({
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      asciiString: decodeFromFieldsWithTypesGenericOrSpecial(
+        String.reified(),
+        item.fields.ascii_string
       ),
-      idField: item.fields.id_field,
-      address: item.fields.address,
-      optionSome:
-        item.fields.option_some !== null
-          ? Option.fromFieldsWithTypes<bigint>({
-              type: '0x1::option::Option<' + `u64` + '>',
-              fields: { vec: [item.fields.option_some] },
-            }).vec[0]
-          : null,
-      optionNone:
-        item.fields.option_none !== null
-          ? Option.fromFieldsWithTypes<bigint>({
-              type: '0x1::option::Option<' + `u64` + '>',
-              fields: { vec: [item.fields.option_none] },
-            }).vec[0]
-          : null,
+      utf8String: decodeFromFieldsWithTypesGenericOrSpecial(
+        String1.reified(),
+        item.fields.utf8_string
+      ),
+      vectorOfU64: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector('u64'),
+        item.fields.vector_of_u64
+      ),
+      vectorOfObjects: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector(ExampleStruct.reified()),
+        item.fields.vector_of_objects
+      ),
+      idField: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id_field),
+      address: decodeFromFieldsWithTypesGenericOrSpecial('address', item.fields.address),
+      optionSome: decodeFromFieldsWithTypesGenericOrSpecial(
+        Option.reified('u64'),
+        item.fields.option_some
+      ),
+      optionNone: decodeFromFieldsWithTypesGenericOrSpecial(
+        Option.reified('u64'),
+        item.fields.option_none
+      ),
     })
   }
 
@@ -195,7 +244,7 @@ export class SpecialTypesStruct {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData(content: SuiParsedData): SpecialTypesStruct {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }

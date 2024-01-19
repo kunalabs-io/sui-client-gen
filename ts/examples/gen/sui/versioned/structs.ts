@@ -1,3 +1,8 @@
+import {
+  ToField,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+} from '../../_framework/types'
 import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { ID, UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -11,13 +16,15 @@ export function isVersionChangeCap(type: Type): boolean {
 }
 
 export interface VersionChangeCapFields {
-  versionedId: string
-  oldVersion: bigint
+  versionedId: ToField<ID>
+  oldVersion: ToField<'u64'>
 }
 
 export class VersionChangeCap {
   static readonly $typeName = '0x2::versioned::VersionChangeCap'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = VersionChangeCap.$typeName
 
   static get bcs() {
     return bcs.struct('VersionChangeCap', {
@@ -26,18 +33,34 @@ export class VersionChangeCap {
     })
   }
 
-  readonly versionedId: string
-  readonly oldVersion: bigint
+  readonly versionedId: ToField<ID>
+  readonly oldVersion: ToField<'u64'>
 
-  constructor(fields: VersionChangeCapFields) {
+  private constructor(fields: VersionChangeCapFields) {
     this.versionedId = fields.versionedId
     this.oldVersion = fields.oldVersion
   }
 
+  static new(fields: VersionChangeCapFields): VersionChangeCap {
+    return new VersionChangeCap(fields)
+  }
+
+  static reified() {
+    return {
+      typeName: VersionChangeCap.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => VersionChangeCap.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => VersionChangeCap.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => VersionChangeCap.fromBcs(data),
+      bcs: VersionChangeCap.bcs,
+      __class: null as unknown as ReturnType<typeof VersionChangeCap.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): VersionChangeCap {
-    return new VersionChangeCap({
-      versionedId: ID.fromFields(fields.versioned_id).bytes,
-      oldVersion: BigInt(fields.old_version),
+    return VersionChangeCap.new({
+      versionedId: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.versioned_id),
+      oldVersion: decodeFromFieldsGenericOrSpecial('u64', fields.old_version),
     })
   }
 
@@ -45,9 +68,13 @@ export class VersionChangeCap {
     if (!isVersionChangeCap(item.type)) {
       throw new Error('not a VersionChangeCap type')
     }
-    return new VersionChangeCap({
-      versionedId: item.fields.versioned_id,
-      oldVersion: BigInt(item.fields.old_version),
+
+    return VersionChangeCap.new({
+      versionedId: decodeFromFieldsWithTypesGenericOrSpecial(
+        ID.reified(),
+        item.fields.versioned_id
+      ),
+      oldVersion: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.old_version),
     })
   }
 
@@ -71,13 +98,15 @@ export function isVersioned(type: Type): boolean {
 }
 
 export interface VersionedFields {
-  id: string
-  version: bigint
+  id: ToField<UID>
+  version: ToField<'u64'>
 }
 
 export class Versioned {
   static readonly $typeName = '0x2::versioned::Versioned'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = Versioned.$typeName
 
   static get bcs() {
     return bcs.struct('Versioned', {
@@ -86,23 +115,46 @@ export class Versioned {
     })
   }
 
-  readonly id: string
-  readonly version: bigint
+  readonly id: ToField<UID>
+  readonly version: ToField<'u64'>
 
-  constructor(fields: VersionedFields) {
+  private constructor(fields: VersionedFields) {
     this.id = fields.id
     this.version = fields.version
   }
 
+  static new(fields: VersionedFields): Versioned {
+    return new Versioned(fields)
+  }
+
+  static reified() {
+    return {
+      typeName: Versioned.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => Versioned.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Versioned.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => Versioned.fromBcs(data),
+      bcs: Versioned.bcs,
+      __class: null as unknown as ReturnType<typeof Versioned.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): Versioned {
-    return new Versioned({ id: UID.fromFields(fields.id).id, version: BigInt(fields.version) })
+    return Versioned.new({
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      version: decodeFromFieldsGenericOrSpecial('u64', fields.version),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Versioned {
     if (!isVersioned(item.type)) {
       throw new Error('not a Versioned type')
     }
-    return new Versioned({ id: item.fields.id.id, version: BigInt(item.fields.version) })
+
+    return Versioned.new({
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      version: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.version),
+    })
   }
 
   static fromBcs(data: Uint8Array): Versioned {
@@ -116,7 +168,7 @@ export class Versioned {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData(content: SuiParsedData): Versioned {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }

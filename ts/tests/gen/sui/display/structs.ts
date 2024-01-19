@@ -1,4 +1,12 @@
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
+import {
+  ReifiedTypeArgument,
+  ToField,
+  assertFieldsWithTypesArgsMatch,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+  extractType,
+} from '../../_framework/types'
+import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib/string/structs'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
@@ -13,14 +21,16 @@ export function isDisplay(type: Type): boolean {
 }
 
 export interface DisplayFields {
-  id: string
-  fields: VecMap<string, string>
-  version: number
+  id: ToField<UID>
+  fields: ToField<VecMap<String, String>>
+  version: ToField<'u16'>
 }
 
 export class Display {
   static readonly $typeName = '0x2::display::Display'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = Display.$typeName
 
   static get bcs() {
     return bcs.struct('Display', {
@@ -30,13 +40,13 @@ export class Display {
     })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly id: string
-  readonly fields: VecMap<string, string>
-  readonly version: number
+  readonly id: ToField<UID>
+  readonly fields: ToField<VecMap<String, String>>
+  readonly version: ToField<'u16'>
 
-  constructor(typeArg: Type, fields: DisplayFields) {
+  private constructor(typeArg: string, fields: DisplayFields) {
     this.$typeArg = typeArg
 
     this.id = fields.id
@@ -44,31 +54,50 @@ export class Display {
     this.version = fields.version
   }
 
-  static fromFields(typeArg: Type, fields: Record<string, any>): Display {
-    return new Display(typeArg, {
-      id: UID.fromFields(fields.id).id,
-      fields: VecMap.fromFields<string, string>(
-        [`0x1::string::String`, `0x1::string::String`],
+  static new(typeArg: ReifiedTypeArgument, fields: DisplayFields): Display {
+    return new Display(extractType(typeArg), fields)
+  }
+
+  static reified(T: ReifiedTypeArgument) {
+    return {
+      typeName: Display.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => Display.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Display.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => Display.fromBcs(T, data),
+      bcs: Display.bcs,
+      __class: null as unknown as ReturnType<typeof Display.new>,
+    }
+  }
+
+  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): Display {
+    return Display.new(typeArg, {
+      id: decodeFromFieldsGenericOrSpecial(UID.reified(), fields.id),
+      fields: decodeFromFieldsGenericOrSpecial(
+        VecMap.reified(String.reified(), String.reified()),
         fields.fields
       ),
-      version: fields.version,
+      version: decodeFromFieldsGenericOrSpecial('u16', fields.version),
     })
   }
 
-  static fromFieldsWithTypes(item: FieldsWithTypes): Display {
+  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): Display {
     if (!isDisplay(item.type)) {
       throw new Error('not a Display type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new Display(typeArgs[0], {
-      id: item.fields.id.id,
-      fields: VecMap.fromFieldsWithTypes<string, string>(item.fields.fields),
-      version: item.fields.version,
+    return Display.new(typeArg, {
+      id: decodeFromFieldsWithTypesGenericOrSpecial(UID.reified(), item.fields.id),
+      fields: decodeFromFieldsWithTypesGenericOrSpecial(
+        VecMap.reified(String.reified(), String.reified()),
+        item.fields.fields
+      ),
+      version: decodeFromFieldsWithTypesGenericOrSpecial('u16', item.fields.version),
     })
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array): Display {
+  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): Display {
     return Display.fromFields(typeArg, Display.bcs.parse(data))
   }
 
@@ -81,17 +110,21 @@ export class Display {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): Display {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
     if (!isDisplay(content.type)) {
       throw new Error(`object at ${(content.fields as any).id} is not a Display object`)
     }
-    return Display.fromFieldsWithTypes(content)
+    return Display.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Display> {
+  static async fetch(
+    client: SuiClient,
+    typeArg: ReifiedTypeArgument,
+    id: string
+  ): Promise<Display> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Display object at id ${id}: ${res.error.code}`)
@@ -99,7 +132,7 @@ export class Display {
     if (res.data?.content?.dataType !== 'moveObject' || !isDisplay(res.data.content.type)) {
       throw new Error(`object at id ${id} is not a Display object`)
     }
-    return Display.fromFieldsWithTypes(res.data.content)
+    return Display.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }
 
@@ -111,12 +144,14 @@ export function isDisplayCreated(type: Type): boolean {
 }
 
 export interface DisplayCreatedFields {
-  id: string
+  id: ToField<ID>
 }
 
 export class DisplayCreated {
   static readonly $typeName = '0x2::display::DisplayCreated'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = DisplayCreated.$typeName
 
   static get bcs() {
     return bcs.struct('DisplayCreated', {
@@ -124,30 +159,49 @@ export class DisplayCreated {
     })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly id: string
+  readonly id: ToField<ID>
 
-  constructor(typeArg: Type, id: string) {
+  private constructor(typeArg: string, id: ToField<ID>) {
     this.$typeArg = typeArg
 
     this.id = id
   }
 
-  static fromFields(typeArg: Type, fields: Record<string, any>): DisplayCreated {
-    return new DisplayCreated(typeArg, ID.fromFields(fields.id).bytes)
+  static new(typeArg: ReifiedTypeArgument, id: ToField<ID>): DisplayCreated {
+    return new DisplayCreated(extractType(typeArg), id)
   }
 
-  static fromFieldsWithTypes(item: FieldsWithTypes): DisplayCreated {
+  static reified(T: ReifiedTypeArgument) {
+    return {
+      typeName: DisplayCreated.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => DisplayCreated.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => DisplayCreated.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => DisplayCreated.fromBcs(T, data),
+      bcs: DisplayCreated.bcs,
+      __class: null as unknown as ReturnType<typeof DisplayCreated.new>,
+    }
+  }
+
+  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): DisplayCreated {
+    return DisplayCreated.new(typeArg, decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id))
+  }
+
+  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): DisplayCreated {
     if (!isDisplayCreated(item.type)) {
       throw new Error('not a DisplayCreated type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new DisplayCreated(typeArgs[0], item.fields.id)
+    return DisplayCreated.new(
+      typeArg,
+      decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id)
+    )
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array): DisplayCreated {
+  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): DisplayCreated {
     return DisplayCreated.fromFields(typeArg, DisplayCreated.bcs.parse(data))
   }
 
@@ -167,14 +221,16 @@ export function isVersionUpdated(type: Type): boolean {
 }
 
 export interface VersionUpdatedFields {
-  id: string
-  version: number
-  fields: VecMap<string, string>
+  id: ToField<ID>
+  version: ToField<'u16'>
+  fields: ToField<VecMap<String, String>>
 }
 
 export class VersionUpdated {
   static readonly $typeName = '0x2::display::VersionUpdated'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = VersionUpdated.$typeName
 
   static get bcs() {
     return bcs.struct('VersionUpdated', {
@@ -184,13 +240,13 @@ export class VersionUpdated {
     })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly id: string
-  readonly version: number
-  readonly fields: VecMap<string, string>
+  readonly id: ToField<ID>
+  readonly version: ToField<'u16'>
+  readonly fields: ToField<VecMap<String, String>>
 
-  constructor(typeArg: Type, fields: VersionUpdatedFields) {
+  private constructor(typeArg: string, fields: VersionUpdatedFields) {
     this.$typeArg = typeArg
 
     this.id = fields.id
@@ -198,31 +254,50 @@ export class VersionUpdated {
     this.fields = fields.fields
   }
 
-  static fromFields(typeArg: Type, fields: Record<string, any>): VersionUpdated {
-    return new VersionUpdated(typeArg, {
-      id: ID.fromFields(fields.id).bytes,
-      version: fields.version,
-      fields: VecMap.fromFields<string, string>(
-        [`0x1::string::String`, `0x1::string::String`],
+  static new(typeArg: ReifiedTypeArgument, fields: VersionUpdatedFields): VersionUpdated {
+    return new VersionUpdated(extractType(typeArg), fields)
+  }
+
+  static reified(T: ReifiedTypeArgument) {
+    return {
+      typeName: VersionUpdated.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => VersionUpdated.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => VersionUpdated.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => VersionUpdated.fromBcs(T, data),
+      bcs: VersionUpdated.bcs,
+      __class: null as unknown as ReturnType<typeof VersionUpdated.new>,
+    }
+  }
+
+  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): VersionUpdated {
+    return VersionUpdated.new(typeArg, {
+      id: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id),
+      version: decodeFromFieldsGenericOrSpecial('u16', fields.version),
+      fields: decodeFromFieldsGenericOrSpecial(
+        VecMap.reified(String.reified(), String.reified()),
         fields.fields
       ),
     })
   }
 
-  static fromFieldsWithTypes(item: FieldsWithTypes): VersionUpdated {
+  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): VersionUpdated {
     if (!isVersionUpdated(item.type)) {
       throw new Error('not a VersionUpdated type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new VersionUpdated(typeArgs[0], {
-      id: item.fields.id,
-      version: item.fields.version,
-      fields: VecMap.fromFieldsWithTypes<string, string>(item.fields.fields),
+    return VersionUpdated.new(typeArg, {
+      id: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id),
+      version: decodeFromFieldsWithTypesGenericOrSpecial('u16', item.fields.version),
+      fields: decodeFromFieldsWithTypesGenericOrSpecial(
+        VecMap.reified(String.reified(), String.reified()),
+        item.fields.fields
+      ),
     })
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array): VersionUpdated {
+  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): VersionUpdated {
     return VersionUpdated.fromFields(typeArg, VersionUpdated.bcs.parse(data))
   }
 

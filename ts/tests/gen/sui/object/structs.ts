@@ -1,12 +1,16 @@
-import { initLoaderIfNeeded } from '../../_framework/init-source'
-import { structClassLoaderSource } from '../../_framework/loader'
 import {
-  FieldsWithTypes,
-  Type,
-  compressSuiType,
-  genericToJSON,
-  parseTypeName,
-} from '../../_framework/util'
+  ReifiedTypeArgument,
+  ToField,
+  ToTypeArgument,
+  TypeArgument,
+  assertFieldsWithTypesArgsMatch,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+  extractType,
+  reified,
+  toBcs,
+} from '../../_framework/types'
+import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
@@ -17,13 +21,15 @@ export function isDynamicFields(type: Type): boolean {
   return type.startsWith('0x2::object::DynamicFields<')
 }
 
-export interface DynamicFieldsFields<K> {
-  names: Array<K>
+export interface DynamicFieldsFields<K extends TypeArgument> {
+  names: Array<ToField<K>>
 }
 
-export class DynamicFields<K> {
+export class DynamicFields<K extends TypeArgument> {
   static readonly $typeName = '0x2::object::DynamicFields'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = DynamicFields.$typeName
 
   static get bcs() {
     return <K extends BcsType<any>>(K: K) =>
@@ -32,50 +38,67 @@ export class DynamicFields<K> {
       })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly names: Array<K>
+  readonly names: Array<ToField<K>>
 
-  constructor(typeArg: Type, names: Array<K>) {
+  private constructor(typeArg: string, names: Array<ToField<K>>) {
     this.$typeArg = typeArg
 
     this.names = names
   }
 
-  static fromFields<K>(typeArg: Type, fields: Record<string, any>): DynamicFields<K> {
-    initLoaderIfNeeded()
+  static new<K extends ReifiedTypeArgument>(
+    typeArg: K,
+    names: Array<ToField<ToTypeArgument<K>>>
+  ): DynamicFields<ToTypeArgument<K>> {
+    return new DynamicFields(extractType(typeArg), names)
+  }
 
-    return new DynamicFields(
+  static reified<K extends ReifiedTypeArgument>(K: K) {
+    return {
+      typeName: DynamicFields.$typeName,
+      typeArgs: [K],
+      fromFields: (fields: Record<string, any>) => DynamicFields.fromFields(K, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => DynamicFields.fromFieldsWithTypes(K, item),
+      fromBcs: (data: Uint8Array) => DynamicFields.fromBcs(K, data),
+      bcs: DynamicFields.bcs(toBcs(K)),
+      __class: null as unknown as ReturnType<typeof DynamicFields.new<ToTypeArgument<K>>>,
+    }
+  }
+
+  static fromFields<K extends ReifiedTypeArgument>(
+    typeArg: K,
+    fields: Record<string, any>
+  ): DynamicFields<ToTypeArgument<K>> {
+    return DynamicFields.new(
       typeArg,
-      fields.names.map((item: any) => structClassLoaderSource.fromFields(typeArg, item))
+      decodeFromFieldsGenericOrSpecial(reified.vector(typeArg), fields.names)
     )
   }
 
-  static fromFieldsWithTypes<K>(item: FieldsWithTypes): DynamicFields<K> {
-    initLoaderIfNeeded()
-
+  static fromFieldsWithTypes<K extends ReifiedTypeArgument>(
+    typeArg: K,
+    item: FieldsWithTypes
+  ): DynamicFields<ToTypeArgument<K>> {
     if (!isDynamicFields(item.type)) {
       throw new Error('not a DynamicFields type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new DynamicFields(
-      typeArgs[0],
-      item.fields.names.map((item: any) =>
-        structClassLoaderSource.fromFieldsWithTypes(typeArgs[0], item)
-      )
+    return DynamicFields.new(
+      typeArg,
+      decodeFromFieldsWithTypesGenericOrSpecial(reified.vector(typeArg), item.fields.names)
     )
   }
 
-  static fromBcs<K>(typeArg: Type, data: Uint8Array): DynamicFields<K> {
-    initLoaderIfNeeded()
-
+  static fromBcs<K extends ReifiedTypeArgument>(
+    typeArg: K,
+    data: Uint8Array
+  ): DynamicFields<ToTypeArgument<K>> {
     const typeArgs = [typeArg]
 
-    return DynamicFields.fromFields(
-      typeArg,
-      DynamicFields.bcs(structClassLoaderSource.getBcsType(typeArgs[0])).parse(data)
-    )
+    return DynamicFields.fromFields(typeArg, DynamicFields.bcs(toBcs(typeArgs[0])).parse(data))
   }
 
   toJSON() {
@@ -85,17 +108,24 @@ export class DynamicFields<K> {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData<K extends ReifiedTypeArgument>(
+    typeArg: K,
+    content: SuiParsedData
+  ): DynamicFields<ToTypeArgument<K>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
     if (!isDynamicFields(content.type)) {
       throw new Error(`object at ${(content.fields as any).id} is not a DynamicFields object`)
     }
-    return DynamicFields.fromFieldsWithTypes(content)
+    return DynamicFields.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<K>(client: SuiClient, id: string): Promise<DynamicFields<K>> {
+  static async fetch<K extends ReifiedTypeArgument>(
+    client: SuiClient,
+    typeArg: K,
+    id: string
+  ): Promise<DynamicFields<ToTypeArgument<K>>> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching DynamicFields object at id ${id}: ${res.error.code}`)
@@ -103,7 +133,7 @@ export class DynamicFields<K> {
     if (res.data?.content?.dataType !== 'moveObject' || !isDynamicFields(res.data.content.type)) {
       throw new Error(`object at id ${id} is not a DynamicFields object`)
     }
-    return DynamicFields.fromFieldsWithTypes(res.data.content)
+    return DynamicFields.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }
 
@@ -115,12 +145,14 @@ export function isID(type: Type): boolean {
 }
 
 export interface IDFields {
-  bytes: string
+  bytes: ToField<'address'>
 }
 
 export class ID {
   static readonly $typeName = '0x2::object::ID'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = ID.$typeName
 
   static get bcs() {
     return bcs.struct('ID', {
@@ -131,21 +163,38 @@ export class ID {
     })
   }
 
-  readonly bytes: string
+  readonly bytes: ToField<'address'>
 
-  constructor(bytes: string) {
+  private constructor(bytes: ToField<'address'>) {
     this.bytes = bytes
   }
 
+  static new(bytes: ToField<'address'>): ID {
+    return new ID(bytes)
+  }
+
+  static reified() {
+    return {
+      typeName: ID.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => ID.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => ID.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => ID.fromBcs(data),
+      bcs: ID.bcs,
+      __class: null as unknown as ReturnType<typeof ID.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): ID {
-    return new ID(`0x${fields.bytes}`)
+    return ID.new(decodeFromFieldsGenericOrSpecial('address', fields.bytes))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): ID {
     if (!isID(item.type)) {
       throw new Error('not a ID type')
     }
-    return new ID(item.fields.bytes)
+
+    return ID.new(decodeFromFieldsWithTypesGenericOrSpecial('address', item.fields.bytes))
   }
 
   static fromBcs(data: Uint8Array): ID {
@@ -167,13 +216,15 @@ export function isOwnership(type: Type): boolean {
 }
 
 export interface OwnershipFields {
-  owner: string
-  status: bigint
+  owner: ToField<'address'>
+  status: ToField<'u64'>
 }
 
 export class Ownership {
   static readonly $typeName = '0x2::object::Ownership'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = Ownership.$typeName
 
   static get bcs() {
     return bcs.struct('Ownership', {
@@ -185,23 +236,46 @@ export class Ownership {
     })
   }
 
-  readonly owner: string
-  readonly status: bigint
+  readonly owner: ToField<'address'>
+  readonly status: ToField<'u64'>
 
-  constructor(fields: OwnershipFields) {
+  private constructor(fields: OwnershipFields) {
     this.owner = fields.owner
     this.status = fields.status
   }
 
+  static new(fields: OwnershipFields): Ownership {
+    return new Ownership(fields)
+  }
+
+  static reified() {
+    return {
+      typeName: Ownership.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => Ownership.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Ownership.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => Ownership.fromBcs(data),
+      bcs: Ownership.bcs,
+      __class: null as unknown as ReturnType<typeof Ownership.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): Ownership {
-    return new Ownership({ owner: `0x${fields.owner}`, status: BigInt(fields.status) })
+    return Ownership.new({
+      owner: decodeFromFieldsGenericOrSpecial('address', fields.owner),
+      status: decodeFromFieldsGenericOrSpecial('u64', fields.status),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Ownership {
     if (!isOwnership(item.type)) {
       throw new Error('not a Ownership type')
     }
-    return new Ownership({ owner: item.fields.owner, status: BigInt(item.fields.status) })
+
+    return Ownership.new({
+      owner: decodeFromFieldsWithTypesGenericOrSpecial('address', item.fields.owner),
+      status: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.status),
+    })
   }
 
   static fromBcs(data: Uint8Array): Ownership {
@@ -215,7 +289,7 @@ export class Ownership {
     }
   }
 
-  static fromSuiParsedData(content: SuiParsedData) {
+  static fromSuiParsedData(content: SuiParsedData): Ownership {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -245,12 +319,14 @@ export function isUID(type: Type): boolean {
 }
 
 export interface UIDFields {
-  id: string
+  id: ToField<ID>
 }
 
 export class UID {
   static readonly $typeName = '0x2::object::UID'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = UID.$typeName
 
   static get bcs() {
     return bcs.struct('UID', {
@@ -258,21 +334,38 @@ export class UID {
     })
   }
 
-  readonly id: string
+  readonly id: ToField<ID>
 
-  constructor(id: string) {
+  private constructor(id: ToField<ID>) {
     this.id = id
   }
 
+  static new(id: ToField<ID>): UID {
+    return new UID(id)
+  }
+
+  static reified() {
+    return {
+      typeName: UID.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => UID.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => UID.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => UID.fromBcs(data),
+      bcs: UID.bcs,
+      __class: null as unknown as ReturnType<typeof UID.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): UID {
-    return new UID(ID.fromFields(fields.id).bytes)
+    return UID.new(decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id))
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): UID {
     if (!isUID(item.type)) {
       throw new Error('not a UID type')
     }
-    return new UID(item.fields.id)
+
+    return UID.new(decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id))
   }
 
   static fromBcs(data: Uint8Array): UID {

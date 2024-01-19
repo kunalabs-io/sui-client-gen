@@ -1,12 +1,16 @@
-import { initLoaderIfNeeded } from '../../_framework/init-source'
-import { structClassLoaderSource } from '../../_framework/loader'
 import {
-  FieldsWithTypes,
-  Type,
-  compressSuiType,
-  genericToJSON,
-  parseTypeName,
-} from '../../_framework/util'
+  ReifiedTypeArgument,
+  ToField,
+  ToTypeArgument,
+  TypeArgument,
+  assertFieldsWithTypesArgsMatch,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+  extractType,
+  reified,
+  toBcs,
+} from '../../_framework/types'
+import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== Entry =============================== */
@@ -16,14 +20,16 @@ export function isEntry(type: Type): boolean {
   return type.startsWith('0x2::vec_map::Entry<')
 }
 
-export interface EntryFields<K, V> {
-  key: K
-  value: V
+export interface EntryFields<K extends TypeArgument, V extends TypeArgument> {
+  key: ToField<K>
+  value: ToField<V>
 }
 
-export class Entry<K, V> {
+export class Entry<K extends TypeArgument, V extends TypeArgument> {
   static readonly $typeName = '0x2::vec_map::Entry'
   static readonly $numTypeParams = 2
+
+  readonly $typeName = Entry.$typeName
 
   static get bcs() {
     return <K extends BcsType<any>, V extends BcsType<any>>(K: K, V: V) =>
@@ -33,51 +39,69 @@ export class Entry<K, V> {
       })
   }
 
-  readonly $typeArgs: [Type, Type]
+  readonly $typeArgs: [string, string]
 
-  readonly key: K
-  readonly value: V
+  readonly key: ToField<K>
+  readonly value: ToField<V>
 
-  constructor(typeArgs: [Type, Type], fields: EntryFields<K, V>) {
+  private constructor(typeArgs: [string, string], fields: EntryFields<K, V>) {
     this.$typeArgs = typeArgs
 
     this.key = fields.key
     this.value = fields.value
   }
 
-  static fromFields<K, V>(typeArgs: [Type, Type], fields: Record<string, any>): Entry<K, V> {
-    initLoaderIfNeeded()
+  static new<K extends ReifiedTypeArgument, V extends ReifiedTypeArgument>(
+    typeArgs: [K, V],
+    fields: EntryFields<ToTypeArgument<K>, ToTypeArgument<V>>
+  ): Entry<ToTypeArgument<K>, ToTypeArgument<V>> {
+    return new Entry(typeArgs.map(extractType) as [string, string], fields)
+  }
 
-    return new Entry(typeArgs, {
-      key: structClassLoaderSource.fromFields(typeArgs[0], fields.key),
-      value: structClassLoaderSource.fromFields(typeArgs[1], fields.value),
+  static reified<K extends ReifiedTypeArgument, V extends ReifiedTypeArgument>(K: K, V: V) {
+    return {
+      typeName: Entry.$typeName,
+      typeArgs: [K, V],
+      fromFields: (fields: Record<string, any>) => Entry.fromFields([K, V], fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Entry.fromFieldsWithTypes([K, V], item),
+      fromBcs: (data: Uint8Array) => Entry.fromBcs([K, V], data),
+      bcs: Entry.bcs(toBcs(K), toBcs(V)),
+      __class: null as unknown as ReturnType<
+        typeof Entry.new<ToTypeArgument<K>, ToTypeArgument<V>>
+      >,
+    }
+  }
+
+  static fromFields<K extends ReifiedTypeArgument, V extends ReifiedTypeArgument>(
+    typeArgs: [K, V],
+    fields: Record<string, any>
+  ): Entry<ToTypeArgument<K>, ToTypeArgument<V>> {
+    return Entry.new(typeArgs, {
+      key: decodeFromFieldsGenericOrSpecial(typeArgs[0], fields.key),
+      value: decodeFromFieldsGenericOrSpecial(typeArgs[1], fields.value),
     })
   }
 
-  static fromFieldsWithTypes<K, V>(item: FieldsWithTypes): Entry<K, V> {
-    initLoaderIfNeeded()
-
+  static fromFieldsWithTypes<K extends ReifiedTypeArgument, V extends ReifiedTypeArgument>(
+    typeArgs: [K, V],
+    item: FieldsWithTypes
+  ): Entry<ToTypeArgument<K>, ToTypeArgument<V>> {
     if (!isEntry(item.type)) {
       throw new Error('not a Entry type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, typeArgs)
 
-    return new Entry([typeArgs[0], typeArgs[1]], {
-      key: structClassLoaderSource.fromFieldsWithTypes(typeArgs[0], item.fields.key),
-      value: structClassLoaderSource.fromFieldsWithTypes(typeArgs[1], item.fields.value),
+    return Entry.new(typeArgs, {
+      key: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[0], item.fields.key),
+      value: decodeFromFieldsWithTypesGenericOrSpecial(typeArgs[1], item.fields.value),
     })
   }
 
-  static fromBcs<K, V>(typeArgs: [Type, Type], data: Uint8Array): Entry<K, V> {
-    initLoaderIfNeeded()
-
-    return Entry.fromFields(
-      typeArgs,
-      Entry.bcs(
-        structClassLoaderSource.getBcsType(typeArgs[0]),
-        structClassLoaderSource.getBcsType(typeArgs[1])
-      ).parse(data)
-    )
+  static fromBcs<K extends ReifiedTypeArgument, V extends ReifiedTypeArgument>(
+    typeArgs: [K, V],
+    data: Uint8Array
+  ): Entry<ToTypeArgument<K>, ToTypeArgument<V>> {
+    return Entry.fromFields(typeArgs, Entry.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data))
   }
 
   toJSON() {
@@ -96,13 +120,15 @@ export function isVecMap(type: Type): boolean {
   return type.startsWith('0x2::vec_map::VecMap<')
 }
 
-export interface VecMapFields<K, V> {
-  contents: Array<Entry<K, V>>
+export interface VecMapFields<K extends TypeArgument, V extends TypeArgument> {
+  contents: Array<ToField<Entry<K, V>>>
 }
 
-export class VecMap<K, V> {
+export class VecMap<K extends TypeArgument, V extends TypeArgument> {
   static readonly $typeName = '0x2::vec_map::VecMap'
   static readonly $numTypeParams = 2
+
+  readonly $typeName = VecMap.$typeName
 
   static get bcs() {
     return <K extends BcsType<any>, V extends BcsType<any>>(K: K, V: V) =>
@@ -111,50 +137,75 @@ export class VecMap<K, V> {
       })
   }
 
-  readonly $typeArgs: [Type, Type]
+  readonly $typeArgs: [string, string]
 
-  readonly contents: Array<Entry<K, V>>
+  readonly contents: Array<ToField<Entry<K, V>>>
 
-  constructor(typeArgs: [Type, Type], contents: Array<Entry<K, V>>) {
+  private constructor(typeArgs: [string, string], contents: Array<ToField<Entry<K, V>>>) {
     this.$typeArgs = typeArgs
 
     this.contents = contents
   }
 
-  static fromFields<K, V>(typeArgs: [Type, Type], fields: Record<string, any>): VecMap<K, V> {
-    initLoaderIfNeeded()
+  static new<K extends ReifiedTypeArgument, V extends ReifiedTypeArgument>(
+    typeArgs: [K, V],
+    contents: Array<ToField<Entry<ToTypeArgument<K>, ToTypeArgument<V>>>>
+  ): VecMap<ToTypeArgument<K>, ToTypeArgument<V>> {
+    return new VecMap(typeArgs.map(extractType) as [string, string], contents)
+  }
 
-    return new VecMap(
+  static reified<K extends ReifiedTypeArgument, V extends ReifiedTypeArgument>(K: K, V: V) {
+    return {
+      typeName: VecMap.$typeName,
+      typeArgs: [K, V],
+      fromFields: (fields: Record<string, any>) => VecMap.fromFields([K, V], fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => VecMap.fromFieldsWithTypes([K, V], item),
+      fromBcs: (data: Uint8Array) => VecMap.fromBcs([K, V], data),
+      bcs: VecMap.bcs(toBcs(K), toBcs(V)),
+      __class: null as unknown as ReturnType<
+        typeof VecMap.new<ToTypeArgument<K>, ToTypeArgument<V>>
+      >,
+    }
+  }
+
+  static fromFields<K extends ReifiedTypeArgument, V extends ReifiedTypeArgument>(
+    typeArgs: [K, V],
+    fields: Record<string, any>
+  ): VecMap<ToTypeArgument<K>, ToTypeArgument<V>> {
+    return VecMap.new(
       typeArgs,
-      fields.contents.map((item: any) =>
-        Entry.fromFields<K, V>([`${typeArgs[0]}`, `${typeArgs[1]}`], item)
+      decodeFromFieldsGenericOrSpecial(
+        reified.vector(Entry.reified(typeArgs[0], typeArgs[1])),
+        fields.contents
       )
     )
   }
 
-  static fromFieldsWithTypes<K, V>(item: FieldsWithTypes): VecMap<K, V> {
-    initLoaderIfNeeded()
-
+  static fromFieldsWithTypes<K extends ReifiedTypeArgument, V extends ReifiedTypeArgument>(
+    typeArgs: [K, V],
+    item: FieldsWithTypes
+  ): VecMap<ToTypeArgument<K>, ToTypeArgument<V>> {
     if (!isVecMap(item.type)) {
       throw new Error('not a VecMap type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, typeArgs)
 
-    return new VecMap(
-      [typeArgs[0], typeArgs[1]],
-      item.fields.contents.map((item: any) => Entry.fromFieldsWithTypes<K, V>(item))
+    return VecMap.new(
+      typeArgs,
+      decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector(Entry.reified(typeArgs[0], typeArgs[1])),
+        item.fields.contents
+      )
     )
   }
 
-  static fromBcs<K, V>(typeArgs: [Type, Type], data: Uint8Array): VecMap<K, V> {
-    initLoaderIfNeeded()
-
+  static fromBcs<K extends ReifiedTypeArgument, V extends ReifiedTypeArgument>(
+    typeArgs: [K, V],
+    data: Uint8Array
+  ): VecMap<ToTypeArgument<K>, ToTypeArgument<V>> {
     return VecMap.fromFields(
       typeArgs,
-      VecMap.bcs(
-        structClassLoaderSource.getBcsType(typeArgs[0]),
-        structClassLoaderSource.getBcsType(typeArgs[1])
-      ).parse(data)
+      VecMap.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data)
     )
   }
 

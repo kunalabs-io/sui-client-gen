@@ -1,3 +1,9 @@
+import {
+  ToField,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+  reified,
+} from '../../../../_framework/types'
 import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
@@ -9,13 +15,15 @@ export function isBitVector(type: Type): boolean {
 }
 
 export interface BitVectorFields {
-  length: bigint
-  bitField: Array<boolean>
+  length: ToField<'u64'>
+  bitField: Array<ToField<'bool'>>
 }
 
 export class BitVector {
   static readonly $typeName = '0x1::bit_vector::BitVector'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = BitVector.$typeName
 
   static get bcs() {
     return bcs.struct('BitVector', {
@@ -24,18 +32,34 @@ export class BitVector {
     })
   }
 
-  readonly length: bigint
-  readonly bitField: Array<boolean>
+  readonly length: ToField<'u64'>
+  readonly bitField: Array<ToField<'bool'>>
 
-  constructor(fields: BitVectorFields) {
+  private constructor(fields: BitVectorFields) {
     this.length = fields.length
     this.bitField = fields.bitField
   }
 
+  static new(fields: BitVectorFields): BitVector {
+    return new BitVector(fields)
+  }
+
+  static reified() {
+    return {
+      typeName: BitVector.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => BitVector.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => BitVector.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => BitVector.fromBcs(data),
+      bcs: BitVector.bcs,
+      __class: null as unknown as ReturnType<typeof BitVector.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): BitVector {
-    return new BitVector({
-      length: BigInt(fields.length),
-      bitField: fields.bit_field.map((item: any) => item),
+    return BitVector.new({
+      length: decodeFromFieldsGenericOrSpecial('u64', fields.length),
+      bitField: decodeFromFieldsGenericOrSpecial(reified.vector('bool'), fields.bit_field),
     })
   }
 
@@ -43,9 +67,13 @@ export class BitVector {
     if (!isBitVector(item.type)) {
       throw new Error('not a BitVector type')
     }
-    return new BitVector({
-      length: BigInt(item.fields.length),
-      bitField: item.fields.bit_field.map((item: any) => item),
+
+    return BitVector.new({
+      length: decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.length),
+      bitField: decodeFromFieldsWithTypesGenericOrSpecial(
+        reified.vector('bool'),
+        item.fields.bit_field
+      ),
     })
   }
 

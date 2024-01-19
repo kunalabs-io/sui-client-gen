@@ -1,12 +1,15 @@
-import { initLoaderIfNeeded } from '../../_framework/init-source'
-import { structClassLoaderSource } from '../../_framework/loader'
 import {
-  FieldsWithTypes,
-  Type,
-  compressSuiType,
-  genericToJSON,
-  parseTypeName,
-} from '../../_framework/util'
+  ReifiedTypeArgument,
+  ToField,
+  ToTypeArgument,
+  TypeArgument,
+  assertFieldsWithTypesArgsMatch,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+  extractType,
+  toBcs,
+} from '../../_framework/types'
+import { FieldsWithTypes, Type, compressSuiType, genericToJSON } from '../../_framework/util'
 import { Option } from '../../move-stdlib/option/structs'
 import { ID } from '../object/structs'
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
@@ -19,13 +22,15 @@ export function isBorrow(type: Type): boolean {
 }
 
 export interface BorrowFields {
-  ref: string
-  obj: string
+  ref: ToField<'address'>
+  obj: ToField<ID>
 }
 
 export class Borrow {
   static readonly $typeName = '0x2::borrow::Borrow'
   static readonly $numTypeParams = 0
+
+  readonly $typeName = Borrow.$typeName
 
   static get bcs() {
     return bcs.struct('Borrow', {
@@ -37,23 +42,46 @@ export class Borrow {
     })
   }
 
-  readonly ref: string
-  readonly obj: string
+  readonly ref: ToField<'address'>
+  readonly obj: ToField<ID>
 
-  constructor(fields: BorrowFields) {
+  private constructor(fields: BorrowFields) {
     this.ref = fields.ref
     this.obj = fields.obj
   }
 
+  static new(fields: BorrowFields): Borrow {
+    return new Borrow(fields)
+  }
+
+  static reified() {
+    return {
+      typeName: Borrow.$typeName,
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => Borrow.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Borrow.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => Borrow.fromBcs(data),
+      bcs: Borrow.bcs,
+      __class: null as unknown as ReturnType<typeof Borrow.new>,
+    }
+  }
+
   static fromFields(fields: Record<string, any>): Borrow {
-    return new Borrow({ ref: `0x${fields.ref}`, obj: ID.fromFields(fields.obj).bytes })
+    return Borrow.new({
+      ref: decodeFromFieldsGenericOrSpecial('address', fields.ref),
+      obj: decodeFromFieldsGenericOrSpecial(ID.reified(), fields.obj),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Borrow {
     if (!isBorrow(item.type)) {
       throw new Error('not a Borrow type')
     }
-    return new Borrow({ ref: item.fields.ref, obj: item.fields.obj })
+
+    return Borrow.new({
+      ref: decodeFromFieldsWithTypesGenericOrSpecial('address', item.fields.ref),
+      obj: decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.obj),
+    })
   }
 
   static fromBcs(data: Uint8Array): Borrow {
@@ -75,14 +103,16 @@ export function isReferent(type: Type): boolean {
   return type.startsWith('0x2::borrow::Referent<')
 }
 
-export interface ReferentFields<T> {
-  id: string
-  value: T | null
+export interface ReferentFields<T extends TypeArgument> {
+  id: ToField<'address'>
+  value: ToField<Option<T>>
 }
 
-export class Referent<T> {
+export class Referent<T extends TypeArgument> {
   static readonly $typeName = '0x2::borrow::Referent'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = Referent.$typeName
 
   static get bcs() {
     return <T extends BcsType<any>>(T: T) =>
@@ -95,56 +125,69 @@ export class Referent<T> {
       })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly id: string
-  readonly value: T | null
+  readonly id: ToField<'address'>
+  readonly value: ToField<Option<T>>
 
-  constructor(typeArg: Type, fields: ReferentFields<T>) {
+  private constructor(typeArg: string, fields: ReferentFields<T>) {
     this.$typeArg = typeArg
 
     this.id = fields.id
     this.value = fields.value
   }
 
-  static fromFields<T>(typeArg: Type, fields: Record<string, any>): Referent<T> {
-    initLoaderIfNeeded()
+  static new<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    fields: ReferentFields<ToTypeArgument<T>>
+  ): Referent<ToTypeArgument<T>> {
+    return new Referent(extractType(typeArg), fields)
+  }
 
-    return new Referent(typeArg, {
-      id: `0x${fields.id}`,
-      value: Option.fromFields<T>(`${typeArg}`, fields.value).vec[0] || null,
+  static reified<T extends ReifiedTypeArgument>(T: T) {
+    return {
+      typeName: Referent.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => Referent.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Referent.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => Referent.fromBcs(T, data),
+      bcs: Referent.bcs(toBcs(T)),
+      __class: null as unknown as ReturnType<typeof Referent.new<ToTypeArgument<T>>>,
+    }
+  }
+
+  static fromFields<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    fields: Record<string, any>
+  ): Referent<ToTypeArgument<T>> {
+    return Referent.new(typeArg, {
+      id: decodeFromFieldsGenericOrSpecial('address', fields.id),
+      value: decodeFromFieldsGenericOrSpecial(Option.reified(typeArg), fields.value),
     })
   }
 
-  static fromFieldsWithTypes<T>(item: FieldsWithTypes): Referent<T> {
-    initLoaderIfNeeded()
-
+  static fromFieldsWithTypes<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    item: FieldsWithTypes
+  ): Referent<ToTypeArgument<T>> {
     if (!isReferent(item.type)) {
       throw new Error('not a Referent type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new Referent(typeArgs[0], {
-      id: item.fields.id,
-      value:
-        item.fields.value !== null
-          ? Option.fromFieldsWithTypes<T>({
-              type: '0x1::option::Option<' + `${typeArgs[0]}` + '>',
-              fields: { vec: [item.fields.value] },
-            }).vec[0]
-          : null,
+    return Referent.new(typeArg, {
+      id: decodeFromFieldsWithTypesGenericOrSpecial('address', item.fields.id),
+      value: decodeFromFieldsWithTypesGenericOrSpecial(Option.reified(typeArg), item.fields.value),
     })
   }
 
-  static fromBcs<T>(typeArg: Type, data: Uint8Array): Referent<T> {
-    initLoaderIfNeeded()
-
+  static fromBcs<T extends ReifiedTypeArgument>(
+    typeArg: T,
+    data: Uint8Array
+  ): Referent<ToTypeArgument<T>> {
     const typeArgs = [typeArg]
 
-    return Referent.fromFields(
-      typeArg,
-      Referent.bcs(structClassLoaderSource.getBcsType(typeArgs[0])).parse(data)
-    )
+    return Referent.fromFields(typeArg, Referent.bcs(toBcs(typeArgs[0])).parse(data))
   }
 
   toJSON() {

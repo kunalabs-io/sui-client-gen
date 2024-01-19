@@ -1,4 +1,12 @@
-import { FieldsWithTypes, Type, compressSuiType, parseTypeName } from '../../_framework/util'
+import {
+  ReifiedTypeArgument,
+  ToField,
+  assertFieldsWithTypesArgsMatch,
+  decodeFromFieldsGenericOrSpecial,
+  decodeFromFieldsWithTypesGenericOrSpecial,
+  extractType,
+} from '../../_framework/types'
+import { FieldsWithTypes, Type, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== Balance =============================== */
@@ -9,12 +17,14 @@ export function isBalance(type: Type): boolean {
 }
 
 export interface BalanceFields {
-  value: bigint
+  value: ToField<'u64'>
 }
 
 export class Balance {
   static readonly $typeName = '0x2::balance::Balance'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = Balance.$typeName
 
   static get bcs() {
     return bcs.struct('Balance', {
@@ -22,30 +32,46 @@ export class Balance {
     })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly value: bigint
+  readonly value: ToField<'u64'>
 
-  constructor(typeArg: Type, value: bigint) {
+  private constructor(typeArg: string, value: ToField<'u64'>) {
     this.$typeArg = typeArg
 
     this.value = value
   }
 
-  static fromFields(typeArg: Type, fields: Record<string, any>): Balance {
-    return new Balance(typeArg, BigInt(fields.value))
+  static new(typeArg: ReifiedTypeArgument, value: ToField<'u64'>): Balance {
+    return new Balance(extractType(typeArg), value)
   }
 
-  static fromFieldsWithTypes(item: FieldsWithTypes): Balance {
+  static reified(T: ReifiedTypeArgument) {
+    return {
+      typeName: Balance.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => Balance.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Balance.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => Balance.fromBcs(T, data),
+      bcs: Balance.bcs,
+      __class: null as unknown as ReturnType<typeof Balance.new>,
+    }
+  }
+
+  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): Balance {
+    return Balance.new(typeArg, decodeFromFieldsGenericOrSpecial('u64', fields.value))
+  }
+
+  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): Balance {
     if (!isBalance(item.type)) {
       throw new Error('not a Balance type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new Balance(typeArgs[0], BigInt(item.fields.value))
+    return Balance.new(typeArg, decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.value))
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array): Balance {
+  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): Balance {
     return Balance.fromFields(typeArg, Balance.bcs.parse(data))
   }
 
@@ -65,12 +91,14 @@ export function isSupply(type: Type): boolean {
 }
 
 export interface SupplyFields {
-  value: bigint
+  value: ToField<'u64'>
 }
 
 export class Supply {
   static readonly $typeName = '0x2::balance::Supply'
   static readonly $numTypeParams = 1
+
+  readonly $typeName = Supply.$typeName
 
   static get bcs() {
     return bcs.struct('Supply', {
@@ -78,30 +106,46 @@ export class Supply {
     })
   }
 
-  readonly $typeArg: Type
+  readonly $typeArg: string
 
-  readonly value: bigint
+  readonly value: ToField<'u64'>
 
-  constructor(typeArg: Type, value: bigint) {
+  private constructor(typeArg: string, value: ToField<'u64'>) {
     this.$typeArg = typeArg
 
     this.value = value
   }
 
-  static fromFields(typeArg: Type, fields: Record<string, any>): Supply {
-    return new Supply(typeArg, BigInt(fields.value))
+  static new(typeArg: ReifiedTypeArgument, value: ToField<'u64'>): Supply {
+    return new Supply(extractType(typeArg), value)
   }
 
-  static fromFieldsWithTypes(item: FieldsWithTypes): Supply {
+  static reified(T: ReifiedTypeArgument) {
+    return {
+      typeName: Supply.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => Supply.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Supply.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => Supply.fromBcs(T, data),
+      bcs: Supply.bcs,
+      __class: null as unknown as ReturnType<typeof Supply.new>,
+    }
+  }
+
+  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): Supply {
+    return Supply.new(typeArg, decodeFromFieldsGenericOrSpecial('u64', fields.value))
+  }
+
+  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): Supply {
     if (!isSupply(item.type)) {
       throw new Error('not a Supply type')
     }
-    const { typeArgs } = parseTypeName(item.type)
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return new Supply(typeArgs[0], BigInt(item.fields.value))
+    return Supply.new(typeArg, decodeFromFieldsWithTypesGenericOrSpecial('u64', item.fields.value))
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array): Supply {
+  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): Supply {
     return Supply.fromFields(typeArg, Supply.bcs.parse(data))
   }
 
