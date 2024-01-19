@@ -414,6 +414,8 @@ export type ToField<T extends TypeArgument> = T extends 'bool'
   ? string
   : T extends { $typeName: '0x1::option::Option'; vec: Array<infer U> }
   ? U | null
+  : T extends Array<infer U extends TypeArgument>
+  ? ToField<U>[]
   : T
 
 export type ToTypeArgument<T extends ReifiedTypeArgument> = T extends StructClassReified
@@ -570,39 +572,76 @@ export function assertFieldsWithTypesArgsMatch(
   }
 }
 
-export function fieldToJSON(type: string, field: any): any {
+export type ToJSON<T extends TypeArgument> = T extends 'bool'
+  ? boolean
+  : T extends 'u8'
+  ? number
+  : T extends 'u16'
+  ? number
+  : T extends 'u32'
+  ? number
+  : T extends 'u64'
+  ? string
+  : T extends 'u128'
+  ? string
+  : T extends 'u256'
+  ? string
+  : T extends 'address'
+  ? string
+  : T extends { $typeName: '0x1::string::String' }
+  ? string
+  : T extends { $typeName: '0x1::ascii::String' }
+  ? string
+  : T extends { $typeName: '0x2::object::UID' }
+  ? string
+  : T extends { $typeName: '0x2::object::ID' }
+  ? string
+  : T extends { $typeName: '0x2::url::Url' }
+  ? string
+  : T extends {
+      $typeName: '0x1::option::Option'
+      __inner: infer U extends TypeArgument
+    }
+  ? ToJSON<U> | null
+  : T extends Array<infer U extends TypeArgument>
+  ? ToJSON<U>[]
+  : T extends StructClass
+  ? ReturnType<T['toJSONField']>
+  : never
+
+export function fieldToJSON<T extends TypeArgument>(type: string, field: ToField<T>): ToJSON<T> {
   const { typeName, typeArgs } = parseTypeName(type)
   switch (typeName) {
     case 'bool':
-      return field
+      return field as any
     case 'u8':
     case 'u16':
     case 'u32':
-      return field
+      return field as any
     case 'u64':
     case 'u128':
     case 'u256':
-      return field.toString()
+      return field.toString() as any
     case 'address':
     case 'signer':
-      return field
+      return field as any
     case 'vector':
-      return field.map((item: any) => fieldToJSON(typeArgs[0], item))
+      return (field as any[]).map((item: any) => fieldToJSON(typeArgs[0], item)) as any
     // handle special types
     case '0x1::string::String':
     case '0x1::ascii::String':
     case '0x2::url::Url':
     case '0x2::object::ID':
     case '0x2::object::UID':
-      return field
+      return field as any
     case '0x1::option::Option': {
       if (field === null) {
-        return null
+        return null as any
       }
       return fieldToJSON(typeArgs[0], field)
     }
     default:
-      return field.toJSONField()
+      return (field as any).toJSONField()
   }
 }
 

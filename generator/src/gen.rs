@@ -1594,6 +1594,10 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                                 let name = self.gen_field_name(&field);
                                 let this_name = quote!(this.$(self.gen_field_name(&field)));
 
+                                let field_type_param = self.gen_struct_class_field_type_inner(
+                                    &field.get_type(), self.strct_type_param_names(strct), None, false
+                                );
+
                                 match field.get_type() {
                                     Type::Struct(mid, sid, _) => {
                                         let field_module = self.env.get_module(mid);
@@ -1615,7 +1619,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                                             }
                                             "0x1::option::Option" => {
                                                 let type_name = gen_bcs_def_for_type(&field.get_type(), self.env, &type_param_names);
-                                                quote_in!(*toks => $name: $field_to_json($type_name, $this_name),)
+                                                quote_in!(*toks => $name: $field_to_json<$field_type_param>($type_name, $this_name),)
                                             }
                                             _ => {
                                                 quote_in!(*toks => $name: $this_name.toJSONField(),)
@@ -1633,10 +1637,10 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                                     Type::Vector(_) => {
                                         let type_name = gen_bcs_def_for_type(&field.get_type(), self.env, &type_param_names);
 
-                                        quote_in!(*toks => $name: $field_to_json($type_name, $this_name),)
+                                        quote_in!(*toks => $name: $field_to_json<$field_type_param>($type_name, $this_name),)
                                     }
                                     Type::TypeParameter(i) => {
-                                        quote_in!(*toks => $name: $field_to_json($(this_type_arg_or_args(i as usize)), $this_name),)
+                                        quote_in!(*toks => $name: $field_to_json<$field_type_param>($(this_type_arg_or_args(i as usize)), $this_name),)
                                     }
                                     _ => {
                                         let name = self.gen_field_name(&field);
