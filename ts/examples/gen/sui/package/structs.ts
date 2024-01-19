@@ -1,7 +1,12 @@
 import * as reified from '../../_framework/reified'
 import { String } from '../../_dependencies/source/0x1/ascii/structs'
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  fieldToJSON,
+} from '../../_framework/reified'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { ID, UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -83,12 +88,16 @@ export class Publisher {
     return Publisher.fromFields(Publisher.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
       package: this.package,
       moduleName: this.moduleName,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): Publisher {
@@ -196,13 +205,17 @@ export class UpgradeCap {
     return UpgradeCap.fromFields(UpgradeCap.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
       package: this.package,
       version: this.version.toString(),
       policy: this.policy,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): UpgradeCap {
@@ -298,11 +311,15 @@ export class UpgradeReceipt {
     return UpgradeReceipt.fromFields(UpgradeReceipt.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       cap: this.cap,
       package: this.package,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -389,12 +406,16 @@ export class UpgradeTicket {
     return UpgradeTicket.fromFields(UpgradeTicket.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       cap: this.cap,
       package: this.package,
       policy: this.policy,
-      digest: genericToJSON(`vector<u8>`, this.digest),
+      digest: fieldToJSON(`vector<u8>`, this.digest),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

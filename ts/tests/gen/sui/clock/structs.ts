@@ -75,11 +75,15 @@ export class Clock {
     return Clock.fromFields(Clock.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
       timestampMs: this.timestampMs.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): Clock {

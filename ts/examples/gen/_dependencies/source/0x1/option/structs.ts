@@ -8,9 +8,10 @@ import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
   extractType,
+  fieldToJSON,
   toBcs,
 } from '../../../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== Option =============================== */
@@ -94,10 +95,13 @@ export class Option<Element extends TypeArgument> {
     return Option.fromFields(typeArg, Option.bcs(toBcs(typeArgs[0])).parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
-      vec: genericToJSON(`vector<${this.$typeArg}>`, this.vec),
+      vec: fieldToJSON(`vector<${this.$typeArg}>`, this.vec),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }

@@ -3,8 +3,9 @@ import {
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
+  fieldToJSON,
 } from '../../../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== Char =============================== */
@@ -68,10 +69,14 @@ export class Char {
     return Char.fromFields(Char.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       byte: this.byte,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -136,9 +141,13 @@ export class String {
     return String.fromFields(String.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      bytes: genericToJSON(`vector<u8>`, this.bytes),
+      bytes: fieldToJSON(`vector<u8>`, this.bytes),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

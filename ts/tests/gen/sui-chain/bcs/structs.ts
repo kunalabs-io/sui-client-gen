@@ -1,6 +1,11 @@
 import * as reified from '../../_framework/reified'
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  fieldToJSON,
+} from '../../_framework/reified'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== BCS =============================== */
@@ -64,9 +69,13 @@ export class BCS {
     return BCS.fromFields(BCS.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      bytes: genericToJSON(`vector<u8>`, this.bytes),
+      bytes: fieldToJSON(`vector<u8>`, this.bytes),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

@@ -8,9 +8,10 @@ import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
   extractType,
+  fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
@@ -98,11 +99,14 @@ export class DynamicFields<K extends TypeArgument> {
     return DynamicFields.fromFields(typeArg, DynamicFields.bcs(toBcs(typeArgs[0])).parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
-      names: genericToJSON(`vector<${this.$typeArg}>`, this.names),
+      names: fieldToJSON(`vector<${this.$typeArg}>`, this.names),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
   static fromSuiParsedData<K extends ReifiedTypeArgument>(
@@ -198,10 +202,14 @@ export class ID {
     return ID.fromFields(ID.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       bytes: this.bytes,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -279,11 +287,15 @@ export class Ownership {
     return Ownership.fromFields(Ownership.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       owner: this.owner,
       status: this.status.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): Ownership {
@@ -369,9 +381,13 @@ export class UID {
     return UID.fromFields(UID.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

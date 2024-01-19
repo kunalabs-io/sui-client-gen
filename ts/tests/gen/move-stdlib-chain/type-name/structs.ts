@@ -64,9 +64,13 @@ export class TypeName {
     return TypeName.fromFields(TypeName.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       name: this.name,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

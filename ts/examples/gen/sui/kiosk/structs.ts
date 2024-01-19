@@ -84,11 +84,15 @@ export class Borrow {
     return Borrow.fromFields(Borrow.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       kioskId: this.kioskId,
       itemId: this.itemId,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -153,10 +157,14 @@ export class Item {
     return Item.fromFields(Item.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -236,12 +244,15 @@ export class ItemDelisted {
     return ItemDelisted.fromFields(typeArg, ItemDelisted.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       kiosk: this.kiosk,
       id: this.id,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }
 
@@ -327,13 +338,16 @@ export class ItemListed {
     return ItemListed.fromFields(typeArg, ItemListed.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       kiosk: this.kiosk,
       id: this.id,
       price: this.price.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }
 
@@ -419,13 +433,16 @@ export class ItemPurchased {
     return ItemPurchased.fromFields(typeArg, ItemPurchased.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       kiosk: this.kiosk,
       id: this.id,
       price: this.price.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }
 
@@ -521,14 +538,18 @@ export class Kiosk {
     return Kiosk.fromFields(Kiosk.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
-      profits: this.profits.toJSON(),
+      profits: this.profits.toJSONField(),
       owner: this.owner,
       itemCount: this.itemCount,
       allowExtensions: this.allowExtensions,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): Kiosk {
@@ -624,11 +645,15 @@ export class KioskOwnerCap {
     return KioskOwnerCap.fromFields(KioskOwnerCap.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
       for: this.for,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): KioskOwnerCap {
@@ -724,11 +749,15 @@ export class Listing {
     return Listing.fromFields(Listing.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
       isExclusive: this.isExclusive,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -793,10 +822,14 @@ export class Lock {
     return Lock.fromFields(Lock.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -888,14 +921,17 @@ export class PurchaseCap {
     return PurchaseCap.fromFields(typeArg, PurchaseCap.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
       kioskId: this.kioskId,
       itemId: this.itemId,
       minPrice: this.minPrice.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): PurchaseCap {

@@ -99,12 +99,15 @@ export class ObjectTable {
     return ObjectTable.fromFields(typeArgs, ObjectTable.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArgs: this.$typeArgs,
       id: this.id,
       size: this.size.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(

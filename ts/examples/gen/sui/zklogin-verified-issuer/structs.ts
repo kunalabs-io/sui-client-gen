@@ -85,12 +85,16 @@ export class VerifiedIssuer {
     return VerifiedIssuer.fromFields(VerifiedIssuer.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
       owner: this.owner,
       issuer: this.issuer,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): VerifiedIssuer {

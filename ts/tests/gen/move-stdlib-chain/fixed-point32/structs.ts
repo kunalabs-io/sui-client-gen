@@ -63,9 +63,13 @@ export class FixedPoint32 {
     return FixedPoint32.fromFields(FixedPoint32.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       value: this.value.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

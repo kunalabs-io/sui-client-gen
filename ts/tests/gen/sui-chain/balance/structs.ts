@@ -75,11 +75,14 @@ export class Supply {
     return Supply.fromFields(typeArg, Supply.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       value: this.value.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }
 
@@ -149,10 +152,13 @@ export class Balance {
     return Balance.fromFields(typeArg, Balance.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       value: this.value.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }

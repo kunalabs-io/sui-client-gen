@@ -98,13 +98,16 @@ export class Display {
     return Display.fromFields(typeArg, Display.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
-      fields: this.fields.toJSON(),
+      fields: this.fields.toJSONField(),
       version: this.version,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): Display {
@@ -199,11 +202,14 @@ export class DisplayCreated {
     return DisplayCreated.fromFields(typeArg, DisplayCreated.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }
 
@@ -292,12 +298,15 @@ export class VersionUpdated {
     return VersionUpdated.fromFields(typeArg, VersionUpdated.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
       version: this.version,
-      fields: this.fields.toJSON(),
+      fields: this.fields.toJSONField(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }

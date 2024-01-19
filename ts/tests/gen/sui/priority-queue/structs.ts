@@ -8,9 +8,10 @@ import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
   extractType,
+  fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== Entry =============================== */
@@ -104,12 +105,15 @@ export class Entry<T extends TypeArgument> {
     return Entry.fromFields(typeArg, Entry.bcs(toBcs(typeArgs[0])).parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       priority: this.priority.toString(),
-      value: genericToJSON(this.$typeArg, this.value),
+      value: fieldToJSON(this.$typeArg, this.value),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }
 
@@ -200,10 +204,13 @@ export class PriorityQueue<T extends TypeArgument> {
     return PriorityQueue.fromFields(typeArg, PriorityQueue.bcs(toBcs(typeArgs[0])).parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
-      entries: genericToJSON(`vector<0x2::priority_queue::Entry<${this.$typeArg}>>`, this.entries),
+      entries: fieldToJSON(`vector<0x2::priority_queue::Entry<${this.$typeArg}>>`, this.entries),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }

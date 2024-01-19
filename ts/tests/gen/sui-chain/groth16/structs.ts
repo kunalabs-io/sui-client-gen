@@ -1,6 +1,11 @@
 import * as reified from '../../_framework/reified'
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  fieldToJSON,
+} from '../../_framework/reified'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== Curve =============================== */
@@ -64,10 +69,14 @@ export class Curve {
     return Curve.fromFields(Curve.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -167,13 +176,17 @@ export class PreparedVerifyingKey {
     return PreparedVerifyingKey.fromFields(PreparedVerifyingKey.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      vkGammaAbcG1Bytes: genericToJSON(`vector<u8>`, this.vkGammaAbcG1Bytes),
-      alphaG1BetaG2Bytes: genericToJSON(`vector<u8>`, this.alphaG1BetaG2Bytes),
-      gammaG2NegPcBytes: genericToJSON(`vector<u8>`, this.gammaG2NegPcBytes),
-      deltaG2NegPcBytes: genericToJSON(`vector<u8>`, this.deltaG2NegPcBytes),
+      vkGammaAbcG1Bytes: fieldToJSON(`vector<u8>`, this.vkGammaAbcG1Bytes),
+      alphaG1BetaG2Bytes: fieldToJSON(`vector<u8>`, this.alphaG1BetaG2Bytes),
+      gammaG2NegPcBytes: fieldToJSON(`vector<u8>`, this.gammaG2NegPcBytes),
+      deltaG2NegPcBytes: fieldToJSON(`vector<u8>`, this.deltaG2NegPcBytes),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -238,10 +251,14 @@ export class PublicProofInputs {
     return PublicProofInputs.fromFields(PublicProofInputs.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      bytes: genericToJSON(`vector<u8>`, this.bytes),
+      bytes: fieldToJSON(`vector<u8>`, this.bytes),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -306,9 +323,13 @@ export class ProofPoints {
     return ProofPoints.fromFields(ProofPoints.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      bytes: genericToJSON(`vector<u8>`, this.bytes),
+      bytes: fieldToJSON(`vector<u8>`, this.bytes),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

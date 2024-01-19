@@ -78,10 +78,14 @@ export class AdminCap {
     return AdminCap.fromFields(AdminCap.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): AdminCap {
@@ -184,11 +188,14 @@ export class LP {
     return LP.fromFields(typeArgs, LP.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArgs: this.$typeArgs,
       dummyField: this.dummyField,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 }
 
@@ -319,17 +326,20 @@ export class Pool {
     return Pool.fromFields(typeArgs, Pool.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArgs: this.$typeArgs,
       id: this.id,
-      balanceA: this.balanceA.toJSON(),
-      balanceB: this.balanceB.toJSON(),
-      lpSupply: this.lpSupply.toJSON(),
+      balanceA: this.balanceA.toJSONField(),
+      balanceB: this.balanceB.toJSONField(),
+      lpSupply: this.lpSupply.toJSONField(),
       lpFeeBps: this.lpFeeBps.toString(),
       adminFeePct: this.adminFeePct.toString(),
-      adminFeeBalance: this.adminFeeBalance.toJSON(),
+      adminFeeBalance: this.adminFeeBalance.toJSONField(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(
@@ -426,10 +436,14 @@ export class PoolCreationEvent {
     return PoolCreationEvent.fromFields(PoolCreationEvent.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       poolId: this.poolId,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -511,11 +525,15 @@ export class PoolRegistry {
     return PoolRegistry.fromFields(PoolRegistry.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
-      table: this.table.toJSON(),
+      table: this.table.toJSONField(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): PoolRegistry {
@@ -615,10 +633,14 @@ export class PoolRegistryItem {
     return PoolRegistryItem.fromFields(PoolRegistryItem.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      a: this.a.toJSON(),
-      b: this.b.toJSON(),
+      a: this.a.toJSONField(),
+      b: this.b.toJSONField(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

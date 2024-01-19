@@ -81,11 +81,14 @@ export class RuleKey {
     return RuleKey.fromFields(typeArg, RuleKey.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       dummyField: this.dummyField,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }
 
@@ -177,14 +180,17 @@ export class TransferRequest {
     return TransferRequest.fromFields(typeArg, TransferRequest.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       item: this.item,
       paid: this.paid.toString(),
       from: this.from,
-      receipts: this.receipts.toJSON(),
+      receipts: this.receipts.toJSONField(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }
 
@@ -270,13 +276,16 @@ export class TransferPolicy {
     return TransferPolicy.fromFields(typeArg, TransferPolicy.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
-      balance: this.balance.toJSON(),
-      rules: this.rules.toJSON(),
+      balance: this.balance.toJSONField(),
+      rules: this.rules.toJSONField(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): TransferPolicy {
@@ -385,12 +394,15 @@ export class TransferPolicyCap {
     return TransferPolicyCap.fromFields(typeArg, TransferPolicyCap.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
       policyId: this.policyId,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(
@@ -501,11 +513,14 @@ export class TransferPolicyCreated {
     return TransferPolicyCreated.fromFields(typeArg, TransferPolicyCreated.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }
 
@@ -585,10 +600,13 @@ export class TransferPolicyDestroyed {
     return TransferPolicyDestroyed.fromFields(typeArg, TransferPolicyDestroyed.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }

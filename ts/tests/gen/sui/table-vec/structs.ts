@@ -79,10 +79,13 @@ export class TableVec {
     return TableVec.fromFields(typeArg, TableVec.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
-      contents: this.contents.toJSON(),
+      contents: this.contents.toJSONField(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }

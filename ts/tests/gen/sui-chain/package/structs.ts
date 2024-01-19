@@ -1,6 +1,11 @@
 import * as reified from '../../_framework/reified'
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  fieldToJSON,
+} from '../../_framework/reified'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/ascii/structs'
 import { ID, UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -83,12 +88,16 @@ export class Publisher {
     return Publisher.fromFields(Publisher.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
       package: this.package,
       moduleName: this.moduleName,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): Publisher {
@@ -196,13 +205,17 @@ export class UpgradeCap {
     return UpgradeCap.fromFields(UpgradeCap.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
       package: this.package,
       version: this.version.toString(),
       policy: this.policy,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): UpgradeCap {
@@ -310,13 +323,17 @@ export class UpgradeTicket {
     return UpgradeTicket.fromFields(UpgradeTicket.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       cap: this.cap,
       package: this.package,
       policy: this.policy,
-      digest: genericToJSON(`vector<u8>`, this.digest),
+      digest: fieldToJSON(`vector<u8>`, this.digest),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -391,10 +408,14 @@ export class UpgradeReceipt {
     return UpgradeReceipt.fromFields(UpgradeReceipt.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       cap: this.cap,
       package: this.package,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

@@ -1,6 +1,11 @@
 import * as reified from '../../_framework/reified'
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  fieldToJSON,
+} from '../../_framework/reified'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== BitVector =============================== */
@@ -74,10 +79,14 @@ export class BitVector {
     return BitVector.fromFields(BitVector.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       length: this.length.toString(),
-      bitField: genericToJSON(`vector<bool>`, this.bitField),
+      bitField: fieldToJSON(`vector<bool>`, this.bitField),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

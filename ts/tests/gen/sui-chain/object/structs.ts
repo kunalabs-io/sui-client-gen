@@ -66,10 +66,14 @@ export class ID {
     return ID.fromFields(ID.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       bytes: this.bytes,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -134,9 +138,13 @@ export class UID {
     return UID.fromFields(UID.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

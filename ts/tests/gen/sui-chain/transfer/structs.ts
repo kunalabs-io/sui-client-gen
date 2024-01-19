@@ -86,11 +86,14 @@ export class Receiving {
     return Receiving.fromFields(typeArg, Receiving.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
       version: this.version.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }

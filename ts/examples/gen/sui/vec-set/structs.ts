@@ -8,9 +8,10 @@ import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
   extractType,
+  fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== VecSet =============================== */
@@ -97,10 +98,13 @@ export class VecSet<K extends TypeArgument> {
     return VecSet.fromFields(typeArg, VecSet.bcs(toBcs(typeArgs[0])).parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
-      contents: genericToJSON(`vector<${this.$typeArg}>`, this.contents),
+      contents: fieldToJSON(`vector<${this.$typeArg}>`, this.contents),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }

@@ -75,11 +75,15 @@ export class ObjectBag {
     return ObjectBag.fromFields(ObjectBag.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
       size: this.size.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): ObjectBag {

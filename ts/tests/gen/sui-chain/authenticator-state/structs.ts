@@ -1,6 +1,11 @@
 import * as reified from '../../_framework/reified'
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  fieldToJSON,
+} from '../../_framework/reified'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/string/structs'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -77,11 +82,15 @@ export class AuthenticatorState {
     return AuthenticatorState.fromFields(AuthenticatorState.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
       version: this.version.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): AuthenticatorState {
@@ -184,11 +193,15 @@ export class AuthenticatorStateInner {
     return AuthenticatorStateInner.fromFields(AuthenticatorStateInner.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       version: this.version.toString(),
-      activeJwks: genericToJSON(`vector<0x2::authenticator_state::ActiveJwk>`, this.activeJwks),
+      activeJwks: fieldToJSON(`vector<0x2::authenticator_state::ActiveJwk>`, this.activeJwks),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -275,13 +288,17 @@ export class JWK {
     return JWK.fromFields(JWK.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       kty: this.kty,
       e: this.e,
       n: this.n,
       alg: this.alg,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -356,11 +373,15 @@ export class JwkId {
     return JwkId.fromFields(JwkId.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       iss: this.iss,
       kid: this.kid,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -441,11 +462,15 @@ export class ActiveJwk {
     return ActiveJwk.fromFields(ActiveJwk.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      jwkId: this.jwkId.toJSON(),
-      jwk: this.jwk.toJSON(),
+      jwkId: this.jwkId.toJSONField(),
+      jwk: this.jwk.toJSONField(),
       epoch: this.epoch.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

@@ -103,7 +103,7 @@ export class VerifiedID {
     return VerifiedID.fromFields(VerifiedID.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
       owner: this.owner,
@@ -112,6 +112,10 @@ export class VerifiedID {
       issuer: this.issuer,
       audience: this.audience,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): VerifiedID {

@@ -7,9 +7,10 @@ import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
   extractType,
+  fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -111,13 +112,16 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> {
     return Field.fromFields(typeArgs, Field.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArgs: this.$typeArgs,
       id: this.id,
-      name: genericToJSON(this.$typeArgs[0], this.name),
-      value: genericToJSON(this.$typeArgs[1], this.value),
+      name: fieldToJSON(this.$typeArgs[0], this.name),
+      value: fieldToJSON(this.$typeArgs[1], this.value),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromSuiParsedData<T0 extends ReifiedTypeArgument, T1 extends ReifiedTypeArgument>(

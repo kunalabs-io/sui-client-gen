@@ -63,9 +63,13 @@ export class SUI {
     return SUI.fromFields(SUI.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       dummyField: this.dummyField,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

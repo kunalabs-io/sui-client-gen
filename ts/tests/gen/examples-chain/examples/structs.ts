@@ -1,6 +1,11 @@
 import * as reified from '../../_framework/reified'
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  fieldToJSON,
+} from '../../_framework/reified'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/ascii/structs'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { String as String1 } from '../../move-stdlib-chain/string/structs'
@@ -73,10 +78,14 @@ export class ExampleStruct {
     return ExampleStruct.fromFields(ExampleStruct.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       dummyField: this.dummyField,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -206,21 +215,25 @@ export class SpecialTypesStruct {
     return SpecialTypesStruct.fromFields(SpecialTypesStruct.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
       asciiString: this.asciiString,
       utf8String: this.utf8String,
-      vectorOfU64: genericToJSON(`vector<u64>`, this.vectorOfU64),
-      vectorOfObjects: genericToJSON(
+      vectorOfU64: fieldToJSON(`vector<u64>`, this.vectorOfU64),
+      vectorOfObjects: fieldToJSON(
         `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct>`,
         this.vectorOfObjects
       ),
       idField: this.idField,
       address: this.address,
-      optionSome: genericToJSON(`0x1::option::Option<u64>`, this.optionSome),
-      optionNone: genericToJSON(`0x1::option::Option<u64>`, this.optionNone),
+      optionSome: fieldToJSON(`0x1::option::Option<u64>`, this.optionSome),
+      optionNone: fieldToJSON(`0x1::option::Option<u64>`, this.optionNone),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): SpecialTypesStruct {

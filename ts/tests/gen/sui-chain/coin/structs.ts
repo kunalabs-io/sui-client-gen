@@ -5,8 +5,9 @@ import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
   extractType,
+  fieldToJSON,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { String as String1 } from '../../move-stdlib-chain/ascii/structs'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { String } from '../../move-stdlib-chain/string/structs'
@@ -92,12 +93,15 @@ export class Coin {
     return Coin.fromFields(typeArg, Coin.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
-      balance: this.balance.toJSON(),
+      balance: this.balance.toJSONField(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): Coin {
@@ -222,16 +226,19 @@ export class CoinMetadata {
     return CoinMetadata.fromFields(typeArg, CoinMetadata.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
       decimals: this.decimals,
       name: this.name,
       symbol: this.symbol,
       description: this.description,
-      iconUrl: genericToJSON(`0x1::option::Option<0x2::url::Url>`, this.iconUrl),
+      iconUrl: fieldToJSON(`0x1::option::Option<0x2::url::Url>`, this.iconUrl),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): CoinMetadata {
@@ -336,12 +343,15 @@ export class TreasuryCap {
     return TreasuryCap.fromFields(typeArg, TreasuryCap.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
-      totalSupply: this.totalSupply.toJSON(),
+      totalSupply: this.totalSupply.toJSONField(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): TreasuryCap {
@@ -436,10 +446,13 @@ export class CurrencyCreated {
     return CurrencyCreated.fromFields(typeArg, CurrencyCreated.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       decimals: this.decimals,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }

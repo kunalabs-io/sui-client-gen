@@ -8,9 +8,10 @@ import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
   extractType,
+  fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== Entry =============================== */
@@ -104,12 +105,15 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> {
     return Entry.fromFields(typeArgs, Entry.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArgs: this.$typeArgs,
-      key: genericToJSON(this.$typeArgs[0], this.key),
-      value: genericToJSON(this.$typeArgs[1], this.value),
+      key: fieldToJSON(this.$typeArgs[0], this.key),
+      value: fieldToJSON(this.$typeArgs[1], this.value),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 }
 
@@ -206,13 +210,16 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> {
     )
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArgs: this.$typeArgs,
-      contents: genericToJSON(
+      contents: fieldToJSON(
         `vector<0x2::vec_map::Entry<${this.$typeArgs[0]}, ${this.$typeArgs[1]}>>`,
         this.contents
       ),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 }

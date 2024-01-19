@@ -93,12 +93,15 @@ export class Table {
     return Table.fromFields(typeArgs, Table.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArgs: this.$typeArgs,
       id: this.id,
       size: this.size.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(

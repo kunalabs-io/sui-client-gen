@@ -70,10 +70,14 @@ export class EXAMPLE_COIN {
     return EXAMPLE_COIN.fromFields(EXAMPLE_COIN.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       dummyField: this.dummyField,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -152,11 +156,15 @@ export class Faucet {
     return Faucet.fromFields(Faucet.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
-      cap: this.cap.toJSON(),
+      cap: this.cap.toJSONField(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): Faucet {

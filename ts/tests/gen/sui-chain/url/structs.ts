@@ -64,9 +64,13 @@ export class Url {
     return Url.fromFields(Url.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       url: this.url,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

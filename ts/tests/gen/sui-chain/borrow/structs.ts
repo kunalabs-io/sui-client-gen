@@ -7,9 +7,10 @@ import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
   extractType,
+  fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { ID } from '../object/structs'
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
@@ -108,12 +109,15 @@ export class Referent<T0 extends TypeArgument> {
     return Referent.fromFields(typeArg, Referent.bcs(toBcs(typeArgs[0])).parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
-      value: genericToJSON(`0x1::option::Option<${this.$typeArg}>`, this.value),
+      value: fieldToJSON(`0x1::option::Option<${this.$typeArg}>`, this.value),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }
 
@@ -191,10 +195,14 @@ export class Borrow {
     return Borrow.fromFields(Borrow.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       ref: this.ref,
       obj: this.obj,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

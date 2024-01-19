@@ -1,6 +1,11 @@
 import * as reified from '../../_framework/reified'
-import { ToField, decodeFromFields, decodeFromFieldsWithTypes } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import {
+  ToField,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  fieldToJSON,
+} from '../../_framework/reified'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { bcs, fromHEX, toHEX } from '@mysten/bcs'
 
 /* ============================== TxContext =============================== */
@@ -95,13 +100,17 @@ export class TxContext {
     return TxContext.fromFields(TxContext.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       sender: this.sender,
-      txHash: genericToJSON(`vector<u8>`, this.txHash),
+      txHash: fieldToJSON(`vector<u8>`, this.txHash),
       epoch: this.epoch.toString(),
       epochTimestampMs: this.epochTimestampMs.toString(),
       idsCreated: this.idsCreated.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

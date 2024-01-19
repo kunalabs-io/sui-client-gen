@@ -87,12 +87,16 @@ export class Extension {
     return Extension.fromFields(Extension.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      storage: this.storage.toJSON(),
+      storage: this.storage.toJSONField(),
       permissions: this.permissions.toString(),
       isEnabled: this.isEnabled,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -162,10 +166,13 @@ export class ExtensionKey {
     return ExtensionKey.fromFields(typeArg, ExtensionKey.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       dummyField: this.dummyField,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }

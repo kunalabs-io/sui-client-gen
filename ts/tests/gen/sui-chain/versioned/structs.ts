@@ -75,11 +75,15 @@ export class Versioned {
     return Versioned.fromFields(Versioned.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       id: this.id,
       version: this.version.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(content: SuiParsedData): Versioned {
@@ -175,10 +179,14 @@ export class VersionChangeCap {
     return VersionChangeCap.fromFields(VersionChangeCap.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       versionedId: this.versionedId,
       oldVersion: this.oldVersion.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }

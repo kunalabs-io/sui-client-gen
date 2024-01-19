@@ -5,8 +5,9 @@ import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
   extractType,
+  fieldToJSON,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { String } from '../../move-stdlib-chain/string/structs'
 import { TypeName } from '../../move-stdlib-chain/type-name/structs'
@@ -93,12 +94,15 @@ export class Token {
     return Token.fromFields(typeArg, Token.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
-      balance: this.balance.toJSON(),
+      balance: this.balance.toJSONField(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): Token {
@@ -199,12 +203,15 @@ export class TokenPolicyCap {
     return TokenPolicyCap.fromFields(typeArg, TokenPolicyCap.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
       for: this.for,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): TokenPolicyCap {
@@ -321,13 +328,16 @@ export class TokenPolicy {
     return TokenPolicy.fromFields(typeArg, TokenPolicy.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
-      spentBalance: this.spentBalance.toJSON(),
-      rules: this.rules.toJSON(),
+      spentBalance: this.spentBalance.toJSONField(),
+      rules: this.rules.toJSONField(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
   static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): TokenPolicy {
@@ -473,19 +483,22 @@ export class ActionRequest {
     return ActionRequest.fromFields(typeArg, ActionRequest.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       name: this.name,
       amount: this.amount.toString(),
       sender: this.sender,
-      recipient: genericToJSON(`0x1::option::Option<address>`, this.recipient),
-      spentBalance: genericToJSON(
+      recipient: fieldToJSON(`0x1::option::Option<address>`, this.recipient),
+      spentBalance: fieldToJSON(
         `0x1::option::Option<0x2::balance::Balance<${this.$typeArg}>>`,
         this.spentBalance
       ),
-      approvals: this.approvals.toJSON(),
+      approvals: this.approvals.toJSONField(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }
 
@@ -555,11 +568,14 @@ export class RuleKey {
     return RuleKey.fromFields(typeArg, RuleKey.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       isProtected: this.isProtected,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }
 
@@ -643,11 +659,14 @@ export class TokenPolicyCreated {
     return TokenPolicyCreated.fromFields(typeArg, TokenPolicyCreated.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
       isMutable: this.isMutable,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }

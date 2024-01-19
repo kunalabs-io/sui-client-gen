@@ -8,9 +8,10 @@ import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
   extractType,
+  fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { String as String1 } from '../../move-stdlib/ascii/structs'
 import { Option } from '../../move-stdlib/option/structs'
 import { String } from '../../move-stdlib/string/structs'
@@ -84,10 +85,14 @@ export class Bar {
     return Bar.fromFields(Bar.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       value: this.value.toString(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -155,10 +160,14 @@ export class Dummy {
     return Dummy.fromFields(Dummy.bcs.parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
       dummyField: this.dummyField,
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, ...this.toJSONField() }
   }
 }
 
@@ -393,33 +402,36 @@ export class Foo<T extends TypeArgument> {
     return Foo.fromFields(typeArg, Foo.bcs(toBcs(typeArgs[0])).parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
-      generic: genericToJSON(this.$typeArg, this.generic),
-      reifiedPrimitiveVec: genericToJSON(`vector<u64>`, this.reifiedPrimitiveVec),
-      reifiedObjectVec: genericToJSON(
+      generic: fieldToJSON(this.$typeArg, this.generic),
+      reifiedPrimitiveVec: fieldToJSON(`vector<u64>`, this.reifiedPrimitiveVec),
+      reifiedObjectVec: fieldToJSON(
         `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
         this.reifiedObjectVec
       ),
-      genericVec: genericToJSON(`vector<${this.$typeArg}>`, this.genericVec),
-      genericVecNested: genericToJSON(
+      genericVec: fieldToJSON(`vector<${this.$typeArg}>`, this.genericVec),
+      genericVecNested: fieldToJSON(
         `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${this.$typeArg}, u8>>`,
         this.genericVecNested
       ),
-      twoGenerics: this.twoGenerics.toJSON(),
-      twoGenericsReifiedPrimitive: this.twoGenericsReifiedPrimitive.toJSON(),
-      twoGenericsReifiedObject: this.twoGenericsReifiedObject.toJSON(),
-      twoGenericsNested: this.twoGenericsNested.toJSON(),
-      twoGenericsReifiedNested: this.twoGenericsReifiedNested.toJSON(),
-      twoGenericsNestedVec: genericToJSON(
+      twoGenerics: this.twoGenerics.toJSONField(),
+      twoGenericsReifiedPrimitive: this.twoGenericsReifiedPrimitive.toJSONField(),
+      twoGenericsReifiedObject: this.twoGenericsReifiedObject.toJSONField(),
+      twoGenericsNested: this.twoGenericsNested.toJSONField(),
+      twoGenericsReifiedNested: this.twoGenericsReifiedNested.toJSONField(),
+      twoGenericsNestedVec: fieldToJSON(
         `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${this.$typeArg}, u8>>>>`,
         this.twoGenericsNestedVec
       ),
-      dummy: this.dummy.toJSON(),
-      other: this.other.toJSON(),
+      dummy: this.dummy.toJSONField(),
+      other: this.other.toJSONField(),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
   static fromSuiParsedData<T extends ReifiedTypeArgument>(
@@ -548,12 +560,15 @@ export class WithGenericField<T extends TypeArgument> {
     )
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
-      genericField: genericToJSON(this.$typeArg, this.genericField),
+      genericField: fieldToJSON(this.$typeArg, this.genericField),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
   static fromSuiParsedData<T extends ReifiedTypeArgument>(
@@ -759,29 +774,32 @@ export class WithSpecialTypes<U extends TypeArgument> {
     )
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArgs: this.$typeArgs,
       id: this.id,
       string: this.string,
       asciiString: this.asciiString,
       url: this.url,
       idField: this.idField,
       uid: this.uid,
-      balance: this.balance.toJSON(),
-      option: genericToJSON(`0x1::option::Option<u64>`, this.option),
-      optionObj: genericToJSON(
+      balance: this.balance.toJSONField(),
+      option: fieldToJSON(`0x1::option::Option<u64>`, this.option),
+      optionObj: fieldToJSON(
         `0x1::option::Option<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
         this.optionObj
       ),
-      optionNone: genericToJSON(`0x1::option::Option<u64>`, this.optionNone),
-      balanceGeneric: this.balanceGeneric.toJSON(),
-      optionGeneric: genericToJSON(`0x1::option::Option<${this.$typeArgs[1]}>`, this.optionGeneric),
-      optionGenericNone: genericToJSON(
+      optionNone: fieldToJSON(`0x1::option::Option<u64>`, this.optionNone),
+      balanceGeneric: this.balanceGeneric.toJSONField(),
+      optionGeneric: fieldToJSON(`0x1::option::Option<${this.$typeArgs[1]}>`, this.optionGeneric),
+      optionGenericNone: fieldToJSON(
         `0x1::option::Option<${this.$typeArgs[1]}>`,
         this.optionGenericNone
       ),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromSuiParsedData<U extends ReifiedTypeArgument>(
@@ -1120,19 +1138,22 @@ export class WithSpecialTypesAsGenerics<
     )
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArgs: this.$typeArgs,
       id: this.id,
-      string: genericToJSON(this.$typeArgs[0], this.string),
-      asciiString: genericToJSON(this.$typeArgs[1], this.asciiString),
-      url: genericToJSON(this.$typeArgs[2], this.url),
-      idField: genericToJSON(this.$typeArgs[3], this.idField),
-      uid: genericToJSON(this.$typeArgs[4], this.uid),
-      balance: genericToJSON(this.$typeArgs[5], this.balance),
-      option: genericToJSON(this.$typeArgs[6], this.option),
-      optionNone: genericToJSON(this.$typeArgs[7], this.optionNone),
+      string: fieldToJSON(this.$typeArgs[0], this.string),
+      asciiString: fieldToJSON(this.$typeArgs[1], this.asciiString),
+      url: fieldToJSON(this.$typeArgs[2], this.url),
+      idField: fieldToJSON(this.$typeArgs[3], this.idField),
+      uid: fieldToJSON(this.$typeArgs[4], this.uid),
+      balance: fieldToJSON(this.$typeArgs[5], this.balance),
+      option: fieldToJSON(this.$typeArgs[6], this.option),
+      optionNone: fieldToJSON(this.$typeArgs[7], this.optionNone),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromSuiParsedData<
@@ -1348,23 +1369,26 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> {
     )
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
       id: this.id,
-      string: genericToJSON(`vector<0x1::string::String>`, this.string),
-      asciiString: genericToJSON(`vector<0x1::ascii::String>`, this.asciiString),
-      idField: genericToJSON(`vector<0x2::object::ID>`, this.idField),
-      bar: genericToJSON(
+      string: fieldToJSON(`vector<0x1::string::String>`, this.string),
+      asciiString: fieldToJSON(`vector<0x1::ascii::String>`, this.asciiString),
+      idField: fieldToJSON(`vector<0x2::object::ID>`, this.idField),
+      bar: fieldToJSON(
         `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
         this.bar
       ),
-      option: genericToJSON(`vector<0x1::option::Option<u64>>`, this.option),
-      optionGeneric: genericToJSON(
+      option: fieldToJSON(`vector<0x1::option::Option<u64>>`, this.option),
+      optionGeneric: fieldToJSON(
         `vector<0x1::option::Option<${this.$typeArg}>>`,
         this.optionGeneric
       ),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
   static fromSuiParsedData<T extends ReifiedTypeArgument>(
@@ -1501,11 +1525,14 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> {
     )
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArgs: this.$typeArgs,
-      genericField1: genericToJSON(this.$typeArgs[0], this.genericField1),
-      genericField2: genericToJSON(this.$typeArgs[1], this.genericField2),
+      genericField1: fieldToJSON(this.$typeArgs[0], this.genericField1),
+      genericField2: fieldToJSON(this.$typeArgs[1], this.genericField2),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 }

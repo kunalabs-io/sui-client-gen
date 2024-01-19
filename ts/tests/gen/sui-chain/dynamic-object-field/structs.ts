@@ -7,9 +7,10 @@ import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
   extractType,
+  fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
 
 /* ============================== Wrapper =============================== */
@@ -93,10 +94,13 @@ export class Wrapper<T0 extends TypeArgument> {
     return Wrapper.fromFields(typeArg, Wrapper.bcs(toBcs(typeArgs[0])).parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArg: this.$typeArg,
-      name: genericToJSON(this.$typeArg, this.name),
+      name: fieldToJSON(this.$typeArg, this.name),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 }

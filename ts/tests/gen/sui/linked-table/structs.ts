@@ -7,9 +7,10 @@ import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
   extractType,
+  fieldToJSON,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType, genericToJSON } from '../../_framework/util'
+import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
 import { Option } from '../../move-stdlib/option/structs'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/bcs'
@@ -116,14 +117,17 @@ export class LinkedTable<K extends TypeArgument> {
     return LinkedTable.fromFields(typeArgs, LinkedTable.bcs(toBcs(typeArgs[0])).parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArgs: this.$typeArgs,
       id: this.id,
       size: this.size.toString(),
-      head: genericToJSON(`0x1::option::Option<${this.$typeArgs[0]}>`, this.head),
-      tail: genericToJSON(`0x1::option::Option<${this.$typeArgs[0]}>`, this.tail),
+      head: fieldToJSON(`0x1::option::Option<${this.$typeArgs[0]}>`, this.head),
+      tail: fieldToJSON(`0x1::option::Option<${this.$typeArgs[0]}>`, this.tail),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromSuiParsedData<K extends ReifiedTypeArgument>(
@@ -250,12 +254,15 @@ export class Node<K extends TypeArgument, V extends TypeArgument> {
     return Node.fromFields(typeArgs, Node.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data))
   }
 
-  toJSON() {
+  toJSONField() {
     return {
-      $typeArgs: this.$typeArgs,
-      prev: genericToJSON(`0x1::option::Option<${this.$typeArgs[0]}>`, this.prev),
-      next: genericToJSON(`0x1::option::Option<${this.$typeArgs[0]}>`, this.next),
-      value: genericToJSON(this.$typeArgs[1], this.value),
+      prev: fieldToJSON(`0x1::option::Option<${this.$typeArgs[0]}>`, this.prev),
+      next: fieldToJSON(`0x1::option::Option<${this.$typeArgs[0]}>`, this.next),
+      value: fieldToJSON(this.$typeArgs[1], this.value),
     }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 }
