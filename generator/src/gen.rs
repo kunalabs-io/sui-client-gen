@@ -1180,6 +1180,29 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         )
     }
 
+    fn gen_from_json_field_field_decode(&mut self, field: &FieldEnv) -> js::Tokens {
+        let decode_from_json_field = &self
+            .framework
+            .import("reified", "decodeFromJSONField");
+
+        let strct = &field.struct_env;
+
+        let field_arg_name = quote!(field.$(self.gen_field_name(field)));
+
+        let type_param_names = match strct.get_type_parameters().len() {
+            0 => vec![],
+            1 => vec![quote!(typeArg)],
+            n => (0..n)
+                .map(|idx| quote!(typeArgs[$idx]))
+                .collect::<Vec<_>>(),
+        };
+        let reified = self.gen_reified(&field.get_type(), &type_param_names);
+
+        quote!(
+            $decode_from_json_field($(reified), $(field_arg_name))
+        )
+    }
+
     /// Generates the `is<StructName>` function for a struct.
     pub fn gen_is_type_func(&self, tokens: &mut js::Tokens, strct: &StructEnv) {
         let compress_sui_type = &self.framework.import("util", "compressSuiType");
@@ -1269,12 +1292,14 @@ impl<'env, 'a> StructsGen<'env, 'a> {
     /// Generates the struct class for a struct.
     pub fn gen_struct_class(&mut self, tokens: &mut js::Tokens, strct: &StructEnv) {
         let fields_with_types = &self.framework.import("util", "FieldsWithTypes");
+        let compose_sui_type = &self.framework.import("util", "composeSuiType");
         let field_to_json = &self.framework.import("reified", "fieldToJSON");
         let type_argument = &self.framework.import("reified", "TypeArgument");
         let reified_type_argument = &self.framework.import("reified", "ReifiedTypeArgument");
         let to_type_argument = &self.framework.import("reified", "ToTypeArgument");
         let to_bcs = &self.framework.import("reified", "toBcs");
         let extract_type = &self.framework.import("reified", "extractType");
+        let assert_reified_type_args_match = &self.framework.import("reified", "assertReifiedTypeArgsMatch");
         let assert_fields_with_types_args_match = &self
             .framework
             .import("reified", "assertFieldsWithTypesArgsMatch");
@@ -1493,6 +1518,15 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                         bcs: $(&struct_name).bcs$(if !non_phantom_params.is_empty() {
                             ($(for param in &non_phantom_param_strs join (, ) => $to_bcs($param)))
                         }),
+                        fromJSONField: (field: any) =>
+                            $(&struct_name).fromJSONField(
+                                $(match type_params.len() {
+                                    0 => (),
+                                    1 => { $(type_params_str[0].clone()), },
+                                    _ => { [$(for param in &type_params_str join (, ) => $param)], },
+                                })
+                                field,
+                            ),
                         __class: null as unknown as ReturnType<typeof $(&struct_name).new$(self.gen_params_toks(strct, &wraps_to_type_argument))>,
                     }
                 }$['\n']
@@ -1590,9 +1624,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                                 .map(|idx| QuoteItem::Interpolated(this_type_arg_or_args(idx)))
                                 .collect::<Vec<_>>();
 
-                            for field in fields {
-                                let name = self.gen_field_name(&field);
-                                let this_name = quote!(this.$(self.gen_field_name(&field)));
+                            for field in fields.iter() {
+                                let name = self.gen_field_name(field);
+                                let this_name = quote!(this.$(self.gen_field_name(field)));
 
                                 let field_type_param = self.gen_struct_class_field_type_inner(
                                     &field.get_type(), self.strct_type_param_names(strct), None, false
@@ -1643,7 +1677,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                                         quote_in!(*toks => $name: $field_to_json<$field_type_param>($(this_type_arg_or_args(i as usize)), $this_name),)
                                     }
                                     _ => {
-                                        let name = self.gen_field_name(&field);
+                                        let name = self.gen_field_name(field);
                                         quote_in!(*toks => $name: $this_name.toJSONField(),)
                                     },
 
@@ -1663,6 +1697,61 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                         })
                         ...this.toJSONField()
                     }
+                }$['\n']
+
+                static fromJSONField$(self.gen_params_toks(strct, &extends_reified_type_argument))(
+                    $type_args_param_if_any field: any
+                ): $(&struct_name)$(self.gen_params_toks(strct, &wraps_to_type_argument)) {
+                    return $(&struct_name).new(
+                        $(match type_params.len() {
+                            0 => (),
+                            1 => { typeArg, },
+                            _ => { typeArgs, },
+                        })
+                        $(match fields.len() {
+                            0 => (),
+                            1 => $(self.gen_from_json_field_field_decode(&fields[0])),
+                            _ => {{
+                                $(for field in &fields join (, ) =>
+                                    $(self.gen_field_name(field)): $(self.gen_from_json_field_field_decode(field))
+                                )
+                            }}
+                        })
+                    )
+                }$['\n']
+
+                static fromJSON$(self.gen_params_toks(strct, &extends_reified_type_argument))(
+                    $type_args_param_if_any json: Record<string, any>
+                ): $(&struct_name)$(self.gen_params_toks(strct, &wraps_to_type_argument)) {
+                    if (json.$$typeName !==  $(&struct_name).$$typeName) {
+                        throw new Error("not a WithTwoGenerics json object")
+                    };
+                    $(if !type_params.is_empty() {
+                        $assert_reified_type_args_match(
+                            $compose_sui_type($(&struct_name).$$typeName,
+                            $(match type_params.len() {
+                                1 => { $extract_type(typeArg) },
+                                _ => { ...typeArgs.map($extract_type) },
+                            })),
+                            $(match type_params.len() {
+                                1 => { [json.$$typeArg] },
+                                _ => { json.$$typeArgs },
+                            }),
+                            $(match type_params.len() {
+                                1 => { [typeArg] },
+                                _ => { typeArgs },
+                            }),
+                        )
+                    })$['\n']
+
+                    return $(&struct_name).fromJSONField(
+                        $(match type_params.len() {
+                            0 => (),
+                            1 => { typeArg, },
+                            _ => { typeArgs, },
+                        })
+                        json,
+                    )
                 }$['\n']
 
                 $(if strct.get_abilities().has_key() {
