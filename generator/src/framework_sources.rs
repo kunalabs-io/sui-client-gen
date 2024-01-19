@@ -378,6 +378,7 @@ export interface VectorReified {
 export type Primitive = 'bool' | 'u8' | 'u16' | 'u32' | 'u64' | 'u128' | 'u256' | 'address'
 
 export interface StructClass {
+  toJSONField(): Record<string, any>
   toJSON(): Record<string, any>
 }
 
@@ -569,7 +570,7 @@ export function assertFieldsWithTypesArgsMatch(
   }
 }
 
-export function toJSON(type: string, field: any): any {
+export function fieldToJSON(type: string, field: any): any {
   const { typeName, typeArgs } = parseTypeName(type)
   switch (typeName) {
     case 'bool':
@@ -586,7 +587,7 @@ export function toJSON(type: string, field: any): any {
     case 'signer':
       return field
     case 'vector':
-      return field.map((item: any) => toJSON(typeArgs[0], item))
+      return field.map((item: any) => fieldToJSON(typeArgs[0], item))
     // handle special types
     case '0x1::string::String':
     case '0x1::ascii::String':
@@ -598,10 +599,10 @@ export function toJSON(type: string, field: any): any {
       if (field === null) {
         return null
       }
-      return toJSON(typeArgs[0], field)
+      return fieldToJSON(typeArgs[0], field)
     }
     default:
-      return field.toJSON()
+      return field.toJSONField()
   }
 }
 
