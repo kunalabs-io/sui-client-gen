@@ -23,6 +23,14 @@ export function new_(txb: TransactionBlock, typeArg: Type, pub: ObjectArg) {
   })
 }
 
+export function version(txb: TransactionBlock, typeArg: Type, d: ObjectArg) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::display::version`,
+    typeArguments: [typeArg],
+    arguments: [obj(txb, d)],
+  })
+}
+
 export interface AddArgs {
   self: ObjectArg
   name: string | TransactionArgument
@@ -38,14 +46,6 @@ export function add(txb: TransactionBlock, typeArg: Type, args: AddArgs) {
       pure(txb, args.name, `0x1::string::String`),
       pure(txb, args.value, `0x1::string::String`),
     ],
-  })
-}
-
-export function version(txb: TransactionBlock, typeArg: Type, d: ObjectArg) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::display::version`,
-    typeArguments: [typeArg],
-    arguments: [obj(txb, d)],
   })
 }
 

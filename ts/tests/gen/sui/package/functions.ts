@@ -2,6 +2,10 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
+export function version(txb: TransactionBlock, cap: ObjectArg) {
+  return txb.moveCall({ target: `${PUBLISHED_AT}::package::version`, arguments: [obj(txb, cap)] })
+}
+
 export function additivePolicy(txb: TransactionBlock) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::package::additive_policy`, arguments: [] })
 }
@@ -176,8 +180,4 @@ export function upgradePolicy(txb: TransactionBlock, cap: ObjectArg) {
     target: `${PUBLISHED_AT}::package::upgrade_policy`,
     arguments: [obj(txb, cap)],
   })
-}
-
-export function version(txb: TransactionBlock, cap: ObjectArg) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::package::version`, arguments: [obj(txb, cap)] })
 }

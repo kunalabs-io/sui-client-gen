@@ -422,6 +422,93 @@ export class TransferPolicyCreated {
   }
 }
 
+/* ============================== TransferPolicyDestroyed =============================== */
+
+export function isTransferPolicyDestroyed(type: Type): boolean {
+  type = compressSuiType(type)
+  return type.startsWith('0x2::transfer_policy::TransferPolicyDestroyed<')
+}
+
+export interface TransferPolicyDestroyedFields {
+  id: ToField<ID>
+}
+
+export class TransferPolicyDestroyed {
+  static readonly $typeName = '0x2::transfer_policy::TransferPolicyDestroyed'
+  static readonly $numTypeParams = 1
+
+  readonly $typeName = TransferPolicyDestroyed.$typeName
+
+  static get bcs() {
+    return bcs.struct('TransferPolicyDestroyed', {
+      id: ID.bcs,
+    })
+  }
+
+  readonly $typeArg: string
+
+  readonly id: ToField<ID>
+
+  private constructor(typeArg: string, id: ToField<ID>) {
+    this.$typeArg = typeArg
+
+    this.id = id
+  }
+
+  static new(typeArg: ReifiedTypeArgument, id: ToField<ID>): TransferPolicyDestroyed {
+    return new TransferPolicyDestroyed(extractType(typeArg), id)
+  }
+
+  static reified(T: ReifiedTypeArgument) {
+    return {
+      typeName: TransferPolicyDestroyed.$typeName,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => TransferPolicyDestroyed.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) =>
+        TransferPolicyDestroyed.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => TransferPolicyDestroyed.fromBcs(T, data),
+      bcs: TransferPolicyDestroyed.bcs,
+      __class: null as unknown as ReturnType<typeof TransferPolicyDestroyed.new>,
+    }
+  }
+
+  static fromFields(
+    typeArg: ReifiedTypeArgument,
+    fields: Record<string, any>
+  ): TransferPolicyDestroyed {
+    return TransferPolicyDestroyed.new(
+      typeArg,
+      decodeFromFieldsGenericOrSpecial(ID.reified(), fields.id)
+    )
+  }
+
+  static fromFieldsWithTypes(
+    typeArg: ReifiedTypeArgument,
+    item: FieldsWithTypes
+  ): TransferPolicyDestroyed {
+    if (!isTransferPolicyDestroyed(item.type)) {
+      throw new Error('not a TransferPolicyDestroyed type')
+    }
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
+
+    return TransferPolicyDestroyed.new(
+      typeArg,
+      decodeFromFieldsWithTypesGenericOrSpecial(ID.reified(), item.fields.id)
+    )
+  }
+
+  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): TransferPolicyDestroyed {
+    return TransferPolicyDestroyed.fromFields(typeArg, TransferPolicyDestroyed.bcs.parse(data))
+  }
+
+  toJSON() {
+    return {
+      $typeArg: this.$typeArg,
+      id: this.id,
+    }
+  }
+}
+
 /* ============================== TransferRequest =============================== */
 
 export function isTransferRequest(type: Type): boolean {

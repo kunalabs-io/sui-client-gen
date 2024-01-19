@@ -2,32 +2,6 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, Type, generic, pure, vector } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
-export interface ContainsArgs {
-  v: Array<GenericArg> | TransactionArgument
-  e: GenericArg
-}
-
-export function contains(txb: TransactionBlock, typeArg: Type, args: ContainsArgs) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::vector::contains`,
-    typeArguments: [typeArg],
-    arguments: [vector(txb, `${typeArg}`, args.v), generic(txb, `${typeArg}`, args.e)],
-  })
-}
-
-export interface IndexOfArgs {
-  v: Array<GenericArg> | TransactionArgument
-  e: GenericArg
-}
-
-export function indexOf(txb: TransactionBlock, typeArg: Type, args: IndexOfArgs) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::vector::index_of`,
-    typeArguments: [typeArg],
-    arguments: [vector(txb, `${typeArg}`, args.v), generic(txb, `${typeArg}`, args.e)],
-  })
-}
-
 export interface AppendArgs {
   lhs: Array<GenericArg> | TransactionArgument
   other: Array<GenericArg> | TransactionArgument
@@ -67,6 +41,19 @@ export function borrowMut(txb: TransactionBlock, typeArg: Type, args: BorrowMutA
   })
 }
 
+export interface ContainsArgs {
+  v: Array<GenericArg> | TransactionArgument
+  e: GenericArg
+}
+
+export function contains(txb: TransactionBlock, typeArg: Type, args: ContainsArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::vector::contains`,
+    typeArguments: [typeArg],
+    arguments: [vector(txb, `${typeArg}`, args.v), generic(txb, `${typeArg}`, args.e)],
+  })
+}
+
 export function destroyEmpty(
   txb: TransactionBlock,
   typeArg: Type,
@@ -84,6 +71,19 @@ export function empty(txb: TransactionBlock, typeArg: Type) {
     target: `${PUBLISHED_AT}::vector::empty`,
     typeArguments: [typeArg],
     arguments: [],
+  })
+}
+
+export interface IndexOfArgs {
+  v: Array<GenericArg> | TransactionArgument
+  e: GenericArg
+}
+
+export function indexOf(txb: TransactionBlock, typeArg: Type, args: IndexOfArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::vector::index_of`,
+    typeArguments: [typeArg],
+    arguments: [vector(txb, `${typeArg}`, args.v), generic(txb, `${typeArg}`, args.e)],
   })
 }
 

@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, Type, generic, pure } from '../../_framework/util'
+import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
 export interface TransferArgs {
@@ -39,6 +39,19 @@ export function publicFreezeObject(txb: TransactionBlock, typeArg: Type, obj: Ge
   })
 }
 
+export interface PublicReceiveArgs {
+  parent: ObjectArg
+  toReceive: ObjectArg
+}
+
+export function publicReceive(txb: TransactionBlock, typeArg: Type, args: PublicReceiveArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::transfer::public_receive`,
+    typeArguments: [typeArg],
+    arguments: [obj(txb, args.parent), obj(txb, args.toReceive)],
+  })
+}
+
 export function publicShareObject(txb: TransactionBlock, typeArg: Type, obj: GenericArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::transfer::public_share_object`,
@@ -57,6 +70,45 @@ export function publicTransfer(txb: TransactionBlock, typeArg: Type, args: Publi
     target: `${PUBLISHED_AT}::transfer::public_transfer`,
     typeArguments: [typeArg],
     arguments: [generic(txb, `${typeArg}`, args.obj), pure(txb, args.recipient, `address`)],
+  })
+}
+
+export interface ReceiveArgs {
+  parent: ObjectArg
+  toReceive: ObjectArg
+}
+
+export function receive(txb: TransactionBlock, typeArg: Type, args: ReceiveArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::transfer::receive`,
+    typeArguments: [typeArg],
+    arguments: [obj(txb, args.parent), obj(txb, args.toReceive)],
+  })
+}
+
+export interface ReceiveImplArgs {
+  parent: string | TransactionArgument
+  toReceive: string | TransactionArgument
+  version: bigint | TransactionArgument
+}
+
+export function receiveImpl(txb: TransactionBlock, typeArg: Type, args: ReceiveImplArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::transfer::receive_impl`,
+    typeArguments: [typeArg],
+    arguments: [
+      pure(txb, args.parent, `address`),
+      pure(txb, args.toReceive, `0x2::object::ID`),
+      pure(txb, args.version, `u64`),
+    ],
+  })
+}
+
+export function receivingObjectId(txb: TransactionBlock, typeArg: Type, receiving: ObjectArg) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::transfer::receiving_object_id`,
+    typeArguments: [typeArg],
+    arguments: [obj(txb, receiving)],
   })
 }
 

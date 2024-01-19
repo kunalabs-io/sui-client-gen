@@ -6,10 +6,6 @@ export function length(txb: TransactionBlock) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::address::length`, arguments: [] })
 }
 
-export function max(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::address::max`, arguments: [] })
-}
-
 export function toBytes(txb: TransactionBlock, a: string | TransactionArgument) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::address::to_bytes`,
@@ -32,6 +28,10 @@ export function fromU256(txb: TransactionBlock, n: bigint | TransactionArgument)
     target: `${PUBLISHED_AT}::address::from_u256`,
     arguments: [pure(txb, n, `u256`)],
   })
+}
+
+export function max(txb: TransactionBlock) {
+  return txb.moveCall({ target: `${PUBLISHED_AT}::address::max`, arguments: [] })
 }
 
 export function toAsciiString(txb: TransactionBlock, a: string | TransactionArgument) {

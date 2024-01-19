@@ -206,6 +206,13 @@ export function itemCount(txb: TransactionBlock, self: ObjectArg) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::kiosk::item_count`, arguments: [obj(txb, self)] })
 }
 
+export function kioskOwnerCapFor(txb: TransactionBlock, cap: ObjectArg) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::kiosk::kiosk_owner_cap_for`,
+    arguments: [obj(txb, cap)],
+  })
+}
+
 export interface ListArgs {
   self: ObjectArg
   cap: ObjectArg
@@ -270,6 +277,19 @@ export function lock(txb: TransactionBlock, typeArg: Type, args: LockArgs) {
   })
 }
 
+export interface LockInternalArgs {
+  self: ObjectArg
+  item: GenericArg
+}
+
+export function lockInternal(txb: TransactionBlock, typeArg: Type, args: LockInternalArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::kiosk::lock_internal`,
+    typeArguments: [typeArg],
+    arguments: [obj(txb, args.self), generic(txb, `${typeArg}`, args.item)],
+  })
+}
+
 export interface PlaceArgs {
   self: ObjectArg
   cap: ObjectArg
@@ -301,6 +321,19 @@ export function placeAndList(txb: TransactionBlock, typeArg: Type, args: PlaceAn
       generic(txb, `${typeArg}`, args.item),
       pure(txb, args.price, `u64`),
     ],
+  })
+}
+
+export interface PlaceInternalArgs {
+  self: ObjectArg
+  item: GenericArg
+}
+
+export function placeInternal(txb: TransactionBlock, typeArg: Type, args: PlaceInternalArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::kiosk::place_internal`,
+    typeArguments: [typeArg],
+    arguments: [obj(txb, args.self), generic(txb, `${typeArg}`, args.item)],
   })
 }
 
@@ -446,4 +479,11 @@ export function setOwnerCustom(txb: TransactionBlock, args: SetOwnerCustomArgs) 
 
 export function uidMut(txb: TransactionBlock, self: ObjectArg) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::kiosk::uid_mut`, arguments: [obj(txb, self)] })
+}
+
+export function uidMutInternal(txb: TransactionBlock, self: ObjectArg) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::kiosk::uid_mut_internal`,
+    arguments: [obj(txb, self)],
+  })
 }

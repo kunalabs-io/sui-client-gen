@@ -2,18 +2,6 @@ import { PUBLISHED_AT } from '..'
 import { pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
-export interface IndexOfArgs {
-  s: string | TransactionArgument
-  r: string | TransactionArgument
-}
-
-export function indexOf(txb: TransactionBlock, args: IndexOfArgs) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::string::index_of`,
-    arguments: [pure(txb, args.s, `0x1::string::String`), pure(txb, args.r, `0x1::string::String`)],
-  })
-}
-
 export interface AppendArgs {
   s: string | TransactionArgument
   r: string | TransactionArgument
@@ -22,6 +10,18 @@ export interface AppendArgs {
 export function append(txb: TransactionBlock, args: AppendArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::string::append`,
+    arguments: [pure(txb, args.s, `0x1::string::String`), pure(txb, args.r, `0x1::string::String`)],
+  })
+}
+
+export interface IndexOfArgs {
+  s: string | TransactionArgument
+  r: string | TransactionArgument
+}
+
+export function indexOf(txb: TransactionBlock, args: IndexOfArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::string::index_of`,
     arguments: [pure(txb, args.s, `0x1::string::String`), pure(txb, args.r, `0x1::string::String`)],
   })
 }

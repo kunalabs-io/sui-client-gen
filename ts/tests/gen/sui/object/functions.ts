@@ -6,12 +6,8 @@ export function new_(txb: TransactionBlock) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::object::new`, arguments: [] })
 }
 
-export function id(txb: TransactionBlock, typeArg: Type, obj: GenericArg) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::object::id`,
-    typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, obj)],
-  })
+export function authenticatorState(txb: TransactionBlock) {
+  return txb.moveCall({ target: `${PUBLISHED_AT}::object::authenticator_state`, arguments: [] })
 }
 
 export function borrowId(txb: TransactionBlock, typeArg: Type, obj: GenericArg) {
@@ -36,6 +32,14 @@ export function clock(txb: TransactionBlock) {
 
 export function delete_(txb: TransactionBlock, id: ObjectArg) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::object::delete`, arguments: [obj(txb, id)] })
+}
+
+export function id(txb: TransactionBlock, typeArg: Type, obj: GenericArg) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::object::id`,
+    typeArguments: [typeArg],
+    arguments: [generic(txb, `${typeArg}`, obj)],
+  })
 }
 
 export function deleteImpl(txb: TransactionBlock, id: string | TransactionArgument) {
@@ -97,6 +101,10 @@ export function newUidFromHash(txb: TransactionBlock, bytes: string | Transactio
     target: `${PUBLISHED_AT}::object::new_uid_from_hash`,
     arguments: [pure(txb, bytes, `address`)],
   })
+}
+
+export function randomnessState(txb: TransactionBlock) {
+  return txb.moveCall({ target: `${PUBLISHED_AT}::object::randomness_state`, arguments: [] })
 }
 
 export function recordNewUid(txb: TransactionBlock, id: string | TransactionArgument) {

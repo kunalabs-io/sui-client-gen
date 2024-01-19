@@ -2,18 +2,6 @@ import { PUBLISHED_AT } from '..'
 import { ObjectArg, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
-export interface UpdateArgs {
-  self: ObjectArg
-  url: string | TransactionArgument
-}
-
-export function update(txb: TransactionBlock, args: UpdateArgs) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::url::update`,
-    arguments: [obj(txb, args.self), pure(txb, args.url, `0x1::ascii::String`)],
-  })
-}
-
 export function innerUrl(txb: TransactionBlock, self: ObjectArg) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::url::inner_url`, arguments: [obj(txb, self)] })
 }
@@ -32,5 +20,17 @@ export function newUnsafeFromBytes(
   return txb.moveCall({
     target: `${PUBLISHED_AT}::url::new_unsafe_from_bytes`,
     arguments: [pure(txb, bytes, `vector<u8>`)],
+  })
+}
+
+export interface UpdateArgs {
+  self: ObjectArg
+  url: string | TransactionArgument
+}
+
+export function update(txb: TransactionBlock, args: UpdateArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::url::update`,
+    arguments: [obj(txb, args.self), pure(txb, args.url, `0x1::ascii::String`)],
   })
 }

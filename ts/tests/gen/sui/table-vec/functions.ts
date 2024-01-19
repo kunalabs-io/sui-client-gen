@@ -89,6 +89,33 @@ export function singleton(txb: TransactionBlock, typeArg: Type, e: GenericArg) {
   })
 }
 
+export interface SwapArgs {
+  t: ObjectArg
+  i: bigint | TransactionArgument
+  j: bigint | TransactionArgument
+}
+
+export function swap(txb: TransactionBlock, typeArg: Type, args: SwapArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::table_vec::swap`,
+    typeArguments: [typeArg],
+    arguments: [obj(txb, args.t), pure(txb, args.i, `u64`), pure(txb, args.j, `u64`)],
+  })
+}
+
+export interface SwapRemoveArgs {
+  t: ObjectArg
+  i: bigint | TransactionArgument
+}
+
+export function swapRemove(txb: TransactionBlock, typeArg: Type, args: SwapRemoveArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::table_vec::swap_remove`,
+    typeArguments: [typeArg],
+    arguments: [obj(txb, args.t), pure(txb, args.i, `u64`)],
+  })
+}
+
 export function drop(txb: TransactionBlock, typeArg: Type, t: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::table_vec::drop`,

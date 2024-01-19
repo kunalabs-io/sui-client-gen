@@ -2,19 +2,6 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, ObjectArg, Type, generic, obj } from '../../_framework/util'
 import { TransactionBlock } from '@mysten/sui.js/transactions'
 
-export interface ContainsArgs {
-  bag: ObjectArg
-  k: GenericArg
-}
-
-export function contains(txb: TransactionBlock, typeArg: Type, args: ContainsArgs) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::bag::contains`,
-    typeArguments: [typeArg],
-    arguments: [obj(txb, args.bag), generic(txb, `${typeArg}`, args.k)],
-  })
-}
-
 export interface BorrowArgs {
   bag: ObjectArg
   k: GenericArg
@@ -38,6 +25,19 @@ export function borrowMut(txb: TransactionBlock, typeArgs: [Type, Type], args: B
     target: `${PUBLISHED_AT}::bag::borrow_mut`,
     typeArguments: typeArgs,
     arguments: [obj(txb, args.bag), generic(txb, `${typeArgs[0]}`, args.k)],
+  })
+}
+
+export interface ContainsArgs {
+  bag: ObjectArg
+  k: GenericArg
+}
+
+export function contains(txb: TransactionBlock, typeArg: Type, args: ContainsArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::bag::contains`,
+    typeArguments: [typeArg],
+    arguments: [obj(txb, args.bag), generic(txb, `${typeArg}`, args.k)],
   })
 }
 

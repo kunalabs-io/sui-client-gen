@@ -2,10 +2,9 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, ObjectArg, Type, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
-export function destroy(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
+export function version(txb: TransactionBlock, self: ObjectArg) {
   return txb.moveCall({
-    target: `${PUBLISHED_AT}::versioned::destroy`,
-    typeArguments: [typeArg],
+    target: `${PUBLISHED_AT}::versioned::version`,
     arguments: [obj(txb, self)],
   })
 }
@@ -23,9 +22,10 @@ export function create(txb: TransactionBlock, typeArg: Type, args: CreateArgs) {
   })
 }
 
-export function version(txb: TransactionBlock, self: ObjectArg) {
+export function destroy(txb: TransactionBlock, typeArg: Type, self: ObjectArg) {
   return txb.moveCall({
-    target: `${PUBLISHED_AT}::versioned::version`,
+    target: `${PUBLISHED_AT}::versioned::destroy`,
+    typeArguments: [typeArg],
     arguments: [obj(txb, self)],
   })
 }

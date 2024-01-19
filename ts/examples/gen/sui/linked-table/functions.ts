@@ -2,19 +2,6 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, ObjectArg, Type, generic, obj } from '../../_framework/util'
 import { TransactionBlock } from '@mysten/sui.js/transactions'
 
-export interface ContainsArgs {
-  table: ObjectArg
-  k: GenericArg
-}
-
-export function contains(txb: TransactionBlock, typeArgs: [Type, Type], args: ContainsArgs) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::linked_table::contains`,
-    typeArguments: typeArgs,
-    arguments: [obj(txb, args.table), generic(txb, `${typeArgs[0]}`, args.k)],
-  })
-}
-
 export interface BorrowArgs {
   table: ObjectArg
   k: GenericArg
@@ -36,6 +23,19 @@ export interface BorrowMutArgs {
 export function borrowMut(txb: TransactionBlock, typeArgs: [Type, Type], args: BorrowMutArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::borrow_mut`,
+    typeArguments: typeArgs,
+    arguments: [obj(txb, args.table), generic(txb, `${typeArgs[0]}`, args.k)],
+  })
+}
+
+export interface ContainsArgs {
+  table: ObjectArg
+  k: GenericArg
+}
+
+export function contains(txb: TransactionBlock, typeArgs: [Type, Type], args: ContainsArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::linked_table::contains`,
     typeArguments: typeArgs,
     arguments: [obj(txb, args.table), generic(txb, `${typeArgs[0]}`, args.k)],
   })
@@ -112,14 +112,6 @@ export function new_(txb: TransactionBlock, typeArgs: [Type, Type]) {
   })
 }
 
-export function front(txb: TransactionBlock, typeArgs: [Type, Type], table: ObjectArg) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::linked_table::front`,
-    typeArguments: typeArgs,
-    arguments: [obj(txb, table)],
-  })
-}
-
 export function back(txb: TransactionBlock, typeArgs: [Type, Type], table: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::back`,
@@ -131,6 +123,14 @@ export function back(txb: TransactionBlock, typeArgs: [Type, Type], table: Objec
 export function drop(txb: TransactionBlock, typeArgs: [Type, Type], table: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::linked_table::drop`,
+    typeArguments: typeArgs,
+    arguments: [obj(txb, table)],
+  })
+}
+
+export function front(txb: TransactionBlock, typeArgs: [Type, Type], table: ObjectArg) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::linked_table::front`,
     typeArguments: typeArgs,
     arguments: [obj(txb, table)],
   })
