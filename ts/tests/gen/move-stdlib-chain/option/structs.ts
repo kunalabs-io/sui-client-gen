@@ -31,6 +31,8 @@ export class Option<T0 extends TypeArgument> {
   static readonly $typeName = '0x1::option::Option'
   static readonly $numTypeParams = 1
 
+  __inner: T0 = null as unknown as T0 // for type checking in reified.ts
+
   readonly $typeName = Option.$typeName
 
   static get bcs() {

@@ -1365,10 +1365,18 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 )],),
         };
 
+        let is_option = strct.get_full_name_with_address() == "0x1::option::Option";
+
         quote_in! { *tokens =>
             export class $(&struct_name)$(self.gen_params_toks(strct, &extends_type_argument)) {
                 static readonly $$typeName = $[str]($[const](strct.get_full_name_with_address()));
                 static readonly $$numTypeParams = $(type_params.len());$['\n']
+
+                $(if is_option {
+                    __inner: $(&type_params_str[0]) = null as unknown as $(&type_params_str[0]); $(ref toks => {
+                        toks.append("// for type checking in reified.ts")
+                    })
+                })$['\n']
 
                 readonly $$typeName = $(&struct_name).$$typeName;$['\n']
 
