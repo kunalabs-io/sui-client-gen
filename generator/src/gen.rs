@@ -954,31 +954,6 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 let field_module = self.env.get_module(*mid);
                 let field_strct = field_module.get_struct(*sid);
 
-                // special case some types
-                /*
-                match field_strct.get_full_name_with_address().as_ref() {
-                    "0x1::string::String" | "0x1::ascii::String" => quote!(string),
-                    "0x2::url::Url" => quote!(string),
-                    "0x2::object::ID" => quote!(string),
-                    "0x2::object::UID" => quote!(string),
-                    "0x1::option::Option" => {
-                        let ty = &ts[0];
-                        quote!(($(self.gen_struct_class_field_type(ty, type_param_names, wrap_type_parameter)) | null))
-                    }
-                    _ => {
-                        let class = self.import_ctx.get_class(&field_strct);
-                        let non_phantom_param_idxs = (0..ts.len())
-                            .filter(|idx| !field_strct.is_phantom_parameter(*idx))
-                            .collect::<Vec<_>>();
-
-                        quote!($class$(if !non_phantom_param_idxs.is_empty() {
-                            <$(for idx in non_phantom_param_idxs join (, ) =>
-                                $(self.gen_struct_class_field_type(&ts[idx], type_param_names.clone(), None))
-                            )>
-                        }))
-                    }
-                }
-                */
                 let class = self.import_ctx.get_class(&field_strct);
                 let non_phantom_param_idxs = (0..ts.len())
                     .filter(|idx| !field_strct.is_phantom_parameter(*idx))
