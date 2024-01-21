@@ -30,7 +30,7 @@ import { newUnsafeFromBytes } from './gen/sui/url/functions'
 import { new_ as newUid, idFromAddress } from './gen/sui/object/functions'
 import { zero } from './gen/sui/balance/functions'
 import { Balance } from './gen/sui/balance/structs'
-import { extractType, vector } from './gen/_framework/reified'
+import { extractType, phantom, vector } from './gen/_framework/reified'
 import { SUI } from './gen/sui/sui/structs'
 import { Option } from './gen/move-stdlib/option/structs'
 import { String } from './gen/move-stdlib/string/structs'
@@ -430,7 +430,7 @@ it('decodes special-cased types correctly', async () => {
     url: 'https://example.com',
     idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
     uid,
-    balance: Balance.new(SUI.reified(), 0n),
+    balance: Balance.new(phantom(SUI.$typeName), 0n),
     option: 100n,
     optionObj: Bar.new(100n),
     optionNone: null,
@@ -543,10 +543,10 @@ it('calls function correctly when special types are used', async () => {
   const encoder = new TextEncoder()
 
   const reifiedArgs = [
-    SUI.reified(),
+    phantom(SUI.$typeName),
     vector(Option.reified(Option.reified(vector(vector('u64'))))),
   ] as [
-    ReturnType<typeof SUI.reified>,
+    ReturnType<typeof phantom<typeof SUI.$typeName>>,
     ReturnType<
       typeof vector<
         ReturnType<
@@ -604,8 +604,10 @@ it('calls function correctly when special types are used', async () => {
     throw new Error(`not a moveObject`)
   }
 
-  expect(WithSpecialTypes.fromFieldsWithTypes(reifiedArgs, obj.data.content)).toEqual(
-    WithSpecialTypes.new(reifiedArgs, {
+  expect(
+    WithSpecialTypes.fromFieldsWithTypes([phantom(SUI.$typeName), reifiedArgs[1]], obj.data.content)
+  ).toEqual(
+    WithSpecialTypes.new([phantom(SUI.$typeName), reifiedArgs[1]], {
       id,
       string: 'string',
       asciiString: 'ascii',
