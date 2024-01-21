@@ -908,26 +908,34 @@ impl<'env, 'a> StructsGen<'env, 'a> {
     /// in other modules by importing them when needed.
     fn gen_struct_class_field_type(
         &mut self,
+        strct: &StructEnv,
         ty: &Type,
         type_param_names: Vec<Symbol>,
-        wrap_type_parameter: Option<js::Tokens>,
+        wrap_non_phantom_type_parameter: Option<js::Tokens>,
+        wrap_phantom_type_parameter: Option<js::Tokens>,
     ) -> js::Tokens {
         self.gen_struct_class_field_type_inner(
+            strct,
             ty,
             type_param_names,
-            wrap_type_parameter,
+            wrap_non_phantom_type_parameter,
+            wrap_phantom_type_parameter,
             true,
         )
     }
 
     fn gen_struct_class_field_type_inner(
         &mut self,
+        strct: &StructEnv,
         ty: &Type,
         type_param_names: Vec<Symbol>,
-        wrap_type_parameter: Option<js::Tokens>,
+        wrap_non_phantom_type_parameter: Option<js::Tokens>,
+        wrap_phantom_type_parameter: Option<js::Tokens>,
         is_top_level: bool,
     ) -> js::Tokens {
         let to_field = &self.framework.import("reified", "ToField");
+        let to_phantom = &self.framework.import("reified", "ToTypeStr").with_alias("ToPhantom");
+        let vector = &self.framework.import("reified", "Vector");
 
         let to_field_if_top_level = |ty| if is_top_level {
             quote!($to_field<$ty>)
@@ -948,29 +956,50 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 _ => panic!("unexpected primitive type: {:?}", ty),
             },
             Type::Vector(ty) => {
-                quote!(Array<$(self.gen_struct_class_field_type_inner(ty, type_param_names, wrap_type_parameter, is_top_level))>)
+                to_field_if_top_level(
+                    quote!($vector<$(self.gen_struct_class_field_type_inner(
+                        strct, ty, type_param_names, wrap_non_phantom_type_parameter, wrap_phantom_type_parameter, false
+                    ))>)
+                )
             }
             Type::Struct(mid, sid, ts) => {
                 let field_module = self.env.get_module(*mid);
                 let field_strct = field_module.get_struct(*sid);
 
                 let class = self.import_ctx.get_class(&field_strct);
-                let non_phantom_param_idxs = (0..ts.len())
-                    .filter(|idx| !field_strct.is_phantom_parameter(*idx))
-                    .collect::<Vec<_>>();
 
-                to_field_if_top_level(quote!($class$(if !non_phantom_param_idxs.is_empty() {
-                    <$(for idx in non_phantom_param_idxs join (, ) =>
-                        $(self.gen_struct_class_field_type_inner(&ts[idx], type_param_names.clone(), wrap_type_parameter.clone(), false))
-                    )>
+                let type_param_inner_toks = (0..ts.len()).map(|idx| {
+                    let is_phantom = field_strct.is_phantom_parameter(idx);
+                    let is_struct_or_vec = matches!(&ts[idx], Type::Struct(_, _, _) | Type::Vector(_));
+
+                    let inner = self.gen_struct_class_field_type_inner(
+                        strct, &ts[idx], type_param_names.clone(), wrap_non_phantom_type_parameter.clone(),
+                        wrap_phantom_type_parameter.clone(), false
+                    );
+                    if is_phantom && is_struct_or_vec {
+                        quote!($to_phantom<$inner>)
+                    } else {
+                        quote!($inner)
+                    }
+                });
+
+                to_field_if_top_level(quote!($class$(if !ts.is_empty() {
+                    <$(for param in type_param_inner_toks join (, ) => $param)>
                 })))
-
             }
             Type::TypeParameter(idx) => {
                 let ty = type_param_names[*idx as usize]
                     .display(self.symbol_pool())
                     .to_string();
-                to_field_if_top_level(match wrap_type_parameter {
+
+                let is_phantom = strct.is_phantom_parameter(*idx as usize);
+                let wrap = if is_phantom {
+                    wrap_phantom_type_parameter
+                } else {
+                    wrap_non_phantom_type_parameter
+                };
+
+                to_field_if_top_level(match wrap {
                     Some(wrap_type_parameter) => quote!($wrap_type_parameter<$ty>),
                     None => quote!($ty),
                 })
@@ -1201,27 +1230,42 @@ impl<'env, 'a> StructsGen<'env, 'a> {
     /// Generates TS type param tokens for a struct. Ignores phantom type parameters as these
     /// are not used in the generated code.
     /// E.g. for `struct Foo<T, P>`, this generates `<T, P>`.
-    fn gen_params_toks(&self, strct: &StructEnv, extends_or_wraps: &ExtendsOrWraps) -> js::Tokens {
-        let non_phantom_params = self.strct_non_phantom_type_param_names(strct);
-        if non_phantom_params.is_empty() {
+    fn gen_params_toks(
+        &self, strct: &StructEnv,
+        extends_or_wraps_non_phantom: &ExtendsOrWraps,
+        extends_or_wraps_phantom: &ExtendsOrWraps
+    ) -> js::Tokens {
+        let param_names = self.strct_type_param_names(strct);
+        if param_names.is_empty() {
             return quote!();
         }
 
-        match extends_or_wraps {
-            ExtendsOrWraps::Extends(extends) => {
-                quote!(<$(for param in &non_phantom_params join (, ) => $(
-                param.display(self.symbol_pool()).to_string()) extends $extends
-            )>)
+        let extend_or_wrap = |idx: usize| {
+            if strct.is_phantom_parameter(idx) {
+                extends_or_wraps_phantom
+            } else {
+                extends_or_wraps_non_phantom
             }
-            ExtendsOrWraps::Wraps(wraps) => {
-                quote!(<$(for param in &non_phantom_params join (, ) => $wraps<$(
-                param.display(self.symbol_pool()).to_string())>
-            )>)
+        };
+
+        let param_toks = param_names.into_iter().enumerate().map(
+            |(idx, param_name)| {
+                let extend_or_wrap = extend_or_wrap(idx);
+                match extend_or_wrap {
+                    ExtendsOrWraps::Extends(extends) => {
+                        quote!($(param_name.display(self.symbol_pool()).to_string()) extends $extends)
+                    },
+                    ExtendsOrWraps::Wraps(wraps) => {
+                        quote!($wraps<$(param_name.display(self.symbol_pool()).to_string())>)
+                    }
+                    ExtendsOrWraps::None => {
+                        quote!($(param_name.display(self.symbol_pool()).to_string()))
+                    }
+                }
             }
-            ExtendsOrWraps::None => quote!(<$(for param in &non_phantom_params join (, ) => $(
-                param.display(self.symbol_pool()).to_string())
-            )>),
-        }
+        );
+
+        quote!(<$(for param in param_toks join (, ) => $param)>)
     }
 
     fn fields_if_name(&self, strct: &StructEnv) -> String {
@@ -1233,21 +1277,29 @@ impl<'env, 'a> StructsGen<'env, 'a> {
     fn gen_fields_if_name_with_params(
         &self,
         strct: &StructEnv,
-        extends_or_wraps: &ExtendsOrWraps,
+        extends_or_wraps_non_phantom: &ExtendsOrWraps,
+        extends_or_wraps_phantom: &ExtendsOrWraps
     ) -> js::Tokens {
-        quote! { $(self.fields_if_name(strct))$(self.gen_params_toks(strct, extends_or_wraps)) }
+        quote! { $(self.fields_if_name(strct))$(
+            self.gen_params_toks(strct, extends_or_wraps_non_phantom, extends_or_wraps_phantom)
+        ) }
     }
 
     /// Generates the `<StructName>Fields` interface.
     pub fn gen_fields_if(&mut self, tokens: &mut js::Tokens, strct: &StructEnv) {
         let type_argument = &self.framework.import("reified", "TypeArgument");
-        let extends = ExtendsOrWraps::Extends(quote!($type_argument));
+        let phantom_type_argument = &self.framework.import("reified", "PhantomTypeArgument");
 
+        let extends_non_phantom = ExtendsOrWraps::Extends(quote!($type_argument));
+        let extends_phantom = ExtendsOrWraps::Extends(quote!($phantom_type_argument));
+
+        tokens.append("// eslint-disable-next-line @typescript-eslint/no-unused-vars");
+        tokens.push();
         quote_in! { *tokens =>
-            export interface $(self.gen_fields_if_name_with_params(strct, &extends)) {
+            export interface $(self.gen_fields_if_name_with_params(strct, &extends_non_phantom, &extends_phantom)) {
                 $(for field in strct.get_fields() join (; )=>
                     $(self.gen_field_name(&field)): $(
-                        self.gen_struct_class_field_type(&field.get_type(), self.strct_type_param_names(strct), None)
+                        self.gen_struct_class_field_type(strct, &field.get_type(), self.strct_type_param_names(strct), None, None)
                     )
                 )
             }
@@ -1270,8 +1322,12 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let compose_sui_type = &self.framework.import("util", "composeSuiType");
         let field_to_json = &self.framework.import("reified", "fieldToJSON");
         let type_argument = &self.framework.import("reified", "TypeArgument");
+        let phantom_type_argument = &self.framework.import("reified", "PhantomTypeArgument");
         let reified_type_argument = &self.framework.import("reified", "ReifiedTypeArgument");
+        let reified_phantom_type_argument = &self.framework.import("reified", "ReifiedPhantomTypeArgument");
         let to_type_argument = &self.framework.import("reified", "ToTypeArgument");
+        let to_phantom_type_argument = &self.framework.import("reified", "ToPhantomTypeArgument");
+        let to_phantom = &self.framework.import("reified", "ToTypeStr").with_alias("ToPhantom");
         let to_bcs = &self.framework.import("reified", "toBcs");
         let extract_type = &self.framework.import("reified", "extractType");
         let assert_reified_type_args_match = &self.framework.import("reified", "assertReifiedTypeArgsMatch");
@@ -1315,10 +1371,6 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             ))
         };
 
-        let extends_type_argument = ExtendsOrWraps::Extends(quote!($type_argument));
-        let extends_reified_type_argument = ExtendsOrWraps::Extends(quote!($reified_type_argument));
-        let wraps_to_type_argument = ExtendsOrWraps::Wraps(quote!($to_type_argument));
-
         // string
         // [string, string, ...]
         let type_args_type = &match type_params.len() {
@@ -1346,37 +1398,101 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         };
 
         // typeArg: T0,
-        // typeArgs: [T0, T1, ReifiedTypeArgument, T3, ...],
+        // typeArgs: [T0, T1, T2, T3, ...],
         let type_args_param_if_any: &js::Tokens = &match type_params.len() {
             0 => quote!(),
             1 => quote!(
-                $(if strct.is_phantom_parameter(0) {
-                    typeArg: $reified_type_argument
-                } else {
-                    typeArg: $(type_params[0].display(self.symbol_pool()).to_string())
-                }),
+                typeArg: $(type_params[0].display(self.symbol_pool()).to_string()),
             ),
             _ => quote!(typeArgs: [$(for idx in 0..type_params.len() join (, ) => 
-                    $(if strct.is_phantom_parameter(idx) {
-                        $reified_type_argument
-                    } else {
-                        $(&type_params[idx].display(self.symbol_pool()).to_string())
-                    })
+                    $(&type_params[idx].display(self.symbol_pool()).to_string())
                 )],),
         };
 
-        let is_option = strct.get_full_name_with_address() == "0x1::option::Option";
+        let extends_type_argument = ExtendsOrWraps::Extends(quote!($type_argument));
+        let extends_phantom_type_argument = ExtendsOrWraps::Extends(quote!($phantom_type_argument));
+        let extends_reified_type_argument = ExtendsOrWraps::Extends(quote!($reified_type_argument));
+        let extends_reified_phantom_type_argument = ExtendsOrWraps::Extends(quote!($reified_phantom_type_argument));
+        let wraps_to_type_argument = ExtendsOrWraps::Wraps(quote!($to_type_argument));
+        let wraps_phantom_to_type_argument = ExtendsOrWraps::Wraps(quote!($to_phantom_type_argument));
 
+        // <T extends ReifiedTypeArgument, P extends ReifiedPhantomTypeArgument>
+        let params_toks_for_reified = &self.gen_params_toks(
+            strct, &extends_reified_type_argument, &extends_reified_phantom_type_argument
+        );
+
+        // <ToTypeArgument<T>, ToPhantomTypeArgument<P>>
+        let params_toks_for_to_type_argument = &self.gen_params_toks(
+            strct, &wraps_to_type_argument, &wraps_phantom_to_type_argument
+        );
+
+        // `0x2::foo::Bar<${ToTypeArgument<T>}, ${ToPhantomTypeArgument<P>}>`
+        let reified_full_type_name_as_toks = match type_params.len() {
+            0 => quote!($[str]($[const](strct.get_full_name_with_address()))),
+            _ => {
+                let mut toks = js::Tokens::new();
+                toks.append(Item::OpenQuote(true));
+                toks.append(Item::Literal(ItemStr::from(strct.get_full_name_with_address())));
+                toks.append(Item::Literal(ItemStr::from("<")));
+                for (idx, param) in type_params_str.iter().enumerate() {
+                    toks.append(Item::Literal(ItemStr::from("${")));
+                    quote_in!(toks => $to_phantom_type_argument<$param>);
+                    toks.append(Item::Literal(ItemStr::from("}")));
+
+                    let is_last = idx == &type_params_str.len() - 1;
+                    if !is_last {
+                        toks.append(Item::Literal(ItemStr::from(", ")));
+                    }
+                }
+                toks.append(Item::Literal(ItemStr::from(">")));
+                toks.append(Item::CloseQuote);
+                quote!($toks)
+            },
+        };
+
+        let is_option = strct.get_full_name_with_address() == "0x1::option::Option";
+        let reified_full_type_string_as_toks = match type_params.len() {
+            0 => quote!($[str]($[const](strct.get_full_name_with_address()))),
+            _ => {
+                let mut toks = js::Tokens::new();
+                toks.append(Item::OpenQuote(true));
+                toks.append(Item::Literal(ItemStr::from(strct.get_full_name_with_address())));
+                toks.append(Item::Literal(ItemStr::from("<")));
+                for (idx, param) in type_params_str.iter().enumerate() {
+                    let is_phantom = strct.is_phantom_parameter(idx);
+
+                    toks.append(Item::Literal(ItemStr::from("${")));
+                    quote_in!(toks => $(if !is_phantom {
+                        $to_phantom<$param>
+                    } else {
+                        $param
+                    }));
+                    toks.append(Item::Literal(ItemStr::from("}")));
+
+                    let is_last = idx == &type_params_str.len() - 1;
+                    if !is_last {
+                        toks.append(Item::Literal(ItemStr::from(", ")));
+                    }
+                }
+                toks.append(Item::Literal(ItemStr::from(">")));
+                toks.append(Item::CloseQuote);
+                quote!($toks)
+            },
+        };
+
+        tokens.append("// eslint-disable-next-line @typescript-eslint/no-unused-vars");
+        tokens.push();
         quote_in! { *tokens =>
-            export class $(&struct_name)$(self.gen_params_toks(strct, &extends_type_argument)) {
+            export class $(&struct_name)$(self.gen_params_toks(strct, &extends_type_argument, &extends_phantom_type_argument)) {
                 static readonly $$typeName = $[str]($[const](strct.get_full_name_with_address()));
                 static readonly $$numTypeParams = $(type_params.len());$['\n']
 
                 $(if is_option {
                     __inner: $(&type_params_str[0]) = null as unknown as $(&type_params_str[0]); $(ref toks => {
                         toks.append("// for type checking in reified.ts")
-                    })
-                })$['\n']
+                    })$['\n'];
+                })
+                __reifiedFullTypeString = null as unknown as $reified_full_type_string_as_toks;$['\n']
 
                 readonly $$typeName = $(&struct_name).$$typeName;$['\n']
 
@@ -1401,7 +1517,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 $(for field in strct.get_fields() join (; ) =>
                     readonly $(self.gen_field_name(&field)):
                         $(self.gen_struct_class_field_type(
-                            &field.get_type(), self.strct_type_param_names(strct), None
+                            strct, &field.get_type(), self.strct_type_param_names(strct), None, None
                         ))
                 )$['\n']
 
@@ -1409,10 +1525,12 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                         0 => (),
                         1 => {
                             $(self.gen_field_name_non_reserved(&fields[0])): $(
-                                self.gen_struct_class_field_type(&fields[0].get_type(), self.strct_type_param_names(strct), None)
+                                self.gen_struct_class_field_type(
+                                    strct, &fields[0].get_type(), self.strct_type_param_names(strct), None, None
+                                )
                             ),
                         },
-                        _ => { fields: $(self.gen_fields_if_name_with_params(strct, &ExtendsOrWraps::None)), }
+                        _ => { fields: $(self.gen_fields_if_name_with_params(strct, &ExtendsOrWraps::None, &ExtendsOrWraps::None)), }
                     })
                 ) {
                     $(match type_params.len() {
@@ -1432,19 +1550,20 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     })
                 }$['\n']
 
-                static new$(self.gen_params_toks(strct, &extends_reified_type_argument))(
+                static new$(params_toks_for_reified)(
                     $type_args_param_if_any $(match fields.len() {
                         0 => (),
                         1 => {
                             $(self.gen_field_name_non_reserved(&fields[0])): $(
                                 self.gen_struct_class_field_type(
-                                    &fields[0].get_type(), self.strct_type_param_names(strct), Some(quote!($to_type_argument))
+                                    strct, &fields[0].get_type(), self.strct_type_param_names(strct),
+                                    Some(quote!($to_type_argument)), Some(quote!($to_phantom_type_argument))
                                 )
-                            ),
+                            )
                         },
-                        _ => { fields: $(self.gen_fields_if_name_with_params(strct, &wraps_to_type_argument)), }
+                        _ => { fields: $(self.gen_fields_if_name_with_params(strct, &wraps_to_type_argument, &wraps_phantom_to_type_argument)), }
                     })
-                ): $(&struct_name)$(self.gen_params_toks(strct, &wraps_to_type_argument)) {
+                ): $(&struct_name)$(params_toks_for_to_type_argument) {
                     return new $(&struct_name)(
                         $(match type_params.len() {
                             0 => (),
@@ -1459,18 +1578,16 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     )
                 }$['\n']
 
-                static reified$(self.gen_params_toks(strct, &extends_reified_type_argument))(
-                    $(for (idx, param) in type_params_str.iter().enumerate() join (, ) => 
-                        $(if strct.is_phantom_parameter(idx) {
-                            $param: $reified_type_argument
-                        } else {
-                            $param: $param
-                        })
-                    )
+                static reified$(params_toks_for_reified)(
+                    $(for param in type_params_str.iter() join (, ) => $param: $param)
                 ) {
                     return {
                         typeName: $(&struct_name).$$typeName,
                         typeArgs: [$(for param in &type_params_str join (, ) => $param)],
+                        fullTypeName: $compose_sui_type(
+                            $(&struct_name).$$typeName,
+                            ...[$(for param in &type_params_str join (, ) => $extract_type($param))]
+                        ) as $reified_full_type_name_as_toks,
                         fromFields: (fields: Record<string, any>) =>
                             $(&struct_name).fromFields(
                                 $(match type_params.len() {
@@ -1510,13 +1627,15 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                                 })
                                 field,
                             ),
-                        __class: null as unknown as ReturnType<typeof $(&struct_name).new$(self.gen_params_toks(strct, &wraps_to_type_argument))>,
+                        __class: null as unknown as ReturnType<typeof $(&struct_name).new$(
+                            self.gen_params_toks(strct, &wraps_to_type_argument, &wraps_to_type_argument)
+                        )>,
                     }
                 }$['\n']
 
-                static fromFields$(self.gen_params_toks(strct, &extends_reified_type_argument))(
+                static fromFields$(params_toks_for_reified)(
                     $type_args_param_if_any fields: Record<string, any>
-                ): $(&struct_name)$(self.gen_params_toks(strct, &wraps_to_type_argument)) {
+                ): $(&struct_name)$(params_toks_for_to_type_argument) {
                     return $(&struct_name).new(
                         $(match type_params.len() {
                             0 => (),
@@ -1535,9 +1654,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     )
                 }$['\n']
 
-                static fromFieldsWithTypes$(self.gen_params_toks(strct, &extends_reified_type_argument))(
+                static fromFieldsWithTypes$(params_toks_for_reified)(
                     $type_args_param_if_any item: $fields_with_types
-                ): $(&struct_name)$(self.gen_params_toks(strct, &wraps_to_type_argument)) {
+                ): $(&struct_name)$(params_toks_for_to_type_argument) {
                     if (!is$(&struct_name)(item.type)) {
                         throw new Error($[str]($[const](format!("not a {} type", &struct_name))));$['\n']
                     }
@@ -1571,9 +1690,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     )
                 }$['\n']
 
-                static fromBcs$(self.gen_params_toks(strct, &extends_reified_type_argument))(
+                static fromBcs$(params_toks_for_reified)(
                     $type_args_param_if_any data: Uint8Array
-                ): $(&struct_name)$(self.gen_params_toks(strct, &wraps_to_type_argument)) {
+                ): $(&struct_name)$(params_toks_for_to_type_argument) {
                     $(if type_params.len() == 1 && !non_phantom_params.is_empty() {
                         const typeArgs = [typeArg];$['\n']
                     })
@@ -1612,7 +1731,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                                 let this_name = quote!(this.$(self.gen_field_name(field)));
 
                                 let field_type_param = self.gen_struct_class_field_type_inner(
-                                    &field.get_type(), self.strct_type_param_names(strct), None, false
+                                    strct, &field.get_type(), self.strct_type_param_names(strct), None, None, false
                                 );
 
                                 match field.get_type() {
@@ -1682,9 +1801,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     }
                 }$['\n']
 
-                static fromJSONField$(self.gen_params_toks(strct, &extends_reified_type_argument))(
+                static fromJSONField$(params_toks_for_reified)(
                     $type_args_param_if_any field: any
-                ): $(&struct_name)$(self.gen_params_toks(strct, &wraps_to_type_argument)) {
+                ): $(&struct_name)$(params_toks_for_to_type_argument) {
                     return $(&struct_name).new(
                         $(match type_params.len() {
                             0 => (),
@@ -1703,9 +1822,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     )
                 }$['\n']
 
-                static fromJSON$(self.gen_params_toks(strct, &extends_reified_type_argument))(
+                static fromJSON$(params_toks_for_reified)(
                     $type_args_param_if_any json: Record<string, any>
-                ): $(&struct_name)$(self.gen_params_toks(strct, &wraps_to_type_argument)) {
+                ): $(&struct_name)$(params_toks_for_to_type_argument) {
                     if (json.$$typeName !==  $(&struct_name).$$typeName) {
                         throw new Error("not a WithTwoGenerics json object")
                     };
@@ -1738,9 +1857,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 }$['\n']
 
                 $(if strct.get_abilities().has_key() {
-                    static fromSuiParsedData$(self.gen_params_toks(strct, &extends_reified_type_argument))(
+                    static fromSuiParsedData$(params_toks_for_reified)(
                         $type_args_param_if_any content: $sui_parsed_data
-                    ): $(&struct_name)$(self.gen_params_toks(strct, &wraps_to_type_argument)) {
+                    ): $(&struct_name)$(params_toks_for_to_type_argument) {
                         if (content.dataType !== "moveObject") {
                             throw new Error("not an object");
                         }
@@ -1759,9 +1878,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                         );
                     }$['\n']
 
-                    static async fetch$(self.gen_params_toks(strct, &extends_reified_type_argument))(
+                    static async fetch$(params_toks_for_reified)(
                         client: $sui_client, $type_args_param_if_any id: string
-                    ): Promise<$(&struct_name)$(self.gen_params_toks(strct, &wraps_to_type_argument))> {
+                    ): Promise<$(&struct_name)$(params_toks_for_to_type_argument)> {
                         const res = await client.getObject({
                             id,
                             options: {
