@@ -1,11 +1,10 @@
-import { normalizeSuiAddress } from '@mysten/sui.js/utils'
 import {
   TransactionArgument,
   TransactionBlock,
   TransactionObjectArgument,
 } from '@mysten/sui.js/transactions'
 import { bcs, ObjectArg as SuiObjectArg } from '@mysten/sui.js/bcs'
-import { BCS } from '@mysten/bcs'
+import { BcsType } from '@mysten/bcs'
 
 export interface FieldsWithTypes {
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -63,20 +62,34 @@ export function pure(txb: TransactionBlock, arg: PureArg, type: string) {
     return obj(txb, arg)
   }
 
-  function convertType(type: string): string {
+  function getBcsForType(type: string): BcsType<any> {
     const { typeName, typeArgs } = parseTypeName(type)
     switch (typeName) {
+      case 'u8':
+        return bcs.U8
+      case 'u16':
+        return bcs.U16
+      case 'u32':
+        return bcs.U32
+      case 'u64':
+        return bcs.U64
+      case 'u128':
+        return bcs.U128
+      case 'u256':
+        return bcs.U256
+      case 'address':
+        return bcs.Address
       case '0x1::string::String':
       case '0x1::ascii::String':
-        return BCS.STRING
+        return bcs.String
       case '0x2::object::ID':
-        return BCS.ADDRESS
+        return bcs.Address
       case '0x1::option::Option':
-        return `vector<${convertType(typeArgs[0])}>`
+        return bcs.option(getBcsForType(typeArgs[0]))
       case 'vector':
-        return `vector<${convertType(typeArgs[0])}>`
+        return bcs.vector(getBcsForType(typeArgs[0]))
       default:
-        return type
+        throw new Error(`invalid primitive type ${type}`)
     }
   }
 
@@ -87,32 +100,15 @@ export function pure(txb: TransactionBlock, arg: PureArg, type: string) {
     return isTransactionArgument(arg)
   }
 
-  function convertArg(arg: PureArg, type: string): PureArg {
-    const { typeName, typeArgs } = parseTypeName(type)
-    if (typeName === '0x1::option::Option') {
-      if (arg === null) {
-        return []
-      } else {
-        return [convertArg(arg, typeArgs[0])]
-      }
-    } else if (typeName === 'vector' && Array.isArray(arg)) {
-      return arg.map(item => convertArg(item, typeArgs[0]))
-    } else if (typeName === '0x2::object::ID' || typeName === 'address') {
-      return normalizeSuiAddress(arg as string)
-    } else {
-      return arg
-    }
-  }
-
   // handle some cases when TransactionArgument is nested within a vector or option
   const { typeName, typeArgs } = parseTypeName(type)
   switch (typeName) {
     case '0x1::option::Option':
       if (arg === null) {
-        return txb.pure([], `vector<${convertType(typeArgs[0])}>`)
+        return txb.pure(bcs.option(bcs.Bool).serialize(null)) // bcs.Bool is arbitrary
       }
       if (isOrHasNestedTransactionArgument(arg)) {
-        throw new Error('nesting TransactionArgument is not currently supported')
+        throw new Error('nesting TransactionArgument is not supported')
       }
       break
     case 'vector':
@@ -120,16 +116,16 @@ export function pure(txb: TransactionBlock, arg: PureArg, type: string) {
         throw new Error('expected an array for vector type')
       }
       if (arg.length === 0) {
-        return txb.pure([], `vector<${convertType(typeArgs[0])}>`)
+        return txb.pure(bcs.vector(bcs.Bool).serialize([])) // bcs.Bool is arbitrary
       }
       if (arg.some(arg => Array.isArray(arg) && isOrHasNestedTransactionArgument(arg))) {
-        throw new Error('nesting TransactionArgument is not currently supported')
+        throw new Error('nesting TransactionArgument is not supported')
       }
       if (
         isTransactionArgument(arg[0]) &&
         arg.filter(arg => !isTransactionArgument(arg)).length > 0
       ) {
-        throw new Error('mixing TransactionArgument with other types is not currently supported')
+        throw new Error('mixing TransactionArgument with other types is not supported')
       }
       if (isTransactionObjectArgument(arg[0])) {
         return txb.makeMoveVec({
@@ -139,7 +135,7 @@ export function pure(txb: TransactionBlock, arg: PureArg, type: string) {
       }
   }
 
-  return txb.pure(convertArg(arg, type), convertType(type))
+  return txb.pure(getBcsForType(type).serialize(arg))
 }
 
 export function option(txb: TransactionBlock, type: string, arg: GenericArg | null) {
