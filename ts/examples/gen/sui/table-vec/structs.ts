@@ -1,6 +1,9 @@
 import {
-  ReifiedTypeArgument,
+  PhantomTypeArgument,
+  ReifiedPhantomTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
+  ToTypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -19,13 +22,17 @@ export function isTableVec(type: string): boolean {
   return type.startsWith('0x2::table_vec::TableVec<')
 }
 
-export interface TableVecFields {
-  contents: ToField<Table>
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface TableVecFields<Element extends PhantomTypeArgument> {
+  contents: ToField<Table<'u64', Element>>
 }
 
-export class TableVec {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class TableVec<Element extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::table_vec::TableVec'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::table_vec::TableVec<${Element}>`
 
   readonly $typeName = TableVec.$typeName
 
@@ -37,36 +44,49 @@ export class TableVec {
 
   readonly $typeArg: string
 
-  readonly contents: ToField<Table>
+  readonly contents: ToField<Table<'u64', Element>>
 
-  private constructor(typeArg: string, contents: ToField<Table>) {
+  private constructor(typeArg: string, contents: ToField<Table<'u64', Element>>) {
     this.$typeArg = typeArg
 
     this.contents = contents
   }
 
-  static new(typeArg: ReifiedTypeArgument, contents: ToField<Table>): TableVec {
+  static new<Element extends ReifiedPhantomTypeArgument>(
+    typeArg: Element,
+    contents: ToField<Table<'u64', ToPhantomTypeArgument<Element>>>
+  ): TableVec<ToPhantomTypeArgument<Element>> {
     return new TableVec(extractType(typeArg), contents)
   }
 
-  static reified(Element: ReifiedTypeArgument) {
+  static reified<Element extends ReifiedPhantomTypeArgument>(Element: Element) {
     return {
       typeName: TableVec.$typeName,
       typeArgs: [Element],
+      fullTypeName: composeSuiType(
+        TableVec.$typeName,
+        ...[extractType(Element)]
+      ) as `0x2::table_vec::TableVec<${ToPhantomTypeArgument<Element>}>`,
       fromFields: (fields: Record<string, any>) => TableVec.fromFields(Element, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TableVec.fromFieldsWithTypes(Element, item),
       fromBcs: (data: Uint8Array) => TableVec.fromBcs(Element, data),
       bcs: TableVec.bcs,
       fromJSONField: (field: any) => TableVec.fromJSONField(Element, field),
-      __class: null as unknown as ReturnType<typeof TableVec.new>,
+      __class: null as unknown as ReturnType<typeof TableVec.new<ToTypeArgument<Element>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): TableVec {
+  static fromFields<Element extends ReifiedPhantomTypeArgument>(
+    typeArg: Element,
+    fields: Record<string, any>
+  ): TableVec<ToPhantomTypeArgument<Element>> {
     return TableVec.new(typeArg, decodeFromFields(Table.reified('u64', typeArg), fields.contents))
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): TableVec {
+  static fromFieldsWithTypes<Element extends ReifiedPhantomTypeArgument>(
+    typeArg: Element,
+    item: FieldsWithTypes
+  ): TableVec<ToPhantomTypeArgument<Element>> {
     if (!isTableVec(item.type)) {
       throw new Error('not a TableVec type')
     }
@@ -78,7 +98,10 @@ export class TableVec {
     )
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): TableVec {
+  static fromBcs<Element extends ReifiedPhantomTypeArgument>(
+    typeArg: Element,
+    data: Uint8Array
+  ): TableVec<ToPhantomTypeArgument<Element>> {
     return TableVec.fromFields(typeArg, TableVec.bcs.parse(data))
   }
 
@@ -92,11 +115,17 @@ export class TableVec {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): TableVec {
+  static fromJSONField<Element extends ReifiedPhantomTypeArgument>(
+    typeArg: Element,
+    field: any
+  ): TableVec<ToPhantomTypeArgument<Element>> {
     return TableVec.new(typeArg, decodeFromJSONField(Table.reified('u64', typeArg), field.contents))
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): TableVec {
+  static fromJSON<Element extends ReifiedPhantomTypeArgument>(
+    typeArg: Element,
+    json: Record<string, any>
+  ): TableVec<ToPhantomTypeArgument<Element>> {
     if (json.$typeName !== TableVec.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }

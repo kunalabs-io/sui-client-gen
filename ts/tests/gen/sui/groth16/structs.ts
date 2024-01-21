@@ -1,12 +1,13 @@
 import * as reified from '../../_framework/reified'
 import {
   ToField,
+  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== Curve =============================== */
@@ -16,13 +17,17 @@ export function isCurve(type: string): boolean {
   return type === '0x2::groth16::Curve'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface CurveFields {
   id: ToField<'u8'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Curve {
   static readonly $typeName = '0x2::groth16::Curve'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::groth16::Curve'
 
   readonly $typeName = Curve.$typeName
 
@@ -46,6 +51,7 @@ export class Curve {
     return {
       typeName: Curve.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(Curve.$typeName, ...[]) as '0x2::groth16::Curve',
       fromFields: (fields: Record<string, any>) => Curve.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Curve.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Curve.fromBcs(data),
@@ -101,16 +107,20 @@ export function isPreparedVerifyingKey(type: string): boolean {
   return type === '0x2::groth16::PreparedVerifyingKey'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PreparedVerifyingKeyFields {
-  vkGammaAbcG1Bytes: Array<ToField<'u8'>>
-  alphaG1BetaG2Bytes: Array<ToField<'u8'>>
-  gammaG2NegPcBytes: Array<ToField<'u8'>>
-  deltaG2NegPcBytes: Array<ToField<'u8'>>
+  vkGammaAbcG1Bytes: ToField<Vector<'u8'>>
+  alphaG1BetaG2Bytes: ToField<Vector<'u8'>>
+  gammaG2NegPcBytes: ToField<Vector<'u8'>>
+  deltaG2NegPcBytes: ToField<Vector<'u8'>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PreparedVerifyingKey {
   static readonly $typeName = '0x2::groth16::PreparedVerifyingKey'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::groth16::PreparedVerifyingKey'
 
   readonly $typeName = PreparedVerifyingKey.$typeName
 
@@ -123,10 +133,10 @@ export class PreparedVerifyingKey {
     })
   }
 
-  readonly vkGammaAbcG1Bytes: Array<ToField<'u8'>>
-  readonly alphaG1BetaG2Bytes: Array<ToField<'u8'>>
-  readonly gammaG2NegPcBytes: Array<ToField<'u8'>>
-  readonly deltaG2NegPcBytes: Array<ToField<'u8'>>
+  readonly vkGammaAbcG1Bytes: ToField<Vector<'u8'>>
+  readonly alphaG1BetaG2Bytes: ToField<Vector<'u8'>>
+  readonly gammaG2NegPcBytes: ToField<Vector<'u8'>>
+  readonly deltaG2NegPcBytes: ToField<Vector<'u8'>>
 
   private constructor(fields: PreparedVerifyingKeyFields) {
     this.vkGammaAbcG1Bytes = fields.vkGammaAbcG1Bytes
@@ -143,6 +153,10 @@ export class PreparedVerifyingKey {
     return {
       typeName: PreparedVerifyingKey.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        PreparedVerifyingKey.$typeName,
+        ...[]
+      ) as '0x2::groth16::PreparedVerifyingKey',
       fromFields: (fields: Record<string, any>) => PreparedVerifyingKey.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         PreparedVerifyingKey.fromFieldsWithTypes(item),
@@ -193,10 +207,10 @@ export class PreparedVerifyingKey {
 
   toJSONField() {
     return {
-      vkGammaAbcG1Bytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.vkGammaAbcG1Bytes),
-      alphaG1BetaG2Bytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.alphaG1BetaG2Bytes),
-      gammaG2NegPcBytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.gammaG2NegPcBytes),
-      deltaG2NegPcBytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.deltaG2NegPcBytes),
+      vkGammaAbcG1Bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.vkGammaAbcG1Bytes),
+      alphaG1BetaG2Bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.alphaG1BetaG2Bytes),
+      gammaG2NegPcBytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.gammaG2NegPcBytes),
+      deltaG2NegPcBytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.deltaG2NegPcBytes),
     }
   }
 
@@ -229,13 +243,17 @@ export function isProofPoints(type: string): boolean {
   return type === '0x2::groth16::ProofPoints'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ProofPointsFields {
-  bytes: Array<ToField<'u8'>>
+  bytes: ToField<Vector<'u8'>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ProofPoints {
   static readonly $typeName = '0x2::groth16::ProofPoints'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::groth16::ProofPoints'
 
   readonly $typeName = ProofPoints.$typeName
 
@@ -245,13 +263,13 @@ export class ProofPoints {
     })
   }
 
-  readonly bytes: Array<ToField<'u8'>>
+  readonly bytes: ToField<Vector<'u8'>>
 
-  private constructor(bytes: Array<ToField<'u8'>>) {
+  private constructor(bytes: ToField<Vector<'u8'>>) {
     this.bytes = bytes
   }
 
-  static new(bytes: Array<ToField<'u8'>>): ProofPoints {
+  static new(bytes: ToField<Vector<'u8'>>): ProofPoints {
     return new ProofPoints(bytes)
   }
 
@@ -259,6 +277,7 @@ export class ProofPoints {
     return {
       typeName: ProofPoints.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(ProofPoints.$typeName, ...[]) as '0x2::groth16::ProofPoints',
       fromFields: (fields: Record<string, any>) => ProofPoints.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ProofPoints.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ProofPoints.fromBcs(data),
@@ -286,7 +305,7 @@ export class ProofPoints {
 
   toJSONField() {
     return {
-      bytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.bytes),
+      bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 
@@ -314,13 +333,17 @@ export function isPublicProofInputs(type: string): boolean {
   return type === '0x2::groth16::PublicProofInputs'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PublicProofInputsFields {
-  bytes: Array<ToField<'u8'>>
+  bytes: ToField<Vector<'u8'>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PublicProofInputs {
   static readonly $typeName = '0x2::groth16::PublicProofInputs'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::groth16::PublicProofInputs'
 
   readonly $typeName = PublicProofInputs.$typeName
 
@@ -330,13 +353,13 @@ export class PublicProofInputs {
     })
   }
 
-  readonly bytes: Array<ToField<'u8'>>
+  readonly bytes: ToField<Vector<'u8'>>
 
-  private constructor(bytes: Array<ToField<'u8'>>) {
+  private constructor(bytes: ToField<Vector<'u8'>>) {
     this.bytes = bytes
   }
 
-  static new(bytes: Array<ToField<'u8'>>): PublicProofInputs {
+  static new(bytes: ToField<Vector<'u8'>>): PublicProofInputs {
     return new PublicProofInputs(bytes)
   }
 
@@ -344,6 +367,10 @@ export class PublicProofInputs {
     return {
       typeName: PublicProofInputs.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        PublicProofInputs.$typeName,
+        ...[]
+      ) as '0x2::groth16::PublicProofInputs',
       fromFields: (fields: Record<string, any>) => PublicProofInputs.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PublicProofInputs.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PublicProofInputs.fromBcs(data),
@@ -371,7 +398,7 @@ export class PublicProofInputs {
 
   toJSONField() {
     return {
-      bytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.bytes),
+      bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 

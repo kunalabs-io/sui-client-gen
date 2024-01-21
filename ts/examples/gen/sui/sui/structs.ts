@@ -4,7 +4,7 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== SUI =============================== */
@@ -14,13 +14,17 @@ export function isSUI(type: string): boolean {
   return type === '0x2::sui::SUI'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface SUIFields {
   dummyField: ToField<'bool'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class SUI {
   static readonly $typeName = '0x2::sui::SUI'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::sui::SUI'
 
   readonly $typeName = SUI.$typeName
 
@@ -44,6 +48,7 @@ export class SUI {
     return {
       typeName: SUI.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(SUI.$typeName, ...[]) as '0x2::sui::SUI',
       fromFields: (fields: Record<string, any>) => SUI.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => SUI.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => SUI.fromBcs(data),

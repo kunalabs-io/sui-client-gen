@@ -1,6 +1,9 @@
 import {
-  ReifiedTypeArgument,
+  PhantomTypeArgument,
+  ReifiedPhantomTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
+  ToTypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -19,14 +22,18 @@ export function isReceiving(type: string): boolean {
   return type.startsWith('0x2::transfer::Receiving<')
 }
 
-export interface ReceivingFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface ReceivingFields<T0 extends PhantomTypeArgument> {
   id: ToField<ID>
   version: ToField<'u64'>
 }
 
-export class Receiving {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class Receiving<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer::Receiving'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::transfer::Receiving<${T0}>`
 
   readonly $typeName = Receiving.$typeName
 
@@ -42,38 +49,51 @@ export class Receiving {
   readonly id: ToField<ID>
   readonly version: ToField<'u64'>
 
-  private constructor(typeArg: string, fields: ReceivingFields) {
+  private constructor(typeArg: string, fields: ReceivingFields<T0>) {
     this.$typeArg = typeArg
 
     this.id = fields.id
     this.version = fields.version
   }
 
-  static new(typeArg: ReifiedTypeArgument, fields: ReceivingFields): Receiving {
+  static new<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: ReceivingFields<ToPhantomTypeArgument<T0>>
+  ): Receiving<ToPhantomTypeArgument<T0>> {
     return new Receiving(extractType(typeArg), fields)
   }
 
-  static reified(T0: ReifiedTypeArgument) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
     return {
       typeName: Receiving.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        Receiving.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::transfer::Receiving<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => Receiving.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Receiving.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => Receiving.fromBcs(T0, data),
       bcs: Receiving.bcs,
       fromJSONField: (field: any) => Receiving.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof Receiving.new>,
+      __class: null as unknown as ReturnType<typeof Receiving.new<ToTypeArgument<T0>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): Receiving {
+  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): Receiving<ToPhantomTypeArgument<T0>> {
     return Receiving.new(typeArg, {
       id: decodeFromFields(ID.reified(), fields.id),
       version: decodeFromFields('u64', fields.version),
     })
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): Receiving {
+  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): Receiving<ToPhantomTypeArgument<T0>> {
     if (!isReceiving(item.type)) {
       throw new Error('not a Receiving type')
     }
@@ -85,7 +105,10 @@ export class Receiving {
     })
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): Receiving {
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    data: Uint8Array
+  ): Receiving<ToPhantomTypeArgument<T0>> {
     return Receiving.fromFields(typeArg, Receiving.bcs.parse(data))
   }
 
@@ -100,14 +123,20 @@ export class Receiving {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): Receiving {
+  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): Receiving<ToPhantomTypeArgument<T0>> {
     return Receiving.new(typeArg, {
       id: decodeFromJSONField(ID.reified(), field.id),
       version: decodeFromJSONField('u64', field.version),
     })
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): Receiving {
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): Receiving<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== Receiving.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }

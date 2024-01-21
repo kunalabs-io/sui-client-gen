@@ -4,7 +4,7 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -16,14 +16,18 @@ export function isObjectBag(type: string): boolean {
   return type === '0x2::object_bag::ObjectBag'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ObjectBagFields {
   id: ToField<UID>
   size: ToField<'u64'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ObjectBag {
   static readonly $typeName = '0x2::object_bag::ObjectBag'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::object_bag::ObjectBag'
 
   readonly $typeName = ObjectBag.$typeName
 
@@ -50,6 +54,7 @@ export class ObjectBag {
     return {
       typeName: ObjectBag.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(ObjectBag.$typeName, ...[]) as '0x2::object_bag::ObjectBag',
       fromFields: (fields: Record<string, any>) => ObjectBag.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ObjectBag.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ObjectBag.fromBcs(data),

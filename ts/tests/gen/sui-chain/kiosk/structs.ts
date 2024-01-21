@@ -1,12 +1,16 @@
 import {
-  ReifiedTypeArgument,
+  PhantomTypeArgument,
+  ReifiedPhantomTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
+  ToTypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
+  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Balance } from '../balance/structs'
@@ -22,14 +26,18 @@ export function isBorrow(type: string): boolean {
   return type === '0x2::kiosk::Borrow'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface BorrowFields {
   kioskId: ToField<ID>
   itemId: ToField<ID>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Borrow {
   static readonly $typeName = '0x2::kiosk::Borrow'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::kiosk::Borrow'
 
   readonly $typeName = Borrow.$typeName
 
@@ -56,6 +64,7 @@ export class Borrow {
     return {
       typeName: Borrow.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(Borrow.$typeName, ...[]) as '0x2::kiosk::Borrow',
       fromFields: (fields: Record<string, any>) => Borrow.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Borrow.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Borrow.fromBcs(data),
@@ -121,17 +130,21 @@ export function isKiosk(type: string): boolean {
   return type === '0x2::kiosk::Kiosk'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface KioskFields {
   id: ToField<UID>
-  profits: ToField<Balance>
+  profits: ToField<Balance<ToPhantom<SUI>>>
   owner: ToField<'address'>
   itemCount: ToField<'u32'>
   allowExtensions: ToField<'bool'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Kiosk {
   static readonly $typeName = '0x2::kiosk::Kiosk'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::kiosk::Kiosk'
 
   readonly $typeName = Kiosk.$typeName
 
@@ -149,7 +162,7 @@ export class Kiosk {
   }
 
   readonly id: ToField<UID>
-  readonly profits: ToField<Balance>
+  readonly profits: ToField<Balance<ToPhantom<SUI>>>
   readonly owner: ToField<'address'>
   readonly itemCount: ToField<'u32'>
   readonly allowExtensions: ToField<'bool'>
@@ -170,6 +183,7 @@ export class Kiosk {
     return {
       typeName: Kiosk.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(Kiosk.$typeName, ...[]) as '0x2::kiosk::Kiosk',
       fromFields: (fields: Record<string, any>) => Kiosk.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Kiosk.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Kiosk.fromBcs(data),
@@ -268,14 +282,18 @@ export function isKioskOwnerCap(type: string): boolean {
   return type === '0x2::kiosk::KioskOwnerCap'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface KioskOwnerCapFields {
   id: ToField<UID>
   for: ToField<ID>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class KioskOwnerCap {
   static readonly $typeName = '0x2::kiosk::KioskOwnerCap'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::kiosk::KioskOwnerCap'
 
   readonly $typeName = KioskOwnerCap.$typeName
 
@@ -302,6 +320,7 @@ export class KioskOwnerCap {
     return {
       typeName: KioskOwnerCap.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(KioskOwnerCap.$typeName, ...[]) as '0x2::kiosk::KioskOwnerCap',
       fromFields: (fields: Record<string, any>) => KioskOwnerCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => KioskOwnerCap.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => KioskOwnerCap.fromBcs(data),
@@ -388,16 +407,20 @@ export function isPurchaseCap(type: string): boolean {
   return type.startsWith('0x2::kiosk::PurchaseCap<')
 }
 
-export interface PurchaseCapFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface PurchaseCapFields<T0 extends PhantomTypeArgument> {
   id: ToField<UID>
   kioskId: ToField<ID>
   itemId: ToField<ID>
   minPrice: ToField<'u64'>
 }
 
-export class PurchaseCap {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class PurchaseCap<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk::PurchaseCap'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::kiosk::PurchaseCap<${T0}>`
 
   readonly $typeName = PurchaseCap.$typeName
 
@@ -417,7 +440,7 @@ export class PurchaseCap {
   readonly itemId: ToField<ID>
   readonly minPrice: ToField<'u64'>
 
-  private constructor(typeArg: string, fields: PurchaseCapFields) {
+  private constructor(typeArg: string, fields: PurchaseCapFields<T0>) {
     this.$typeArg = typeArg
 
     this.id = fields.id
@@ -426,24 +449,34 @@ export class PurchaseCap {
     this.minPrice = fields.minPrice
   }
 
-  static new(typeArg: ReifiedTypeArgument, fields: PurchaseCapFields): PurchaseCap {
+  static new<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: PurchaseCapFields<ToPhantomTypeArgument<T0>>
+  ): PurchaseCap<ToPhantomTypeArgument<T0>> {
     return new PurchaseCap(extractType(typeArg), fields)
   }
 
-  static reified(T0: ReifiedTypeArgument) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
     return {
       typeName: PurchaseCap.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        PurchaseCap.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::kiosk::PurchaseCap<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => PurchaseCap.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PurchaseCap.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => PurchaseCap.fromBcs(T0, data),
       bcs: PurchaseCap.bcs,
       fromJSONField: (field: any) => PurchaseCap.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof PurchaseCap.new>,
+      __class: null as unknown as ReturnType<typeof PurchaseCap.new<ToTypeArgument<T0>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): PurchaseCap {
+  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): PurchaseCap<ToPhantomTypeArgument<T0>> {
     return PurchaseCap.new(typeArg, {
       id: decodeFromFields(UID.reified(), fields.id),
       kioskId: decodeFromFields(ID.reified(), fields.kiosk_id),
@@ -452,7 +485,10 @@ export class PurchaseCap {
     })
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): PurchaseCap {
+  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): PurchaseCap<ToPhantomTypeArgument<T0>> {
     if (!isPurchaseCap(item.type)) {
       throw new Error('not a PurchaseCap type')
     }
@@ -466,7 +502,10 @@ export class PurchaseCap {
     })
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): PurchaseCap {
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    data: Uint8Array
+  ): PurchaseCap<ToPhantomTypeArgument<T0>> {
     return PurchaseCap.fromFields(typeArg, PurchaseCap.bcs.parse(data))
   }
 
@@ -483,7 +522,10 @@ export class PurchaseCap {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): PurchaseCap {
+  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): PurchaseCap<ToPhantomTypeArgument<T0>> {
     return PurchaseCap.new(typeArg, {
       id: decodeFromJSONField(UID.reified(), field.id),
       kioskId: decodeFromJSONField(ID.reified(), field.kioskId),
@@ -492,7 +534,10 @@ export class PurchaseCap {
     })
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): PurchaseCap {
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): PurchaseCap<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== PurchaseCap.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
@@ -505,7 +550,10 @@ export class PurchaseCap {
     return PurchaseCap.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): PurchaseCap {
+  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    content: SuiParsedData
+  ): PurchaseCap<ToPhantomTypeArgument<T0>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -515,11 +563,11 @@ export class PurchaseCap {
     return PurchaseCap.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch(
+  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
     client: SuiClient,
-    typeArg: ReifiedTypeArgument,
+    typeArg: T0,
     id: string
-  ): Promise<PurchaseCap> {
+  ): Promise<PurchaseCap<ToPhantomTypeArgument<T0>>> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching PurchaseCap object at id ${id}: ${res.error.code}`)
@@ -538,13 +586,17 @@ export function isItem(type: string): boolean {
   return type === '0x2::kiosk::Item'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ItemFields {
   id: ToField<ID>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Item {
   static readonly $typeName = '0x2::kiosk::Item'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::kiosk::Item'
 
   readonly $typeName = Item.$typeName
 
@@ -568,6 +620,7 @@ export class Item {
     return {
       typeName: Item.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(Item.$typeName, ...[]) as '0x2::kiosk::Item',
       fromFields: (fields: Record<string, any>) => Item.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Item.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Item.fromBcs(data),
@@ -623,14 +676,18 @@ export function isListing(type: string): boolean {
   return type === '0x2::kiosk::Listing'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ListingFields {
   id: ToField<ID>
   isExclusive: ToField<'bool'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Listing {
   static readonly $typeName = '0x2::kiosk::Listing'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::kiosk::Listing'
 
   readonly $typeName = Listing.$typeName
 
@@ -657,6 +714,7 @@ export class Listing {
     return {
       typeName: Listing.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(Listing.$typeName, ...[]) as '0x2::kiosk::Listing',
       fromFields: (fields: Record<string, any>) => Listing.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Listing.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Listing.fromBcs(data),
@@ -722,13 +780,17 @@ export function isLock(type: string): boolean {
   return type === '0x2::kiosk::Lock'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface LockFields {
   id: ToField<ID>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Lock {
   static readonly $typeName = '0x2::kiosk::Lock'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::kiosk::Lock'
 
   readonly $typeName = Lock.$typeName
 
@@ -752,6 +814,7 @@ export class Lock {
     return {
       typeName: Lock.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(Lock.$typeName, ...[]) as '0x2::kiosk::Lock',
       fromFields: (fields: Record<string, any>) => Lock.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Lock.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Lock.fromBcs(data),
@@ -807,15 +870,19 @@ export function isItemListed(type: string): boolean {
   return type.startsWith('0x2::kiosk::ItemListed<')
 }
 
-export interface ItemListedFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface ItemListedFields<T0 extends PhantomTypeArgument> {
   kiosk: ToField<ID>
   id: ToField<ID>
   price: ToField<'u64'>
 }
 
-export class ItemListed {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class ItemListed<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk::ItemListed'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::kiosk::ItemListed<${T0}>`
 
   readonly $typeName = ItemListed.$typeName
 
@@ -833,7 +900,7 @@ export class ItemListed {
   readonly id: ToField<ID>
   readonly price: ToField<'u64'>
 
-  private constructor(typeArg: string, fields: ItemListedFields) {
+  private constructor(typeArg: string, fields: ItemListedFields<T0>) {
     this.$typeArg = typeArg
 
     this.kiosk = fields.kiosk
@@ -841,24 +908,34 @@ export class ItemListed {
     this.price = fields.price
   }
 
-  static new(typeArg: ReifiedTypeArgument, fields: ItemListedFields): ItemListed {
+  static new<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: ItemListedFields<ToPhantomTypeArgument<T0>>
+  ): ItemListed<ToPhantomTypeArgument<T0>> {
     return new ItemListed(extractType(typeArg), fields)
   }
 
-  static reified(T0: ReifiedTypeArgument) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
     return {
       typeName: ItemListed.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        ItemListed.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::kiosk::ItemListed<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => ItemListed.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ItemListed.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => ItemListed.fromBcs(T0, data),
       bcs: ItemListed.bcs,
       fromJSONField: (field: any) => ItemListed.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof ItemListed.new>,
+      __class: null as unknown as ReturnType<typeof ItemListed.new<ToTypeArgument<T0>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): ItemListed {
+  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): ItemListed<ToPhantomTypeArgument<T0>> {
     return ItemListed.new(typeArg, {
       kiosk: decodeFromFields(ID.reified(), fields.kiosk),
       id: decodeFromFields(ID.reified(), fields.id),
@@ -866,7 +943,10 @@ export class ItemListed {
     })
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): ItemListed {
+  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): ItemListed<ToPhantomTypeArgument<T0>> {
     if (!isItemListed(item.type)) {
       throw new Error('not a ItemListed type')
     }
@@ -879,7 +959,10 @@ export class ItemListed {
     })
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): ItemListed {
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    data: Uint8Array
+  ): ItemListed<ToPhantomTypeArgument<T0>> {
     return ItemListed.fromFields(typeArg, ItemListed.bcs.parse(data))
   }
 
@@ -895,7 +978,10 @@ export class ItemListed {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): ItemListed {
+  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): ItemListed<ToPhantomTypeArgument<T0>> {
     return ItemListed.new(typeArg, {
       kiosk: decodeFromJSONField(ID.reified(), field.kiosk),
       id: decodeFromJSONField(ID.reified(), field.id),
@@ -903,7 +989,10 @@ export class ItemListed {
     })
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): ItemListed {
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): ItemListed<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== ItemListed.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
@@ -924,15 +1013,19 @@ export function isItemPurchased(type: string): boolean {
   return type.startsWith('0x2::kiosk::ItemPurchased<')
 }
 
-export interface ItemPurchasedFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface ItemPurchasedFields<T0 extends PhantomTypeArgument> {
   kiosk: ToField<ID>
   id: ToField<ID>
   price: ToField<'u64'>
 }
 
-export class ItemPurchased {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class ItemPurchased<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk::ItemPurchased'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::kiosk::ItemPurchased<${T0}>`
 
   readonly $typeName = ItemPurchased.$typeName
 
@@ -950,7 +1043,7 @@ export class ItemPurchased {
   readonly id: ToField<ID>
   readonly price: ToField<'u64'>
 
-  private constructor(typeArg: string, fields: ItemPurchasedFields) {
+  private constructor(typeArg: string, fields: ItemPurchasedFields<T0>) {
     this.$typeArg = typeArg
 
     this.kiosk = fields.kiosk
@@ -958,24 +1051,34 @@ export class ItemPurchased {
     this.price = fields.price
   }
 
-  static new(typeArg: ReifiedTypeArgument, fields: ItemPurchasedFields): ItemPurchased {
+  static new<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: ItemPurchasedFields<ToPhantomTypeArgument<T0>>
+  ): ItemPurchased<ToPhantomTypeArgument<T0>> {
     return new ItemPurchased(extractType(typeArg), fields)
   }
 
-  static reified(T0: ReifiedTypeArgument) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
     return {
       typeName: ItemPurchased.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        ItemPurchased.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::kiosk::ItemPurchased<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => ItemPurchased.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ItemPurchased.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => ItemPurchased.fromBcs(T0, data),
       bcs: ItemPurchased.bcs,
       fromJSONField: (field: any) => ItemPurchased.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof ItemPurchased.new>,
+      __class: null as unknown as ReturnType<typeof ItemPurchased.new<ToTypeArgument<T0>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): ItemPurchased {
+  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): ItemPurchased<ToPhantomTypeArgument<T0>> {
     return ItemPurchased.new(typeArg, {
       kiosk: decodeFromFields(ID.reified(), fields.kiosk),
       id: decodeFromFields(ID.reified(), fields.id),
@@ -983,7 +1086,10 @@ export class ItemPurchased {
     })
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): ItemPurchased {
+  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): ItemPurchased<ToPhantomTypeArgument<T0>> {
     if (!isItemPurchased(item.type)) {
       throw new Error('not a ItemPurchased type')
     }
@@ -996,7 +1102,10 @@ export class ItemPurchased {
     })
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): ItemPurchased {
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    data: Uint8Array
+  ): ItemPurchased<ToPhantomTypeArgument<T0>> {
     return ItemPurchased.fromFields(typeArg, ItemPurchased.bcs.parse(data))
   }
 
@@ -1012,7 +1121,10 @@ export class ItemPurchased {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): ItemPurchased {
+  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): ItemPurchased<ToPhantomTypeArgument<T0>> {
     return ItemPurchased.new(typeArg, {
       kiosk: decodeFromJSONField(ID.reified(), field.kiosk),
       id: decodeFromJSONField(ID.reified(), field.id),
@@ -1020,7 +1132,10 @@ export class ItemPurchased {
     })
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): ItemPurchased {
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): ItemPurchased<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== ItemPurchased.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
@@ -1041,14 +1156,18 @@ export function isItemDelisted(type: string): boolean {
   return type.startsWith('0x2::kiosk::ItemDelisted<')
 }
 
-export interface ItemDelistedFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface ItemDelistedFields<T0 extends PhantomTypeArgument> {
   kiosk: ToField<ID>
   id: ToField<ID>
 }
 
-export class ItemDelisted {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class ItemDelisted<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk::ItemDelisted'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::kiosk::ItemDelisted<${T0}>`
 
   readonly $typeName = ItemDelisted.$typeName
 
@@ -1064,38 +1183,51 @@ export class ItemDelisted {
   readonly kiosk: ToField<ID>
   readonly id: ToField<ID>
 
-  private constructor(typeArg: string, fields: ItemDelistedFields) {
+  private constructor(typeArg: string, fields: ItemDelistedFields<T0>) {
     this.$typeArg = typeArg
 
     this.kiosk = fields.kiosk
     this.id = fields.id
   }
 
-  static new(typeArg: ReifiedTypeArgument, fields: ItemDelistedFields): ItemDelisted {
+  static new<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: ItemDelistedFields<ToPhantomTypeArgument<T0>>
+  ): ItemDelisted<ToPhantomTypeArgument<T0>> {
     return new ItemDelisted(extractType(typeArg), fields)
   }
 
-  static reified(T0: ReifiedTypeArgument) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
     return {
       typeName: ItemDelisted.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        ItemDelisted.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::kiosk::ItemDelisted<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => ItemDelisted.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ItemDelisted.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => ItemDelisted.fromBcs(T0, data),
       bcs: ItemDelisted.bcs,
       fromJSONField: (field: any) => ItemDelisted.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof ItemDelisted.new>,
+      __class: null as unknown as ReturnType<typeof ItemDelisted.new<ToTypeArgument<T0>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): ItemDelisted {
+  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): ItemDelisted<ToPhantomTypeArgument<T0>> {
     return ItemDelisted.new(typeArg, {
       kiosk: decodeFromFields(ID.reified(), fields.kiosk),
       id: decodeFromFields(ID.reified(), fields.id),
     })
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): ItemDelisted {
+  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): ItemDelisted<ToPhantomTypeArgument<T0>> {
     if (!isItemDelisted(item.type)) {
       throw new Error('not a ItemDelisted type')
     }
@@ -1107,7 +1239,10 @@ export class ItemDelisted {
     })
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): ItemDelisted {
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    data: Uint8Array
+  ): ItemDelisted<ToPhantomTypeArgument<T0>> {
     return ItemDelisted.fromFields(typeArg, ItemDelisted.bcs.parse(data))
   }
 
@@ -1122,14 +1257,20 @@ export class ItemDelisted {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): ItemDelisted {
+  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): ItemDelisted<ToPhantomTypeArgument<T0>> {
     return ItemDelisted.new(typeArg, {
       kiosk: decodeFromJSONField(ID.reified(), field.kiosk),
       id: decodeFromJSONField(ID.reified(), field.id),
     })
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): ItemDelisted {
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): ItemDelisted<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== ItemDelisted.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }

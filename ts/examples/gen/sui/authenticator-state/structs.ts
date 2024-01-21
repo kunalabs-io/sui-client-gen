@@ -2,12 +2,13 @@ import * as reified from '../../_framework/reified'
 import { String } from '../../_dependencies/source/0x1/string/structs'
 import {
   ToField,
+  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -19,15 +20,19 @@ export function isActiveJwk(type: string): boolean {
   return type === '0x2::authenticator_state::ActiveJwk'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ActiveJwkFields {
   jwkId: ToField<JwkId>
   jwk: ToField<JWK>
   epoch: ToField<'u64'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ActiveJwk {
   static readonly $typeName = '0x2::authenticator_state::ActiveJwk'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::authenticator_state::ActiveJwk'
 
   readonly $typeName = ActiveJwk.$typeName
 
@@ -57,6 +62,10 @@ export class ActiveJwk {
     return {
       typeName: ActiveJwk.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        ActiveJwk.$typeName,
+        ...[]
+      ) as '0x2::authenticator_state::ActiveJwk',
       fromFields: (fields: Record<string, any>) => ActiveJwk.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ActiveJwk.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ActiveJwk.fromBcs(data),
@@ -126,14 +135,18 @@ export function isAuthenticatorState(type: string): boolean {
   return type === '0x2::authenticator_state::AuthenticatorState'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface AuthenticatorStateFields {
   id: ToField<UID>
   version: ToField<'u64'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class AuthenticatorState {
   static readonly $typeName = '0x2::authenticator_state::AuthenticatorState'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::authenticator_state::AuthenticatorState'
 
   readonly $typeName = AuthenticatorState.$typeName
 
@@ -160,6 +173,10 @@ export class AuthenticatorState {
     return {
       typeName: AuthenticatorState.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        AuthenticatorState.$typeName,
+        ...[]
+      ) as '0x2::authenticator_state::AuthenticatorState',
       fromFields: (fields: Record<string, any>) => AuthenticatorState.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => AuthenticatorState.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => AuthenticatorState.fromBcs(data),
@@ -249,14 +266,18 @@ export function isAuthenticatorStateInner(type: string): boolean {
   return type === '0x2::authenticator_state::AuthenticatorStateInner'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface AuthenticatorStateInnerFields {
   version: ToField<'u64'>
-  activeJwks: Array<ToField<ActiveJwk>>
+  activeJwks: ToField<Vector<ActiveJwk>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class AuthenticatorStateInner {
   static readonly $typeName = '0x2::authenticator_state::AuthenticatorStateInner'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::authenticator_state::AuthenticatorStateInner'
 
   readonly $typeName = AuthenticatorStateInner.$typeName
 
@@ -268,7 +289,7 @@ export class AuthenticatorStateInner {
   }
 
   readonly version: ToField<'u64'>
-  readonly activeJwks: Array<ToField<ActiveJwk>>
+  readonly activeJwks: ToField<Vector<ActiveJwk>>
 
   private constructor(fields: AuthenticatorStateInnerFields) {
     this.version = fields.version
@@ -283,6 +304,10 @@ export class AuthenticatorStateInner {
     return {
       typeName: AuthenticatorStateInner.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        AuthenticatorStateInner.$typeName,
+        ...[]
+      ) as '0x2::authenticator_state::AuthenticatorStateInner',
       fromFields: (fields: Record<string, any>) => AuthenticatorStateInner.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         AuthenticatorStateInner.fromFieldsWithTypes(item),
@@ -321,7 +346,7 @@ export class AuthenticatorStateInner {
   toJSONField() {
     return {
       version: this.version.toString(),
-      activeJwks: fieldToJSON<Array<ActiveJwk>>(
+      activeJwks: fieldToJSON<Vector<ActiveJwk>>(
         `vector<0x2::authenticator_state::ActiveJwk>`,
         this.activeJwks
       ),
@@ -355,6 +380,7 @@ export function isJWK(type: string): boolean {
   return type === '0x2::authenticator_state::JWK'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface JWKFields {
   kty: ToField<String>
   e: ToField<String>
@@ -362,9 +388,12 @@ export interface JWKFields {
   alg: ToField<String>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class JWK {
   static readonly $typeName = '0x2::authenticator_state::JWK'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::authenticator_state::JWK'
 
   readonly $typeName = JWK.$typeName
 
@@ -397,6 +426,7 @@ export class JWK {
     return {
       typeName: JWK.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(JWK.$typeName, ...[]) as '0x2::authenticator_state::JWK',
       fromFields: (fields: Record<string, any>) => JWK.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => JWK.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => JWK.fromBcs(data),
@@ -470,14 +500,18 @@ export function isJwkId(type: string): boolean {
   return type === '0x2::authenticator_state::JwkId'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface JwkIdFields {
   iss: ToField<String>
   kid: ToField<String>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class JwkId {
   static readonly $typeName = '0x2::authenticator_state::JwkId'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::authenticator_state::JwkId'
 
   readonly $typeName = JwkId.$typeName
 
@@ -504,6 +538,7 @@ export class JwkId {
     return {
       typeName: JwkId.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(JwkId.$typeName, ...[]) as '0x2::authenticator_state::JwkId',
       fromFields: (fields: Record<string, any>) => JwkId.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => JwkId.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => JwkId.fromBcs(data),

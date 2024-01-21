@@ -2,24 +2,26 @@ import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
 import { FieldsWithTypes, compressSuiType, parseTypeName } from './util'
 
 export interface StructClassReified {
-  typeName: string
-  typeArgs: ReifiedTypeArgument[]
+  typeName: string // e.g., '0x2::balance::Balance', without type arguments
+  typeArgs: Array<ReifiedTypeArgument | PhantomReified>
+  fullTypeName: any // e.g., '0x2::balance::Balance<0x2::sui:SUI>', leave as any to allow for string literals
   bcs: BcsType<any>
   fromFields(fields: Record<string, any>): any
   fromFieldsWithTypes(item: FieldsWithTypes): any
   fromBcs: (data: Uint8Array) => any
   fromJSONField: (field: any) => any
-  __class: any
+  __class: any // leave as any to allow for string literals, used for type inferrence
 }
 
 export interface VectorReified {
   typeArg: ReifiedTypeArgument
   bcs: BcsType<any>
+  fullTypeName: any // e.g., 'vector<u8>', leave as any to allow for string literals
   fromFields(fields: any[]): any[]
   fromFieldsWithTypes(item: any[]): any[]
   fromBcs(data: Uint8Array): any[]
   fromJSONField: (field: any) => any
-  __vectorItem: any
+  __vectorItem: any // leave as any to allow type inference
 }
 
 export type Primitive = 'bool' | 'u8' | 'u16' | 'u32' | 'u64' | 'u128' | 'u256' | 'address'
@@ -27,9 +29,14 @@ export type Primitive = 'bool' | 'u8' | 'u16' | 'u32' | 'u64' | 'u128' | 'u256' 
 export interface StructClass {
   toJSONField(): Record<string, any>
   toJSON(): Record<string, any>
+  __reifiedFullTypeString: string // e.g., '0x2::balance::Balance<0x2::sui:SUI>'
 }
 
-export type TypeArgument = StructClass | Primitive | Array<TypeArgument>
+export interface Vector<T extends TypeArgument> {
+  __vectorTypeArg: T
+}
+
+export type TypeArgument = StructClass | Primitive | Vector<TypeArgument>
 
 export type ReifiedTypeArgument = Primitive | VectorReified | StructClassReified
 
@@ -59,17 +66,29 @@ export type ToField<T extends TypeArgument> = T extends 'bool'
   ? string
   : T extends { $typeName: '0x2::url::Url' }
   ? string
-  : T extends { $typeName: '0x1::option::Option'; vec: Array<infer U> }
-  ? U | null
-  : T extends Array<infer U extends TypeArgument>
+  : T extends { $typeName: '0x1::option::Option'; __inner: infer U extends TypeArgument }
+  ? ToField<U> | null
+  : T extends Vector<infer U>
   ? ToField<U>[]
-  : T
+  : T extends StructClass
+  ? T
+  : never
 
-export type ToTypeArgument<T extends ReifiedTypeArgument> = T extends StructClassReified
-  ? T['__class']
-  : T extends VectorReified
-  ? Array<T['__vectorItem']>
-  : T
+export type ToTypeArgument<T extends ReifiedTypeArgument | PhantomReified> =
+  T extends StructClassReified
+    ? T['__class']
+    : T extends VectorReified
+    ? Vector<T['__vectorItem']>
+    : T // add primitive and then never
+
+export type ToPhantomTypeArgument<T extends PhantomReified | ReifiedTypeArgument> =
+  T extends PhantomReified
+    ? T['phantomType']
+    : T extends StructClassReified
+    ? T['fullTypeName']
+    : T extends VectorReified
+    ? T['fullTypeName']
+    : T // add primitive and then never
 
 const Address = bcs.bytes(32).transform({
   input: (val: string) => fromHEX(val),
@@ -99,7 +118,7 @@ export function toBcs<T extends ReifiedTypeArgument>(arg: T): BcsType<any> {
   }
 }
 
-export function extractType(generic: ReifiedTypeArgument): string {
+export function extractType(generic: ReifiedTypeArgument | PhantomReified): string {
   switch (generic) {
     case 'u8':
     case 'u16':
@@ -112,13 +131,13 @@ export function extractType(generic: ReifiedTypeArgument): string {
       return generic
   }
   if ('__vectorItem' in generic) {
-    return 'vector<' + extractType(generic.typeArg) + '>'
+    return generic.fullTypeName
+  } else if ('__class' in generic) {
+    return generic.fullTypeName
+  } else if ('phantomType' in generic) {
+    return generic.phantomType
   } else {
-    if (generic.typeArgs.length > 0) {
-      return generic.typeName + '<' + generic.typeArgs.map(extractType).join(', ') + '>'
-    } else {
-      return generic.typeName
-    }
+    throw new Error(`invalid reified type argument ${generic}`)
   }
 }
 
@@ -153,7 +172,7 @@ export function decodeFromFields(typeArg: ReifiedTypeArgument, field: any) {
       if (field.vec.length === 0) {
         return null
       }
-      return decodeFromFields(typeArg.typeArgs[0], field.vec[0])
+      return decodeFromFields(typeArg.typeArgs[0] as ReifiedTypeArgument, field.vec[0])
     }
     default:
       return typeArg.fromFields(field)
@@ -191,7 +210,7 @@ export function decodeFromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: an
       if (item === null) {
         return null
       }
-      return decodeFromFieldsWithTypes(typeArg.typeArgs[0], item)
+      return decodeFromFieldsWithTypes(typeArg.typeArgs[0] as ReifiedTypeArgument, item)
     }
     default:
       return typeArg.fromFieldsWithTypes(item)
@@ -201,7 +220,7 @@ export function decodeFromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: an
 export function assertReifiedTypeArgsMatch(
   fullType: string,
   typeArgs: string[],
-  reifiedTypeArgs: ReifiedTypeArgument[]
+  reifiedTypeArgs: Array<ReifiedTypeArgument | PhantomReified>
 ) {
   if (reifiedTypeArgs.length !== typeArgs.length) {
     throw new Error(
@@ -221,7 +240,7 @@ export function assertReifiedTypeArgsMatch(
 
 export function assertFieldsWithTypesArgsMatch(
   item: FieldsWithTypes,
-  reifiedTypeArgs: ReifiedTypeArgument[]
+  reifiedTypeArgs: Array<ReifiedTypeArgument | PhantomReified>
 ) {
   const { typeArgs: itemTypeArgs } = parseTypeName(item.type)
   assertReifiedTypeArgsMatch(item.type, itemTypeArgs, reifiedTypeArgs)
@@ -258,7 +277,7 @@ export type ToJSON<T extends TypeArgument> = T extends 'bool'
       __inner: infer U extends TypeArgument
     }
   ? ToJSON<U> | null
-  : T extends Array<infer U extends TypeArgument>
+  : T extends Vector<infer U>
   ? ToJSON<U>[]
   : T extends StructClass
   ? ReturnType<T['toJSONField']>
@@ -303,13 +322,14 @@ export function fieldToJSON<T extends TypeArgument>(type: string, field: ToField
 export function vector<T extends ReifiedTypeArgument>(typeArg: T) {
   return {
     typeArg,
+    fullTypeName: `vector<${extractType(typeArg)}>` as `vector<${ToPhantomTypeArgument<T>}>`,
     bcs: bcs.vector(toBcs(typeArg)),
     fromFields: (fields: any[]) => fields.map(field => decodeFromFields(typeArg, field)),
     fromFieldsWithTypes: (item: any[]) =>
       item.map(field => decodeFromFieldsWithTypes(typeArg, field)),
     fromBcs: (data: Uint8Array) => bcs.vector(toBcs(typeArg)).parse(data),
     fromJSONField: (json: any[]) => json.map(field => decodeFromJSONField(typeArg, field)),
-    __vectorItem: null as unknown as ToField<ToTypeArgument<T>>,
+    __vectorItem: null as unknown as ToTypeArgument<T>,
   }
 }
 
@@ -341,9 +361,57 @@ export function decodeFromJSONField(typeArg: ReifiedTypeArgument, field: any) {
       if (field === null) {
         return null
       }
-      return decodeFromJSONField(typeArg.typeArgs[0], field)
+      return decodeFromJSONField(typeArg.typeArgs[0] as ReifiedTypeArgument, field)
     }
     default:
       return typeArg.fromJSONField(field)
   }
 }
+
+export interface PhantomReified {
+  phantomType: any // leave as any to allow for string literals
+}
+
+export function phantom<P extends string>(phantomType: P): { phantomType: P } {
+  return {
+    phantomType,
+  }
+}
+
+export type PhantomTypeArgument = string
+
+export type ReifiedPhantomTypeArgument = ReifiedTypeArgument | PhantomReified
+
+export type ToTypeStr<T extends TypeArgument, Depth extends number = 10> = Depth extends 0
+  ? string
+  : T extends Primitive
+  ? T
+  : T extends { __reifiedFullTypeString: infer U }
+  ? U
+  : T extends Vector<infer U>
+  ? `vector<${ToTypeStr<U, Decrement<Depth>>}>`
+  : never
+
+// to prevent "Type instantiation is excessively deep and possibly infinite" errors
+// for nested vectors
+type Decrement<N extends number> = N extends 1
+  ? 0
+  : N extends 2
+  ? 1
+  : N extends 3
+  ? 2
+  : N extends 4
+  ? 3
+  : N extends 5
+  ? 4
+  : N extends 6
+  ? 5
+  : N extends 7
+  ? 6
+  : N extends 8
+  ? 7
+  : N extends 9
+  ? 8
+  : N extends 10
+  ? 9
+  : never

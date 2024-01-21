@@ -1,13 +1,17 @@
 import { TypeName } from '../../_dependencies/source/0x1/type-name/structs'
 import {
-  ReifiedTypeArgument,
+  PhantomTypeArgument,
+  ReifiedPhantomTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
+  ToTypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
+  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Balance, Supply } from '../../sui/balance/structs'
@@ -25,14 +29,19 @@ export function isAdminCap(type: string): boolean {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface AdminCapFields {
   id: ToField<UID>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class AdminCap {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString =
+    null as unknown as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
 
   readonly $typeName = AdminCap.$typeName
 
@@ -56,6 +65,10 @@ export class AdminCap {
     return {
       typeName: AdminCap.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        AdminCap.$typeName,
+        ...[]
+      ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap',
       fromFields: (fields: Record<string, any>) => AdminCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => AdminCap.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => AdminCap.fromBcs(data),
@@ -134,14 +147,19 @@ export function isLP(type: string): boolean {
   )
 }
 
-export interface LPFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface LPFields<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
   dummyField: ToField<'bool'>
 }
 
-export class LP {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP'
   static readonly $numTypeParams = 2
+
+  __reifiedFullTypeString =
+    null as unknown as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${A}, ${B}>`
 
   readonly $typeName = LP.$typeName
 
@@ -161,37 +179,47 @@ export class LP {
     this.dummyField = dummyField
   }
 
-  static new(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static new<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+    typeArgs: [A, B],
     dummyField: ToField<'bool'>
-  ): LP {
+  ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return new LP(typeArgs.map(extractType) as [string, string], dummyField)
   }
 
-  static reified(A: ReifiedTypeArgument, B: ReifiedTypeArgument) {
+  static reified<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+    A: A,
+    B: B
+  ) {
     return {
       typeName: LP.$typeName,
       typeArgs: [A, B],
+      fullTypeName: composeSuiType(
+        LP.$typeName,
+        ...[extractType(A), extractType(B)]
+      ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${ToPhantomTypeArgument<A>}, ${ToPhantomTypeArgument<B>}>`,
       fromFields: (fields: Record<string, any>) => LP.fromFields([A, B], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => LP.fromFieldsWithTypes([A, B], item),
       fromBcs: (data: Uint8Array) => LP.fromBcs([A, B], data),
       bcs: LP.bcs,
       fromJSONField: (field: any) => LP.fromJSONField([A, B], field),
-      __class: null as unknown as ReturnType<typeof LP.new>,
+      __class: null as unknown as ReturnType<typeof LP.new<ToTypeArgument<A>, ToTypeArgument<B>>>,
     }
   }
 
-  static fromFields(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromFields<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+    typeArgs: [A, B],
     fields: Record<string, any>
-  ): LP {
+  ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return LP.new(typeArgs, decodeFromFields('bool', fields.dummy_field))
   }
 
-  static fromFieldsWithTypes(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromFieldsWithTypes<
+    A extends ReifiedPhantomTypeArgument,
+    B extends ReifiedPhantomTypeArgument,
+  >(
+    typeArgs: [A, B],
     item: FieldsWithTypes
-  ): LP {
+  ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     if (!isLP(item.type)) {
       throw new Error('not a LP type')
     }
@@ -200,7 +228,10 @@ export class LP {
     return LP.new(typeArgs, decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
   }
 
-  static fromBcs(typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument], data: Uint8Array): LP {
+  static fromBcs<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+    typeArgs: [A, B],
+    data: Uint8Array
+  ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return LP.fromFields(typeArgs, LP.bcs.parse(data))
   }
 
@@ -214,14 +245,17 @@ export class LP {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument], field: any): LP {
+  static fromJSONField<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+    typeArgs: [A, B],
+    field: any
+  ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return LP.new(typeArgs, decodeFromJSONField('bool', field.dummyField))
   }
 
-  static fromJSON(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromJSON<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+    typeArgs: [A, B],
     json: Record<string, any>
-  ): LP {
+  ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     if (json.$typeName !== LP.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
@@ -244,20 +278,25 @@ export function isPool(type: string): boolean {
   )
 }
 
-export interface PoolFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface PoolFields<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
   id: ToField<UID>
-  balanceA: ToField<Balance>
-  balanceB: ToField<Balance>
-  lpSupply: ToField<Supply>
+  balanceA: ToField<Balance<A>>
+  balanceB: ToField<Balance<B>>
+  lpSupply: ToField<Supply<ToPhantom<LP<A, B>>>>
   lpFeeBps: ToField<'u64'>
   adminFeePct: ToField<'u64'>
-  adminFeeBalance: ToField<Balance>
+  adminFeeBalance: ToField<Balance<ToPhantom<LP<A, B>>>>
 }
 
-export class Pool {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool'
   static readonly $numTypeParams = 2
+
+  __reifiedFullTypeString =
+    null as unknown as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${A}, ${B}>`
 
   readonly $typeName = Pool.$typeName
 
@@ -276,14 +315,14 @@ export class Pool {
   readonly $typeArgs: [string, string]
 
   readonly id: ToField<UID>
-  readonly balanceA: ToField<Balance>
-  readonly balanceB: ToField<Balance>
-  readonly lpSupply: ToField<Supply>
+  readonly balanceA: ToField<Balance<A>>
+  readonly balanceB: ToField<Balance<B>>
+  readonly lpSupply: ToField<Supply<ToPhantom<LP<A, B>>>>
   readonly lpFeeBps: ToField<'u64'>
   readonly adminFeePct: ToField<'u64'>
-  readonly adminFeeBalance: ToField<Balance>
+  readonly adminFeeBalance: ToField<Balance<ToPhantom<LP<A, B>>>>
 
-  private constructor(typeArgs: [string, string], fields: PoolFields) {
+  private constructor(typeArgs: [string, string], fields: PoolFields<A, B>) {
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -295,27 +334,37 @@ export class Pool {
     this.adminFeeBalance = fields.adminFeeBalance
   }
 
-  static new(typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument], fields: PoolFields): Pool {
+  static new<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+    typeArgs: [A, B],
+    fields: PoolFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>
+  ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return new Pool(typeArgs.map(extractType) as [string, string], fields)
   }
 
-  static reified(A: ReifiedTypeArgument, B: ReifiedTypeArgument) {
+  static reified<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+    A: A,
+    B: B
+  ) {
     return {
       typeName: Pool.$typeName,
       typeArgs: [A, B],
+      fullTypeName: composeSuiType(
+        Pool.$typeName,
+        ...[extractType(A), extractType(B)]
+      ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${ToPhantomTypeArgument<A>}, ${ToPhantomTypeArgument<B>}>`,
       fromFields: (fields: Record<string, any>) => Pool.fromFields([A, B], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Pool.fromFieldsWithTypes([A, B], item),
       fromBcs: (data: Uint8Array) => Pool.fromBcs([A, B], data),
       bcs: Pool.bcs,
       fromJSONField: (field: any) => Pool.fromJSONField([A, B], field),
-      __class: null as unknown as ReturnType<typeof Pool.new>,
+      __class: null as unknown as ReturnType<typeof Pool.new<ToTypeArgument<A>, ToTypeArgument<B>>>,
     }
   }
 
-  static fromFields(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromFields<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+    typeArgs: [A, B],
     fields: Record<string, any>
-  ): Pool {
+  ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return Pool.new(typeArgs, {
       id: decodeFromFields(UID.reified(), fields.id),
       balanceA: decodeFromFields(Balance.reified(typeArgs[0]), fields.balance_a),
@@ -333,10 +382,13 @@ export class Pool {
     })
   }
 
-  static fromFieldsWithTypes(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromFieldsWithTypes<
+    A extends ReifiedPhantomTypeArgument,
+    B extends ReifiedPhantomTypeArgument,
+  >(
+    typeArgs: [A, B],
     item: FieldsWithTypes
-  ): Pool {
+  ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     if (!isPool(item.type)) {
       throw new Error('not a Pool type')
     }
@@ -359,7 +411,10 @@ export class Pool {
     })
   }
 
-  static fromBcs(typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument], data: Uint8Array): Pool {
+  static fromBcs<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+    typeArgs: [A, B],
+    data: Uint8Array
+  ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return Pool.fromFields(typeArgs, Pool.bcs.parse(data))
   }
 
@@ -379,7 +434,10 @@ export class Pool {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument], field: any): Pool {
+  static fromJSONField<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+    typeArgs: [A, B],
+    field: any
+  ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return Pool.new(typeArgs, {
       id: decodeFromJSONField(UID.reified(), field.id),
       balanceA: decodeFromJSONField(Balance.reified(typeArgs[0]), field.balanceA),
@@ -397,10 +455,10 @@ export class Pool {
     })
   }
 
-  static fromJSON(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromJSON<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+    typeArgs: [A, B],
     json: Record<string, any>
-  ): Pool {
+  ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     if (json.$typeName !== Pool.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
@@ -413,10 +471,13 @@ export class Pool {
     return Pool.fromJSONField(typeArgs, json)
   }
 
-  static fromSuiParsedData(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromSuiParsedData<
+    A extends ReifiedPhantomTypeArgument,
+    B extends ReifiedPhantomTypeArgument,
+  >(
+    typeArgs: [A, B],
     content: SuiParsedData
-  ): Pool {
+  ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -426,11 +487,11 @@ export class Pool {
     return Pool.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch(
+  static async fetch<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
     client: SuiClient,
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    typeArgs: [A, B],
     id: string
-  ): Promise<Pool> {
+  ): Promise<Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Pool object at id ${id}: ${res.error.code}`)
@@ -452,14 +513,19 @@ export function isPoolCreationEvent(type: string): boolean {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PoolCreationEventFields {
   poolId: ToField<ID>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PoolCreationEvent {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString =
+    null as unknown as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
 
   readonly $typeName = PoolCreationEvent.$typeName
 
@@ -483,6 +549,10 @@ export class PoolCreationEvent {
     return {
       typeName: PoolCreationEvent.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        PoolCreationEvent.$typeName,
+        ...[]
+      ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent',
       fromFields: (fields: Record<string, any>) => PoolCreationEvent.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PoolCreationEvent.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PoolCreationEvent.fromBcs(data),
@@ -541,15 +611,20 @@ export function isPoolRegistry(type: string): boolean {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PoolRegistryFields {
   id: ToField<UID>
-  table: ToField<Table>
+  table: ToField<Table<ToPhantom<PoolRegistryItem>, 'bool'>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PoolRegistry {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString =
+    null as unknown as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
 
   readonly $typeName = PoolRegistry.$typeName
 
@@ -561,7 +636,7 @@ export class PoolRegistry {
   }
 
   readonly id: ToField<UID>
-  readonly table: ToField<Table>
+  readonly table: ToField<Table<ToPhantom<PoolRegistryItem>, 'bool'>>
 
   private constructor(fields: PoolRegistryFields) {
     this.id = fields.id
@@ -576,6 +651,10 @@ export class PoolRegistry {
     return {
       typeName: PoolRegistry.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        PoolRegistry.$typeName,
+        ...[]
+      ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry',
       fromFields: (fields: Record<string, any>) => PoolRegistry.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PoolRegistry.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PoolRegistry.fromBcs(data),
@@ -668,15 +747,20 @@ export function isPoolRegistryItem(type: string): boolean {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PoolRegistryItemFields {
   a: ToField<TypeName>
   b: ToField<TypeName>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PoolRegistryItem {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString =
+    null as unknown as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
 
   readonly $typeName = PoolRegistryItem.$typeName
 
@@ -703,6 +787,10 @@ export class PoolRegistryItem {
     return {
       typeName: PoolRegistryItem.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        PoolRegistryItem.$typeName,
+        ...[]
+      ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem',
       fromFields: (fields: Record<string, any>) => PoolRegistryItem.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PoolRegistryItem.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PoolRegistryItem.fromBcs(data),

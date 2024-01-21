@@ -4,7 +4,7 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { ID, UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -16,14 +16,18 @@ export function isVersioned(type: string): boolean {
   return type === '0x2::versioned::Versioned'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface VersionedFields {
   id: ToField<UID>
   version: ToField<'u64'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Versioned {
   static readonly $typeName = '0x2::versioned::Versioned'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::versioned::Versioned'
 
   readonly $typeName = Versioned.$typeName
 
@@ -50,6 +54,7 @@ export class Versioned {
     return {
       typeName: Versioned.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(Versioned.$typeName, ...[]) as '0x2::versioned::Versioned',
       fromFields: (fields: Record<string, any>) => Versioned.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Versioned.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Versioned.fromBcs(data),
@@ -136,14 +141,18 @@ export function isVersionChangeCap(type: string): boolean {
   return type === '0x2::versioned::VersionChangeCap'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface VersionChangeCapFields {
   versionedId: ToField<ID>
   oldVersion: ToField<'u64'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class VersionChangeCap {
   static readonly $typeName = '0x2::versioned::VersionChangeCap'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::versioned::VersionChangeCap'
 
   readonly $typeName = VersionChangeCap.$typeName
 
@@ -170,6 +179,10 @@ export class VersionChangeCap {
     return {
       typeName: VersionChangeCap.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        VersionChangeCap.$typeName,
+        ...[]
+      ) as '0x2::versioned::VersionChangeCap',
       fromFields: (fields: Record<string, any>) => VersionChangeCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VersionChangeCap.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => VersionChangeCap.fromBcs(data),

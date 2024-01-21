@@ -4,7 +4,7 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/ascii/structs'
 import { bcs } from '@mysten/bcs'
 
@@ -15,13 +15,17 @@ export function isUrl(type: string): boolean {
   return type === '0x2::url::Url'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface UrlFields {
   url: ToField<String>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Url {
   static readonly $typeName = '0x2::url::Url'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::url::Url'
 
   readonly $typeName = Url.$typeName
 
@@ -45,6 +49,7 @@ export class Url {
     return {
       typeName: Url.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(Url.$typeName, ...[]) as '0x2::url::Url',
       fromFields: (fields: Record<string, any>) => Url.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Url.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Url.fromBcs(data),

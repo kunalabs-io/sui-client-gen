@@ -1,12 +1,13 @@
 import * as reified from '../../_framework/reified'
 import {
   ToField,
+  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/ascii/structs'
 import { ID, UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
@@ -19,15 +20,19 @@ export function isPublisher(type: string): boolean {
   return type === '0x2::package::Publisher'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PublisherFields {
   id: ToField<UID>
   package: ToField<String>
   moduleName: ToField<String>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Publisher {
   static readonly $typeName = '0x2::package::Publisher'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::package::Publisher'
 
   readonly $typeName = Publisher.$typeName
 
@@ -57,6 +62,7 @@ export class Publisher {
     return {
       typeName: Publisher.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(Publisher.$typeName, ...[]) as '0x2::package::Publisher',
       fromFields: (fields: Record<string, any>) => Publisher.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Publisher.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Publisher.fromBcs(data),
@@ -147,6 +153,7 @@ export function isUpgradeCap(type: string): boolean {
   return type === '0x2::package::UpgradeCap'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface UpgradeCapFields {
   id: ToField<UID>
   package: ToField<ID>
@@ -154,9 +161,12 @@ export interface UpgradeCapFields {
   policy: ToField<'u8'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class UpgradeCap {
   static readonly $typeName = '0x2::package::UpgradeCap'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::package::UpgradeCap'
 
   readonly $typeName = UpgradeCap.$typeName
 
@@ -189,6 +199,7 @@ export class UpgradeCap {
     return {
       typeName: UpgradeCap.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(UpgradeCap.$typeName, ...[]) as '0x2::package::UpgradeCap',
       fromFields: (fields: Record<string, any>) => UpgradeCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeCap.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UpgradeCap.fromBcs(data),
@@ -283,16 +294,20 @@ export function isUpgradeTicket(type: string): boolean {
   return type === '0x2::package::UpgradeTicket'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface UpgradeTicketFields {
   cap: ToField<ID>
   package: ToField<ID>
   policy: ToField<'u8'>
-  digest: Array<ToField<'u8'>>
+  digest: ToField<Vector<'u8'>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class UpgradeTicket {
   static readonly $typeName = '0x2::package::UpgradeTicket'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::package::UpgradeTicket'
 
   readonly $typeName = UpgradeTicket.$typeName
 
@@ -308,7 +323,7 @@ export class UpgradeTicket {
   readonly cap: ToField<ID>
   readonly package: ToField<ID>
   readonly policy: ToField<'u8'>
-  readonly digest: Array<ToField<'u8'>>
+  readonly digest: ToField<Vector<'u8'>>
 
   private constructor(fields: UpgradeTicketFields) {
     this.cap = fields.cap
@@ -325,6 +340,7 @@ export class UpgradeTicket {
     return {
       typeName: UpgradeTicket.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(UpgradeTicket.$typeName, ...[]) as '0x2::package::UpgradeTicket',
       fromFields: (fields: Record<string, any>) => UpgradeTicket.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeTicket.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UpgradeTicket.fromBcs(data),
@@ -365,7 +381,7 @@ export class UpgradeTicket {
       cap: this.cap,
       package: this.package,
       policy: this.policy,
-      digest: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.digest),
+      digest: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.digest),
     }
   }
 
@@ -398,14 +414,18 @@ export function isUpgradeReceipt(type: string): boolean {
   return type === '0x2::package::UpgradeReceipt'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface UpgradeReceiptFields {
   cap: ToField<ID>
   package: ToField<ID>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class UpgradeReceipt {
   static readonly $typeName = '0x2::package::UpgradeReceipt'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::package::UpgradeReceipt'
 
   readonly $typeName = UpgradeReceipt.$typeName
 
@@ -432,6 +452,10 @@ export class UpgradeReceipt {
     return {
       typeName: UpgradeReceipt.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        UpgradeReceipt.$typeName,
+        ...[]
+      ) as '0x2::package::UpgradeReceipt',
       fromFields: (fields: Record<string, any>) => UpgradeReceipt.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeReceipt.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UpgradeReceipt.fromBcs(data),

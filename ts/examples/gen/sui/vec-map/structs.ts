@@ -2,8 +2,10 @@ import * as reified from '../../_framework/reified'
 import {
   ReifiedTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
   ToTypeArgument,
   TypeArgument,
+  Vector,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -12,6 +14,7 @@ import {
   extractType,
   fieldToJSON,
   toBcs,
+  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
@@ -23,14 +26,19 @@ export function isEntry(type: string): boolean {
   return type.startsWith('0x2::vec_map::Entry<')
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface EntryFields<K extends TypeArgument, V extends TypeArgument> {
   key: ToField<K>
   value: ToField<V>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Entry<K extends TypeArgument, V extends TypeArgument> {
   static readonly $typeName = '0x2::vec_map::Entry'
   static readonly $numTypeParams = 2
+
+  __reifiedFullTypeString =
+    null as unknown as `0x2::vec_map::Entry<${ToPhantom<K>}, ${ToPhantom<V>}>`
 
   readonly $typeName = Entry.$typeName
 
@@ -65,6 +73,10 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> {
     return {
       typeName: Entry.$typeName,
       typeArgs: [K, V],
+      fullTypeName: composeSuiType(
+        Entry.$typeName,
+        ...[extractType(K), extractType(V)]
+      ) as `0x2::vec_map::Entry<${ToPhantomTypeArgument<K>}, ${ToPhantomTypeArgument<V>}>`,
       fromFields: (fields: Record<string, any>) => Entry.fromFields([K, V], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Entry.fromFieldsWithTypes([K, V], item),
       fromBcs: (data: Uint8Array) => Entry.fromBcs([K, V], data),
@@ -153,13 +165,18 @@ export function isVecMap(type: string): boolean {
   return type.startsWith('0x2::vec_map::VecMap<')
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface VecMapFields<K extends TypeArgument, V extends TypeArgument> {
-  contents: Array<ToField<Entry<K, V>>>
+  contents: ToField<Vector<Entry<K, V>>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class VecMap<K extends TypeArgument, V extends TypeArgument> {
   static readonly $typeName = '0x2::vec_map::VecMap'
   static readonly $numTypeParams = 2
+
+  __reifiedFullTypeString =
+    null as unknown as `0x2::vec_map::VecMap<${ToPhantom<K>}, ${ToPhantom<V>}>`
 
   readonly $typeName = VecMap.$typeName
 
@@ -172,9 +189,9 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> {
 
   readonly $typeArgs: [string, string]
 
-  readonly contents: Array<ToField<Entry<K, V>>>
+  readonly contents: ToField<Vector<Entry<K, V>>>
 
-  private constructor(typeArgs: [string, string], contents: Array<ToField<Entry<K, V>>>) {
+  private constructor(typeArgs: [string, string], contents: ToField<Vector<Entry<K, V>>>) {
     this.$typeArgs = typeArgs
 
     this.contents = contents
@@ -182,7 +199,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> {
 
   static new<K extends ReifiedTypeArgument, V extends ReifiedTypeArgument>(
     typeArgs: [K, V],
-    contents: Array<ToField<Entry<ToTypeArgument<K>, ToTypeArgument<V>>>>
+    contents: ToField<Vector<Entry<ToTypeArgument<K>, ToTypeArgument<V>>>>
   ): VecMap<ToTypeArgument<K>, ToTypeArgument<V>> {
     return new VecMap(typeArgs.map(extractType) as [string, string], contents)
   }
@@ -191,6 +208,10 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> {
     return {
       typeName: VecMap.$typeName,
       typeArgs: [K, V],
+      fullTypeName: composeSuiType(
+        VecMap.$typeName,
+        ...[extractType(K), extractType(V)]
+      ) as `0x2::vec_map::VecMap<${ToPhantomTypeArgument<K>}, ${ToPhantomTypeArgument<V>}>`,
       fromFields: (fields: Record<string, any>) => VecMap.fromFields([K, V], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VecMap.fromFieldsWithTypes([K, V], item),
       fromBcs: (data: Uint8Array) => VecMap.fromBcs([K, V], data),
@@ -242,7 +263,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> {
 
   toJSONField() {
     return {
-      contents: fieldToJSON<Array<Entry<K, V>>>(
+      contents: fieldToJSON<Vector<Entry<K, V>>>(
         `vector<0x2::vec_map::Entry<${this.$typeArgs[0]}, ${this.$typeArgs[1]}>>`,
         this.contents
       ),

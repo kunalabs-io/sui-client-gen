@@ -2,8 +2,10 @@ import * as reified from '../../_framework/reified'
 import {
   ReifiedTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
   ToTypeArgument,
   TypeArgument,
+  Vector,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -12,6 +14,7 @@ import {
   extractType,
   fieldToJSON,
   toBcs,
+  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
@@ -23,13 +26,17 @@ export function isVecSet(type: string): boolean {
   return type.startsWith('0x2::vec_set::VecSet<')
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface VecSetFields<K extends TypeArgument> {
-  contents: Array<ToField<K>>
+  contents: ToField<Vector<K>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class VecSet<K extends TypeArgument> {
   static readonly $typeName = '0x2::vec_set::VecSet'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::vec_set::VecSet<${ToPhantom<K>}>`
 
   readonly $typeName = VecSet.$typeName
 
@@ -42,9 +49,9 @@ export class VecSet<K extends TypeArgument> {
 
   readonly $typeArg: string
 
-  readonly contents: Array<ToField<K>>
+  readonly contents: ToField<Vector<K>>
 
-  private constructor(typeArg: string, contents: Array<ToField<K>>) {
+  private constructor(typeArg: string, contents: ToField<Vector<K>>) {
     this.$typeArg = typeArg
 
     this.contents = contents
@@ -52,7 +59,7 @@ export class VecSet<K extends TypeArgument> {
 
   static new<K extends ReifiedTypeArgument>(
     typeArg: K,
-    contents: Array<ToField<ToTypeArgument<K>>>
+    contents: ToField<Vector<ToTypeArgument<K>>>
   ): VecSet<ToTypeArgument<K>> {
     return new VecSet(extractType(typeArg), contents)
   }
@@ -61,6 +68,10 @@ export class VecSet<K extends TypeArgument> {
     return {
       typeName: VecSet.$typeName,
       typeArgs: [K],
+      fullTypeName: composeSuiType(
+        VecSet.$typeName,
+        ...[extractType(K)]
+      ) as `0x2::vec_set::VecSet<${ToPhantomTypeArgument<K>}>`,
       fromFields: (fields: Record<string, any>) => VecSet.fromFields(K, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VecSet.fromFieldsWithTypes(K, item),
       fromBcs: (data: Uint8Array) => VecSet.fromBcs(K, data),
@@ -103,7 +114,7 @@ export class VecSet<K extends TypeArgument> {
 
   toJSONField() {
     return {
-      contents: fieldToJSON<Array<K>>(`vector<${this.$typeArg}>`, this.contents),
+      contents: fieldToJSON<Vector<K>>(`vector<${this.$typeArg}>`, this.contents),
     }
   }
 

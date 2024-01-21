@@ -2,8 +2,10 @@ import * as reified from '../../_framework/reified'
 import {
   ReifiedTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
   ToTypeArgument,
   TypeArgument,
+  Vector,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -12,6 +14,7 @@ import {
   extractType,
   fieldToJSON,
   toBcs,
+  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
@@ -23,15 +26,19 @@ export function isOption(type: string): boolean {
   return type.startsWith('0x1::option::Option<')
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface OptionFields<T0 extends TypeArgument> {
-  vec: Array<ToField<T0>>
+  vec: ToField<Vector<T0>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Option<T0 extends TypeArgument> {
   static readonly $typeName = '0x1::option::Option'
   static readonly $numTypeParams = 1
 
   __inner: T0 = null as unknown as T0 // for type checking in reified.ts
+
+  __reifiedFullTypeString = null as unknown as `0x1::option::Option<${ToPhantom<T0>}>`
 
   readonly $typeName = Option.$typeName
 
@@ -44,9 +51,9 @@ export class Option<T0 extends TypeArgument> {
 
   readonly $typeArg: string
 
-  readonly vec: Array<ToField<T0>>
+  readonly vec: ToField<Vector<T0>>
 
-  private constructor(typeArg: string, vec: Array<ToField<T0>>) {
+  private constructor(typeArg: string, vec: ToField<Vector<T0>>) {
     this.$typeArg = typeArg
 
     this.vec = vec
@@ -54,7 +61,7 @@ export class Option<T0 extends TypeArgument> {
 
   static new<T0 extends ReifiedTypeArgument>(
     typeArg: T0,
-    vec: Array<ToField<ToTypeArgument<T0>>>
+    vec: ToField<Vector<ToTypeArgument<T0>>>
   ): Option<ToTypeArgument<T0>> {
     return new Option(extractType(typeArg), vec)
   }
@@ -63,6 +70,10 @@ export class Option<T0 extends TypeArgument> {
     return {
       typeName: Option.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        Option.$typeName,
+        ...[extractType(T0)]
+      ) as `0x1::option::Option<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => Option.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Option.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => Option.fromBcs(T0, data),
@@ -102,7 +113,7 @@ export class Option<T0 extends TypeArgument> {
 
   toJSONField() {
     return {
-      vec: fieldToJSON<Array<T0>>(`vector<${this.$typeArg}>`, this.vec),
+      vec: fieldToJSON<Vector<T0>>(`vector<${this.$typeArg}>`, this.vec),
     }
   }
 

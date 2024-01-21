@@ -1,6 +1,9 @@
 import {
-  ReifiedTypeArgument,
+  PhantomTypeArgument,
+  ReifiedPhantomTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
+  ToTypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -20,14 +23,18 @@ export function isObjectTable(type: string): boolean {
   return type.startsWith('0x2::object_table::ObjectTable<')
 }
 
-export interface ObjectTableFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface ObjectTableFields<T0 extends PhantomTypeArgument, T1 extends PhantomTypeArgument> {
   id: ToField<UID>
   size: ToField<'u64'>
 }
 
-export class ObjectTable {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::object_table::ObjectTable'
   static readonly $numTypeParams = 2
+
+  __reifiedFullTypeString = null as unknown as `0x2::object_table::ObjectTable<${T0}, ${T1}>`
 
   readonly $typeName = ObjectTable.$typeName
 
@@ -43,48 +50,60 @@ export class ObjectTable {
   readonly id: ToField<UID>
   readonly size: ToField<'u64'>
 
-  private constructor(typeArgs: [string, string], fields: ObjectTableFields) {
+  private constructor(typeArgs: [string, string], fields: ObjectTableFields<T0, T1>) {
     this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.size = fields.size
   }
 
-  static new(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
-    fields: ObjectTableFields
-  ): ObjectTable {
+  static new<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
+    typeArgs: [T0, T1],
+    fields: ObjectTableFields<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>
+  ): ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
     return new ObjectTable(typeArgs.map(extractType) as [string, string], fields)
   }
 
-  static reified(T0: ReifiedTypeArgument, T1: ReifiedTypeArgument) {
+  static reified<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
+    T0: T0,
+    T1: T1
+  ) {
     return {
       typeName: ObjectTable.$typeName,
       typeArgs: [T0, T1],
+      fullTypeName: composeSuiType(
+        ObjectTable.$typeName,
+        ...[extractType(T0), extractType(T1)]
+      ) as `0x2::object_table::ObjectTable<${ToPhantomTypeArgument<T0>}, ${ToPhantomTypeArgument<T1>}>`,
       fromFields: (fields: Record<string, any>) => ObjectTable.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         ObjectTable.fromFieldsWithTypes([T0, T1], item),
       fromBcs: (data: Uint8Array) => ObjectTable.fromBcs([T0, T1], data),
       bcs: ObjectTable.bcs,
       fromJSONField: (field: any) => ObjectTable.fromJSONField([T0, T1], field),
-      __class: null as unknown as ReturnType<typeof ObjectTable.new>,
+      __class: null as unknown as ReturnType<
+        typeof ObjectTable.new<ToTypeArgument<T0>, ToTypeArgument<T1>>
+      >,
     }
   }
 
-  static fromFields(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromFields<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
+    typeArgs: [T0, T1],
     fields: Record<string, any>
-  ): ObjectTable {
+  ): ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
     return ObjectTable.new(typeArgs, {
       id: decodeFromFields(UID.reified(), fields.id),
       size: decodeFromFields('u64', fields.size),
     })
   }
 
-  static fromFieldsWithTypes(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromFieldsWithTypes<
+    T0 extends ReifiedPhantomTypeArgument,
+    T1 extends ReifiedPhantomTypeArgument,
+  >(
+    typeArgs: [T0, T1],
     item: FieldsWithTypes
-  ): ObjectTable {
+  ): ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
     if (!isObjectTable(item.type)) {
       throw new Error('not a ObjectTable type')
     }
@@ -96,10 +115,10 @@ export class ObjectTable {
     })
   }
 
-  static fromBcs(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
+    typeArgs: [T0, T1],
     data: Uint8Array
-  ): ObjectTable {
+  ): ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
     return ObjectTable.fromFields(typeArgs, ObjectTable.bcs.parse(data))
   }
 
@@ -114,20 +133,23 @@ export class ObjectTable {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
-  static fromJSONField(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromJSONField<
+    T0 extends ReifiedPhantomTypeArgument,
+    T1 extends ReifiedPhantomTypeArgument,
+  >(
+    typeArgs: [T0, T1],
     field: any
-  ): ObjectTable {
+  ): ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
     return ObjectTable.new(typeArgs, {
       id: decodeFromJSONField(UID.reified(), field.id),
       size: decodeFromJSONField('u64', field.size),
     })
   }
 
-  static fromJSON(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
+    typeArgs: [T0, T1],
     json: Record<string, any>
-  ): ObjectTable {
+  ): ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
     if (json.$typeName !== ObjectTable.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
@@ -140,10 +162,13 @@ export class ObjectTable {
     return ObjectTable.fromJSONField(typeArgs, json)
   }
 
-  static fromSuiParsedData(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromSuiParsedData<
+    T0 extends ReifiedPhantomTypeArgument,
+    T1 extends ReifiedPhantomTypeArgument,
+  >(
+    typeArgs: [T0, T1],
     content: SuiParsedData
-  ): ObjectTable {
+  ): ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -153,11 +178,11 @@ export class ObjectTable {
     return ObjectTable.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch(
+  static async fetch<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
     client: SuiClient,
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    typeArgs: [T0, T1],
     id: string
-  ): Promise<ObjectTable> {
+  ): Promise<ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching ObjectTable object at id ${id}: ${res.error.code}`)

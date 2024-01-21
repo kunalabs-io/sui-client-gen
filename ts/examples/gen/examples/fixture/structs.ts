@@ -3,10 +3,14 @@ import { String as String1 } from '../../_dependencies/source/0x1/ascii/structs'
 import { Option } from '../../_dependencies/source/0x1/option/structs'
 import { String } from '../../_dependencies/source/0x1/string/structs'
 import {
+  PhantomTypeArgument,
+  ReifiedPhantomTypeArgument,
   ReifiedTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
   ToTypeArgument,
   TypeArgument,
+  Vector,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -15,6 +19,7 @@ import {
   extractType,
   fieldToJSON,
   toBcs,
+  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Balance } from '../../sui/balance/structs'
@@ -32,14 +37,19 @@ export function isBar(type: string): boolean {
   return type === '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface BarFields {
   value: ToField<'u64'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Bar {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString =
+    null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
 
   readonly $typeName = Bar.$typeName
 
@@ -63,6 +73,10 @@ export class Bar {
     return {
       typeName: Bar.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        Bar.$typeName,
+        ...[]
+      ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar',
       fromFields: (fields: Record<string, any>) => Bar.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Bar.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Bar.fromBcs(data),
@@ -120,14 +134,19 @@ export function isDummy(type: string): boolean {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface DummyFields {
   dummyField: ToField<'bool'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Dummy {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString =
+    null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
 
   readonly $typeName = Dummy.$typeName
 
@@ -151,6 +170,10 @@ export class Dummy {
     return {
       typeName: Dummy.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        Dummy.$typeName,
+        ...[]
+      ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy',
       fromFields: (fields: Record<string, any>) => Dummy.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Dummy.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Dummy.fromBcs(data),
@@ -208,27 +231,32 @@ export function isFoo(type: string): boolean {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface FooFields<T extends TypeArgument> {
   id: ToField<UID>
   generic: ToField<T>
-  reifiedPrimitiveVec: Array<ToField<'u64'>>
-  reifiedObjectVec: Array<ToField<Bar>>
-  genericVec: Array<ToField<T>>
-  genericVecNested: Array<ToField<WithTwoGenerics<T, 'u8'>>>
+  reifiedPrimitiveVec: ToField<Vector<'u64'>>
+  reifiedObjectVec: ToField<Vector<Bar>>
+  genericVec: ToField<Vector<T>>
+  genericVecNested: ToField<Vector<WithTwoGenerics<T, 'u8'>>>
   twoGenerics: ToField<WithTwoGenerics<T, Bar>>
   twoGenericsReifiedPrimitive: ToField<WithTwoGenerics<'u16', 'u64'>>
   twoGenericsReifiedObject: ToField<WithTwoGenerics<Bar, Bar>>
   twoGenericsNested: ToField<WithTwoGenerics<T, WithTwoGenerics<'u8', 'u8'>>>
   twoGenericsReifiedNested: ToField<WithTwoGenerics<Bar, WithTwoGenerics<'u8', 'u8'>>>
-  twoGenericsNestedVec: Array<ToField<WithTwoGenerics<Bar, Array<WithTwoGenerics<T, 'u8'>>>>>
+  twoGenericsNestedVec: ToField<Vector<WithTwoGenerics<Bar, Vector<WithTwoGenerics<T, 'u8'>>>>>
   dummy: ToField<Dummy>
   other: ToField<StructFromOtherModule>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Foo<T extends TypeArgument> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString =
+    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<${ToPhantom<T>}>`
 
   readonly $typeName = Foo.$typeName
 
@@ -261,17 +289,17 @@ export class Foo<T extends TypeArgument> {
 
   readonly id: ToField<UID>
   readonly generic: ToField<T>
-  readonly reifiedPrimitiveVec: Array<ToField<'u64'>>
-  readonly reifiedObjectVec: Array<ToField<Bar>>
-  readonly genericVec: Array<ToField<T>>
-  readonly genericVecNested: Array<ToField<WithTwoGenerics<T, 'u8'>>>
+  readonly reifiedPrimitiveVec: ToField<Vector<'u64'>>
+  readonly reifiedObjectVec: ToField<Vector<Bar>>
+  readonly genericVec: ToField<Vector<T>>
+  readonly genericVecNested: ToField<Vector<WithTwoGenerics<T, 'u8'>>>
   readonly twoGenerics: ToField<WithTwoGenerics<T, Bar>>
   readonly twoGenericsReifiedPrimitive: ToField<WithTwoGenerics<'u16', 'u64'>>
   readonly twoGenericsReifiedObject: ToField<WithTwoGenerics<Bar, Bar>>
   readonly twoGenericsNested: ToField<WithTwoGenerics<T, WithTwoGenerics<'u8', 'u8'>>>
   readonly twoGenericsReifiedNested: ToField<WithTwoGenerics<Bar, WithTwoGenerics<'u8', 'u8'>>>
-  readonly twoGenericsNestedVec: Array<
-    ToField<WithTwoGenerics<Bar, Array<WithTwoGenerics<T, 'u8'>>>>
+  readonly twoGenericsNestedVec: ToField<
+    Vector<WithTwoGenerics<Bar, Vector<WithTwoGenerics<T, 'u8'>>>>
   >
   readonly dummy: ToField<Dummy>
   readonly other: ToField<StructFromOtherModule>
@@ -306,6 +334,10 @@ export class Foo<T extends TypeArgument> {
     return {
       typeName: Foo.$typeName,
       typeArgs: [T],
+      fullTypeName: composeSuiType(
+        Foo.$typeName,
+        ...[extractType(T)]
+      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<${ToPhantomTypeArgument<T>}>`,
       fromFields: (fields: Record<string, any>) => Foo.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Foo.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Foo.fromBcs(T, data),
@@ -435,13 +467,13 @@ export class Foo<T extends TypeArgument> {
     return {
       id: this.id,
       generic: fieldToJSON<T>(this.$typeArg, this.generic),
-      reifiedPrimitiveVec: fieldToJSON<Array<'u64'>>(`vector<u64>`, this.reifiedPrimitiveVec),
-      reifiedObjectVec: fieldToJSON<Array<Bar>>(
+      reifiedPrimitiveVec: fieldToJSON<Vector<'u64'>>(`vector<u64>`, this.reifiedPrimitiveVec),
+      reifiedObjectVec: fieldToJSON<Vector<Bar>>(
         `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
         this.reifiedObjectVec
       ),
-      genericVec: fieldToJSON<Array<T>>(`vector<${this.$typeArg}>`, this.genericVec),
-      genericVecNested: fieldToJSON<Array<WithTwoGenerics<T, 'u8'>>>(
+      genericVec: fieldToJSON<Vector<T>>(`vector<${this.$typeArg}>`, this.genericVec),
+      genericVecNested: fieldToJSON<Vector<WithTwoGenerics<T, 'u8'>>>(
         `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${this.$typeArg}, u8>>`,
         this.genericVecNested
       ),
@@ -451,7 +483,7 @@ export class Foo<T extends TypeArgument> {
       twoGenericsNested: this.twoGenericsNested.toJSONField(),
       twoGenericsReifiedNested: this.twoGenericsReifiedNested.toJSONField(),
       twoGenericsNestedVec: fieldToJSON<
-        Array<WithTwoGenerics<Bar, Array<WithTwoGenerics<T, 'u8'>>>>
+        Vector<WithTwoGenerics<Bar, Vector<WithTwoGenerics<T, 'u8'>>>>
       >(
         `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${this.$typeArg}, u8>>>>`,
         this.twoGenericsNestedVec
@@ -567,15 +599,20 @@ export function isWithGenericField(type: string): boolean {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface WithGenericFieldFields<T extends TypeArgument> {
   id: ToField<UID>
   genericField: ToField<T>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WithGenericField<T extends TypeArgument> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString =
+    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<${ToPhantom<T>}>`
 
   readonly $typeName = WithGenericField.$typeName
 
@@ -610,6 +647,10 @@ export class WithGenericField<T extends TypeArgument> {
     return {
       typeName: WithGenericField.$typeName,
       typeArgs: [T],
+      fullTypeName: composeSuiType(
+        WithGenericField.$typeName,
+        ...[extractType(T)]
+      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<${ToPhantomTypeArgument<T>}>`,
       fromFields: (fields: Record<string, any>) => WithGenericField.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => WithGenericField.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => WithGenericField.fromBcs(T, data),
@@ -734,26 +775,31 @@ export function isWithSpecialTypes(type: string): boolean {
   )
 }
 
-export interface WithSpecialTypesFields<U extends TypeArgument> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface WithSpecialTypesFields<T extends PhantomTypeArgument, U extends TypeArgument> {
   id: ToField<UID>
   string: ToField<String>
   asciiString: ToField<String1>
   url: ToField<Url>
   idField: ToField<ID>
   uid: ToField<UID>
-  balance: ToField<Balance>
+  balance: ToField<Balance<ToPhantom<SUI>>>
   option: ToField<Option<'u64'>>
   optionObj: ToField<Option<Bar>>
   optionNone: ToField<Option<'u64'>>
-  balanceGeneric: ToField<Balance>
+  balanceGeneric: ToField<Balance<T>>
   optionGeneric: ToField<Option<U>>
   optionGenericNone: ToField<Option<U>>
 }
 
-export class WithSpecialTypes<U extends TypeArgument> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgument> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes'
   static readonly $numTypeParams = 2
+
+  __reifiedFullTypeString =
+    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<${T}, ${ToPhantom<U>}>`
 
   readonly $typeName = WithSpecialTypes.$typeName
 
@@ -784,15 +830,15 @@ export class WithSpecialTypes<U extends TypeArgument> {
   readonly url: ToField<Url>
   readonly idField: ToField<ID>
   readonly uid: ToField<UID>
-  readonly balance: ToField<Balance>
+  readonly balance: ToField<Balance<ToPhantom<SUI>>>
   readonly option: ToField<Option<'u64'>>
   readonly optionObj: ToField<Option<Bar>>
   readonly optionNone: ToField<Option<'u64'>>
-  readonly balanceGeneric: ToField<Balance>
+  readonly balanceGeneric: ToField<Balance<T>>
   readonly optionGeneric: ToField<Option<U>>
   readonly optionGenericNone: ToField<Option<U>>
 
-  private constructor(typeArgs: [string, string], fields: WithSpecialTypesFields<U>) {
+  private constructor(typeArgs: [string, string], fields: WithSpecialTypesFields<T, U>) {
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -810,31 +856,37 @@ export class WithSpecialTypes<U extends TypeArgument> {
     this.optionGenericNone = fields.optionGenericNone
   }
 
-  static new<U extends ReifiedTypeArgument>(
-    typeArgs: [ReifiedTypeArgument, U],
-    fields: WithSpecialTypesFields<ToTypeArgument<U>>
-  ): WithSpecialTypes<ToTypeArgument<U>> {
+  static new<T extends ReifiedPhantomTypeArgument, U extends ReifiedTypeArgument>(
+    typeArgs: [T, U],
+    fields: WithSpecialTypesFields<ToPhantomTypeArgument<T>, ToTypeArgument<U>>
+  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
     return new WithSpecialTypes(typeArgs.map(extractType) as [string, string], fields)
   }
 
-  static reified<U extends ReifiedTypeArgument>(T: ReifiedTypeArgument, U: U) {
+  static reified<T extends ReifiedPhantomTypeArgument, U extends ReifiedTypeArgument>(T: T, U: U) {
     return {
       typeName: WithSpecialTypes.$typeName,
       typeArgs: [T, U],
+      fullTypeName: composeSuiType(
+        WithSpecialTypes.$typeName,
+        ...[extractType(T), extractType(U)]
+      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<${ToPhantomTypeArgument<T>}, ${ToPhantomTypeArgument<U>}>`,
       fromFields: (fields: Record<string, any>) => WithSpecialTypes.fromFields([T, U], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         WithSpecialTypes.fromFieldsWithTypes([T, U], item),
       fromBcs: (data: Uint8Array) => WithSpecialTypes.fromBcs([T, U], data),
       bcs: WithSpecialTypes.bcs(toBcs(U)),
       fromJSONField: (field: any) => WithSpecialTypes.fromJSONField([T, U], field),
-      __class: null as unknown as ReturnType<typeof WithSpecialTypes.new<ToTypeArgument<U>>>,
+      __class: null as unknown as ReturnType<
+        typeof WithSpecialTypes.new<ToTypeArgument<T>, ToTypeArgument<U>>
+      >,
     }
   }
 
-  static fromFields<U extends ReifiedTypeArgument>(
-    typeArgs: [ReifiedTypeArgument, U],
+  static fromFields<T extends ReifiedPhantomTypeArgument, U extends ReifiedTypeArgument>(
+    typeArgs: [T, U],
     fields: Record<string, any>
-  ): WithSpecialTypes<ToTypeArgument<U>> {
+  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
     return WithSpecialTypes.new(typeArgs, {
       id: decodeFromFields(UID.reified(), fields.id),
       string: decodeFromFields(String.reified(), fields.string),
@@ -852,10 +904,10 @@ export class WithSpecialTypes<U extends TypeArgument> {
     })
   }
 
-  static fromFieldsWithTypes<U extends ReifiedTypeArgument>(
-    typeArgs: [ReifiedTypeArgument, U],
+  static fromFieldsWithTypes<T extends ReifiedPhantomTypeArgument, U extends ReifiedTypeArgument>(
+    typeArgs: [T, U],
     item: FieldsWithTypes
-  ): WithSpecialTypes<ToTypeArgument<U>> {
+  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
     if (!isWithSpecialTypes(item.type)) {
       throw new Error('not a WithSpecialTypes type')
     }
@@ -887,10 +939,10 @@ export class WithSpecialTypes<U extends TypeArgument> {
     })
   }
 
-  static fromBcs<U extends ReifiedTypeArgument>(
-    typeArgs: [ReifiedTypeArgument, U],
+  static fromBcs<T extends ReifiedPhantomTypeArgument, U extends ReifiedTypeArgument>(
+    typeArgs: [T, U],
     data: Uint8Array
-  ): WithSpecialTypes<ToTypeArgument<U>> {
+  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
     return WithSpecialTypes.fromFields(
       typeArgs,
       WithSpecialTypes.bcs(toBcs(typeArgs[1])).parse(data)
@@ -928,10 +980,10 @@ export class WithSpecialTypes<U extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
-  static fromJSONField<U extends ReifiedTypeArgument>(
-    typeArgs: [ReifiedTypeArgument, U],
+  static fromJSONField<T extends ReifiedPhantomTypeArgument, U extends ReifiedTypeArgument>(
+    typeArgs: [T, U],
     field: any
-  ): WithSpecialTypes<ToTypeArgument<U>> {
+  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
     return WithSpecialTypes.new(typeArgs, {
       id: decodeFromJSONField(UID.reified(), field.id),
       string: decodeFromJSONField(String.reified(), field.string),
@@ -949,10 +1001,10 @@ export class WithSpecialTypes<U extends TypeArgument> {
     })
   }
 
-  static fromJSON<U extends ReifiedTypeArgument>(
-    typeArgs: [ReifiedTypeArgument, U],
+  static fromJSON<T extends ReifiedPhantomTypeArgument, U extends ReifiedTypeArgument>(
+    typeArgs: [T, U],
     json: Record<string, any>
-  ): WithSpecialTypes<ToTypeArgument<U>> {
+  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
     if (json.$typeName !== WithSpecialTypes.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
@@ -965,10 +1017,10 @@ export class WithSpecialTypes<U extends TypeArgument> {
     return WithSpecialTypes.fromJSONField(typeArgs, json)
   }
 
-  static fromSuiParsedData<U extends ReifiedTypeArgument>(
-    typeArgs: [ReifiedTypeArgument, U],
+  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument, U extends ReifiedTypeArgument>(
+    typeArgs: [T, U],
     content: SuiParsedData
-  ): WithSpecialTypes<ToTypeArgument<U>> {
+  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -978,11 +1030,11 @@ export class WithSpecialTypes<U extends TypeArgument> {
     return WithSpecialTypes.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch<U extends ReifiedTypeArgument>(
+  static async fetch<T extends ReifiedPhantomTypeArgument, U extends ReifiedTypeArgument>(
     client: SuiClient,
-    typeArgs: [ReifiedTypeArgument, U],
+    typeArgs: [T, U],
     id: string
-  ): Promise<WithSpecialTypes<ToTypeArgument<U>>> {
+  ): Promise<WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>>> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching WithSpecialTypes object at id ${id}: ${res.error.code}`)
@@ -1006,6 +1058,7 @@ export function isWithSpecialTypesAsGenerics(type: string): boolean {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface WithSpecialTypesAsGenericsFields<
   T0 extends TypeArgument,
   T1 extends TypeArgument,
@@ -1027,6 +1080,7 @@ export interface WithSpecialTypesAsGenericsFields<
   optionNone: ToField<T7>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WithSpecialTypesAsGenerics<
   T0 extends TypeArgument,
   T1 extends TypeArgument,
@@ -1040,6 +1094,9 @@ export class WithSpecialTypesAsGenerics<
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics'
   static readonly $numTypeParams = 8
+
+  __reifiedFullTypeString =
+    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<${ToPhantom<T0>}, ${ToPhantom<T1>}, ${ToPhantom<T2>}, ${ToPhantom<T3>}, ${ToPhantom<T4>}, ${ToPhantom<T5>}, ${ToPhantom<T6>}, ${ToPhantom<T7>}>`
 
   readonly $typeName = WithSpecialTypesAsGenerics.$typeName
 
@@ -1158,6 +1215,19 @@ export class WithSpecialTypesAsGenerics<
     return {
       typeName: WithSpecialTypesAsGenerics.$typeName,
       typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
+      fullTypeName: composeSuiType(
+        WithSpecialTypesAsGenerics.$typeName,
+        ...[
+          extractType(T0),
+          extractType(T1),
+          extractType(T2),
+          extractType(T3),
+          extractType(T4),
+          extractType(T5),
+          extractType(T6),
+          extractType(T7),
+        ]
+      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<${ToPhantomTypeArgument<T0>}, ${ToPhantomTypeArgument<T1>}, ${ToPhantomTypeArgument<T2>}, ${ToPhantomTypeArgument<T3>}, ${ToPhantomTypeArgument<T4>}, ${ToPhantomTypeArgument<T5>}, ${ToPhantomTypeArgument<T6>}, ${ToPhantomTypeArgument<T7>}>`,
       fromFields: (fields: Record<string, any>) =>
         WithSpecialTypesAsGenerics.fromFields([T0, T1, T2, T3, T4, T5, T6, T7], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
@@ -1473,20 +1543,25 @@ export function isWithSpecialTypesInVectors(type: string): boolean {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface WithSpecialTypesInVectorsFields<T extends TypeArgument> {
   id: ToField<UID>
-  string: Array<ToField<String>>
-  asciiString: Array<ToField<String1>>
-  idField: Array<ToField<ID>>
-  bar: Array<ToField<Bar>>
-  option: Array<ToField<Option<'u64'>>>
-  optionGeneric: Array<ToField<Option<T>>>
+  string: ToField<Vector<String>>
+  asciiString: ToField<Vector<String1>>
+  idField: ToField<Vector<ID>>
+  bar: ToField<Vector<Bar>>
+  option: ToField<Vector<Option<'u64'>>>
+  optionGeneric: ToField<Vector<Option<T>>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WithSpecialTypesInVectors<T extends TypeArgument> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString =
+    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<${ToPhantom<T>}>`
 
   readonly $typeName = WithSpecialTypesInVectors.$typeName
 
@@ -1506,12 +1581,12 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> {
   readonly $typeArg: string
 
   readonly id: ToField<UID>
-  readonly string: Array<ToField<String>>
-  readonly asciiString: Array<ToField<String1>>
-  readonly idField: Array<ToField<ID>>
-  readonly bar: Array<ToField<Bar>>
-  readonly option: Array<ToField<Option<'u64'>>>
-  readonly optionGeneric: Array<ToField<Option<T>>>
+  readonly string: ToField<Vector<String>>
+  readonly asciiString: ToField<Vector<String1>>
+  readonly idField: ToField<Vector<ID>>
+  readonly bar: ToField<Vector<Bar>>
+  readonly option: ToField<Vector<Option<'u64'>>>
+  readonly optionGeneric: ToField<Vector<Option<T>>>
 
   private constructor(typeArg: string, fields: WithSpecialTypesInVectorsFields<T>) {
     this.$typeArg = typeArg
@@ -1536,6 +1611,10 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> {
     return {
       typeName: WithSpecialTypesInVectors.$typeName,
       typeArgs: [T],
+      fullTypeName: composeSuiType(
+        WithSpecialTypesInVectors.$typeName,
+        ...[extractType(T)]
+      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<${ToPhantomTypeArgument<T>}>`,
       fromFields: (fields: Record<string, any>) => WithSpecialTypesInVectors.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         WithSpecialTypesInVectors.fromFieldsWithTypes(T, item),
@@ -1607,15 +1686,15 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> {
   toJSONField() {
     return {
       id: this.id,
-      string: fieldToJSON<Array<String>>(`vector<0x1::string::String>`, this.string),
-      asciiString: fieldToJSON<Array<String1>>(`vector<0x1::ascii::String>`, this.asciiString),
-      idField: fieldToJSON<Array<ID>>(`vector<0x2::object::ID>`, this.idField),
-      bar: fieldToJSON<Array<Bar>>(
+      string: fieldToJSON<Vector<String>>(`vector<0x1::string::String>`, this.string),
+      asciiString: fieldToJSON<Vector<String1>>(`vector<0x1::ascii::String>`, this.asciiString),
+      idField: fieldToJSON<Vector<ID>>(`vector<0x2::object::ID>`, this.idField),
+      bar: fieldToJSON<Vector<Bar>>(
         `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
         this.bar
       ),
-      option: fieldToJSON<Array<Option<'u64'>>>(`vector<0x1::option::Option<u64>>`, this.option),
-      optionGeneric: fieldToJSON<Array<Option<T>>>(
+      option: fieldToJSON<Vector<Option<'u64'>>>(`vector<0x1::option::Option<u64>>`, this.option),
+      optionGeneric: fieldToJSON<Vector<Option<T>>>(
         `vector<0x1::option::Option<${this.$typeArg}>>`,
         this.optionGeneric
       ),
@@ -1705,15 +1784,20 @@ export function isWithTwoGenerics(type: string): boolean {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface WithTwoGenericsFields<T extends TypeArgument, U extends TypeArgument> {
   genericField1: ToField<T>
   genericField2: ToField<U>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics'
   static readonly $numTypeParams = 2
+
+  __reifiedFullTypeString =
+    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${ToPhantom<T>}, ${ToPhantom<U>}>`
 
   readonly $typeName = WithTwoGenerics.$typeName
 
@@ -1748,6 +1832,10 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> {
     return {
       typeName: WithTwoGenerics.$typeName,
       typeArgs: [T, U],
+      fullTypeName: composeSuiType(
+        WithTwoGenerics.$typeName,
+        ...[extractType(T), extractType(U)]
+      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${ToPhantomTypeArgument<T>}, ${ToPhantomTypeArgument<U>}>`,
       fromFields: (fields: Record<string, any>) => WithTwoGenerics.fromFields([T, U], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         WithTwoGenerics.fromFieldsWithTypes([T, U], item),

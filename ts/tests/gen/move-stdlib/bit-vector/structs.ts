@@ -1,12 +1,13 @@
 import * as reified from '../../_framework/reified'
 import {
   ToField,
+  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== BitVector =============================== */
@@ -16,14 +17,18 @@ export function isBitVector(type: string): boolean {
   return type === '0x1::bit_vector::BitVector'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface BitVectorFields {
   length: ToField<'u64'>
-  bitField: Array<ToField<'bool'>>
+  bitField: ToField<Vector<'bool'>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class BitVector {
   static readonly $typeName = '0x1::bit_vector::BitVector'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x1::bit_vector::BitVector'
 
   readonly $typeName = BitVector.$typeName
 
@@ -35,7 +40,7 @@ export class BitVector {
   }
 
   readonly length: ToField<'u64'>
-  readonly bitField: Array<ToField<'bool'>>
+  readonly bitField: ToField<Vector<'bool'>>
 
   private constructor(fields: BitVectorFields) {
     this.length = fields.length
@@ -50,6 +55,7 @@ export class BitVector {
     return {
       typeName: BitVector.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(BitVector.$typeName, ...[]) as '0x1::bit_vector::BitVector',
       fromFields: (fields: Record<string, any>) => BitVector.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => BitVector.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => BitVector.fromBcs(data),
@@ -84,7 +90,7 @@ export class BitVector {
   toJSONField() {
     return {
       length: this.length.toString(),
-      bitField: fieldToJSON<Array<'bool'>>(`vector<bool>`, this.bitField),
+      bitField: fieldToJSON<Vector<'bool'>>(`vector<bool>`, this.bitField),
     }
   }
 

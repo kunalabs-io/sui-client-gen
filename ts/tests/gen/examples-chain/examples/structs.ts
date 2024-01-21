@@ -1,12 +1,13 @@
 import * as reified from '../../_framework/reified'
 import {
   ToField,
+  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/ascii/structs'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { String as String1 } from '../../move-stdlib-chain/string/structs'
@@ -24,14 +25,19 @@ export function isExampleStruct(type: string): boolean {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ExampleStructFields {
   dummyField: ToField<'bool'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ExampleStruct {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString =
+    null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
 
   readonly $typeName = ExampleStruct.$typeName
 
@@ -55,6 +61,10 @@ export class ExampleStruct {
     return {
       typeName: ExampleStruct.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        ExampleStruct.$typeName,
+        ...[]
+      ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct',
       fromFields: (fields: Record<string, any>) => ExampleStruct.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ExampleStruct.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ExampleStruct.fromBcs(data),
@@ -113,22 +123,27 @@ export function isSpecialTypesStruct(type: string): boolean {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface SpecialTypesStructFields {
   id: ToField<UID>
   asciiString: ToField<String>
   utf8String: ToField<String1>
-  vectorOfU64: Array<ToField<'u64'>>
-  vectorOfObjects: Array<ToField<ExampleStruct>>
+  vectorOfU64: ToField<Vector<'u64'>>
+  vectorOfObjects: ToField<Vector<ExampleStruct>>
   idField: ToField<ID>
   address: ToField<'address'>
   optionSome: ToField<Option<'u64'>>
   optionNone: ToField<Option<'u64'>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class SpecialTypesStruct {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString =
+    null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
 
   readonly $typeName = SpecialTypesStruct.$typeName
 
@@ -152,8 +167,8 @@ export class SpecialTypesStruct {
   readonly id: ToField<UID>
   readonly asciiString: ToField<String>
   readonly utf8String: ToField<String1>
-  readonly vectorOfU64: Array<ToField<'u64'>>
-  readonly vectorOfObjects: Array<ToField<ExampleStruct>>
+  readonly vectorOfU64: ToField<Vector<'u64'>>
+  readonly vectorOfObjects: ToField<Vector<ExampleStruct>>
   readonly idField: ToField<ID>
   readonly address: ToField<'address'>
   readonly optionSome: ToField<Option<'u64'>>
@@ -179,6 +194,10 @@ export class SpecialTypesStruct {
     return {
       typeName: SpecialTypesStruct.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        SpecialTypesStruct.$typeName,
+        ...[]
+      ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct',
       fromFields: (fields: Record<string, any>) => SpecialTypesStruct.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => SpecialTypesStruct.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => SpecialTypesStruct.fromBcs(data),
@@ -235,8 +254,8 @@ export class SpecialTypesStruct {
       id: this.id,
       asciiString: this.asciiString,
       utf8String: this.utf8String,
-      vectorOfU64: fieldToJSON<Array<'u64'>>(`vector<u64>`, this.vectorOfU64),
-      vectorOfObjects: fieldToJSON<Array<ExampleStruct>>(
+      vectorOfU64: fieldToJSON<Vector<'u64'>>(`vector<u64>`, this.vectorOfU64),
+      vectorOfObjects: fieldToJSON<Vector<ExampleStruct>>(
         `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct>`,
         this.vectorOfObjects
       ),

@@ -1,6 +1,9 @@
 import {
-  ReifiedTypeArgument,
+  PhantomTypeArgument,
+  ReifiedPhantomTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
+  ToTypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -20,14 +23,18 @@ export function isTable(type: string): boolean {
   return type.startsWith('0x2::table::Table<')
 }
 
-export interface TableFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface TableFields<T0 extends PhantomTypeArgument, T1 extends PhantomTypeArgument> {
   id: ToField<UID>
   size: ToField<'u64'>
 }
 
-export class Table {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class Table<T0 extends PhantomTypeArgument, T1 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::table::Table'
   static readonly $numTypeParams = 2
+
+  __reifiedFullTypeString = null as unknown as `0x2::table::Table<${T0}, ${T1}>`
 
   readonly $typeName = Table.$typeName
 
@@ -43,44 +50,59 @@ export class Table {
   readonly id: ToField<UID>
   readonly size: ToField<'u64'>
 
-  private constructor(typeArgs: [string, string], fields: TableFields) {
+  private constructor(typeArgs: [string, string], fields: TableFields<T0, T1>) {
     this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.size = fields.size
   }
 
-  static new(typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument], fields: TableFields): Table {
+  static new<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
+    typeArgs: [T0, T1],
+    fields: TableFields<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>
+  ): Table<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
     return new Table(typeArgs.map(extractType) as [string, string], fields)
   }
 
-  static reified(T0: ReifiedTypeArgument, T1: ReifiedTypeArgument) {
+  static reified<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
+    T0: T0,
+    T1: T1
+  ) {
     return {
       typeName: Table.$typeName,
       typeArgs: [T0, T1],
+      fullTypeName: composeSuiType(
+        Table.$typeName,
+        ...[extractType(T0), extractType(T1)]
+      ) as `0x2::table::Table<${ToPhantomTypeArgument<T0>}, ${ToPhantomTypeArgument<T1>}>`,
       fromFields: (fields: Record<string, any>) => Table.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Table.fromFieldsWithTypes([T0, T1], item),
       fromBcs: (data: Uint8Array) => Table.fromBcs([T0, T1], data),
       bcs: Table.bcs,
       fromJSONField: (field: any) => Table.fromJSONField([T0, T1], field),
-      __class: null as unknown as ReturnType<typeof Table.new>,
+      __class: null as unknown as ReturnType<
+        typeof Table.new<ToTypeArgument<T0>, ToTypeArgument<T1>>
+      >,
     }
   }
 
-  static fromFields(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromFields<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
+    typeArgs: [T0, T1],
     fields: Record<string, any>
-  ): Table {
+  ): Table<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
     return Table.new(typeArgs, {
       id: decodeFromFields(UID.reified(), fields.id),
       size: decodeFromFields('u64', fields.size),
     })
   }
 
-  static fromFieldsWithTypes(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromFieldsWithTypes<
+    T0 extends ReifiedPhantomTypeArgument,
+    T1 extends ReifiedPhantomTypeArgument,
+  >(
+    typeArgs: [T0, T1],
     item: FieldsWithTypes
-  ): Table {
+  ): Table<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
     if (!isTable(item.type)) {
       throw new Error('not a Table type')
     }
@@ -92,7 +114,10 @@ export class Table {
     })
   }
 
-  static fromBcs(typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument], data: Uint8Array): Table {
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
+    typeArgs: [T0, T1],
+    data: Uint8Array
+  ): Table<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
     return Table.fromFields(typeArgs, Table.bcs.parse(data))
   }
 
@@ -107,17 +132,20 @@ export class Table {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument], field: any): Table {
+  static fromJSONField<
+    T0 extends ReifiedPhantomTypeArgument,
+    T1 extends ReifiedPhantomTypeArgument,
+  >(typeArgs: [T0, T1], field: any): Table<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
     return Table.new(typeArgs, {
       id: decodeFromJSONField(UID.reified(), field.id),
       size: decodeFromJSONField('u64', field.size),
     })
   }
 
-  static fromJSON(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
+    typeArgs: [T0, T1],
     json: Record<string, any>
-  ): Table {
+  ): Table<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
     if (json.$typeName !== Table.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
@@ -130,10 +158,13 @@ export class Table {
     return Table.fromJSONField(typeArgs, json)
   }
 
-  static fromSuiParsedData(
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+  static fromSuiParsedData<
+    T0 extends ReifiedPhantomTypeArgument,
+    T1 extends ReifiedPhantomTypeArgument,
+  >(
+    typeArgs: [T0, T1],
     content: SuiParsedData
-  ): Table {
+  ): Table<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -143,11 +174,11 @@ export class Table {
     return Table.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch(
+  static async fetch<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
     client: SuiClient,
-    typeArgs: [ReifiedTypeArgument, ReifiedTypeArgument],
+    typeArgs: [T0, T1],
     id: string
-  ): Promise<Table> {
+  ): Promise<Table<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Table object at id ${id}: ${res.error.code}`)

@@ -1,12 +1,13 @@
 import * as reified from '../../_framework/reified'
 import {
   ToField,
+  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs, fromHEX, toHEX } from '@mysten/bcs'
 
 /* ============================== TxContext =============================== */
@@ -16,17 +17,21 @@ export function isTxContext(type: string): boolean {
   return type === '0x2::tx_context::TxContext'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TxContextFields {
   sender: ToField<'address'>
-  txHash: Array<ToField<'u8'>>
+  txHash: ToField<Vector<'u8'>>
   epoch: ToField<'u64'>
   epochTimestampMs: ToField<'u64'>
   idsCreated: ToField<'u64'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TxContext {
   static readonly $typeName = '0x2::tx_context::TxContext'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::tx_context::TxContext'
 
   readonly $typeName = TxContext.$typeName
 
@@ -44,7 +49,7 @@ export class TxContext {
   }
 
   readonly sender: ToField<'address'>
-  readonly txHash: Array<ToField<'u8'>>
+  readonly txHash: ToField<Vector<'u8'>>
   readonly epoch: ToField<'u64'>
   readonly epochTimestampMs: ToField<'u64'>
   readonly idsCreated: ToField<'u64'>
@@ -65,6 +70,7 @@ export class TxContext {
     return {
       typeName: TxContext.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(TxContext.$typeName, ...[]) as '0x2::tx_context::TxContext',
       fromFields: (fields: Record<string, any>) => TxContext.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TxContext.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => TxContext.fromBcs(data),
@@ -105,7 +111,7 @@ export class TxContext {
   toJSONField() {
     return {
       sender: this.sender,
-      txHash: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.txHash),
+      txHash: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.txHash),
       epoch: this.epoch.toString(),
       epochTimestampMs: this.epochTimestampMs.toString(),
       idsCreated: this.idsCreated.toString(),

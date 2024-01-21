@@ -1,6 +1,9 @@
 import {
-  ReifiedTypeArgument,
+  PhantomTypeArgument,
+  ReifiedPhantomTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
+  ToTypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -22,15 +25,19 @@ export function isDisplay(type: string): boolean {
   return type.startsWith('0x2::display::Display<')
 }
 
-export interface DisplayFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface DisplayFields<T extends PhantomTypeArgument> {
   id: ToField<UID>
   fields: ToField<VecMap<String, String>>
   version: ToField<'u16'>
 }
 
-export class Display {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class Display<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::Display'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::display::Display<${T}>`
 
   readonly $typeName = Display.$typeName
 
@@ -48,7 +55,7 @@ export class Display {
   readonly fields: ToField<VecMap<String, String>>
   readonly version: ToField<'u16'>
 
-  private constructor(typeArg: string, fields: DisplayFields) {
+  private constructor(typeArg: string, fields: DisplayFields<T>) {
     this.$typeArg = typeArg
 
     this.id = fields.id
@@ -56,24 +63,34 @@ export class Display {
     this.version = fields.version
   }
 
-  static new(typeArg: ReifiedTypeArgument, fields: DisplayFields): Display {
+  static new<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    fields: DisplayFields<ToPhantomTypeArgument<T>>
+  ): Display<ToPhantomTypeArgument<T>> {
     return new Display(extractType(typeArg), fields)
   }
 
-  static reified(T: ReifiedTypeArgument) {
+  static reified<T extends ReifiedPhantomTypeArgument>(T: T) {
     return {
       typeName: Display.$typeName,
       typeArgs: [T],
+      fullTypeName: composeSuiType(
+        Display.$typeName,
+        ...[extractType(T)]
+      ) as `0x2::display::Display<${ToPhantomTypeArgument<T>}>`,
       fromFields: (fields: Record<string, any>) => Display.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Display.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Display.fromBcs(T, data),
       bcs: Display.bcs,
       fromJSONField: (field: any) => Display.fromJSONField(T, field),
-      __class: null as unknown as ReturnType<typeof Display.new>,
+      __class: null as unknown as ReturnType<typeof Display.new<ToTypeArgument<T>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): Display {
+  static fromFields<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    fields: Record<string, any>
+  ): Display<ToPhantomTypeArgument<T>> {
     return Display.new(typeArg, {
       id: decodeFromFields(UID.reified(), fields.id),
       fields: decodeFromFields(VecMap.reified(String.reified(), String.reified()), fields.fields),
@@ -81,7 +98,10 @@ export class Display {
     })
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): Display {
+  static fromFieldsWithTypes<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    item: FieldsWithTypes
+  ): Display<ToPhantomTypeArgument<T>> {
     if (!isDisplay(item.type)) {
       throw new Error('not a Display type')
     }
@@ -97,7 +117,10 @@ export class Display {
     })
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): Display {
+  static fromBcs<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    data: Uint8Array
+  ): Display<ToPhantomTypeArgument<T>> {
     return Display.fromFields(typeArg, Display.bcs.parse(data))
   }
 
@@ -113,7 +136,10 @@ export class Display {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): Display {
+  static fromJSONField<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    field: any
+  ): Display<ToPhantomTypeArgument<T>> {
     return Display.new(typeArg, {
       id: decodeFromJSONField(UID.reified(), field.id),
       fields: decodeFromJSONField(VecMap.reified(String.reified(), String.reified()), field.fields),
@@ -121,7 +147,10 @@ export class Display {
     })
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): Display {
+  static fromJSON<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    json: Record<string, any>
+  ): Display<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Display.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
@@ -134,7 +163,10 @@ export class Display {
     return Display.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): Display {
+  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    content: SuiParsedData
+  ): Display<ToPhantomTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -144,11 +176,11 @@ export class Display {
     return Display.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch(
+  static async fetch<T extends ReifiedPhantomTypeArgument>(
     client: SuiClient,
-    typeArg: ReifiedTypeArgument,
+    typeArg: T,
     id: string
-  ): Promise<Display> {
+  ): Promise<Display<ToPhantomTypeArgument<T>>> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Display object at id ${id}: ${res.error.code}`)
@@ -167,13 +199,17 @@ export function isDisplayCreated(type: string): boolean {
   return type.startsWith('0x2::display::DisplayCreated<')
 }
 
-export interface DisplayCreatedFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface DisplayCreatedFields<T extends PhantomTypeArgument> {
   id: ToField<ID>
 }
 
-export class DisplayCreated {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class DisplayCreated<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::DisplayCreated'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::display::DisplayCreated<${T}>`
 
   readonly $typeName = DisplayCreated.$typeName
 
@@ -193,28 +229,41 @@ export class DisplayCreated {
     this.id = id
   }
 
-  static new(typeArg: ReifiedTypeArgument, id: ToField<ID>): DisplayCreated {
+  static new<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    id: ToField<ID>
+  ): DisplayCreated<ToPhantomTypeArgument<T>> {
     return new DisplayCreated(extractType(typeArg), id)
   }
 
-  static reified(T: ReifiedTypeArgument) {
+  static reified<T extends ReifiedPhantomTypeArgument>(T: T) {
     return {
       typeName: DisplayCreated.$typeName,
       typeArgs: [T],
+      fullTypeName: composeSuiType(
+        DisplayCreated.$typeName,
+        ...[extractType(T)]
+      ) as `0x2::display::DisplayCreated<${ToPhantomTypeArgument<T>}>`,
       fromFields: (fields: Record<string, any>) => DisplayCreated.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => DisplayCreated.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => DisplayCreated.fromBcs(T, data),
       bcs: DisplayCreated.bcs,
       fromJSONField: (field: any) => DisplayCreated.fromJSONField(T, field),
-      __class: null as unknown as ReturnType<typeof DisplayCreated.new>,
+      __class: null as unknown as ReturnType<typeof DisplayCreated.new<ToTypeArgument<T>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): DisplayCreated {
+  static fromFields<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    fields: Record<string, any>
+  ): DisplayCreated<ToPhantomTypeArgument<T>> {
     return DisplayCreated.new(typeArg, decodeFromFields(ID.reified(), fields.id))
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): DisplayCreated {
+  static fromFieldsWithTypes<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    item: FieldsWithTypes
+  ): DisplayCreated<ToPhantomTypeArgument<T>> {
     if (!isDisplayCreated(item.type)) {
       throw new Error('not a DisplayCreated type')
     }
@@ -223,7 +272,10 @@ export class DisplayCreated {
     return DisplayCreated.new(typeArg, decodeFromFieldsWithTypes(ID.reified(), item.fields.id))
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): DisplayCreated {
+  static fromBcs<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    data: Uint8Array
+  ): DisplayCreated<ToPhantomTypeArgument<T>> {
     return DisplayCreated.fromFields(typeArg, DisplayCreated.bcs.parse(data))
   }
 
@@ -237,11 +289,17 @@ export class DisplayCreated {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): DisplayCreated {
+  static fromJSONField<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    field: any
+  ): DisplayCreated<ToPhantomTypeArgument<T>> {
     return DisplayCreated.new(typeArg, decodeFromJSONField(ID.reified(), field.id))
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): DisplayCreated {
+  static fromJSON<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    json: Record<string, any>
+  ): DisplayCreated<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== DisplayCreated.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
@@ -262,15 +320,19 @@ export function isVersionUpdated(type: string): boolean {
   return type.startsWith('0x2::display::VersionUpdated<')
 }
 
-export interface VersionUpdatedFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface VersionUpdatedFields<T extends PhantomTypeArgument> {
   id: ToField<ID>
   version: ToField<'u16'>
   fields: ToField<VecMap<String, String>>
 }
 
-export class VersionUpdated {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class VersionUpdated<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::VersionUpdated'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::display::VersionUpdated<${T}>`
 
   readonly $typeName = VersionUpdated.$typeName
 
@@ -288,7 +350,7 @@ export class VersionUpdated {
   readonly version: ToField<'u16'>
   readonly fields: ToField<VecMap<String, String>>
 
-  private constructor(typeArg: string, fields: VersionUpdatedFields) {
+  private constructor(typeArg: string, fields: VersionUpdatedFields<T>) {
     this.$typeArg = typeArg
 
     this.id = fields.id
@@ -296,24 +358,34 @@ export class VersionUpdated {
     this.fields = fields.fields
   }
 
-  static new(typeArg: ReifiedTypeArgument, fields: VersionUpdatedFields): VersionUpdated {
+  static new<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    fields: VersionUpdatedFields<ToPhantomTypeArgument<T>>
+  ): VersionUpdated<ToPhantomTypeArgument<T>> {
     return new VersionUpdated(extractType(typeArg), fields)
   }
 
-  static reified(T: ReifiedTypeArgument) {
+  static reified<T extends ReifiedPhantomTypeArgument>(T: T) {
     return {
       typeName: VersionUpdated.$typeName,
       typeArgs: [T],
+      fullTypeName: composeSuiType(
+        VersionUpdated.$typeName,
+        ...[extractType(T)]
+      ) as `0x2::display::VersionUpdated<${ToPhantomTypeArgument<T>}>`,
       fromFields: (fields: Record<string, any>) => VersionUpdated.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VersionUpdated.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => VersionUpdated.fromBcs(T, data),
       bcs: VersionUpdated.bcs,
       fromJSONField: (field: any) => VersionUpdated.fromJSONField(T, field),
-      __class: null as unknown as ReturnType<typeof VersionUpdated.new>,
+      __class: null as unknown as ReturnType<typeof VersionUpdated.new<ToTypeArgument<T>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): VersionUpdated {
+  static fromFields<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    fields: Record<string, any>
+  ): VersionUpdated<ToPhantomTypeArgument<T>> {
     return VersionUpdated.new(typeArg, {
       id: decodeFromFields(ID.reified(), fields.id),
       version: decodeFromFields('u16', fields.version),
@@ -321,7 +393,10 @@ export class VersionUpdated {
     })
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): VersionUpdated {
+  static fromFieldsWithTypes<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    item: FieldsWithTypes
+  ): VersionUpdated<ToPhantomTypeArgument<T>> {
     if (!isVersionUpdated(item.type)) {
       throw new Error('not a VersionUpdated type')
     }
@@ -337,7 +412,10 @@ export class VersionUpdated {
     })
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): VersionUpdated {
+  static fromBcs<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    data: Uint8Array
+  ): VersionUpdated<ToPhantomTypeArgument<T>> {
     return VersionUpdated.fromFields(typeArg, VersionUpdated.bcs.parse(data))
   }
 
@@ -353,7 +431,10 @@ export class VersionUpdated {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): VersionUpdated {
+  static fromJSONField<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    field: any
+  ): VersionUpdated<ToPhantomTypeArgument<T>> {
     return VersionUpdated.new(typeArg, {
       id: decodeFromJSONField(ID.reified(), field.id),
       version: decodeFromJSONField('u16', field.version),
@@ -361,7 +442,10 @@ export class VersionUpdated {
     })
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): VersionUpdated {
+  static fromJSON<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    json: Record<string, any>
+  ): VersionUpdated<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== VersionUpdated.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }

@@ -1,6 +1,9 @@
 import {
-  ReifiedTypeArgument,
+  PhantomTypeArgument,
+  ReifiedPhantomTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
+  ToTypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -19,15 +22,19 @@ export function isExtension(type: string): boolean {
   return type === '0x2::kiosk_extension::Extension'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ExtensionFields {
   storage: ToField<Bag>
   permissions: ToField<'u128'>
   isEnabled: ToField<'bool'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Extension {
   static readonly $typeName = '0x2::kiosk_extension::Extension'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::kiosk_extension::Extension'
 
   readonly $typeName = Extension.$typeName
 
@@ -57,6 +64,7 @@ export class Extension {
     return {
       typeName: Extension.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(Extension.$typeName, ...[]) as '0x2::kiosk_extension::Extension',
       fromFields: (fields: Record<string, any>) => Extension.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Extension.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Extension.fromBcs(data),
@@ -126,13 +134,17 @@ export function isExtensionKey(type: string): boolean {
   return type.startsWith('0x2::kiosk_extension::ExtensionKey<')
 }
 
-export interface ExtensionKeyFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface ExtensionKeyFields<T0 extends PhantomTypeArgument> {
   dummyField: ToField<'bool'>
 }
 
-export class ExtensionKey {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class ExtensionKey<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk_extension::ExtensionKey'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::kiosk_extension::ExtensionKey<${T0}>`
 
   readonly $typeName = ExtensionKey.$typeName
 
@@ -152,28 +164,41 @@ export class ExtensionKey {
     this.dummyField = dummyField
   }
 
-  static new(typeArg: ReifiedTypeArgument, dummyField: ToField<'bool'>): ExtensionKey {
+  static new<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    dummyField: ToField<'bool'>
+  ): ExtensionKey<ToPhantomTypeArgument<T0>> {
     return new ExtensionKey(extractType(typeArg), dummyField)
   }
 
-  static reified(T0: ReifiedTypeArgument) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
     return {
       typeName: ExtensionKey.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        ExtensionKey.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::kiosk_extension::ExtensionKey<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => ExtensionKey.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ExtensionKey.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => ExtensionKey.fromBcs(T0, data),
       bcs: ExtensionKey.bcs,
       fromJSONField: (field: any) => ExtensionKey.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof ExtensionKey.new>,
+      __class: null as unknown as ReturnType<typeof ExtensionKey.new<ToTypeArgument<T0>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): ExtensionKey {
+  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): ExtensionKey<ToPhantomTypeArgument<T0>> {
     return ExtensionKey.new(typeArg, decodeFromFields('bool', fields.dummy_field))
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): ExtensionKey {
+  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): ExtensionKey<ToPhantomTypeArgument<T0>> {
     if (!isExtensionKey(item.type)) {
       throw new Error('not a ExtensionKey type')
     }
@@ -182,7 +207,10 @@ export class ExtensionKey {
     return ExtensionKey.new(typeArg, decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): ExtensionKey {
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    data: Uint8Array
+  ): ExtensionKey<ToPhantomTypeArgument<T0>> {
     return ExtensionKey.fromFields(typeArg, ExtensionKey.bcs.parse(data))
   }
 
@@ -196,11 +224,17 @@ export class ExtensionKey {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): ExtensionKey {
+  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): ExtensionKey<ToPhantomTypeArgument<T0>> {
     return ExtensionKey.new(typeArg, decodeFromJSONField('bool', field.dummyField))
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): ExtensionKey {
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): ExtensionKey<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== ExtensionKey.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }

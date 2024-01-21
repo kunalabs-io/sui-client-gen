@@ -1,6 +1,9 @@
 import {
-  ReifiedTypeArgument,
+  PhantomTypeArgument,
+  ReifiedPhantomTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
+  ToTypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -27,14 +30,18 @@ export function isToken(type: string): boolean {
   return type.startsWith('0x2::token::Token<')
 }
 
-export interface TokenFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface TokenFields<T0 extends PhantomTypeArgument> {
   id: ToField<UID>
-  balance: ToField<Balance>
+  balance: ToField<Balance<T0>>
 }
 
-export class Token {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class Token<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::Token'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::token::Token<${T0}>`
 
   readonly $typeName = Token.$typeName
 
@@ -48,40 +55,53 @@ export class Token {
   readonly $typeArg: string
 
   readonly id: ToField<UID>
-  readonly balance: ToField<Balance>
+  readonly balance: ToField<Balance<T0>>
 
-  private constructor(typeArg: string, fields: TokenFields) {
+  private constructor(typeArg: string, fields: TokenFields<T0>) {
     this.$typeArg = typeArg
 
     this.id = fields.id
     this.balance = fields.balance
   }
 
-  static new(typeArg: ReifiedTypeArgument, fields: TokenFields): Token {
+  static new<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: TokenFields<ToPhantomTypeArgument<T0>>
+  ): Token<ToPhantomTypeArgument<T0>> {
     return new Token(extractType(typeArg), fields)
   }
 
-  static reified(T0: ReifiedTypeArgument) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
     return {
       typeName: Token.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        Token.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::token::Token<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => Token.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Token.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => Token.fromBcs(T0, data),
       bcs: Token.bcs,
       fromJSONField: (field: any) => Token.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof Token.new>,
+      __class: null as unknown as ReturnType<typeof Token.new<ToTypeArgument<T0>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): Token {
+  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): Token<ToPhantomTypeArgument<T0>> {
     return Token.new(typeArg, {
       id: decodeFromFields(UID.reified(), fields.id),
       balance: decodeFromFields(Balance.reified(typeArg), fields.balance),
     })
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): Token {
+  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): Token<ToPhantomTypeArgument<T0>> {
     if (!isToken(item.type)) {
       throw new Error('not a Token type')
     }
@@ -93,7 +113,10 @@ export class Token {
     })
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): Token {
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    data: Uint8Array
+  ): Token<ToPhantomTypeArgument<T0>> {
     return Token.fromFields(typeArg, Token.bcs.parse(data))
   }
 
@@ -108,14 +131,20 @@ export class Token {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): Token {
+  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): Token<ToPhantomTypeArgument<T0>> {
     return Token.new(typeArg, {
       id: decodeFromJSONField(UID.reified(), field.id),
       balance: decodeFromJSONField(Balance.reified(typeArg), field.balance),
     })
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): Token {
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): Token<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== Token.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
@@ -128,7 +157,10 @@ export class Token {
     return Token.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): Token {
+  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    content: SuiParsedData
+  ): Token<ToPhantomTypeArgument<T0>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -138,7 +170,11 @@ export class Token {
     return Token.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch(client: SuiClient, typeArg: ReifiedTypeArgument, id: string): Promise<Token> {
+  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+    client: SuiClient,
+    typeArg: T0,
+    id: string
+  ): Promise<Token<ToPhantomTypeArgument<T0>>> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching Token object at id ${id}: ${res.error.code}`)
@@ -157,14 +193,18 @@ export function isTokenPolicyCap(type: string): boolean {
   return type.startsWith('0x2::token::TokenPolicyCap<')
 }
 
-export interface TokenPolicyCapFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface TokenPolicyCapFields<T0 extends PhantomTypeArgument> {
   id: ToField<UID>
   for: ToField<ID>
 }
 
-export class TokenPolicyCap {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class TokenPolicyCap<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::TokenPolicyCap'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::token::TokenPolicyCap<${T0}>`
 
   readonly $typeName = TokenPolicyCap.$typeName
 
@@ -180,38 +220,51 @@ export class TokenPolicyCap {
   readonly id: ToField<UID>
   readonly for: ToField<ID>
 
-  private constructor(typeArg: string, fields: TokenPolicyCapFields) {
+  private constructor(typeArg: string, fields: TokenPolicyCapFields<T0>) {
     this.$typeArg = typeArg
 
     this.id = fields.id
     this.for = fields.for
   }
 
-  static new(typeArg: ReifiedTypeArgument, fields: TokenPolicyCapFields): TokenPolicyCap {
+  static new<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: TokenPolicyCapFields<ToPhantomTypeArgument<T0>>
+  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
     return new TokenPolicyCap(extractType(typeArg), fields)
   }
 
-  static reified(T0: ReifiedTypeArgument) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
     return {
       typeName: TokenPolicyCap.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        TokenPolicyCap.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::token::TokenPolicyCap<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => TokenPolicyCap.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TokenPolicyCap.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => TokenPolicyCap.fromBcs(T0, data),
       bcs: TokenPolicyCap.bcs,
       fromJSONField: (field: any) => TokenPolicyCap.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof TokenPolicyCap.new>,
+      __class: null as unknown as ReturnType<typeof TokenPolicyCap.new<ToTypeArgument<T0>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): TokenPolicyCap {
+  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
     return TokenPolicyCap.new(typeArg, {
       id: decodeFromFields(UID.reified(), fields.id),
       for: decodeFromFields(ID.reified(), fields.for),
     })
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): TokenPolicyCap {
+  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
     if (!isTokenPolicyCap(item.type)) {
       throw new Error('not a TokenPolicyCap type')
     }
@@ -223,7 +276,10 @@ export class TokenPolicyCap {
     })
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): TokenPolicyCap {
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    data: Uint8Array
+  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
     return TokenPolicyCap.fromFields(typeArg, TokenPolicyCap.bcs.parse(data))
   }
 
@@ -238,14 +294,20 @@ export class TokenPolicyCap {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): TokenPolicyCap {
+  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
     return TokenPolicyCap.new(typeArg, {
       id: decodeFromJSONField(UID.reified(), field.id),
       for: decodeFromJSONField(ID.reified(), field.for),
     })
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): TokenPolicyCap {
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== TokenPolicyCap.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
@@ -258,7 +320,10 @@ export class TokenPolicyCap {
     return TokenPolicyCap.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): TokenPolicyCap {
+  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    content: SuiParsedData
+  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -268,11 +333,11 @@ export class TokenPolicyCap {
     return TokenPolicyCap.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch(
+  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
     client: SuiClient,
-    typeArg: ReifiedTypeArgument,
+    typeArg: T0,
     id: string
-  ): Promise<TokenPolicyCap> {
+  ): Promise<TokenPolicyCap<ToPhantomTypeArgument<T0>>> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching TokenPolicyCap object at id ${id}: ${res.error.code}`)
@@ -291,15 +356,19 @@ export function isTokenPolicy(type: string): boolean {
   return type.startsWith('0x2::token::TokenPolicy<')
 }
 
-export interface TokenPolicyFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface TokenPolicyFields<T0 extends PhantomTypeArgument> {
   id: ToField<UID>
-  spentBalance: ToField<Balance>
+  spentBalance: ToField<Balance<T0>>
   rules: ToField<VecMap<String, VecSet<TypeName>>>
 }
 
-export class TokenPolicy {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class TokenPolicy<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::TokenPolicy'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::token::TokenPolicy<${T0}>`
 
   readonly $typeName = TokenPolicy.$typeName
 
@@ -314,10 +383,10 @@ export class TokenPolicy {
   readonly $typeArg: string
 
   readonly id: ToField<UID>
-  readonly spentBalance: ToField<Balance>
+  readonly spentBalance: ToField<Balance<T0>>
   readonly rules: ToField<VecMap<String, VecSet<TypeName>>>
 
-  private constructor(typeArg: string, fields: TokenPolicyFields) {
+  private constructor(typeArg: string, fields: TokenPolicyFields<T0>) {
     this.$typeArg = typeArg
 
     this.id = fields.id
@@ -325,24 +394,34 @@ export class TokenPolicy {
     this.rules = fields.rules
   }
 
-  static new(typeArg: ReifiedTypeArgument, fields: TokenPolicyFields): TokenPolicy {
+  static new<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: TokenPolicyFields<ToPhantomTypeArgument<T0>>
+  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
     return new TokenPolicy(extractType(typeArg), fields)
   }
 
-  static reified(T0: ReifiedTypeArgument) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
     return {
       typeName: TokenPolicy.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        TokenPolicy.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::token::TokenPolicy<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => TokenPolicy.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TokenPolicy.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => TokenPolicy.fromBcs(T0, data),
       bcs: TokenPolicy.bcs,
       fromJSONField: (field: any) => TokenPolicy.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof TokenPolicy.new>,
+      __class: null as unknown as ReturnType<typeof TokenPolicy.new<ToTypeArgument<T0>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): TokenPolicy {
+  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
     return TokenPolicy.new(typeArg, {
       id: decodeFromFields(UID.reified(), fields.id),
       spentBalance: decodeFromFields(Balance.reified(typeArg), fields.spent_balance),
@@ -353,7 +432,10 @@ export class TokenPolicy {
     })
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): TokenPolicy {
+  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
     if (!isTokenPolicy(item.type)) {
       throw new Error('not a TokenPolicy type')
     }
@@ -369,7 +451,10 @@ export class TokenPolicy {
     })
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): TokenPolicy {
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    data: Uint8Array
+  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
     return TokenPolicy.fromFields(typeArg, TokenPolicy.bcs.parse(data))
   }
 
@@ -385,7 +470,10 @@ export class TokenPolicy {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): TokenPolicy {
+  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
     return TokenPolicy.new(typeArg, {
       id: decodeFromJSONField(UID.reified(), field.id),
       spentBalance: decodeFromJSONField(Balance.reified(typeArg), field.spentBalance),
@@ -396,7 +484,10 @@ export class TokenPolicy {
     })
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): TokenPolicy {
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== TokenPolicy.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
@@ -409,7 +500,10 @@ export class TokenPolicy {
     return TokenPolicy.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData(typeArg: ReifiedTypeArgument, content: SuiParsedData): TokenPolicy {
+  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    content: SuiParsedData
+  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -419,11 +513,11 @@ export class TokenPolicy {
     return TokenPolicy.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch(
+  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
     client: SuiClient,
-    typeArg: ReifiedTypeArgument,
+    typeArg: T0,
     id: string
-  ): Promise<TokenPolicy> {
+  ): Promise<TokenPolicy<ToPhantomTypeArgument<T0>>> {
     const res = await client.getObject({ id, options: { showContent: true } })
     if (res.error) {
       throw new Error(`error fetching TokenPolicy object at id ${id}: ${res.error.code}`)
@@ -442,18 +536,22 @@ export function isActionRequest(type: string): boolean {
   return type.startsWith('0x2::token::ActionRequest<')
 }
 
-export interface ActionRequestFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface ActionRequestFields<T0 extends PhantomTypeArgument> {
   name: ToField<String>
   amount: ToField<'u64'>
   sender: ToField<'address'>
   recipient: ToField<Option<'address'>>
-  spentBalance: ToField<Option<Balance>>
+  spentBalance: ToField<Option<Balance<T0>>>
   approvals: ToField<VecSet<TypeName>>
 }
 
-export class ActionRequest {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class ActionRequest<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::ActionRequest'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::token::ActionRequest<${T0}>`
 
   readonly $typeName = ActionRequest.$typeName
 
@@ -482,10 +580,10 @@ export class ActionRequest {
   readonly amount: ToField<'u64'>
   readonly sender: ToField<'address'>
   readonly recipient: ToField<Option<'address'>>
-  readonly spentBalance: ToField<Option<Balance>>
+  readonly spentBalance: ToField<Option<Balance<T0>>>
   readonly approvals: ToField<VecSet<TypeName>>
 
-  private constructor(typeArg: string, fields: ActionRequestFields) {
+  private constructor(typeArg: string, fields: ActionRequestFields<T0>) {
     this.$typeArg = typeArg
 
     this.name = fields.name
@@ -496,24 +594,34 @@ export class ActionRequest {
     this.approvals = fields.approvals
   }
 
-  static new(typeArg: ReifiedTypeArgument, fields: ActionRequestFields): ActionRequest {
+  static new<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: ActionRequestFields<ToPhantomTypeArgument<T0>>
+  ): ActionRequest<ToPhantomTypeArgument<T0>> {
     return new ActionRequest(extractType(typeArg), fields)
   }
 
-  static reified(T0: ReifiedTypeArgument) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
     return {
       typeName: ActionRequest.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        ActionRequest.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::token::ActionRequest<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => ActionRequest.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ActionRequest.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => ActionRequest.fromBcs(T0, data),
       bcs: ActionRequest.bcs,
       fromJSONField: (field: any) => ActionRequest.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof ActionRequest.new>,
+      __class: null as unknown as ReturnType<typeof ActionRequest.new<ToTypeArgument<T0>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): ActionRequest {
+  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): ActionRequest<ToPhantomTypeArgument<T0>> {
     return ActionRequest.new(typeArg, {
       name: decodeFromFields(String.reified(), fields.name),
       amount: decodeFromFields('u64', fields.amount),
@@ -527,7 +635,10 @@ export class ActionRequest {
     })
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): ActionRequest {
+  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): ActionRequest<ToPhantomTypeArgument<T0>> {
     if (!isActionRequest(item.type)) {
       throw new Error('not a ActionRequest type')
     }
@@ -549,7 +660,10 @@ export class ActionRequest {
     })
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): ActionRequest {
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    data: Uint8Array
+  ): ActionRequest<ToPhantomTypeArgument<T0>> {
     return ActionRequest.fromFields(typeArg, ActionRequest.bcs.parse(data))
   }
 
@@ -559,7 +673,7 @@ export class ActionRequest {
       amount: this.amount.toString(),
       sender: this.sender,
       recipient: fieldToJSON<Option<'address'>>(`0x1::option::Option<address>`, this.recipient),
-      spentBalance: fieldToJSON<Option<Balance>>(
+      spentBalance: fieldToJSON<Option<Balance<T0>>>(
         `0x1::option::Option<0x2::balance::Balance<${this.$typeArg}>>`,
         this.spentBalance
       ),
@@ -571,7 +685,10 @@ export class ActionRequest {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): ActionRequest {
+  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): ActionRequest<ToPhantomTypeArgument<T0>> {
     return ActionRequest.new(typeArg, {
       name: decodeFromJSONField(String.reified(), field.name),
       amount: decodeFromJSONField('u64', field.amount),
@@ -585,7 +702,10 @@ export class ActionRequest {
     })
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): ActionRequest {
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): ActionRequest<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== ActionRequest.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
@@ -606,13 +726,17 @@ export function isRuleKey(type: string): boolean {
   return type.startsWith('0x2::token::RuleKey<')
 }
 
-export interface RuleKeyFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface RuleKeyFields<T0 extends PhantomTypeArgument> {
   isProtected: ToField<'bool'>
 }
 
-export class RuleKey {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class RuleKey<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::RuleKey'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::token::RuleKey<${T0}>`
 
   readonly $typeName = RuleKey.$typeName
 
@@ -632,28 +756,41 @@ export class RuleKey {
     this.isProtected = isProtected
   }
 
-  static new(typeArg: ReifiedTypeArgument, isProtected: ToField<'bool'>): RuleKey {
+  static new<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    isProtected: ToField<'bool'>
+  ): RuleKey<ToPhantomTypeArgument<T0>> {
     return new RuleKey(extractType(typeArg), isProtected)
   }
 
-  static reified(T0: ReifiedTypeArgument) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
     return {
       typeName: RuleKey.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        RuleKey.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::token::RuleKey<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => RuleKey.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => RuleKey.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => RuleKey.fromBcs(T0, data),
       bcs: RuleKey.bcs,
       fromJSONField: (field: any) => RuleKey.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof RuleKey.new>,
+      __class: null as unknown as ReturnType<typeof RuleKey.new<ToTypeArgument<T0>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): RuleKey {
+  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): RuleKey<ToPhantomTypeArgument<T0>> {
     return RuleKey.new(typeArg, decodeFromFields('bool', fields.is_protected))
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): RuleKey {
+  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): RuleKey<ToPhantomTypeArgument<T0>> {
     if (!isRuleKey(item.type)) {
       throw new Error('not a RuleKey type')
     }
@@ -662,7 +799,10 @@ export class RuleKey {
     return RuleKey.new(typeArg, decodeFromFieldsWithTypes('bool', item.fields.is_protected))
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): RuleKey {
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    data: Uint8Array
+  ): RuleKey<ToPhantomTypeArgument<T0>> {
     return RuleKey.fromFields(typeArg, RuleKey.bcs.parse(data))
   }
 
@@ -676,11 +816,17 @@ export class RuleKey {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): RuleKey {
+  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): RuleKey<ToPhantomTypeArgument<T0>> {
     return RuleKey.new(typeArg, decodeFromJSONField('bool', field.isProtected))
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): RuleKey {
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): RuleKey<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== RuleKey.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
@@ -701,14 +847,18 @@ export function isTokenPolicyCreated(type: string): boolean {
   return type.startsWith('0x2::token::TokenPolicyCreated<')
 }
 
-export interface TokenPolicyCreatedFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface TokenPolicyCreatedFields<T0 extends PhantomTypeArgument> {
   id: ToField<ID>
   isMutable: ToField<'bool'>
 }
 
-export class TokenPolicyCreated {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class TokenPolicyCreated<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::TokenPolicyCreated'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::token::TokenPolicyCreated<${T0}>`
 
   readonly $typeName = TokenPolicyCreated.$typeName
 
@@ -724,42 +874,52 @@ export class TokenPolicyCreated {
   readonly id: ToField<ID>
   readonly isMutable: ToField<'bool'>
 
-  private constructor(typeArg: string, fields: TokenPolicyCreatedFields) {
+  private constructor(typeArg: string, fields: TokenPolicyCreatedFields<T0>) {
     this.$typeArg = typeArg
 
     this.id = fields.id
     this.isMutable = fields.isMutable
   }
 
-  static new(typeArg: ReifiedTypeArgument, fields: TokenPolicyCreatedFields): TokenPolicyCreated {
+  static new<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: TokenPolicyCreatedFields<ToPhantomTypeArgument<T0>>
+  ): TokenPolicyCreated<ToPhantomTypeArgument<T0>> {
     return new TokenPolicyCreated(extractType(typeArg), fields)
   }
 
-  static reified(T0: ReifiedTypeArgument) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
     return {
       typeName: TokenPolicyCreated.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        TokenPolicyCreated.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::token::TokenPolicyCreated<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => TokenPolicyCreated.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         TokenPolicyCreated.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => TokenPolicyCreated.fromBcs(T0, data),
       bcs: TokenPolicyCreated.bcs,
       fromJSONField: (field: any) => TokenPolicyCreated.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof TokenPolicyCreated.new>,
+      __class: null as unknown as ReturnType<typeof TokenPolicyCreated.new<ToTypeArgument<T0>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): TokenPolicyCreated {
+  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): TokenPolicyCreated<ToPhantomTypeArgument<T0>> {
     return TokenPolicyCreated.new(typeArg, {
       id: decodeFromFields(ID.reified(), fields.id),
       isMutable: decodeFromFields('bool', fields.is_mutable),
     })
   }
 
-  static fromFieldsWithTypes(
-    typeArg: ReifiedTypeArgument,
+  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
     item: FieldsWithTypes
-  ): TokenPolicyCreated {
+  ): TokenPolicyCreated<ToPhantomTypeArgument<T0>> {
     if (!isTokenPolicyCreated(item.type)) {
       throw new Error('not a TokenPolicyCreated type')
     }
@@ -771,7 +931,10 @@ export class TokenPolicyCreated {
     })
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): TokenPolicyCreated {
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    data: Uint8Array
+  ): TokenPolicyCreated<ToPhantomTypeArgument<T0>> {
     return TokenPolicyCreated.fromFields(typeArg, TokenPolicyCreated.bcs.parse(data))
   }
 
@@ -786,14 +949,20 @@ export class TokenPolicyCreated {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): TokenPolicyCreated {
+  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): TokenPolicyCreated<ToPhantomTypeArgument<T0>> {
     return TokenPolicyCreated.new(typeArg, {
       id: decodeFromJSONField(ID.reified(), field.id),
       isMutable: decodeFromJSONField('bool', field.isMutable),
     })
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): TokenPolicyCreated {
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): TokenPolicyCreated<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== TokenPolicyCreated.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }

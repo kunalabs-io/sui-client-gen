@@ -3,8 +3,9 @@ import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
+  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { TreasuryCap } from '../../sui-chain/coin/structs'
 import { UID } from '../../sui-chain/object/structs'
 import { bcs } from '@mysten/bcs'
@@ -20,14 +21,19 @@ export function isEXAMPLE_COIN(type: string): boolean {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface EXAMPLE_COINFields {
   dummyField: ToField<'bool'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class EXAMPLE_COIN {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString =
+    null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
 
   readonly $typeName = EXAMPLE_COIN.$typeName
 
@@ -51,6 +57,10 @@ export class EXAMPLE_COIN {
     return {
       typeName: EXAMPLE_COIN.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        EXAMPLE_COIN.$typeName,
+        ...[]
+      ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN',
       fromFields: (fields: Record<string, any>) => EXAMPLE_COIN.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => EXAMPLE_COIN.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => EXAMPLE_COIN.fromBcs(data),
@@ -109,15 +119,20 @@ export function isFaucet(type: string): boolean {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface FaucetFields {
   id: ToField<UID>
-  cap: ToField<TreasuryCap>
+  cap: ToField<TreasuryCap<ToPhantom<EXAMPLE_COIN>>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Faucet {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString =
+    null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'
 
   readonly $typeName = Faucet.$typeName
 
@@ -129,7 +144,7 @@ export class Faucet {
   }
 
   readonly id: ToField<UID>
-  readonly cap: ToField<TreasuryCap>
+  readonly cap: ToField<TreasuryCap<ToPhantom<EXAMPLE_COIN>>>
 
   private constructor(fields: FaucetFields) {
     this.id = fields.id
@@ -144,6 +159,10 @@ export class Faucet {
     return {
       typeName: Faucet.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        Faucet.$typeName,
+        ...[]
+      ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet',
       fromFields: (fields: Record<string, any>) => Faucet.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Faucet.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Faucet.fromBcs(data),

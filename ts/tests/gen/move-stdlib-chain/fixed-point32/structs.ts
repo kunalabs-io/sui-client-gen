@@ -4,7 +4,7 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== FixedPoint32 =============================== */
@@ -14,13 +14,17 @@ export function isFixedPoint32(type: string): boolean {
   return type === '0x1::fixed_point32::FixedPoint32'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface FixedPoint32Fields {
   value: ToField<'u64'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class FixedPoint32 {
   static readonly $typeName = '0x1::fixed_point32::FixedPoint32'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x1::fixed_point32::FixedPoint32'
 
   readonly $typeName = FixedPoint32.$typeName
 
@@ -44,6 +48,10 @@ export class FixedPoint32 {
     return {
       typeName: FixedPoint32.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        FixedPoint32.$typeName,
+        ...[]
+      ) as '0x1::fixed_point32::FixedPoint32',
       fromFields: (fields: Record<string, any>) => FixedPoint32.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => FixedPoint32.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => FixedPoint32.fromBcs(data),

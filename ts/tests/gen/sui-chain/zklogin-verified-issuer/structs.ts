@@ -4,7 +4,7 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/string/structs'
 import { UID } from '../object/structs'
 import { bcs, fromHEX, toHEX } from '@mysten/bcs'
@@ -17,15 +17,19 @@ export function isVerifiedIssuer(type: string): boolean {
   return type === '0x2::zklogin_verified_issuer::VerifiedIssuer'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface VerifiedIssuerFields {
   id: ToField<UID>
   owner: ToField<'address'>
   issuer: ToField<String>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class VerifiedIssuer {
   static readonly $typeName = '0x2::zklogin_verified_issuer::VerifiedIssuer'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::zklogin_verified_issuer::VerifiedIssuer'
 
   readonly $typeName = VerifiedIssuer.$typeName
 
@@ -58,6 +62,10 @@ export class VerifiedIssuer {
     return {
       typeName: VerifiedIssuer.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        VerifiedIssuer.$typeName,
+        ...[]
+      ) as '0x2::zklogin_verified_issuer::VerifiedIssuer',
       fromFields: (fields: Record<string, any>) => VerifiedIssuer.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VerifiedIssuer.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => VerifiedIssuer.fromBcs(data),

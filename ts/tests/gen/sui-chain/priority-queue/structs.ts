@@ -2,8 +2,10 @@ import * as reified from '../../_framework/reified'
 import {
   ReifiedTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
   ToTypeArgument,
   TypeArgument,
+  Vector,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -12,6 +14,7 @@ import {
   extractType,
   fieldToJSON,
   toBcs,
+  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
@@ -23,13 +26,18 @@ export function isPriorityQueue(type: string): boolean {
   return type.startsWith('0x2::priority_queue::PriorityQueue<')
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PriorityQueueFields<T0 extends TypeArgument> {
-  entries: Array<ToField<Entry<T0>>>
+  entries: ToField<Vector<Entry<T0>>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PriorityQueue<T0 extends TypeArgument> {
   static readonly $typeName = '0x2::priority_queue::PriorityQueue'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString =
+    null as unknown as `0x2::priority_queue::PriorityQueue<${ToPhantom<T0>}>`
 
   readonly $typeName = PriorityQueue.$typeName
 
@@ -42,9 +50,9 @@ export class PriorityQueue<T0 extends TypeArgument> {
 
   readonly $typeArg: string
 
-  readonly entries: Array<ToField<Entry<T0>>>
+  readonly entries: ToField<Vector<Entry<T0>>>
 
-  private constructor(typeArg: string, entries: Array<ToField<Entry<T0>>>) {
+  private constructor(typeArg: string, entries: ToField<Vector<Entry<T0>>>) {
     this.$typeArg = typeArg
 
     this.entries = entries
@@ -52,7 +60,7 @@ export class PriorityQueue<T0 extends TypeArgument> {
 
   static new<T0 extends ReifiedTypeArgument>(
     typeArg: T0,
-    entries: Array<ToField<Entry<ToTypeArgument<T0>>>>
+    entries: ToField<Vector<Entry<ToTypeArgument<T0>>>>
   ): PriorityQueue<ToTypeArgument<T0>> {
     return new PriorityQueue(extractType(typeArg), entries)
   }
@@ -61,6 +69,10 @@ export class PriorityQueue<T0 extends TypeArgument> {
     return {
       typeName: PriorityQueue.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        PriorityQueue.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::priority_queue::PriorityQueue<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => PriorityQueue.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PriorityQueue.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => PriorityQueue.fromBcs(T0, data),
@@ -106,7 +118,7 @@ export class PriorityQueue<T0 extends TypeArgument> {
 
   toJSONField() {
     return {
-      entries: fieldToJSON<Array<Entry<T0>>>(
+      entries: fieldToJSON<Vector<Entry<T0>>>(
         `vector<0x2::priority_queue::Entry<${this.$typeArg}>>`,
         this.entries
       ),
@@ -151,14 +163,18 @@ export function isEntry(type: string): boolean {
   return type.startsWith('0x2::priority_queue::Entry<')
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface EntryFields<T0 extends TypeArgument> {
   priority: ToField<'u64'>
   value: ToField<T0>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Entry<T0 extends TypeArgument> {
   static readonly $typeName = '0x2::priority_queue::Entry'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::priority_queue::Entry<${ToPhantom<T0>}>`
 
   readonly $typeName = Entry.$typeName
 
@@ -193,6 +209,10 @@ export class Entry<T0 extends TypeArgument> {
     return {
       typeName: Entry.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        Entry.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::priority_queue::Entry<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => Entry.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Entry.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => Entry.fromBcs(T0, data),

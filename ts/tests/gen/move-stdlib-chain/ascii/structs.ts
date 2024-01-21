@@ -1,12 +1,13 @@
 import * as reified from '../../_framework/reified'
 import {
   ToField,
+  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== String =============================== */
@@ -16,13 +17,17 @@ export function isString(type: string): boolean {
   return type === '0x1::ascii::String'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface StringFields {
-  bytes: Array<ToField<'u8'>>
+  bytes: ToField<Vector<'u8'>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class String {
   static readonly $typeName = '0x1::ascii::String'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x1::ascii::String'
 
   readonly $typeName = String.$typeName
 
@@ -32,13 +37,13 @@ export class String {
     })
   }
 
-  readonly bytes: Array<ToField<'u8'>>
+  readonly bytes: ToField<Vector<'u8'>>
 
-  private constructor(bytes: Array<ToField<'u8'>>) {
+  private constructor(bytes: ToField<Vector<'u8'>>) {
     this.bytes = bytes
   }
 
-  static new(bytes: Array<ToField<'u8'>>): String {
+  static new(bytes: ToField<Vector<'u8'>>): String {
     return new String(bytes)
   }
 
@@ -46,6 +51,7 @@ export class String {
     return {
       typeName: String.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(String.$typeName, ...[]) as '0x1::ascii::String',
       fromFields: (fields: Record<string, any>) => String.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => String.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => String.fromBcs(data),
@@ -73,7 +79,7 @@ export class String {
 
   toJSONField() {
     return {
-      bytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.bytes),
+      bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 
@@ -101,13 +107,17 @@ export function isChar(type: string): boolean {
   return type === '0x1::ascii::Char'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface CharFields {
   byte: ToField<'u8'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Char {
   static readonly $typeName = '0x1::ascii::Char'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x1::ascii::Char'
 
   readonly $typeName = Char.$typeName
 
@@ -131,6 +141,7 @@ export class Char {
     return {
       typeName: Char.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(Char.$typeName, ...[]) as '0x1::ascii::Char',
       fromFields: (fields: Record<string, any>) => Char.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Char.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Char.fromBcs(data),

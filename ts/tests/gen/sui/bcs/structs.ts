@@ -1,12 +1,13 @@
 import * as reified from '../../_framework/reified'
 import {
   ToField,
+  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== BCS =============================== */
@@ -16,13 +17,17 @@ export function isBCS(type: string): boolean {
   return type === '0x2::bcs::BCS'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface BCSFields {
-  bytes: Array<ToField<'u8'>>
+  bytes: ToField<Vector<'u8'>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class BCS {
   static readonly $typeName = '0x2::bcs::BCS'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::bcs::BCS'
 
   readonly $typeName = BCS.$typeName
 
@@ -32,13 +37,13 @@ export class BCS {
     })
   }
 
-  readonly bytes: Array<ToField<'u8'>>
+  readonly bytes: ToField<Vector<'u8'>>
 
-  private constructor(bytes: Array<ToField<'u8'>>) {
+  private constructor(bytes: ToField<Vector<'u8'>>) {
     this.bytes = bytes
   }
 
-  static new(bytes: Array<ToField<'u8'>>): BCS {
+  static new(bytes: ToField<Vector<'u8'>>): BCS {
     return new BCS(bytes)
   }
 
@@ -46,6 +51,7 @@ export class BCS {
     return {
       typeName: BCS.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(BCS.$typeName, ...[]) as '0x2::bcs::BCS',
       fromFields: (fields: Record<string, any>) => BCS.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => BCS.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => BCS.fromBcs(data),
@@ -73,7 +79,7 @@ export class BCS {
 
   toJSONField() {
     return {
-      bytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.bytes),
+      bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 

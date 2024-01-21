@@ -1,12 +1,13 @@
 import * as reified from '../../_framework/reified'
 import {
   ToField,
+  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { Versioned } from '../versioned/structs'
 import { bcs } from '@mysten/bcs'
@@ -19,14 +20,18 @@ export function isRandom(type: string): boolean {
   return type === '0x2::random::Random'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface RandomFields {
   id: ToField<UID>
   inner: ToField<Versioned>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Random {
   static readonly $typeName = '0x2::random::Random'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::random::Random'
 
   readonly $typeName = Random.$typeName
 
@@ -53,6 +58,7 @@ export class Random {
     return {
       typeName: Random.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(Random.$typeName, ...[]) as '0x2::random::Random',
       fromFields: (fields: Record<string, any>) => Random.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Random.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Random.fromBcs(data),
@@ -139,16 +145,20 @@ export function isRandomInner(type: string): boolean {
   return type === '0x2::random::RandomInner'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface RandomInnerFields {
   version: ToField<'u64'>
   epoch: ToField<'u64'>
   randomnessRound: ToField<'u64'>
-  randomBytes: Array<ToField<'u8'>>
+  randomBytes: ToField<Vector<'u8'>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class RandomInner {
   static readonly $typeName = '0x2::random::RandomInner'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::random::RandomInner'
 
   readonly $typeName = RandomInner.$typeName
 
@@ -164,7 +174,7 @@ export class RandomInner {
   readonly version: ToField<'u64'>
   readonly epoch: ToField<'u64'>
   readonly randomnessRound: ToField<'u64'>
-  readonly randomBytes: Array<ToField<'u8'>>
+  readonly randomBytes: ToField<Vector<'u8'>>
 
   private constructor(fields: RandomInnerFields) {
     this.version = fields.version
@@ -181,6 +191,7 @@ export class RandomInner {
     return {
       typeName: RandomInner.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(RandomInner.$typeName, ...[]) as '0x2::random::RandomInner',
       fromFields: (fields: Record<string, any>) => RandomInner.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => RandomInner.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => RandomInner.fromBcs(data),
@@ -221,7 +232,7 @@ export class RandomInner {
       version: this.version.toString(),
       epoch: this.epoch.toString(),
       randomnessRound: this.randomnessRound.toString(),
-      randomBytes: fieldToJSON<Array<'u8'>>(`vector<u8>`, this.randomBytes),
+      randomBytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.randomBytes),
     }
   }
 

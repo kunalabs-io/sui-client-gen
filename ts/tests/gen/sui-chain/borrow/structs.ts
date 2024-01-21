@@ -1,6 +1,7 @@
 import {
   ReifiedTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
@@ -11,6 +12,7 @@ import {
   extractType,
   fieldToJSON,
   toBcs,
+  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Option } from '../../move-stdlib-chain/option/structs'
@@ -24,14 +26,18 @@ export function isReferent(type: string): boolean {
   return type.startsWith('0x2::borrow::Referent<')
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ReferentFields<T0 extends TypeArgument> {
   id: ToField<'address'>
   value: ToField<Option<T0>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Referent<T0 extends TypeArgument> {
   static readonly $typeName = '0x2::borrow::Referent'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::borrow::Referent<${ToPhantom<T0>}>`
 
   readonly $typeName = Referent.$typeName
 
@@ -69,6 +75,10 @@ export class Referent<T0 extends TypeArgument> {
     return {
       typeName: Referent.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        Referent.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::borrow::Referent<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => Referent.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Referent.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => Referent.fromBcs(T0, data),
@@ -157,14 +167,18 @@ export function isBorrow(type: string): boolean {
   return type === '0x2::borrow::Borrow'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface BorrowFields {
   ref: ToField<'address'>
   obj: ToField<ID>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Borrow {
   static readonly $typeName = '0x2::borrow::Borrow'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::borrow::Borrow'
 
   readonly $typeName = Borrow.$typeName
 
@@ -194,6 +208,7 @@ export class Borrow {
     return {
       typeName: Borrow.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(Borrow.$typeName, ...[]) as '0x2::borrow::Borrow',
       fromFields: (fields: Record<string, any>) => Borrow.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Borrow.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Borrow.fromBcs(data),

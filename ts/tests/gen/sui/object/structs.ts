@@ -2,8 +2,10 @@ import * as reified from '../../_framework/reified'
 import {
   ReifiedTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
   ToTypeArgument,
   TypeArgument,
+  Vector,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -12,6 +14,7 @@ import {
   extractType,
   fieldToJSON,
   toBcs,
+  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
@@ -24,13 +27,17 @@ export function isDynamicFields(type: string): boolean {
   return type.startsWith('0x2::object::DynamicFields<')
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface DynamicFieldsFields<K extends TypeArgument> {
-  names: Array<ToField<K>>
+  names: ToField<Vector<K>>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class DynamicFields<K extends TypeArgument> {
   static readonly $typeName = '0x2::object::DynamicFields'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::object::DynamicFields<${ToPhantom<K>}>`
 
   readonly $typeName = DynamicFields.$typeName
 
@@ -43,9 +50,9 @@ export class DynamicFields<K extends TypeArgument> {
 
   readonly $typeArg: string
 
-  readonly names: Array<ToField<K>>
+  readonly names: ToField<Vector<K>>
 
-  private constructor(typeArg: string, names: Array<ToField<K>>) {
+  private constructor(typeArg: string, names: ToField<Vector<K>>) {
     this.$typeArg = typeArg
 
     this.names = names
@@ -53,7 +60,7 @@ export class DynamicFields<K extends TypeArgument> {
 
   static new<K extends ReifiedTypeArgument>(
     typeArg: K,
-    names: Array<ToField<ToTypeArgument<K>>>
+    names: ToField<Vector<ToTypeArgument<K>>>
   ): DynamicFields<ToTypeArgument<K>> {
     return new DynamicFields(extractType(typeArg), names)
   }
@@ -62,6 +69,10 @@ export class DynamicFields<K extends TypeArgument> {
     return {
       typeName: DynamicFields.$typeName,
       typeArgs: [K],
+      fullTypeName: composeSuiType(
+        DynamicFields.$typeName,
+        ...[extractType(K)]
+      ) as `0x2::object::DynamicFields<${ToPhantomTypeArgument<K>}>`,
       fromFields: (fields: Record<string, any>) => DynamicFields.fromFields(K, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => DynamicFields.fromFieldsWithTypes(K, item),
       fromBcs: (data: Uint8Array) => DynamicFields.fromBcs(K, data),
@@ -104,7 +115,7 @@ export class DynamicFields<K extends TypeArgument> {
 
   toJSONField() {
     return {
-      names: fieldToJSON<Array<K>>(`vector<${this.$typeArg}>`, this.names),
+      names: fieldToJSON<Vector<K>>(`vector<${this.$typeArg}>`, this.names),
     }
   }
 
@@ -171,13 +182,17 @@ export function isID(type: string): boolean {
   return type === '0x2::object::ID'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface IDFields {
   bytes: ToField<'address'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ID {
   static readonly $typeName = '0x2::object::ID'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::object::ID'
 
   readonly $typeName = ID.$typeName
 
@@ -204,6 +219,7 @@ export class ID {
     return {
       typeName: ID.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(ID.$typeName, ...[]) as '0x2::object::ID',
       fromFields: (fields: Record<string, any>) => ID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ID.fromBcs(data),
@@ -259,14 +275,18 @@ export function isOwnership(type: string): boolean {
   return type === '0x2::object::Ownership'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface OwnershipFields {
   owner: ToField<'address'>
   status: ToField<'u64'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Ownership {
   static readonly $typeName = '0x2::object::Ownership'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::object::Ownership'
 
   readonly $typeName = Ownership.$typeName
 
@@ -296,6 +316,7 @@ export class Ownership {
     return {
       typeName: Ownership.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(Ownership.$typeName, ...[]) as '0x2::object::Ownership',
       fromFields: (fields: Record<string, any>) => Ownership.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Ownership.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Ownership.fromBcs(data),
@@ -382,13 +403,17 @@ export function isUID(type: string): boolean {
   return type === '0x2::object::UID'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface UIDFields {
   id: ToField<ID>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class UID {
   static readonly $typeName = '0x2::object::UID'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::object::UID'
 
   readonly $typeName = UID.$typeName
 
@@ -412,6 +437,7 @@ export class UID {
     return {
       typeName: UID.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(UID.$typeName, ...[]) as '0x2::object::UID',
       fromFields: (fields: Record<string, any>) => UID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UID.fromBcs(data),

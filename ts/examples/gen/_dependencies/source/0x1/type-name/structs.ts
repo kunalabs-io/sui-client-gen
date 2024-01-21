@@ -4,7 +4,7 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
 } from '../../../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { String } from '../ascii/structs'
 import { bcs } from '@mysten/bcs'
 
@@ -15,13 +15,17 @@ export function isTypeName(type: string): boolean {
   return type === '0x1::type_name::TypeName'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TypeNameFields {
   name: ToField<String>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TypeName {
   static readonly $typeName = '0x1::type_name::TypeName'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x1::type_name::TypeName'
 
   readonly $typeName = TypeName.$typeName
 
@@ -45,6 +49,7 @@ export class TypeName {
     return {
       typeName: TypeName.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(TypeName.$typeName, ...[]) as '0x1::type_name::TypeName',
       fromFields: (fields: Record<string, any>) => TypeName.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TypeName.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => TypeName.fromBcs(data),

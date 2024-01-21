@@ -1,6 +1,9 @@
 import {
-  ReifiedTypeArgument,
+  PhantomTypeArgument,
+  ReifiedPhantomTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
+  ToTypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -18,13 +21,17 @@ export function isSupply(type: string): boolean {
   return type.startsWith('0x2::balance::Supply<')
 }
 
-export interface SupplyFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface SupplyFields<T0 extends PhantomTypeArgument> {
   value: ToField<'u64'>
 }
 
-export class Supply {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class Supply<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::balance::Supply'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::balance::Supply<${T0}>`
 
   readonly $typeName = Supply.$typeName
 
@@ -44,28 +51,41 @@ export class Supply {
     this.value = value
   }
 
-  static new(typeArg: ReifiedTypeArgument, value: ToField<'u64'>): Supply {
+  static new<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    value: ToField<'u64'>
+  ): Supply<ToPhantomTypeArgument<T0>> {
     return new Supply(extractType(typeArg), value)
   }
 
-  static reified(T0: ReifiedTypeArgument) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
     return {
       typeName: Supply.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        Supply.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::balance::Supply<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => Supply.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Supply.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => Supply.fromBcs(T0, data),
       bcs: Supply.bcs,
       fromJSONField: (field: any) => Supply.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof Supply.new>,
+      __class: null as unknown as ReturnType<typeof Supply.new<ToTypeArgument<T0>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): Supply {
+  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): Supply<ToPhantomTypeArgument<T0>> {
     return Supply.new(typeArg, decodeFromFields('u64', fields.value))
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): Supply {
+  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): Supply<ToPhantomTypeArgument<T0>> {
     if (!isSupply(item.type)) {
       throw new Error('not a Supply type')
     }
@@ -74,7 +94,10 @@ export class Supply {
     return Supply.new(typeArg, decodeFromFieldsWithTypes('u64', item.fields.value))
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): Supply {
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    data: Uint8Array
+  ): Supply<ToPhantomTypeArgument<T0>> {
     return Supply.fromFields(typeArg, Supply.bcs.parse(data))
   }
 
@@ -88,11 +111,17 @@ export class Supply {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): Supply {
+  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): Supply<ToPhantomTypeArgument<T0>> {
     return Supply.new(typeArg, decodeFromJSONField('u64', field.value))
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): Supply {
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): Supply<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== Supply.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
@@ -113,13 +142,17 @@ export function isBalance(type: string): boolean {
   return type.startsWith('0x2::balance::Balance<')
 }
 
-export interface BalanceFields {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface BalanceFields<T0 extends PhantomTypeArgument> {
   value: ToField<'u64'>
 }
 
-export class Balance {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class Balance<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::balance::Balance'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString = null as unknown as `0x2::balance::Balance<${T0}>`
 
   readonly $typeName = Balance.$typeName
 
@@ -139,28 +172,41 @@ export class Balance {
     this.value = value
   }
 
-  static new(typeArg: ReifiedTypeArgument, value: ToField<'u64'>): Balance {
+  static new<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    value: ToField<'u64'>
+  ): Balance<ToPhantomTypeArgument<T0>> {
     return new Balance(extractType(typeArg), value)
   }
 
-  static reified(T0: ReifiedTypeArgument) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
     return {
       typeName: Balance.$typeName,
       typeArgs: [T0],
+      fullTypeName: composeSuiType(
+        Balance.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::balance::Balance<${ToPhantomTypeArgument<T0>}>`,
       fromFields: (fields: Record<string, any>) => Balance.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Balance.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => Balance.fromBcs(T0, data),
       bcs: Balance.bcs,
       fromJSONField: (field: any) => Balance.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof Balance.new>,
+      __class: null as unknown as ReturnType<typeof Balance.new<ToTypeArgument<T0>>>,
     }
   }
 
-  static fromFields(typeArg: ReifiedTypeArgument, fields: Record<string, any>): Balance {
+  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): Balance<ToPhantomTypeArgument<T0>> {
     return Balance.new(typeArg, decodeFromFields('u64', fields.value))
   }
 
-  static fromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: FieldsWithTypes): Balance {
+  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): Balance<ToPhantomTypeArgument<T0>> {
     if (!isBalance(item.type)) {
       throw new Error('not a Balance type')
     }
@@ -169,7 +215,10 @@ export class Balance {
     return Balance.new(typeArg, decodeFromFieldsWithTypes('u64', item.fields.value))
   }
 
-  static fromBcs(typeArg: ReifiedTypeArgument, data: Uint8Array): Balance {
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    data: Uint8Array
+  ): Balance<ToPhantomTypeArgument<T0>> {
     return Balance.fromFields(typeArg, Balance.bcs.parse(data))
   }
 
@@ -183,11 +232,17 @@ export class Balance {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField(typeArg: ReifiedTypeArgument, field: any): Balance {
+  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    field: any
+  ): Balance<ToPhantomTypeArgument<T0>> {
     return Balance.new(typeArg, decodeFromJSONField('u64', field.value))
   }
 
-  static fromJSON(typeArg: ReifiedTypeArgument, json: Record<string, any>): Balance {
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): Balance<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== Balance.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }

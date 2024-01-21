@@ -4,7 +4,7 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
@@ -16,14 +16,18 @@ export function isClock(type: string): boolean {
   return type === '0x2::clock::Clock'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ClockFields {
   id: ToField<UID>
   timestampMs: ToField<'u64'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Clock {
   static readonly $typeName = '0x2::clock::Clock'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::clock::Clock'
 
   readonly $typeName = Clock.$typeName
 
@@ -50,6 +54,7 @@ export class Clock {
     return {
       typeName: Clock.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(Clock.$typeName, ...[]) as '0x2::clock::Clock',
       fromFields: (fields: Record<string, any>) => Clock.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Clock.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Clock.fromBcs(data),

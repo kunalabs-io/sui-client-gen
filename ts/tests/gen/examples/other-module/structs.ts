@@ -4,7 +4,7 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
 
 /* ============================== StructFromOtherModule =============================== */
@@ -17,14 +17,19 @@ export function isStructFromOtherModule(type: string): boolean {
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface StructFromOtherModuleFields {
   dummyField: ToField<'bool'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class StructFromOtherModule {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString =
+    null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
 
   readonly $typeName = StructFromOtherModule.$typeName
 
@@ -48,6 +53,10 @@ export class StructFromOtherModule {
     return {
       typeName: StructFromOtherModule.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(
+        StructFromOtherModule.$typeName,
+        ...[]
+      ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule',
       fromFields: (fields: Record<string, any>) => StructFromOtherModule.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         StructFromOtherModule.fromFieldsWithTypes(item),

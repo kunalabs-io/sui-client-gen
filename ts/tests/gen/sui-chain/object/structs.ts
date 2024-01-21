@@ -4,7 +4,7 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
 } from '../../_framework/reified'
-import { FieldsWithTypes, compressSuiType } from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs, fromHEX, toHEX } from '@mysten/bcs'
 
 /* ============================== ID =============================== */
@@ -14,13 +14,17 @@ export function isID(type: string): boolean {
   return type === '0x2::object::ID'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface IDFields {
   bytes: ToField<'address'>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ID {
   static readonly $typeName = '0x2::object::ID'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::object::ID'
 
   readonly $typeName = ID.$typeName
 
@@ -47,6 +51,7 @@ export class ID {
     return {
       typeName: ID.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(ID.$typeName, ...[]) as '0x2::object::ID',
       fromFields: (fields: Record<string, any>) => ID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ID.fromBcs(data),
@@ -102,13 +107,17 @@ export function isUID(type: string): boolean {
   return type === '0x2::object::UID'
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface UIDFields {
   id: ToField<ID>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class UID {
   static readonly $typeName = '0x2::object::UID'
   static readonly $numTypeParams = 0
+
+  __reifiedFullTypeString = null as unknown as '0x2::object::UID'
 
   readonly $typeName = UID.$typeName
 
@@ -132,6 +141,7 @@ export class UID {
     return {
       typeName: UID.$typeName,
       typeArgs: [],
+      fullTypeName: composeSuiType(UID.$typeName, ...[]) as '0x2::object::UID',
       fromFields: (fields: Record<string, any>) => UID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UID.fromBcs(data),

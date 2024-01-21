@@ -1,6 +1,7 @@
 import {
   ReifiedTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
@@ -11,6 +12,7 @@ import {
   extractType,
   fieldToJSON,
   toBcs,
+  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
@@ -22,13 +24,18 @@ export function isWrapper(type: string): boolean {
   return type.startsWith('0x2::dynamic_object_field::Wrapper<')
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface WrapperFields<Name extends TypeArgument> {
   name: ToField<Name>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Wrapper<Name extends TypeArgument> {
   static readonly $typeName = '0x2::dynamic_object_field::Wrapper'
   static readonly $numTypeParams = 1
+
+  __reifiedFullTypeString =
+    null as unknown as `0x2::dynamic_object_field::Wrapper<${ToPhantom<Name>}>`
 
   readonly $typeName = Wrapper.$typeName
 
@@ -60,6 +67,10 @@ export class Wrapper<Name extends TypeArgument> {
     return {
       typeName: Wrapper.$typeName,
       typeArgs: [Name],
+      fullTypeName: composeSuiType(
+        Wrapper.$typeName,
+        ...[extractType(Name)]
+      ) as `0x2::dynamic_object_field::Wrapper<${ToPhantomTypeArgument<Name>}>`,
       fromFields: (fields: Record<string, any>) => Wrapper.fromFields(Name, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Wrapper.fromFieldsWithTypes(Name, item),
       fromBcs: (data: Uint8Array) => Wrapper.fromBcs(Name, data),

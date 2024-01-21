@@ -1,6 +1,7 @@
 import {
   ReifiedTypeArgument,
   ToField,
+  ToPhantomTypeArgument,
   ToTypeArgument,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
@@ -11,6 +12,7 @@ import {
   extractType,
   fieldToJSON,
   toBcs,
+  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
@@ -24,15 +26,20 @@ export function isField(type: string): boolean {
   return type.startsWith('0x2::dynamic_field::Field<')
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface FieldFields<Name extends TypeArgument, Value extends TypeArgument> {
   id: ToField<UID>
   name: ToField<Name>
   value: ToField<Value>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Field<Name extends TypeArgument, Value extends TypeArgument> {
   static readonly $typeName = '0x2::dynamic_field::Field'
   static readonly $numTypeParams = 2
+
+  __reifiedFullTypeString =
+    null as unknown as `0x2::dynamic_field::Field<${ToPhantom<Name>}, ${ToPhantom<Value>}>`
 
   readonly $typeName = Field.$typeName
 
@@ -73,6 +80,10 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> {
     return {
       typeName: Field.$typeName,
       typeArgs: [Name, Value],
+      fullTypeName: composeSuiType(
+        Field.$typeName,
+        ...[extractType(Name), extractType(Value)]
+      ) as `0x2::dynamic_field::Field<${ToPhantomTypeArgument<Name>}, ${ToPhantomTypeArgument<Value>}>`,
       fromFields: (fields: Record<string, any>) => Field.fromFields([Name, Value], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         Field.fromFieldsWithTypes([Name, Value], item),
