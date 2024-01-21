@@ -444,7 +444,7 @@ export type ToTypeArgument<T extends ReifiedTypeArgument | PhantomReified> =
     ? T['__class']
     : T extends VectorReified
     ? Vector<T['__vectorItem']>
-    : T // add primitive and then never
+    : T
 
 export type ToPhantomTypeArgument<T extends PhantomReified | ReifiedTypeArgument> =
   T extends PhantomReified
@@ -453,7 +453,7 @@ export type ToPhantomTypeArgument<T extends PhantomReified | ReifiedTypeArgument
     ? T['fullTypeName']
     : T extends VectorReified
     ? T['fullTypeName']
-    : T // add primitive and then never
+    : T
 
 const Address = bcs.bytes(32).transform({
   input: (val: string) => fromHEX(val),
