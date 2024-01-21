@@ -937,30 +937,22 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let to_phantom = &self.framework.import("reified", "ToTypeStr").with_alias("ToPhantom");
         let vector = &self.framework.import("reified", "Vector");
 
-        let to_field_if_top_level = |ty| if is_top_level {
-            quote!($to_field<$ty>)
-        } else {
-            quote!($ty)
-        };
-
-        match ty {
+        let field_type = match ty {
             Type::Primitive(ty) => match ty {
-                PrimitiveType::U8 => to_field_if_top_level(quote!($[str](u8))),
-                PrimitiveType::U16 => to_field_if_top_level(quote!($[str](u16))),
-                PrimitiveType::U32 => to_field_if_top_level(quote!($[str](u32))),
-                PrimitiveType::U64 => to_field_if_top_level(quote!($[str](u64))),
-                PrimitiveType::U128 => to_field_if_top_level(quote!($[str](u128))),
-                PrimitiveType::U256 => to_field_if_top_level(quote!($[str](u256))),
-                PrimitiveType::Bool => to_field_if_top_level(quote!($[str](bool))),
-                PrimitiveType::Address => to_field_if_top_level(quote!($[str](address))),
+                PrimitiveType::U8 => quote!($[str](u8)),
+                PrimitiveType::U16 => quote!($[str](u16)),
+                PrimitiveType::U32 => quote!($[str](u32)),
+                PrimitiveType::U64 => quote!($[str](u64)),
+                PrimitiveType::U128 => quote!($[str](u128)),
+                PrimitiveType::U256 => quote!($[str](u256)),
+                PrimitiveType::Bool => quote!($[str](bool)),
+                PrimitiveType::Address => quote!($[str](address)),
                 _ => panic!("unexpected primitive type: {:?}", ty),
             },
             Type::Vector(ty) => {
-                to_field_if_top_level(
-                    quote!($vector<$(self.gen_struct_class_field_type_inner(
-                        strct, ty, type_param_names, wrap_non_phantom_type_parameter, wrap_phantom_type_parameter, false
-                    ))>)
-                )
+                quote!($vector<$(self.gen_struct_class_field_type_inner(
+                    strct, ty, type_param_names, wrap_non_phantom_type_parameter, wrap_phantom_type_parameter, false
+                ))>)
             }
             Type::Struct(mid, sid, ts) => {
                 let field_module = self.env.get_module(*mid);
@@ -983,9 +975,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     }
                 });
 
-                to_field_if_top_level(quote!($class$(if !ts.is_empty() {
+                quote!($class$(if !ts.is_empty() {
                     <$(for param in type_param_inner_toks join (, ) => $param)>
-                })))
+                }))
             }
             Type::TypeParameter(idx) => {
                 let ty = type_param_names[*idx as usize]
@@ -999,12 +991,18 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     wrap_non_phantom_type_parameter
                 };
 
-                to_field_if_top_level(match wrap {
+                match wrap {
                     Some(wrap_type_parameter) => quote!($wrap_type_parameter<$ty>),
                     None => quote!($ty),
-                })
+                }
             }
             _ => panic!("unexpected type: {:?}", ty),
+        };
+
+        if is_top_level {
+            quote!($to_field<$field_type>)
+        } else {
+            quote!($field_type)
         }
     }
 
