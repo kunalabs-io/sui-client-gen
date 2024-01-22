@@ -9,6 +9,7 @@ export function registerClasses(loader: StructClassLoader) {
   loader.register(exampleCoin.Faucet)
   loader.register(examples.ExampleStruct)
   loader.register(examples.SpecialTypesStruct)
+  loader.register(otherModule.AddedInAnUpgrade)
   loader.register(otherModule.StructFromOtherModule)
   loader.register(fixture.Bar)
   loader.register(fixture.Dummy)

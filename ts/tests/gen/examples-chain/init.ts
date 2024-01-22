@@ -6,6 +6,7 @@ import { StructClassLoader } from '../_framework/loader'
 
 export function registerClasses(loader: StructClassLoader) {
   loader.register(otherModule.StructFromOtherModule)
+  loader.register(otherModule.AddedInAnUpgrade)
   loader.register(exampleCoin.EXAMPLE_COIN)
   loader.register(exampleCoin.Faucet)
   loader.register(examples.ExampleStruct)
