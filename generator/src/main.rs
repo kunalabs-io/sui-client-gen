@@ -17,7 +17,7 @@ use sui_client_gen::gen::{
 };
 use sui_client_gen::gen::{FrameworkImportCtx, FunctionsGen, StructClassImportCtx, StructsGen};
 use sui_client_gen::manifest::{parse_gen_manifest_from_file, GenManifest, Package};
-use sui_client_gen::model_builder::{build_models, ModelResult};
+use sui_client_gen::model_builder::{build_models, ModelResult, TypeOriginTable};
 use sui_client_gen::package_cache::PackageCache;
 use sui_move_build::SuiPackageHooks;
 use sui_sdk::SuiClientBuilder;
@@ -126,6 +126,7 @@ async fn main() -> Result<()> {
             &m.env,
             &source_top_level_addr_map,
             &m.published_at,
+            &m.type_origin_table,
             true,
             &out_root,
         )?;
@@ -140,6 +141,7 @@ async fn main() -> Result<()> {
             &m.env,
             &on_chain_top_level_addr_map,
             &m.published_at,
+            &m.type_origin_table,
             false,
             &out_root,
         )?;
@@ -260,6 +262,7 @@ fn gen_packages_for_model(
     env: &GlobalEnv,
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
     published_at_map: &BTreeMap<AccountAddress, AccountAddress>,
+    type_origin_table: &TypeOriginTable,
     is_source: bool,
     out_root: &Path,
 ) -> Result<()> {
@@ -321,6 +324,7 @@ fn gen_packages_for_model(
                 let func_gen = FunctionsGen::new(
                     module.env,
                     FrameworkImportCtx::new(levels_from_root + 2, is_source),
+                    type_origin_table,
                 );
                 for func in module.get_functions() {
                     func_gen.gen_fun_args_if(&func, &mut tokens)?;
@@ -335,6 +339,7 @@ fn gen_packages_for_model(
                 module.env,
                 StructClassImportCtx::from_module(module, is_source, top_level_pkg_names),
                 FrameworkImportCtx::new(levels_from_root + 2, is_source),
+                type_origin_table,
             );
 
             for strct in module.get_structs() {

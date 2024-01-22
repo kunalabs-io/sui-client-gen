@@ -39,6 +39,8 @@ const STUB_PACKAGE_NAME: &str = "SuiClientGenRootPackageStub";
 struct DependencyTOML<'a>(PM::PackageName, &'a PM::InternalDependency);
 struct SubstTOML<'a>(&'a PM::Substitution);
 
+pub type TypeOriginTable = BTreeMap<AccountAddress, BTreeMap<String, AccountAddress>>;
+
 pub struct ModelResult {
     /// Move model for packages defined in gen.toml
     pub env: GlobalEnv,
@@ -46,6 +48,8 @@ pub struct ModelResult {
     pub id_map: BTreeMap<AccountAddress, PM::PackageName>,
     /// Map from original package id to the published at id
     pub published_at: BTreeMap<AccountAddress, AccountAddress>,
+    /// Map from original package id to type origins
+    pub type_origin_table: TypeOriginTable,
 }
 
 pub async fn build_models<Progress: Write>(
@@ -91,7 +95,7 @@ pub async fn build_models<Progress: Write>(
     }
 
     let source_model = if !source_pkgs.is_empty() {
-        Some(build_source_model(source_pkgs, progress_output)?)
+        Some(build_source_model(source_pkgs, cache, progress_output).await?)
     } else {
         None
     };
@@ -107,8 +111,9 @@ pub async fn build_models<Progress: Write>(
 
 // build a model for source packages -- create a stub Move.toml with packages listed as dependencies
 // to build a single ResolvedGraph.
-fn build_source_model<Progress: Write>(
+async fn build_source_model<Progress: Write>(
     pkgs: Vec<(PM::PackageName, PM::InternalDependency)>,
+    cache: &mut PackageCache<'_>,
     progress_output: &mut Progress,
 ) -> Result<ModelResult> {
     writeln!(
@@ -158,10 +163,21 @@ fn build_source_model<Progress: Write>(
         bail!("Source model has errors.");
     }
 
+    // resolve type origins
+    let type_origin_table = resolve_type_origin_table(
+        cache,
+        &source_id_map,
+        &source_published_at,
+        &source_env,
+        progress_output,
+    )
+    .await?;
+
     Ok(ModelResult {
         env: source_env,
         id_map: source_id_map,
         published_at: source_published_at,
+        type_origin_table,
     })
 }
 
@@ -187,6 +203,7 @@ async fn build_on_chain_model<Progress: Write>(
     let mut modules = vec![];
     let raw_pkgs = cache.get_multi(pkg_ids).await?;
     for pkg in raw_pkgs {
+        let pkg = pkg?;
         let SuiRawMovePackage { module_map, .. } = pkg;
         for (_, bytes) in module_map {
             let module = CompiledModule::deserialize_with_defaults(&bytes)?;
@@ -216,10 +233,21 @@ async fn build_on_chain_model<Progress: Write>(
         on_chain_published_at.insert(*original_id, pkg.id);
     }
 
+    // resolve type origins
+    let type_origin_table = resolve_type_origin_table(
+        cache,
+        &on_chain_id_map,
+        &on_chain_published_at,
+        &on_chain_env,
+        progress_output,
+    )
+    .await?;
+
     Ok(ModelResult {
         env: on_chain_env,
         id_map: on_chain_id_map,
         published_at: on_chain_published_at,
+        type_origin_table,
     })
 }
 
@@ -288,6 +316,7 @@ async fn resolve_on_chain_packages(
     let mut highest_versions: BTreeMap<AccountAddress, UpgradeInfo> = BTreeMap::new();
 
     for pkg in dl.get_multi(ids.clone()).await? {
+        let pkg = pkg?;
         let original_id = original_map.get(&pkg.id.into()).cloned().unwrap();
         match highest_versions.get(&original_id) {
             None => {
@@ -323,6 +352,7 @@ async fn resolve_on_chain_packages(
 
         let pkgs = dl.get_multi(pkg_queue.drain().collect::<Vec<_>>()).await?;
         for pkg in pkgs {
+            let pkg = pkg?;
             for (original_id, info) in pkg.linkage_table {
                 original_map.insert(info.upgraded_id.into(), original_id.into());
                 match highest_versions.get(&original_id) {
@@ -372,6 +402,7 @@ async fn resolve_original_package_id(
     let mut min_version: SequenceNumber = u64::MAX.into();
     let mut id = id;
     for pkg in dl.get_multi(origin_pkgs).await? {
+        let pkg = pkg?;
         if pkg.version < min_version {
             min_version = pkg.version;
             id = pkg.id.into();
@@ -422,6 +453,75 @@ fn add_modules_to_model<'a>(
     }
 
     Ok(())
+}
+
+async fn resolve_type_origin_table<Progress: Write>(
+    cache: &mut PackageCache<'_>,
+    id_map: &BTreeMap<AccountAddress, PM::PackageName>,
+    published_at: &BTreeMap<AccountAddress, AccountAddress>,
+    model: &GlobalEnv,
+    progress_output: &mut Progress,
+) -> Result<BTreeMap<AccountAddress, BTreeMap<String, AccountAddress>>> {
+    let mut type_origin_table = BTreeMap::new();
+    let mut packages_to_fetch = vec![];
+    for (addr, name) in id_map.iter() {
+        let published_at = published_at.get(addr);
+        let published_at = match published_at {
+            Some(addr) => addr,
+            None => addr,
+        };
+        if published_at == &AccountAddress::ZERO {
+            continue;
+        };
+        packages_to_fetch.push((addr, name, *published_at));
+    }
+    let raw_pkgs = cache
+        .get_multi(packages_to_fetch.iter().map(|(_, _, addr)| *addr).collect())
+        .await?
+        .into_iter()
+        .zip(packages_to_fetch)
+        .collect::<Vec<_>>();
+    for (pkg_res, (original_id, name, published_at)) in raw_pkgs {
+        let pkg = match pkg_res {
+            Ok(pkg) => pkg,
+            Err(_) => {
+                writeln!(
+                    progress_output,
+                    "{} Package \"{}\" published at {} couldn't be fetched from chain for type origin resolution", "WARNING ".yellow().bold(),
+                    name, published_at.to_hex_literal()
+                )?;
+                continue;
+            }
+        };
+        let origin_map: BTreeMap<String, AccountAddress> = pkg
+            .type_origin_table
+            .into_iter()
+            .map(|origin| {
+                (
+                    format!("{}::{}", origin.module_name, origin.struct_name),
+                    origin.package.into(),
+                )
+            })
+            .collect();
+        type_origin_table.insert(*original_id, origin_map);
+    }
+    // populate type origin table with remaining modules from the model (that couldn't be resolved from chain).
+    // in this case we set origin of all types to the package's original id.
+    for module in model.get_modules() {
+        let original_id = *module.self_address();
+        type_origin_table
+            .entry(original_id)
+            .or_insert_with(BTreeMap::new);
+        let origin_map = type_origin_table.get_mut(&original_id).unwrap();
+        for strct in module.get_structs() {
+            if origin_map.contains_key(&strct.get_full_name_str()) {
+                continue;
+            };
+            origin_map.insert(strct.get_full_name_str(), original_id);
+        }
+    }
+
+    Ok(type_origin_table)
 }
 
 impl<'a> fmt::Display for DependencyTOML<'a> {
