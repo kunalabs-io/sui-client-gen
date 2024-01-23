@@ -132,7 +132,7 @@ export class ID {
     if (!isID(item.type)) {
       throw new Error('not a ID type')
     }
-    return new ID(`0x${item.fields.bytes}`)
+    return new ID(item.fields.bytes)
   }
 
   static fromBcs(data: Uint8Array): ID {
@@ -182,7 +182,7 @@ export class Ownership {
     if (!isOwnership(item.type)) {
       throw new Error('not a Ownership type')
     }
-    return new Ownership({ owner: `0x${item.fields.owner}`, status: BigInt(item.fields.status) })
+    return new Ownership({ owner: item.fields.owner, status: BigInt(item.fields.status) })
   }
 
   static fromBcs(data: Uint8Array): Ownership {

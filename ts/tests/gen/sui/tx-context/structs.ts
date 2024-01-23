@@ -62,7 +62,7 @@ export class TxContext {
       throw new Error('not a TxContext type')
     }
     return new TxContext({
-      sender: `0x${item.fields.sender}`,
+      sender: item.fields.sender,
       txHash: item.fields.tx_hash.map((item: any) => item),
       epoch: BigInt(item.fields.epoch),
       epochTimestampMs: BigInt(item.fields.epoch_timestamp_ms),

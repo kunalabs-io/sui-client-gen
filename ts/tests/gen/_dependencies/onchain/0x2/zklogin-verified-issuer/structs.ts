@@ -58,7 +58,7 @@ export class VerifiedIssuer {
     }
     return new VerifiedIssuer({
       id: item.fields.id.id,
-      owner: `0x${item.fields.owner}`,
+      owner: item.fields.owner,
       issuer: item.fields.issuer,
     })
   }

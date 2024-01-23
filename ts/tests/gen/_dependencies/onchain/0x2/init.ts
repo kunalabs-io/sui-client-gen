@@ -17,9 +17,11 @@ import * as objectTable from './object-table/structs'
 import * as object from './object/structs'
 import * as package_ from './package/structs'
 import * as priorityQueue from './priority-queue/structs'
+import * as random from './random/structs'
 import * as sui from './sui/structs'
 import * as tableVec from './table-vec/structs'
 import * as table from './table/structs'
+import * as token from './token/structs'
 import * as transferPolicy from './transfer-policy/structs'
 import * as transfer from './transfer/structs'
 import * as txContext from './tx-context/structs'
@@ -66,6 +68,8 @@ export function registerClasses(loader: StructClassLoader) {
   loader.register(tableVec.TableVec)
   loader.register(versioned.Versioned)
   loader.register(versioned.VersionChangeCap)
+  loader.register(random.Random)
+  loader.register(random.RandomInner)
   loader.register(dynamicObjectField.Wrapper)
   loader.register(linkedTable.LinkedTable)
   loader.register(linkedTable.Node)
@@ -82,11 +86,18 @@ export function registerClasses(loader: StructClassLoader) {
   loader.register(display.Display)
   loader.register(display.DisplayCreated)
   loader.register(display.VersionUpdated)
+  loader.register(token.Token)
+  loader.register(token.TokenPolicyCap)
+  loader.register(token.TokenPolicy)
+  loader.register(token.ActionRequest)
+  loader.register(token.RuleKey)
+  loader.register(token.TokenPolicyCreated)
+  loader.register(transferPolicy.RuleKey)
   loader.register(transferPolicy.TransferRequest)
   loader.register(transferPolicy.TransferPolicy)
   loader.register(transferPolicy.TransferPolicyCap)
   loader.register(transferPolicy.TransferPolicyCreated)
-  loader.register(transferPolicy.RuleKey)
+  loader.register(transferPolicy.TransferPolicyDestroyed)
   loader.register(kiosk.Borrow)
   loader.register(kiosk.Kiosk)
   loader.register(kiosk.KioskOwnerCap)

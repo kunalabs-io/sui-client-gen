@@ -39,7 +39,7 @@ export class ID {
     if (!isID(item.type)) {
       throw new Error('not a ID type')
     }
-    return new ID(`0x${item.fields.bytes}`)
+    return new ID(item.fields.bytes)
   }
 
   static fromBcs(data: Uint8Array): ID {

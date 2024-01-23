@@ -6,6 +6,55 @@ import { VecSet } from '../vec-set/structs'
 import { bcs } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
+/* ============================== RuleKey =============================== */
+
+export function isRuleKey(type: Type): boolean {
+  type = compressSuiType(type)
+  return type.startsWith('0x2::transfer_policy::RuleKey<')
+}
+
+export interface RuleKeyFields {
+  dummyField: boolean
+}
+
+export class RuleKey {
+  static readonly $typeName = '0x2::transfer_policy::RuleKey'
+  static readonly $numTypeParams = 1
+
+  static get bcs() {
+    return bcs.struct('RuleKey', {
+      dummy_field: bcs.bool(),
+    })
+  }
+
+  readonly $typeArg: Type
+
+  readonly dummyField: boolean
+
+  constructor(typeArg: Type, dummyField: boolean) {
+    this.$typeArg = typeArg
+
+    this.dummyField = dummyField
+  }
+
+  static fromFields(typeArg: Type, fields: Record<string, any>): RuleKey {
+    return new RuleKey(typeArg, fields.dummy_field)
+  }
+
+  static fromFieldsWithTypes(item: FieldsWithTypes): RuleKey {
+    if (!isRuleKey(item.type)) {
+      throw new Error('not a RuleKey type')
+    }
+    const { typeArgs } = parseTypeName(item.type)
+
+    return new RuleKey(typeArgs[0], item.fields.dummy_field)
+  }
+
+  static fromBcs(typeArg: Type, data: Uint8Array): RuleKey {
+    return RuleKey.fromFields(typeArg, RuleKey.bcs.parse(data))
+  }
+}
+
 /* ============================== TransferRequest =============================== */
 
 export function isTransferRequest(type: Type): boolean {
@@ -295,51 +344,51 @@ export class TransferPolicyCreated {
   }
 }
 
-/* ============================== RuleKey =============================== */
+/* ============================== TransferPolicyDestroyed =============================== */
 
-export function isRuleKey(type: Type): boolean {
+export function isTransferPolicyDestroyed(type: Type): boolean {
   type = compressSuiType(type)
-  return type.startsWith('0x2::transfer_policy::RuleKey<')
+  return type.startsWith('0x2::transfer_policy::TransferPolicyDestroyed<')
 }
 
-export interface RuleKeyFields {
-  dummyField: boolean
+export interface TransferPolicyDestroyedFields {
+  id: string
 }
 
-export class RuleKey {
-  static readonly $typeName = '0x2::transfer_policy::RuleKey'
+export class TransferPolicyDestroyed {
+  static readonly $typeName = '0x2::transfer_policy::TransferPolicyDestroyed'
   static readonly $numTypeParams = 1
 
   static get bcs() {
-    return bcs.struct('RuleKey', {
-      dummy_field: bcs.bool(),
+    return bcs.struct('TransferPolicyDestroyed', {
+      id: ID.bcs,
     })
   }
 
   readonly $typeArg: Type
 
-  readonly dummyField: boolean
+  readonly id: string
 
-  constructor(typeArg: Type, dummyField: boolean) {
+  constructor(typeArg: Type, id: string) {
     this.$typeArg = typeArg
 
-    this.dummyField = dummyField
+    this.id = id
   }
 
-  static fromFields(typeArg: Type, fields: Record<string, any>): RuleKey {
-    return new RuleKey(typeArg, fields.dummy_field)
+  static fromFields(typeArg: Type, fields: Record<string, any>): TransferPolicyDestroyed {
+    return new TransferPolicyDestroyed(typeArg, ID.fromFields(fields.id).bytes)
   }
 
-  static fromFieldsWithTypes(item: FieldsWithTypes): RuleKey {
-    if (!isRuleKey(item.type)) {
-      throw new Error('not a RuleKey type')
+  static fromFieldsWithTypes(item: FieldsWithTypes): TransferPolicyDestroyed {
+    if (!isTransferPolicyDestroyed(item.type)) {
+      throw new Error('not a TransferPolicyDestroyed type')
     }
     const { typeArgs } = parseTypeName(item.type)
 
-    return new RuleKey(typeArgs[0], item.fields.dummy_field)
+    return new TransferPolicyDestroyed(typeArgs[0], item.fields.id)
   }
 
-  static fromBcs(typeArg: Type, data: Uint8Array): RuleKey {
-    return RuleKey.fromFields(typeArg, RuleKey.bcs.parse(data))
+  static fromBcs(typeArg: Type, data: Uint8Array): TransferPolicyDestroyed {
+    return TransferPolicyDestroyed.fromFields(typeArg, TransferPolicyDestroyed.bcs.parse(data))
   }
 }

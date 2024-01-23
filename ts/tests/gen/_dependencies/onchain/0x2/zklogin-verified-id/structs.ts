@@ -79,7 +79,7 @@ export class VerifiedID {
     }
     return new VerifiedID({
       id: item.fields.id.id,
-      owner: `0x${item.fields.owner}`,
+      owner: item.fields.owner,
       keyClaimName: item.fields.key_claim_name,
       keyClaimValue: item.fields.key_claim_value,
       issuer: item.fields.issuer,

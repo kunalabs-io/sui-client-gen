@@ -117,7 +117,7 @@ export class Kiosk {
     return new Kiosk({
       id: item.fields.id.id,
       profits: new Balance(`0x2::sui::SUI`, BigInt(item.fields.profits)),
-      owner: `0x${item.fields.owner}`,
+      owner: item.fields.owner,
       itemCount: item.fields.item_count,
       allowExtensions: item.fields.allow_extensions,
     })

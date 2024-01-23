@@ -62,7 +62,7 @@ export class Referent<T0> {
     const { typeArgs } = parseTypeName(item.type)
 
     return new Referent(typeArgs[0], {
-      id: `0x${item.fields.id}`,
+      id: item.fields.id,
       value:
         item.fields.value !== null
           ? Option.fromFieldsWithTypes<T0>({
@@ -127,7 +127,7 @@ export class Borrow {
     if (!isBorrow(item.type)) {
       throw new Error('not a Borrow type')
     }
-    return new Borrow({ ref: `0x${item.fields.ref}`, obj: item.fields.obj })
+    return new Borrow({ ref: item.fields.ref, obj: item.fields.obj })
   }
 
   static fromBcs(data: Uint8Array): Borrow {

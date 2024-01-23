@@ -150,7 +150,7 @@ export class SpecialTypesStruct {
         ExampleStruct.fromFieldsWithTypes(item)
       ),
       idField: item.fields.id_field,
-      address: `0x${item.fields.address}`,
+      address: item.fields.address,
       optionSome:
         item.fields.option_some !== null
           ? Option.fromFieldsWithTypes<bigint>({
