@@ -1094,9 +1094,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     quote!(BigInt($(field_arg_name)))
                 }
                 PrimitiveType::Bool => quote!($field_arg_name),
-                PrimitiveType::Address => quote! {
-                    $[str]($[const]("0x")$($(field_arg_name.to_string())))
-                },
+                PrimitiveType::Address => quote!($field_arg_name),
                 PrimitiveType::Signer => quote!($field_arg_name),
                 _ => panic!("unexpected primitive type: {:?}", ty),
             },
