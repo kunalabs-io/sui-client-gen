@@ -1174,6 +1174,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     let wrap_to_phantom = field_strct.is_phantom_parameter(idx) && match &ts[idx] {
                         Type::TypeParameter(t_idx) => !strct.is_phantom_parameter(*t_idx as usize),
                         Type::Primitive(_) => true,
+                        Type::Vector(_) => true,
                         _ => false,
                     };
 
