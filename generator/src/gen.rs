@@ -1441,8 +1441,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                         $(match non_phantom_params.len() {
                             0 => $(&struct_name).bcs.parse(data),
                             len => $(&struct_name).bcs(
-                                    $(for i in 0..len join (, ) => $(struct_class_loader).getBcsType(typeArgs[$(non_phantom_param_idxs[i])]))
-                                ).parse(data),
+                                $(for i in 0..len join (, ) => $(struct_class_loader).getBcsType(typeArgs[$(non_phantom_param_idxs[i])]))
+                            ).parse(data),
                         })
                     )
                 }$['\n']
