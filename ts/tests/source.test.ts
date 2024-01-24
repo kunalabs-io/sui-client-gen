@@ -30,10 +30,17 @@ import { newUnsafeFromBytes } from './gen/sui/url/functions'
 import { new_ as newUid, idFromAddress } from './gen/sui/object/functions'
 import { zero } from './gen/sui/balance/functions'
 import { Balance } from './gen/sui/balance/structs'
-import { extractType, phantom, vector } from './gen/_framework/reified'
+import {
+  PhantomReified,
+  Reified,
+  Vector,
+  extractType,
+  phantom,
+  vector,
+} from './gen/_framework/reified'
 import { SUI } from './gen/sui/sui/structs'
 import { Option } from './gen/move-stdlib/option/structs'
-import { String } from './gen/move-stdlib/string/structs'
+import { String as Utf8String } from './gen/move-stdlib/string/structs'
 import { String as AsciiString } from './gen/move-stdlib/ascii/structs'
 import { Url } from './gen/sui/url/structs'
 import { ID, UID } from './gen/sui/object/structs'
@@ -460,7 +467,7 @@ it('decodes special-cased types as generics correctly', async () => {
     '0x1::option::Option<u64>',
   ] as [string, string, string, string, string, string, string, string]
   const reifiedArgs = [
-    String.reified(),
+    Utf8String.reified(),
     AsciiString.reified(),
     Url.reified(),
     ID.reified(),
@@ -469,14 +476,14 @@ it('decodes special-cased types as generics correctly', async () => {
     Option.reified('u64'),
     Option.reified('u64'),
   ] as [
-    ReturnType<typeof String.reified>,
-    ReturnType<typeof AsciiString.reified>,
-    ReturnType<typeof Url.reified>,
-    ReturnType<typeof ID.reified>,
-    ReturnType<typeof UID.reified>,
-    ReturnType<typeof Balance.reified>,
-    ReturnType<typeof Option.reified<'u64'>>,
-    ReturnType<typeof Option.reified<'u64'>>,
+    Reified<Utf8String>,
+    Reified<AsciiString>,
+    Reified<Url>,
+    Reified<ID>,
+    Reified<UID>,
+    Reified<Balance<typeof SUI.$typeName>>,
+    Reified<Option<'u64'>>,
+    Reified<Option<'u64'>>,
   ]
 
   createSpecialAsGenerics(txb, typeArgs, {
@@ -546,18 +553,8 @@ it('calls function correctly when special types are used', async () => {
     phantom(SUI.$typeName),
     vector(Option.reified(Option.reified(vector(vector('u64'))))),
   ] as [
-    ReturnType<typeof phantom<typeof SUI.$typeName>>,
-    ReturnType<
-      typeof vector<
-        ReturnType<
-          typeof Option.reified<
-            ReturnType<
-              typeof Option.reified<ReturnType<typeof vector<ReturnType<typeof vector<'u64'>>>>>
-            >
-          >
-        >
-      >
-    >,
+    PhantomReified<typeof SUI.$typeName>,
+    Reified<Vector<Option<Option<Vector<Vector<'u64'>>>>>>,
   ]
 
   createSpecial(
@@ -631,7 +628,7 @@ it('calls function correctly when special types are used as generics', async () 
   const encoder = new TextEncoder()
 
   const reifiedArgs = [
-    String.reified(),
+    Utf8String.reified(),
     AsciiString.reified(),
     Url.reified(),
     ID.reified(),
@@ -640,16 +637,14 @@ it('calls function correctly when special types are used as generics', async () 
     Option.reified(vector(Option.reified('u64'))),
     Option.reified('u64'),
   ] as [
-    ReturnType<typeof String.reified>,
-    ReturnType<typeof AsciiString.reified>,
-    ReturnType<typeof Url.reified>,
-    ReturnType<typeof ID.reified>,
-    ReturnType<typeof UID.reified>,
-    ReturnType<typeof Balance.reified>,
-    ReturnType<
-      typeof Option.reified<ReturnType<typeof vector<ReturnType<typeof Option.reified<'u64'>>>>>
-    >,
-    ReturnType<typeof Option.reified<'u64'>>,
+    Reified<Utf8String>,
+    Reified<AsciiString>,
+    Reified<Url>,
+    Reified<ID>,
+    Reified<UID>,
+    Reified<Balance<typeof SUI.$typeName>>,
+    Reified<Option<Vector<Option<'u64'>>>>,
+    Reified<Option<'u64'>>,
   ]
 
   createSpecialAsGenerics(
