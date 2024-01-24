@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   Reified,
   ToField,
@@ -200,10 +199,7 @@ export class Faucet {
   static fromFields(fields: Record<string, any>): Faucet {
     return Faucet.new({
       id: decodeFromFields(UID.reified(), fields.id),
-      cap: decodeFromFields(
-        TreasuryCap.reified(reified.phantom(EXAMPLE_COIN.reified())),
-        fields.cap
-      ),
+      cap: decodeFromFields(TreasuryCap.reified(EXAMPLE_COIN.reified()), fields.cap),
     })
   }
 
@@ -214,10 +210,7 @@ export class Faucet {
 
     return Faucet.new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
-      cap: decodeFromFieldsWithTypes(
-        TreasuryCap.reified(reified.phantom(EXAMPLE_COIN.reified())),
-        item.fields.cap
-      ),
+      cap: decodeFromFieldsWithTypes(TreasuryCap.reified(EXAMPLE_COIN.reified()), item.fields.cap),
     })
   }
 
@@ -239,10 +232,7 @@ export class Faucet {
   static fromJSONField(field: any): Faucet {
     return Faucet.new({
       id: decodeFromJSONField(UID.reified(), field.id),
-      cap: decodeFromJSONField(
-        TreasuryCap.reified(reified.phantom(EXAMPLE_COIN.reified())),
-        field.cap
-      ),
+      cap: decodeFromJSONField(TreasuryCap.reified(EXAMPLE_COIN.reified()), field.cap),
     })
   }
 

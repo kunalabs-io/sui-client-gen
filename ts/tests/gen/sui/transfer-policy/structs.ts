@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomTypeArgument,
   Reified,
@@ -254,7 +253,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> {
   ): TransferPolicy<ToPhantomTypeArgument<T>> {
     return TransferPolicy.new(typeArg, {
       id: decodeFromFields(UID.reified(), fields.id),
-      balance: decodeFromFields(Balance.reified(reified.phantom(SUI.reified())), fields.balance),
+      balance: decodeFromFields(Balance.reified(SUI.reified()), fields.balance),
       rules: decodeFromFields(VecSet.reified(TypeName.reified()), fields.rules),
     })
   }
@@ -270,10 +269,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> {
 
     return TransferPolicy.new(typeArg, {
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
-      balance: decodeFromFieldsWithTypes(
-        Balance.reified(reified.phantom(SUI.reified())),
-        item.fields.balance
-      ),
+      balance: decodeFromFieldsWithTypes(Balance.reified(SUI.reified()), item.fields.balance),
       rules: decodeFromFieldsWithTypes(VecSet.reified(TypeName.reified()), item.fields.rules),
     })
   }
@@ -303,7 +299,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> {
   ): TransferPolicy<ToPhantomTypeArgument<T>> {
     return TransferPolicy.new(typeArg, {
       id: decodeFromJSONField(UID.reified(), field.id),
-      balance: decodeFromJSONField(Balance.reified(reified.phantom(SUI.reified())), field.balance),
+      balance: decodeFromJSONField(Balance.reified(SUI.reified()), field.balance),
       rules: decodeFromJSONField(VecSet.reified(TypeName.reified()), field.rules),
     })
   }

@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomTypeArgument,
   Reified,
@@ -221,7 +220,7 @@ export class Kiosk {
   static fromFields(fields: Record<string, any>): Kiosk {
     return Kiosk.new({
       id: decodeFromFields(UID.reified(), fields.id),
-      profits: decodeFromFields(Balance.reified(reified.phantom(SUI.reified())), fields.profits),
+      profits: decodeFromFields(Balance.reified(SUI.reified()), fields.profits),
       owner: decodeFromFields('address', fields.owner),
       itemCount: decodeFromFields('u32', fields.item_count),
       allowExtensions: decodeFromFields('bool', fields.allow_extensions),
@@ -235,10 +234,7 @@ export class Kiosk {
 
     return Kiosk.new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
-      profits: decodeFromFieldsWithTypes(
-        Balance.reified(reified.phantom(SUI.reified())),
-        item.fields.profits
-      ),
+      profits: decodeFromFieldsWithTypes(Balance.reified(SUI.reified()), item.fields.profits),
       owner: decodeFromFieldsWithTypes('address', item.fields.owner),
       itemCount: decodeFromFieldsWithTypes('u32', item.fields.item_count),
       allowExtensions: decodeFromFieldsWithTypes('bool', item.fields.allow_extensions),
@@ -266,7 +262,7 @@ export class Kiosk {
   static fromJSONField(field: any): Kiosk {
     return Kiosk.new({
       id: decodeFromJSONField(UID.reified(), field.id),
-      profits: decodeFromJSONField(Balance.reified(reified.phantom(SUI.reified())), field.profits),
+      profits: decodeFromJSONField(Balance.reified(SUI.reified()), field.profits),
       owner: decodeFromJSONField('address', field.owner),
       itemCount: decodeFromJSONField('u32', field.itemCount),
       allowExtensions: decodeFromJSONField('bool', field.allowExtensions),

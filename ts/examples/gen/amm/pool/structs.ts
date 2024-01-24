@@ -410,13 +410,13 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
       balanceA: decodeFromFields(Balance.reified(typeArgs[0]), fields.balance_a),
       balanceB: decodeFromFields(Balance.reified(typeArgs[1]), fields.balance_b),
       lpSupply: decodeFromFields(
-        Supply.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
+        Supply.reified(LP.reified(typeArgs[0], typeArgs[1])),
         fields.lp_supply
       ),
       lpFeeBps: decodeFromFields('u64', fields.lp_fee_bps),
       adminFeePct: decodeFromFields('u64', fields.admin_fee_pct),
       adminFeeBalance: decodeFromFields(
-        Balance.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
+        Balance.reified(LP.reified(typeArgs[0], typeArgs[1])),
         fields.admin_fee_balance
       ),
     })
@@ -439,13 +439,13 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
       balanceA: decodeFromFieldsWithTypes(Balance.reified(typeArgs[0]), item.fields.balance_a),
       balanceB: decodeFromFieldsWithTypes(Balance.reified(typeArgs[1]), item.fields.balance_b),
       lpSupply: decodeFromFieldsWithTypes(
-        Supply.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
+        Supply.reified(LP.reified(typeArgs[0], typeArgs[1])),
         item.fields.lp_supply
       ),
       lpFeeBps: decodeFromFieldsWithTypes('u64', item.fields.lp_fee_bps),
       adminFeePct: decodeFromFieldsWithTypes('u64', item.fields.admin_fee_pct),
       adminFeeBalance: decodeFromFieldsWithTypes(
-        Balance.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
+        Balance.reified(LP.reified(typeArgs[0], typeArgs[1])),
         item.fields.admin_fee_balance
       ),
     })
@@ -483,13 +483,13 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
       balanceA: decodeFromJSONField(Balance.reified(typeArgs[0]), field.balanceA),
       balanceB: decodeFromJSONField(Balance.reified(typeArgs[1]), field.balanceB),
       lpSupply: decodeFromJSONField(
-        Supply.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
+        Supply.reified(LP.reified(typeArgs[0], typeArgs[1])),
         field.lpSupply
       ),
       lpFeeBps: decodeFromJSONField('u64', field.lpFeeBps),
       adminFeePct: decodeFromJSONField('u64', field.adminFeePct),
       adminFeeBalance: decodeFromJSONField(
-        Balance.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
+        Balance.reified(LP.reified(typeArgs[0], typeArgs[1])),
         field.adminFeeBalance
       ),
     })
@@ -734,7 +734,7 @@ export class PoolRegistry {
     return PoolRegistry.new({
       id: decodeFromFields(UID.reified(), fields.id),
       table: decodeFromFields(
-        Table.reified(reified.phantom(PoolRegistryItem.reified()), reified.phantom('bool')),
+        Table.reified(PoolRegistryItem.reified(), reified.phantom('bool')),
         fields.table
       ),
     })
@@ -748,7 +748,7 @@ export class PoolRegistry {
     return PoolRegistry.new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       table: decodeFromFieldsWithTypes(
-        Table.reified(reified.phantom(PoolRegistryItem.reified()), reified.phantom('bool')),
+        Table.reified(PoolRegistryItem.reified(), reified.phantom('bool')),
         item.fields.table
       ),
     })
@@ -773,7 +773,7 @@ export class PoolRegistry {
     return PoolRegistry.new({
       id: decodeFromJSONField(UID.reified(), field.id),
       table: decodeFromJSONField(
-        Table.reified(reified.phantom(PoolRegistryItem.reified()), reified.phantom('bool')),
+        Table.reified(PoolRegistryItem.reified(), reified.phantom('bool')),
         field.table
       ),
     })
