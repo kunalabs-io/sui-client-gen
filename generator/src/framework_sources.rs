@@ -667,7 +667,7 @@ export function decodeFromFields(reified: Reified<TypeArgument>, field: any) {
     case 'u256':
       return BigInt(field)
     case 'address':
-      return field
+      return `0x${field}`
   }
   if (reified.kind === 'VectorClassReified') {
     return reified.fromFields(field).vec
