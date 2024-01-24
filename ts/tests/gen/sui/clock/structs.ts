@@ -66,6 +66,10 @@ export class Clock {
     }
   }
 
+  static get r() {
+    return Clock.reified()
+  }
+
   static fromFields(fields: Record<string, any>): Clock {
     return Clock.new({
       id: decodeFromFields(UID.reified(), fields.id),

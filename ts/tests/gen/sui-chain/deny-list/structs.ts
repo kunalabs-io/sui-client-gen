@@ -72,6 +72,10 @@ export class DenyList {
     }
   }
 
+  static get r() {
+    return DenyList.reified()
+  }
+
   static fromFields(fields: Record<string, any>): DenyList {
     return DenyList.new({
       id: decodeFromFields(UID.reified(), fields.id),
@@ -200,6 +204,10 @@ export class PerTypeList {
       fetch: async (client: SuiClient, id: string) => PerTypeList.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return PerTypeList.reified()
   }
 
   static fromFields(fields: Record<string, any>): PerTypeList {

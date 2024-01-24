@@ -86,6 +86,10 @@ export class RuleKey<T extends PhantomTypeArgument> {
     }
   }
 
+  static get r() {
+    return RuleKey.reified
+  }
+
   static fromFields<T extends ReifiedPhantomTypeArgument>(
     typeArg: T,
     fields: Record<string, any>
@@ -245,6 +249,10 @@ export class TransferPolicy<T extends PhantomTypeArgument> {
       fetch: async (client: SuiClient, id: string) => TransferPolicy.fetch(client, T, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return TransferPolicy.reified
   }
 
   static fromFields<T extends ReifiedPhantomTypeArgument>(
@@ -419,6 +427,10 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> {
     }
   }
 
+  static get r() {
+    return TransferPolicyCap.reified
+  }
+
   static fromFields<T extends ReifiedPhantomTypeArgument>(
     typeArg: T,
     fields: Record<string, any>
@@ -586,6 +598,10 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> {
     }
   }
 
+  static get r() {
+    return TransferPolicyCreated.reified
+  }
+
   static fromFields<T extends ReifiedPhantomTypeArgument>(
     typeArg: T,
     fields: Record<string, any>
@@ -746,6 +762,10 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> {
       fetch: async (client: SuiClient, id: string) => TransferPolicyDestroyed.fetch(client, T, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return TransferPolicyDestroyed.reified
   }
 
   static fromFields<T extends ReifiedPhantomTypeArgument>(
@@ -921,6 +941,10 @@ export class TransferRequest<T extends PhantomTypeArgument> {
       fetch: async (client: SuiClient, id: string) => TransferRequest.fetch(client, T, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return TransferRequest.reified
   }
 
   static fromFields<T extends ReifiedPhantomTypeArgument>(

@@ -76,6 +76,10 @@ export class Borrow {
     }
   }
 
+  static get r() {
+    return Borrow.reified()
+  }
+
   static fromFields(fields: Record<string, any>): Borrow {
     return Borrow.new({
       kioskId: decodeFromFields(ID.reified(), fields.kiosk_id),
@@ -196,6 +200,10 @@ export class Item {
       fetch: async (client: SuiClient, id: string) => Item.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return Item.reified()
   }
 
   static fromFields(fields: Record<string, any>): Item {
@@ -324,6 +332,10 @@ export class ItemDelisted<T extends PhantomTypeArgument> {
       fetch: async (client: SuiClient, id: string) => ItemDelisted.fetch(client, T, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return ItemDelisted.reified
   }
 
   static fromFields<T extends ReifiedPhantomTypeArgument>(
@@ -494,6 +506,10 @@ export class ItemListed<T extends PhantomTypeArgument> {
       fetch: async (client: SuiClient, id: string) => ItemListed.fetch(client, T, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return ItemListed.reified
   }
 
   static fromFields<T extends ReifiedPhantomTypeArgument>(
@@ -670,6 +686,10 @@ export class ItemPurchased<T extends PhantomTypeArgument> {
     }
   }
 
+  static get r() {
+    return ItemPurchased.reified
+  }
+
   static fromFields<T extends ReifiedPhantomTypeArgument>(
     typeArg: T,
     fields: Record<string, any>
@@ -843,6 +863,10 @@ export class Kiosk {
     }
   }
 
+  static get r() {
+    return Kiosk.reified()
+  }
+
   static fromFields(fields: Record<string, any>): Kiosk {
     return Kiosk.new({
       id: decodeFromFields(UID.reified(), fields.id),
@@ -981,6 +1005,10 @@ export class KioskOwnerCap {
     }
   }
 
+  static get r() {
+    return KioskOwnerCap.reified()
+  }
+
   static fromFields(fields: Record<string, any>): KioskOwnerCap {
     return KioskOwnerCap.new({
       id: decodeFromFields(UID.reified(), fields.id),
@@ -1107,6 +1135,10 @@ export class Listing {
     }
   }
 
+  static get r() {
+    return Listing.reified()
+  }
+
   static fromFields(fields: Record<string, any>): Listing {
     return Listing.new({
       id: decodeFromFields(ID.reified(), fields.id),
@@ -1227,6 +1259,10 @@ export class Lock {
       fetch: async (client: SuiClient, id: string) => Lock.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return Lock.reified()
   }
 
   static fromFields(fields: Record<string, any>): Lock {
@@ -1363,6 +1399,10 @@ export class PurchaseCap<T extends PhantomTypeArgument> {
       fetch: async (client: SuiClient, id: string) => PurchaseCap.fetch(client, T, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return PurchaseCap.reified
   }
 
   static fromFields<T extends ReifiedPhantomTypeArgument>(

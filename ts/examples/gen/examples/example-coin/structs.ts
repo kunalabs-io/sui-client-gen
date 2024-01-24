@@ -72,6 +72,10 @@ export class EXAMPLE_COIN {
     }
   }
 
+  static get r() {
+    return EXAMPLE_COIN.reified()
+  }
+
   static fromFields(fields: Record<string, any>): EXAMPLE_COIN {
     return EXAMPLE_COIN.new(decodeFromFields('bool', fields.dummy_field))
   }
@@ -194,6 +198,10 @@ export class Faucet {
       fetch: async (client: SuiClient, id: string) => Faucet.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return Faucet.reified()
   }
 
   static fromFields(fields: Record<string, any>): Faucet {

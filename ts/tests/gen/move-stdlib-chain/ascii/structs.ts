@@ -64,6 +64,10 @@ export class String {
     }
   }
 
+  static get r() {
+    return String.reified()
+  }
+
   static fromFields(fields: Record<string, any>): String {
     return String.new(decodeFromFields(reified.vector('u8'), fields.bytes))
   }
@@ -174,6 +178,10 @@ export class Char {
       fetch: async (client: SuiClient, id: string) => Char.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return Char.reified()
   }
 
   static fromFields(fields: Record<string, any>): Char {

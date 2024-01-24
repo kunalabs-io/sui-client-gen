@@ -64,6 +64,10 @@ export class BCS {
     }
   }
 
+  static get r() {
+    return BCS.reified()
+  }
+
   static fromFields(fields: Record<string, any>): BCS {
     return BCS.new(decodeFromFields(reified.vector('u8'), fields.bytes))
   }

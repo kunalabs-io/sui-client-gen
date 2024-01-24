@@ -86,6 +86,10 @@ export class Option<Element extends TypeArgument> {
     }
   }
 
+  static get r() {
+    return Option.reified
+  }
+
   static fromFields<Element extends Reified<TypeArgument>>(
     typeArg: Element,
     fields: Record<string, any>

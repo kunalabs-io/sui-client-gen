@@ -74,6 +74,10 @@ export class Publisher {
     }
   }
 
+  static get r() {
+    return Publisher.reified()
+  }
+
   static fromFields(fields: Record<string, any>): Publisher {
     return Publisher.new({
       id: decodeFromFields(UID.reified(), fields.id),
@@ -210,6 +214,10 @@ export class UpgradeCap {
       fetch: async (client: SuiClient, id: string) => UpgradeCap.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return UpgradeCap.reified()
   }
 
   static fromFields(fields: Record<string, any>): UpgradeCap {
@@ -349,6 +357,10 @@ export class UpgradeReceipt {
     }
   }
 
+  static get r() {
+    return UpgradeReceipt.reified()
+  }
+
   static fromFields(fields: Record<string, any>): UpgradeReceipt {
     return UpgradeReceipt.new({
       cap: decodeFromFields(ID.reified(), fields.cap),
@@ -481,6 +493,10 @@ export class UpgradeTicket {
       fetch: async (client: SuiClient, id: string) => UpgradeTicket.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return UpgradeTicket.reified()
   }
 
   static fromFields(fields: Record<string, any>): UpgradeTicket {

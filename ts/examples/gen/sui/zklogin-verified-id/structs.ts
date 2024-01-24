@@ -89,6 +89,10 @@ export class VerifiedID {
     }
   }
 
+  static get r() {
+    return VerifiedID.reified()
+  }
+
   static fromFields(fields: Record<string, any>): VerifiedID {
     return VerifiedID.new({
       id: decodeFromFields(UID.reified(), fields.id),

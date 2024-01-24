@@ -78,6 +78,10 @@ export class Borrow {
     }
   }
 
+  static get r() {
+    return Borrow.reified()
+  }
+
   static fromFields(fields: Record<string, any>): Borrow {
     return Borrow.new({
       ref: decodeFromFields('address', fields.ref),
@@ -216,6 +220,10 @@ export class Referent<T extends TypeArgument> {
       fetch: async (client: SuiClient, id: string) => Referent.fetch(client, T, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return Referent.reified
   }
 
   static fromFields<T extends Reified<TypeArgument>>(

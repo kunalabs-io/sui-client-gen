@@ -76,6 +76,10 @@ export class ExampleStruct {
     }
   }
 
+  static get r() {
+    return ExampleStruct.reified()
+  }
+
   static fromFields(fields: Record<string, any>): ExampleStruct {
     return ExampleStruct.new(decodeFromFields('bool', fields.dummy_field))
   }
@@ -229,6 +233,10 @@ export class SpecialTypesStruct {
       fetch: async (client: SuiClient, id: string) => SpecialTypesStruct.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return SpecialTypesStruct.reified()
   }
 
   static fromFields(fields: Record<string, any>): SpecialTypesStruct {

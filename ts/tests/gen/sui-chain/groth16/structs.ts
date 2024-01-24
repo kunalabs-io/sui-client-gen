@@ -64,6 +64,10 @@ export class Curve {
     }
   }
 
+  static get r() {
+    return Curve.reified()
+  }
+
   static fromFields(fields: Record<string, any>): Curve {
     return Curve.new(decodeFromFields('u8', fields.id))
   }
@@ -190,6 +194,10 @@ export class PreparedVerifyingKey {
       fetch: async (client: SuiClient, id: string) => PreparedVerifyingKey.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return PreparedVerifyingKey.reified()
   }
 
   static fromFields(fields: Record<string, any>): PreparedVerifyingKey {
@@ -342,6 +350,10 @@ export class PublicProofInputs {
     }
   }
 
+  static get r() {
+    return PublicProofInputs.reified()
+  }
+
   static fromFields(fields: Record<string, any>): PublicProofInputs {
     return PublicProofInputs.new(decodeFromFields(reified.vector('u8'), fields.bytes))
   }
@@ -455,6 +467,10 @@ export class ProofPoints {
       fetch: async (client: SuiClient, id: string) => ProofPoints.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return ProofPoints.reified()
   }
 
   static fromFields(fields: Record<string, any>): ProofPoints {

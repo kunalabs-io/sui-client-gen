@@ -89,6 +89,10 @@ export class Referent<T0 extends TypeArgument> {
     }
   }
 
+  static get r() {
+    return Referent.reified
+  }
+
   static fromFields<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     fields: Record<string, any>
@@ -246,6 +250,10 @@ export class Borrow {
       fetch: async (client: SuiClient, id: string) => Borrow.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return Borrow.reified()
   }
 
   static fromFields(fields: Record<string, any>): Borrow {

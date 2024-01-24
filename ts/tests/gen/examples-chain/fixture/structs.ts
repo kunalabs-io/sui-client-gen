@@ -90,6 +90,10 @@ export class Dummy {
     }
   }
 
+  static get r() {
+    return Dummy.reified()
+  }
+
   static fromFields(fields: Record<string, any>): Dummy {
     return Dummy.new(decodeFromFields('bool', fields.dummy_field))
   }
@@ -224,6 +228,10 @@ export class WithGenericField<T0 extends TypeArgument> {
       fetch: async (client: SuiClient, id: string) => WithGenericField.fetch(client, T0, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return WithGenericField.reified
   }
 
   static fromFields<T0 extends Reified<TypeArgument>>(
@@ -389,6 +397,10 @@ export class Bar {
     }
   }
 
+  static get r() {
+    return Bar.reified()
+  }
+
   static fromFields(fields: Record<string, any>): Bar {
     return Bar.new(decodeFromFields('u64', fields.value))
   }
@@ -524,6 +536,10 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument> {
       fetch: async (client: SuiClient, id: string) => WithTwoGenerics.fetch(client, [T0, T1], id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return WithTwoGenerics.reified
   }
 
   static fromFields<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
@@ -753,6 +769,10 @@ export class Foo<T0 extends TypeArgument> {
       fetch: async (client: SuiClient, id: string) => Foo.fetch(client, T0, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return Foo.reified
   }
 
   static fromFields<T0 extends Reified<TypeArgument>>(
@@ -1117,6 +1137,10 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
       fetch: async (client: SuiClient, id: string) => WithSpecialTypes.fetch(client, [T0, T1], id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return WithSpecialTypes.reified
   }
 
   static fromFields<T0 extends ReifiedPhantomTypeArgument, T1 extends Reified<TypeArgument>>(
@@ -1517,6 +1541,10 @@ export class WithSpecialTypesAsGenerics<
     }
   }
 
+  static get r() {
+    return WithSpecialTypesAsGenerics.reified
+  }
+
   static fromFields<
     T0 extends Reified<TypeArgument>,
     T1 extends Reified<TypeArgument>,
@@ -1885,6 +1913,10 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> {
         WithSpecialTypesInVectors.fetch(client, T0, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return WithSpecialTypesInVectors.reified
   }
 
   static fromFields<T0 extends Reified<TypeArgument>>(

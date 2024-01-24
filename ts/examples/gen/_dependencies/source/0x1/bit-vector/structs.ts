@@ -68,6 +68,10 @@ export class BitVector {
     }
   }
 
+  static get r() {
+    return BitVector.reified()
+  }
+
   static fromFields(fields: Record<string, any>): BitVector {
     return BitVector.new({
       length: decodeFromFields('u64', fields.length),

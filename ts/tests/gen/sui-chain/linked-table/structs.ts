@@ -104,6 +104,10 @@ export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument
     }
   }
 
+  static get r() {
+    return LinkedTable.reified
+  }
+
   static fromFields<T0 extends Reified<TypeArgument>, T1 extends ReifiedPhantomTypeArgument>(
     typeArgs: [T0, T1],
     fields: Record<string, any>
@@ -288,6 +292,10 @@ export class Node<T0 extends TypeArgument, T1 extends TypeArgument> {
       fetch: async (client: SuiClient, id: string) => Node.fetch(client, [T0, T1], id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return Node.reified
   }
 
   static fromFields<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(

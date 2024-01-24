@@ -80,6 +80,10 @@ export class Supply<T0 extends PhantomTypeArgument> {
     }
   }
 
+  static get r() {
+    return Supply.reified
+  }
+
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(
     typeArg: T0,
     fields: Record<string, any>
@@ -230,6 +234,10 @@ export class Balance<T0 extends PhantomTypeArgument> {
       fetch: async (client: SuiClient, id: string) => Balance.fetch(client, T0, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return Balance.reified
   }
 
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(

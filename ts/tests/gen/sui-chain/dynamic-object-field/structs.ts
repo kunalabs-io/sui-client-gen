@@ -80,6 +80,10 @@ export class Wrapper<T0 extends TypeArgument> {
     }
   }
 
+  static get r() {
+    return Wrapper.reified
+  }
+
   static fromFields<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     fields: Record<string, any>

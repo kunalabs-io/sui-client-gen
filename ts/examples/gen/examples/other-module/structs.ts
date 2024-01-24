@@ -69,6 +69,10 @@ export class AddedInAnUpgrade {
     }
   }
 
+  static get r() {
+    return AddedInAnUpgrade.reified()
+  }
+
   static fromFields(fields: Record<string, any>): AddedInAnUpgrade {
     return AddedInAnUpgrade.new(decodeFromFields('bool', fields.dummy_field))
   }
@@ -191,6 +195,10 @@ export class StructFromOtherModule {
       fetch: async (client: SuiClient, id: string) => StructFromOtherModule.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return StructFromOtherModule.reified()
   }
 
   static fromFields(fields: Record<string, any>): StructFromOtherModule {

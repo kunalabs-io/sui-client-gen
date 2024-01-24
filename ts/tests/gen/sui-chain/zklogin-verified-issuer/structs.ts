@@ -77,6 +77,10 @@ export class VerifiedIssuer {
     }
   }
 
+  static get r() {
+    return VerifiedIssuer.reified()
+  }
+
   static fromFields(fields: Record<string, any>): VerifiedIssuer {
     return VerifiedIssuer.new({
       id: decodeFromFields(UID.reified(), fields.id),

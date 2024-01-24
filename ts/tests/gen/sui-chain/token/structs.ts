@@ -92,6 +92,10 @@ export class Token<T0 extends PhantomTypeArgument> {
     }
   }
 
+  static get r() {
+    return Token.reified
+  }
+
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(
     typeArg: T0,
     fields: Record<string, any>
@@ -256,6 +260,10 @@ export class TokenPolicyCap<T0 extends PhantomTypeArgument> {
       fetch: async (client: SuiClient, id: string) => TokenPolicyCap.fetch(client, T0, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return TokenPolicyCap.reified
   }
 
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(
@@ -426,6 +434,10 @@ export class TokenPolicy<T0 extends PhantomTypeArgument> {
       fetch: async (client: SuiClient, id: string) => TokenPolicy.fetch(client, T0, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return TokenPolicy.reified
   }
 
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(
@@ -631,6 +643,10 @@ export class ActionRequest<T0 extends PhantomTypeArgument> {
     }
   }
 
+  static get r() {
+    return ActionRequest.reified
+  }
+
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(
     typeArg: T0,
     fields: Record<string, any>
@@ -824,6 +840,10 @@ export class RuleKey<T0 extends PhantomTypeArgument> {
     }
   }
 
+  static get r() {
+    return RuleKey.reified
+  }
+
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(
     typeArg: T0,
     fields: Record<string, any>
@@ -979,6 +999,10 @@ export class TokenPolicyCreated<T0 extends PhantomTypeArgument> {
       fetch: async (client: SuiClient, id: string) => TokenPolicyCreated.fetch(client, T0, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return TokenPolicyCreated.reified
   }
 
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(

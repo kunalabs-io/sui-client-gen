@@ -66,6 +66,10 @@ export class ObjectBag {
     }
   }
 
+  static get r() {
+    return ObjectBag.reified()
+  }
+
   static fromFields(fields: Record<string, any>): ObjectBag {
     return ObjectBag.new({
       id: decodeFromFields(UID.reified(), fields.id),

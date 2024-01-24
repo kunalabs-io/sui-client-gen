@@ -82,6 +82,10 @@ export class DynamicFields<K extends TypeArgument> {
     }
   }
 
+  static get r() {
+    return DynamicFields.reified
+  }
+
   static fromFields<K extends Reified<TypeArgument>>(
     typeArg: K,
     fields: Record<string, any>
@@ -230,6 +234,10 @@ export class ID {
     }
   }
 
+  static get r() {
+    return ID.reified()
+  }
+
   static fromFields(fields: Record<string, any>): ID {
     return ID.new(decodeFromFields('address', fields.bytes))
   }
@@ -347,6 +355,10 @@ export class Ownership {
       fetch: async (client: SuiClient, id: string) => Ownership.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return Ownership.reified()
   }
 
   static fromFields(fields: Record<string, any>): Ownership {
@@ -469,6 +481,10 @@ export class UID {
       fetch: async (client: SuiClient, id: string) => UID.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return UID.reified()
   }
 
   static fromFields(fields: Record<string, any>): UID {

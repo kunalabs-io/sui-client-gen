@@ -61,6 +61,10 @@ export class SUI {
     }
   }
 
+  static get r() {
+    return SUI.reified()
+  }
+
   static fromFields(fields: Record<string, any>): SUI {
     return SUI.new(decodeFromFields('bool', fields.dummy_field))
   }

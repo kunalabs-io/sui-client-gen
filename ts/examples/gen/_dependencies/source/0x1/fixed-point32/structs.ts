@@ -64,6 +64,10 @@ export class FixedPoint32 {
     }
   }
 
+  static get r() {
+    return FixedPoint32.reified()
+  }
+
   static fromFields(fields: Record<string, any>): FixedPoint32 {
     return FixedPoint32.new(decodeFromFields('u64', fields.value))
   }

@@ -69,6 +69,10 @@ export class VersionChangeCap {
     }
   }
 
+  static get r() {
+    return VersionChangeCap.reified()
+  }
+
   static fromFields(fields: Record<string, any>): VersionChangeCap {
     return VersionChangeCap.new({
       versionedId: decodeFromFields(ID.reified(), fields.versioned_id),
@@ -196,6 +200,10 @@ export class Versioned {
       fetch: async (client: SuiClient, id: string) => Versioned.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return Versioned.reified()
   }
 
   static fromFields(fields: Record<string, any>): Versioned {

@@ -70,6 +70,10 @@ export class Random {
     }
   }
 
+  static get r() {
+    return Random.reified()
+  }
+
   static fromFields(fields: Record<string, any>): Random {
     return Random.new({
       id: decodeFromFields(UID.reified(), fields.id),
@@ -202,6 +206,10 @@ export class RandomInner {
       fetch: async (client: SuiClient, id: string) => RandomInner.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return RandomInner.reified()
   }
 
   static fromFields(fields: Record<string, any>): RandomInner {

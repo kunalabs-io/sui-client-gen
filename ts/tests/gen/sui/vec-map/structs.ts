@@ -90,6 +90,10 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> {
     }
   }
 
+  static get r() {
+    return Entry.reified
+  }
+
   static fromFields<K extends Reified<TypeArgument>, V extends Reified<TypeArgument>>(
     typeArgs: [K, V],
     fields: Record<string, any>
@@ -253,6 +257,10 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> {
       fetch: async (client: SuiClient, id: string) => VecMap.fetch(client, [K, V], id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return VecMap.reified
   }
 
   static fromFields<K extends Reified<TypeArgument>, V extends Reified<TypeArgument>>(

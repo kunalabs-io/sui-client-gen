@@ -83,6 +83,10 @@ export class Wrapper<Name extends TypeArgument> {
     }
   }
 
+  static get r() {
+    return Wrapper.reified
+  }
+
   static fromFields<Name extends Reified<TypeArgument>>(
     typeArg: Name,
     fields: Record<string, any>

@@ -77,6 +77,10 @@ export class Extension {
     }
   }
 
+  static get r() {
+    return Extension.reified()
+  }
+
   static fromFields(fields: Record<string, any>): Extension {
     return Extension.new({
       storage: decodeFromFields(Bag.reified(), fields.storage),
@@ -213,6 +217,10 @@ export class ExtensionKey<T0 extends PhantomTypeArgument> {
       fetch: async (client: SuiClient, id: string) => ExtensionKey.fetch(client, T0, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return ExtensionKey.reified
   }
 
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(

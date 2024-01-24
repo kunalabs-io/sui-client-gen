@@ -95,6 +95,10 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> {
     }
   }
 
+  static get r() {
+    return Field.reified
+  }
+
   static fromFields<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
     typeArgs: [T0, T1],
     fields: Record<string, any>

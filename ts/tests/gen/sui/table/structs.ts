@@ -88,6 +88,10 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
     }
   }
 
+  static get r() {
+    return Table.reified
+  }
+
   static fromFields<K extends ReifiedPhantomTypeArgument, V extends ReifiedPhantomTypeArgument>(
     typeArgs: [K, V],
     fields: Record<string, any>

@@ -82,6 +82,10 @@ export class TableVec<Element extends PhantomTypeArgument> {
     }
   }
 
+  static get r() {
+    return TableVec.reified
+  }
+
   static fromFields<Element extends ReifiedPhantomTypeArgument>(
     typeArg: Element,
     fields: Record<string, any>

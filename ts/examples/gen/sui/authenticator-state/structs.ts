@@ -77,6 +77,10 @@ export class ActiveJwk {
     }
   }
 
+  static get r() {
+    return ActiveJwk.reified()
+  }
+
   static fromFields(fields: Record<string, any>): ActiveJwk {
     return ActiveJwk.new({
       jwkId: decodeFromFields(JwkId.reified(), fields.jwk_id),
@@ -210,6 +214,10 @@ export class AuthenticatorState {
     }
   }
 
+  static get r() {
+    return AuthenticatorState.reified()
+  }
+
   static fromFields(fields: Record<string, any>): AuthenticatorState {
     return AuthenticatorState.new({
       id: decodeFromFields(UID.reified(), fields.id),
@@ -341,6 +349,10 @@ export class AuthenticatorStateInner {
       fetch: async (client: SuiClient, id: string) => AuthenticatorStateInner.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return AuthenticatorStateInner.reified()
   }
 
   static fromFields(fields: Record<string, any>): AuthenticatorStateInner {
@@ -490,6 +502,10 @@ export class JWK {
     }
   }
 
+  static get r() {
+    return JWK.reified()
+  }
+
   static fromFields(fields: Record<string, any>): JWK {
     return JWK.new({
       kty: decodeFromFields(String.reified(), fields.kty),
@@ -622,6 +638,10 @@ export class JwkId {
       fetch: async (client: SuiClient, id: string) => JwkId.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return JwkId.reified()
   }
 
   static fromFields(fields: Record<string, any>): JwkId {

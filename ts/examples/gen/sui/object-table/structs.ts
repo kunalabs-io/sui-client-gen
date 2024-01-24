@@ -89,6 +89,10 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     }
   }
 
+  static get r() {
+    return ObjectTable.reified
+  }
+
   static fromFields<K extends ReifiedPhantomTypeArgument, V extends ReifiedPhantomTypeArgument>(
     typeArgs: [K, V],
     fields: Record<string, any>

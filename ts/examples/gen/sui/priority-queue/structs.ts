@@ -86,6 +86,10 @@ export class Entry<T extends TypeArgument> {
     }
   }
 
+  static get r() {
+    return Entry.reified
+  }
+
   static fromFields<T extends Reified<TypeArgument>>(
     typeArg: T,
     fields: Record<string, any>
@@ -247,6 +251,10 @@ export class PriorityQueue<T extends TypeArgument> {
       fetch: async (client: SuiClient, id: string) => PriorityQueue.fetch(client, T, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return PriorityQueue.reified
   }
 
   static fromFields<T extends Reified<TypeArgument>>(

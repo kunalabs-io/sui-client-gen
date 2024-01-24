@@ -91,6 +91,10 @@ export class Display<T0 extends PhantomTypeArgument> {
     }
   }
 
+  static get r() {
+    return Display.reified
+  }
+
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(
     typeArg: T0,
     fields: Record<string, any>
@@ -260,6 +264,10 @@ export class DisplayCreated<T0 extends PhantomTypeArgument> {
     }
   }
 
+  static get r() {
+    return DisplayCreated.reified
+  }
+
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(
     typeArg: T0,
     fields: Record<string, any>
@@ -418,6 +426,10 @@ export class VersionUpdated<T0 extends PhantomTypeArgument> {
       fetch: async (client: SuiClient, id: string) => VersionUpdated.fetch(client, T0, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return VersionUpdated.reified
   }
 
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(

@@ -83,6 +83,10 @@ export class TxContext {
     }
   }
 
+  static get r() {
+    return TxContext.reified()
+  }
+
   static fromFields(fields: Record<string, any>): TxContext {
     return TxContext.new({
       sender: decodeFromFields('address', fields.sender),

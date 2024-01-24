@@ -62,6 +62,10 @@ export class TypeName {
     }
   }
 
+  static get r() {
+    return TypeName.reified()
+  }
+
   static fromFields(fields: Record<string, any>): TypeName {
     return TypeName.new(decodeFromFields(String.reified(), fields.name))
   }

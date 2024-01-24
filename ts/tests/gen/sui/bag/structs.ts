@@ -66,6 +66,10 @@ export class Bag {
     }
   }
 
+  static get r() {
+    return Bag.reified()
+  }
+
   static fromFields(fields: Record<string, any>): Bag {
     return Bag.new({
       id: decodeFromFields(UID.reified(), fields.id),

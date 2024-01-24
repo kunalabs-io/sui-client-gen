@@ -64,6 +64,10 @@ export class ID {
     }
   }
 
+  static get r() {
+    return ID.reified()
+  }
+
   static fromFields(fields: Record<string, any>): ID {
     return ID.new(decodeFromFields('address', fields.bytes))
   }
@@ -174,6 +178,10 @@ export class UID {
       fetch: async (client: SuiClient, id: string) => UID.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return UID.reified()
   }
 
   static fromFields(fields: Record<string, any>): UID {

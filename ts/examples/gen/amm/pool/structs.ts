@@ -81,6 +81,10 @@ export class AdminCap {
     }
   }
 
+  static get r() {
+    return AdminCap.reified()
+  }
+
   static fromFields(fields: Record<string, any>): AdminCap {
     return AdminCap.new(decodeFromFields(UID.reified(), fields.id))
   }
@@ -210,6 +214,10 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
       fetch: async (client: SuiClient, id: string) => LP.fetch(client, [A, B], id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return LP.reified
   }
 
   static fromFields<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
@@ -399,6 +407,10 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
       fetch: async (client: SuiClient, id: string) => Pool.fetch(client, [A, B], id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return Pool.reified
   }
 
   static fromFields<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
@@ -603,6 +615,10 @@ export class PoolCreationEvent {
     }
   }
 
+  static get r() {
+    return PoolCreationEvent.reified()
+  }
+
   static fromFields(fields: Record<string, any>): PoolCreationEvent {
     return PoolCreationEvent.new(decodeFromFields(ID.reified(), fields.pool_id))
   }
@@ -728,6 +744,10 @@ export class PoolRegistry {
       fetch: async (client: SuiClient, id: string) => PoolRegistry.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return PoolRegistry.reified()
   }
 
   static fromFields(fields: Record<string, any>): PoolRegistry {
@@ -871,6 +891,10 @@ export class PoolRegistryItem {
       fetch: async (client: SuiClient, id: string) => PoolRegistryItem.fetch(client, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return PoolRegistryItem.reified()
   }
 
   static fromFields(fields: Record<string, any>): PoolRegistryItem {

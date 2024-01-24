@@ -62,6 +62,10 @@ export class Url {
     }
   }
 
+  static get r() {
+    return Url.reified()
+  }
+
   static fromFields(fields: Record<string, any>): Url {
     return Url.new(decodeFromFields(String.reified(), fields.url))
   }

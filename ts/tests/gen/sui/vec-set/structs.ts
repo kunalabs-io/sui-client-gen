@@ -82,6 +82,10 @@ export class VecSet<K extends TypeArgument> {
     }
   }
 
+  static get r() {
+    return VecSet.reified
+  }
+
   static fromFields<K extends Reified<TypeArgument>>(
     typeArg: K,
     fields: Record<string, any>

@@ -91,6 +91,10 @@ export class Coin<T0 extends PhantomTypeArgument> {
     }
   }
 
+  static get r() {
+    return Coin.reified
+  }
+
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(
     typeArg: T0,
     fields: Record<string, any>
@@ -271,6 +275,10 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> {
       fetch: async (client: SuiClient, id: string) => CoinMetadata.fetch(client, T0, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return CoinMetadata.reified
   }
 
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(
@@ -460,6 +468,10 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> {
     }
   }
 
+  static get r() {
+    return RegulatedCoinMetadata.reified
+  }
+
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(
     typeArg: T0,
     fields: Record<string, any>
@@ -635,6 +647,10 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> {
     }
   }
 
+  static get r() {
+    return TreasuryCap.reified
+  }
+
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(
     typeArg: T0,
     fields: Record<string, any>
@@ -797,6 +813,10 @@ export class DenyCap<T0 extends PhantomTypeArgument> {
     }
   }
 
+  static get r() {
+    return DenyCap.reified
+  }
+
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(
     typeArg: T0,
     fields: Record<string, any>
@@ -947,6 +967,10 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> {
       fetch: async (client: SuiClient, id: string) => CurrencyCreated.fetch(client, T0, id),
       kind: 'StructClassReified',
     }
+  }
+
+  static get r() {
+    return CurrencyCreated.reified
   }
 
   static fromFields<T0 extends ReifiedPhantomTypeArgument>(

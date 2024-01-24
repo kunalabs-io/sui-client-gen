@@ -64,6 +64,10 @@ export class String {
     }
   }
 
+  static get r() {
+    return String.reified()
+  }
+
   static fromFields(fields: Record<string, any>): String {
     return String.new(decodeFromFields(reified.vector('u8'), fields.bytes))
   }

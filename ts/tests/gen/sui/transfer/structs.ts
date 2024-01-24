@@ -85,6 +85,10 @@ export class Receiving<T extends PhantomTypeArgument> {
     }
   }
 
+  static get r() {
+    return Receiving.reified
+  }
+
   static fromFields<T extends ReifiedPhantomTypeArgument>(
     typeArg: T,
     fields: Record<string, any>
