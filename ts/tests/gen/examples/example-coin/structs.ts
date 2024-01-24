@@ -1,4 +1,6 @@
+import * as reified from '../../_framework/reified'
 import {
+  Reified,
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -32,7 +34,7 @@ export class EXAMPLE_COIN {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString =
+  readonly $fullTypeName =
     null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
 
   readonly $typeName = EXAMPLE_COIN.$typeName
@@ -53,20 +55,21 @@ export class EXAMPLE_COIN {
     return new EXAMPLE_COIN(dummyField)
   }
 
-  static reified() {
+  static reified(): Reified<EXAMPLE_COIN> {
     return {
       typeName: EXAMPLE_COIN.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         EXAMPLE_COIN.$typeName,
         ...[]
       ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => EXAMPLE_COIN.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => EXAMPLE_COIN.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => EXAMPLE_COIN.fromBcs(data),
       bcs: EXAMPLE_COIN.bcs,
       fromJSONField: (field: any) => EXAMPLE_COIN.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof EXAMPLE_COIN.new>,
+      fetch: async (client: SuiClient, id: string) => EXAMPLE_COIN.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -107,6 +110,27 @@ export class EXAMPLE_COIN {
 
     return EXAMPLE_COIN.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): EXAMPLE_COIN {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isEXAMPLE_COIN(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a EXAMPLE_COIN object`)
+    }
+    return EXAMPLE_COIN.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<EXAMPLE_COIN> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching EXAMPLE_COIN object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isEXAMPLE_COIN(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a EXAMPLE_COIN object`)
+    }
+    return EXAMPLE_COIN.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== Faucet =============================== */
@@ -131,7 +155,7 @@ export class Faucet {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString =
+  readonly $fullTypeName =
     null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'
 
   readonly $typeName = Faucet.$typeName
@@ -155,27 +179,31 @@ export class Faucet {
     return new Faucet(fields)
   }
 
-  static reified() {
+  static reified(): Reified<Faucet> {
     return {
       typeName: Faucet.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         Faucet.$typeName,
         ...[]
       ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => Faucet.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Faucet.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Faucet.fromBcs(data),
       bcs: Faucet.bcs,
       fromJSONField: (field: any) => Faucet.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof Faucet.new>,
+      fetch: async (client: SuiClient, id: string) => Faucet.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
   static fromFields(fields: Record<string, any>): Faucet {
     return Faucet.new({
       id: decodeFromFields(UID.reified(), fields.id),
-      cap: decodeFromFields(TreasuryCap.reified(EXAMPLE_COIN.reified()), fields.cap),
+      cap: decodeFromFields(
+        TreasuryCap.reified(reified.phantom(EXAMPLE_COIN.reified())),
+        fields.cap
+      ),
     })
   }
 
@@ -186,7 +214,10 @@ export class Faucet {
 
     return Faucet.new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
-      cap: decodeFromFieldsWithTypes(TreasuryCap.reified(EXAMPLE_COIN.reified()), item.fields.cap),
+      cap: decodeFromFieldsWithTypes(
+        TreasuryCap.reified(reified.phantom(EXAMPLE_COIN.reified())),
+        item.fields.cap
+      ),
     })
   }
 
@@ -208,7 +239,10 @@ export class Faucet {
   static fromJSONField(field: any): Faucet {
     return Faucet.new({
       id: decodeFromJSONField(UID.reified(), field.id),
-      cap: decodeFromJSONField(TreasuryCap.reified(EXAMPLE_COIN.reified()), field.cap),
+      cap: decodeFromJSONField(
+        TreasuryCap.reified(reified.phantom(EXAMPLE_COIN.reified())),
+        field.cap
+      ),
     })
   }
 

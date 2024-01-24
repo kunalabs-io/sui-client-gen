@@ -1,33 +1,42 @@
 import { compressSuiType, parseTypeName } from './util'
 import {
+  PhantomReified,
+  PhantomTypeArgument,
   Primitive,
-  ReifiedTypeArgument,
+  Reified,
+  StructClass,
   StructClassReified,
-  VectorReified,
+  TypeArgument,
+  VectorClass,
+  VectorClassReified,
   vector,
 } from './reified'
 
 export type PrimitiveValue = string | number | boolean | bigint
 
-interface StructClass {
+interface _StructClass {
   $typeName: string
   $numTypeParams: number
-  reified(...Ts: ReifiedTypeArgument[]): StructClassReified
+  reified(
+    ...Ts: Array<Reified<TypeArgument> | PhantomReified<PhantomTypeArgument>>
+  ): StructClassReified<StructClass>
 }
 
 export class StructClassLoader {
-  private map: Map<string, StructClass> = new Map()
+  private map: Map<string, _StructClass> = new Map()
 
-  register(...classes: StructClass[]) {
+  register(...classes: _StructClass[]) {
     for (const cls of classes) {
       this.map.set(cls.$typeName, cls)
     }
   }
 
   reified<T extends Primitive>(type: T): T
-  reified(type: `vector<${string}>`): VectorReified
-  reified(type: string): StructClassReified
-  reified(type: string): ReifiedTypeArgument {
+  reified(type: `vector<${string}>`): VectorClassReified<VectorClass>
+  reified(type: string): StructClassReified<StructClass>
+  reified(
+    type: string
+  ): StructClassReified<StructClass> | VectorClassReified<VectorClass> | string {
     const { typeName, typeArgs } = parseTypeName(compressSuiType(type))
     switch (typeName) {
       case 'bool':

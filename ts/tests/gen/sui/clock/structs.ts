@@ -1,4 +1,5 @@
 import {
+  Reified,
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -27,7 +28,7 @@ export class Clock {
   static readonly $typeName = '0x2::clock::Clock'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::clock::Clock'
+  readonly $fullTypeName = null as unknown as '0x2::clock::Clock'
 
   readonly $typeName = Clock.$typeName
 
@@ -50,17 +51,18 @@ export class Clock {
     return new Clock(fields)
   }
 
-  static reified() {
+  static reified(): Reified<Clock> {
     return {
       typeName: Clock.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(Clock.$typeName, ...[]) as '0x2::clock::Clock',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => Clock.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Clock.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Clock.fromBcs(data),
       bcs: Clock.bcs,
       fromJSONField: (field: any) => Clock.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof Clock.new>,
+      fetch: async (client: SuiClient, id: string) => Clock.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 

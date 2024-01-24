@@ -1,4 +1,5 @@
 import {
+  Reified,
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -29,7 +30,7 @@ export class VerifiedIssuer {
   static readonly $typeName = '0x2::zklogin_verified_issuer::VerifiedIssuer'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::zklogin_verified_issuer::VerifiedIssuer'
+  readonly $fullTypeName = null as unknown as '0x2::zklogin_verified_issuer::VerifiedIssuer'
 
   readonly $typeName = VerifiedIssuer.$typeName
 
@@ -58,20 +59,21 @@ export class VerifiedIssuer {
     return new VerifiedIssuer(fields)
   }
 
-  static reified() {
+  static reified(): Reified<VerifiedIssuer> {
     return {
       typeName: VerifiedIssuer.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         VerifiedIssuer.$typeName,
         ...[]
       ) as '0x2::zklogin_verified_issuer::VerifiedIssuer',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => VerifiedIssuer.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VerifiedIssuer.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => VerifiedIssuer.fromBcs(data),
       bcs: VerifiedIssuer.bcs,
       fromJSONField: (field: any) => VerifiedIssuer.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof VerifiedIssuer.new>,
+      fetch: async (client: SuiClient, id: string) => VerifiedIssuer.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 

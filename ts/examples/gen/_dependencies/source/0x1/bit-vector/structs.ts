@@ -1,5 +1,6 @@
 import * as reified from '../../../../_framework/reified'
 import {
+  Reified,
   ToField,
   Vector,
   decodeFromFields,
@@ -9,6 +10,7 @@ import {
 } from '../../../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { bcs } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== BitVector =============================== */
 
@@ -28,7 +30,7 @@ export class BitVector {
   static readonly $typeName = '0x1::bit_vector::BitVector'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x1::bit_vector::BitVector'
+  readonly $fullTypeName = null as unknown as '0x1::bit_vector::BitVector'
 
   readonly $typeName = BitVector.$typeName
 
@@ -51,17 +53,18 @@ export class BitVector {
     return new BitVector(fields)
   }
 
-  static reified() {
+  static reified(): Reified<BitVector> {
     return {
       typeName: BitVector.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(BitVector.$typeName, ...[]) as '0x1::bit_vector::BitVector',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => BitVector.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => BitVector.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => BitVector.fromBcs(data),
       bcs: BitVector.bcs,
       fromJSONField: (field: any) => BitVector.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof BitVector.new>,
+      fetch: async (client: SuiClient, id: string) => BitVector.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -111,5 +114,26 @@ export class BitVector {
     }
 
     return BitVector.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): BitVector {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isBitVector(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a BitVector object`)
+    }
+    return BitVector.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<BitVector> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching BitVector object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isBitVector(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a BitVector object`)
+    }
+    return BitVector.fromFieldsWithTypes(res.data.content)
   }
 }

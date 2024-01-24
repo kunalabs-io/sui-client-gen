@@ -1,4 +1,5 @@
 import {
+  Reified,
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -27,7 +28,7 @@ export class Bag {
   static readonly $typeName = '0x2::bag::Bag'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::bag::Bag'
+  readonly $fullTypeName = null as unknown as '0x2::bag::Bag'
 
   readonly $typeName = Bag.$typeName
 
@@ -50,17 +51,18 @@ export class Bag {
     return new Bag(fields)
   }
 
-  static reified() {
+  static reified(): Reified<Bag> {
     return {
       typeName: Bag.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(Bag.$typeName, ...[]) as '0x2::bag::Bag',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => Bag.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Bag.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Bag.fromBcs(data),
       bcs: Bag.bcs,
       fromJSONField: (field: any) => Bag.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof Bag.new>,
+      fetch: async (client: SuiClient, id: string) => Bag.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 

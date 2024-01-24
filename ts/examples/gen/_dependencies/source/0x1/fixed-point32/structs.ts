@@ -1,4 +1,5 @@
 import {
+  Reified,
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -6,6 +7,7 @@ import {
 } from '../../../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { bcs } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== FixedPoint32 =============================== */
 
@@ -24,7 +26,7 @@ export class FixedPoint32 {
   static readonly $typeName = '0x1::fixed_point32::FixedPoint32'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x1::fixed_point32::FixedPoint32'
+  readonly $fullTypeName = null as unknown as '0x1::fixed_point32::FixedPoint32'
 
   readonly $typeName = FixedPoint32.$typeName
 
@@ -44,20 +46,21 @@ export class FixedPoint32 {
     return new FixedPoint32(value)
   }
 
-  static reified() {
+  static reified(): Reified<FixedPoint32> {
     return {
       typeName: FixedPoint32.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         FixedPoint32.$typeName,
         ...[]
       ) as '0x1::fixed_point32::FixedPoint32',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => FixedPoint32.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => FixedPoint32.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => FixedPoint32.fromBcs(data),
       bcs: FixedPoint32.bcs,
       fromJSONField: (field: any) => FixedPoint32.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof FixedPoint32.new>,
+      fetch: async (client: SuiClient, id: string) => FixedPoint32.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -97,5 +100,26 @@ export class FixedPoint32 {
     }
 
     return FixedPoint32.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): FixedPoint32 {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isFixedPoint32(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a FixedPoint32 object`)
+    }
+    return FixedPoint32.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<FixedPoint32> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching FixedPoint32 object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isFixedPoint32(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a FixedPoint32 object`)
+    }
+    return FixedPoint32.fromFieldsWithTypes(res.data.content)
   }
 }

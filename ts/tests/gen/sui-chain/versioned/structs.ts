@@ -1,4 +1,5 @@
 import {
+  Reified,
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -27,7 +28,7 @@ export class Versioned {
   static readonly $typeName = '0x2::versioned::Versioned'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::versioned::Versioned'
+  readonly $fullTypeName = null as unknown as '0x2::versioned::Versioned'
 
   readonly $typeName = Versioned.$typeName
 
@@ -50,17 +51,18 @@ export class Versioned {
     return new Versioned(fields)
   }
 
-  static reified() {
+  static reified(): Reified<Versioned> {
     return {
       typeName: Versioned.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(Versioned.$typeName, ...[]) as '0x2::versioned::Versioned',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => Versioned.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Versioned.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Versioned.fromBcs(data),
       bcs: Versioned.bcs,
       fromJSONField: (field: any) => Versioned.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof Versioned.new>,
+      fetch: async (client: SuiClient, id: string) => Versioned.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -152,7 +154,7 @@ export class VersionChangeCap {
   static readonly $typeName = '0x2::versioned::VersionChangeCap'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::versioned::VersionChangeCap'
+  readonly $fullTypeName = null as unknown as '0x2::versioned::VersionChangeCap'
 
   readonly $typeName = VersionChangeCap.$typeName
 
@@ -175,20 +177,21 @@ export class VersionChangeCap {
     return new VersionChangeCap(fields)
   }
 
-  static reified() {
+  static reified(): Reified<VersionChangeCap> {
     return {
       typeName: VersionChangeCap.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         VersionChangeCap.$typeName,
         ...[]
       ) as '0x2::versioned::VersionChangeCap',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => VersionChangeCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VersionChangeCap.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => VersionChangeCap.fromBcs(data),
       bcs: VersionChangeCap.bcs,
       fromJSONField: (field: any) => VersionChangeCap.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof VersionChangeCap.new>,
+      fetch: async (client: SuiClient, id: string) => VersionChangeCap.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -238,5 +241,29 @@ export class VersionChangeCap {
     }
 
     return VersionChangeCap.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): VersionChangeCap {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isVersionChangeCap(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a VersionChangeCap object`)
+    }
+    return VersionChangeCap.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<VersionChangeCap> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching VersionChangeCap object at id ${id}: ${res.error.code}`)
+    }
+    if (
+      res.data?.content?.dataType !== 'moveObject' ||
+      !isVersionChangeCap(res.data.content.type)
+    ) {
+      throw new Error(`object at id ${id} is not a VersionChangeCap object`)
+    }
+    return VersionChangeCap.fromFieldsWithTypes(res.data.content)
   }
 }

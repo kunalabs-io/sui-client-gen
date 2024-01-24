@@ -1,10 +1,11 @@
 import { String } from '../../_dependencies/source/0x1/string/structs'
 import {
   PhantomTypeArgument,
+  Reified,
   ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -37,7 +38,7 @@ export class Display<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::Display'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::display::Display<${T}>`
+  readonly $fullTypeName = null as unknown as `0x2::display::Display<${ToTypeStr<T>}>`
 
   readonly $typeName = Display.$typeName
 
@@ -70,20 +71,23 @@ export class Display<T extends PhantomTypeArgument> {
     return new Display(extractType(typeArg), fields)
   }
 
-  static reified<T extends ReifiedPhantomTypeArgument>(T: T) {
+  static reified<T extends ReifiedPhantomTypeArgument>(
+    T: T
+  ): Reified<Display<ToPhantomTypeArgument<T>>> {
     return {
       typeName: Display.$typeName,
-      typeArgs: [T],
       fullTypeName: composeSuiType(
         Display.$typeName,
         ...[extractType(T)]
-      ) as `0x2::display::Display<${ToPhantomTypeArgument<T>}>`,
+      ) as `0x2::display::Display<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      typeArgs: [T],
       fromFields: (fields: Record<string, any>) => Display.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Display.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Display.fromBcs(T, data),
       bcs: Display.bcs,
       fromJSONField: (field: any) => Display.fromJSONField(T, field),
-      __class: null as unknown as ReturnType<typeof Display.new<ToTypeArgument<T>>>,
+      fetch: async (client: SuiClient, id: string) => Display.fetch(client, T, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -209,7 +213,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::DisplayCreated'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::display::DisplayCreated<${T}>`
+  readonly $fullTypeName = null as unknown as `0x2::display::DisplayCreated<${ToTypeStr<T>}>`
 
   readonly $typeName = DisplayCreated.$typeName
 
@@ -236,20 +240,23 @@ export class DisplayCreated<T extends PhantomTypeArgument> {
     return new DisplayCreated(extractType(typeArg), id)
   }
 
-  static reified<T extends ReifiedPhantomTypeArgument>(T: T) {
+  static reified<T extends ReifiedPhantomTypeArgument>(
+    T: T
+  ): Reified<DisplayCreated<ToPhantomTypeArgument<T>>> {
     return {
       typeName: DisplayCreated.$typeName,
-      typeArgs: [T],
       fullTypeName: composeSuiType(
         DisplayCreated.$typeName,
         ...[extractType(T)]
-      ) as `0x2::display::DisplayCreated<${ToPhantomTypeArgument<T>}>`,
+      ) as `0x2::display::DisplayCreated<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      typeArgs: [T],
       fromFields: (fields: Record<string, any>) => DisplayCreated.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => DisplayCreated.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => DisplayCreated.fromBcs(T, data),
       bcs: DisplayCreated.bcs,
       fromJSONField: (field: any) => DisplayCreated.fromJSONField(T, field),
-      __class: null as unknown as ReturnType<typeof DisplayCreated.new<ToTypeArgument<T>>>,
+      fetch: async (client: SuiClient, id: string) => DisplayCreated.fetch(client, T, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -311,6 +318,34 @@ export class DisplayCreated<T extends PhantomTypeArgument> {
 
     return DisplayCreated.fromJSONField(typeArg, json)
   }
+
+  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    content: SuiParsedData
+  ): DisplayCreated<ToPhantomTypeArgument<T>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isDisplayCreated(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a DisplayCreated object`)
+    }
+    return DisplayCreated.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<T extends ReifiedPhantomTypeArgument>(
+    client: SuiClient,
+    typeArg: T,
+    id: string
+  ): Promise<DisplayCreated<ToPhantomTypeArgument<T>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching DisplayCreated object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isDisplayCreated(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a DisplayCreated object`)
+    }
+    return DisplayCreated.fromFieldsWithTypes(typeArg, res.data.content)
+  }
 }
 
 /* ============================== VersionUpdated =============================== */
@@ -332,7 +367,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::VersionUpdated'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::display::VersionUpdated<${T}>`
+  readonly $fullTypeName = null as unknown as `0x2::display::VersionUpdated<${ToTypeStr<T>}>`
 
   readonly $typeName = VersionUpdated.$typeName
 
@@ -365,20 +400,23 @@ export class VersionUpdated<T extends PhantomTypeArgument> {
     return new VersionUpdated(extractType(typeArg), fields)
   }
 
-  static reified<T extends ReifiedPhantomTypeArgument>(T: T) {
+  static reified<T extends ReifiedPhantomTypeArgument>(
+    T: T
+  ): Reified<VersionUpdated<ToPhantomTypeArgument<T>>> {
     return {
       typeName: VersionUpdated.$typeName,
-      typeArgs: [T],
       fullTypeName: composeSuiType(
         VersionUpdated.$typeName,
         ...[extractType(T)]
-      ) as `0x2::display::VersionUpdated<${ToPhantomTypeArgument<T>}>`,
+      ) as `0x2::display::VersionUpdated<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      typeArgs: [T],
       fromFields: (fields: Record<string, any>) => VersionUpdated.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VersionUpdated.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => VersionUpdated.fromBcs(T, data),
       bcs: VersionUpdated.bcs,
       fromJSONField: (field: any) => VersionUpdated.fromJSONField(T, field),
-      __class: null as unknown as ReturnType<typeof VersionUpdated.new<ToTypeArgument<T>>>,
+      fetch: async (client: SuiClient, id: string) => VersionUpdated.fetch(client, T, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -456,5 +494,33 @@ export class VersionUpdated<T extends PhantomTypeArgument> {
     )
 
     return VersionUpdated.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    content: SuiParsedData
+  ): VersionUpdated<ToPhantomTypeArgument<T>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isVersionUpdated(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a VersionUpdated object`)
+    }
+    return VersionUpdated.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<T extends ReifiedPhantomTypeArgument>(
+    client: SuiClient,
+    typeArg: T,
+    id: string
+  ): Promise<VersionUpdated<ToPhantomTypeArgument<T>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching VersionUpdated object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isVersionUpdated(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a VersionUpdated object`)
+    }
+    return VersionUpdated.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }

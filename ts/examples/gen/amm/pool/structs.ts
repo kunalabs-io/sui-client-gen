@@ -1,10 +1,12 @@
+import * as reified from '../../_framework/reified'
 import { TypeName } from '../../_dependencies/source/0x1/type-name/structs'
 import {
   PhantomTypeArgument,
+  Reified,
   ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -40,7 +42,7 @@ export class AdminCap {
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString =
+  readonly $fullTypeName =
     null as unknown as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
 
   readonly $typeName = AdminCap.$typeName
@@ -61,20 +63,21 @@ export class AdminCap {
     return new AdminCap(id)
   }
 
-  static reified() {
+  static reified(): Reified<AdminCap> {
     return {
       typeName: AdminCap.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         AdminCap.$typeName,
         ...[]
       ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => AdminCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => AdminCap.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => AdminCap.fromBcs(data),
       bcs: AdminCap.bcs,
       fromJSONField: (field: any) => AdminCap.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof AdminCap.new>,
+      fetch: async (client: SuiClient, id: string) => AdminCap.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -158,8 +161,8 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP'
   static readonly $numTypeParams = 2
 
-  __reifiedFullTypeString =
-    null as unknown as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${A}, ${B}>`
+  readonly $fullTypeName =
+    null as unknown as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${ToTypeStr<A>}, ${ToTypeStr<B>}>`
 
   readonly $typeName = LP.$typeName
 
@@ -189,20 +192,23 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
   static reified<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
     A: A,
     B: B
-  ) {
+  ): Reified<LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>> {
     return {
       typeName: LP.$typeName,
-      typeArgs: [A, B],
       fullTypeName: composeSuiType(
         LP.$typeName,
         ...[extractType(A), extractType(B)]
-      ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${ToPhantomTypeArgument<A>}, ${ToPhantomTypeArgument<B>}>`,
+      ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${ToTypeStr<
+        ToPhantomTypeArgument<A>
+      >}, ${ToTypeStr<ToPhantomTypeArgument<B>>}>`,
+      typeArgs: [A, B],
       fromFields: (fields: Record<string, any>) => LP.fromFields([A, B], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => LP.fromFieldsWithTypes([A, B], item),
       fromBcs: (data: Uint8Array) => LP.fromBcs([A, B], data),
       bcs: LP.bcs,
       fromJSONField: (field: any) => LP.fromJSONField([A, B], field),
-      __class: null as unknown as ReturnType<typeof LP.new<ToTypeArgument<A>, ToTypeArgument<B>>>,
+      fetch: async (client: SuiClient, id: string) => LP.fetch(client, [A, B], id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -267,6 +273,37 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
 
     return LP.fromJSONField(typeArgs, json)
   }
+
+  static fromSuiParsedData<
+    A extends ReifiedPhantomTypeArgument,
+    B extends ReifiedPhantomTypeArgument,
+  >(
+    typeArgs: [A, B],
+    content: SuiParsedData
+  ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isLP(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a LP object`)
+    }
+    return LP.fromFieldsWithTypes(typeArgs, content)
+  }
+
+  static async fetch<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+    client: SuiClient,
+    typeArgs: [A, B],
+    id: string
+  ): Promise<LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching LP object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isLP(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a LP object`)
+    }
+    return LP.fromFieldsWithTypes(typeArgs, res.data.content)
+  }
 }
 
 /* ============================== Pool =============================== */
@@ -295,8 +332,8 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool'
   static readonly $numTypeParams = 2
 
-  __reifiedFullTypeString =
-    null as unknown as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${A}, ${B}>`
+  readonly $fullTypeName =
+    null as unknown as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${ToTypeStr<A>}, ${ToTypeStr<B>}>`
 
   readonly $typeName = Pool.$typeName
 
@@ -344,20 +381,23 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
   static reified<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
     A: A,
     B: B
-  ) {
+  ): Reified<Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>> {
     return {
       typeName: Pool.$typeName,
-      typeArgs: [A, B],
       fullTypeName: composeSuiType(
         Pool.$typeName,
         ...[extractType(A), extractType(B)]
-      ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${ToPhantomTypeArgument<A>}, ${ToPhantomTypeArgument<B>}>`,
+      ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${ToTypeStr<
+        ToPhantomTypeArgument<A>
+      >}, ${ToTypeStr<ToPhantomTypeArgument<B>>}>`,
+      typeArgs: [A, B],
       fromFields: (fields: Record<string, any>) => Pool.fromFields([A, B], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Pool.fromFieldsWithTypes([A, B], item),
       fromBcs: (data: Uint8Array) => Pool.fromBcs([A, B], data),
       bcs: Pool.bcs,
       fromJSONField: (field: any) => Pool.fromJSONField([A, B], field),
-      __class: null as unknown as ReturnType<typeof Pool.new<ToTypeArgument<A>, ToTypeArgument<B>>>,
+      fetch: async (client: SuiClient, id: string) => Pool.fetch(client, [A, B], id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -370,13 +410,13 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
       balanceA: decodeFromFields(Balance.reified(typeArgs[0]), fields.balance_a),
       balanceB: decodeFromFields(Balance.reified(typeArgs[1]), fields.balance_b),
       lpSupply: decodeFromFields(
-        Supply.reified(LP.reified(typeArgs[0], typeArgs[1])),
+        Supply.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
         fields.lp_supply
       ),
       lpFeeBps: decodeFromFields('u64', fields.lp_fee_bps),
       adminFeePct: decodeFromFields('u64', fields.admin_fee_pct),
       adminFeeBalance: decodeFromFields(
-        Balance.reified(LP.reified(typeArgs[0], typeArgs[1])),
+        Balance.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
         fields.admin_fee_balance
       ),
     })
@@ -399,13 +439,13 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
       balanceA: decodeFromFieldsWithTypes(Balance.reified(typeArgs[0]), item.fields.balance_a),
       balanceB: decodeFromFieldsWithTypes(Balance.reified(typeArgs[1]), item.fields.balance_b),
       lpSupply: decodeFromFieldsWithTypes(
-        Supply.reified(LP.reified(typeArgs[0], typeArgs[1])),
+        Supply.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
         item.fields.lp_supply
       ),
       lpFeeBps: decodeFromFieldsWithTypes('u64', item.fields.lp_fee_bps),
       adminFeePct: decodeFromFieldsWithTypes('u64', item.fields.admin_fee_pct),
       adminFeeBalance: decodeFromFieldsWithTypes(
-        Balance.reified(LP.reified(typeArgs[0], typeArgs[1])),
+        Balance.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
         item.fields.admin_fee_balance
       ),
     })
@@ -443,13 +483,13 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
       balanceA: decodeFromJSONField(Balance.reified(typeArgs[0]), field.balanceA),
       balanceB: decodeFromJSONField(Balance.reified(typeArgs[1]), field.balanceB),
       lpSupply: decodeFromJSONField(
-        Supply.reified(LP.reified(typeArgs[0], typeArgs[1])),
+        Supply.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
         field.lpSupply
       ),
       lpFeeBps: decodeFromJSONField('u64', field.lpFeeBps),
       adminFeePct: decodeFromJSONField('u64', field.adminFeePct),
       adminFeeBalance: decodeFromJSONField(
-        Balance.reified(LP.reified(typeArgs[0], typeArgs[1])),
+        Balance.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
         field.adminFeeBalance
       ),
     })
@@ -524,7 +564,7 @@ export class PoolCreationEvent {
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString =
+  readonly $fullTypeName =
     null as unknown as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
 
   readonly $typeName = PoolCreationEvent.$typeName
@@ -545,20 +585,21 @@ export class PoolCreationEvent {
     return new PoolCreationEvent(poolId)
   }
 
-  static reified() {
+  static reified(): Reified<PoolCreationEvent> {
     return {
       typeName: PoolCreationEvent.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         PoolCreationEvent.$typeName,
         ...[]
       ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => PoolCreationEvent.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PoolCreationEvent.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PoolCreationEvent.fromBcs(data),
       bcs: PoolCreationEvent.bcs,
       fromJSONField: (field: any) => PoolCreationEvent.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof PoolCreationEvent.new>,
+      fetch: async (client: SuiClient, id: string) => PoolCreationEvent.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -599,6 +640,30 @@ export class PoolCreationEvent {
 
     return PoolCreationEvent.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): PoolCreationEvent {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isPoolCreationEvent(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a PoolCreationEvent object`)
+    }
+    return PoolCreationEvent.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<PoolCreationEvent> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching PoolCreationEvent object at id ${id}: ${res.error.code}`)
+    }
+    if (
+      res.data?.content?.dataType !== 'moveObject' ||
+      !isPoolCreationEvent(res.data.content.type)
+    ) {
+      throw new Error(`object at id ${id} is not a PoolCreationEvent object`)
+    }
+    return PoolCreationEvent.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== PoolRegistry =============================== */
@@ -623,7 +688,7 @@ export class PoolRegistry {
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString =
+  readonly $fullTypeName =
     null as unknown as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
 
   readonly $typeName = PoolRegistry.$typeName
@@ -647,27 +712,31 @@ export class PoolRegistry {
     return new PoolRegistry(fields)
   }
 
-  static reified() {
+  static reified(): Reified<PoolRegistry> {
     return {
       typeName: PoolRegistry.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         PoolRegistry.$typeName,
         ...[]
       ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => PoolRegistry.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PoolRegistry.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PoolRegistry.fromBcs(data),
       bcs: PoolRegistry.bcs,
       fromJSONField: (field: any) => PoolRegistry.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof PoolRegistry.new>,
+      fetch: async (client: SuiClient, id: string) => PoolRegistry.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
   static fromFields(fields: Record<string, any>): PoolRegistry {
     return PoolRegistry.new({
       id: decodeFromFields(UID.reified(), fields.id),
-      table: decodeFromFields(Table.reified(PoolRegistryItem.reified(), 'bool'), fields.table),
+      table: decodeFromFields(
+        Table.reified(reified.phantom(PoolRegistryItem.reified()), reified.phantom('bool')),
+        fields.table
+      ),
     })
   }
 
@@ -679,7 +748,7 @@ export class PoolRegistry {
     return PoolRegistry.new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       table: decodeFromFieldsWithTypes(
-        Table.reified(PoolRegistryItem.reified(), 'bool'),
+        Table.reified(reified.phantom(PoolRegistryItem.reified()), reified.phantom('bool')),
         item.fields.table
       ),
     })
@@ -703,7 +772,10 @@ export class PoolRegistry {
   static fromJSONField(field: any): PoolRegistry {
     return PoolRegistry.new({
       id: decodeFromJSONField(UID.reified(), field.id),
-      table: decodeFromJSONField(Table.reified(PoolRegistryItem.reified(), 'bool'), field.table),
+      table: decodeFromJSONField(
+        Table.reified(reified.phantom(PoolRegistryItem.reified()), reified.phantom('bool')),
+        field.table
+      ),
     })
   }
 
@@ -759,7 +831,7 @@ export class PoolRegistryItem {
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString =
+  readonly $fullTypeName =
     null as unknown as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
 
   readonly $typeName = PoolRegistryItem.$typeName
@@ -783,20 +855,21 @@ export class PoolRegistryItem {
     return new PoolRegistryItem(fields)
   }
 
-  static reified() {
+  static reified(): Reified<PoolRegistryItem> {
     return {
       typeName: PoolRegistryItem.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         PoolRegistryItem.$typeName,
         ...[]
       ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => PoolRegistryItem.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PoolRegistryItem.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PoolRegistryItem.fromBcs(data),
       bcs: PoolRegistryItem.bcs,
       fromJSONField: (field: any) => PoolRegistryItem.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof PoolRegistryItem.new>,
+      fetch: async (client: SuiClient, id: string) => PoolRegistryItem.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -846,5 +919,29 @@ export class PoolRegistryItem {
     }
 
     return PoolRegistryItem.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): PoolRegistryItem {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isPoolRegistryItem(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a PoolRegistryItem object`)
+    }
+    return PoolRegistryItem.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<PoolRegistryItem> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching PoolRegistryItem object at id ${id}: ${res.error.code}`)
+    }
+    if (
+      res.data?.content?.dataType !== 'moveObject' ||
+      !isPoolRegistryItem(res.data.content.type)
+    ) {
+      throw new Error(`object at id ${id} is not a PoolRegistryItem object`)
+    }
+    return PoolRegistryItem.fromFieldsWithTypes(res.data.content)
   }
 }

@@ -1,9 +1,9 @@
 import * as reified from '../../../../_framework/reified'
 import {
-  ReifiedTypeArgument,
+  Reified,
   ToField,
-  ToPhantomTypeArgument,
   ToTypeArgument,
+  ToTypeStr,
   TypeArgument,
   Vector,
   assertFieldsWithTypesArgsMatch,
@@ -14,10 +14,10 @@ import {
   extractType,
   fieldToJSON,
   toBcs,
-  ToTypeStr as ToPhantom,
 } from '../../../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Option =============================== */
 
@@ -38,7 +38,7 @@ export class Option<Element extends TypeArgument> {
 
   __inner: Element = null as unknown as Element // for type checking in reified.ts
 
-  __reifiedFullTypeString = null as unknown as `0x1::option::Option<${ToPhantom<Element>}>`
+  readonly $fullTypeName = null as unknown as `0x1::option::Option<${ToTypeStr<Element>}>`
 
   readonly $typeName = Option.$typeName
 
@@ -59,38 +59,41 @@ export class Option<Element extends TypeArgument> {
     this.vec = vec
   }
 
-  static new<Element extends ReifiedTypeArgument>(
+  static new<Element extends Reified<TypeArgument>>(
     typeArg: Element,
     vec: ToField<Vector<ToTypeArgument<Element>>>
   ): Option<ToTypeArgument<Element>> {
     return new Option(extractType(typeArg), vec)
   }
 
-  static reified<Element extends ReifiedTypeArgument>(Element: Element) {
+  static reified<Element extends Reified<TypeArgument>>(
+    Element: Element
+  ): Reified<Option<ToTypeArgument<Element>>> {
     return {
       typeName: Option.$typeName,
-      typeArgs: [Element],
       fullTypeName: composeSuiType(
         Option.$typeName,
         ...[extractType(Element)]
-      ) as `0x1::option::Option<${ToPhantomTypeArgument<Element>}>`,
+      ) as `0x1::option::Option<${ToTypeStr<ToTypeArgument<Element>>}>`,
+      typeArgs: [Element],
       fromFields: (fields: Record<string, any>) => Option.fromFields(Element, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Option.fromFieldsWithTypes(Element, item),
       fromBcs: (data: Uint8Array) => Option.fromBcs(Element, data),
       bcs: Option.bcs(toBcs(Element)),
       fromJSONField: (field: any) => Option.fromJSONField(Element, field),
-      __class: null as unknown as ReturnType<typeof Option.new<ToTypeArgument<Element>>>,
+      fetch: async (client: SuiClient, id: string) => Option.fetch(client, Element, id),
+      kind: 'StructClassReified',
     }
   }
 
-  static fromFields<Element extends ReifiedTypeArgument>(
+  static fromFields<Element extends Reified<TypeArgument>>(
     typeArg: Element,
     fields: Record<string, any>
   ): Option<ToTypeArgument<Element>> {
     return Option.new(typeArg, decodeFromFields(reified.vector(typeArg), fields.vec))
   }
 
-  static fromFieldsWithTypes<Element extends ReifiedTypeArgument>(
+  static fromFieldsWithTypes<Element extends Reified<TypeArgument>>(
     typeArg: Element,
     item: FieldsWithTypes
   ): Option<ToTypeArgument<Element>> {
@@ -102,7 +105,7 @@ export class Option<Element extends TypeArgument> {
     return Option.new(typeArg, decodeFromFieldsWithTypes(reified.vector(typeArg), item.fields.vec))
   }
 
-  static fromBcs<Element extends ReifiedTypeArgument>(
+  static fromBcs<Element extends Reified<TypeArgument>>(
     typeArg: Element,
     data: Uint8Array
   ): Option<ToTypeArgument<Element>> {
@@ -121,14 +124,14 @@ export class Option<Element extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<Element extends ReifiedTypeArgument>(
+  static fromJSONField<Element extends Reified<TypeArgument>>(
     typeArg: Element,
     field: any
   ): Option<ToTypeArgument<Element>> {
     return Option.new(typeArg, decodeFromJSONField(reified.vector(typeArg), field.vec))
   }
 
-  static fromJSON<Element extends ReifiedTypeArgument>(
+  static fromJSON<Element extends Reified<TypeArgument>>(
     typeArg: Element,
     json: Record<string, any>
   ): Option<ToTypeArgument<Element>> {
@@ -142,5 +145,33 @@ export class Option<Element extends TypeArgument> {
     )
 
     return Option.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<Element extends Reified<TypeArgument>>(
+    typeArg: Element,
+    content: SuiParsedData
+  ): Option<ToTypeArgument<Element>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isOption(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a Option object`)
+    }
+    return Option.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<Element extends Reified<TypeArgument>>(
+    client: SuiClient,
+    typeArg: Element,
+    id: string
+  ): Promise<Option<ToTypeArgument<Element>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching Option object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isOption(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a Option object`)
+    }
+    return Option.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }

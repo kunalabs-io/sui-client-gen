@@ -1,9 +1,10 @@
 import {
   PhantomTypeArgument,
+  Reified,
   ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -34,7 +35,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
   static readonly $typeName = '0x2::table::Table'
   static readonly $numTypeParams = 2
 
-  __reifiedFullTypeString = null as unknown as `0x2::table::Table<${K}, ${V}>`
+  readonly $fullTypeName = null as unknown as `0x2::table::Table<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
 
   readonly $typeName = Table.$typeName
 
@@ -67,22 +68,23 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
   static reified<K extends ReifiedPhantomTypeArgument, V extends ReifiedPhantomTypeArgument>(
     K: K,
     V: V
-  ) {
+  ): Reified<Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>> {
     return {
       typeName: Table.$typeName,
-      typeArgs: [K, V],
       fullTypeName: composeSuiType(
         Table.$typeName,
         ...[extractType(K), extractType(V)]
-      ) as `0x2::table::Table<${ToPhantomTypeArgument<K>}, ${ToPhantomTypeArgument<V>}>`,
+      ) as `0x2::table::Table<${ToTypeStr<ToPhantomTypeArgument<K>>}, ${ToTypeStr<
+        ToPhantomTypeArgument<V>
+      >}>`,
+      typeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => Table.fromFields([K, V], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Table.fromFieldsWithTypes([K, V], item),
       fromBcs: (data: Uint8Array) => Table.fromBcs([K, V], data),
       bcs: Table.bcs,
       fromJSONField: (field: any) => Table.fromJSONField([K, V], field),
-      __class: null as unknown as ReturnType<
-        typeof Table.new<ToTypeArgument<K>, ToTypeArgument<V>>
-      >,
+      fetch: async (client: SuiClient, id: string) => Table.fetch(client, [K, V], id),
+      kind: 'StructClassReified',
     }
   }
 

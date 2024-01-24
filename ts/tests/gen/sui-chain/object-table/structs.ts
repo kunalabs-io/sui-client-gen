@@ -1,9 +1,10 @@
 import {
   PhantomTypeArgument,
+  Reified,
   ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -34,7 +35,8 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
   static readonly $typeName = '0x2::object_table::ObjectTable'
   static readonly $numTypeParams = 2
 
-  __reifiedFullTypeString = null as unknown as `0x2::object_table::ObjectTable<${T0}, ${T1}>`
+  readonly $fullTypeName =
+    null as unknown as `0x2::object_table::ObjectTable<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
 
   readonly $typeName = ObjectTable.$typeName
 
@@ -67,23 +69,24 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
   static reified<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
     T0: T0,
     T1: T1
-  ) {
+  ): Reified<ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>> {
     return {
       typeName: ObjectTable.$typeName,
-      typeArgs: [T0, T1],
       fullTypeName: composeSuiType(
         ObjectTable.$typeName,
         ...[extractType(T0), extractType(T1)]
-      ) as `0x2::object_table::ObjectTable<${ToPhantomTypeArgument<T0>}, ${ToPhantomTypeArgument<T1>}>`,
+      ) as `0x2::object_table::ObjectTable<${ToTypeStr<ToPhantomTypeArgument<T0>>}, ${ToTypeStr<
+        ToPhantomTypeArgument<T1>
+      >}>`,
+      typeArgs: [T0, T1],
       fromFields: (fields: Record<string, any>) => ObjectTable.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         ObjectTable.fromFieldsWithTypes([T0, T1], item),
       fromBcs: (data: Uint8Array) => ObjectTable.fromBcs([T0, T1], data),
       bcs: ObjectTable.bcs,
       fromJSONField: (field: any) => ObjectTable.fromJSONField([T0, T1], field),
-      __class: null as unknown as ReturnType<
-        typeof ObjectTable.new<ToTypeArgument<T0>, ToTypeArgument<T1>>
-      >,
+      fetch: async (client: SuiClient, id: string) => ObjectTable.fetch(client, [T0, T1], id),
+      kind: 'StructClassReified',
     }
   }
 

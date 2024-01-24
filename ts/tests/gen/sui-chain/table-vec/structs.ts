@@ -1,9 +1,11 @@
+import * as reified from '../../_framework/reified'
 import {
   PhantomTypeArgument,
+  Reified,
   ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -14,6 +16,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Table } from '../table/structs'
 import { bcs } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== TableVec =============================== */
 
@@ -32,7 +35,7 @@ export class TableVec<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::table_vec::TableVec'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::table_vec::TableVec<${T0}>`
+  readonly $fullTypeName = null as unknown as `0x2::table_vec::TableVec<${ToTypeStr<T0>}>`
 
   readonly $typeName = TableVec.$typeName
 
@@ -59,20 +62,23 @@ export class TableVec<T0 extends PhantomTypeArgument> {
     return new TableVec(extractType(typeArg), contents)
   }
 
-  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(
+    T0: T0
+  ): Reified<TableVec<ToPhantomTypeArgument<T0>>> {
     return {
       typeName: TableVec.$typeName,
-      typeArgs: [T0],
       fullTypeName: composeSuiType(
         TableVec.$typeName,
         ...[extractType(T0)]
-      ) as `0x2::table_vec::TableVec<${ToPhantomTypeArgument<T0>}>`,
+      ) as `0x2::table_vec::TableVec<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => TableVec.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TableVec.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => TableVec.fromBcs(T0, data),
       bcs: TableVec.bcs,
       fromJSONField: (field: any) => TableVec.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof TableVec.new<ToTypeArgument<T0>>>,
+      fetch: async (client: SuiClient, id: string) => TableVec.fetch(client, T0, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -80,7 +86,10 @@ export class TableVec<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     fields: Record<string, any>
   ): TableVec<ToPhantomTypeArgument<T0>> {
-    return TableVec.new(typeArg, decodeFromFields(Table.reified('u64', typeArg), fields.contents))
+    return TableVec.new(
+      typeArg,
+      decodeFromFields(Table.reified(reified.phantom('u64'), typeArg), fields.contents)
+    )
   }
 
   static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
@@ -94,7 +103,10 @@ export class TableVec<T0 extends PhantomTypeArgument> {
 
     return TableVec.new(
       typeArg,
-      decodeFromFieldsWithTypes(Table.reified('u64', typeArg), item.fields.contents)
+      decodeFromFieldsWithTypes(
+        Table.reified(reified.phantom('u64'), typeArg),
+        item.fields.contents
+      )
     )
   }
 
@@ -119,7 +131,10 @@ export class TableVec<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     field: any
   ): TableVec<ToPhantomTypeArgument<T0>> {
-    return TableVec.new(typeArg, decodeFromJSONField(Table.reified('u64', typeArg), field.contents))
+    return TableVec.new(
+      typeArg,
+      decodeFromJSONField(Table.reified(reified.phantom('u64'), typeArg), field.contents)
+    )
   }
 
   static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
@@ -136,5 +151,33 @@ export class TableVec<T0 extends PhantomTypeArgument> {
     )
 
     return TableVec.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    content: SuiParsedData
+  ): TableVec<ToPhantomTypeArgument<T0>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isTableVec(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a TableVec object`)
+    }
+    return TableVec.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+    client: SuiClient,
+    typeArg: T0,
+    id: string
+  ): Promise<TableVec<ToPhantomTypeArgument<T0>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching TableVec object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isTableVec(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a TableVec object`)
+    }
+    return TableVec.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }

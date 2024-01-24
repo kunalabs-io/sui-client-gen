@@ -1,9 +1,11 @@
+import * as reified from '../../_framework/reified'
 import {
   PhantomTypeArgument,
+  Reified,
   ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -38,7 +40,7 @@ export class RuleKey<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::RuleKey'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::transfer_policy::RuleKey<${T0}>`
+  readonly $fullTypeName = null as unknown as `0x2::transfer_policy::RuleKey<${ToTypeStr<T0>}>`
 
   readonly $typeName = RuleKey.$typeName
 
@@ -65,20 +67,23 @@ export class RuleKey<T0 extends PhantomTypeArgument> {
     return new RuleKey(extractType(typeArg), dummyField)
   }
 
-  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(
+    T0: T0
+  ): Reified<RuleKey<ToPhantomTypeArgument<T0>>> {
     return {
       typeName: RuleKey.$typeName,
-      typeArgs: [T0],
       fullTypeName: composeSuiType(
         RuleKey.$typeName,
         ...[extractType(T0)]
-      ) as `0x2::transfer_policy::RuleKey<${ToPhantomTypeArgument<T0>}>`,
+      ) as `0x2::transfer_policy::RuleKey<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => RuleKey.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => RuleKey.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => RuleKey.fromBcs(T0, data),
       bcs: RuleKey.bcs,
       fromJSONField: (field: any) => RuleKey.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof RuleKey.new<ToTypeArgument<T0>>>,
+      fetch: async (client: SuiClient, id: string) => RuleKey.fetch(client, T0, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -140,6 +145,34 @@ export class RuleKey<T0 extends PhantomTypeArgument> {
 
     return RuleKey.fromJSONField(typeArg, json)
   }
+
+  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    content: SuiParsedData
+  ): RuleKey<ToPhantomTypeArgument<T0>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isRuleKey(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a RuleKey object`)
+    }
+    return RuleKey.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+    client: SuiClient,
+    typeArg: T0,
+    id: string
+  ): Promise<RuleKey<ToPhantomTypeArgument<T0>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching RuleKey object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isRuleKey(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a RuleKey object`)
+    }
+    return RuleKey.fromFieldsWithTypes(typeArg, res.data.content)
+  }
 }
 
 /* ============================== TransferRequest =============================== */
@@ -162,7 +195,8 @@ export class TransferRequest<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferRequest'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::transfer_policy::TransferRequest<${T0}>`
+  readonly $fullTypeName =
+    null as unknown as `0x2::transfer_policy::TransferRequest<${ToTypeStr<T0>}>`
 
   readonly $typeName = TransferRequest.$typeName
 
@@ -198,20 +232,23 @@ export class TransferRequest<T0 extends PhantomTypeArgument> {
     return new TransferRequest(extractType(typeArg), fields)
   }
 
-  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(
+    T0: T0
+  ): Reified<TransferRequest<ToPhantomTypeArgument<T0>>> {
     return {
       typeName: TransferRequest.$typeName,
-      typeArgs: [T0],
       fullTypeName: composeSuiType(
         TransferRequest.$typeName,
         ...[extractType(T0)]
-      ) as `0x2::transfer_policy::TransferRequest<${ToPhantomTypeArgument<T0>}>`,
+      ) as `0x2::transfer_policy::TransferRequest<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => TransferRequest.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TransferRequest.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => TransferRequest.fromBcs(T0, data),
       bcs: TransferRequest.bcs,
       fromJSONField: (field: any) => TransferRequest.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof TransferRequest.new<ToTypeArgument<T0>>>,
+      fetch: async (client: SuiClient, id: string) => TransferRequest.fetch(client, T0, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -291,6 +328,34 @@ export class TransferRequest<T0 extends PhantomTypeArgument> {
 
     return TransferRequest.fromJSONField(typeArg, json)
   }
+
+  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    content: SuiParsedData
+  ): TransferRequest<ToPhantomTypeArgument<T0>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isTransferRequest(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a TransferRequest object`)
+    }
+    return TransferRequest.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+    client: SuiClient,
+    typeArg: T0,
+    id: string
+  ): Promise<TransferRequest<ToPhantomTypeArgument<T0>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching TransferRequest object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isTransferRequest(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a TransferRequest object`)
+    }
+    return TransferRequest.fromFieldsWithTypes(typeArg, res.data.content)
+  }
 }
 
 /* ============================== TransferPolicy =============================== */
@@ -312,7 +377,8 @@ export class TransferPolicy<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicy'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::transfer_policy::TransferPolicy<${T0}>`
+  readonly $fullTypeName =
+    null as unknown as `0x2::transfer_policy::TransferPolicy<${ToTypeStr<T0>}>`
 
   readonly $typeName = TransferPolicy.$typeName
 
@@ -345,20 +411,23 @@ export class TransferPolicy<T0 extends PhantomTypeArgument> {
     return new TransferPolicy(extractType(typeArg), fields)
   }
 
-  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(
+    T0: T0
+  ): Reified<TransferPolicy<ToPhantomTypeArgument<T0>>> {
     return {
       typeName: TransferPolicy.$typeName,
-      typeArgs: [T0],
       fullTypeName: composeSuiType(
         TransferPolicy.$typeName,
         ...[extractType(T0)]
-      ) as `0x2::transfer_policy::TransferPolicy<${ToPhantomTypeArgument<T0>}>`,
+      ) as `0x2::transfer_policy::TransferPolicy<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => TransferPolicy.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TransferPolicy.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => TransferPolicy.fromBcs(T0, data),
       bcs: TransferPolicy.bcs,
       fromJSONField: (field: any) => TransferPolicy.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof TransferPolicy.new<ToTypeArgument<T0>>>,
+      fetch: async (client: SuiClient, id: string) => TransferPolicy.fetch(client, T0, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -368,7 +437,7 @@ export class TransferPolicy<T0 extends PhantomTypeArgument> {
   ): TransferPolicy<ToPhantomTypeArgument<T0>> {
     return TransferPolicy.new(typeArg, {
       id: decodeFromFields(UID.reified(), fields.id),
-      balance: decodeFromFields(Balance.reified(SUI.reified()), fields.balance),
+      balance: decodeFromFields(Balance.reified(reified.phantom(SUI.reified())), fields.balance),
       rules: decodeFromFields(VecSet.reified(TypeName.reified()), fields.rules),
     })
   }
@@ -384,7 +453,10 @@ export class TransferPolicy<T0 extends PhantomTypeArgument> {
 
     return TransferPolicy.new(typeArg, {
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
-      balance: decodeFromFieldsWithTypes(Balance.reified(SUI.reified()), item.fields.balance),
+      balance: decodeFromFieldsWithTypes(
+        Balance.reified(reified.phantom(SUI.reified())),
+        item.fields.balance
+      ),
       rules: decodeFromFieldsWithTypes(VecSet.reified(TypeName.reified()), item.fields.rules),
     })
   }
@@ -414,7 +486,7 @@ export class TransferPolicy<T0 extends PhantomTypeArgument> {
   ): TransferPolicy<ToPhantomTypeArgument<T0>> {
     return TransferPolicy.new(typeArg, {
       id: decodeFromJSONField(UID.reified(), field.id),
-      balance: decodeFromJSONField(Balance.reified(SUI.reified()), field.balance),
+      balance: decodeFromJSONField(Balance.reified(reified.phantom(SUI.reified())), field.balance),
       rules: decodeFromJSONField(VecSet.reified(TypeName.reified()), field.rules),
     })
   }
@@ -482,7 +554,8 @@ export class TransferPolicyCap<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyCap'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::transfer_policy::TransferPolicyCap<${T0}>`
+  readonly $fullTypeName =
+    null as unknown as `0x2::transfer_policy::TransferPolicyCap<${ToTypeStr<T0>}>`
 
   readonly $typeName = TransferPolicyCap.$typeName
 
@@ -512,21 +585,24 @@ export class TransferPolicyCap<T0 extends PhantomTypeArgument> {
     return new TransferPolicyCap(extractType(typeArg), fields)
   }
 
-  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(
+    T0: T0
+  ): Reified<TransferPolicyCap<ToPhantomTypeArgument<T0>>> {
     return {
       typeName: TransferPolicyCap.$typeName,
-      typeArgs: [T0],
       fullTypeName: composeSuiType(
         TransferPolicyCap.$typeName,
         ...[extractType(T0)]
-      ) as `0x2::transfer_policy::TransferPolicyCap<${ToPhantomTypeArgument<T0>}>`,
+      ) as `0x2::transfer_policy::TransferPolicyCap<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => TransferPolicyCap.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         TransferPolicyCap.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => TransferPolicyCap.fromBcs(T0, data),
       bcs: TransferPolicyCap.bcs,
       fromJSONField: (field: any) => TransferPolicyCap.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof TransferPolicyCap.new<ToTypeArgument<T0>>>,
+      fetch: async (client: SuiClient, id: string) => TransferPolicyCap.fetch(client, T0, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -648,7 +724,8 @@ export class TransferPolicyCreated<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyCreated'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::transfer_policy::TransferPolicyCreated<${T0}>`
+  readonly $fullTypeName =
+    null as unknown as `0x2::transfer_policy::TransferPolicyCreated<${ToTypeStr<T0>}>`
 
   readonly $typeName = TransferPolicyCreated.$typeName
 
@@ -675,21 +752,24 @@ export class TransferPolicyCreated<T0 extends PhantomTypeArgument> {
     return new TransferPolicyCreated(extractType(typeArg), id)
   }
 
-  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(
+    T0: T0
+  ): Reified<TransferPolicyCreated<ToPhantomTypeArgument<T0>>> {
     return {
       typeName: TransferPolicyCreated.$typeName,
-      typeArgs: [T0],
       fullTypeName: composeSuiType(
         TransferPolicyCreated.$typeName,
         ...[extractType(T0)]
-      ) as `0x2::transfer_policy::TransferPolicyCreated<${ToPhantomTypeArgument<T0>}>`,
+      ) as `0x2::transfer_policy::TransferPolicyCreated<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => TransferPolicyCreated.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         TransferPolicyCreated.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => TransferPolicyCreated.fromBcs(T0, data),
       bcs: TransferPolicyCreated.bcs,
       fromJSONField: (field: any) => TransferPolicyCreated.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof TransferPolicyCreated.new<ToTypeArgument<T0>>>,
+      fetch: async (client: SuiClient, id: string) => TransferPolicyCreated.fetch(client, T0, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -754,6 +834,39 @@ export class TransferPolicyCreated<T0 extends PhantomTypeArgument> {
 
     return TransferPolicyCreated.fromJSONField(typeArg, json)
   }
+
+  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    content: SuiParsedData
+  ): TransferPolicyCreated<ToPhantomTypeArgument<T0>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isTransferPolicyCreated(content.type)) {
+      throw new Error(
+        `object at ${(content.fields as any).id} is not a TransferPolicyCreated object`
+      )
+    }
+    return TransferPolicyCreated.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+    client: SuiClient,
+    typeArg: T0,
+    id: string
+  ): Promise<TransferPolicyCreated<ToPhantomTypeArgument<T0>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching TransferPolicyCreated object at id ${id}: ${res.error.code}`)
+    }
+    if (
+      res.data?.content?.dataType !== 'moveObject' ||
+      !isTransferPolicyCreated(res.data.content.type)
+    ) {
+      throw new Error(`object at id ${id} is not a TransferPolicyCreated object`)
+    }
+    return TransferPolicyCreated.fromFieldsWithTypes(typeArg, res.data.content)
+  }
 }
 
 /* ============================== TransferPolicyDestroyed =============================== */
@@ -773,8 +886,8 @@ export class TransferPolicyDestroyed<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyDestroyed'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString =
-    null as unknown as `0x2::transfer_policy::TransferPolicyDestroyed<${T0}>`
+  readonly $fullTypeName =
+    null as unknown as `0x2::transfer_policy::TransferPolicyDestroyed<${ToTypeStr<T0>}>`
 
   readonly $typeName = TransferPolicyDestroyed.$typeName
 
@@ -801,23 +914,24 @@ export class TransferPolicyDestroyed<T0 extends PhantomTypeArgument> {
     return new TransferPolicyDestroyed(extractType(typeArg), id)
   }
 
-  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(
+    T0: T0
+  ): Reified<TransferPolicyDestroyed<ToPhantomTypeArgument<T0>>> {
     return {
       typeName: TransferPolicyDestroyed.$typeName,
-      typeArgs: [T0],
       fullTypeName: composeSuiType(
         TransferPolicyDestroyed.$typeName,
         ...[extractType(T0)]
-      ) as `0x2::transfer_policy::TransferPolicyDestroyed<${ToPhantomTypeArgument<T0>}>`,
+      ) as `0x2::transfer_policy::TransferPolicyDestroyed<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => TransferPolicyDestroyed.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         TransferPolicyDestroyed.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => TransferPolicyDestroyed.fromBcs(T0, data),
       bcs: TransferPolicyDestroyed.bcs,
       fromJSONField: (field: any) => TransferPolicyDestroyed.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<
-        typeof TransferPolicyDestroyed.new<ToTypeArgument<T0>>
-      >,
+      fetch: async (client: SuiClient, id: string) => TransferPolicyDestroyed.fetch(client, T0, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -881,5 +995,40 @@ export class TransferPolicyDestroyed<T0 extends PhantomTypeArgument> {
     )
 
     return TransferPolicyDestroyed.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    content: SuiParsedData
+  ): TransferPolicyDestroyed<ToPhantomTypeArgument<T0>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isTransferPolicyDestroyed(content.type)) {
+      throw new Error(
+        `object at ${(content.fields as any).id} is not a TransferPolicyDestroyed object`
+      )
+    }
+    return TransferPolicyDestroyed.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+    client: SuiClient,
+    typeArg: T0,
+    id: string
+  ): Promise<TransferPolicyDestroyed<ToPhantomTypeArgument<T0>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(
+        `error fetching TransferPolicyDestroyed object at id ${id}: ${res.error.code}`
+      )
+    }
+    if (
+      res.data?.content?.dataType !== 'moveObject' ||
+      !isTransferPolicyDestroyed(res.data.content.type)
+    ) {
+      throw new Error(`object at id ${id} is not a TransferPolicyDestroyed object`)
+    }
+    return TransferPolicyDestroyed.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }

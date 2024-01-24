@@ -1,4 +1,5 @@
 import {
+  Reified,
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -6,6 +7,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== StructFromOtherModule =============================== */
 
@@ -28,7 +30,7 @@ export class StructFromOtherModule {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString =
+  readonly $fullTypeName =
     null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
 
   readonly $typeName = StructFromOtherModule.$typeName
@@ -49,21 +51,22 @@ export class StructFromOtherModule {
     return new StructFromOtherModule(dummyField)
   }
 
-  static reified() {
+  static reified(): Reified<StructFromOtherModule> {
     return {
       typeName: StructFromOtherModule.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         StructFromOtherModule.$typeName,
         ...[]
       ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => StructFromOtherModule.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         StructFromOtherModule.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => StructFromOtherModule.fromBcs(data),
       bcs: StructFromOtherModule.bcs,
       fromJSONField: (field: any) => StructFromOtherModule.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof StructFromOtherModule.new>,
+      fetch: async (client: SuiClient, id: string) => StructFromOtherModule.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -104,6 +107,32 @@ export class StructFromOtherModule {
 
     return StructFromOtherModule.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): StructFromOtherModule {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isStructFromOtherModule(content.type)) {
+      throw new Error(
+        `object at ${(content.fields as any).id} is not a StructFromOtherModule object`
+      )
+    }
+    return StructFromOtherModule.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<StructFromOtherModule> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching StructFromOtherModule object at id ${id}: ${res.error.code}`)
+    }
+    if (
+      res.data?.content?.dataType !== 'moveObject' ||
+      !isStructFromOtherModule(res.data.content.type)
+    ) {
+      throw new Error(`object at id ${id} is not a StructFromOtherModule object`)
+    }
+    return StructFromOtherModule.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== AddedInAnUpgrade =============================== */
@@ -127,7 +156,7 @@ export class AddedInAnUpgrade {
     '0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe::other_module::AddedInAnUpgrade'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString =
+  readonly $fullTypeName =
     null as unknown as '0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe::other_module::AddedInAnUpgrade'
 
   readonly $typeName = AddedInAnUpgrade.$typeName
@@ -148,20 +177,21 @@ export class AddedInAnUpgrade {
     return new AddedInAnUpgrade(dummyField)
   }
 
-  static reified() {
+  static reified(): Reified<AddedInAnUpgrade> {
     return {
       typeName: AddedInAnUpgrade.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         AddedInAnUpgrade.$typeName,
         ...[]
       ) as '0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe::other_module::AddedInAnUpgrade',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => AddedInAnUpgrade.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => AddedInAnUpgrade.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => AddedInAnUpgrade.fromBcs(data),
       bcs: AddedInAnUpgrade.bcs,
       fromJSONField: (field: any) => AddedInAnUpgrade.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof AddedInAnUpgrade.new>,
+      fetch: async (client: SuiClient, id: string) => AddedInAnUpgrade.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -201,5 +231,29 @@ export class AddedInAnUpgrade {
     }
 
     return AddedInAnUpgrade.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): AddedInAnUpgrade {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isAddedInAnUpgrade(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a AddedInAnUpgrade object`)
+    }
+    return AddedInAnUpgrade.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<AddedInAnUpgrade> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching AddedInAnUpgrade object at id ${id}: ${res.error.code}`)
+    }
+    if (
+      res.data?.content?.dataType !== 'moveObject' ||
+      !isAddedInAnUpgrade(res.data.content.type)
+    ) {
+      throw new Error(`object at id ${id} is not a AddedInAnUpgrade object`)
+    }
+    return AddedInAnUpgrade.fromFieldsWithTypes(res.data.content)
   }
 }

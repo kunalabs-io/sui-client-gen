@@ -1,9 +1,10 @@
 import {
   PhantomTypeArgument,
+  Reified,
   ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -40,7 +41,7 @@ export class RuleKey<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::RuleKey'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::token::RuleKey<${T}>`
+  readonly $fullTypeName = null as unknown as `0x2::token::RuleKey<${ToTypeStr<T>}>`
 
   readonly $typeName = RuleKey.$typeName
 
@@ -67,20 +68,23 @@ export class RuleKey<T extends PhantomTypeArgument> {
     return new RuleKey(extractType(typeArg), isProtected)
   }
 
-  static reified<T extends ReifiedPhantomTypeArgument>(T: T) {
+  static reified<T extends ReifiedPhantomTypeArgument>(
+    T: T
+  ): Reified<RuleKey<ToPhantomTypeArgument<T>>> {
     return {
       typeName: RuleKey.$typeName,
-      typeArgs: [T],
       fullTypeName: composeSuiType(
         RuleKey.$typeName,
         ...[extractType(T)]
-      ) as `0x2::token::RuleKey<${ToPhantomTypeArgument<T>}>`,
+      ) as `0x2::token::RuleKey<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      typeArgs: [T],
       fromFields: (fields: Record<string, any>) => RuleKey.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => RuleKey.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => RuleKey.fromBcs(T, data),
       bcs: RuleKey.bcs,
       fromJSONField: (field: any) => RuleKey.fromJSONField(T, field),
-      __class: null as unknown as ReturnType<typeof RuleKey.new<ToTypeArgument<T>>>,
+      fetch: async (client: SuiClient, id: string) => RuleKey.fetch(client, T, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -142,6 +146,34 @@ export class RuleKey<T extends PhantomTypeArgument> {
 
     return RuleKey.fromJSONField(typeArg, json)
   }
+
+  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    content: SuiParsedData
+  ): RuleKey<ToPhantomTypeArgument<T>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isRuleKey(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a RuleKey object`)
+    }
+    return RuleKey.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<T extends ReifiedPhantomTypeArgument>(
+    client: SuiClient,
+    typeArg: T,
+    id: string
+  ): Promise<RuleKey<ToPhantomTypeArgument<T>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching RuleKey object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isRuleKey(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a RuleKey object`)
+    }
+    return RuleKey.fromFieldsWithTypes(typeArg, res.data.content)
+  }
 }
 
 /* ============================== ActionRequest =============================== */
@@ -166,7 +198,7 @@ export class ActionRequest<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::ActionRequest'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::token::ActionRequest<${T}>`
+  readonly $fullTypeName = null as unknown as `0x2::token::ActionRequest<${ToTypeStr<T>}>`
 
   readonly $typeName = ActionRequest.$typeName
 
@@ -216,20 +248,23 @@ export class ActionRequest<T extends PhantomTypeArgument> {
     return new ActionRequest(extractType(typeArg), fields)
   }
 
-  static reified<T extends ReifiedPhantomTypeArgument>(T: T) {
+  static reified<T extends ReifiedPhantomTypeArgument>(
+    T: T
+  ): Reified<ActionRequest<ToPhantomTypeArgument<T>>> {
     return {
       typeName: ActionRequest.$typeName,
-      typeArgs: [T],
       fullTypeName: composeSuiType(
         ActionRequest.$typeName,
         ...[extractType(T)]
-      ) as `0x2::token::ActionRequest<${ToPhantomTypeArgument<T>}>`,
+      ) as `0x2::token::ActionRequest<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      typeArgs: [T],
       fromFields: (fields: Record<string, any>) => ActionRequest.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ActionRequest.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => ActionRequest.fromBcs(T, data),
       bcs: ActionRequest.bcs,
       fromJSONField: (field: any) => ActionRequest.fromJSONField(T, field),
-      __class: null as unknown as ReturnType<typeof ActionRequest.new<ToTypeArgument<T>>>,
+      fetch: async (client: SuiClient, id: string) => ActionRequest.fetch(client, T, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -332,6 +367,34 @@ export class ActionRequest<T extends PhantomTypeArgument> {
 
     return ActionRequest.fromJSONField(typeArg, json)
   }
+
+  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    content: SuiParsedData
+  ): ActionRequest<ToPhantomTypeArgument<T>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isActionRequest(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a ActionRequest object`)
+    }
+    return ActionRequest.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<T extends ReifiedPhantomTypeArgument>(
+    client: SuiClient,
+    typeArg: T,
+    id: string
+  ): Promise<ActionRequest<ToPhantomTypeArgument<T>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching ActionRequest object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isActionRequest(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a ActionRequest object`)
+    }
+    return ActionRequest.fromFieldsWithTypes(typeArg, res.data.content)
+  }
 }
 
 /* ============================== Token =============================== */
@@ -352,7 +415,7 @@ export class Token<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::Token'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::token::Token<${T}>`
+  readonly $fullTypeName = null as unknown as `0x2::token::Token<${ToTypeStr<T>}>`
 
   readonly $typeName = Token.$typeName
 
@@ -382,20 +445,23 @@ export class Token<T extends PhantomTypeArgument> {
     return new Token(extractType(typeArg), fields)
   }
 
-  static reified<T extends ReifiedPhantomTypeArgument>(T: T) {
+  static reified<T extends ReifiedPhantomTypeArgument>(
+    T: T
+  ): Reified<Token<ToPhantomTypeArgument<T>>> {
     return {
       typeName: Token.$typeName,
-      typeArgs: [T],
       fullTypeName: composeSuiType(
         Token.$typeName,
         ...[extractType(T)]
-      ) as `0x2::token::Token<${ToPhantomTypeArgument<T>}>`,
+      ) as `0x2::token::Token<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      typeArgs: [T],
       fromFields: (fields: Record<string, any>) => Token.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Token.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Token.fromBcs(T, data),
       bcs: Token.bcs,
       fromJSONField: (field: any) => Token.fromJSONField(T, field),
-      __class: null as unknown as ReturnType<typeof Token.new<ToTypeArgument<T>>>,
+      fetch: async (client: SuiClient, id: string) => Token.fetch(client, T, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -516,7 +582,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::TokenPolicy'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::token::TokenPolicy<${T}>`
+  readonly $fullTypeName = null as unknown as `0x2::token::TokenPolicy<${ToTypeStr<T>}>`
 
   readonly $typeName = TokenPolicy.$typeName
 
@@ -549,20 +615,23 @@ export class TokenPolicy<T extends PhantomTypeArgument> {
     return new TokenPolicy(extractType(typeArg), fields)
   }
 
-  static reified<T extends ReifiedPhantomTypeArgument>(T: T) {
+  static reified<T extends ReifiedPhantomTypeArgument>(
+    T: T
+  ): Reified<TokenPolicy<ToPhantomTypeArgument<T>>> {
     return {
       typeName: TokenPolicy.$typeName,
-      typeArgs: [T],
       fullTypeName: composeSuiType(
         TokenPolicy.$typeName,
         ...[extractType(T)]
-      ) as `0x2::token::TokenPolicy<${ToPhantomTypeArgument<T>}>`,
+      ) as `0x2::token::TokenPolicy<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      typeArgs: [T],
       fromFields: (fields: Record<string, any>) => TokenPolicy.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TokenPolicy.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => TokenPolicy.fromBcs(T, data),
       bcs: TokenPolicy.bcs,
       fromJSONField: (field: any) => TokenPolicy.fromJSONField(T, field),
-      __class: null as unknown as ReturnType<typeof TokenPolicy.new<ToTypeArgument<T>>>,
+      fetch: async (client: SuiClient, id: string) => TokenPolicy.fetch(client, T, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -695,7 +764,7 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::TokenPolicyCap'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::token::TokenPolicyCap<${T}>`
+  readonly $fullTypeName = null as unknown as `0x2::token::TokenPolicyCap<${ToTypeStr<T>}>`
 
   readonly $typeName = TokenPolicyCap.$typeName
 
@@ -725,20 +794,23 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> {
     return new TokenPolicyCap(extractType(typeArg), fields)
   }
 
-  static reified<T extends ReifiedPhantomTypeArgument>(T: T) {
+  static reified<T extends ReifiedPhantomTypeArgument>(
+    T: T
+  ): Reified<TokenPolicyCap<ToPhantomTypeArgument<T>>> {
     return {
       typeName: TokenPolicyCap.$typeName,
-      typeArgs: [T],
       fullTypeName: composeSuiType(
         TokenPolicyCap.$typeName,
         ...[extractType(T)]
-      ) as `0x2::token::TokenPolicyCap<${ToPhantomTypeArgument<T>}>`,
+      ) as `0x2::token::TokenPolicyCap<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      typeArgs: [T],
       fromFields: (fields: Record<string, any>) => TokenPolicyCap.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TokenPolicyCap.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => TokenPolicyCap.fromBcs(T, data),
       bcs: TokenPolicyCap.bcs,
       fromJSONField: (field: any) => TokenPolicyCap.fromJSONField(T, field),
-      __class: null as unknown as ReturnType<typeof TokenPolicyCap.new<ToTypeArgument<T>>>,
+      fetch: async (client: SuiClient, id: string) => TokenPolicyCap.fetch(client, T, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -858,7 +930,7 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::TokenPolicyCreated'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::token::TokenPolicyCreated<${T}>`
+  readonly $fullTypeName = null as unknown as `0x2::token::TokenPolicyCreated<${ToTypeStr<T>}>`
 
   readonly $typeName = TokenPolicyCreated.$typeName
 
@@ -888,21 +960,24 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> {
     return new TokenPolicyCreated(extractType(typeArg), fields)
   }
 
-  static reified<T extends ReifiedPhantomTypeArgument>(T: T) {
+  static reified<T extends ReifiedPhantomTypeArgument>(
+    T: T
+  ): Reified<TokenPolicyCreated<ToPhantomTypeArgument<T>>> {
     return {
       typeName: TokenPolicyCreated.$typeName,
-      typeArgs: [T],
       fullTypeName: composeSuiType(
         TokenPolicyCreated.$typeName,
         ...[extractType(T)]
-      ) as `0x2::token::TokenPolicyCreated<${ToPhantomTypeArgument<T>}>`,
+      ) as `0x2::token::TokenPolicyCreated<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      typeArgs: [T],
       fromFields: (fields: Record<string, any>) => TokenPolicyCreated.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         TokenPolicyCreated.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => TokenPolicyCreated.fromBcs(T, data),
       bcs: TokenPolicyCreated.bcs,
       fromJSONField: (field: any) => TokenPolicyCreated.fromJSONField(T, field),
-      __class: null as unknown as ReturnType<typeof TokenPolicyCreated.new<ToTypeArgument<T>>>,
+      fetch: async (client: SuiClient, id: string) => TokenPolicyCreated.fetch(client, T, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -973,5 +1048,36 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> {
     )
 
     return TokenPolicyCreated.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    content: SuiParsedData
+  ): TokenPolicyCreated<ToPhantomTypeArgument<T>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isTokenPolicyCreated(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a TokenPolicyCreated object`)
+    }
+    return TokenPolicyCreated.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<T extends ReifiedPhantomTypeArgument>(
+    client: SuiClient,
+    typeArg: T,
+    id: string
+  ): Promise<TokenPolicyCreated<ToPhantomTypeArgument<T>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching TokenPolicyCreated object at id ${id}: ${res.error.code}`)
+    }
+    if (
+      res.data?.content?.dataType !== 'moveObject' ||
+      !isTokenPolicyCreated(res.data.content.type)
+    ) {
+      throw new Error(`object at id ${id} is not a TokenPolicyCreated object`)
+    }
+    return TokenPolicyCreated.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }

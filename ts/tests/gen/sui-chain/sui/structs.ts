@@ -1,4 +1,5 @@
 import {
+  Reified,
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -6,6 +7,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== SUI =============================== */
 
@@ -24,7 +26,7 @@ export class SUI {
   static readonly $typeName = '0x2::sui::SUI'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::sui::SUI'
+  readonly $fullTypeName = null as unknown as '0x2::sui::SUI'
 
   readonly $typeName = SUI.$typeName
 
@@ -44,17 +46,18 @@ export class SUI {
     return new SUI(dummyField)
   }
 
-  static reified() {
+  static reified(): Reified<SUI> {
     return {
       typeName: SUI.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(SUI.$typeName, ...[]) as '0x2::sui::SUI',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => SUI.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => SUI.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => SUI.fromBcs(data),
       bcs: SUI.bcs,
       fromJSONField: (field: any) => SUI.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof SUI.new>,
+      fetch: async (client: SuiClient, id: string) => SUI.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -94,5 +97,26 @@ export class SUI {
     }
 
     return SUI.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): SUI {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isSUI(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a SUI object`)
+    }
+    return SUI.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<SUI> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching SUI object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isSUI(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a SUI object`)
+    }
+    return SUI.fromFieldsWithTypes(res.data.content)
   }
 }

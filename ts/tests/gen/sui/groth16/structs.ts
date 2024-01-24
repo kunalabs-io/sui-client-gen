@@ -1,5 +1,6 @@
 import * as reified from '../../_framework/reified'
 import {
+  Reified,
   ToField,
   Vector,
   decodeFromFields,
@@ -9,6 +10,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Curve =============================== */
 
@@ -27,7 +29,7 @@ export class Curve {
   static readonly $typeName = '0x2::groth16::Curve'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::groth16::Curve'
+  readonly $fullTypeName = null as unknown as '0x2::groth16::Curve'
 
   readonly $typeName = Curve.$typeName
 
@@ -47,17 +49,18 @@ export class Curve {
     return new Curve(id)
   }
 
-  static reified() {
+  static reified(): Reified<Curve> {
     return {
       typeName: Curve.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(Curve.$typeName, ...[]) as '0x2::groth16::Curve',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => Curve.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Curve.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Curve.fromBcs(data),
       bcs: Curve.bcs,
       fromJSONField: (field: any) => Curve.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof Curve.new>,
+      fetch: async (client: SuiClient, id: string) => Curve.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -98,6 +101,27 @@ export class Curve {
 
     return Curve.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): Curve {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isCurve(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a Curve object`)
+    }
+    return Curve.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<Curve> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching Curve object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isCurve(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a Curve object`)
+    }
+    return Curve.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== PreparedVerifyingKey =============================== */
@@ -120,7 +144,7 @@ export class PreparedVerifyingKey {
   static readonly $typeName = '0x2::groth16::PreparedVerifyingKey'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::groth16::PreparedVerifyingKey'
+  readonly $fullTypeName = null as unknown as '0x2::groth16::PreparedVerifyingKey'
 
   readonly $typeName = PreparedVerifyingKey.$typeName
 
@@ -149,21 +173,22 @@ export class PreparedVerifyingKey {
     return new PreparedVerifyingKey(fields)
   }
 
-  static reified() {
+  static reified(): Reified<PreparedVerifyingKey> {
     return {
       typeName: PreparedVerifyingKey.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         PreparedVerifyingKey.$typeName,
         ...[]
       ) as '0x2::groth16::PreparedVerifyingKey',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => PreparedVerifyingKey.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         PreparedVerifyingKey.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PreparedVerifyingKey.fromBcs(data),
       bcs: PreparedVerifyingKey.bcs,
       fromJSONField: (field: any) => PreparedVerifyingKey.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof PreparedVerifyingKey.new>,
+      fetch: async (client: SuiClient, id: string) => PreparedVerifyingKey.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -234,6 +259,32 @@ export class PreparedVerifyingKey {
 
     return PreparedVerifyingKey.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): PreparedVerifyingKey {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isPreparedVerifyingKey(content.type)) {
+      throw new Error(
+        `object at ${(content.fields as any).id} is not a PreparedVerifyingKey object`
+      )
+    }
+    return PreparedVerifyingKey.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<PreparedVerifyingKey> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching PreparedVerifyingKey object at id ${id}: ${res.error.code}`)
+    }
+    if (
+      res.data?.content?.dataType !== 'moveObject' ||
+      !isPreparedVerifyingKey(res.data.content.type)
+    ) {
+      throw new Error(`object at id ${id} is not a PreparedVerifyingKey object`)
+    }
+    return PreparedVerifyingKey.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== ProofPoints =============================== */
@@ -253,7 +304,7 @@ export class ProofPoints {
   static readonly $typeName = '0x2::groth16::ProofPoints'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::groth16::ProofPoints'
+  readonly $fullTypeName = null as unknown as '0x2::groth16::ProofPoints'
 
   readonly $typeName = ProofPoints.$typeName
 
@@ -273,17 +324,18 @@ export class ProofPoints {
     return new ProofPoints(bytes)
   }
 
-  static reified() {
+  static reified(): Reified<ProofPoints> {
     return {
       typeName: ProofPoints.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(ProofPoints.$typeName, ...[]) as '0x2::groth16::ProofPoints',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => ProofPoints.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ProofPoints.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ProofPoints.fromBcs(data),
       bcs: ProofPoints.bcs,
       fromJSONField: (field: any) => ProofPoints.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof ProofPoints.new>,
+      fetch: async (client: SuiClient, id: string) => ProofPoints.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -324,6 +376,27 @@ export class ProofPoints {
 
     return ProofPoints.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): ProofPoints {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isProofPoints(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a ProofPoints object`)
+    }
+    return ProofPoints.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<ProofPoints> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching ProofPoints object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isProofPoints(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a ProofPoints object`)
+    }
+    return ProofPoints.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== PublicProofInputs =============================== */
@@ -343,7 +416,7 @@ export class PublicProofInputs {
   static readonly $typeName = '0x2::groth16::PublicProofInputs'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::groth16::PublicProofInputs'
+  readonly $fullTypeName = null as unknown as '0x2::groth16::PublicProofInputs'
 
   readonly $typeName = PublicProofInputs.$typeName
 
@@ -363,20 +436,21 @@ export class PublicProofInputs {
     return new PublicProofInputs(bytes)
   }
 
-  static reified() {
+  static reified(): Reified<PublicProofInputs> {
     return {
       typeName: PublicProofInputs.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         PublicProofInputs.$typeName,
         ...[]
       ) as '0x2::groth16::PublicProofInputs',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => PublicProofInputs.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PublicProofInputs.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PublicProofInputs.fromBcs(data),
       bcs: PublicProofInputs.bcs,
       fromJSONField: (field: any) => PublicProofInputs.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof PublicProofInputs.new>,
+      fetch: async (client: SuiClient, id: string) => PublicProofInputs.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -416,5 +490,29 @@ export class PublicProofInputs {
     }
 
     return PublicProofInputs.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): PublicProofInputs {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isPublicProofInputs(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a PublicProofInputs object`)
+    }
+    return PublicProofInputs.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<PublicProofInputs> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching PublicProofInputs object at id ${id}: ${res.error.code}`)
+    }
+    if (
+      res.data?.content?.dataType !== 'moveObject' ||
+      !isPublicProofInputs(res.data.content.type)
+    ) {
+      throw new Error(`object at id ${id} is not a PublicProofInputs object`)
+    }
+    return PublicProofInputs.fromFieldsWithTypes(res.data.content)
   }
 }

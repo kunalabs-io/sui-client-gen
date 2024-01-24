@@ -3,6 +3,7 @@ import { String } from '../../_dependencies/source/0x1/ascii/structs'
 import { Option } from '../../_dependencies/source/0x1/option/structs'
 import { String as String1 } from '../../_dependencies/source/0x1/string/structs'
 import {
+  Reified,
   ToField,
   Vector,
   decodeFromFields,
@@ -36,7 +37,7 @@ export class ExampleStruct {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString =
+  readonly $fullTypeName =
     null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
 
   readonly $typeName = ExampleStruct.$typeName
@@ -57,20 +58,21 @@ export class ExampleStruct {
     return new ExampleStruct(dummyField)
   }
 
-  static reified() {
+  static reified(): Reified<ExampleStruct> {
     return {
       typeName: ExampleStruct.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         ExampleStruct.$typeName,
         ...[]
       ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => ExampleStruct.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ExampleStruct.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ExampleStruct.fromBcs(data),
       bcs: ExampleStruct.bcs,
       fromJSONField: (field: any) => ExampleStruct.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof ExampleStruct.new>,
+      fetch: async (client: SuiClient, id: string) => ExampleStruct.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -111,6 +113,27 @@ export class ExampleStruct {
 
     return ExampleStruct.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): ExampleStruct {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isExampleStruct(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a ExampleStruct object`)
+    }
+    return ExampleStruct.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<ExampleStruct> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching ExampleStruct object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isExampleStruct(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a ExampleStruct object`)
+    }
+    return ExampleStruct.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== SpecialTypesStruct =============================== */
@@ -142,7 +165,7 @@ export class SpecialTypesStruct {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString =
+  readonly $fullTypeName =
     null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
 
   readonly $typeName = SpecialTypesStruct.$typeName
@@ -190,20 +213,21 @@ export class SpecialTypesStruct {
     return new SpecialTypesStruct(fields)
   }
 
-  static reified() {
+  static reified(): Reified<SpecialTypesStruct> {
     return {
       typeName: SpecialTypesStruct.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         SpecialTypesStruct.$typeName,
         ...[]
       ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => SpecialTypesStruct.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => SpecialTypesStruct.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => SpecialTypesStruct.fromBcs(data),
       bcs: SpecialTypesStruct.bcs,
       fromJSONField: (field: any) => SpecialTypesStruct.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof SpecialTypesStruct.new>,
+      fetch: async (client: SuiClient, id: string) => SpecialTypesStruct.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 

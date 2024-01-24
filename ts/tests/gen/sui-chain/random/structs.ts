@@ -1,5 +1,6 @@
 import * as reified from '../../_framework/reified'
 import {
+  Reified,
   ToField,
   Vector,
   decodeFromFields,
@@ -31,7 +32,7 @@ export class Random {
   static readonly $typeName = '0x2::random::Random'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::random::Random'
+  readonly $fullTypeName = null as unknown as '0x2::random::Random'
 
   readonly $typeName = Random.$typeName
 
@@ -54,17 +55,18 @@ export class Random {
     return new Random(fields)
   }
 
-  static reified() {
+  static reified(): Reified<Random> {
     return {
       typeName: Random.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(Random.$typeName, ...[]) as '0x2::random::Random',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => Random.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Random.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Random.fromBcs(data),
       bcs: Random.bcs,
       fromJSONField: (field: any) => Random.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof Random.new>,
+      fetch: async (client: SuiClient, id: string) => Random.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -158,7 +160,7 @@ export class RandomInner {
   static readonly $typeName = '0x2::random::RandomInner'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::random::RandomInner'
+  readonly $fullTypeName = null as unknown as '0x2::random::RandomInner'
 
   readonly $typeName = RandomInner.$typeName
 
@@ -187,17 +189,18 @@ export class RandomInner {
     return new RandomInner(fields)
   }
 
-  static reified() {
+  static reified(): Reified<RandomInner> {
     return {
       typeName: RandomInner.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(RandomInner.$typeName, ...[]) as '0x2::random::RandomInner',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => RandomInner.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => RandomInner.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => RandomInner.fromBcs(data),
       bcs: RandomInner.bcs,
       fromJSONField: (field: any) => RandomInner.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof RandomInner.new>,
+      fetch: async (client: SuiClient, id: string) => RandomInner.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -255,5 +258,26 @@ export class RandomInner {
     }
 
     return RandomInner.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): RandomInner {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isRandomInner(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a RandomInner object`)
+    }
+    return RandomInner.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<RandomInner> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching RandomInner object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isRandomInner(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a RandomInner object`)
+    }
+    return RandomInner.fromFieldsWithTypes(res.data.content)
   }
 }

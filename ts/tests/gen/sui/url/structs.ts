@@ -1,4 +1,5 @@
 import {
+  Reified,
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -7,6 +8,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib/ascii/structs'
 import { bcs } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Url =============================== */
 
@@ -25,7 +27,7 @@ export class Url {
   static readonly $typeName = '0x2::url::Url'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::url::Url'
+  readonly $fullTypeName = null as unknown as '0x2::url::Url'
 
   readonly $typeName = Url.$typeName
 
@@ -45,17 +47,18 @@ export class Url {
     return new Url(url)
   }
 
-  static reified() {
+  static reified(): Reified<Url> {
     return {
       typeName: Url.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(Url.$typeName, ...[]) as '0x2::url::Url',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => Url.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Url.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Url.fromBcs(data),
       bcs: Url.bcs,
       fromJSONField: (field: any) => Url.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof Url.new>,
+      fetch: async (client: SuiClient, id: string) => Url.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -95,5 +98,26 @@ export class Url {
     }
 
     return Url.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): Url {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isUrl(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a Url object`)
+    }
+    return Url.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<Url> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching Url object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isUrl(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a Url object`)
+    }
+    return Url.fromFieldsWithTypes(res.data.content)
   }
 }

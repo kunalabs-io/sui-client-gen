@@ -1,5 +1,6 @@
 import * as reified from '../../_framework/reified'
 import {
+  Reified,
   ToField,
   Vector,
   decodeFromFields,
@@ -9,6 +10,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs, fromHEX, toHEX } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== TxContext =============================== */
 
@@ -31,7 +33,7 @@ export class TxContext {
   static readonly $typeName = '0x2::tx_context::TxContext'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::tx_context::TxContext'
+  readonly $fullTypeName = null as unknown as '0x2::tx_context::TxContext'
 
   readonly $typeName = TxContext.$typeName
 
@@ -66,17 +68,18 @@ export class TxContext {
     return new TxContext(fields)
   }
 
-  static reified() {
+  static reified(): Reified<TxContext> {
     return {
       typeName: TxContext.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(TxContext.$typeName, ...[]) as '0x2::tx_context::TxContext',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => TxContext.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TxContext.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => TxContext.fromBcs(data),
       bcs: TxContext.bcs,
       fromJSONField: (field: any) => TxContext.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof TxContext.new>,
+      fetch: async (client: SuiClient, id: string) => TxContext.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -138,5 +141,26 @@ export class TxContext {
     }
 
     return TxContext.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): TxContext {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isTxContext(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a TxContext object`)
+    }
+    return TxContext.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<TxContext> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching TxContext object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isTxContext(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a TxContext object`)
+    }
+    return TxContext.fromFieldsWithTypes(res.data.content)
   }
 }

@@ -1,9 +1,9 @@
 import { Option } from '../../_dependencies/source/0x1/option/structs'
 import {
-  ReifiedTypeArgument,
+  Reified,
   ToField,
-  ToPhantomTypeArgument,
   ToTypeArgument,
+  ToTypeStr,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -13,11 +13,11 @@ import {
   extractType,
   fieldToJSON,
   toBcs,
-  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { ID } from '../object/structs'
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Borrow =============================== */
 
@@ -37,7 +37,7 @@ export class Borrow {
   static readonly $typeName = '0x2::borrow::Borrow'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::borrow::Borrow'
+  readonly $fullTypeName = null as unknown as '0x2::borrow::Borrow'
 
   readonly $typeName = Borrow.$typeName
 
@@ -63,17 +63,18 @@ export class Borrow {
     return new Borrow(fields)
   }
 
-  static reified() {
+  static reified(): Reified<Borrow> {
     return {
       typeName: Borrow.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(Borrow.$typeName, ...[]) as '0x2::borrow::Borrow',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => Borrow.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Borrow.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Borrow.fromBcs(data),
       bcs: Borrow.bcs,
       fromJSONField: (field: any) => Borrow.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof Borrow.new>,
+      fetch: async (client: SuiClient, id: string) => Borrow.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -124,6 +125,27 @@ export class Borrow {
 
     return Borrow.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): Borrow {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isBorrow(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a Borrow object`)
+    }
+    return Borrow.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<Borrow> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching Borrow object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isBorrow(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a Borrow object`)
+    }
+    return Borrow.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== Referent =============================== */
@@ -144,7 +166,7 @@ export class Referent<T extends TypeArgument> {
   static readonly $typeName = '0x2::borrow::Referent'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::borrow::Referent<${ToPhantom<T>}>`
+  readonly $fullTypeName = null as unknown as `0x2::borrow::Referent<${ToTypeStr<T>}>`
 
   readonly $typeName = Referent.$typeName
 
@@ -171,31 +193,32 @@ export class Referent<T extends TypeArgument> {
     this.value = fields.value
   }
 
-  static new<T extends ReifiedTypeArgument>(
+  static new<T extends Reified<TypeArgument>>(
     typeArg: T,
     fields: ReferentFields<ToTypeArgument<T>>
   ): Referent<ToTypeArgument<T>> {
     return new Referent(extractType(typeArg), fields)
   }
 
-  static reified<T extends ReifiedTypeArgument>(T: T) {
+  static reified<T extends Reified<TypeArgument>>(T: T): Reified<Referent<ToTypeArgument<T>>> {
     return {
       typeName: Referent.$typeName,
-      typeArgs: [T],
       fullTypeName: composeSuiType(
         Referent.$typeName,
         ...[extractType(T)]
-      ) as `0x2::borrow::Referent<${ToPhantomTypeArgument<T>}>`,
+      ) as `0x2::borrow::Referent<${ToTypeStr<ToTypeArgument<T>>}>`,
+      typeArgs: [T],
       fromFields: (fields: Record<string, any>) => Referent.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Referent.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Referent.fromBcs(T, data),
       bcs: Referent.bcs(toBcs(T)),
       fromJSONField: (field: any) => Referent.fromJSONField(T, field),
-      __class: null as unknown as ReturnType<typeof Referent.new<ToTypeArgument<T>>>,
+      fetch: async (client: SuiClient, id: string) => Referent.fetch(client, T, id),
+      kind: 'StructClassReified',
     }
   }
 
-  static fromFields<T extends ReifiedTypeArgument>(
+  static fromFields<T extends Reified<TypeArgument>>(
     typeArg: T,
     fields: Record<string, any>
   ): Referent<ToTypeArgument<T>> {
@@ -205,7 +228,7 @@ export class Referent<T extends TypeArgument> {
     })
   }
 
-  static fromFieldsWithTypes<T extends ReifiedTypeArgument>(
+  static fromFieldsWithTypes<T extends Reified<TypeArgument>>(
     typeArg: T,
     item: FieldsWithTypes
   ): Referent<ToTypeArgument<T>> {
@@ -220,7 +243,7 @@ export class Referent<T extends TypeArgument> {
     })
   }
 
-  static fromBcs<T extends ReifiedTypeArgument>(
+  static fromBcs<T extends Reified<TypeArgument>>(
     typeArg: T,
     data: Uint8Array
   ): Referent<ToTypeArgument<T>> {
@@ -240,7 +263,7 @@ export class Referent<T extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T extends ReifiedTypeArgument>(
+  static fromJSONField<T extends Reified<TypeArgument>>(
     typeArg: T,
     field: any
   ): Referent<ToTypeArgument<T>> {
@@ -250,7 +273,7 @@ export class Referent<T extends TypeArgument> {
     })
   }
 
-  static fromJSON<T extends ReifiedTypeArgument>(
+  static fromJSON<T extends Reified<TypeArgument>>(
     typeArg: T,
     json: Record<string, any>
   ): Referent<ToTypeArgument<T>> {
@@ -264,5 +287,33 @@ export class Referent<T extends TypeArgument> {
     )
 
     return Referent.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<T extends Reified<TypeArgument>>(
+    typeArg: T,
+    content: SuiParsedData
+  ): Referent<ToTypeArgument<T>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isReferent(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a Referent object`)
+    }
+    return Referent.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<T extends Reified<TypeArgument>>(
+    client: SuiClient,
+    typeArg: T,
+    id: string
+  ): Promise<Referent<ToTypeArgument<T>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching Referent object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isReferent(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a Referent object`)
+    }
+    return Referent.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }

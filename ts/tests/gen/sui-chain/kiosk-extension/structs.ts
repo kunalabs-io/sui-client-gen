@@ -1,9 +1,10 @@
 import {
   PhantomTypeArgument,
+  Reified,
   ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -14,6 +15,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Bag } from '../bag/structs'
 import { bcs } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Extension =============================== */
 
@@ -34,7 +36,7 @@ export class Extension {
   static readonly $typeName = '0x2::kiosk_extension::Extension'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::kiosk_extension::Extension'
+  readonly $fullTypeName = null as unknown as '0x2::kiosk_extension::Extension'
 
   readonly $typeName = Extension.$typeName
 
@@ -60,17 +62,18 @@ export class Extension {
     return new Extension(fields)
   }
 
-  static reified() {
+  static reified(): Reified<Extension> {
     return {
       typeName: Extension.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(Extension.$typeName, ...[]) as '0x2::kiosk_extension::Extension',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => Extension.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Extension.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Extension.fromBcs(data),
       bcs: Extension.bcs,
       fromJSONField: (field: any) => Extension.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof Extension.new>,
+      fetch: async (client: SuiClient, id: string) => Extension.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -125,6 +128,27 @@ export class Extension {
 
     return Extension.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): Extension {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isExtension(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a Extension object`)
+    }
+    return Extension.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<Extension> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching Extension object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isExtension(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a Extension object`)
+    }
+    return Extension.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== ExtensionKey =============================== */
@@ -144,7 +168,7 @@ export class ExtensionKey<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk_extension::ExtensionKey'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::kiosk_extension::ExtensionKey<${T0}>`
+  readonly $fullTypeName = null as unknown as `0x2::kiosk_extension::ExtensionKey<${ToTypeStr<T0>}>`
 
   readonly $typeName = ExtensionKey.$typeName
 
@@ -171,20 +195,23 @@ export class ExtensionKey<T0 extends PhantomTypeArgument> {
     return new ExtensionKey(extractType(typeArg), dummyField)
   }
 
-  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(
+    T0: T0
+  ): Reified<ExtensionKey<ToPhantomTypeArgument<T0>>> {
     return {
       typeName: ExtensionKey.$typeName,
-      typeArgs: [T0],
       fullTypeName: composeSuiType(
         ExtensionKey.$typeName,
         ...[extractType(T0)]
-      ) as `0x2::kiosk_extension::ExtensionKey<${ToPhantomTypeArgument<T0>}>`,
+      ) as `0x2::kiosk_extension::ExtensionKey<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => ExtensionKey.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ExtensionKey.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => ExtensionKey.fromBcs(T0, data),
       bcs: ExtensionKey.bcs,
       fromJSONField: (field: any) => ExtensionKey.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof ExtensionKey.new<ToTypeArgument<T0>>>,
+      fetch: async (client: SuiClient, id: string) => ExtensionKey.fetch(client, T0, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -245,5 +272,33 @@ export class ExtensionKey<T0 extends PhantomTypeArgument> {
     )
 
     return ExtensionKey.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    content: SuiParsedData
+  ): ExtensionKey<ToPhantomTypeArgument<T0>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isExtensionKey(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a ExtensionKey object`)
+    }
+    return ExtensionKey.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+    client: SuiClient,
+    typeArg: T0,
+    id: string
+  ): Promise<ExtensionKey<ToPhantomTypeArgument<T0>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching ExtensionKey object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isExtensionKey(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a ExtensionKey object`)
+    }
+    return ExtensionKey.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }

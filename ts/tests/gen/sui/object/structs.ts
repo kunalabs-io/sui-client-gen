@@ -1,9 +1,9 @@
 import * as reified from '../../_framework/reified'
 import {
-  ReifiedTypeArgument,
+  Reified,
   ToField,
-  ToPhantomTypeArgument,
   ToTypeArgument,
+  ToTypeStr,
   TypeArgument,
   Vector,
   assertFieldsWithTypesArgsMatch,
@@ -14,7 +14,6 @@ import {
   extractType,
   fieldToJSON,
   toBcs,
-  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
@@ -37,7 +36,7 @@ export class DynamicFields<K extends TypeArgument> {
   static readonly $typeName = '0x2::object::DynamicFields'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::object::DynamicFields<${ToPhantom<K>}>`
+  readonly $fullTypeName = null as unknown as `0x2::object::DynamicFields<${ToTypeStr<K>}>`
 
   readonly $typeName = DynamicFields.$typeName
 
@@ -58,38 +57,39 @@ export class DynamicFields<K extends TypeArgument> {
     this.names = names
   }
 
-  static new<K extends ReifiedTypeArgument>(
+  static new<K extends Reified<TypeArgument>>(
     typeArg: K,
     names: ToField<Vector<ToTypeArgument<K>>>
   ): DynamicFields<ToTypeArgument<K>> {
     return new DynamicFields(extractType(typeArg), names)
   }
 
-  static reified<K extends ReifiedTypeArgument>(K: K) {
+  static reified<K extends Reified<TypeArgument>>(K: K): Reified<DynamicFields<ToTypeArgument<K>>> {
     return {
       typeName: DynamicFields.$typeName,
-      typeArgs: [K],
       fullTypeName: composeSuiType(
         DynamicFields.$typeName,
         ...[extractType(K)]
-      ) as `0x2::object::DynamicFields<${ToPhantomTypeArgument<K>}>`,
+      ) as `0x2::object::DynamicFields<${ToTypeStr<ToTypeArgument<K>>}>`,
+      typeArgs: [K],
       fromFields: (fields: Record<string, any>) => DynamicFields.fromFields(K, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => DynamicFields.fromFieldsWithTypes(K, item),
       fromBcs: (data: Uint8Array) => DynamicFields.fromBcs(K, data),
       bcs: DynamicFields.bcs(toBcs(K)),
       fromJSONField: (field: any) => DynamicFields.fromJSONField(K, field),
-      __class: null as unknown as ReturnType<typeof DynamicFields.new<ToTypeArgument<K>>>,
+      fetch: async (client: SuiClient, id: string) => DynamicFields.fetch(client, K, id),
+      kind: 'StructClassReified',
     }
   }
 
-  static fromFields<K extends ReifiedTypeArgument>(
+  static fromFields<K extends Reified<TypeArgument>>(
     typeArg: K,
     fields: Record<string, any>
   ): DynamicFields<ToTypeArgument<K>> {
     return DynamicFields.new(typeArg, decodeFromFields(reified.vector(typeArg), fields.names))
   }
 
-  static fromFieldsWithTypes<K extends ReifiedTypeArgument>(
+  static fromFieldsWithTypes<K extends Reified<TypeArgument>>(
     typeArg: K,
     item: FieldsWithTypes
   ): DynamicFields<ToTypeArgument<K>> {
@@ -104,7 +104,7 @@ export class DynamicFields<K extends TypeArgument> {
     )
   }
 
-  static fromBcs<K extends ReifiedTypeArgument>(
+  static fromBcs<K extends Reified<TypeArgument>>(
     typeArg: K,
     data: Uint8Array
   ): DynamicFields<ToTypeArgument<K>> {
@@ -123,14 +123,14 @@ export class DynamicFields<K extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<K extends ReifiedTypeArgument>(
+  static fromJSONField<K extends Reified<TypeArgument>>(
     typeArg: K,
     field: any
   ): DynamicFields<ToTypeArgument<K>> {
     return DynamicFields.new(typeArg, decodeFromJSONField(reified.vector(typeArg), field.names))
   }
 
-  static fromJSON<K extends ReifiedTypeArgument>(
+  static fromJSON<K extends Reified<TypeArgument>>(
     typeArg: K,
     json: Record<string, any>
   ): DynamicFields<ToTypeArgument<K>> {
@@ -146,7 +146,7 @@ export class DynamicFields<K extends TypeArgument> {
     return DynamicFields.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<K extends ReifiedTypeArgument>(
+  static fromSuiParsedData<K extends Reified<TypeArgument>>(
     typeArg: K,
     content: SuiParsedData
   ): DynamicFields<ToTypeArgument<K>> {
@@ -159,7 +159,7 @@ export class DynamicFields<K extends TypeArgument> {
     return DynamicFields.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<K extends ReifiedTypeArgument>(
+  static async fetch<K extends Reified<TypeArgument>>(
     client: SuiClient,
     typeArg: K,
     id: string
@@ -192,7 +192,7 @@ export class ID {
   static readonly $typeName = '0x2::object::ID'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::object::ID'
+  readonly $fullTypeName = null as unknown as '0x2::object::ID'
 
   readonly $typeName = ID.$typeName
 
@@ -215,17 +215,18 @@ export class ID {
     return new ID(bytes)
   }
 
-  static reified() {
+  static reified(): Reified<ID> {
     return {
       typeName: ID.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(ID.$typeName, ...[]) as '0x2::object::ID',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => ID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ID.fromBcs(data),
       bcs: ID.bcs,
       fromJSONField: (field: any) => ID.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof ID.new>,
+      fetch: async (client: SuiClient, id: string) => ID.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -266,6 +267,27 @@ export class ID {
 
     return ID.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): ID {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isID(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a ID object`)
+    }
+    return ID.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<ID> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching ID object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isID(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a ID object`)
+    }
+    return ID.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== Ownership =============================== */
@@ -286,7 +308,7 @@ export class Ownership {
   static readonly $typeName = '0x2::object::Ownership'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::object::Ownership'
+  readonly $fullTypeName = null as unknown as '0x2::object::Ownership'
 
   readonly $typeName = Ownership.$typeName
 
@@ -312,17 +334,18 @@ export class Ownership {
     return new Ownership(fields)
   }
 
-  static reified() {
+  static reified(): Reified<Ownership> {
     return {
       typeName: Ownership.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(Ownership.$typeName, ...[]) as '0x2::object::Ownership',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => Ownership.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Ownership.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Ownership.fromBcs(data),
       bcs: Ownership.bcs,
       fromJSONField: (field: any) => Ownership.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof Ownership.new>,
+      fetch: async (client: SuiClient, id: string) => Ownership.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -413,7 +436,7 @@ export class UID {
   static readonly $typeName = '0x2::object::UID'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::object::UID'
+  readonly $fullTypeName = null as unknown as '0x2::object::UID'
 
   readonly $typeName = UID.$typeName
 
@@ -433,17 +456,18 @@ export class UID {
     return new UID(id)
   }
 
-  static reified() {
+  static reified(): Reified<UID> {
     return {
       typeName: UID.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(UID.$typeName, ...[]) as '0x2::object::UID',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => UID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UID.fromBcs(data),
       bcs: UID.bcs,
       fromJSONField: (field: any) => UID.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof UID.new>,
+      fetch: async (client: SuiClient, id: string) => UID.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -483,5 +507,26 @@ export class UID {
     }
 
     return UID.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): UID {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isUID(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a UID object`)
+    }
+    return UID.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<UID> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching UID object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isUID(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a UID object`)
+    }
+    return UID.fromFieldsWithTypes(res.data.content)
   }
 }

@@ -1,11 +1,12 @@
 import * as reified from '../../_framework/reified'
 import {
   PhantomTypeArgument,
+  Reified,
   ReifiedPhantomTypeArgument,
-  ReifiedTypeArgument,
   ToField,
   ToPhantomTypeArgument,
   ToTypeArgument,
+  ToTypeStr,
   TypeArgument,
   Vector,
   assertFieldsWithTypesArgsMatch,
@@ -50,7 +51,7 @@ export class Dummy {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString =
+  readonly $fullTypeName =
     null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
 
   readonly $typeName = Dummy.$typeName
@@ -71,20 +72,21 @@ export class Dummy {
     return new Dummy(dummyField)
   }
 
-  static reified() {
+  static reified(): Reified<Dummy> {
     return {
       typeName: Dummy.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         Dummy.$typeName,
         ...[]
       ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => Dummy.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Dummy.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Dummy.fromBcs(data),
       bcs: Dummy.bcs,
       fromJSONField: (field: any) => Dummy.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof Dummy.new>,
+      fetch: async (client: SuiClient, id: string) => Dummy.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -125,6 +127,27 @@ export class Dummy {
 
     return Dummy.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): Dummy {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isDummy(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a Dummy object`)
+    }
+    return Dummy.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<Dummy> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching Dummy object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isDummy(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a Dummy object`)
+    }
+    return Dummy.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== WithGenericField =============================== */
@@ -148,8 +171,8 @@ export class WithGenericField<T0 extends TypeArgument> {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString =
-    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<${ToPhantom<T0>}>`
+  readonly $fullTypeName =
+    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<${ToTypeStr<T0>}>`
 
   readonly $typeName = WithGenericField.$typeName
 
@@ -173,32 +196,37 @@ export class WithGenericField<T0 extends TypeArgument> {
     this.genericField = fields.genericField
   }
 
-  static new<T0 extends ReifiedTypeArgument>(
+  static new<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     fields: WithGenericFieldFields<ToTypeArgument<T0>>
   ): WithGenericField<ToTypeArgument<T0>> {
     return new WithGenericField(extractType(typeArg), fields)
   }
 
-  static reified<T0 extends ReifiedTypeArgument>(T0: T0) {
+  static reified<T0 extends Reified<TypeArgument>>(
+    T0: T0
+  ): Reified<WithGenericField<ToTypeArgument<T0>>> {
     return {
       typeName: WithGenericField.$typeName,
-      typeArgs: [T0],
       fullTypeName: composeSuiType(
         WithGenericField.$typeName,
         ...[extractType(T0)]
-      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<${ToPhantomTypeArgument<T0>}>`,
+      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<${ToTypeStr<
+        ToTypeArgument<T0>
+      >}>`,
+      typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => WithGenericField.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         WithGenericField.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => WithGenericField.fromBcs(T0, data),
       bcs: WithGenericField.bcs(toBcs(T0)),
       fromJSONField: (field: any) => WithGenericField.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof WithGenericField.new<ToTypeArgument<T0>>>,
+      fetch: async (client: SuiClient, id: string) => WithGenericField.fetch(client, T0, id),
+      kind: 'StructClassReified',
     }
   }
 
-  static fromFields<T0 extends ReifiedTypeArgument>(
+  static fromFields<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     fields: Record<string, any>
   ): WithGenericField<ToTypeArgument<T0>> {
@@ -208,7 +236,7 @@ export class WithGenericField<T0 extends TypeArgument> {
     })
   }
 
-  static fromFieldsWithTypes<T0 extends ReifiedTypeArgument>(
+  static fromFieldsWithTypes<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     item: FieldsWithTypes
   ): WithGenericField<ToTypeArgument<T0>> {
@@ -223,7 +251,7 @@ export class WithGenericField<T0 extends TypeArgument> {
     })
   }
 
-  static fromBcs<T0 extends ReifiedTypeArgument>(
+  static fromBcs<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     data: Uint8Array
   ): WithGenericField<ToTypeArgument<T0>> {
@@ -246,7 +274,7 @@ export class WithGenericField<T0 extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends ReifiedTypeArgument>(
+  static fromJSONField<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     field: any
   ): WithGenericField<ToTypeArgument<T0>> {
@@ -256,7 +284,7 @@ export class WithGenericField<T0 extends TypeArgument> {
     })
   }
 
-  static fromJSON<T0 extends ReifiedTypeArgument>(
+  static fromJSON<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     json: Record<string, any>
   ): WithGenericField<ToTypeArgument<T0>> {
@@ -272,7 +300,7 @@ export class WithGenericField<T0 extends TypeArgument> {
     return WithGenericField.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T0 extends ReifiedTypeArgument>(
+  static fromSuiParsedData<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     content: SuiParsedData
   ): WithGenericField<ToTypeArgument<T0>> {
@@ -285,7 +313,7 @@ export class WithGenericField<T0 extends TypeArgument> {
     return WithGenericField.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T0 extends ReifiedTypeArgument>(
+  static async fetch<T0 extends Reified<TypeArgument>>(
     client: SuiClient,
     typeArg: T0,
     id: string
@@ -322,7 +350,7 @@ export class Bar {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString =
+  readonly $fullTypeName =
     null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
 
   readonly $typeName = Bar.$typeName
@@ -343,20 +371,21 @@ export class Bar {
     return new Bar(value)
   }
 
-  static reified() {
+  static reified(): Reified<Bar> {
     return {
       typeName: Bar.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         Bar.$typeName,
         ...[]
       ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => Bar.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Bar.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Bar.fromBcs(data),
       bcs: Bar.bcs,
       fromJSONField: (field: any) => Bar.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof Bar.new>,
+      fetch: async (client: SuiClient, id: string) => Bar.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -397,6 +426,27 @@ export class Bar {
 
     return Bar.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): Bar {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isBar(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a Bar object`)
+    }
+    return Bar.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<Bar> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching Bar object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isBar(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a Bar object`)
+    }
+    return Bar.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== WithTwoGenerics =============================== */
@@ -420,8 +470,8 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument> {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics'
   static readonly $numTypeParams = 2
 
-  __reifiedFullTypeString =
-    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${ToPhantom<T0>}, ${ToPhantom<T1>}>`
+  readonly $fullTypeName =
+    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
 
   readonly $typeName = WithTwoGenerics.$typeName
 
@@ -445,34 +495,38 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument> {
     this.genericField2 = fields.genericField2
   }
 
-  static new<T0 extends ReifiedTypeArgument, T1 extends ReifiedTypeArgument>(
+  static new<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
     typeArgs: [T0, T1],
     fields: WithTwoGenericsFields<ToTypeArgument<T0>, ToTypeArgument<T1>>
   ): WithTwoGenerics<ToTypeArgument<T0>, ToTypeArgument<T1>> {
     return new WithTwoGenerics(typeArgs.map(extractType) as [string, string], fields)
   }
 
-  static reified<T0 extends ReifiedTypeArgument, T1 extends ReifiedTypeArgument>(T0: T0, T1: T1) {
+  static reified<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+    T0: T0,
+    T1: T1
+  ): Reified<WithTwoGenerics<ToTypeArgument<T0>, ToTypeArgument<T1>>> {
     return {
       typeName: WithTwoGenerics.$typeName,
-      typeArgs: [T0, T1],
       fullTypeName: composeSuiType(
         WithTwoGenerics.$typeName,
         ...[extractType(T0), extractType(T1)]
-      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${ToPhantomTypeArgument<T0>}, ${ToPhantomTypeArgument<T1>}>`,
+      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${ToTypeStr<
+        ToTypeArgument<T0>
+      >}, ${ToTypeStr<ToTypeArgument<T1>>}>`,
+      typeArgs: [T0, T1],
       fromFields: (fields: Record<string, any>) => WithTwoGenerics.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         WithTwoGenerics.fromFieldsWithTypes([T0, T1], item),
       fromBcs: (data: Uint8Array) => WithTwoGenerics.fromBcs([T0, T1], data),
       bcs: WithTwoGenerics.bcs(toBcs(T0), toBcs(T1)),
       fromJSONField: (field: any) => WithTwoGenerics.fromJSONField([T0, T1], field),
-      __class: null as unknown as ReturnType<
-        typeof WithTwoGenerics.new<ToTypeArgument<T0>, ToTypeArgument<T1>>
-      >,
+      fetch: async (client: SuiClient, id: string) => WithTwoGenerics.fetch(client, [T0, T1], id),
+      kind: 'StructClassReified',
     }
   }
 
-  static fromFields<T0 extends ReifiedTypeArgument, T1 extends ReifiedTypeArgument>(
+  static fromFields<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
     typeArgs: [T0, T1],
     fields: Record<string, any>
   ): WithTwoGenerics<ToTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -482,7 +536,7 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument> {
     })
   }
 
-  static fromFieldsWithTypes<T0 extends ReifiedTypeArgument, T1 extends ReifiedTypeArgument>(
+  static fromFieldsWithTypes<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
     typeArgs: [T0, T1],
     item: FieldsWithTypes
   ): WithTwoGenerics<ToTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -497,7 +551,7 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument> {
     })
   }
 
-  static fromBcs<T0 extends ReifiedTypeArgument, T1 extends ReifiedTypeArgument>(
+  static fromBcs<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
     typeArgs: [T0, T1],
     data: Uint8Array
   ): WithTwoGenerics<ToTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -518,7 +572,7 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends ReifiedTypeArgument, T1 extends ReifiedTypeArgument>(
+  static fromJSONField<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
     typeArgs: [T0, T1],
     field: any
   ): WithTwoGenerics<ToTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -528,7 +582,7 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument> {
     })
   }
 
-  static fromJSON<T0 extends ReifiedTypeArgument, T1 extends ReifiedTypeArgument>(
+  static fromJSON<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
     typeArgs: [T0, T1],
     json: Record<string, any>
   ): WithTwoGenerics<ToTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -542,6 +596,34 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument> {
     )
 
     return WithTwoGenerics.fromJSONField(typeArgs, json)
+  }
+
+  static fromSuiParsedData<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+    typeArgs: [T0, T1],
+    content: SuiParsedData
+  ): WithTwoGenerics<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isWithTwoGenerics(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a WithTwoGenerics object`)
+    }
+    return WithTwoGenerics.fromFieldsWithTypes(typeArgs, content)
+  }
+
+  static async fetch<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+    client: SuiClient,
+    typeArgs: [T0, T1],
+    id: string
+  ): Promise<WithTwoGenerics<ToTypeArgument<T0>, ToTypeArgument<T1>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching WithTwoGenerics object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isWithTwoGenerics(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a WithTwoGenerics object`)
+    }
+    return WithTwoGenerics.fromFieldsWithTypes(typeArgs, res.data.content)
   }
 }
 
@@ -578,8 +660,8 @@ export class Foo<T0 extends TypeArgument> {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString =
-    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<${ToPhantom<T0>}>`
+  readonly $fullTypeName =
+    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<${ToTypeStr<T0>}>`
 
   readonly $typeName = Foo.$typeName
 
@@ -646,31 +728,34 @@ export class Foo<T0 extends TypeArgument> {
     this.other = fields.other
   }
 
-  static new<T0 extends ReifiedTypeArgument>(
+  static new<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     fields: FooFields<ToTypeArgument<T0>>
   ): Foo<ToTypeArgument<T0>> {
     return new Foo(extractType(typeArg), fields)
   }
 
-  static reified<T0 extends ReifiedTypeArgument>(T0: T0) {
+  static reified<T0 extends Reified<TypeArgument>>(T0: T0): Reified<Foo<ToTypeArgument<T0>>> {
     return {
       typeName: Foo.$typeName,
-      typeArgs: [T0],
       fullTypeName: composeSuiType(
         Foo.$typeName,
         ...[extractType(T0)]
-      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<${ToPhantomTypeArgument<T0>}>`,
+      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<${ToTypeStr<
+        ToTypeArgument<T0>
+      >}>`,
+      typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Foo.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Foo.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => Foo.fromBcs(T0, data),
       bcs: Foo.bcs(toBcs(T0)),
       fromJSONField: (field: any) => Foo.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof Foo.new<ToTypeArgument<T0>>>,
+      fetch: async (client: SuiClient, id: string) => Foo.fetch(client, T0, id),
+      kind: 'StructClassReified',
     }
   }
 
-  static fromFields<T0 extends ReifiedTypeArgument>(
+  static fromFields<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     fields: Record<string, any>
   ): Foo<ToTypeArgument<T0>> {
@@ -718,7 +803,7 @@ export class Foo<T0 extends TypeArgument> {
     })
   }
 
-  static fromFieldsWithTypes<T0 extends ReifiedTypeArgument>(
+  static fromFieldsWithTypes<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     item: FieldsWithTypes
   ): Foo<ToTypeArgument<T0>> {
@@ -777,7 +862,7 @@ export class Foo<T0 extends TypeArgument> {
     })
   }
 
-  static fromBcs<T0 extends ReifiedTypeArgument>(
+  static fromBcs<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     data: Uint8Array
   ): Foo<ToTypeArgument<T0>> {
@@ -820,7 +905,7 @@ export class Foo<T0 extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends ReifiedTypeArgument>(
+  static fromJSONField<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     field: any
   ): Foo<ToTypeArgument<T0>> {
@@ -868,7 +953,7 @@ export class Foo<T0 extends TypeArgument> {
     })
   }
 
-  static fromJSON<T0 extends ReifiedTypeArgument>(
+  static fromJSON<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     json: Record<string, any>
   ): Foo<ToTypeArgument<T0>> {
@@ -884,7 +969,7 @@ export class Foo<T0 extends TypeArgument> {
     return Foo.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T0 extends ReifiedTypeArgument>(
+  static fromSuiParsedData<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     content: SuiParsedData
   ): Foo<ToTypeArgument<T0>> {
@@ -897,7 +982,7 @@ export class Foo<T0 extends TypeArgument> {
     return Foo.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T0 extends ReifiedTypeArgument>(
+  static async fetch<T0 extends Reified<TypeArgument>>(
     client: SuiClient,
     typeArg: T0,
     id: string
@@ -945,8 +1030,8 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes'
   static readonly $numTypeParams = 2
 
-  __reifiedFullTypeString =
-    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<${T0}, ${ToPhantom<T1>}>`
+  readonly $fullTypeName =
+    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
 
   readonly $typeName = WithSpecialTypes.$typeName
 
@@ -1003,37 +1088,38 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     this.optionGenericNone = fields.optionGenericNone
   }
 
-  static new<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedTypeArgument>(
+  static new<T0 extends ReifiedPhantomTypeArgument, T1 extends Reified<TypeArgument>>(
     typeArgs: [T0, T1],
     fields: WithSpecialTypesFields<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>>
   ): WithSpecialTypes<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>> {
     return new WithSpecialTypes(typeArgs.map(extractType) as [string, string], fields)
   }
 
-  static reified<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedTypeArgument>(
+  static reified<T0 extends ReifiedPhantomTypeArgument, T1 extends Reified<TypeArgument>>(
     T0: T0,
     T1: T1
-  ) {
+  ): Reified<WithSpecialTypes<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>>> {
     return {
       typeName: WithSpecialTypes.$typeName,
-      typeArgs: [T0, T1],
       fullTypeName: composeSuiType(
         WithSpecialTypes.$typeName,
         ...[extractType(T0), extractType(T1)]
-      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<${ToPhantomTypeArgument<T0>}, ${ToPhantomTypeArgument<T1>}>`,
+      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<${ToTypeStr<
+        ToPhantomTypeArgument<T0>
+      >}, ${ToTypeStr<ToTypeArgument<T1>>}>`,
+      typeArgs: [T0, T1],
       fromFields: (fields: Record<string, any>) => WithSpecialTypes.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         WithSpecialTypes.fromFieldsWithTypes([T0, T1], item),
       fromBcs: (data: Uint8Array) => WithSpecialTypes.fromBcs([T0, T1], data),
       bcs: WithSpecialTypes.bcs(toBcs(T1)),
       fromJSONField: (field: any) => WithSpecialTypes.fromJSONField([T0, T1], field),
-      __class: null as unknown as ReturnType<
-        typeof WithSpecialTypes.new<ToTypeArgument<T0>, ToTypeArgument<T1>>
-      >,
+      fetch: async (client: SuiClient, id: string) => WithSpecialTypes.fetch(client, [T0, T1], id),
+      kind: 'StructClassReified',
     }
   }
 
-  static fromFields<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedTypeArgument>(
+  static fromFields<T0 extends ReifiedPhantomTypeArgument, T1 extends Reified<TypeArgument>>(
     typeArgs: [T0, T1],
     fields: Record<string, any>
   ): WithSpecialTypes<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -1044,7 +1130,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
       url: decodeFromFields(Url.reified(), fields.url),
       idField: decodeFromFields(ID.reified(), fields.id_field),
       uid: decodeFromFields(UID.reified(), fields.uid),
-      balance: decodeFromFields(Balance.reified(SUI.reified()), fields.balance),
+      balance: decodeFromFields(Balance.reified(reified.phantom(SUI.reified())), fields.balance),
       option: decodeFromFields(Option.reified('u64'), fields.option),
       optionObj: decodeFromFields(Option.reified(Bar.reified()), fields.option_obj),
       optionNone: decodeFromFields(Option.reified('u64'), fields.option_none),
@@ -1054,7 +1140,10 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     })
   }
 
-  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedTypeArgument>(
+  static fromFieldsWithTypes<
+    T0 extends ReifiedPhantomTypeArgument,
+    T1 extends Reified<TypeArgument>,
+  >(
     typeArgs: [T0, T1],
     item: FieldsWithTypes
   ): WithSpecialTypes<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -1070,7 +1159,10 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
       url: decodeFromFieldsWithTypes(Url.reified(), item.fields.url),
       idField: decodeFromFieldsWithTypes(ID.reified(), item.fields.id_field),
       uid: decodeFromFieldsWithTypes(UID.reified(), item.fields.uid),
-      balance: decodeFromFieldsWithTypes(Balance.reified(SUI.reified()), item.fields.balance),
+      balance: decodeFromFieldsWithTypes(
+        Balance.reified(reified.phantom(SUI.reified())),
+        item.fields.balance
+      ),
       option: decodeFromFieldsWithTypes(Option.reified('u64'), item.fields.option),
       optionObj: decodeFromFieldsWithTypes(Option.reified(Bar.reified()), item.fields.option_obj),
       optionNone: decodeFromFieldsWithTypes(Option.reified('u64'), item.fields.option_none),
@@ -1089,7 +1181,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     })
   }
 
-  static fromBcs<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedTypeArgument>(
+  static fromBcs<T0 extends ReifiedPhantomTypeArgument, T1 extends Reified<TypeArgument>>(
     typeArgs: [T0, T1],
     data: Uint8Array
   ): WithSpecialTypes<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -1130,7 +1222,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedTypeArgument>(
+  static fromJSONField<T0 extends ReifiedPhantomTypeArgument, T1 extends Reified<TypeArgument>>(
     typeArgs: [T0, T1],
     field: any
   ): WithSpecialTypes<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -1141,7 +1233,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
       url: decodeFromJSONField(Url.reified(), field.url),
       idField: decodeFromJSONField(ID.reified(), field.idField),
       uid: decodeFromJSONField(UID.reified(), field.uid),
-      balance: decodeFromJSONField(Balance.reified(SUI.reified()), field.balance),
+      balance: decodeFromJSONField(Balance.reified(reified.phantom(SUI.reified())), field.balance),
       option: decodeFromJSONField(Option.reified('u64'), field.option),
       optionObj: decodeFromJSONField(Option.reified(Bar.reified()), field.optionObj),
       optionNone: decodeFromJSONField(Option.reified('u64'), field.optionNone),
@@ -1151,7 +1243,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     })
   }
 
-  static fromJSON<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedTypeArgument>(
+  static fromJSON<T0 extends ReifiedPhantomTypeArgument, T1 extends Reified<TypeArgument>>(
     typeArgs: [T0, T1],
     json: Record<string, any>
   ): WithSpecialTypes<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -1167,7 +1259,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     return WithSpecialTypes.fromJSONField(typeArgs, json)
   }
 
-  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedTypeArgument>(
+  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument, T1 extends Reified<TypeArgument>>(
     typeArgs: [T0, T1],
     content: SuiParsedData
   ): WithSpecialTypes<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -1180,7 +1272,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     return WithSpecialTypes.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedTypeArgument>(
+  static async fetch<T0 extends ReifiedPhantomTypeArgument, T1 extends Reified<TypeArgument>>(
     client: SuiClient,
     typeArgs: [T0, T1],
     id: string
@@ -1245,8 +1337,8 @@ export class WithSpecialTypesAsGenerics<
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics'
   static readonly $numTypeParams = 8
 
-  __reifiedFullTypeString =
-    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<${ToPhantom<T0>}, ${ToPhantom<T1>}, ${ToPhantom<T2>}, ${ToPhantom<T3>}, ${ToPhantom<T4>}, ${ToPhantom<T5>}, ${ToPhantom<T6>}, ${ToPhantom<T7>}>`
+  readonly $fullTypeName =
+    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<${ToTypeStr<T0>}, ${ToTypeStr<T1>}, ${ToTypeStr<T2>}, ${ToTypeStr<T3>}, ${ToTypeStr<T4>}, ${ToTypeStr<T5>}, ${ToTypeStr<T6>}, ${ToTypeStr<T7>}>`
 
   readonly $typeName = WithSpecialTypesAsGenerics.$typeName
 
@@ -1316,14 +1408,14 @@ export class WithSpecialTypesAsGenerics<
   }
 
   static new<
-    T0 extends ReifiedTypeArgument,
-    T1 extends ReifiedTypeArgument,
-    T2 extends ReifiedTypeArgument,
-    T3 extends ReifiedTypeArgument,
-    T4 extends ReifiedTypeArgument,
-    T5 extends ReifiedTypeArgument,
-    T6 extends ReifiedTypeArgument,
-    T7 extends ReifiedTypeArgument,
+    T0 extends Reified<TypeArgument>,
+    T1 extends Reified<TypeArgument>,
+    T2 extends Reified<TypeArgument>,
+    T3 extends Reified<TypeArgument>,
+    T4 extends Reified<TypeArgument>,
+    T5 extends Reified<TypeArgument>,
+    T6 extends Reified<TypeArgument>,
+    T7 extends Reified<TypeArgument>,
   >(
     typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
     fields: WithSpecialTypesAsGenericsFields<
@@ -1353,18 +1445,37 @@ export class WithSpecialTypesAsGenerics<
   }
 
   static reified<
-    T0 extends ReifiedTypeArgument,
-    T1 extends ReifiedTypeArgument,
-    T2 extends ReifiedTypeArgument,
-    T3 extends ReifiedTypeArgument,
-    T4 extends ReifiedTypeArgument,
-    T5 extends ReifiedTypeArgument,
-    T6 extends ReifiedTypeArgument,
-    T7 extends ReifiedTypeArgument,
-  >(T0: T0, T1: T1, T2: T2, T3: T3, T4: T4, T5: T5, T6: T6, T7: T7) {
+    T0 extends Reified<TypeArgument>,
+    T1 extends Reified<TypeArgument>,
+    T2 extends Reified<TypeArgument>,
+    T3 extends Reified<TypeArgument>,
+    T4 extends Reified<TypeArgument>,
+    T5 extends Reified<TypeArgument>,
+    T6 extends Reified<TypeArgument>,
+    T7 extends Reified<TypeArgument>,
+  >(
+    T0: T0,
+    T1: T1,
+    T2: T2,
+    T3: T3,
+    T4: T4,
+    T5: T5,
+    T6: T6,
+    T7: T7
+  ): Reified<
+    WithSpecialTypesAsGenerics<
+      ToTypeArgument<T0>,
+      ToTypeArgument<T1>,
+      ToTypeArgument<T2>,
+      ToTypeArgument<T3>,
+      ToTypeArgument<T4>,
+      ToTypeArgument<T5>,
+      ToTypeArgument<T6>,
+      ToTypeArgument<T7>
+    >
+  > {
     return {
       typeName: WithSpecialTypesAsGenerics.$typeName,
-      typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
       fullTypeName: composeSuiType(
         WithSpecialTypesAsGenerics.$typeName,
         ...[
@@ -1377,7 +1488,14 @@ export class WithSpecialTypesAsGenerics<
           extractType(T6),
           extractType(T7),
         ]
-      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<${ToPhantomTypeArgument<T0>}, ${ToPhantomTypeArgument<T1>}, ${ToPhantomTypeArgument<T2>}, ${ToPhantomTypeArgument<T3>}, ${ToPhantomTypeArgument<T4>}, ${ToPhantomTypeArgument<T5>}, ${ToPhantomTypeArgument<T6>}, ${ToPhantomTypeArgument<T7>}>`,
+      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<${ToTypeStr<
+        ToTypeArgument<T0>
+      >}, ${ToTypeStr<ToTypeArgument<T1>>}, ${ToTypeStr<ToTypeArgument<T2>>}, ${ToTypeStr<
+        ToTypeArgument<T3>
+      >}, ${ToTypeStr<ToTypeArgument<T4>>}, ${ToTypeStr<ToTypeArgument<T5>>}, ${ToTypeStr<
+        ToTypeArgument<T6>
+      >}, ${ToTypeStr<ToTypeArgument<T7>>}>`,
+      typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
       fromFields: (fields: Record<string, any>) =>
         WithSpecialTypesAsGenerics.fromFields([T0, T1, T2, T3, T4, T5, T6, T7], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
@@ -1396,30 +1514,21 @@ export class WithSpecialTypesAsGenerics<
       ),
       fromJSONField: (field: any) =>
         WithSpecialTypesAsGenerics.fromJSONField([T0, T1, T2, T3, T4, T5, T6, T7], field),
-      __class: null as unknown as ReturnType<
-        typeof WithSpecialTypesAsGenerics.new<
-          ToTypeArgument<T0>,
-          ToTypeArgument<T1>,
-          ToTypeArgument<T2>,
-          ToTypeArgument<T3>,
-          ToTypeArgument<T4>,
-          ToTypeArgument<T5>,
-          ToTypeArgument<T6>,
-          ToTypeArgument<T7>
-        >
-      >,
+      fetch: async (client: SuiClient, id: string) =>
+        WithSpecialTypesAsGenerics.fetch(client, [T0, T1, T2, T3, T4, T5, T6, T7], id),
+      kind: 'StructClassReified',
     }
   }
 
   static fromFields<
-    T0 extends ReifiedTypeArgument,
-    T1 extends ReifiedTypeArgument,
-    T2 extends ReifiedTypeArgument,
-    T3 extends ReifiedTypeArgument,
-    T4 extends ReifiedTypeArgument,
-    T5 extends ReifiedTypeArgument,
-    T6 extends ReifiedTypeArgument,
-    T7 extends ReifiedTypeArgument,
+    T0 extends Reified<TypeArgument>,
+    T1 extends Reified<TypeArgument>,
+    T2 extends Reified<TypeArgument>,
+    T3 extends Reified<TypeArgument>,
+    T4 extends Reified<TypeArgument>,
+    T5 extends Reified<TypeArgument>,
+    T6 extends Reified<TypeArgument>,
+    T7 extends Reified<TypeArgument>,
   >(
     typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
     fields: Record<string, any>
@@ -1447,14 +1556,14 @@ export class WithSpecialTypesAsGenerics<
   }
 
   static fromFieldsWithTypes<
-    T0 extends ReifiedTypeArgument,
-    T1 extends ReifiedTypeArgument,
-    T2 extends ReifiedTypeArgument,
-    T3 extends ReifiedTypeArgument,
-    T4 extends ReifiedTypeArgument,
-    T5 extends ReifiedTypeArgument,
-    T6 extends ReifiedTypeArgument,
-    T7 extends ReifiedTypeArgument,
+    T0 extends Reified<TypeArgument>,
+    T1 extends Reified<TypeArgument>,
+    T2 extends Reified<TypeArgument>,
+    T3 extends Reified<TypeArgument>,
+    T4 extends Reified<TypeArgument>,
+    T5 extends Reified<TypeArgument>,
+    T6 extends Reified<TypeArgument>,
+    T7 extends Reified<TypeArgument>,
   >(
     typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
     item: FieldsWithTypes
@@ -1487,14 +1596,14 @@ export class WithSpecialTypesAsGenerics<
   }
 
   static fromBcs<
-    T0 extends ReifiedTypeArgument,
-    T1 extends ReifiedTypeArgument,
-    T2 extends ReifiedTypeArgument,
-    T3 extends ReifiedTypeArgument,
-    T4 extends ReifiedTypeArgument,
-    T5 extends ReifiedTypeArgument,
-    T6 extends ReifiedTypeArgument,
-    T7 extends ReifiedTypeArgument,
+    T0 extends Reified<TypeArgument>,
+    T1 extends Reified<TypeArgument>,
+    T2 extends Reified<TypeArgument>,
+    T3 extends Reified<TypeArgument>,
+    T4 extends Reified<TypeArgument>,
+    T5 extends Reified<TypeArgument>,
+    T6 extends Reified<TypeArgument>,
+    T7 extends Reified<TypeArgument>,
   >(
     typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
     data: Uint8Array
@@ -1542,14 +1651,14 @@ export class WithSpecialTypesAsGenerics<
   }
 
   static fromJSONField<
-    T0 extends ReifiedTypeArgument,
-    T1 extends ReifiedTypeArgument,
-    T2 extends ReifiedTypeArgument,
-    T3 extends ReifiedTypeArgument,
-    T4 extends ReifiedTypeArgument,
-    T5 extends ReifiedTypeArgument,
-    T6 extends ReifiedTypeArgument,
-    T7 extends ReifiedTypeArgument,
+    T0 extends Reified<TypeArgument>,
+    T1 extends Reified<TypeArgument>,
+    T2 extends Reified<TypeArgument>,
+    T3 extends Reified<TypeArgument>,
+    T4 extends Reified<TypeArgument>,
+    T5 extends Reified<TypeArgument>,
+    T6 extends Reified<TypeArgument>,
+    T7 extends Reified<TypeArgument>,
   >(
     typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
     field: any
@@ -1577,14 +1686,14 @@ export class WithSpecialTypesAsGenerics<
   }
 
   static fromJSON<
-    T0 extends ReifiedTypeArgument,
-    T1 extends ReifiedTypeArgument,
-    T2 extends ReifiedTypeArgument,
-    T3 extends ReifiedTypeArgument,
-    T4 extends ReifiedTypeArgument,
-    T5 extends ReifiedTypeArgument,
-    T6 extends ReifiedTypeArgument,
-    T7 extends ReifiedTypeArgument,
+    T0 extends Reified<TypeArgument>,
+    T1 extends Reified<TypeArgument>,
+    T2 extends Reified<TypeArgument>,
+    T3 extends Reified<TypeArgument>,
+    T4 extends Reified<TypeArgument>,
+    T5 extends Reified<TypeArgument>,
+    T6 extends Reified<TypeArgument>,
+    T7 extends Reified<TypeArgument>,
   >(
     typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
     json: Record<string, any>
@@ -1611,14 +1720,14 @@ export class WithSpecialTypesAsGenerics<
   }
 
   static fromSuiParsedData<
-    T0 extends ReifiedTypeArgument,
-    T1 extends ReifiedTypeArgument,
-    T2 extends ReifiedTypeArgument,
-    T3 extends ReifiedTypeArgument,
-    T4 extends ReifiedTypeArgument,
-    T5 extends ReifiedTypeArgument,
-    T6 extends ReifiedTypeArgument,
-    T7 extends ReifiedTypeArgument,
+    T0 extends Reified<TypeArgument>,
+    T1 extends Reified<TypeArgument>,
+    T2 extends Reified<TypeArgument>,
+    T3 extends Reified<TypeArgument>,
+    T4 extends Reified<TypeArgument>,
+    T5 extends Reified<TypeArgument>,
+    T6 extends Reified<TypeArgument>,
+    T7 extends Reified<TypeArgument>,
   >(
     typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
     content: SuiParsedData
@@ -1644,14 +1753,14 @@ export class WithSpecialTypesAsGenerics<
   }
 
   static async fetch<
-    T0 extends ReifiedTypeArgument,
-    T1 extends ReifiedTypeArgument,
-    T2 extends ReifiedTypeArgument,
-    T3 extends ReifiedTypeArgument,
-    T4 extends ReifiedTypeArgument,
-    T5 extends ReifiedTypeArgument,
-    T6 extends ReifiedTypeArgument,
-    T7 extends ReifiedTypeArgument,
+    T0 extends Reified<TypeArgument>,
+    T1 extends Reified<TypeArgument>,
+    T2 extends Reified<TypeArgument>,
+    T3 extends Reified<TypeArgument>,
+    T4 extends Reified<TypeArgument>,
+    T5 extends Reified<TypeArgument>,
+    T6 extends Reified<TypeArgument>,
+    T7 extends Reified<TypeArgument>,
   >(
     client: SuiClient,
     typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
@@ -1710,8 +1819,8 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString =
-    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<${ToPhantom<T0>}>`
+  readonly $fullTypeName =
+    null as unknown as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<${ToTypeStr<T0>}>`
 
   readonly $typeName = WithSpecialTypesInVectors.$typeName
 
@@ -1750,34 +1859,38 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> {
     this.optionGeneric = fields.optionGeneric
   }
 
-  static new<T0 extends ReifiedTypeArgument>(
+  static new<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     fields: WithSpecialTypesInVectorsFields<ToTypeArgument<T0>>
   ): WithSpecialTypesInVectors<ToTypeArgument<T0>> {
     return new WithSpecialTypesInVectors(extractType(typeArg), fields)
   }
 
-  static reified<T0 extends ReifiedTypeArgument>(T0: T0) {
+  static reified<T0 extends Reified<TypeArgument>>(
+    T0: T0
+  ): Reified<WithSpecialTypesInVectors<ToTypeArgument<T0>>> {
     return {
       typeName: WithSpecialTypesInVectors.$typeName,
-      typeArgs: [T0],
       fullTypeName: composeSuiType(
         WithSpecialTypesInVectors.$typeName,
         ...[extractType(T0)]
-      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<${ToPhantomTypeArgument<T0>}>`,
+      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<${ToTypeStr<
+        ToTypeArgument<T0>
+      >}>`,
+      typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => WithSpecialTypesInVectors.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         WithSpecialTypesInVectors.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => WithSpecialTypesInVectors.fromBcs(T0, data),
       bcs: WithSpecialTypesInVectors.bcs(toBcs(T0)),
       fromJSONField: (field: any) => WithSpecialTypesInVectors.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<
-        typeof WithSpecialTypesInVectors.new<ToTypeArgument<T0>>
-      >,
+      fetch: async (client: SuiClient, id: string) =>
+        WithSpecialTypesInVectors.fetch(client, T0, id),
+      kind: 'StructClassReified',
     }
   }
 
-  static fromFields<T0 extends ReifiedTypeArgument>(
+  static fromFields<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     fields: Record<string, any>
   ): WithSpecialTypesInVectors<ToTypeArgument<T0>> {
@@ -1795,7 +1908,7 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> {
     })
   }
 
-  static fromFieldsWithTypes<T0 extends ReifiedTypeArgument>(
+  static fromFieldsWithTypes<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     item: FieldsWithTypes
   ): WithSpecialTypesInVectors<ToTypeArgument<T0>> {
@@ -1821,7 +1934,7 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> {
     })
   }
 
-  static fromBcs<T0 extends ReifiedTypeArgument>(
+  static fromBcs<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     data: Uint8Array
   ): WithSpecialTypesInVectors<ToTypeArgument<T0>> {
@@ -1855,7 +1968,7 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends ReifiedTypeArgument>(
+  static fromJSONField<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     field: any
   ): WithSpecialTypesInVectors<ToTypeArgument<T0>> {
@@ -1873,7 +1986,7 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> {
     })
   }
 
-  static fromJSON<T0 extends ReifiedTypeArgument>(
+  static fromJSON<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     json: Record<string, any>
   ): WithSpecialTypesInVectors<ToTypeArgument<T0>> {
@@ -1889,7 +2002,7 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> {
     return WithSpecialTypesInVectors.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T0 extends ReifiedTypeArgument>(
+  static fromSuiParsedData<T0 extends Reified<TypeArgument>>(
     typeArg: T0,
     content: SuiParsedData
   ): WithSpecialTypesInVectors<ToTypeArgument<T0>> {
@@ -1904,7 +2017,7 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> {
     return WithSpecialTypesInVectors.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T0 extends ReifiedTypeArgument>(
+  static async fetch<T0 extends Reified<TypeArgument>>(
     client: SuiClient,
     typeArg: T0,
     id: string

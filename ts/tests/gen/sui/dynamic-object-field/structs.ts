@@ -1,8 +1,8 @@
 import {
-  ReifiedTypeArgument,
+  Reified,
   ToField,
-  ToPhantomTypeArgument,
   ToTypeArgument,
+  ToTypeStr,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -12,10 +12,10 @@ import {
   extractType,
   fieldToJSON,
   toBcs,
-  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Wrapper =============================== */
 
@@ -34,8 +34,8 @@ export class Wrapper<Name extends TypeArgument> {
   static readonly $typeName = '0x2::dynamic_object_field::Wrapper'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString =
-    null as unknown as `0x2::dynamic_object_field::Wrapper<${ToPhantom<Name>}>`
+  readonly $fullTypeName =
+    null as unknown as `0x2::dynamic_object_field::Wrapper<${ToTypeStr<Name>}>`
 
   readonly $typeName = Wrapper.$typeName
 
@@ -56,38 +56,41 @@ export class Wrapper<Name extends TypeArgument> {
     this.name = name
   }
 
-  static new<Name extends ReifiedTypeArgument>(
+  static new<Name extends Reified<TypeArgument>>(
     typeArg: Name,
     name: ToField<ToTypeArgument<Name>>
   ): Wrapper<ToTypeArgument<Name>> {
     return new Wrapper(extractType(typeArg), name)
   }
 
-  static reified<Name extends ReifiedTypeArgument>(Name: Name) {
+  static reified<Name extends Reified<TypeArgument>>(
+    Name: Name
+  ): Reified<Wrapper<ToTypeArgument<Name>>> {
     return {
       typeName: Wrapper.$typeName,
-      typeArgs: [Name],
       fullTypeName: composeSuiType(
         Wrapper.$typeName,
         ...[extractType(Name)]
-      ) as `0x2::dynamic_object_field::Wrapper<${ToPhantomTypeArgument<Name>}>`,
+      ) as `0x2::dynamic_object_field::Wrapper<${ToTypeStr<ToTypeArgument<Name>>}>`,
+      typeArgs: [Name],
       fromFields: (fields: Record<string, any>) => Wrapper.fromFields(Name, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Wrapper.fromFieldsWithTypes(Name, item),
       fromBcs: (data: Uint8Array) => Wrapper.fromBcs(Name, data),
       bcs: Wrapper.bcs(toBcs(Name)),
       fromJSONField: (field: any) => Wrapper.fromJSONField(Name, field),
-      __class: null as unknown as ReturnType<typeof Wrapper.new<ToTypeArgument<Name>>>,
+      fetch: async (client: SuiClient, id: string) => Wrapper.fetch(client, Name, id),
+      kind: 'StructClassReified',
     }
   }
 
-  static fromFields<Name extends ReifiedTypeArgument>(
+  static fromFields<Name extends Reified<TypeArgument>>(
     typeArg: Name,
     fields: Record<string, any>
   ): Wrapper<ToTypeArgument<Name>> {
     return Wrapper.new(typeArg, decodeFromFields(typeArg, fields.name))
   }
 
-  static fromFieldsWithTypes<Name extends ReifiedTypeArgument>(
+  static fromFieldsWithTypes<Name extends Reified<TypeArgument>>(
     typeArg: Name,
     item: FieldsWithTypes
   ): Wrapper<ToTypeArgument<Name>> {
@@ -99,7 +102,7 @@ export class Wrapper<Name extends TypeArgument> {
     return Wrapper.new(typeArg, decodeFromFieldsWithTypes(typeArg, item.fields.name))
   }
 
-  static fromBcs<Name extends ReifiedTypeArgument>(
+  static fromBcs<Name extends Reified<TypeArgument>>(
     typeArg: Name,
     data: Uint8Array
   ): Wrapper<ToTypeArgument<Name>> {
@@ -118,14 +121,14 @@ export class Wrapper<Name extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<Name extends ReifiedTypeArgument>(
+  static fromJSONField<Name extends Reified<TypeArgument>>(
     typeArg: Name,
     field: any
   ): Wrapper<ToTypeArgument<Name>> {
     return Wrapper.new(typeArg, decodeFromJSONField(typeArg, field.name))
   }
 
-  static fromJSON<Name extends ReifiedTypeArgument>(
+  static fromJSON<Name extends Reified<TypeArgument>>(
     typeArg: Name,
     json: Record<string, any>
   ): Wrapper<ToTypeArgument<Name>> {
@@ -139,5 +142,33 @@ export class Wrapper<Name extends TypeArgument> {
     )
 
     return Wrapper.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<Name extends Reified<TypeArgument>>(
+    typeArg: Name,
+    content: SuiParsedData
+  ): Wrapper<ToTypeArgument<Name>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isWrapper(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a Wrapper object`)
+    }
+    return Wrapper.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<Name extends Reified<TypeArgument>>(
+    client: SuiClient,
+    typeArg: Name,
+    id: string
+  ): Promise<Wrapper<ToTypeArgument<Name>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching Wrapper object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isWrapper(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a Wrapper object`)
+    }
+    return Wrapper.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }

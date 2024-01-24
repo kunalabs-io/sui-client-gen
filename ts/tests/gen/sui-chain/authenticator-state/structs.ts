@@ -1,5 +1,6 @@
 import * as reified from '../../_framework/reified'
 import {
+  Reified,
   ToField,
   Vector,
   decodeFromFields,
@@ -31,7 +32,7 @@ export class AuthenticatorState {
   static readonly $typeName = '0x2::authenticator_state::AuthenticatorState'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::authenticator_state::AuthenticatorState'
+  readonly $fullTypeName = null as unknown as '0x2::authenticator_state::AuthenticatorState'
 
   readonly $typeName = AuthenticatorState.$typeName
 
@@ -54,20 +55,21 @@ export class AuthenticatorState {
     return new AuthenticatorState(fields)
   }
 
-  static reified() {
+  static reified(): Reified<AuthenticatorState> {
     return {
       typeName: AuthenticatorState.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         AuthenticatorState.$typeName,
         ...[]
       ) as '0x2::authenticator_state::AuthenticatorState',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => AuthenticatorState.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => AuthenticatorState.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => AuthenticatorState.fromBcs(data),
       bcs: AuthenticatorState.bcs,
       fromJSONField: (field: any) => AuthenticatorState.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof AuthenticatorState.new>,
+      fetch: async (client: SuiClient, id: string) => AuthenticatorState.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -162,7 +164,7 @@ export class AuthenticatorStateInner {
   static readonly $typeName = '0x2::authenticator_state::AuthenticatorStateInner'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::authenticator_state::AuthenticatorStateInner'
+  readonly $fullTypeName = null as unknown as '0x2::authenticator_state::AuthenticatorStateInner'
 
   readonly $typeName = AuthenticatorStateInner.$typeName
 
@@ -185,21 +187,22 @@ export class AuthenticatorStateInner {
     return new AuthenticatorStateInner(fields)
   }
 
-  static reified() {
+  static reified(): Reified<AuthenticatorStateInner> {
     return {
       typeName: AuthenticatorStateInner.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         AuthenticatorStateInner.$typeName,
         ...[]
       ) as '0x2::authenticator_state::AuthenticatorStateInner',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => AuthenticatorStateInner.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         AuthenticatorStateInner.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => AuthenticatorStateInner.fromBcs(data),
       bcs: AuthenticatorStateInner.bcs,
       fromJSONField: (field: any) => AuthenticatorStateInner.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof AuthenticatorStateInner.new>,
+      fetch: async (client: SuiClient, id: string) => AuthenticatorStateInner.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -256,6 +259,34 @@ export class AuthenticatorStateInner {
 
     return AuthenticatorStateInner.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): AuthenticatorStateInner {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isAuthenticatorStateInner(content.type)) {
+      throw new Error(
+        `object at ${(content.fields as any).id} is not a AuthenticatorStateInner object`
+      )
+    }
+    return AuthenticatorStateInner.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<AuthenticatorStateInner> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(
+        `error fetching AuthenticatorStateInner object at id ${id}: ${res.error.code}`
+      )
+    }
+    if (
+      res.data?.content?.dataType !== 'moveObject' ||
+      !isAuthenticatorStateInner(res.data.content.type)
+    ) {
+      throw new Error(`object at id ${id} is not a AuthenticatorStateInner object`)
+    }
+    return AuthenticatorStateInner.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== JWK =============================== */
@@ -278,7 +309,7 @@ export class JWK {
   static readonly $typeName = '0x2::authenticator_state::JWK'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::authenticator_state::JWK'
+  readonly $fullTypeName = null as unknown as '0x2::authenticator_state::JWK'
 
   readonly $typeName = JWK.$typeName
 
@@ -307,17 +338,18 @@ export class JWK {
     return new JWK(fields)
   }
 
-  static reified() {
+  static reified(): Reified<JWK> {
     return {
       typeName: JWK.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(JWK.$typeName, ...[]) as '0x2::authenticator_state::JWK',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => JWK.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => JWK.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => JWK.fromBcs(data),
       bcs: JWK.bcs,
       fromJSONField: (field: any) => JWK.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof JWK.new>,
+      fetch: async (client: SuiClient, id: string) => JWK.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -376,6 +408,27 @@ export class JWK {
 
     return JWK.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): JWK {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isJWK(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a JWK object`)
+    }
+    return JWK.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<JWK> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching JWK object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isJWK(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a JWK object`)
+    }
+    return JWK.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== JwkId =============================== */
@@ -396,7 +449,7 @@ export class JwkId {
   static readonly $typeName = '0x2::authenticator_state::JwkId'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::authenticator_state::JwkId'
+  readonly $fullTypeName = null as unknown as '0x2::authenticator_state::JwkId'
 
   readonly $typeName = JwkId.$typeName
 
@@ -419,17 +472,18 @@ export class JwkId {
     return new JwkId(fields)
   }
 
-  static reified() {
+  static reified(): Reified<JwkId> {
     return {
       typeName: JwkId.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(JwkId.$typeName, ...[]) as '0x2::authenticator_state::JwkId',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => JwkId.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => JwkId.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => JwkId.fromBcs(data),
       bcs: JwkId.bcs,
       fromJSONField: (field: any) => JwkId.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof JwkId.new>,
+      fetch: async (client: SuiClient, id: string) => JwkId.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -480,6 +534,27 @@ export class JwkId {
 
     return JwkId.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): JwkId {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isJwkId(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a JwkId object`)
+    }
+    return JwkId.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<JwkId> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching JwkId object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isJwkId(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a JwkId object`)
+    }
+    return JwkId.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== ActiveJwk =============================== */
@@ -501,7 +576,7 @@ export class ActiveJwk {
   static readonly $typeName = '0x2::authenticator_state::ActiveJwk'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::authenticator_state::ActiveJwk'
+  readonly $fullTypeName = null as unknown as '0x2::authenticator_state::ActiveJwk'
 
   readonly $typeName = ActiveJwk.$typeName
 
@@ -527,20 +602,21 @@ export class ActiveJwk {
     return new ActiveJwk(fields)
   }
 
-  static reified() {
+  static reified(): Reified<ActiveJwk> {
     return {
       typeName: ActiveJwk.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         ActiveJwk.$typeName,
         ...[]
       ) as '0x2::authenticator_state::ActiveJwk',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => ActiveJwk.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ActiveJwk.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ActiveJwk.fromBcs(data),
       bcs: ActiveJwk.bcs,
       fromJSONField: (field: any) => ActiveJwk.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof ActiveJwk.new>,
+      fetch: async (client: SuiClient, id: string) => ActiveJwk.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -594,5 +670,26 @@ export class ActiveJwk {
     }
 
     return ActiveJwk.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): ActiveJwk {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isActiveJwk(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a ActiveJwk object`)
+    }
+    return ActiveJwk.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<ActiveJwk> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching ActiveJwk object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isActiveJwk(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a ActiveJwk object`)
+    }
+    return ActiveJwk.fromFieldsWithTypes(res.data.content)
   }
 }

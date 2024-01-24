@@ -1,9 +1,10 @@
 import {
   PhantomTypeArgument,
+  Reified,
   ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -14,6 +15,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { ID } from '../object/structs'
 import { bcs } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Receiving =============================== */
 
@@ -33,7 +35,7 @@ export class Receiving<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer::Receiving'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::transfer::Receiving<${T0}>`
+  readonly $fullTypeName = null as unknown as `0x2::transfer::Receiving<${ToTypeStr<T0>}>`
 
   readonly $typeName = Receiving.$typeName
 
@@ -63,20 +65,23 @@ export class Receiving<T0 extends PhantomTypeArgument> {
     return new Receiving(extractType(typeArg), fields)
   }
 
-  static reified<T0 extends ReifiedPhantomTypeArgument>(T0: T0) {
+  static reified<T0 extends ReifiedPhantomTypeArgument>(
+    T0: T0
+  ): Reified<Receiving<ToPhantomTypeArgument<T0>>> {
     return {
       typeName: Receiving.$typeName,
-      typeArgs: [T0],
       fullTypeName: composeSuiType(
         Receiving.$typeName,
         ...[extractType(T0)]
-      ) as `0x2::transfer::Receiving<${ToPhantomTypeArgument<T0>}>`,
+      ) as `0x2::transfer::Receiving<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Receiving.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Receiving.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => Receiving.fromBcs(T0, data),
       bcs: Receiving.bcs,
       fromJSONField: (field: any) => Receiving.fromJSONField(T0, field),
-      __class: null as unknown as ReturnType<typeof Receiving.new<ToTypeArgument<T0>>>,
+      fetch: async (client: SuiClient, id: string) => Receiving.fetch(client, T0, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -147,5 +152,33 @@ export class Receiving<T0 extends PhantomTypeArgument> {
     )
 
     return Receiving.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+    typeArg: T0,
+    content: SuiParsedData
+  ): Receiving<ToPhantomTypeArgument<T0>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isReceiving(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a Receiving object`)
+    }
+    return Receiving.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+    client: SuiClient,
+    typeArg: T0,
+    id: string
+  ): Promise<Receiving<ToPhantomTypeArgument<T0>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching Receiving object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isReceiving(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a Receiving object`)
+    }
+    return Receiving.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }

@@ -1,5 +1,6 @@
 import * as reified from '../../_framework/reified'
 import {
+  Reified,
   ToField,
   Vector,
   decodeFromFields,
@@ -9,6 +10,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== BCS =============================== */
 
@@ -27,7 +29,7 @@ export class BCS {
   static readonly $typeName = '0x2::bcs::BCS'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::bcs::BCS'
+  readonly $fullTypeName = null as unknown as '0x2::bcs::BCS'
 
   readonly $typeName = BCS.$typeName
 
@@ -47,17 +49,18 @@ export class BCS {
     return new BCS(bytes)
   }
 
-  static reified() {
+  static reified(): Reified<BCS> {
     return {
       typeName: BCS.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(BCS.$typeName, ...[]) as '0x2::bcs::BCS',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => BCS.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => BCS.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => BCS.fromBcs(data),
       bcs: BCS.bcs,
       fromJSONField: (field: any) => BCS.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof BCS.new>,
+      fetch: async (client: SuiClient, id: string) => BCS.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -97,5 +100,26 @@ export class BCS {
     }
 
     return BCS.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): BCS {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isBCS(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a BCS object`)
+    }
+    return BCS.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<BCS> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching BCS object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isBCS(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a BCS object`)
+    }
+    return BCS.fromFieldsWithTypes(res.data.content)
   }
 }

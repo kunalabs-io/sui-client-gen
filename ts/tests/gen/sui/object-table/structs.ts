@@ -1,9 +1,10 @@
 import {
   PhantomTypeArgument,
+  Reified,
   ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -34,7 +35,8 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
   static readonly $typeName = '0x2::object_table::ObjectTable'
   static readonly $numTypeParams = 2
 
-  __reifiedFullTypeString = null as unknown as `0x2::object_table::ObjectTable<${K}, ${V}>`
+  readonly $fullTypeName =
+    null as unknown as `0x2::object_table::ObjectTable<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
 
   readonly $typeName = ObjectTable.$typeName
 
@@ -67,22 +69,23 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
   static reified<K extends ReifiedPhantomTypeArgument, V extends ReifiedPhantomTypeArgument>(
     K: K,
     V: V
-  ) {
+  ): Reified<ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>> {
     return {
       typeName: ObjectTable.$typeName,
-      typeArgs: [K, V],
       fullTypeName: composeSuiType(
         ObjectTable.$typeName,
         ...[extractType(K), extractType(V)]
-      ) as `0x2::object_table::ObjectTable<${ToPhantomTypeArgument<K>}, ${ToPhantomTypeArgument<V>}>`,
+      ) as `0x2::object_table::ObjectTable<${ToTypeStr<ToPhantomTypeArgument<K>>}, ${ToTypeStr<
+        ToPhantomTypeArgument<V>
+      >}>`,
+      typeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => ObjectTable.fromFields([K, V], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ObjectTable.fromFieldsWithTypes([K, V], item),
       fromBcs: (data: Uint8Array) => ObjectTable.fromBcs([K, V], data),
       bcs: ObjectTable.bcs,
       fromJSONField: (field: any) => ObjectTable.fromJSONField([K, V], field),
-      __class: null as unknown as ReturnType<
-        typeof ObjectTable.new<ToTypeArgument<K>, ToTypeArgument<V>>
-      >,
+      fetch: async (client: SuiClient, id: string) => ObjectTable.fetch(client, [K, V], id),
+      kind: 'StructClassReified',
     }
   }
 

@@ -1,8 +1,8 @@
 import {
-  ReifiedTypeArgument,
+  Reified,
   ToField,
-  ToPhantomTypeArgument,
   ToTypeArgument,
+  ToTypeStr,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -12,7 +12,6 @@ import {
   extractType,
   fieldToJSON,
   toBcs,
-  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
@@ -38,8 +37,8 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> {
   static readonly $typeName = '0x2::dynamic_field::Field'
   static readonly $numTypeParams = 2
 
-  __reifiedFullTypeString =
-    null as unknown as `0x2::dynamic_field::Field<${ToPhantom<Name>}, ${ToPhantom<Value>}>`
+  readonly $fullTypeName =
+    null as unknown as `0x2::dynamic_field::Field<${ToTypeStr<Name>}, ${ToTypeStr<Value>}>`
 
   readonly $typeName = Field.$typeName
 
@@ -66,37 +65,38 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> {
     this.value = fields.value
   }
 
-  static new<Name extends ReifiedTypeArgument, Value extends ReifiedTypeArgument>(
+  static new<Name extends Reified<TypeArgument>, Value extends Reified<TypeArgument>>(
     typeArgs: [Name, Value],
     fields: FieldFields<ToTypeArgument<Name>, ToTypeArgument<Value>>
   ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
     return new Field(typeArgs.map(extractType) as [string, string], fields)
   }
 
-  static reified<Name extends ReifiedTypeArgument, Value extends ReifiedTypeArgument>(
+  static reified<Name extends Reified<TypeArgument>, Value extends Reified<TypeArgument>>(
     Name: Name,
     Value: Value
-  ) {
+  ): Reified<Field<ToTypeArgument<Name>, ToTypeArgument<Value>>> {
     return {
       typeName: Field.$typeName,
-      typeArgs: [Name, Value],
       fullTypeName: composeSuiType(
         Field.$typeName,
         ...[extractType(Name), extractType(Value)]
-      ) as `0x2::dynamic_field::Field<${ToPhantomTypeArgument<Name>}, ${ToPhantomTypeArgument<Value>}>`,
+      ) as `0x2::dynamic_field::Field<${ToTypeStr<ToTypeArgument<Name>>}, ${ToTypeStr<
+        ToTypeArgument<Value>
+      >}>`,
+      typeArgs: [Name, Value],
       fromFields: (fields: Record<string, any>) => Field.fromFields([Name, Value], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         Field.fromFieldsWithTypes([Name, Value], item),
       fromBcs: (data: Uint8Array) => Field.fromBcs([Name, Value], data),
       bcs: Field.bcs(toBcs(Name), toBcs(Value)),
       fromJSONField: (field: any) => Field.fromJSONField([Name, Value], field),
-      __class: null as unknown as ReturnType<
-        typeof Field.new<ToTypeArgument<Name>, ToTypeArgument<Value>>
-      >,
+      fetch: async (client: SuiClient, id: string) => Field.fetch(client, [Name, Value], id),
+      kind: 'StructClassReified',
     }
   }
 
-  static fromFields<Name extends ReifiedTypeArgument, Value extends ReifiedTypeArgument>(
+  static fromFields<Name extends Reified<TypeArgument>, Value extends Reified<TypeArgument>>(
     typeArgs: [Name, Value],
     fields: Record<string, any>
   ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
@@ -107,7 +107,10 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> {
     })
   }
 
-  static fromFieldsWithTypes<Name extends ReifiedTypeArgument, Value extends ReifiedTypeArgument>(
+  static fromFieldsWithTypes<
+    Name extends Reified<TypeArgument>,
+    Value extends Reified<TypeArgument>,
+  >(
     typeArgs: [Name, Value],
     item: FieldsWithTypes
   ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
@@ -123,7 +126,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> {
     })
   }
 
-  static fromBcs<Name extends ReifiedTypeArgument, Value extends ReifiedTypeArgument>(
+  static fromBcs<Name extends Reified<TypeArgument>, Value extends Reified<TypeArgument>>(
     typeArgs: [Name, Value],
     data: Uint8Array
   ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
@@ -142,7 +145,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
-  static fromJSONField<Name extends ReifiedTypeArgument, Value extends ReifiedTypeArgument>(
+  static fromJSONField<Name extends Reified<TypeArgument>, Value extends Reified<TypeArgument>>(
     typeArgs: [Name, Value],
     field: any
   ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
@@ -153,7 +156,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> {
     })
   }
 
-  static fromJSON<Name extends ReifiedTypeArgument, Value extends ReifiedTypeArgument>(
+  static fromJSON<Name extends Reified<TypeArgument>, Value extends Reified<TypeArgument>>(
     typeArgs: [Name, Value],
     json: Record<string, any>
   ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
@@ -169,7 +172,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> {
     return Field.fromJSONField(typeArgs, json)
   }
 
-  static fromSuiParsedData<Name extends ReifiedTypeArgument, Value extends ReifiedTypeArgument>(
+  static fromSuiParsedData<Name extends Reified<TypeArgument>, Value extends Reified<TypeArgument>>(
     typeArgs: [Name, Value],
     content: SuiParsedData
   ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
@@ -182,7 +185,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> {
     return Field.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch<Name extends ReifiedTypeArgument, Value extends ReifiedTypeArgument>(
+  static async fetch<Name extends Reified<TypeArgument>, Value extends Reified<TypeArgument>>(
     client: SuiClient,
     typeArgs: [Name, Value],
     id: string

@@ -1,4 +1,5 @@
 import {
+  Reified,
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -7,6 +8,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { String } from '../ascii/structs'
 import { bcs } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== TypeName =============================== */
 
@@ -25,7 +27,7 @@ export class TypeName {
   static readonly $typeName = '0x1::type_name::TypeName'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x1::type_name::TypeName'
+  readonly $fullTypeName = null as unknown as '0x1::type_name::TypeName'
 
   readonly $typeName = TypeName.$typeName
 
@@ -45,17 +47,18 @@ export class TypeName {
     return new TypeName(name)
   }
 
-  static reified() {
+  static reified(): Reified<TypeName> {
     return {
       typeName: TypeName.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(TypeName.$typeName, ...[]) as '0x1::type_name::TypeName',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => TypeName.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TypeName.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => TypeName.fromBcs(data),
       bcs: TypeName.bcs,
       fromJSONField: (field: any) => TypeName.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof TypeName.new>,
+      fetch: async (client: SuiClient, id: string) => TypeName.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -95,5 +98,26 @@ export class TypeName {
     }
 
     return TypeName.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): TypeName {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isTypeName(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a TypeName object`)
+    }
+    return TypeName.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<TypeName> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching TypeName object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isTypeName(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a TypeName object`)
+    }
+    return TypeName.fromFieldsWithTypes(res.data.content)
   }
 }

@@ -1,9 +1,10 @@
 import {
   PhantomTypeArgument,
+  Reified,
   ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -13,6 +14,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Balance =============================== */
 
@@ -31,7 +33,7 @@ export class Balance<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::balance::Balance'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::balance::Balance<${T}>`
+  readonly $fullTypeName = null as unknown as `0x2::balance::Balance<${ToTypeStr<T>}>`
 
   readonly $typeName = Balance.$typeName
 
@@ -58,20 +60,23 @@ export class Balance<T extends PhantomTypeArgument> {
     return new Balance(extractType(typeArg), value)
   }
 
-  static reified<T extends ReifiedPhantomTypeArgument>(T: T) {
+  static reified<T extends ReifiedPhantomTypeArgument>(
+    T: T
+  ): Reified<Balance<ToPhantomTypeArgument<T>>> {
     return {
       typeName: Balance.$typeName,
-      typeArgs: [T],
       fullTypeName: composeSuiType(
         Balance.$typeName,
         ...[extractType(T)]
-      ) as `0x2::balance::Balance<${ToPhantomTypeArgument<T>}>`,
+      ) as `0x2::balance::Balance<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      typeArgs: [T],
       fromFields: (fields: Record<string, any>) => Balance.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Balance.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Balance.fromBcs(T, data),
       bcs: Balance.bcs,
       fromJSONField: (field: any) => Balance.fromJSONField(T, field),
-      __class: null as unknown as ReturnType<typeof Balance.new<ToTypeArgument<T>>>,
+      fetch: async (client: SuiClient, id: string) => Balance.fetch(client, T, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -133,6 +138,34 @@ export class Balance<T extends PhantomTypeArgument> {
 
     return Balance.fromJSONField(typeArg, json)
   }
+
+  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    content: SuiParsedData
+  ): Balance<ToPhantomTypeArgument<T>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isBalance(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a Balance object`)
+    }
+    return Balance.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<T extends ReifiedPhantomTypeArgument>(
+    client: SuiClient,
+    typeArg: T,
+    id: string
+  ): Promise<Balance<ToPhantomTypeArgument<T>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching Balance object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isBalance(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a Balance object`)
+    }
+    return Balance.fromFieldsWithTypes(typeArg, res.data.content)
+  }
 }
 
 /* ============================== Supply =============================== */
@@ -152,7 +185,7 @@ export class Supply<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::balance::Supply'
   static readonly $numTypeParams = 1
 
-  __reifiedFullTypeString = null as unknown as `0x2::balance::Supply<${T}>`
+  readonly $fullTypeName = null as unknown as `0x2::balance::Supply<${ToTypeStr<T>}>`
 
   readonly $typeName = Supply.$typeName
 
@@ -179,20 +212,23 @@ export class Supply<T extends PhantomTypeArgument> {
     return new Supply(extractType(typeArg), value)
   }
 
-  static reified<T extends ReifiedPhantomTypeArgument>(T: T) {
+  static reified<T extends ReifiedPhantomTypeArgument>(
+    T: T
+  ): Reified<Supply<ToPhantomTypeArgument<T>>> {
     return {
       typeName: Supply.$typeName,
-      typeArgs: [T],
       fullTypeName: composeSuiType(
         Supply.$typeName,
         ...[extractType(T)]
-      ) as `0x2::balance::Supply<${ToPhantomTypeArgument<T>}>`,
+      ) as `0x2::balance::Supply<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      typeArgs: [T],
       fromFields: (fields: Record<string, any>) => Supply.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Supply.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Supply.fromBcs(T, data),
       bcs: Supply.bcs,
       fromJSONField: (field: any) => Supply.fromJSONField(T, field),
-      __class: null as unknown as ReturnType<typeof Supply.new<ToTypeArgument<T>>>,
+      fetch: async (client: SuiClient, id: string) => Supply.fetch(client, T, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -253,5 +289,33 @@ export class Supply<T extends PhantomTypeArgument> {
     )
 
     return Supply.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+    typeArg: T,
+    content: SuiParsedData
+  ): Supply<ToPhantomTypeArgument<T>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isSupply(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a Supply object`)
+    }
+    return Supply.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<T extends ReifiedPhantomTypeArgument>(
+    client: SuiClient,
+    typeArg: T,
+    id: string
+  ): Promise<Supply<ToPhantomTypeArgument<T>>> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching Supply object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isSupply(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a Supply object`)
+    }
+    return Supply.fromFieldsWithTypes(typeArg, res.data.content)
   }
 }

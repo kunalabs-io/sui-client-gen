@@ -1,4 +1,5 @@
 import {
+  Reified,
   ToField,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -6,6 +7,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs, fromHEX, toHEX } from '@mysten/bcs'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== ID =============================== */
 
@@ -24,7 +26,7 @@ export class ID {
   static readonly $typeName = '0x2::object::ID'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::object::ID'
+  readonly $fullTypeName = null as unknown as '0x2::object::ID'
 
   readonly $typeName = ID.$typeName
 
@@ -47,17 +49,18 @@ export class ID {
     return new ID(bytes)
   }
 
-  static reified() {
+  static reified(): Reified<ID> {
     return {
       typeName: ID.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(ID.$typeName, ...[]) as '0x2::object::ID',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => ID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ID.fromBcs(data),
       bcs: ID.bcs,
       fromJSONField: (field: any) => ID.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof ID.new>,
+      fetch: async (client: SuiClient, id: string) => ID.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -98,6 +101,27 @@ export class ID {
 
     return ID.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): ID {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isID(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a ID object`)
+    }
+    return ID.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<ID> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching ID object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isID(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a ID object`)
+    }
+    return ID.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== UID =============================== */
@@ -117,7 +141,7 @@ export class UID {
   static readonly $typeName = '0x2::object::UID'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::object::UID'
+  readonly $fullTypeName = null as unknown as '0x2::object::UID'
 
   readonly $typeName = UID.$typeName
 
@@ -137,17 +161,18 @@ export class UID {
     return new UID(id)
   }
 
-  static reified() {
+  static reified(): Reified<UID> {
     return {
       typeName: UID.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(UID.$typeName, ...[]) as '0x2::object::UID',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => UID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UID.fromBcs(data),
       bcs: UID.bcs,
       fromJSONField: (field: any) => UID.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof UID.new>,
+      fetch: async (client: SuiClient, id: string) => UID.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -187,5 +212,26 @@ export class UID {
     }
 
     return UID.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): UID {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isUID(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a UID object`)
+    }
+    return UID.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<UID> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching UID object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isUID(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a UID object`)
+    }
+    return UID.fromFieldsWithTypes(res.data.content)
   }
 }

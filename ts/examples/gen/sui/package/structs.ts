@@ -1,6 +1,7 @@
 import * as reified from '../../_framework/reified'
 import { String } from '../../_dependencies/source/0x1/ascii/structs'
 import {
+  Reified,
   ToField,
   Vector,
   decodeFromFields,
@@ -32,7 +33,7 @@ export class Publisher {
   static readonly $typeName = '0x2::package::Publisher'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::package::Publisher'
+  readonly $fullTypeName = null as unknown as '0x2::package::Publisher'
 
   readonly $typeName = Publisher.$typeName
 
@@ -58,17 +59,18 @@ export class Publisher {
     return new Publisher(fields)
   }
 
-  static reified() {
+  static reified(): Reified<Publisher> {
     return {
       typeName: Publisher.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(Publisher.$typeName, ...[]) as '0x2::package::Publisher',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => Publisher.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Publisher.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Publisher.fromBcs(data),
       bcs: Publisher.bcs,
       fromJSONField: (field: any) => Publisher.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof Publisher.new>,
+      fetch: async (client: SuiClient, id: string) => Publisher.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -166,7 +168,7 @@ export class UpgradeCap {
   static readonly $typeName = '0x2::package::UpgradeCap'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::package::UpgradeCap'
+  readonly $fullTypeName = null as unknown as '0x2::package::UpgradeCap'
 
   readonly $typeName = UpgradeCap.$typeName
 
@@ -195,17 +197,18 @@ export class UpgradeCap {
     return new UpgradeCap(fields)
   }
 
-  static reified() {
+  static reified(): Reified<UpgradeCap> {
     return {
       typeName: UpgradeCap.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(UpgradeCap.$typeName, ...[]) as '0x2::package::UpgradeCap',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => UpgradeCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeCap.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UpgradeCap.fromBcs(data),
       bcs: UpgradeCap.bcs,
       fromJSONField: (field: any) => UpgradeCap.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof UpgradeCap.new>,
+      fetch: async (client: SuiClient, id: string) => UpgradeCap.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -305,7 +308,7 @@ export class UpgradeReceipt {
   static readonly $typeName = '0x2::package::UpgradeReceipt'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::package::UpgradeReceipt'
+  readonly $fullTypeName = null as unknown as '0x2::package::UpgradeReceipt'
 
   readonly $typeName = UpgradeReceipt.$typeName
 
@@ -328,20 +331,21 @@ export class UpgradeReceipt {
     return new UpgradeReceipt(fields)
   }
 
-  static reified() {
+  static reified(): Reified<UpgradeReceipt> {
     return {
       typeName: UpgradeReceipt.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(
         UpgradeReceipt.$typeName,
         ...[]
       ) as '0x2::package::UpgradeReceipt',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => UpgradeReceipt.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeReceipt.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UpgradeReceipt.fromBcs(data),
       bcs: UpgradeReceipt.bcs,
       fromJSONField: (field: any) => UpgradeReceipt.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof UpgradeReceipt.new>,
+      fetch: async (client: SuiClient, id: string) => UpgradeReceipt.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -392,6 +396,27 @@ export class UpgradeReceipt {
 
     return UpgradeReceipt.fromJSONField(json)
   }
+
+  static fromSuiParsedData(content: SuiParsedData): UpgradeReceipt {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isUpgradeReceipt(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a UpgradeReceipt object`)
+    }
+    return UpgradeReceipt.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<UpgradeReceipt> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching UpgradeReceipt object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isUpgradeReceipt(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a UpgradeReceipt object`)
+    }
+    return UpgradeReceipt.fromFieldsWithTypes(res.data.content)
+  }
 }
 
 /* ============================== UpgradeTicket =============================== */
@@ -414,7 +439,7 @@ export class UpgradeTicket {
   static readonly $typeName = '0x2::package::UpgradeTicket'
   static readonly $numTypeParams = 0
 
-  __reifiedFullTypeString = null as unknown as '0x2::package::UpgradeTicket'
+  readonly $fullTypeName = null as unknown as '0x2::package::UpgradeTicket'
 
   readonly $typeName = UpgradeTicket.$typeName
 
@@ -443,17 +468,18 @@ export class UpgradeTicket {
     return new UpgradeTicket(fields)
   }
 
-  static reified() {
+  static reified(): Reified<UpgradeTicket> {
     return {
       typeName: UpgradeTicket.$typeName,
-      typeArgs: [],
       fullTypeName: composeSuiType(UpgradeTicket.$typeName, ...[]) as '0x2::package::UpgradeTicket',
+      typeArgs: [],
       fromFields: (fields: Record<string, any>) => UpgradeTicket.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeTicket.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UpgradeTicket.fromBcs(data),
       bcs: UpgradeTicket.bcs,
       fromJSONField: (field: any) => UpgradeTicket.fromJSONField(field),
-      __class: null as unknown as ReturnType<typeof UpgradeTicket.new>,
+      fetch: async (client: SuiClient, id: string) => UpgradeTicket.fetch(client, id),
+      kind: 'StructClassReified',
     }
   }
 
@@ -511,5 +537,26 @@ export class UpgradeTicket {
     }
 
     return UpgradeTicket.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): UpgradeTicket {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isUpgradeTicket(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a UpgradeTicket object`)
+    }
+    return UpgradeTicket.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<UpgradeTicket> {
+    const res = await client.getObject({ id, options: { showContent: true } })
+    if (res.error) {
+      throw new Error(`error fetching UpgradeTicket object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.content?.dataType !== 'moveObject' || !isUpgradeTicket(res.data.content.type)) {
+      throw new Error(`object at id ${id} is not a UpgradeTicket object`)
+    }
+    return UpgradeTicket.fromFieldsWithTypes(res.data.content)
   }
 }
