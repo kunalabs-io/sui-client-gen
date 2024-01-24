@@ -906,3 +906,162 @@ it('converts to json correctly', () => {
   const fromJSON = WithTwoGenerics.fromJSON([U, V], resJSON)
   expect(fromJSON).toEqual(obj)
 })
+
+it('decodes address field correctly', async () => {
+  const txb = new TransactionBlock()
+
+  const T = 'address'
+
+  const genericVecNested = [
+    createWithTwoGenerics(txb, ['address', 'u8'], {
+      genericField1: '0x999',
+      genericField2: 1,
+    }),
+  ]
+
+  const twoGenericsNested = createWithTwoGenerics(
+    txb,
+    [T, `${WithTwoGenerics.$typeName}<u8, u8>`],
+    {
+      genericField1: '0x111',
+      genericField2: createWithTwoGenerics(txb, ['u8', 'u8'], {
+        genericField1: 1,
+        genericField2: 2,
+      }),
+    }
+  )
+
+  const twoGenericsReifiedNested = createWithTwoGenerics(
+    txb,
+    [Bar.$typeName, `${WithTwoGenerics.$typeName}<u8, u8>`],
+    {
+      genericField1: createBar(txb, 100n),
+      genericField2: createWithTwoGenerics(txb, ['u8', 'u8'], {
+        genericField1: 1,
+        genericField2: 2,
+      }),
+    }
+  )
+
+  const twoGenericsNestedVec = [
+    createWithTwoGenerics(txb, [Bar.$typeName, `vector<${WithTwoGenerics.$typeName}<${T}, u8>>`], {
+      genericField1: createBar(txb, 100n),
+      genericField2: [
+        createWithTwoGenerics(txb, ['address', 'u8'], {
+          genericField1: '0x111',
+          genericField2: 1,
+        }),
+      ],
+    }),
+  ]
+
+  createFoo(txb, [T, Bar.$typeName], {
+    generic: '0x123',
+    reifiedPrimitiveVec: [1n, 2n, 3n],
+    reifiedObjectVec: [createBar(txb, 100n)],
+    genericVec: ['0x555'],
+    genericVecNested,
+    twoGenerics: createWithTwoGenerics(txb, ['address', Bar.$typeName], {
+      genericField1: '0x111',
+      genericField2: createBar(txb, 100n),
+    }),
+    twoGenericsReifiedPrimitive: createWithTwoGenerics(txb, ['u16', 'u64'], {
+      genericField1: 1,
+      genericField2: 2n,
+    }),
+    twoGenericsReifiedObject: createWithTwoGenerics(txb, [Bar.$typeName, Bar.$typeName], {
+      genericField1: createBar(txb, 100n),
+      genericField2: createBar(txb, 100n),
+    }),
+    twoGenericsNested,
+    twoGenericsReifiedNested,
+    twoGenericsNestedVec,
+    objRef: createBar(txb, 100n),
+  })
+
+  const res = await client.signAndExecuteTransactionBlock({
+    signer: keypair,
+    transactionBlock: txb,
+    options: {
+      showEffects: true,
+    },
+  })
+
+  const id = res.effects!.created![0].reference.objectId
+
+  const foo = await client.getObject({
+    id,
+    options: {
+      showBcs: true,
+      showContent: true,
+    },
+  })
+
+  if (foo.data?.bcs?.dataType !== 'moveObject' || foo.data?.content?.dataType !== 'moveObject') {
+    throw new Error(`not a moveObject`)
+  }
+
+  const exp = Foo.new('address', {
+    id,
+    generic: '0x0000000000000000000000000000000000000000000000000000000000000123',
+    reifiedPrimitiveVec: [1n, 2n, 3n],
+    reifiedObjectVec: [Bar.new(100n)],
+    genericVec: ['0x0000000000000000000000000000000000000000000000000000000000000555'],
+    genericVecNested: [
+      WithTwoGenerics.new(['address', 'u8'], {
+        genericField1: '0x0000000000000000000000000000000000000000000000000000000000000999',
+        genericField2: 1,
+      }),
+    ],
+    twoGenerics: WithTwoGenerics.new(['address', Bar.reified()], {
+      genericField1: '0x0000000000000000000000000000000000000000000000000000000000000111',
+      genericField2: Bar.new(100n),
+    }),
+    twoGenericsReifiedPrimitive: WithTwoGenerics.new(['u16', 'u64'], {
+      genericField1: 1,
+      genericField2: 2n,
+    }),
+    twoGenericsReifiedObject: WithTwoGenerics.new([Bar.reified(), Bar.reified()], {
+      genericField1: Bar.new(100n),
+      genericField2: Bar.new(100n),
+    }),
+    twoGenericsNested: WithTwoGenerics.new(['address', WithTwoGenerics.reified('u8', 'u8')], {
+      genericField1: '0x0000000000000000000000000000000000000000000000000000000000000111',
+      genericField2: WithTwoGenerics.new(['u8', 'u8'], {
+        genericField1: 1,
+        genericField2: 2,
+      }),
+    }),
+    twoGenericsReifiedNested: WithTwoGenerics.new(
+      [Bar.reified(), WithTwoGenerics.reified('u8', 'u8')],
+      {
+        genericField1: Bar.new(100n),
+        genericField2: WithTwoGenerics.new(['u8', 'u8'], {
+          genericField1: 1,
+          genericField2: 2,
+        }),
+      }
+    ),
+    twoGenericsNestedVec: [
+      WithTwoGenerics.new([Bar.reified(), vector(WithTwoGenerics.reified('address', 'u8'))], {
+        genericField1: Bar.new(100n),
+        genericField2: [
+          WithTwoGenerics.new(['address', 'u8'], {
+            genericField1: '0x0000000000000000000000000000000000000000000000000000000000000111',
+            genericField2: 1,
+          }) as WithTwoGenerics<'address', 'u8'>,
+        ],
+      }),
+    ],
+    dummy: Dummy.new(false),
+    other: StructFromOtherModule.new(false),
+  })
+
+  expect(Foo.fromBcs('address', fromB64(foo.data.bcs.bcsBytes))).toEqual(exp)
+  expect(Foo.fromFieldsWithTypes('address', foo.data.content)).toEqual(exp)
+  expect(Foo.fromSuiParsedData('address', foo.data.content)).toEqual(exp)
+  expect(await Foo.fetch(client, 'address', id)).toEqual(exp)
+
+  const de = Foo.fromFieldsWithTypes('address', foo.data.content)
+  expect(Foo.fromJSON('address', de.toJSON())).toEqual(exp)
+})
