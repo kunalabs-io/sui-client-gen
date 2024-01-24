@@ -1571,8 +1571,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                         )>($(for param in non_phantom_param_strs.iter() join (, ) =>
                             $param: $param
                         )) =>
-                    })
-                    $bcs.struct($bcs_def_name, {$['\n']
+                    }) $bcs.struct($bcs_def_name, {$['\n']
                         $(for field in strct.get_fields() join (, ) =>
                             $(field.get_name().display(self.symbol_pool()).to_string()):
                                 $(self.gen_struct_bcs_def_field_value(&field.get_type(), self.strct_type_param_names(strct)))
@@ -1696,14 +1695,14 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                                 field,
                             ),
                         fetch: async (client: $sui_client, id: string) => $(&struct_name).fetch(
-                                client,
-                                $(match type_params.len() {
-                                    0 => (),
-                                    1 => { $(type_params_str[0].clone()), },
-                                    _ => { [$(for param in &type_params_str join (, ) => $param)], },
-                                })
-                                id,
-                            ),
+                            client,
+                            $(match type_params.len() {
+                                0 => (),
+                                1 => { $(type_params_str[0].clone()), },
+                                _ => { [$(for param in &type_params_str join (, ) => $param)], },
+                            })
+                            id,
+                        ),
                         kind: "StructClassReified",
                     }
                 }$['\n']
@@ -1781,8 +1780,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                         $(match non_phantom_params.len() {
                             0 => $(&struct_name).bcs.parse(data),
                             len => $(&struct_name).bcs(
-                                    $(for i in 0..len join (, ) => $to_bcs(typeArgs[$(non_phantom_param_idxs[i])]))
-                                ).parse(data),
+                                $(for i in 0..len join (, ) => $to_bcs(typeArgs[$(non_phantom_param_idxs[i])]))
+                            ).parse(data),
                         })
                     )
                 }$['\n']
