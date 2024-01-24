@@ -1009,14 +1009,17 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 let class = self.import_ctx.get_class(&field_strct);
 
                 let type_param_inner_toks = (0..ts.len()).map(|idx| {
-                    let is_phantom = field_strct.is_phantom_parameter(idx);
-                    let is_struct_or_vec = matches!(&ts[idx], Type::Struct(_, _, _) | Type::Vector(_));
+                    let wrap_to_phantom = field_strct.is_phantom_parameter(idx) && match &ts[idx] {
+                        Type::TypeParameter(t_idx) => !strct.is_phantom_parameter(*t_idx as usize),
+                        Type::Struct(_, _, _) | Type::Vector(_) => true,
+                        _ => false,
+                    };
 
                     let inner = self.gen_struct_class_field_type_inner(
                         strct, &ts[idx], type_param_names.clone(), wrap_non_phantom_type_parameter.clone(),
                         wrap_phantom_type_parameter.clone(), false
                     );
-                    if is_phantom && is_struct_or_vec {
+                    if wrap_to_phantom {
                         quote!($to_phantom<$inner>)
                     } else {
                         quote!($inner)
@@ -1140,6 +1143,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
     pub fn gen_reified(
         &mut self,
+        strct: &StructEnv,
         ty: &Type,
         type_param_names: &Vec<Tokens<JavaScript>>,
     ) -> js::Tokens {
@@ -1157,7 +1161,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 _ => panic!("unexpected primitive type: {:?}", ty),
             },
             Type::Vector(ty) => {
-                quote!($reified.vector($(self.gen_reified(ty, type_param_names))))
+                quote!($reified.vector($(self.gen_reified(strct, ty, type_param_names))))
             }
             Type::Struct(mid, sid, ts) => {
                 let field_module = self.env.get_module(*mid);
@@ -1167,9 +1171,13 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
                 let mut toks: Vec<js::Tokens> = vec![]; 
                 for (idx, ty) in ts.iter().enumerate() {
-                    let inner = self.gen_reified(ty, type_param_names);
-                    let wrap_to_phantom = field_strct.is_phantom_parameter(idx) &&
-                        !matches!(ty, Type::TypeParameter(_));
+                    let wrap_to_phantom = field_strct.is_phantom_parameter(idx) && match &ts[idx] {
+                        Type::TypeParameter(t_idx) => !strct.is_phantom_parameter(*t_idx as usize),
+                        Type::Primitive(_) => true,
+                        _ => false,
+                    };
+
+                    let inner = self.gen_reified(strct, ty, type_param_names);
                     let tok = if wrap_to_phantom {
                         quote!($reified.phantom($inner))
                     } else {
@@ -1208,7 +1216,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 .map(|idx| quote!(typeArgs[$idx]))
                 .collect::<Vec<_>>(),
         };
-        let reified = self.gen_reified(&field.get_type(), &type_param_names);
+        let reified = self.gen_reified(strct, &field.get_type(), &type_param_names);
 
         quote!(
             $decode_from_fields($(reified), $(field_arg_name))
@@ -1234,7 +1242,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 .map(|idx| quote!(typeArgs[$idx]))
                 .collect::<Vec<_>>(),
         };
-        let reified = self.gen_reified(&field.get_type(), &type_param_names);
+        let reified = self.gen_reified(strct, &field.get_type(), &type_param_names);
 
         quote!(
             $decode_from_fields_with_types_generic_or_special($(reified), $(field_arg_name))
@@ -1257,7 +1265,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 .map(|idx| quote!(typeArgs[$idx]))
                 .collect::<Vec<_>>(),
         };
-        let reified = self.gen_reified(&field.get_type(), &type_param_names);
+        let reified = self.gen_reified(strct, &field.get_type(), &type_param_names);
 
         quote!(
             $decode_from_json_field($(reified), $(field_arg_name))
