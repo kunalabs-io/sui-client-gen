@@ -1708,6 +1708,14 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     }
                 }$['\n']
 
+                static get r() {
+                    $(if type_params.is_empty() {
+                        return $(&struct_name).reified()
+                    } else {
+                        return $(&struct_name).reified
+                    })
+                }$['\n']
+
                 static fromFields$(params_toks_for_reified)(
                     $type_args_param_if_any fields: Record<string, any>
                 ): $(&struct_name)$(params_toks_for_to_type_argument) {
