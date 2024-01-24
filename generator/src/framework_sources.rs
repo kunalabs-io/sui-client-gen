@@ -8,29 +8,44 @@ pub static ESLINTRC: &str = r#"{
 
 pub static LOADER: &str = r#"
 import { compressSuiType, parseTypeName } from './util'
-import { Primitive, ReifiedTypeArgument, StructClassReified, VectorReified, vector } from './reified'
+import {
+  PhantomReified,
+  PhantomTypeArgument,
+  Primitive,
+  Reified,
+  StructClass,
+  StructClassReified,
+  TypeArgument,
+  VectorClass,
+  VectorClassReified,
+  vector,
+} from './reified'
 
 export type PrimitiveValue = string | number | boolean | bigint
 
-interface StructClass {
+interface _StructClass {
   $typeName: string
   $numTypeParams: number
-  reified(...Ts: ReifiedTypeArgument[]): StructClassReified
+  reified(
+    ...Ts: Array<Reified<TypeArgument> | PhantomReified<PhantomTypeArgument>>
+  ): StructClassReified<StructClass>
 }
 
 export class StructClassLoader {
-  private map: Map<string, StructClass> = new Map()
+  private map: Map<string, _StructClass> = new Map()
 
-  register(...classes: StructClass[]) {
+  register(...classes: _StructClass[]) {
     for (const cls of classes) {
       this.map.set(cls.$typeName, cls)
     }
   }
 
   reified<T extends Primitive>(type: T): T
-  reified(type: `vector<${string}>`): VectorReified
-  reified(type: string): StructClassReified
-  reified(type: string): ReifiedTypeArgument {
+  reified(type: `vector<${string}>`): VectorClassReified<VectorClass>
+  reified(type: string): StructClassReified<StructClass>
+  reified(
+    type: string
+  ): StructClassReified<StructClass> | VectorClassReified<VectorClass> | string {
     const { typeName, typeArgs } = parseTypeName(compressSuiType(type))
     switch (typeName) {
       case 'bool':
@@ -361,250 +376,157 @@ export function composeSuiType(typeName: string, ...typeArgs: string[]): string 
 pub static REIFIED: &str = r#"
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
 import { FieldsWithTypes, compressSuiType, parseTypeName } from './util'
+import { SuiClient } from '@mysten/sui.js/client'
 
-export interface StructClassReified {
-  typeName: string // e.g., '0x2::balance::Balance', without type arguments
-  typeArgs: Array<ReifiedTypeArgument | PhantomReified>
-  fullTypeName: any // e.g., '0x2::balance::Balance<0x2::sui:SUI>', leave as any to allow for string literals
-  bcs: BcsType<any>
-  fromFields(fields: Record<string, any>): any
-  fromFieldsWithTypes(item: FieldsWithTypes): any
-  fromBcs: (data: Uint8Array) => any
-  fromJSONField: (field: any) => any
-  __class: any // leave as any to allow for string literals, used for type inferrence
+export interface StructClass {
+  $typeName: string
+  $fullTypeName: string
+  toJSONField(): Record<string, any>
+  toJSON(): Record<string, any>
 }
 
-export interface VectorReified {
-  typeArg: ReifiedTypeArgument
-  bcs: BcsType<any>
-  fullTypeName: any // e.g., 'vector<u8>', leave as any to allow for string literals
-  fromFields(fields: any[]): any[]
-  fromFieldsWithTypes(item: any[]): any[]
-  fromBcs(data: Uint8Array): any[]
-  fromJSONField: (field: any) => any
-  __vectorItem: any // leave as any to allow type inference
+export interface VectorClass {
+  $fullTypeName: string
+  toJSONField(): any[]
+
+  readonly vec: any
+
+  readonly kind: 'VectorClass'
+}
+
+export class Vector<T extends TypeArgument> implements VectorClass {
+  readonly $fullTypeName: `vector<${ToTypeStr<T>}>`
+
+  readonly vec: Array<ToField<T>>
+  constructor(fullTypeName: string, vec: Array<ToField<T>>) {
+    this.$fullTypeName = fullTypeName as `vector<${ToTypeStr<T>}>`
+    this.vec = vec
+  }
+
+  toJSONField(): Array<ToJSON<T>> {
+    return null as any
+  }
+
+  readonly kind = 'VectorClass'
 }
 
 export type Primitive = 'bool' | 'u8' | 'u16' | 'u32' | 'u64' | 'u128' | 'u256' | 'address'
+export type TypeArgument = StructClass | Primitive | VectorClass
 
-export interface StructClass {
-  toJSONField(): Record<string, any>
-  toJSON(): Record<string, any>
-  __reifiedFullTypeString: string // e.g., '0x2::balance::Balance<0x2::sui:SUI>'
+export interface StructClassReified<T extends StructClass> {
+  typeName: T['$typeName'] // e.g., '0x2::balance::Balance', without type arguments
+  fullTypeName: ToTypeStr<T> // e.g., '0x2::balance::Balance<0x2::sui:SUI>'
+  typeArgs: Array<Reified<TypeArgument> | PhantomReified<string>>
+  bcs: BcsType<any>
+  fromFields(fields: Record<string, any>): T
+  fromFieldsWithTypes(item: FieldsWithTypes): T
+  fromBcs(data: Uint8Array): T
+  fromJSONField: (field: any) => T
+  fetch: (client: SuiClient, id: string) => Promise<T>
+  kind: 'StructClassReified'
 }
 
-export interface Vector<T extends TypeArgument> {
-  __vectorTypeArg: T
+export interface VectorClassReified<T extends VectorClass> {
+  fullTypeName: ToTypeStr<T>
+  bcs: BcsType<any>
+  fromFields(fields: any[]): T
+  fromFieldsWithTypes(item: FieldsWithTypes): T
+  fromJSONField: (field: any) => T
+  kind: 'VectorClassReified'
 }
 
-export type TypeArgument = StructClass | Primitive | Vector<TypeArgument>
-
-export type ReifiedTypeArgument = Primitive | VectorReified | StructClassReified
-
-export type ToField<T extends TypeArgument> = T extends 'bool'
-  ? boolean
-  : T extends 'u8'
-  ? number
-  : T extends 'u16'
-  ? number
-  : T extends 'u32'
-  ? number
-  : T extends 'u64'
-  ? bigint
-  : T extends 'u128'
-  ? bigint
-  : T extends 'u256'
-  ? bigint
-  : T extends 'address'
-  ? string
-  : T extends { $typeName: '0x1::string::String' }
-  ? string
-  : T extends { $typeName: '0x1::ascii::String' }
-  ? string
-  : T extends { $typeName: '0x2::object::UID' }
-  ? string
-  : T extends { $typeName: '0x2::object::ID' }
-  ? string
-  : T extends { $typeName: '0x2::url::Url' }
-  ? string
-  : T extends { $typeName: '0x1::option::Option'; __inner: infer U extends TypeArgument }
-  ? ToField<U> | null
-  : T extends Vector<infer U>
-  ? ToField<U>[]
+export type Reified<T extends TypeArgument> = T extends Primitive
+  ? Primitive
   : T extends StructClass
+  ? StructClassReified<T>
+  : T extends VectorClass
+  ? VectorClassReified<T>
+  : never
+
+export type ToTypeArgument<
+  T extends Primitive | StructClassReified<StructClass> | VectorClassReified<VectorClass>,
+> = T extends Primitive
+  ? T
+  : T extends StructClassReified<infer U>
+  ? U
+  : T extends VectorClassReified<infer U>
+  ? U
+  : never
+
+export type ToPhantomTypeArgument<T extends PhantomReified<string> | Reified<TypeArgument>> =
+  T extends PhantomReified<infer U>
+    ? U
+    : T extends StructClassReified<infer U>
+    ? ToTypeStr<U>
+    : T extends Primitive
+    ? T
+    : never
+
+export type PhantomTypeArgument = string
+
+export interface PhantomReified<P> {
+  phantomType: P
+  kind: 'PhantomReified'
+}
+
+export function phantom<T extends Reified<TypeArgument>>(
+  reified: T
+): PhantomReified<ToTypeStr<ToTypeArgument<T>>>
+export function phantom<P extends string>(phantomType: P): PhantomReified<P>
+export function phantom(type: string | Reified<TypeArgument>): PhantomReified<string> {
+  if (typeof type === 'string') {
+    return {
+      phantomType: type,
+      kind: 'PhantomReified',
+    }
+  } else {
+    return {
+      phantomType: type.fullTypeName,
+      kind: 'PhantomReified',
+    }
+  }
+}
+
+export type ReifiedPhantomTypeArgument = Reified<StructClass> | PhantomReified<string>
+
+export type ToTypeStr<T extends TypeArgument | PhantomTypeArgument> = T extends Primitive
+  ? T
+  : T extends StructClass
+  ? T['$fullTypeName']
+  : T extends VectorClass
+  ? T['$fullTypeName']
+  : T extends PhantomTypeArgument
   ? T
   : never
 
-export type ToTypeArgument<T extends ReifiedTypeArgument | PhantomReified> =
-  T extends StructClassReified
-    ? T['__class']
-    : T extends VectorReified
-    ? Vector<T['__vectorItem']>
-    : T
+export function vector<T extends Reified<TypeArgument>>(
+  T: T
+): VectorClassReified<Vector<ToTypeArgument<T>>> {
+  const fullTypeName = `vector<${extractType(T)}>` as `vector<${ToTypeStr<ToTypeArgument<T>>}>`
 
-export type ToPhantomTypeArgument<T extends PhantomReified | ReifiedTypeArgument> =
-  T extends PhantomReified
-    ? T['phantomType']
-    : T extends StructClassReified
-    ? T['fullTypeName']
-    : T extends VectorReified
-    ? T['fullTypeName']
-    : T
-
-const Address = bcs.bytes(32).transform({
-  input: (val: string) => fromHEX(val),
-  output: val => toHEX(val),
-})
-
-export function toBcs<T extends ReifiedTypeArgument>(arg: T): BcsType<any> {
-  switch (arg) {
-    case 'bool':
-      return bcs.bool()
-    case 'u8':
-      return bcs.u8()
-    case 'u16':
-      return bcs.u16()
-    case 'u32':
-      return bcs.u32()
-    case 'u64':
-      return bcs.u64()
-    case 'u128':
-      return bcs.u128()
-    case 'u256':
-      return bcs.u256()
-    case 'address':
-      return Address
-    default:
-      return arg.bcs
-  }
-}
-
-export function extractType(generic: ReifiedTypeArgument | PhantomReified): string {
-  switch (generic) {
-    case 'u8':
-    case 'u16':
-    case 'u32':
-    case 'u64':
-    case 'u128':
-    case 'u256':
-    case 'bool':
-    case 'address':
-      return generic
-  }
-  if ('__vectorItem' in generic) {
-    return generic.fullTypeName
-  } else if ('__class' in generic) {
-    return generic.fullTypeName
-  } else if ('phantomType' in generic) {
-    return generic.phantomType
-  } else {
-    throw new Error(`invalid reified type argument ${generic}`)
-  }
-}
-
-export function decodeFromFields(typeArg: ReifiedTypeArgument, field: any) {
-  switch (typeArg) {
-    case 'bool':
-    case 'u8':
-    case 'u16':
-    case 'u32':
-      return field
-    case 'u64':
-    case 'u128':
-    case 'u256':
-      return BigInt(field)
-    case 'address':
-      return field
-  }
-  if ('__vectorItem' in typeArg) {
-    return typeArg.fromFields(field)
-  }
-  switch (typeArg.typeName) {
-    case '0x1::string::String':
-    case '0x1::ascii::String':
-      return new TextDecoder().decode(Uint8Array.from(field.bytes)).toString()
-    case '0x2::url::Url':
-      return new TextDecoder().decode(Uint8Array.from(field.url.bytes)).toString()
-    case '0x2::object::ID':
-      return `0x${field.bytes}`
-    case '0x2::object::UID':
-      return `0x${field.id.bytes}`
-    case '0x1::option::Option': {
-      if (field.vec.length === 0) {
-        return null
-      }
-      return decodeFromFields(typeArg.typeArgs[0] as ReifiedTypeArgument, field.vec[0])
-    }
-    default:
-      return typeArg.fromFields(field)
-  }
-}
-
-export function decodeFromFieldsWithTypes(typeArg: ReifiedTypeArgument, item: any) {
-  switch (typeArg) {
-    case 'bool':
-    case 'u8':
-    case 'u16':
-    case 'u32':
-      return item
-    case 'u64':
-    case 'u128':
-    case 'u256':
-      return BigInt(item)
-    case 'address':
-      return item
-  }
-  if ('__vectorItem' in typeArg) {
-    return typeArg.fromFieldsWithTypes(item)
-  }
-  switch (typeArg.typeName) {
-    case '0x1::string::String':
-    case '0x1::ascii::String':
-    case '0x2::url::Url':
-    case '0x2::object::ID':
-      return item
-    case '0x2::object::UID':
-      return item.id
-    case '0x2::balance::Balance':
-      return typeArg.fromFields({ value: BigInt(item) })
-    case '0x1::option::Option': {
-      if (item === null) {
-        return null
-      }
-      return decodeFromFieldsWithTypes(typeArg.typeArgs[0] as ReifiedTypeArgument, item)
-    }
-    default:
-      return typeArg.fromFieldsWithTypes(item)
-  }
-}
-
-export function assertReifiedTypeArgsMatch(
-  fullType: string,
-  typeArgs: string[],
-  reifiedTypeArgs: Array<ReifiedTypeArgument | PhantomReified>
-) {
-  if (reifiedTypeArgs.length !== typeArgs.length) {
-    throw new Error(
-      `provided item has mismatching number of type argments ${fullType} (expected ${reifiedTypeArgs.length}, got ${typeArgs.length}))`
-    )
-  }
-  for (let i = 0; i < typeArgs.length; i++) {
-    if (compressSuiType(typeArgs[i]) !== compressSuiType(extractType(reifiedTypeArgs[i]))) {
-      throw new Error(
-        `provided item has mismatching type argments ${fullType} (expected ${extractType(
-          reifiedTypeArgs[i]
-        )}, got ${typeArgs[i]}))`
+  return {
+    fullTypeName,
+    bcs: bcs.vector(toBcs(T)),
+    fromFieldsWithTypes: (item: FieldsWithTypes) => {
+      return new Vector(
+        fullTypeName,
+        (item as unknown as any[]).map((field: any) => decodeFromFieldsWithTypes(T, field))
       )
-    }
-  }
-}
+    },
+    fromFields: (fields: any[]) => {
+      return new Vector(
+        fullTypeName,
+        fields.map(field => decodeFromFields(T, field))
+      )
+    },
 
-export function assertFieldsWithTypesArgsMatch(
-  item: FieldsWithTypes,
-  reifiedTypeArgs: Array<ReifiedTypeArgument | PhantomReified>
-) {
-  const { typeArgs: itemTypeArgs } = parseTypeName(item.type)
-  assertReifiedTypeArgsMatch(item.type, itemTypeArgs, reifiedTypeArgs)
+    fromJSONField: (field: any) =>
+      new Vector(
+        fullTypeName,
+        field.map((field: any) => decodeFromJSONField(T, field))
+      ),
+    kind: 'VectorClassReified',
+  }
 }
 
 export type ToJSON<T extends TypeArgument> = T extends 'bool'
@@ -638,11 +560,205 @@ export type ToJSON<T extends TypeArgument> = T extends 'bool'
       __inner: infer U extends TypeArgument
     }
   ? ToJSON<U> | null
-  : T extends Vector<infer U>
-  ? ToJSON<U>[]
+  : T extends VectorClass
+  ? ReturnType<T['toJSONField']>
   : T extends StructClass
   ? ReturnType<T['toJSONField']>
   : never
+
+export type ToField<T extends TypeArgument> = T extends 'bool'
+  ? boolean
+  : T extends 'u8'
+  ? number
+  : T extends 'u16'
+  ? number
+  : T extends 'u32'
+  ? number
+  : T extends 'u64'
+  ? bigint
+  : T extends 'u128'
+  ? bigint
+  : T extends 'u256'
+  ? bigint
+  : T extends 'address'
+  ? string
+  : T extends { $typeName: '0x1::string::String' }
+  ? string
+  : T extends { $typeName: '0x1::ascii::String' }
+  ? string
+  : T extends { $typeName: '0x2::object::UID' }
+  ? string
+  : T extends { $typeName: '0x2::object::ID' }
+  ? string
+  : T extends { $typeName: '0x2::url::Url' }
+  ? string
+  : T extends {
+      $typeName: '0x1::option::Option'
+      __inner: infer U extends TypeArgument
+    }
+  ? ToField<U> | null
+  : T extends VectorClass
+  ? T['vec']
+  : T extends StructClass
+  ? T
+  : never
+
+const Address = bcs.bytes(32).transform({
+  input: (val: string) => fromHEX(val),
+  output: val => toHEX(val),
+})
+
+export function toBcs<T extends Reified<TypeArgument>>(arg: T): BcsType<any> {
+  switch (arg) {
+    case 'bool':
+      return bcs.bool()
+    case 'u8':
+      return bcs.u8()
+    case 'u16':
+      return bcs.u16()
+    case 'u32':
+      return bcs.u32()
+    case 'u64':
+      return bcs.u64()
+    case 'u128':
+      return bcs.u128()
+    case 'u256':
+      return bcs.u256()
+    case 'address':
+      return Address
+    default:
+      return arg.bcs
+  }
+}
+
+export function extractType(reified: Reified<TypeArgument> | PhantomReified<string>): string {
+  switch (reified) {
+    case 'u8':
+    case 'u16':
+    case 'u32':
+    case 'u64':
+    case 'u128':
+    case 'u256':
+    case 'bool':
+    case 'address':
+      return reified
+  }
+  switch (reified.kind) {
+    case 'PhantomReified':
+      return reified.phantomType
+    case 'StructClassReified':
+      return reified.fullTypeName
+    case 'VectorClassReified':
+      return reified.fullTypeName
+  }
+
+  throw new Error('unreachable')
+}
+
+export function decodeFromFields(reified: Reified<TypeArgument>, field: any) {
+  switch (reified) {
+    case 'bool':
+    case 'u8':
+    case 'u16':
+    case 'u32':
+      return field
+    case 'u64':
+    case 'u128':
+    case 'u256':
+      return BigInt(field)
+    case 'address':
+      return field
+  }
+  if (reified.kind === 'VectorClassReified') {
+    return reified.fromFields(field).vec
+  }
+  switch (reified.typeName) {
+    case '0x1::string::String':
+    case '0x1::ascii::String':
+      return new TextDecoder().decode(Uint8Array.from(field.bytes)).toString()
+    case '0x2::url::Url':
+      return new TextDecoder().decode(Uint8Array.from(field.url.bytes)).toString()
+    case '0x2::object::ID':
+      return `0x${field.bytes}`
+    case '0x2::object::UID':
+      return `0x${field.id.bytes}`
+    case '0x1::option::Option': {
+      if (field.vec.length === 0) {
+        return null
+      }
+      return (reified.fromFields(field) as any).vec[0]
+    }
+    default:
+      return reified.fromFields(field)
+  }
+}
+
+export function decodeFromFieldsWithTypes(reified: Reified<TypeArgument>, item: any) {
+  switch (reified) {
+    case 'bool':
+    case 'u8':
+    case 'u16':
+    case 'u32':
+      return item
+    case 'u64':
+    case 'u128':
+    case 'u256':
+      return BigInt(item)
+    case 'address':
+      return item
+  }
+  if (reified.kind === 'VectorClassReified') {
+    return reified.fromFieldsWithTypes(item).vec
+  }
+  switch (reified.typeName) {
+    case '0x1::string::String':
+    case '0x1::ascii::String':
+    case '0x2::url::Url':
+    case '0x2::object::ID':
+      return item
+    case '0x2::object::UID':
+      return item.id
+    case '0x2::balance::Balance':
+      return reified.fromFields({ value: BigInt(item) })
+    case '0x1::option::Option': {
+      if (item === null) {
+        return null
+      }
+      return decodeFromFieldsWithTypes((reified as any).typeArgs[0], item)
+    }
+    default:
+      return reified.fromFieldsWithTypes(item)
+  }
+}
+
+export function assertReifiedTypeArgsMatch(
+  fullType: string,
+  typeArgs: string[],
+  reifiedTypeArgs: Array<Reified<TypeArgument> | PhantomReified<string>>
+) {
+  if (reifiedTypeArgs.length !== typeArgs.length) {
+    throw new Error(
+      `provided item has mismatching number of type argments ${fullType} (expected ${reifiedTypeArgs.length}, got ${typeArgs.length}))`
+    )
+  }
+  for (let i = 0; i < typeArgs.length; i++) {
+    if (compressSuiType(typeArgs[i]) !== compressSuiType(extractType(reifiedTypeArgs[i]))) {
+      throw new Error(
+        `provided item has mismatching type argments ${fullType} (expected ${extractType(
+          reifiedTypeArgs[i]
+        )}, got ${typeArgs[i]}))`
+      )
+    }
+  }
+}
+
+export function assertFieldsWithTypesArgsMatch(
+  item: FieldsWithTypes,
+  reifiedTypeArgs: Array<Reified<TypeArgument> | PhantomReified<string>>
+) {
+  const { typeArgs: itemTypeArgs } = parseTypeName(item.type)
+  assertReifiedTypeArgsMatch(item.type, itemTypeArgs, reifiedTypeArgs)
+}
 
 export function fieldToJSON<T extends TypeArgument>(type: string, field: ToField<T>): ToJSON<T> {
   const { typeName, typeArgs } = parseTypeName(type)
@@ -680,21 +796,7 @@ export function fieldToJSON<T extends TypeArgument>(type: string, field: ToField
   }
 }
 
-export function vector<T extends ReifiedTypeArgument>(typeArg: T) {
-  return {
-    typeArg,
-    fullTypeName: `vector<${extractType(typeArg)}>` as `vector<${ToPhantomTypeArgument<T>}>`,
-    bcs: bcs.vector(toBcs(typeArg)),
-    fromFields: (fields: any[]) => fields.map(field => decodeFromFields(typeArg, field)),
-    fromFieldsWithTypes: (item: any[]) =>
-      item.map(field => decodeFromFieldsWithTypes(typeArg, field)),
-    fromBcs: (data: Uint8Array) => bcs.vector(toBcs(typeArg)).parse(data),
-    fromJSONField: (json: any[]) => json.map(field => decodeFromJSONField(typeArg, field)),
-    __vectorItem: null as unknown as ToTypeArgument<T>,
-  }
-}
-
-export function decodeFromJSONField(typeArg: ReifiedTypeArgument, field: any) {
+export function decodeFromJSONField(typeArg: Reified<TypeArgument>, field: any) {
   switch (typeArg) {
     case 'bool':
     case 'u8':
@@ -708,8 +810,8 @@ export function decodeFromJSONField(typeArg: ReifiedTypeArgument, field: any) {
     case 'address':
       return field
   }
-  if ('__vectorItem' in typeArg) {
-    return typeArg.fromJSONField(field)
+  if (typeArg.kind === 'VectorClassReified') {
+    return typeArg.fromJSONField(field).vec
   }
   switch (typeArg.typeName) {
     case '0x1::string::String':
@@ -722,59 +824,11 @@ export function decodeFromJSONField(typeArg: ReifiedTypeArgument, field: any) {
       if (field === null) {
         return null
       }
-      return decodeFromJSONField(typeArg.typeArgs[0] as ReifiedTypeArgument, field)
+      return decodeFromJSONField(typeArg.typeArgs[0] as any, field)
     }
     default:
       return typeArg.fromJSONField(field)
   }
 }
-
-export interface PhantomReified {
-  phantomType: any // leave as any to allow for string literals
-}
-
-export function phantom<P extends string>(phantomType: P): { phantomType: P } {
-  return {
-    phantomType,
-  }
-}
-
-export type PhantomTypeArgument = string
-
-export type ReifiedPhantomTypeArgument = ReifiedTypeArgument | PhantomReified
-
-export type ToTypeStr<T extends TypeArgument, Depth extends number = 10> = Depth extends 0
-  ? string
-  : T extends Primitive
-  ? T
-  : T extends { __reifiedFullTypeString: infer U }
-  ? U
-  : T extends Vector<infer U>
-  ? `vector<${ToTypeStr<U, Decrement<Depth>>}>`
-  : never
-
-// to prevent "Type instantiation is excessively deep and possibly infinite" errors
-// for nested vectors
-type Decrement<N extends number> = N extends 1
-  ? 0
-  : N extends 2
-  ? 1
-  : N extends 3
-  ? 2
-  : N extends 4
-  ? 3
-  : N extends 5
-  ? 4
-  : N extends 6
-  ? 5
-  : N extends 7
-  ? 6
-  : N extends 8
-  ? 7
-  : N extends 9
-  ? 8
-  : N extends 10
-  ? 9
-  : never
 
 "#;

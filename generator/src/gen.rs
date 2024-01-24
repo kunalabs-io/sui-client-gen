@@ -1165,10 +1165,21 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
                 let class = self.import_ctx.get_class(&field_strct);
 
+                let mut toks: Vec<js::Tokens> = vec![]; 
+                for (idx, ty) in ts.iter().enumerate() {
+                    let inner = self.gen_reified(ty, type_param_names);
+                    let wrap_to_phantom = field_strct.is_phantom_parameter(idx) &&
+                        !matches!(ty, Type::TypeParameter(_));
+                    let tok = if wrap_to_phantom {
+                        quote!($reified.phantom($inner))
+                    } else {
+                        quote!($inner)
+                    };
+                    toks.push(tok);
+                };
+
                 quote!($class.reified($(if !ts.is_empty() {
-                    $(for t in ts join (, ) =>
-                        $(self.gen_reified(t, type_param_names))
-                    )
+                    $(for t in toks join (, ) => $t)
                 })))
             }
             Type::TypeParameter(idx) => {
@@ -1179,7 +1190,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
     }
 
     fn gen_from_fields_field_decode(&mut self, field: &FieldEnv) -> js::Tokens {
-        let decode_from_fields_generic_or_special = &self
+        let decode_from_fields = &self
             .framework
             .import("reified", "decodeFromFields");
 
@@ -1200,7 +1211,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let reified = self.gen_reified(&field.get_type(), &type_param_names);
 
         quote!(
-            $decode_from_fields_generic_or_special($(reified), $(field_arg_name))
+            $decode_from_fields($(reified), $(field_arg_name))
         )
     }
 
@@ -1369,11 +1380,11 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let field_to_json = &self.framework.import("reified", "fieldToJSON");
         let type_argument = &self.framework.import("reified", "TypeArgument");
         let phantom_type_argument = &self.framework.import("reified", "PhantomTypeArgument");
-        let reified_type_argument = &self.framework.import("reified", "ReifiedTypeArgument");
+        let reified = &self.framework.import("reified", "Reified");
         let reified_phantom_type_argument = &self.framework.import("reified", "ReifiedPhantomTypeArgument");
         let to_type_argument = &self.framework.import("reified", "ToTypeArgument");
         let to_phantom_type_argument = &self.framework.import("reified", "ToPhantomTypeArgument");
-        let to_phantom = &self.framework.import("reified", "ToTypeStr").with_alias("ToPhantom");
+        let to_type_str = &self.framework.import("reified", "ToTypeStr");
         let to_bcs = &self.framework.import("reified", "toBcs");
         let extract_type = &self.framework.import("reified", "extractType");
         let assert_reified_type_args_match = &self.framework.import("reified", "assertReifiedTypeArgsMatch");
@@ -1457,7 +1468,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
         let extends_type_argument = ExtendsOrWraps::Extends(quote!($type_argument));
         let extends_phantom_type_argument = ExtendsOrWraps::Extends(quote!($phantom_type_argument));
-        let extends_reified_type_argument = ExtendsOrWraps::Extends(quote!($reified_type_argument));
+        let extends_reified_type_argument = ExtendsOrWraps::Extends(quote!($reified<$type_argument>));
         let extends_reified_phantom_type_argument = ExtendsOrWraps::Extends(quote!($reified_phantom_type_argument));
         let wraps_to_type_argument = ExtendsOrWraps::Wraps(quote!($to_type_argument));
         let wraps_phantom_to_type_argument = ExtendsOrWraps::Wraps(quote!($to_phantom_type_argument));
@@ -1472,7 +1483,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             strct, &wraps_to_type_argument, &wraps_phantom_to_type_argument
         );
 
-        // `0x2::foo::Bar<${ToTypeArgument<T>}, ${ToPhantomTypeArgument<P>}>`
+        // `0x2::foo::Bar<${ToTypeStr<ToTypeArgument<T>>}, ${ToTypeStr<ToTypeArgument<P>>}>`
         let reified_full_type_name_as_toks = match type_params.len() {
             0 => quote!($[str]($[const](self.get_full_name_with_address(strct)))),
             _ => {
@@ -1481,8 +1492,14 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 toks.append(Item::Literal(ItemStr::from(self.get_full_name_with_address(strct))));
                 toks.append(Item::Literal(ItemStr::from("<")));
                 for (idx, param) in type_params_str.iter().enumerate() {
+                    let is_phantom = strct.is_phantom_parameter(idx);
+
                     toks.append(Item::Literal(ItemStr::from("${")));
-                    quote_in!(toks => $to_phantom_type_argument<$param>);
+                    if is_phantom {
+                        quote_in!(toks => $to_type_str<$to_phantom_type_argument<$param>>);
+                    } else {
+                        quote_in!(toks => $to_type_str<$to_type_argument<$param>>);
+                    }
                     toks.append(Item::Literal(ItemStr::from("}")));
 
                     let is_last = idx == &type_params_str.len() - 1;
@@ -1496,8 +1513,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             },
         };
 
+        // `0x2::foo::Bar<${ToTypeStr<T>}, ${ToTypeStr<P>}>`
         let is_option = self.get_full_name_with_address(strct) == "0x1::option::Option";
-        let reified_full_type_string_as_toks = match type_params.len() {
+        let full_type_name_as_toks = match type_params.len() {
             0 => quote!($[str]($[const](self.get_full_name_with_address(strct)))),
             _ => {
                 let mut toks = js::Tokens::new();
@@ -1505,14 +1523,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 toks.append(Item::Literal(ItemStr::from(self.get_full_name_with_address(strct))));
                 toks.append(Item::Literal(ItemStr::from("<")));
                 for (idx, param) in type_params_str.iter().enumerate() {
-                    let is_phantom = strct.is_phantom_parameter(idx);
 
                     toks.append(Item::Literal(ItemStr::from("${")));
-                    quote_in!(toks => $(if !is_phantom {
-                        $to_phantom<$param>
-                    } else {
-                        $param
-                    }));
+                    quote_in!(toks => $to_type_str<$param>);
                     toks.append(Item::Literal(ItemStr::from("}")));
 
                     let is_last = idx == &type_params_str.len() - 1;
@@ -1538,7 +1551,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                         toks.append("// for type checking in reified.ts")
                     })$['\n'];
                 })
-                __reifiedFullTypeString = null as unknown as $reified_full_type_string_as_toks;$['\n']
+
+                readonly $$fullTypeName = null as unknown as $full_type_name_as_toks;$['\n']
 
                 readonly $$typeName = $(&struct_name).$$typeName;$['\n']
 
@@ -1626,14 +1640,14 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
                 static reified$(params_toks_for_reified)(
                     $(for param in type_params_str.iter() join (, ) => $param: $param)
-                ) {
+                ): $reified<$(&struct_name)$(params_toks_for_to_type_argument)> {
                     return {
                         typeName: $(&struct_name).$$typeName,
-                        typeArgs: [$(for param in &type_params_str join (, ) => $param)],
                         fullTypeName: $compose_sui_type(
                             $(&struct_name).$$typeName,
                             ...[$(for param in &type_params_str join (, ) => $extract_type($param))]
                         ) as $reified_full_type_name_as_toks,
+                        typeArgs: [$(for param in &type_params_str join (, ) => $param)],
                         fromFields: (fields: Record<string, any>) =>
                             $(&struct_name).fromFields(
                                 $(match type_params.len() {
@@ -1673,9 +1687,16 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                                 })
                                 field,
                             ),
-                        __class: null as unknown as ReturnType<typeof $(&struct_name).new$(
-                            self.gen_params_toks(strct, &wraps_to_type_argument, &wraps_to_type_argument)
-                        )>,
+                        fetch: async (client: $sui_client, id: string) => $(&struct_name).fetch(
+                                client,
+                                $(match type_params.len() {
+                                    0 => (),
+                                    1 => { $(type_params_str[0].clone()), },
+                                    _ => { [$(for param in &type_params_str join (, ) => $param)], },
+                                })
+                                id,
+                            ),
+                        kind: "StructClassReified",
                     }
                 }$['\n']
 
@@ -1902,58 +1923,56 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     )
                 }$['\n']
 
-                $(if strct.get_abilities().has_key() {
-                    static fromSuiParsedData$(params_toks_for_reified)(
-                        $type_args_param_if_any content: $sui_parsed_data
-                    ): $(&struct_name)$(params_toks_for_to_type_argument) {
-                        if (content.dataType !== "moveObject") {
-                            throw new Error("not an object");
-                        }
-                        if (!is$(&struct_name)(content.type)) {
-                            throw new Error($(self.interpolate(
-                                format!("object at ${{(content.fields as any).id}} is not a {} object", &struct_name))
-                            ));
-                        }
-                        return $(&struct_name).fromFieldsWithTypes(
-                            $(match type_params.len() {
-                                0 => (),
-                                1 => { typeArg, },
-                                _ => { typeArgs, },
-                            })
-                            content
-                        );
-                    }$['\n']
+                static fromSuiParsedData$(params_toks_for_reified)(
+                    $type_args_param_if_any content: $sui_parsed_data
+                ): $(&struct_name)$(params_toks_for_to_type_argument) {
+                    if (content.dataType !== "moveObject") {
+                        throw new Error("not an object");
+                    }
+                    if (!is$(&struct_name)(content.type)) {
+                        throw new Error($(self.interpolate(
+                            format!("object at ${{(content.fields as any).id}} is not a {} object", &struct_name))
+                        ));
+                    }
+                    return $(&struct_name).fromFieldsWithTypes(
+                        $(match type_params.len() {
+                            0 => (),
+                            1 => { typeArg, },
+                            _ => { typeArgs, },
+                        })
+                        content
+                    );
+                }$['\n']
 
-                    static async fetch$(params_toks_for_reified)(
-                        client: $sui_client, $type_args_param_if_any id: string
-                    ): Promise<$(&struct_name)$(params_toks_for_to_type_argument)> {
-                        const res = await client.getObject({
-                            id,
-                            options: {
-                                showContent: true,
-                            },
-                        });
-                        if (res.error) {
-                            throw new Error($(self.interpolate(
-                                format!("error fetching {} object at id ${{id}}: ${{res.error.code}}", &struct_name))
-                            ));
-                        }
-                        if (res.data?.content?.dataType !== "moveObject" || !is$(&struct_name)(res.data.content.type)) {
-                            throw new Error($(self.interpolate(
-                                format!("object at id ${{id}} is not a {} object", &struct_name))
-                            ));
-                        }$['\r']
+                static async fetch$(params_toks_for_reified)(
+                    client: $sui_client, $type_args_param_if_any id: string
+                ): Promise<$(&struct_name)$(params_toks_for_to_type_argument)> {
+                    const res = await client.getObject({
+                        id,
+                        options: {
+                            showContent: true,
+                        },
+                    });
+                    if (res.error) {
+                        throw new Error($(self.interpolate(
+                            format!("error fetching {} object at id ${{id}}: ${{res.error.code}}", &struct_name))
+                        ));
+                    }
+                    if (res.data?.content?.dataType !== "moveObject" || !is$(&struct_name)(res.data.content.type)) {
+                        throw new Error($(self.interpolate(
+                            format!("object at id ${{id}} is not a {} object", &struct_name))
+                        ));
+                    }$['\r']
 
-                        return $(&struct_name).fromFieldsWithTypes(
-                            $(match type_params.len() {
-                                0 => (),
-                                1 => { typeArg, },
-                                _ => { typeArgs, },
-                            })
-                            res.data.content
-                        );
-                    }$['\n']
-                })
+                    return $(&struct_name).fromFieldsWithTypes(
+                        $(match type_params.len() {
+                            0 => (),
+                            1 => { typeArg, },
+                            _ => { typeArgs, },
+                        })
+                        res.data.content
+                    );
+                }$['\n']
             }
         }
         tokens.line()
