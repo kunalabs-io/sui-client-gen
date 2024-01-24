@@ -37,7 +37,7 @@ const client = new SuiClient({
  * Create a new AMM pool. Will not work if the pool already exists.
  */
 async function createPool() {
-  const address = await keypair.getPublicKey().toSuiAddress()
+  const address = keypair.getPublicKey().toSuiAddress()
 
   const txb = new TransactionBlock()
 
@@ -61,7 +61,7 @@ async function createPool() {
 
 /** An example for object fetching. Fetch and print the AMM pool at AMM_POOL_ID. */
 async function fetchPool() {
-  const pool = await Pool.fetch(client, [SUI.reified(), EXAMPLE_COIN.reified()], AMM_POOL_ID)
+  const pool = await Pool.r(SUI.r, EXAMPLE_COIN.r).fetch(client, AMM_POOL_ID)
   console.log(pool)
 }
 
@@ -121,9 +121,8 @@ async function createStructWithVector() {
 
 /** An example for object fetching with generic fields. */
 async function fetchWithGenericField() {
-  const field = await WithGenericField.fetch(
+  const field = await WithGenericField.r(vector(EXAMPLE_COIN.r)).fetch(
     client,
-    vector(EXAMPLE_COIN.reified()),
     WITH_GENERIC_FIELD_ID
   )
   console.log(field)
