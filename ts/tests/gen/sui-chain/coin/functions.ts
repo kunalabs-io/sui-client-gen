@@ -179,6 +179,34 @@ export function createCurrency(txb: TransactionBlock, typeArg: string, args: Cre
   })
 }
 
+export interface CreateRegulatedCurrencyArgs {
+  t0: GenericArg
+  u8: number | TransactionArgument
+  vecU81: Array<number | TransactionArgument> | TransactionArgument
+  vecU82: Array<number | TransactionArgument> | TransactionArgument
+  vecU83: Array<number | TransactionArgument> | TransactionArgument
+  option: ObjectArg | TransactionArgument | null
+}
+
+export function createRegulatedCurrency(
+  txb: TransactionBlock,
+  typeArg: string,
+  args: CreateRegulatedCurrencyArgs
+) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::coin::create_regulated_currency`,
+    typeArguments: [typeArg],
+    arguments: [
+      generic(txb, `${typeArg}`, args.t0),
+      pure(txb, args.u8, `u8`),
+      pure(txb, args.vecU81, `vector<u8>`),
+      pure(txb, args.vecU82, `vector<u8>`),
+      pure(txb, args.vecU83, `vector<u8>`),
+      option(txb, `0x2::url::Url`, args.option),
+    ],
+  })
+}
+
 export interface MintArgs {
   treasuryCap: ObjectArg
   u64: bigint | TransactionArgument
@@ -215,6 +243,59 @@ export function burn(txb: TransactionBlock, typeArg: string, args: BurnArgs) {
     target: `${PUBLISHED_AT}::coin::burn`,
     typeArguments: [typeArg],
     arguments: [obj(txb, args.treasuryCap), obj(txb, args.coin)],
+  })
+}
+
+export interface DenyListAddArgs {
+  denyList: ObjectArg
+  denyCap: ObjectArg
+  address: string | TransactionArgument
+}
+
+export function denyListAdd(txb: TransactionBlock, typeArg: string, args: DenyListAddArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::coin::deny_list_add`,
+    typeArguments: [typeArg],
+    arguments: [
+      obj(txb, args.denyList),
+      obj(txb, args.denyCap),
+      pure(txb, args.address, `address`),
+    ],
+  })
+}
+
+export interface DenyListRemoveArgs {
+  denyList: ObjectArg
+  denyCap: ObjectArg
+  address: string | TransactionArgument
+}
+
+export function denyListRemove(txb: TransactionBlock, typeArg: string, args: DenyListRemoveArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::coin::deny_list_remove`,
+    typeArguments: [typeArg],
+    arguments: [
+      obj(txb, args.denyList),
+      obj(txb, args.denyCap),
+      pure(txb, args.address, `address`),
+    ],
+  })
+}
+
+export interface DenyListContainsArgs {
+  denyList: ObjectArg
+  address: string | TransactionArgument
+}
+
+export function denyListContains(
+  txb: TransactionBlock,
+  typeArg: string,
+  args: DenyListContainsArgs
+) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::coin::deny_list_contains`,
+    typeArguments: [typeArg],
+    arguments: [obj(txb, args.denyList), pure(txb, args.address, `address`)],
   })
 }
 

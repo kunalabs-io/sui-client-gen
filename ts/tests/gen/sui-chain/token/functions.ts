@@ -73,6 +73,14 @@ export function transfer(txb: TransactionBlock, typeArg: string, args: TransferA
   })
 }
 
+export function key(txb: TransactionBlock, typeArg: string) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::token::key`,
+    typeArguments: [typeArg],
+    arguments: [],
+  })
+}
+
 export interface MintArgs {
   treasuryCap: ObjectArg
   u64: bigint | TransactionArgument
@@ -104,14 +112,6 @@ export function keep(txb: TransactionBlock, typeArg: string, token: ObjectArg) {
     target: `${PUBLISHED_AT}::token::keep`,
     typeArguments: [typeArg],
     arguments: [obj(txb, token)],
-  })
-}
-
-export function key(txb: TransactionBlock, typeArg: string) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::token::key`,
-    typeArguments: [typeArg],
-    arguments: [],
   })
 }
 

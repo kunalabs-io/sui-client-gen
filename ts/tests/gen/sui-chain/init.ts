@@ -5,6 +5,7 @@ import * as bcs from './bcs/structs'
 import * as borrow from './borrow/structs'
 import * as clock from './clock/structs'
 import * as coin from './coin/structs'
+import * as denyList from './deny-list/structs'
 import * as display from './display/structs'
 import * as dynamicField from './dynamic-field/structs'
 import * as dynamicObjectField from './dynamic-object-field/structs'
@@ -53,10 +54,6 @@ export function registerClasses(loader: StructClassLoader) {
   loader.register(bcs.BCS)
   loader.register(borrow.Referent)
   loader.register(borrow.Borrow)
-  loader.register(coin.Coin)
-  loader.register(coin.CoinMetadata)
-  loader.register(coin.TreasuryCap)
-  loader.register(coin.CurrencyCreated)
   loader.register(dynamicField.Field)
   loader.register(authenticatorState.AuthenticatorState)
   loader.register(authenticatorState.AuthenticatorStateInner)
@@ -75,10 +72,18 @@ export function registerClasses(loader: StructClassLoader) {
   loader.register(linkedTable.Node)
   loader.register(objectBag.ObjectBag)
   loader.register(objectTable.ObjectTable)
-  loader.register(sui.SUI)
   loader.register(vecMap.Entry)
   loader.register(vecMap.VecMap)
   loader.register(vecSet.VecSet)
+  loader.register(denyList.DenyList)
+  loader.register(denyList.PerTypeList)
+  loader.register(coin.Coin)
+  loader.register(coin.CoinMetadata)
+  loader.register(coin.RegulatedCoinMetadata)
+  loader.register(coin.TreasuryCap)
+  loader.register(coin.DenyCap)
+  loader.register(coin.CurrencyCreated)
+  loader.register(sui.SUI)
   loader.register(package_.Publisher)
   loader.register(package_.UpgradeCap)
   loader.register(package_.UpgradeTicket)

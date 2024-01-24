@@ -54,3 +54,20 @@ export function toString(txb: TransactionBlock, address: string | TransactionArg
     arguments: [pure(txb, address, `address`)],
   })
 }
+
+export function fromAsciiBytes(
+  txb: TransactionBlock,
+  vecU8: Array<number | TransactionArgument> | TransactionArgument
+) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::address::from_ascii_bytes`,
+    arguments: [pure(txb, vecU8, `vector<u8>`)],
+  })
+}
+
+export function hexCharValue(txb: TransactionBlock, u8: number | TransactionArgument) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::address::hex_char_value`,
+    arguments: [pure(txb, u8, `u8`)],
+  })
+}

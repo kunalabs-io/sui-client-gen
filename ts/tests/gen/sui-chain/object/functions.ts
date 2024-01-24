@@ -61,6 +61,10 @@ export function randomnessState(txb: TransactionBlock) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::object::randomness_state`, arguments: [] })
 }
 
+export function suiDenyListObjectId(txb: TransactionBlock) {
+  return txb.moveCall({ target: `${PUBLISHED_AT}::object::sui_deny_list_object_id`, arguments: [] })
+}
+
 export function uidAsInner(txb: TransactionBlock, uid: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::object::uid_as_inner`,

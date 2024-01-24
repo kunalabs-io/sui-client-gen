@@ -18,6 +18,13 @@ export function getWithOriginalIds(txb: TransactionBlock, typeArg: string) {
   })
 }
 
+export function isPrimitive(txb: TransactionBlock, typeName: ObjectArg) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::type_name::is_primitive`,
+    arguments: [obj(txb, typeName)],
+  })
+}
+
 export function borrowString(txb: TransactionBlock, typeName: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::type_name::borrow_string`,
