@@ -1687,6 +1687,15 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                                 })
                                 field,
                             ),
+                        fromJSON: (json: Record<string, any>) =>
+                            $(&struct_name).fromJSON(
+                                $(match type_params.len() {
+                                    0 => (),
+                                    1 => { $(type_params_str[0].clone()), },
+                                    _ => { [$(for param in &type_params_str join (, ) => $param)], },
+                                })
+                                json,
+                            ),
                         fetch: async (client: $sui_client, id: string) => $(&struct_name).fetch(
                             client,
                             $(match type_params.len() {
