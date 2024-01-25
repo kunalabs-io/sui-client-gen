@@ -1550,31 +1550,6 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             },
         };
 
-        // `0x2::foo::Bar<${string}, ${string}>`
-        let full_type_name_as_toks = &match type_params.len() {
-            0 => quote!($[str]($[const](self.get_full_name_with_address(strct)))),
-            _ => {
-                let mut toks = js::Tokens::new();
-                toks.append(Item::OpenQuote(true));
-                toks.append(Item::Literal(ItemStr::from(self.get_full_name_with_address(strct))));
-                toks.append(Item::Literal(ItemStr::from("<")));
-                for idx in 0..type_params_str.len() {
-                    toks.append(Item::Literal(ItemStr::from("${")));
-                    quote_in!(toks => string);
-                    toks.append(Item::Literal(ItemStr::from("}")));
-
-                    let is_last = idx == &type_params_str.len() - 1;
-                    if !is_last {
-                        toks.append(Item::Literal(ItemStr::from(", ")));
-                    }
-                }
-                toks.append(Item::Literal(ItemStr::from(">")));
-                toks.append(Item::CloseQuote);
-                quote!($toks)
-            },
-        };
-
-
         let is_option = self.get_full_name_with_address(strct) == "0x1::option::Option";
 
         quote_in! { *tokens =>
@@ -1600,7 +1575,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 })
 
                 readonly $$typeName = $(&struct_name).$$typeName;$['\n']
-                readonly $$fullTypeName: $full_type_name_as_toks;$['\n']
+                readonly $$fullTypeName: $static_full_type_name_as_toks;$['\n']
 
                 $type_args_field_if_any;
 
