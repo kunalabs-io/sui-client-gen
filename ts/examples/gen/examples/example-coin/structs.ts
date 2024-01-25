@@ -10,7 +10,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { TreasuryCap } from '../../sui/coin/structs'
 import { UID } from '../../sui/object/structs'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== EXAMPLE_COIN =============================== */
@@ -129,14 +129,14 @@ export class EXAMPLE_COIN {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<EXAMPLE_COIN> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching EXAMPLE_COIN object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isEXAMPLE_COIN(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isEXAMPLE_COIN(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a EXAMPLE_COIN object`)
     }
-    return EXAMPLE_COIN.fromFieldsWithTypes(res.data.content)
+    return EXAMPLE_COIN.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -277,13 +277,13 @@ export class Faucet {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<Faucet> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Faucet object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isFaucet(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isFaucet(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Faucet object`)
     }
-    return Faucet.fromFieldsWithTypes(res.data.content)
+    return Faucet.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

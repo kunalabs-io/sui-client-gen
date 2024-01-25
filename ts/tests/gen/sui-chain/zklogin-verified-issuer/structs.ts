@@ -8,7 +8,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/string/structs'
 import { UID } from '../object/structs'
-import { bcs, fromHEX, toHEX } from '@mysten/bcs'
+import { bcs, fromB64, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== VerifiedIssuer =============================== */
@@ -146,13 +146,13 @@ export class VerifiedIssuer {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<VerifiedIssuer> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching VerifiedIssuer object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isVerifiedIssuer(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isVerifiedIssuer(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a VerifiedIssuer object`)
     }
-    return VerifiedIssuer.fromFieldsWithTypes(res.data.content)
+    return VerifiedIssuer.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

@@ -16,7 +16,7 @@ import {
   toBcs,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { BcsType, bcs } from '@mysten/bcs'
+import { BcsType, bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== VecSet =============================== */
@@ -175,13 +175,13 @@ export class VecSet<T0 extends TypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<VecSet<ToTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching VecSet object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isVecSet(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isVecSet(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a VecSet object`)
     }
-    return VecSet.fromFieldsWithTypes(typeArg, res.data.content)
+    return VecSet.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

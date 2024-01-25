@@ -9,7 +9,7 @@ import {
   fieldToJSON,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { bcs, fromHEX, toHEX } from '@mysten/bcs'
+import { bcs, fromB64, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== TxContext =============================== */
@@ -160,13 +160,13 @@ export class TxContext {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<TxContext> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching TxContext object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isTxContext(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isTxContext(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TxContext object`)
     }
-    return TxContext.fromFieldsWithTypes(res.data.content)
+    return TxContext.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

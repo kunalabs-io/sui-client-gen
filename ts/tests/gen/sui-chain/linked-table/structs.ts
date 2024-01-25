@@ -20,7 +20,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { UID } from '../object/structs'
-import { BcsType, bcs } from '@mysten/bcs'
+import { BcsType, bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== LinkedTable =============================== */
@@ -229,14 +229,14 @@ export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument
     typeArgs: [T0, T1],
     id: string
   ): Promise<LinkedTable<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching LinkedTable object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isLinkedTable(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isLinkedTable(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a LinkedTable object`)
     }
-    return LinkedTable.fromFieldsWithTypes(typeArgs, res.data.content)
+    return LinkedTable.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -416,13 +416,13 @@ export class Node<T0 extends TypeArgument, T1 extends TypeArgument> {
     typeArgs: [T0, T1],
     id: string
   ): Promise<Node<ToTypeArgument<T0>, ToTypeArgument<T1>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Node object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isNode(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isNode(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Node object`)
     }
-    return Node.fromFieldsWithTypes(typeArgs, res.data.content)
+    return Node.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }

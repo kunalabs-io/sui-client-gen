@@ -14,7 +14,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== ObjectTable =============================== */
@@ -205,13 +205,13 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     typeArgs: [K, V],
     id: string
   ): Promise<ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching ObjectTable object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isObjectTable(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isObjectTable(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ObjectTable object`)
     }
-    return ObjectTable.fromFieldsWithTypes(typeArgs, res.data.content)
+    return ObjectTable.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }

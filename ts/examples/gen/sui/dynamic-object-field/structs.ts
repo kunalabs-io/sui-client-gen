@@ -14,7 +14,7 @@ import {
   toBcs,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { BcsType, bcs } from '@mysten/bcs'
+import { BcsType, bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Wrapper =============================== */
@@ -169,13 +169,13 @@ export class Wrapper<Name extends TypeArgument> {
     typeArg: Name,
     id: string
   ): Promise<Wrapper<ToTypeArgument<Name>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Wrapper object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isWrapper(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isWrapper(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Wrapper object`)
     }
-    return Wrapper.fromFieldsWithTypes(typeArg, res.data.content)
+    return Wrapper.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

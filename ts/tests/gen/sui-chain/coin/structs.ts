@@ -20,7 +20,7 @@ import { String } from '../../move-stdlib-chain/string/structs'
 import { Balance, Supply } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { Url } from '../url/structs'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Coin =============================== */
@@ -184,14 +184,14 @@ export class Coin<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<Coin<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Coin object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isCoin(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isCoin(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Coin object`)
     }
-    return Coin.fromFieldsWithTypes(typeArg, res.data.content)
+    return Coin.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -391,14 +391,14 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<CoinMetadata<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching CoinMetadata object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isCoinMetadata(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isCoinMetadata(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a CoinMetadata object`)
     }
-    return CoinMetadata.fromFieldsWithTypes(typeArg, res.data.content)
+    return CoinMetadata.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -577,17 +577,14 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<RegulatedCoinMetadata<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching RegulatedCoinMetadata object at id ${id}: ${res.error.code}`)
     }
-    if (
-      res.data?.content?.dataType !== 'moveObject' ||
-      !isRegulatedCoinMetadata(res.data.content.type)
-    ) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isRegulatedCoinMetadata(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a RegulatedCoinMetadata object`)
     }
-    return RegulatedCoinMetadata.fromFieldsWithTypes(typeArg, res.data.content)
+    return RegulatedCoinMetadata.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -752,14 +749,14 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<TreasuryCap<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching TreasuryCap object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isTreasuryCap(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isTreasuryCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TreasuryCap object`)
     }
-    return TreasuryCap.fromFieldsWithTypes(typeArg, res.data.content)
+    return TreasuryCap.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -912,14 +909,14 @@ export class DenyCap<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<DenyCap<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching DenyCap object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isDenyCap(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isDenyCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a DenyCap object`)
     }
-    return DenyCap.fromFieldsWithTypes(typeArg, res.data.content)
+    return DenyCap.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -1079,13 +1076,13 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<CurrencyCreated<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching CurrencyCreated object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isCurrencyCreated(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isCurrencyCreated(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a CurrencyCreated object`)
     }
-    return CurrencyCreated.fromFieldsWithTypes(typeArg, res.data.content)
+    return CurrencyCreated.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

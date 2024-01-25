@@ -13,7 +13,7 @@ import { Bag } from '../bag/structs'
 import { UID } from '../object/structs'
 import { Table } from '../table/structs'
 import { VecSet } from '../vec-set/structs'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== DenyList =============================== */
@@ -137,14 +137,14 @@ export class DenyList {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<DenyList> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching DenyList object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isDenyList(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isDenyList(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a DenyList object`)
     }
-    return DenyList.fromFieldsWithTypes(res.data.content)
+    return DenyList.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -304,13 +304,13 @@ export class PerTypeList {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<PerTypeList> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching PerTypeList object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isPerTypeList(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isPerTypeList(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a PerTypeList object`)
     }
-    return PerTypeList.fromFieldsWithTypes(res.data.content)
+    return PerTypeList.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

@@ -16,7 +16,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Display =============================== */
@@ -191,14 +191,14 @@ export class Display<T extends PhantomTypeArgument> {
     typeArg: T,
     id: string
   ): Promise<Display<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Display object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isDisplay(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isDisplay(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Display object`)
     }
-    return Display.fromFieldsWithTypes(typeArg, res.data.content)
+    return Display.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -354,14 +354,14 @@ export class DisplayCreated<T extends PhantomTypeArgument> {
     typeArg: T,
     id: string
   ): Promise<DisplayCreated<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching DisplayCreated object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isDisplayCreated(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isDisplayCreated(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a DisplayCreated object`)
     }
-    return DisplayCreated.fromFieldsWithTypes(typeArg, res.data.content)
+    return DisplayCreated.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -540,13 +540,13 @@ export class VersionUpdated<T extends PhantomTypeArgument> {
     typeArg: T,
     id: string
   ): Promise<VersionUpdated<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching VersionUpdated object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isVersionUpdated(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isVersionUpdated(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a VersionUpdated object`)
     }
-    return VersionUpdated.fromFieldsWithTypes(typeArg, res.data.content)
+    return VersionUpdated.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

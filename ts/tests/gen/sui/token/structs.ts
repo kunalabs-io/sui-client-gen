@@ -21,7 +21,7 @@ import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
 import { VecSet } from '../vec-set/structs'
-import { bcs, fromHEX, toHEX } from '@mysten/bcs'
+import { bcs, fromB64, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== RuleKey =============================== */
@@ -177,14 +177,14 @@ export class RuleKey<T extends PhantomTypeArgument> {
     typeArg: T,
     id: string
   ): Promise<RuleKey<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching RuleKey object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isRuleKey(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isRuleKey(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a RuleKey object`)
     }
-    return RuleKey.fromFieldsWithTypes(typeArg, res.data.content)
+    return RuleKey.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -407,14 +407,14 @@ export class ActionRequest<T extends PhantomTypeArgument> {
     typeArg: T,
     id: string
   ): Promise<ActionRequest<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching ActionRequest object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isActionRequest(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isActionRequest(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ActionRequest object`)
     }
-    return ActionRequest.fromFieldsWithTypes(typeArg, res.data.content)
+    return ActionRequest.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -579,14 +579,14 @@ export class Token<T extends PhantomTypeArgument> {
     typeArg: T,
     id: string
   ): Promise<Token<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Token object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isToken(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isToken(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Token object`)
     }
-    return Token.fromFieldsWithTypes(typeArg, res.data.content)
+    return Token.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -768,14 +768,14 @@ export class TokenPolicy<T extends PhantomTypeArgument> {
     typeArg: T,
     id: string
   ): Promise<TokenPolicy<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching TokenPolicy object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isTokenPolicy(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isTokenPolicy(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TokenPolicy object`)
     }
-    return TokenPolicy.fromFieldsWithTypes(typeArg, res.data.content)
+    return TokenPolicy.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -943,14 +943,14 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> {
     typeArg: T,
     id: string
   ): Promise<TokenPolicyCap<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching TokenPolicyCap object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isTokenPolicyCap(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isTokenPolicyCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TokenPolicyCap object`)
     }
-    return TokenPolicyCap.fromFieldsWithTypes(typeArg, res.data.content)
+    return TokenPolicyCap.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -1119,16 +1119,13 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> {
     typeArg: T,
     id: string
   ): Promise<TokenPolicyCreated<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching TokenPolicyCreated object at id ${id}: ${res.error.code}`)
     }
-    if (
-      res.data?.content?.dataType !== 'moveObject' ||
-      !isTokenPolicyCreated(res.data.content.type)
-    ) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isTokenPolicyCreated(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TokenPolicyCreated object`)
     }
-    return TokenPolicyCreated.fromFieldsWithTypes(typeArg, res.data.content)
+    return TokenPolicyCreated.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

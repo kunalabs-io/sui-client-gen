@@ -7,7 +7,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../ascii/structs'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== TypeName =============================== */
@@ -119,13 +119,13 @@ export class TypeName {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<TypeName> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching TypeName object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isTypeName(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isTypeName(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TypeName object`)
     }
-    return TypeName.fromFieldsWithTypes(res.data.content)
+    return TypeName.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

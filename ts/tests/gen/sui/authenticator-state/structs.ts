@@ -11,7 +11,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib/string/structs'
 import { UID } from '../object/structs'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== ActiveJwk =============================== */
@@ -146,14 +146,14 @@ export class ActiveJwk {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<ActiveJwk> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching ActiveJwk object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isActiveJwk(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isActiveJwk(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ActiveJwk object`)
     }
-    return ActiveJwk.fromFieldsWithTypes(res.data.content)
+    return ActiveJwk.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -281,17 +281,14 @@ export class AuthenticatorState {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<AuthenticatorState> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching AuthenticatorState object at id ${id}: ${res.error.code}`)
     }
-    if (
-      res.data?.content?.dataType !== 'moveObject' ||
-      !isAuthenticatorState(res.data.content.type)
-    ) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isAuthenticatorState(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a AuthenticatorState object`)
     }
-    return AuthenticatorState.fromFieldsWithTypes(res.data.content)
+    return AuthenticatorState.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -428,19 +425,16 @@ export class AuthenticatorStateInner {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<AuthenticatorStateInner> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(
         `error fetching AuthenticatorStateInner object at id ${id}: ${res.error.code}`
       )
     }
-    if (
-      res.data?.content?.dataType !== 'moveObject' ||
-      !isAuthenticatorStateInner(res.data.content.type)
-    ) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isAuthenticatorStateInner(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a AuthenticatorStateInner object`)
     }
-    return AuthenticatorStateInner.fromFieldsWithTypes(res.data.content)
+    return AuthenticatorStateInner.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -581,14 +575,14 @@ export class JWK {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<JWK> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching JWK object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isJWK(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isJWK(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a JWK object`)
     }
-    return JWK.fromFieldsWithTypes(res.data.content)
+    return JWK.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -713,13 +707,13 @@ export class JwkId {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<JwkId> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching JwkId object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isJwkId(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isJwkId(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a JwkId object`)
     }
-    return JwkId.fromFieldsWithTypes(res.data.content)
+    return JwkId.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

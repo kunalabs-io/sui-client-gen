@@ -11,7 +11,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { ID, UID } from '../object/structs'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Publisher =============================== */
@@ -143,14 +143,14 @@ export class Publisher {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<Publisher> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Publisher object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isPublisher(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isPublisher(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Publisher object`)
     }
-    return Publisher.fromFieldsWithTypes(res.data.content)
+    return Publisher.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -291,14 +291,14 @@ export class UpgradeCap {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<UpgradeCap> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching UpgradeCap object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isUpgradeCap(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isUpgradeCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a UpgradeCap object`)
     }
-    return UpgradeCap.fromFieldsWithTypes(res.data.content)
+    return UpgradeCap.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -426,14 +426,14 @@ export class UpgradeReceipt {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<UpgradeReceipt> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching UpgradeReceipt object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isUpgradeReceipt(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isUpgradeReceipt(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a UpgradeReceipt object`)
     }
-    return UpgradeReceipt.fromFieldsWithTypes(res.data.content)
+    return UpgradeReceipt.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -574,13 +574,13 @@ export class UpgradeTicket {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<UpgradeTicket> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching UpgradeTicket object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isUpgradeTicket(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isUpgradeTicket(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a UpgradeTicket object`)
     }
-    return UpgradeTicket.fromFieldsWithTypes(res.data.content)
+    return UpgradeTicket.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

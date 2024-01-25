@@ -11,7 +11,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { Versioned } from '../versioned/structs'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Random =============================== */
@@ -135,14 +135,14 @@ export class Random {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<Random> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Random object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isRandom(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isRandom(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Random object`)
     }
-    return Random.fromFieldsWithTypes(res.data.content)
+    return Random.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -283,13 +283,13 @@ export class RandomInner {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<RandomInner> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching RandomInner object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isRandomInner(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isRandomInner(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a RandomInner object`)
     }
-    return RandomInner.fromFieldsWithTypes(res.data.content)
+    return RandomInner.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

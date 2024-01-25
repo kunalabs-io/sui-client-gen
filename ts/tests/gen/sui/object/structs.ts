@@ -16,7 +16,7 @@ import {
   toBcs,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
+import { BcsType, bcs, fromB64, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== DynamicFields =============================== */
@@ -175,14 +175,14 @@ export class DynamicFields<K extends TypeArgument> {
     typeArg: K,
     id: string
   ): Promise<DynamicFields<ToTypeArgument<K>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching DynamicFields object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isDynamicFields(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isDynamicFields(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a DynamicFields object`)
     }
-    return DynamicFields.fromFieldsWithTypes(typeArg, res.data.content)
+    return DynamicFields.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -296,14 +296,14 @@ export class ID {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<ID> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching ID object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isID(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isID(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ID object`)
     }
-    return ID.fromFieldsWithTypes(res.data.content)
+    return ID.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -431,14 +431,14 @@ export class Ownership {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<Ownership> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Ownership object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isOwnership(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isOwnership(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Ownership object`)
     }
-    return Ownership.fromFieldsWithTypes(res.data.content)
+    return Ownership.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -549,13 +549,13 @@ export class UID {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<UID> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching UID object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isUID(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isUID(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a UID object`)
     }
-    return UID.fromFieldsWithTypes(res.data.content)
+    return UID.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

@@ -16,7 +16,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { ID } from '../object/structs'
-import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
+import { BcsType, bcs, fromB64, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Referent =============================== */
@@ -186,14 +186,14 @@ export class Referent<T0 extends TypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<Referent<ToTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Referent object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isReferent(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isReferent(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Referent object`)
     }
-    return Referent.fromFieldsWithTypes(typeArg, res.data.content)
+    return Referent.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -321,13 +321,13 @@ export class Borrow {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<Borrow> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Borrow object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isBorrow(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isBorrow(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Borrow object`)
     }
-    return Borrow.fromFieldsWithTypes(res.data.content)
+    return Borrow.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

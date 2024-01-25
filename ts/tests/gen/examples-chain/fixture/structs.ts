@@ -29,7 +29,7 @@ import { ID, UID } from '../../sui-chain/object/structs'
 import { SUI } from '../../sui-chain/sui/structs'
 import { Url } from '../../sui-chain/url/structs'
 import { StructFromOtherModule } from '../other-module/structs'
-import { BcsType, bcs } from '@mysten/bcs'
+import { BcsType, bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Dummy =============================== */
@@ -147,14 +147,14 @@ export class Dummy {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<Dummy> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Dummy object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isDummy(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isDummy(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Dummy object`)
     }
-    return Dummy.fromFieldsWithTypes(res.data.content)
+    return Dummy.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -331,17 +331,14 @@ export class WithGenericField<T0 extends TypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<WithGenericField<ToTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching WithGenericField object at id ${id}: ${res.error.code}`)
     }
-    if (
-      res.data?.content?.dataType !== 'moveObject' ||
-      !isWithGenericField(res.data.content.type)
-    ) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isWithGenericField(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a WithGenericField object`)
     }
-    return WithGenericField.fromFieldsWithTypes(typeArg, res.data.content)
+    return WithGenericField.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -456,14 +453,14 @@ export class Bar {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<Bar> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Bar object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isBar(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isBar(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Bar object`)
     }
-    return Bar.fromFieldsWithTypes(res.data.content)
+    return Bar.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -648,14 +645,14 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument> {
     typeArgs: [T0, T1],
     id: string
   ): Promise<WithTwoGenerics<ToTypeArgument<T0>, ToTypeArgument<T1>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching WithTwoGenerics object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isWithTwoGenerics(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isWithTwoGenerics(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a WithTwoGenerics object`)
     }
-    return WithTwoGenerics.fromFieldsWithTypes(typeArgs, res.data.content)
+    return WithTwoGenerics.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -1026,14 +1023,14 @@ export class Foo<T0 extends TypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<Foo<ToTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Foo object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isFoo(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isFoo(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Foo object`)
     }
-    return Foo.fromFieldsWithTypes(typeArg, res.data.content)
+    return Foo.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -1345,17 +1342,14 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     typeArgs: [T0, T1],
     id: string
   ): Promise<WithSpecialTypes<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching WithSpecialTypes object at id ${id}: ${res.error.code}`)
     }
-    if (
-      res.data?.content?.dataType !== 'moveObject' ||
-      !isWithSpecialTypes(res.data.content.type)
-    ) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isWithSpecialTypes(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a WithSpecialTypes object`)
     }
-    return WithSpecialTypes.fromFieldsWithTypes(typeArgs, res.data.content)
+    return WithSpecialTypes.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -1881,19 +1875,19 @@ export class WithSpecialTypesAsGenerics<
       ToTypeArgument<T7>
     >
   > {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(
         `error fetching WithSpecialTypesAsGenerics object at id ${id}: ${res.error.code}`
       )
     }
     if (
-      res.data?.content?.dataType !== 'moveObject' ||
-      !isWithSpecialTypesAsGenerics(res.data.content.type)
+      res.data?.bcs?.dataType !== 'moveObject' ||
+      !isWithSpecialTypesAsGenerics(res.data.bcs.type)
     ) {
       throw new Error(`object at id ${id} is not a WithSpecialTypesAsGenerics object`)
     }
-    return WithSpecialTypesAsGenerics.fromFieldsWithTypes(typeArgs, res.data.content)
+    return WithSpecialTypesAsGenerics.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -2134,18 +2128,18 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<WithSpecialTypesInVectors<ToTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(
         `error fetching WithSpecialTypesInVectors object at id ${id}: ${res.error.code}`
       )
     }
     if (
-      res.data?.content?.dataType !== 'moveObject' ||
-      !isWithSpecialTypesInVectors(res.data.content.type)
+      res.data?.bcs?.dataType !== 'moveObject' ||
+      !isWithSpecialTypesInVectors(res.data.bcs.type)
     ) {
       throw new Error(`object at id ${id} is not a WithSpecialTypesInVectors object`)
     }
-    return WithSpecialTypesInVectors.fromFieldsWithTypes(typeArg, res.data.content)
+    return WithSpecialTypesInVectors.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

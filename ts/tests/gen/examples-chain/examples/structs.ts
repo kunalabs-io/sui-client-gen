@@ -13,7 +13,7 @@ import { String } from '../../move-stdlib-chain/ascii/structs'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { String as String1 } from '../../move-stdlib-chain/string/structs'
 import { ID, UID } from '../../sui-chain/object/structs'
-import { bcs, fromHEX, toHEX } from '@mysten/bcs'
+import { bcs, fromB64, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== ExampleStruct =============================== */
@@ -134,14 +134,14 @@ export class ExampleStruct {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<ExampleStruct> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching ExampleStruct object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isExampleStruct(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isExampleStruct(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ExampleStruct object`)
     }
-    return ExampleStruct.fromFieldsWithTypes(res.data.content)
+    return ExampleStruct.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -344,16 +344,13 @@ export class SpecialTypesStruct {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<SpecialTypesStruct> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching SpecialTypesStruct object at id ${id}: ${res.error.code}`)
     }
-    if (
-      res.data?.content?.dataType !== 'moveObject' ||
-      !isSpecialTypesStruct(res.data.content.type)
-    ) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isSpecialTypesStruct(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a SpecialTypesStruct object`)
     }
-    return SpecialTypesStruct.fromFieldsWithTypes(res.data.content)
+    return SpecialTypesStruct.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

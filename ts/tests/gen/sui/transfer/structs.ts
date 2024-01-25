@@ -14,7 +14,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { ID } from '../object/structs'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Receiving =============================== */
@@ -178,13 +178,13 @@ export class Receiving<T extends PhantomTypeArgument> {
     typeArg: T,
     id: string
   ): Promise<Receiving<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Receiving object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isReceiving(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isReceiving(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Receiving object`)
     }
-    return Receiving.fromFieldsWithTypes(typeArg, res.data.content)
+    return Receiving.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

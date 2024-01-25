@@ -20,7 +20,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
-import { BcsType, bcs } from '@mysten/bcs'
+import { BcsType, bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== LinkedTable =============================== */
@@ -225,14 +225,14 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument> 
     typeArgs: [K, V],
     id: string
   ): Promise<LinkedTable<ToTypeArgument<K>, ToPhantomTypeArgument<V>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching LinkedTable object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isLinkedTable(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isLinkedTable(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a LinkedTable object`)
     }
-    return LinkedTable.fromFieldsWithTypes(typeArgs, res.data.content)
+    return LinkedTable.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -412,13 +412,13 @@ export class Node<K extends TypeArgument, V extends TypeArgument> {
     typeArgs: [K, V],
     id: string
   ): Promise<Node<ToTypeArgument<K>, ToTypeArgument<V>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Node object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isNode(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isNode(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Node object`)
     }
-    return Node.fromFieldsWithTypes(typeArgs, res.data.content)
+    return Node.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }

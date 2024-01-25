@@ -13,7 +13,7 @@ import {
   extractType,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Balance =============================== */
@@ -165,14 +165,14 @@ export class Balance<T extends PhantomTypeArgument> {
     typeArg: T,
     id: string
   ): Promise<Balance<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Balance object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isBalance(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isBalance(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Balance object`)
     }
-    return Balance.fromFieldsWithTypes(typeArg, res.data.content)
+    return Balance.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -325,13 +325,13 @@ export class Supply<T extends PhantomTypeArgument> {
     typeArg: T,
     id: string
   ): Promise<Supply<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Supply object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isSupply(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isSupply(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Supply object`)
     }
-    return Supply.fromFieldsWithTypes(typeArg, res.data.content)
+    return Supply.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

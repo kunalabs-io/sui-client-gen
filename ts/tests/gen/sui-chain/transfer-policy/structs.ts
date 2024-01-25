@@ -20,7 +20,7 @@ import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { SUI } from '../sui/structs'
 import { VecSet } from '../vec-set/structs'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== RuleKey =============================== */
@@ -176,14 +176,14 @@ export class RuleKey<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<RuleKey<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching RuleKey object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isRuleKey(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isRuleKey(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a RuleKey object`)
     }
-    return RuleKey.fromFieldsWithTypes(typeArg, res.data.content)
+    return RuleKey.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -367,14 +367,14 @@ export class TransferRequest<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<TransferRequest<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching TransferRequest object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isTransferRequest(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferRequest(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TransferRequest object`)
     }
-    return TransferRequest.fromFieldsWithTypes(typeArg, res.data.content)
+    return TransferRequest.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -553,14 +553,14 @@ export class TransferPolicy<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<TransferPolicy<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching TransferPolicy object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isTransferPolicy(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferPolicy(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TransferPolicy object`)
     }
-    return TransferPolicy.fromFieldsWithTypes(typeArg, res.data.content)
+    return TransferPolicy.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -731,17 +731,14 @@ export class TransferPolicyCap<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<TransferPolicyCap<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching TransferPolicyCap object at id ${id}: ${res.error.code}`)
     }
-    if (
-      res.data?.content?.dataType !== 'moveObject' ||
-      !isTransferPolicyCap(res.data.content.type)
-    ) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferPolicyCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TransferPolicyCap object`)
     }
-    return TransferPolicyCap.fromFieldsWithTypes(typeArg, res.data.content)
+    return TransferPolicyCap.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -906,17 +903,14 @@ export class TransferPolicyCreated<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<TransferPolicyCreated<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching TransferPolicyCreated object at id ${id}: ${res.error.code}`)
     }
-    if (
-      res.data?.content?.dataType !== 'moveObject' ||
-      !isTransferPolicyCreated(res.data.content.type)
-    ) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferPolicyCreated(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TransferPolicyCreated object`)
     }
-    return TransferPolicyCreated.fromFieldsWithTypes(typeArg, res.data.content)
+    return TransferPolicyCreated.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -1081,18 +1075,15 @@ export class TransferPolicyDestroyed<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<TransferPolicyDestroyed<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(
         `error fetching TransferPolicyDestroyed object at id ${id}: ${res.error.code}`
       )
     }
-    if (
-      res.data?.content?.dataType !== 'moveObject' ||
-      !isTransferPolicyDestroyed(res.data.content.type)
-    ) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferPolicyDestroyed(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TransferPolicyDestroyed object`)
     }
-    return TransferPolicyDestroyed.fromFieldsWithTypes(typeArg, res.data.content)
+    return TransferPolicyDestroyed.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

@@ -16,7 +16,7 @@ import {
   toBcs,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { BcsType, bcs } from '@mysten/bcs'
+import { BcsType, bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Entry =============================== */
@@ -185,14 +185,14 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> {
     typeArgs: [K, V],
     id: string
   ): Promise<Entry<ToTypeArgument<K>, ToTypeArgument<V>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Entry object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isEntry(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isEntry(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Entry object`)
     }
-    return Entry.fromFieldsWithTypes(typeArgs, res.data.content)
+    return Entry.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -369,13 +369,13 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> {
     typeArgs: [K, V],
     id: string
   ): Promise<VecMap<ToTypeArgument<K>, ToTypeArgument<V>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching VecMap object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isVecMap(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isVecMap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a VecMap object`)
     }
-    return VecMap.fromFieldsWithTypes(typeArgs, res.data.content)
+    return VecMap.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }

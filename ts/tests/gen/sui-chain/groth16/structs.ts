@@ -9,7 +9,7 @@ import {
   fieldToJSON,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Curve =============================== */
@@ -119,14 +119,14 @@ export class Curve {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<Curve> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Curve object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isCurve(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isCurve(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Curve object`)
     }
-    return Curve.fromFieldsWithTypes(res.data.content)
+    return Curve.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -285,17 +285,14 @@ export class PreparedVerifyingKey {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<PreparedVerifyingKey> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching PreparedVerifyingKey object at id ${id}: ${res.error.code}`)
     }
-    if (
-      res.data?.content?.dataType !== 'moveObject' ||
-      !isPreparedVerifyingKey(res.data.content.type)
-    ) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isPreparedVerifyingKey(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a PreparedVerifyingKey object`)
     }
-    return PreparedVerifyingKey.fromFieldsWithTypes(res.data.content)
+    return PreparedVerifyingKey.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -415,17 +412,14 @@ export class PublicProofInputs {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<PublicProofInputs> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching PublicProofInputs object at id ${id}: ${res.error.code}`)
     }
-    if (
-      res.data?.content?.dataType !== 'moveObject' ||
-      !isPublicProofInputs(res.data.content.type)
-    ) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isPublicProofInputs(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a PublicProofInputs object`)
     }
-    return PublicProofInputs.fromFieldsWithTypes(res.data.content)
+    return PublicProofInputs.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -542,13 +536,13 @@ export class ProofPoints {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<ProofPoints> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching ProofPoints object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isProofPoints(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isProofPoints(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ProofPoints object`)
     }
-    return ProofPoints.fromFieldsWithTypes(res.data.content)
+    return ProofPoints.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

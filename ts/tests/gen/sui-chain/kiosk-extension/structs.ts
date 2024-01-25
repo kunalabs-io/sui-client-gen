@@ -14,7 +14,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Bag } from '../bag/structs'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Extension =============================== */
@@ -146,14 +146,14 @@ export class Extension {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<Extension> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Extension object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isExtension(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isExtension(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Extension object`)
     }
-    return Extension.fromFieldsWithTypes(res.data.content)
+    return Extension.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -313,13 +313,13 @@ export class ExtensionKey<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<ExtensionKey<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching ExtensionKey object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isExtensionKey(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isExtensionKey(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ExtensionKey object`)
     }
-    return ExtensionKey.fromFieldsWithTypes(typeArg, res.data.content)
+    return ExtensionKey.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

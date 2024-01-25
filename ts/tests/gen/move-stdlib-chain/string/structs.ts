@@ -9,7 +9,7 @@ import {
   fieldToJSON,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== String =============================== */
@@ -121,13 +121,13 @@ export class String {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<String> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching String object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isString(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isString(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a String object`)
     }
-    return String.fromFieldsWithTypes(res.data.content)
+    return String.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

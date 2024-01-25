@@ -9,7 +9,7 @@ import {
   fieldToJSON,
 } from '../../../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== BitVector =============================== */
@@ -133,13 +133,13 @@ export class BitVector {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<BitVector> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching BitVector object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isBitVector(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isBitVector(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a BitVector object`)
     }
-    return BitVector.fromFieldsWithTypes(res.data.content)
+    return BitVector.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

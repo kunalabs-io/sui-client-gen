@@ -16,7 +16,7 @@ import {
   toBcs,
 } from '../../../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
-import { BcsType, bcs } from '@mysten/bcs'
+import { BcsType, bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Option =============================== */
@@ -177,13 +177,13 @@ export class Option<Element extends TypeArgument> {
     typeArg: Element,
     id: string
   ): Promise<Option<ToTypeArgument<Element>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Option object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isOption(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isOption(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Option object`)
     }
-    return Option.fromFieldsWithTypes(typeArg, res.data.content)
+    return Option.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

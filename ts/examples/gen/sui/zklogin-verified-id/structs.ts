@@ -8,7 +8,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
-import { bcs, fromHEX, toHEX } from '@mysten/bcs'
+import { bcs, fromB64, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== VerifiedID =============================== */
@@ -170,13 +170,13 @@ export class VerifiedID {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<VerifiedID> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching VerifiedID object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isVerifiedID(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isVerifiedID(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a VerifiedID object`)
     }
-    return VerifiedID.fromFieldsWithTypes(res.data.content)
+    return VerifiedID.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

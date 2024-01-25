@@ -7,7 +7,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { ID, UID } from '../object/structs'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Versioned =============================== */
@@ -131,14 +131,14 @@ export class Versioned {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<Versioned> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Versioned object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isVersioned(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isVersioned(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Versioned object`)
     }
-    return Versioned.fromFieldsWithTypes(res.data.content)
+    return Versioned.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -266,16 +266,13 @@ export class VersionChangeCap {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<VersionChangeCap> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching VersionChangeCap object at id ${id}: ${res.error.code}`)
     }
-    if (
-      res.data?.content?.dataType !== 'moveObject' ||
-      !isVersionChangeCap(res.data.content.type)
-    ) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isVersionChangeCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a VersionChangeCap object`)
     }
-    return VersionChangeCap.fromFieldsWithTypes(res.data.content)
+    return VersionChangeCap.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

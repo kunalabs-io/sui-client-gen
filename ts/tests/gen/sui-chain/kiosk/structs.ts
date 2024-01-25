@@ -18,7 +18,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framewo
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { SUI } from '../sui/structs'
-import { bcs, fromHEX, toHEX } from '@mysten/bcs'
+import { bcs, fromB64, fromHEX, toHEX } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== Borrow =============================== */
@@ -142,14 +142,14 @@ export class Borrow {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<Borrow> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Borrow object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isBorrow(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isBorrow(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Borrow object`)
     }
-    return Borrow.fromFieldsWithTypes(res.data.content)
+    return Borrow.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -304,14 +304,14 @@ export class Kiosk {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<Kiosk> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Kiosk object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isKiosk(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isKiosk(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Kiosk object`)
     }
-    return Kiosk.fromFieldsWithTypes(res.data.content)
+    return Kiosk.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -436,14 +436,14 @@ export class KioskOwnerCap {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<KioskOwnerCap> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching KioskOwnerCap object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isKioskOwnerCap(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isKioskOwnerCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a KioskOwnerCap object`)
     }
-    return KioskOwnerCap.fromFieldsWithTypes(res.data.content)
+    return KioskOwnerCap.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -624,14 +624,14 @@ export class PurchaseCap<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<PurchaseCap<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching PurchaseCap object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isPurchaseCap(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isPurchaseCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a PurchaseCap object`)
     }
-    return PurchaseCap.fromFieldsWithTypes(typeArg, res.data.content)
+    return PurchaseCap.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -742,14 +742,14 @@ export class Item {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<Item> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Item object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isItem(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isItem(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Item object`)
     }
-    return Item.fromFieldsWithTypes(res.data.content)
+    return Item.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -874,14 +874,14 @@ export class Listing {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<Listing> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Listing object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isListing(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isListing(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Listing object`)
     }
-    return Listing.fromFieldsWithTypes(res.data.content)
+    return Listing.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -992,14 +992,14 @@ export class Lock {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<Lock> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching Lock object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isLock(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isLock(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Lock object`)
     }
-    return Lock.fromFieldsWithTypes(res.data.content)
+    return Lock.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -1172,14 +1172,14 @@ export class ItemListed<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<ItemListed<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching ItemListed object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isItemListed(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isItemListed(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ItemListed object`)
     }
-    return ItemListed.fromFieldsWithTypes(typeArg, res.data.content)
+    return ItemListed.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -1355,14 +1355,14 @@ export class ItemPurchased<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<ItemPurchased<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching ItemPurchased object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isItemPurchased(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isItemPurchased(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ItemPurchased object`)
     }
-    return ItemPurchased.fromFieldsWithTypes(typeArg, res.data.content)
+    return ItemPurchased.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -1530,13 +1530,13 @@ export class ItemDelisted<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<ItemDelisted<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching ItemDelisted object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isItemDelisted(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isItemDelisted(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ItemDelisted object`)
     }
-    return ItemDelisted.fromFieldsWithTypes(typeArg, res.data.content)
+    return ItemDelisted.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

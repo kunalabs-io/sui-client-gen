@@ -15,7 +15,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Table } from '../table/structs'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== TableVec =============================== */
@@ -174,13 +174,13 @@ export class TableVec<T0 extends PhantomTypeArgument> {
     typeArg: T0,
     id: string
   ): Promise<TableVec<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching TableVec object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isTableVec(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isTableVec(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TableVec object`)
     }
-    return TableVec.fromFieldsWithTypes(typeArg, res.data.content)
+    return TableVec.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

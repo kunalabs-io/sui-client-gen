@@ -6,7 +6,7 @@ import {
   decodeFromJSONField,
 } from '../../../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
-import { bcs } from '@mysten/bcs'
+import { bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 /* ============================== FixedPoint32 =============================== */
@@ -121,13 +121,13 @@ export class FixedPoint32 {
   }
 
   static async fetch(client: SuiClient, id: string): Promise<FixedPoint32> {
-    const res = await client.getObject({ id, options: { showContent: true } })
+    const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
       throw new Error(`error fetching FixedPoint32 object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.content?.dataType !== 'moveObject' || !isFixedPoint32(res.data.content.type)) {
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isFixedPoint32(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a FixedPoint32 object`)
     }
-    return FixedPoint32.fromFieldsWithTypes(res.data.content)
+    return FixedPoint32.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
