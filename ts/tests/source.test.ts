@@ -30,14 +30,7 @@ import { newUnsafeFromBytes } from './gen/sui/url/functions'
 import { new_ as newUid, idFromAddress } from './gen/sui/object/functions'
 import { zero } from './gen/sui/balance/functions'
 import { Balance } from './gen/sui/balance/structs'
-import {
-  PhantomReified,
-  Reified,
-  Vector,
-  extractType,
-  phantom,
-  vector,
-} from './gen/_framework/reified'
+import { extractType, phantom, vector } from './gen/_framework/reified'
 import { SUI } from './gen/sui/sui/structs'
 import { Option } from './gen/move-stdlib/option/structs'
 import { String as Utf8String } from './gen/move-stdlib/string/structs'
@@ -149,60 +142,60 @@ it('creates and decodes an object with object as type param', async () => {
     throw new Error(`not a moveObject`)
   }
 
-  const exp = Foo.new(Bar.reified(), {
+  const exp = Foo.r(Bar.reified()).new({
     id,
-    generic: Bar.new(100n),
+    generic: Bar.r.new({ value: 100n }),
     reifiedPrimitiveVec: [1n, 2n, 3n],
-    reifiedObjectVec: [Bar.new(100n)],
-    genericVec: [Bar.new(100n)],
+    reifiedObjectVec: [Bar.r.new({ value: 100n })],
+    genericVec: [Bar.r.new({ value: 100n })],
     genericVecNested: [
-      WithTwoGenerics.new([Bar.reified(), 'u8'], {
-        genericField1: Bar.new(100n),
+      WithTwoGenerics.r(Bar.reified(), 'u8').new({
+        genericField1: Bar.r.new({ value: 100n }),
         genericField2: 1,
       }),
     ],
-    twoGenerics: WithTwoGenerics.new([Bar.reified(), Bar.reified()], {
-      genericField1: Bar.new(100n),
-      genericField2: Bar.new(100n),
+    twoGenerics: WithTwoGenerics.r(Bar.reified(), Bar.reified()).new({
+      genericField1: Bar.r.new({ value: 100n }),
+      genericField2: Bar.r.new({ value: 100n }),
     }),
-    twoGenericsReifiedPrimitive: WithTwoGenerics.new(['u16', 'u64'], {
+    twoGenericsReifiedPrimitive: WithTwoGenerics.r('u16', 'u64').new({
       genericField1: 1,
       genericField2: 2n,
     }),
-    twoGenericsReifiedObject: WithTwoGenerics.new([Bar.reified(), Bar.reified()], {
-      genericField1: Bar.new(100n),
-      genericField2: Bar.new(100n),
+    twoGenericsReifiedObject: WithTwoGenerics.r(Bar.reified(), Bar.reified()).new({
+      genericField1: Bar.r.new({ value: 100n }),
+      genericField2: Bar.r.new({ value: 100n }),
     }),
-    twoGenericsNested: WithTwoGenerics.new([Bar.reified(), WithTwoGenerics.reified('u8', 'u8')], {
-      genericField1: Bar.new(100n),
-      genericField2: WithTwoGenerics.new(['u8', 'u8'], {
+    twoGenericsNested: WithTwoGenerics.r(Bar.reified(), WithTwoGenerics.reified('u8', 'u8')).new({
+      genericField1: Bar.r.new({ value: 100n }),
+      genericField2: WithTwoGenerics.r('u8', 'u8').new({
         genericField1: 1,
         genericField2: 2,
       }),
     }),
-    twoGenericsReifiedNested: WithTwoGenerics.new(
-      [Bar.reified(), WithTwoGenerics.reified('u8', 'u8')],
-      {
-        genericField1: Bar.new(100n),
-        genericField2: WithTwoGenerics.new(['u8', 'u8'], {
-          genericField1: 1,
-          genericField2: 2,
-        }),
-      }
-    ),
+    twoGenericsReifiedNested: WithTwoGenerics.r(
+      Bar.reified(),
+      WithTwoGenerics.reified('u8', 'u8')
+    ).new({
+      genericField1: Bar.r.new({ value: 100n }),
+      genericField2: WithTwoGenerics.r('u8', 'u8').new({
+        genericField1: 1,
+        genericField2: 2,
+      }),
+    }),
     twoGenericsNestedVec: [
-      WithTwoGenerics.new([Bar.reified(), vector(WithTwoGenerics.reified(Bar.reified(), 'u8'))], {
-        genericField1: Bar.new(100n),
+      WithTwoGenerics.r(Bar.reified(), vector(WithTwoGenerics.reified(Bar.reified(), 'u8'))).new({
+        genericField1: Bar.r.new({ value: 100n }),
         genericField2: [
-          WithTwoGenerics.new([Bar.reified(), 'u8'], {
-            genericField1: Bar.new(100n),
+          WithTwoGenerics.r(Bar.reified(), 'u8').new({
+            genericField1: Bar.r.new({ value: 100n }),
             genericField2: 1,
           }),
         ],
       }),
     ],
-    dummy: Dummy.new(false),
-    other: StructFromOtherModule.new(false),
+    dummy: Dummy.r.new({ dummyField: false }),
+    other: StructFromOtherModule.r.new({ dummyField: false }),
   })
 
   const de = Foo.fromBcs(Bar.reified(), fromB64(foo.data.bcs.bcsBytes))
@@ -316,60 +309,60 @@ it('creates and decodes Foo with vector of objects as type param', async () => {
     throw new Error(`not a moveObject`)
   }
 
-  const exp = Foo.new(reifiedT, {
+  const exp = Foo.r(reifiedT).new({
     id: id,
-    generic: [Bar.new(100n)],
+    generic: [Bar.r.new({ value: 100n })],
     reifiedPrimitiveVec: [1n, 2n, 3n],
-    reifiedObjectVec: [Bar.new(100n)],
-    genericVec: [[Bar.new(100n)]],
+    reifiedObjectVec: [Bar.r.new({ value: 100n })],
+    genericVec: [[Bar.r.new({ value: 100n })]],
     genericVecNested: [
-      WithTwoGenerics.new([reifiedT, 'u8'], {
-        genericField1: [Bar.new(100n)],
+      WithTwoGenerics.r(reifiedT, 'u8').new({
+        genericField1: [Bar.r.new({ value: 100n })],
         genericField2: 1,
       }),
     ],
-    twoGenerics: WithTwoGenerics.new([reifiedT, Bar.reified()], {
-      genericField1: [Bar.new(100n), Bar.new(100n)],
-      genericField2: Bar.new(100n),
+    twoGenerics: WithTwoGenerics.r(reifiedT, Bar.reified()).new({
+      genericField1: [Bar.r.new({ value: 100n }), Bar.r.new({ value: 100n })],
+      genericField2: Bar.r.new({ value: 100n }),
     }),
-    twoGenericsReifiedPrimitive: WithTwoGenerics.new(['u16', 'u64'], {
+    twoGenericsReifiedPrimitive: WithTwoGenerics.r('u16', 'u64').new({
       genericField1: 1,
       genericField2: 2n,
     }),
-    twoGenericsReifiedObject: WithTwoGenerics.new([Bar.reified(), Bar.reified()], {
-      genericField1: Bar.new(100n),
-      genericField2: Bar.new(100n),
+    twoGenericsReifiedObject: WithTwoGenerics.r(Bar.reified(), Bar.reified()).new({
+      genericField1: Bar.r.new({ value: 100n }),
+      genericField2: Bar.r.new({ value: 100n }),
     }),
-    twoGenericsNested: WithTwoGenerics.new([reifiedT, WithTwoGenerics.reified('u8', 'u8')], {
-      genericField1: [Bar.new(100n)],
-      genericField2: WithTwoGenerics.new(['u8', 'u8'], {
+    twoGenericsNested: WithTwoGenerics.r(reifiedT, WithTwoGenerics.reified('u8', 'u8')).new({
+      genericField1: [Bar.r.new({ value: 100n })],
+      genericField2: WithTwoGenerics.r('u8', 'u8').new({
         genericField1: 1,
         genericField2: 2,
       }),
     }),
-    twoGenericsReifiedNested: WithTwoGenerics.new(
-      [Bar.reified(), WithTwoGenerics.reified('u8', 'u8')],
-      {
-        genericField1: Bar.new(100n),
-        genericField2: WithTwoGenerics.new(['u8', 'u8'], {
-          genericField1: 1,
-          genericField2: 2,
-        }),
-      }
-    ),
+    twoGenericsReifiedNested: WithTwoGenerics.r(
+      Bar.reified(),
+      WithTwoGenerics.reified('u8', 'u8')
+    ).new({
+      genericField1: Bar.r.new({ value: 100n }),
+      genericField2: WithTwoGenerics.r('u8', 'u8').new({
+        genericField1: 1,
+        genericField2: 2,
+      }),
+    }),
     twoGenericsNestedVec: [
-      WithTwoGenerics.new([Bar.reified(), vector(WithTwoGenerics.reified(reifiedT, 'u8'))], {
-        genericField1: Bar.new(100n),
+      WithTwoGenerics.r(Bar.reified(), vector(WithTwoGenerics.reified(reifiedT, 'u8'))).new({
+        genericField1: Bar.r.new({ value: 100n }),
         genericField2: [
-          WithTwoGenerics.new([reifiedT, 'u8'], {
-            genericField1: [Bar.new(100n)],
+          WithTwoGenerics.r(reifiedT, 'u8').new({
+            genericField1: [Bar.r.new({ value: 100n })],
             genericField2: 1,
           }),
         ],
       }),
     ],
-    dummy: Dummy.new(false),
-    other: StructFromOtherModule.new(false),
+    dummy: Dummy.r.new({ dummyField: false }),
+    other: StructFromOtherModule.r.new({ dummyField: false }),
   })
 
   const de = Foo.fromBcs(reifiedT, fromB64(foo.data.bcs.bcsBytes))
@@ -386,7 +379,7 @@ it('decodes special-cased types correctly', async () => {
   const encoder = new TextEncoder()
 
   const typeArgs = ['0x2::sui::SUI', 'u64'] as [string, string]
-  const reifiedArgs = [SUI.reified(), 'u64'] as [ReturnType<typeof SUI.reified>, 'u64']
+  const reifiedArgs = [phantom(SUI.reified()), 'u64'] as const
 
   createSpecial(txb, typeArgs, {
     string: utf8(txb, Array.from(encoder.encode('string'))),
@@ -425,23 +418,25 @@ it('decodes special-cased types correctly', async () => {
     throw new Error(`not a moveObject`)
   }
 
-  const fromBcs = WithSpecialTypes.fromBcs(reifiedArgs, fromB64(obj.data.bcs.bcsBytes))
-  const fromFieldsWithTypes = WithSpecialTypes.fromFieldsWithTypes(reifiedArgs, obj.data.content)
+  const fromBcs = WithSpecialTypes.r(...reifiedArgs).fromBcs(fromB64(obj.data.bcs.bcsBytes))
+  const fromFieldsWithTypes = WithSpecialTypes.r(...reifiedArgs).fromFieldsWithTypes(
+    obj.data.content
+  )
 
   const uid = (obj.data.content.fields as { uid: { id: string } }).uid.id
 
-  const exp = WithSpecialTypes.new(reifiedArgs, {
+  const exp = WithSpecialTypes.r(...reifiedArgs).new({
     id,
     string: 'string',
     asciiString: 'ascii',
     url: 'https://example.com',
     idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
     uid,
-    balance: Balance.new(phantom(SUI.$typeName), 0n),
+    balance: Balance.r(phantom(SUI.r)).new({ value: 0n }),
     option: 100n,
-    optionObj: Bar.new(100n),
+    optionObj: Bar.r.new({ value: 100n }),
     optionNone: null,
-    balanceGeneric: Balance.new(SUI.reified(), 0n),
+    balanceGeneric: Balance.r(phantom(SUI.r)).new({ value: 0n }),
     optionGeneric: 200n,
     optionGenericNone: null,
   })
@@ -472,19 +467,10 @@ it('decodes special-cased types as generics correctly', async () => {
     Url.reified(),
     ID.reified(),
     UID.reified(),
-    Balance.reified(SUI.reified()),
+    Balance.reified(phantom(SUI.reified())),
     Option.reified('u64'),
     Option.reified('u64'),
-  ] as [
-    Reified<Utf8String>,
-    Reified<AsciiString>,
-    Reified<Url>,
-    Reified<ID>,
-    Reified<UID>,
-    Reified<Balance<typeof SUI.$typeName>>,
-    Reified<Option<'u64'>>,
-    Reified<Option<'u64'>>,
-  ]
+  ] as const
 
   createSpecialAsGenerics(txb, typeArgs, {
     string: utf8(txb, Array.from(encoder.encode('string'))),
@@ -521,20 +507,21 @@ it('decodes special-cased types as generics correctly', async () => {
 
   const uid = (obj.data.content.fields as { uid: { id: string } }).uid.id
 
-  const fromBcs = WithSpecialTypesAsGenerics.fromBcs(reifiedArgs, fromB64(obj.data.bcs.bcsBytes))
-  const fromFieldsWithTypes = WithSpecialTypesAsGenerics.fromFieldsWithTypes(
-    reifiedArgs,
+  const fromBcs = WithSpecialTypesAsGenerics.r(...reifiedArgs).fromBcs(
+    fromB64(obj.data.bcs.bcsBytes)
+  )
+  const fromFieldsWithTypes = WithSpecialTypesAsGenerics.r(...reifiedArgs).fromFieldsWithTypes(
     obj.data.content
   )
 
-  const exp = WithSpecialTypesAsGenerics.new(reifiedArgs, {
+  const exp = WithSpecialTypesAsGenerics.r(...reifiedArgs).new({
     id,
     string: 'string',
     asciiString: 'ascii',
     url: 'https://example.com',
     idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
     uid,
-    balance: Balance.new(SUI.reified(), 0n),
+    balance: Balance.r(phantom(SUI.r)).new({ value: 0n }),
     option: 100n,
     optionNone: null,
   })
@@ -552,10 +539,7 @@ it('calls function correctly when special types are used', async () => {
   const reifiedArgs = [
     phantom(SUI.$typeName),
     vector(Option.reified(Option.reified(vector(vector('u64'))))),
-  ] as [
-    PhantomReified<typeof SUI.$typeName>,
-    Reified<Vector<Option<Option<Vector<Vector<'u64'>>>>>>,
-  ]
+  ] as const
 
   createSpecial(
     txb,
@@ -604,18 +588,18 @@ it('calls function correctly when special types are used', async () => {
   expect(
     WithSpecialTypes.fromFieldsWithTypes([phantom(SUI.$typeName), reifiedArgs[1]], obj.data.content)
   ).toEqual(
-    WithSpecialTypes.new([phantom(SUI.$typeName), reifiedArgs[1]], {
+    WithSpecialTypes.r(phantom(SUI.$typeName), reifiedArgs[1]).new({
       id,
       string: 'string',
       asciiString: 'ascii',
       url: 'https://example.com',
       idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
       uid: (obj.data.content.fields as { uid: { id: string } }).uid.id,
-      balance: Balance.new(SUI.reified(), 0n),
+      balance: Balance.r(phantom(SUI.reified())).new({ value: 0n }),
       option: 100n,
-      optionObj: Bar.new(100n),
+      optionObj: Bar.r.new({ value: 100n }),
       optionNone: null,
-      balanceGeneric: Balance.new(SUI.reified(), 0n),
+      balanceGeneric: Balance.r(phantom(SUI.reified())).new({ value: 0n }),
       optionGeneric: [[[200n, 300n]], null, [[400n, 500n]]],
       optionGenericNone: null,
     })
@@ -633,19 +617,10 @@ it('calls function correctly when special types are used as generics', async () 
     Url.reified(),
     ID.reified(),
     UID.reified(),
-    Balance.reified(SUI.reified()),
+    Balance.reified(phantom(SUI.reified())),
     Option.reified(vector(Option.reified('u64'))),
     Option.reified('u64'),
-  ] as [
-    Reified<Utf8String>,
-    Reified<AsciiString>,
-    Reified<Url>,
-    Reified<ID>,
-    Reified<UID>,
-    Reified<Balance<typeof SUI.$typeName>>,
-    Reified<Option<Vector<Option<'u64'>>>>,
-    Reified<Option<'u64'>>,
-  ]
+  ] as const
 
   createSpecialAsGenerics(
     txb,
@@ -696,15 +671,17 @@ it('calls function correctly when special types are used as generics', async () 
     throw new Error(`not a moveObject`)
   }
 
-  expect(WithSpecialTypesAsGenerics.fromFieldsWithTypes(reifiedArgs, obj.data.content)).toEqual(
-    WithSpecialTypesAsGenerics.new(reifiedArgs, {
+  expect(
+    WithSpecialTypesAsGenerics.r(...reifiedArgs).fromFieldsWithTypes(obj.data.content)
+  ).toEqual(
+    WithSpecialTypesAsGenerics.r(...reifiedArgs).new({
       id,
       string: 'string',
       asciiString: 'ascii',
       url: 'https://example.com',
       idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
       uid: (obj.data.content.fields as { uid: { id: string } }).uid.id,
-      balance: Balance.new(SUI.reified(), 0n),
+      balance: Balance.r(phantom(SUI.r)).new({ value: 0n }),
       option: [5n, null, 3n],
       optionNone: null,
     })
@@ -746,7 +723,7 @@ it('calls function correctly when special types are used as as vectors', async (
   }
 
   expect(WithSpecialTypesInVectors.fromFieldsWithTypes(vector('u64'), obj.data.content)).toEqual(
-    WithSpecialTypesInVectors.new(vector('u64'), {
+    WithSpecialTypesInVectors.r(vector('u64')).new({
       id,
       string: ['string'],
       asciiString: ['ascii'],
@@ -754,7 +731,7 @@ it('calls function correctly when special types are used as as vectors', async (
         '0x0000000000000000000000000000000000000000000000000000000000000000',
         '0x0000000000000000000000000000000000000000000000000000000000000001',
       ],
-      bar: [Bar.new(100n)],
+      bar: [Bar.r.new({ value: 100n })],
       option: [5n, 1n, 3n],
       optionGeneric: [[5n], null],
     })
@@ -816,47 +793,47 @@ it('loads with loader correctly', async () => {
 
   const fromBcs = withGenericFieldReified.fromFieldsWithTypes(obj.data.content)
   expect(fromBcs).toEqual(
-    WithGenericField.new(tReified, {
+    WithGenericField.r(tReified).new({
       id,
-      genericField: WithTwoGenerics.new(
-        [Bar.reified(), vector(WithTwoGenerics.reified(Bar.reified(), 'u8'))],
-        {
-          genericField1: Bar.new(100n),
-          genericField2: [
-            WithTwoGenerics.new([Bar.reified(), 'u8'], {
-              genericField1: Bar.new(100n),
-              genericField2: 1,
-            }),
-          ],
-        }
-      ),
+      genericField: WithTwoGenerics.r(
+        Bar.reified(),
+        vector(WithTwoGenerics.reified(Bar.reified(), 'u8'))
+      ).new({
+        genericField1: Bar.r.new({ value: 100n }),
+        genericField2: [
+          WithTwoGenerics.r(Bar.reified(), 'u8').new({
+            genericField1: Bar.r.new({ value: 100n }),
+            genericField2: 1,
+          }),
+        ],
+      }),
     })
   )
 })
 
 it('converts to json correctly', () => {
-  const U = WithSpecialTypes.reified(SUI.reified(), 'u64')
+  const U = WithSpecialTypes.reified(phantom(SUI.reified()), 'u64')
   const V = vector(WithTwoGenerics.reified(Bar.reified(), 'u8'))
 
-  const obj = WithTwoGenerics.new([U, V], {
-    genericField1: WithSpecialTypes.new([SUI.reified(), 'u64'], {
+  const obj = WithTwoGenerics.r(U, V).new({
+    genericField1: WithSpecialTypes.r(phantom(SUI.r), 'u64').new({
       id: '0x1',
       string: 'string',
       asciiString: 'ascii',
       url: 'https://example.com',
       idField: '0x2',
       uid: '0x3',
-      balance: Balance.new(SUI.reified(), 0n),
+      balance: Balance.r(phantom(SUI.r)).new({ value: 0n }),
       option: 100n,
-      optionObj: Bar.new(100n),
+      optionObj: Bar.r.new({ value: 100n }),
       optionNone: null,
-      balanceGeneric: Balance.new(SUI.reified(), 0n),
+      balanceGeneric: Balance.r(phantom(SUI.r)).new({ value: 0n }),
       optionGeneric: 200n,
       optionGenericNone: null,
     }),
     genericField2: [
-      WithTwoGenerics.new([Bar.reified(), 'u8'], {
-        genericField1: Bar.new(100n),
+      WithTwoGenerics.r(Bar.reified(), 'u8').new({
+        genericField1: Bar.r.new({ value: 100n }),
         genericField2: 1,
       }),
     ],
@@ -1001,60 +978,60 @@ it('decodes address field correctly', async () => {
     throw new Error(`not a moveObject`)
   }
 
-  const exp = Foo.new('address', {
+  const exp = Foo.r('address').new({
     id,
     generic: '0x0000000000000000000000000000000000000000000000000000000000000123',
     reifiedPrimitiveVec: [1n, 2n, 3n],
-    reifiedObjectVec: [Bar.new(100n)],
+    reifiedObjectVec: [Bar.r.new({ value: 100n })],
     genericVec: ['0x0000000000000000000000000000000000000000000000000000000000000555'],
     genericVecNested: [
-      WithTwoGenerics.new(['address', 'u8'], {
+      WithTwoGenerics.r('address', 'u8').new({
         genericField1: '0x0000000000000000000000000000000000000000000000000000000000000999',
         genericField2: 1,
       }),
     ],
-    twoGenerics: WithTwoGenerics.new(['address', Bar.reified()], {
+    twoGenerics: WithTwoGenerics.r('address', Bar.reified()).new({
       genericField1: '0x0000000000000000000000000000000000000000000000000000000000000111',
-      genericField2: Bar.new(100n),
+      genericField2: Bar.r.new({ value: 100n }),
     }),
-    twoGenericsReifiedPrimitive: WithTwoGenerics.new(['u16', 'u64'], {
+    twoGenericsReifiedPrimitive: WithTwoGenerics.r('u16', 'u64').new({
       genericField1: 1,
       genericField2: 2n,
     }),
-    twoGenericsReifiedObject: WithTwoGenerics.new([Bar.reified(), Bar.reified()], {
-      genericField1: Bar.new(100n),
-      genericField2: Bar.new(100n),
+    twoGenericsReifiedObject: WithTwoGenerics.r(Bar.reified(), Bar.reified()).new({
+      genericField1: Bar.r.new({ value: 100n }),
+      genericField2: Bar.r.new({ value: 100n }),
     }),
-    twoGenericsNested: WithTwoGenerics.new(['address', WithTwoGenerics.reified('u8', 'u8')], {
+    twoGenericsNested: WithTwoGenerics.r('address', WithTwoGenerics.reified('u8', 'u8')).new({
       genericField1: '0x0000000000000000000000000000000000000000000000000000000000000111',
-      genericField2: WithTwoGenerics.new(['u8', 'u8'], {
+      genericField2: WithTwoGenerics.r('u8', 'u8').new({
         genericField1: 1,
         genericField2: 2,
       }),
     }),
-    twoGenericsReifiedNested: WithTwoGenerics.new(
-      [Bar.reified(), WithTwoGenerics.reified('u8', 'u8')],
-      {
-        genericField1: Bar.new(100n),
-        genericField2: WithTwoGenerics.new(['u8', 'u8'], {
-          genericField1: 1,
-          genericField2: 2,
-        }),
-      }
-    ),
+    twoGenericsReifiedNested: WithTwoGenerics.r(
+      Bar.reified(),
+      WithTwoGenerics.reified('u8', 'u8')
+    ).new({
+      genericField1: Bar.r.new({ value: 100n }),
+      genericField2: WithTwoGenerics.r('u8', 'u8').new({
+        genericField1: 1,
+        genericField2: 2,
+      }),
+    }),
     twoGenericsNestedVec: [
-      WithTwoGenerics.new([Bar.reified(), vector(WithTwoGenerics.reified('address', 'u8'))], {
-        genericField1: Bar.new(100n),
+      WithTwoGenerics.r(Bar.reified(), vector(WithTwoGenerics.reified('address', 'u8'))).new({
+        genericField1: Bar.r.new({ value: 100n }),
         genericField2: [
-          WithTwoGenerics.new(['address', 'u8'], {
+          WithTwoGenerics.r('address', 'u8').new({
             genericField1: '0x0000000000000000000000000000000000000000000000000000000000000111',
             genericField2: 1,
-          }) as WithTwoGenerics<'address', 'u8'>,
+          }),
         ],
       }),
     ],
-    dummy: Dummy.new(false),
-    other: StructFromOtherModule.new(false),
+    dummy: Dummy.r.new({ dummyField: false }),
+    other: StructFromOtherModule.r.new({ dummyField: false }),
   })
 
   expect(Foo.fromBcs('address', fromB64(foo.data.bcs.bcsBytes))).toEqual(exp)
