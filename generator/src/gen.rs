@@ -1346,7 +1346,6 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let extends_non_phantom = ExtendsOrWraps::Extends(quote!($type_argument));
         let extends_phantom = ExtendsOrWraps::Extends(quote!($phantom_type_argument));
 
-        tokens.append("// eslint-disable-next-line @typescript-eslint/no-unused-vars");
         tokens.push();
         quote_in! { *tokens =>
             export interface $(self.gen_fields_if_name_with_params(strct, &extends_non_phantom, &extends_phantom)) {
@@ -1561,7 +1560,6 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             >;$['\n']
         }
 
-        tokens.append("// eslint-disable-next-line @typescript-eslint/no-unused-vars");
         tokens.push();
         quote_in! { *tokens =>
             export class $(&struct_name)$(self.gen_params_toks(strct, type_params_str.clone(), &extends_type_argument, &extends_phantom_type_argument)) {
