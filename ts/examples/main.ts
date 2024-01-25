@@ -15,7 +15,7 @@ import { createExampleStruct, specialTypes } from './gen/examples/examples/funct
 import { BCS } from '@mysten/bcs'
 import { ExampleStruct } from './gen/examples/examples/structs'
 import { SUI } from './gen/sui/sui/structs'
-import { phantom, vector } from './gen/_framework/reified'
+import { vector } from './gen/_framework/reified'
 
 const EXAMPLE_COIN_FAUCET_ID = '0x23a00d64a785280a794d0bdd2f641dfabf117c78e07cb682550ed3c2b41dd760'
 const AMM_POOL_REGISTRY_ID = '0xe3e05313eff4f6f44206982e42fa1219c972113f3a651abe168123abc0202411'
@@ -61,7 +61,7 @@ async function createPool() {
 
 /** An example for object fetching. Fetch and print the AMM pool at AMM_POOL_ID. */
 async function fetchPool() {
-  const pool = await Pool.r(phantom(SUI.r), phantom(EXAMPLE_COIN.r)).fetch(client, AMM_POOL_ID)
+  const pool = await Pool.r(SUI.p, EXAMPLE_COIN.p).fetch(client, AMM_POOL_ID)
   console.log(pool)
 }
 

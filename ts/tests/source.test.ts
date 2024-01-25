@@ -30,7 +30,7 @@ import { newUnsafeFromBytes } from './gen/sui/url/functions'
 import { new_ as newUid, idFromAddress } from './gen/sui/object/functions'
 import { zero } from './gen/sui/balance/functions'
 import { Balance } from './gen/sui/balance/structs'
-import { extractType, phantom, vector } from './gen/_framework/reified'
+import { extractType, vector } from './gen/_framework/reified'
 import { SUI } from './gen/sui/sui/structs'
 import { Option } from './gen/move-stdlib/option/structs'
 import { String as Utf8String } from './gen/move-stdlib/string/structs'
@@ -379,7 +379,7 @@ it('decodes special-cased types correctly', async () => {
   const encoder = new TextEncoder()
 
   const typeArgs = ['0x2::sui::SUI', 'u64'] as [string, string]
-  const reifiedArgs = [phantom(SUI.reified()), 'u64'] as const
+  const reifiedArgs = [SUI.p, 'u64'] as const
 
   createSpecial(txb, typeArgs, {
     string: utf8(txb, Array.from(encoder.encode('string'))),
@@ -432,11 +432,11 @@ it('decodes special-cased types correctly', async () => {
     url: 'https://example.com',
     idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
     uid,
-    balance: Balance.r(phantom(SUI.r)).new({ value: 0n }),
+    balance: Balance.r(SUI.p).new({ value: 0n }),
     option: 100n,
     optionObj: Bar.r.new({ value: 100n }),
     optionNone: null,
-    balanceGeneric: Balance.r(phantom(SUI.r)).new({ value: 0n }),
+    balanceGeneric: Balance.r(SUI.p).new({ value: 0n }),
     optionGeneric: 200n,
     optionGenericNone: null,
   })
@@ -467,7 +467,7 @@ it('decodes special-cased types as generics correctly', async () => {
     Url.reified(),
     ID.reified(),
     UID.reified(),
-    Balance.reified(phantom(SUI.reified())),
+    Balance.reified(SUI.p),
     Option.reified('u64'),
     Option.reified('u64'),
   ] as const
@@ -521,7 +521,7 @@ it('decodes special-cased types as generics correctly', async () => {
     url: 'https://example.com',
     idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
     uid,
-    balance: Balance.r(phantom(SUI.r)).new({ value: 0n }),
+    balance: Balance.r(SUI.p).new({ value: 0n }),
     option: 100n,
     optionNone: null,
   })
@@ -537,7 +537,7 @@ it('calls function correctly when special types are used', async () => {
   const encoder = new TextEncoder()
 
   const reifiedArgs = [
-    phantom(SUI.$typeName),
+    SUI.p,
     vector(Option.reified(Option.reified(vector(vector('u64'))))),
   ] as const
 
@@ -585,21 +585,19 @@ it('calls function correctly when special types are used', async () => {
     throw new Error(`not a moveObject`)
   }
 
-  expect(
-    WithSpecialTypes.fromFieldsWithTypes([phantom(SUI.$typeName), reifiedArgs[1]], obj.data.content)
-  ).toEqual(
-    WithSpecialTypes.r(phantom(SUI.$typeName), reifiedArgs[1]).new({
+  expect(WithSpecialTypes.fromFieldsWithTypes([SUI.p, reifiedArgs[1]], obj.data.content)).toEqual(
+    WithSpecialTypes.r(SUI.p, reifiedArgs[1]).new({
       id,
       string: 'string',
       asciiString: 'ascii',
       url: 'https://example.com',
       idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
       uid: (obj.data.content.fields as { uid: { id: string } }).uid.id,
-      balance: Balance.r(phantom(SUI.reified())).new({ value: 0n }),
+      balance: Balance.r(SUI.p).new({ value: 0n }),
       option: 100n,
       optionObj: Bar.r.new({ value: 100n }),
       optionNone: null,
-      balanceGeneric: Balance.r(phantom(SUI.reified())).new({ value: 0n }),
+      balanceGeneric: Balance.r(SUI.p).new({ value: 0n }),
       optionGeneric: [[[200n, 300n]], null, [[400n, 500n]]],
       optionGenericNone: null,
     })
@@ -617,7 +615,7 @@ it('calls function correctly when special types are used as generics', async () 
     Url.reified(),
     ID.reified(),
     UID.reified(),
-    Balance.reified(phantom(SUI.reified())),
+    Balance.reified(SUI.p),
     Option.reified(vector(Option.reified('u64'))),
     Option.reified('u64'),
   ] as const
@@ -681,7 +679,7 @@ it('calls function correctly when special types are used as generics', async () 
       url: 'https://example.com',
       idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
       uid: (obj.data.content.fields as { uid: { id: string } }).uid.id,
-      balance: Balance.r(phantom(SUI.r)).new({ value: 0n }),
+      balance: Balance.r(SUI.p).new({ value: 0n }),
       option: [5n, null, 3n],
       optionNone: null,
     })
@@ -812,22 +810,22 @@ it('loads with loader correctly', async () => {
 })
 
 it('converts to json correctly', () => {
-  const U = WithSpecialTypes.reified(phantom(SUI.reified()), 'u64')
+  const U = WithSpecialTypes.reified(SUI.p, 'u64')
   const V = vector(WithTwoGenerics.reified(Bar.reified(), 'u8'))
 
   const obj = WithTwoGenerics.r(U, V).new({
-    genericField1: WithSpecialTypes.r(phantom(SUI.r), 'u64').new({
+    genericField1: WithSpecialTypes.r(SUI.p, 'u64').new({
       id: '0x1',
       string: 'string',
       asciiString: 'ascii',
       url: 'https://example.com',
       idField: '0x2',
       uid: '0x3',
-      balance: Balance.r(phantom(SUI.r)).new({ value: 0n }),
+      balance: Balance.r(SUI.p).new({ value: 0n }),
       option: 100n,
       optionObj: Bar.r.new({ value: 100n }),
       optionNone: null,
-      balanceGeneric: Balance.r(phantom(SUI.r)).new({ value: 0n }),
+      balanceGeneric: Balance.r(SUI.p).new({ value: 0n }),
       optionGeneric: 200n,
       optionGenericNone: null,
     }),
