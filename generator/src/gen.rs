@@ -1384,6 +1384,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let phantom_to_type_str = &self.framework.import("reified", "PhantomToTypeStr");
         let to_bcs = &self.framework.import("reified", "toBcs");
         let extract_type = &self.framework.import("reified", "extractType");
+        let phantom = &self.framework.import("reified", "phantom");
         let assert_reified_type_args_match = &self.framework.import("reified", "assertReifiedTypeArgsMatch");
         let assert_fields_with_types_args_match = &self
             .framework
@@ -1733,6 +1734,22 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                         return $(&struct_name).reified()
                     } else {
                         return $(&struct_name).reified
+                    })
+                }$['\n']
+
+                static phantom$(params_toks_for_reified)(
+                    $(for param in type_params_str.iter() join (, ) => $param: $param)
+                ): $phantom_reified<$to_type_str<$(&struct_name)$(params_toks_for_to_type_argument)>> {
+                    return $phantom($(&struct_name).reified(
+                        $(for param in type_params_str.iter() join (, ) => $param)
+                    ));
+                }
+
+                static get p() {
+                    $(if type_params.is_empty() {
+                        return $(&struct_name).phantom()
+                    } else {
+                        return $(&struct_name).phantom
                     })
                 }$['\n']
 
