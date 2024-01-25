@@ -38,6 +38,11 @@ export interface CoinFields<T0 extends PhantomTypeArgument> {
   balance: ToField<Balance<T0>>
 }
 
+export type CoinReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  Coin<ToPhantomTypeArgument<T0>>,
+  CoinFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Coin<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::Coin'
@@ -64,9 +69,7 @@ export class Coin<T0 extends PhantomTypeArgument> {
     this.balance = fields.balance
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): Reified<Coin<ToPhantomTypeArgument<T0>>, CoinFields<ToPhantomTypeArgument<T0>>> {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): CoinReified<T0> {
     return {
       typeName: Coin.$typeName,
       fullTypeName: composeSuiType(
@@ -223,6 +226,11 @@ export interface CoinMetadataFields<T0 extends PhantomTypeArgument> {
   iconUrl: ToField<Option<Url>>
 }
 
+export type CoinMetadataReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  CoinMetadata<ToPhantomTypeArgument<T0>>,
+  CoinMetadataFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class CoinMetadata<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::CoinMetadata'
@@ -257,12 +265,7 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> {
     this.iconUrl = fields.iconUrl
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): Reified<
-    CoinMetadata<ToPhantomTypeArgument<T0>>,
-    CoinMetadataFields<ToPhantomTypeArgument<T0>>
-  > {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): CoinMetadataReified<T0> {
     return {
       typeName: CoinMetadata.$typeName,
       fullTypeName: composeSuiType(
@@ -436,6 +439,11 @@ export interface RegulatedCoinMetadataFields<T0 extends PhantomTypeArgument> {
   denyCapObject: ToField<ID>
 }
 
+export type RegulatedCoinMetadataReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  RegulatedCoinMetadata<ToPhantomTypeArgument<T0>>,
+  RegulatedCoinMetadataFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::RegulatedCoinMetadata'
@@ -466,10 +474,7 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> {
 
   static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
-  ): Reified<
-    RegulatedCoinMetadata<ToPhantomTypeArgument<T0>>,
-    RegulatedCoinMetadataFields<ToPhantomTypeArgument<T0>>
-  > {
+  ): RegulatedCoinMetadataReified<T0> {
     return {
       typeName: RegulatedCoinMetadata.$typeName,
       fullTypeName: composeSuiType(
@@ -630,6 +635,11 @@ export interface TreasuryCapFields<T0 extends PhantomTypeArgument> {
   totalSupply: ToField<Supply<T0>>
 }
 
+export type TreasuryCapReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  TreasuryCap<ToPhantomTypeArgument<T0>>,
+  TreasuryCapFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TreasuryCap<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::TreasuryCap'
@@ -656,9 +666,7 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> {
     this.totalSupply = fields.totalSupply
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): Reified<TreasuryCap<ToPhantomTypeArgument<T0>>, TreasuryCapFields<ToPhantomTypeArgument<T0>>> {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): TreasuryCapReified<T0> {
     return {
       typeName: TreasuryCap.$typeName,
       fullTypeName: composeSuiType(
@@ -810,6 +818,11 @@ export interface DenyCapFields<T0 extends PhantomTypeArgument> {
   id: ToField<UID>
 }
 
+export type DenyCapReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  DenyCap<ToPhantomTypeArgument<T0>>,
+  DenyCapFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class DenyCap<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::DenyCap'
@@ -834,9 +847,7 @@ export class DenyCap<T0 extends PhantomTypeArgument> {
     this.id = fields.id
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): Reified<DenyCap<ToPhantomTypeArgument<T0>>, DenyCapFields<ToPhantomTypeArgument<T0>>> {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): DenyCapReified<T0> {
     return {
       typeName: DenyCap.$typeName,
       fullTypeName: composeSuiType(
@@ -979,6 +990,11 @@ export interface CurrencyCreatedFields<T0 extends PhantomTypeArgument> {
   decimals: ToField<'u8'>
 }
 
+export type CurrencyCreatedReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  CurrencyCreated<ToPhantomTypeArgument<T0>>,
+  CurrencyCreatedFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class CurrencyCreated<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::CurrencyCreated'
@@ -1005,10 +1021,7 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> {
 
   static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
-  ): Reified<
-    CurrencyCreated<ToPhantomTypeArgument<T0>>,
-    CurrencyCreatedFields<ToPhantomTypeArgument<T0>>
-  > {
+  ): CurrencyCreatedReified<T0> {
     return {
       typeName: CurrencyCreated.$typeName,
       fullTypeName: composeSuiType(

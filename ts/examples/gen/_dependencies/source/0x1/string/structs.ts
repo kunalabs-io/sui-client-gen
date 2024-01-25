@@ -27,6 +27,8 @@ export interface StringFields {
   bytes: ToField<Vector<'u8'>>
 }
 
+export type StringReified = Reified<String, StringFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class String {
   static readonly $typeName = '0x1::string::String'
@@ -44,7 +46,7 @@ export class String {
     this.bytes = fields.bytes
   }
 
-  static reified(): Reified<String, StringFields> {
+  static reified(): StringReified {
     return {
       typeName: String.$typeName,
       fullTypeName: composeSuiType(String.$typeName, ...[]) as '0x1::string::String',

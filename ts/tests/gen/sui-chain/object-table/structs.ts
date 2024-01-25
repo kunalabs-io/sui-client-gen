@@ -32,6 +32,14 @@ export interface ObjectTableFields<T0 extends PhantomTypeArgument, T1 extends Ph
   size: ToField<'u64'>
 }
 
+export type ObjectTableReified<
+  T0 extends PhantomReified<PhantomTypeArgument>,
+  T1 extends PhantomReified<PhantomTypeArgument>,
+> = Reified<
+  ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>,
+  ObjectTableFields<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::object_table::ObjectTable'
@@ -61,13 +69,7 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
   static reified<
     T0 extends PhantomReified<PhantomTypeArgument>,
     T1 extends PhantomReified<PhantomTypeArgument>,
-  >(
-    T0: T0,
-    T1: T1
-  ): Reified<
-    ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>,
-    ObjectTableFields<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>
-  > {
+  >(T0: T0, T1: T1): ObjectTableReified<T0, T1> {
     return {
       typeName: ObjectTable.$typeName,
       fullTypeName: composeSuiType(

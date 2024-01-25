@@ -33,6 +33,11 @@ export interface VecSetFields<K extends TypeArgument> {
   contents: ToField<Vector<K>>
 }
 
+export type VecSetReified<K extends Reified<TypeArgument, any>> = Reified<
+  VecSet<ToTypeArgument<K>>,
+  VecSetFields<ToTypeArgument<K>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class VecSet<K extends TypeArgument> {
   static readonly $typeName = '0x2::vec_set::VecSet'
@@ -57,9 +62,7 @@ export class VecSet<K extends TypeArgument> {
     this.contents = fields.contents
   }
 
-  static reified<K extends Reified<TypeArgument, any>>(
-    K: K
-  ): Reified<VecSet<ToTypeArgument<K>>, VecSetFields<ToTypeArgument<K>>> {
+  static reified<K extends Reified<TypeArgument, any>>(K: K): VecSetReified<K> {
     return {
       typeName: VecSet.$typeName,
       fullTypeName: composeSuiType(

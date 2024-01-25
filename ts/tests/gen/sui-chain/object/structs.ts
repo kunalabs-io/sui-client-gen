@@ -24,6 +24,8 @@ export interface IDFields {
   bytes: ToField<'address'>
 }
 
+export type IDReified = Reified<ID, IDFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ID {
   static readonly $typeName = '0x2::object::ID'
@@ -41,7 +43,7 @@ export class ID {
     this.bytes = fields.bytes
   }
 
-  static reified(): Reified<ID, IDFields> {
+  static reified(): IDReified {
     return {
       typeName: ID.$typeName,
       fullTypeName: composeSuiType(ID.$typeName, ...[]) as '0x2::object::ID',
@@ -152,6 +154,8 @@ export interface UIDFields {
   id: ToField<ID>
 }
 
+export type UIDReified = Reified<UID, UIDFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class UID {
   static readonly $typeName = '0x2::object::UID'
@@ -169,7 +173,7 @@ export class UID {
     this.id = fields.id
   }
 
-  static reified(): Reified<UID, UIDFields> {
+  static reified(): UIDReified {
     return {
       typeName: UID.$typeName,
       fullTypeName: composeSuiType(UID.$typeName, ...[]) as '0x2::object::UID',

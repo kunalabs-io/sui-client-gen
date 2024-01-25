@@ -30,6 +30,8 @@ export interface AuthenticatorStateFields {
   version: ToField<'u64'>
 }
 
+export type AuthenticatorStateReified = Reified<AuthenticatorState, AuthenticatorStateFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class AuthenticatorState {
   static readonly $typeName = '0x2::authenticator_state::AuthenticatorState'
@@ -49,7 +51,7 @@ export class AuthenticatorState {
     this.version = fields.version
   }
 
-  static reified(): Reified<AuthenticatorState, AuthenticatorStateFields> {
+  static reified(): AuthenticatorStateReified {
     return {
       typeName: AuthenticatorState.$typeName,
       fullTypeName: composeSuiType(
@@ -172,6 +174,11 @@ export interface AuthenticatorStateInnerFields {
   activeJwks: ToField<Vector<ActiveJwk>>
 }
 
+export type AuthenticatorStateInnerReified = Reified<
+  AuthenticatorStateInner,
+  AuthenticatorStateInnerFields
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class AuthenticatorStateInner {
   static readonly $typeName = '0x2::authenticator_state::AuthenticatorStateInner'
@@ -191,7 +198,7 @@ export class AuthenticatorStateInner {
     this.activeJwks = fields.activeJwks
   }
 
-  static reified(): Reified<AuthenticatorStateInner, AuthenticatorStateInnerFields> {
+  static reified(): AuthenticatorStateInnerReified {
     return {
       typeName: AuthenticatorStateInner.$typeName,
       fullTypeName: composeSuiType(
@@ -327,6 +334,8 @@ export interface JWKFields {
   alg: ToField<String>
 }
 
+export type JWKReified = Reified<JWK, JWKFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class JWK {
   static readonly $typeName = '0x2::authenticator_state::JWK'
@@ -350,7 +359,7 @@ export class JWK {
     this.alg = fields.alg
   }
 
-  static reified(): Reified<JWK, JWKFields> {
+  static reified(): JWKReified {
     return {
       typeName: JWK.$typeName,
       fullTypeName: composeSuiType(JWK.$typeName, ...[]) as '0x2::authenticator_state::JWK',
@@ -480,6 +489,8 @@ export interface JwkIdFields {
   kid: ToField<String>
 }
 
+export type JwkIdReified = Reified<JwkId, JwkIdFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class JwkId {
   static readonly $typeName = '0x2::authenticator_state::JwkId'
@@ -499,7 +510,7 @@ export class JwkId {
     this.kid = fields.kid
   }
 
-  static reified(): Reified<JwkId, JwkIdFields> {
+  static reified(): JwkIdReified {
     return {
       typeName: JwkId.$typeName,
       fullTypeName: composeSuiType(JwkId.$typeName, ...[]) as '0x2::authenticator_state::JwkId',
@@ -620,6 +631,8 @@ export interface ActiveJwkFields {
   epoch: ToField<'u64'>
 }
 
+export type ActiveJwkReified = Reified<ActiveJwk, ActiveJwkFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ActiveJwk {
   static readonly $typeName = '0x2::authenticator_state::ActiveJwk'
@@ -641,7 +654,7 @@ export class ActiveJwk {
     this.epoch = fields.epoch
   }
 
-  static reified(): Reified<ActiveJwk, ActiveJwkFields> {
+  static reified(): ActiveJwkReified {
     return {
       typeName: ActiveJwk.$typeName,
       fullTypeName: composeSuiType(

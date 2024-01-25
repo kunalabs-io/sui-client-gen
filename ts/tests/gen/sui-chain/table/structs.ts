@@ -32,6 +32,14 @@ export interface TableFields<T0 extends PhantomTypeArgument, T1 extends PhantomT
   size: ToField<'u64'>
 }
 
+export type TableReified<
+  T0 extends PhantomReified<PhantomTypeArgument>,
+  T1 extends PhantomReified<PhantomTypeArgument>,
+> = Reified<
+  Table<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>,
+  TableFields<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Table<T0 extends PhantomTypeArgument, T1 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::table::Table'
@@ -61,13 +69,7 @@ export class Table<T0 extends PhantomTypeArgument, T1 extends PhantomTypeArgumen
   static reified<
     T0 extends PhantomReified<PhantomTypeArgument>,
     T1 extends PhantomReified<PhantomTypeArgument>,
-  >(
-    T0: T0,
-    T1: T1
-  ): Reified<
-    Table<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>,
-    TableFields<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>
-  > {
+  >(T0: T0, T1: T1): TableReified<T0, T1> {
     return {
       typeName: Table.$typeName,
       fullTypeName: composeSuiType(

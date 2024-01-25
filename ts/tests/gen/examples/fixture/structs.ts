@@ -45,6 +45,8 @@ export interface BarFields {
   value: ToField<'u64'>
 }
 
+export type BarReified = Reified<Bar, BarFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Bar {
   static readonly $typeName =
@@ -63,7 +65,7 @@ export class Bar {
     this.value = fields.value
   }
 
-  static reified(): Reified<Bar, BarFields> {
+  static reified(): BarReified {
     return {
       typeName: Bar.$typeName,
       fullTypeName: composeSuiType(
@@ -176,6 +178,8 @@ export interface DummyFields {
   dummyField: ToField<'bool'>
 }
 
+export type DummyReified = Reified<Dummy, DummyFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Dummy {
   static readonly $typeName =
@@ -194,7 +198,7 @@ export class Dummy {
     this.dummyField = fields.dummyField
   }
 
-  static reified(): Reified<Dummy, DummyFields> {
+  static reified(): DummyReified {
     return {
       typeName: Dummy.$typeName,
       fullTypeName: composeSuiType(
@@ -322,6 +326,11 @@ export interface FooFields<T extends TypeArgument> {
   other: ToField<StructFromOtherModule>
 }
 
+export type FooReified<T extends Reified<TypeArgument, any>> = Reified<
+  Foo<ToTypeArgument<T>>,
+  FooFields<ToTypeArgument<T>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Foo<T extends TypeArgument> {
   static readonly $typeName =
@@ -375,9 +384,7 @@ export class Foo<T extends TypeArgument> {
     this.other = fields.other
   }
 
-  static reified<T extends Reified<TypeArgument, any>>(
-    T: T
-  ): Reified<Foo<ToTypeArgument<T>>, FooFields<ToTypeArgument<T>>> {
+  static reified<T extends Reified<TypeArgument, any>>(T: T): FooReified<T> {
     return {
       typeName: Foo.$typeName,
       fullTypeName: composeSuiType(
@@ -697,6 +704,11 @@ export interface WithGenericFieldFields<T extends TypeArgument> {
   genericField: ToField<T>
 }
 
+export type WithGenericFieldReified<T extends Reified<TypeArgument, any>> = Reified<
+  WithGenericField<ToTypeArgument<T>>,
+  WithGenericFieldFields<ToTypeArgument<T>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WithGenericField<T extends TypeArgument> {
   static readonly $typeName =
@@ -724,9 +736,7 @@ export class WithGenericField<T extends TypeArgument> {
     this.genericField = fields.genericField
   }
 
-  static reified<T extends Reified<TypeArgument, any>>(
-    T: T
-  ): Reified<WithGenericField<ToTypeArgument<T>>, WithGenericFieldFields<ToTypeArgument<T>>> {
+  static reified<T extends Reified<TypeArgument, any>>(T: T): WithGenericFieldReified<T> {
     return {
       typeName: WithGenericField.$typeName,
       fullTypeName: composeSuiType(
@@ -900,6 +910,14 @@ export interface WithSpecialTypesFields<T extends PhantomTypeArgument, U extends
   optionGenericNone: ToField<Option<U>>
 }
 
+export type WithSpecialTypesReified<
+  T extends PhantomReified<PhantomTypeArgument>,
+  U extends Reified<TypeArgument, any>,
+> = Reified<
+  WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>>,
+  WithSpecialTypesFields<ToPhantomTypeArgument<T>, ToTypeArgument<U>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgument> {
   static readonly $typeName =
@@ -952,13 +970,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
   static reified<
     T extends PhantomReified<PhantomTypeArgument>,
     U extends Reified<TypeArgument, any>,
-  >(
-    T: T,
-    U: U
-  ): Reified<
-    WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>>,
-    WithSpecialTypesFields<ToPhantomTypeArgument<T>, ToTypeArgument<U>>
-  > {
+  >(T: T, U: U): WithSpecialTypesReified<T, U> {
     return {
       typeName: WithSpecialTypes.$typeName,
       fullTypeName: composeSuiType(
@@ -1234,6 +1246,38 @@ export interface WithSpecialTypesAsGenericsFields<
   optionNone: ToField<T7>
 }
 
+export type WithSpecialTypesAsGenericsReified<
+  T0 extends Reified<TypeArgument, any>,
+  T1 extends Reified<TypeArgument, any>,
+  T2 extends Reified<TypeArgument, any>,
+  T3 extends Reified<TypeArgument, any>,
+  T4 extends Reified<TypeArgument, any>,
+  T5 extends Reified<TypeArgument, any>,
+  T6 extends Reified<TypeArgument, any>,
+  T7 extends Reified<TypeArgument, any>,
+> = Reified<
+  WithSpecialTypesAsGenerics<
+    ToTypeArgument<T0>,
+    ToTypeArgument<T1>,
+    ToTypeArgument<T2>,
+    ToTypeArgument<T3>,
+    ToTypeArgument<T4>,
+    ToTypeArgument<T5>,
+    ToTypeArgument<T6>,
+    ToTypeArgument<T7>
+  >,
+  WithSpecialTypesAsGenericsFields<
+    ToTypeArgument<T0>,
+    ToTypeArgument<T1>,
+    ToTypeArgument<T2>,
+    ToTypeArgument<T3>,
+    ToTypeArgument<T4>,
+    ToTypeArgument<T5>,
+    ToTypeArgument<T6>,
+    ToTypeArgument<T7>
+  >
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WithSpecialTypesAsGenerics<
   T0 extends TypeArgument,
@@ -1305,28 +1349,7 @@ export class WithSpecialTypesAsGenerics<
     T5: T5,
     T6: T6,
     T7: T7
-  ): Reified<
-    WithSpecialTypesAsGenerics<
-      ToTypeArgument<T0>,
-      ToTypeArgument<T1>,
-      ToTypeArgument<T2>,
-      ToTypeArgument<T3>,
-      ToTypeArgument<T4>,
-      ToTypeArgument<T5>,
-      ToTypeArgument<T6>,
-      ToTypeArgument<T7>
-    >,
-    WithSpecialTypesAsGenericsFields<
-      ToTypeArgument<T0>,
-      ToTypeArgument<T1>,
-      ToTypeArgument<T2>,
-      ToTypeArgument<T3>,
-      ToTypeArgument<T4>,
-      ToTypeArgument<T5>,
-      ToTypeArgument<T6>,
-      ToTypeArgument<T7>
-    >
-  > {
+  ): WithSpecialTypesAsGenericsReified<T0, T1, T2, T3, T4, T5, T6, T7> {
     return {
       typeName: WithSpecialTypesAsGenerics.$typeName,
       fullTypeName: composeSuiType(
@@ -1799,6 +1822,11 @@ export interface WithSpecialTypesInVectorsFields<T extends TypeArgument> {
   optionGeneric: ToField<Vector<Option<T>>>
 }
 
+export type WithSpecialTypesInVectorsReified<T extends Reified<TypeArgument, any>> = Reified<
+  WithSpecialTypesInVectors<ToTypeArgument<T>>,
+  WithSpecialTypesInVectorsFields<ToTypeArgument<T>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WithSpecialTypesInVectors<T extends TypeArgument> {
   static readonly $typeName =
@@ -1836,12 +1864,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> {
     this.optionGeneric = fields.optionGeneric
   }
 
-  static reified<T extends Reified<TypeArgument, any>>(
-    T: T
-  ): Reified<
-    WithSpecialTypesInVectors<ToTypeArgument<T>>,
-    WithSpecialTypesInVectorsFields<ToTypeArgument<T>>
-  > {
+  static reified<T extends Reified<TypeArgument, any>>(T: T): WithSpecialTypesInVectorsReified<T> {
     return {
       typeName: WithSpecialTypesInVectors.$typeName,
       fullTypeName: composeSuiType(
@@ -2056,6 +2079,14 @@ export interface WithTwoGenericsFields<T extends TypeArgument, U extends TypeArg
   genericField2: ToField<U>
 }
 
+export type WithTwoGenericsReified<
+  T extends Reified<TypeArgument, any>,
+  U extends Reified<TypeArgument, any>,
+> = Reified<
+  WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>>,
+  WithTwoGenericsFields<ToTypeArgument<T>, ToTypeArgument<U>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> {
   static readonly $typeName =
@@ -2086,10 +2117,7 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> {
   static reified<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
     T: T,
     U: U
-  ): Reified<
-    WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>>,
-    WithTwoGenericsFields<ToTypeArgument<T>, ToTypeArgument<U>>
-  > {
+  ): WithTwoGenericsReified<T, U> {
     return {
       typeName: WithTwoGenerics.$typeName,
       fullTypeName: composeSuiType(

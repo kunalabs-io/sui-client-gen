@@ -38,6 +38,8 @@ export interface AdminCapFields {
   id: ToField<UID>
 }
 
+export type AdminCapReified = Reified<AdminCap, AdminCapFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class AdminCap {
   static readonly $typeName =
@@ -56,7 +58,7 @@ export class AdminCap {
     this.id = fields.id
   }
 
-  static reified(): Reified<AdminCap, AdminCapFields> {
+  static reified(): AdminCapReified {
     return {
       typeName: AdminCap.$typeName,
       fullTypeName: composeSuiType(
@@ -169,6 +171,14 @@ export interface LPFields<A extends PhantomTypeArgument, B extends PhantomTypeAr
   dummyField: ToField<'bool'>
 }
 
+export type LPReified<
+  A extends PhantomReified<PhantomTypeArgument>,
+  B extends PhantomReified<PhantomTypeArgument>,
+> = Reified<
+  LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>,
+  LPFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
   static readonly $typeName =
@@ -197,13 +207,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
   static reified<
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
-  >(
-    A: A,
-    B: B
-  ): Reified<
-    LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>,
-    LPFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>
-  > {
+  >(A: A, B: B): LPReified<A, B> {
     return {
       typeName: LP.$typeName,
       fullTypeName: composeSuiType(
@@ -376,6 +380,14 @@ export interface PoolFields<A extends PhantomTypeArgument, B extends PhantomType
   adminFeeBalance: ToField<Balance<ToPhantom<LP<A, B>>>>
 }
 
+export type PoolReified<
+  A extends PhantomReified<PhantomTypeArgument>,
+  B extends PhantomReified<PhantomTypeArgument>,
+> = Reified<
+  Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>,
+  PoolFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
   static readonly $typeName =
@@ -416,13 +428,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
   static reified<
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
-  >(
-    A: A,
-    B: B
-  ): Reified<
-    Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>,
-    PoolFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>
-  > {
+  >(A: A, B: B): PoolReified<A, B> {
     return {
       typeName: Pool.$typeName,
       fullTypeName: composeSuiType(
@@ -641,6 +647,8 @@ export interface PoolCreationEventFields {
   poolId: ToField<ID>
 }
 
+export type PoolCreationEventReified = Reified<PoolCreationEvent, PoolCreationEventFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PoolCreationEvent {
   static readonly $typeName =
@@ -659,7 +667,7 @@ export class PoolCreationEvent {
     this.poolId = fields.poolId
   }
 
-  static reified(): Reified<PoolCreationEvent, PoolCreationEventFields> {
+  static reified(): PoolCreationEventReified {
     return {
       typeName: PoolCreationEvent.$typeName,
       fullTypeName: composeSuiType(
@@ -780,6 +788,8 @@ export interface PoolRegistryFields {
   table: ToField<Table<ToPhantom<PoolRegistryItem>, 'bool'>>
 }
 
+export type PoolRegistryReified = Reified<PoolRegistry, PoolRegistryFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PoolRegistry {
   static readonly $typeName =
@@ -800,7 +810,7 @@ export class PoolRegistry {
     this.table = fields.table
   }
 
-  static reified(): Reified<PoolRegistry, PoolRegistryFields> {
+  static reified(): PoolRegistryReified {
     return {
       typeName: PoolRegistry.$typeName,
       fullTypeName: composeSuiType(
@@ -935,6 +945,8 @@ export interface PoolRegistryItemFields {
   b: ToField<TypeName>
 }
 
+export type PoolRegistryItemReified = Reified<PoolRegistryItem, PoolRegistryItemFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PoolRegistryItem {
   static readonly $typeName =
@@ -955,7 +967,7 @@ export class PoolRegistryItem {
     this.b = fields.b
   }
 
-  static reified(): Reified<PoolRegistryItem, PoolRegistryItemFields> {
+  static reified(): PoolRegistryItemReified {
     return {
       typeName: PoolRegistryItem.$typeName,
       fullTypeName: composeSuiType(

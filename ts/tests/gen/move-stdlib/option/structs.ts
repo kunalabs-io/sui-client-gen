@@ -33,6 +33,11 @@ export interface OptionFields<Element extends TypeArgument> {
   vec: ToField<Vector<Element>>
 }
 
+export type OptionReified<Element extends Reified<TypeArgument, any>> = Reified<
+  Option<ToTypeArgument<Element>>,
+  OptionFields<ToTypeArgument<Element>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Option<Element extends TypeArgument> {
   static readonly $typeName = '0x1::option::Option'
@@ -61,7 +66,7 @@ export class Option<Element extends TypeArgument> {
 
   static reified<Element extends Reified<TypeArgument, any>>(
     Element: Element
-  ): Reified<Option<ToTypeArgument<Element>>, OptionFields<ToTypeArgument<Element>>> {
+  ): OptionReified<Element> {
     return {
       typeName: Option.$typeName,
       fullTypeName: composeSuiType(

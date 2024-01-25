@@ -32,6 +32,8 @@ export interface DenyListFields {
   lists: ToField<Bag>
 }
 
+export type DenyListReified = Reified<DenyList, DenyListFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class DenyList {
   static readonly $typeName = '0x2::deny_list::DenyList'
@@ -51,7 +53,7 @@ export class DenyList {
     this.lists = fields.lists
   }
 
-  static reified(): Reified<DenyList, DenyListFields> {
+  static reified(): DenyListReified {
     return {
       typeName: DenyList.$typeName,
       fullTypeName: composeSuiType(DenyList.$typeName, ...[]) as '0x2::deny_list::DenyList',
@@ -172,6 +174,8 @@ export interface PerTypeListFields {
   deniedAddresses: ToField<Table<ToPhantom<Vector<'u8'>>, ToPhantom<VecSet<'address'>>>>
 }
 
+export type PerTypeListReified = Reified<PerTypeList, PerTypeListFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PerTypeList {
   static readonly $typeName = '0x2::deny_list::PerTypeList'
@@ -193,7 +197,7 @@ export class PerTypeList {
     this.deniedAddresses = fields.deniedAddresses
   }
 
-  static reified(): Reified<PerTypeList, PerTypeListFields> {
+  static reified(): PerTypeListReified {
     return {
       typeName: PerTypeList.$typeName,
       fullTypeName: composeSuiType(PerTypeList.$typeName, ...[]) as '0x2::deny_list::PerTypeList',

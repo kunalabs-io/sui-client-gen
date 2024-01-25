@@ -33,6 +33,11 @@ export interface DynamicFieldsFields<K extends TypeArgument> {
   names: ToField<Vector<K>>
 }
 
+export type DynamicFieldsReified<K extends Reified<TypeArgument, any>> = Reified<
+  DynamicFields<ToTypeArgument<K>>,
+  DynamicFieldsFields<ToTypeArgument<K>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class DynamicFields<K extends TypeArgument> {
   static readonly $typeName = '0x2::object::DynamicFields'
@@ -57,9 +62,7 @@ export class DynamicFields<K extends TypeArgument> {
     this.names = fields.names
   }
 
-  static reified<K extends Reified<TypeArgument, any>>(
-    K: K
-  ): Reified<DynamicFields<ToTypeArgument<K>>, DynamicFieldsFields<ToTypeArgument<K>>> {
+  static reified<K extends Reified<TypeArgument, any>>(K: K): DynamicFieldsReified<K> {
     return {
       typeName: DynamicFields.$typeName,
       fullTypeName: composeSuiType(
@@ -209,6 +212,8 @@ export interface IDFields {
   bytes: ToField<'address'>
 }
 
+export type IDReified = Reified<ID, IDFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ID {
   static readonly $typeName = '0x2::object::ID'
@@ -226,7 +231,7 @@ export class ID {
     this.bytes = fields.bytes
   }
 
-  static reified(): Reified<ID, IDFields> {
+  static reified(): IDReified {
     return {
       typeName: ID.$typeName,
       fullTypeName: composeSuiType(ID.$typeName, ...[]) as '0x2::object::ID',
@@ -338,6 +343,8 @@ export interface OwnershipFields {
   status: ToField<'u64'>
 }
 
+export type OwnershipReified = Reified<Ownership, OwnershipFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Ownership {
   static readonly $typeName = '0x2::object::Ownership'
@@ -357,7 +364,7 @@ export class Ownership {
     this.status = fields.status
   }
 
-  static reified(): Reified<Ownership, OwnershipFields> {
+  static reified(): OwnershipReified {
     return {
       typeName: Ownership.$typeName,
       fullTypeName: composeSuiType(Ownership.$typeName, ...[]) as '0x2::object::Ownership',
@@ -479,6 +486,8 @@ export interface UIDFields {
   id: ToField<ID>
 }
 
+export type UIDReified = Reified<UID, UIDFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class UID {
   static readonly $typeName = '0x2::object::UID'
@@ -496,7 +505,7 @@ export class UID {
     this.id = fields.id
   }
 
-  static reified(): Reified<UID, UIDFields> {
+  static reified(): UIDReified {
     return {
       typeName: UID.$typeName,
       fullTypeName: composeSuiType(UID.$typeName, ...[]) as '0x2::object::UID',

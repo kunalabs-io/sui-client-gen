@@ -28,6 +28,8 @@ export interface BitVectorFields {
   bitField: ToField<Vector<'bool'>>
 }
 
+export type BitVectorReified = Reified<BitVector, BitVectorFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class BitVector {
   static readonly $typeName = '0x1::bit_vector::BitVector'
@@ -47,7 +49,7 @@ export class BitVector {
     this.bitField = fields.bitField
   }
 
-  static reified(): Reified<BitVector, BitVectorFields> {
+  static reified(): BitVectorReified {
     return {
       typeName: BitVector.$typeName,
       fullTypeName: composeSuiType(BitVector.$typeName, ...[]) as '0x1::bit_vector::BitVector',

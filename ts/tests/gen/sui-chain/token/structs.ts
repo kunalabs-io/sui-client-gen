@@ -39,6 +39,11 @@ export interface TokenFields<T0 extends PhantomTypeArgument> {
   balance: ToField<Balance<T0>>
 }
 
+export type TokenReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  Token<ToPhantomTypeArgument<T0>>,
+  TokenFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Token<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::Token'
@@ -65,9 +70,7 @@ export class Token<T0 extends PhantomTypeArgument> {
     this.balance = fields.balance
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): Reified<Token<ToPhantomTypeArgument<T0>>, TokenFields<ToPhantomTypeArgument<T0>>> {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): TokenReified<T0> {
     return {
       typeName: Token.$typeName,
       fullTypeName: composeSuiType(
@@ -220,6 +223,11 @@ export interface TokenPolicyCapFields<T0 extends PhantomTypeArgument> {
   for: ToField<ID>
 }
 
+export type TokenPolicyCapReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  TokenPolicyCap<ToPhantomTypeArgument<T0>>,
+  TokenPolicyCapFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TokenPolicyCap<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::TokenPolicyCap'
@@ -248,10 +256,7 @@ export class TokenPolicyCap<T0 extends PhantomTypeArgument> {
 
   static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
-  ): Reified<
-    TokenPolicyCap<ToPhantomTypeArgument<T0>>,
-    TokenPolicyCapFields<ToPhantomTypeArgument<T0>>
-  > {
+  ): TokenPolicyCapReified<T0> {
     return {
       typeName: TokenPolicyCap.$typeName,
       fullTypeName: composeSuiType(
@@ -405,6 +410,11 @@ export interface TokenPolicyFields<T0 extends PhantomTypeArgument> {
   rules: ToField<VecMap<String, VecSet<TypeName>>>
 }
 
+export type TokenPolicyReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  TokenPolicy<ToPhantomTypeArgument<T0>>,
+  TokenPolicyFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TokenPolicy<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::TokenPolicy'
@@ -433,9 +443,7 @@ export class TokenPolicy<T0 extends PhantomTypeArgument> {
     this.rules = fields.rules
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): Reified<TokenPolicy<ToPhantomTypeArgument<T0>>, TokenPolicyFields<ToPhantomTypeArgument<T0>>> {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): TokenPolicyReified<T0> {
     return {
       typeName: TokenPolicy.$typeName,
       fullTypeName: composeSuiType(
@@ -606,6 +614,11 @@ export interface ActionRequestFields<T0 extends PhantomTypeArgument> {
   approvals: ToField<VecSet<TypeName>>
 }
 
+export type ActionRequestReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  ActionRequest<ToPhantomTypeArgument<T0>>,
+  ActionRequestFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ActionRequest<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::ActionRequest'
@@ -640,12 +653,7 @@ export class ActionRequest<T0 extends PhantomTypeArgument> {
     this.approvals = fields.approvals
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): Reified<
-    ActionRequest<ToPhantomTypeArgument<T0>>,
-    ActionRequestFields<ToPhantomTypeArgument<T0>>
-  > {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): ActionRequestReified<T0> {
     return {
       typeName: ActionRequest.$typeName,
       fullTypeName: composeSuiType(
@@ -840,6 +848,11 @@ export interface RuleKeyFields<T0 extends PhantomTypeArgument> {
   isProtected: ToField<'bool'>
 }
 
+export type RuleKeyReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  RuleKey<ToPhantomTypeArgument<T0>>,
+  RuleKeyFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class RuleKey<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::RuleKey'
@@ -864,9 +877,7 @@ export class RuleKey<T0 extends PhantomTypeArgument> {
     this.isProtected = fields.isProtected
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): Reified<RuleKey<ToPhantomTypeArgument<T0>>, RuleKeyFields<ToPhantomTypeArgument<T0>>> {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): RuleKeyReified<T0> {
     return {
       typeName: RuleKey.$typeName,
       fullTypeName: composeSuiType(
@@ -1014,6 +1025,11 @@ export interface TokenPolicyCreatedFields<T0 extends PhantomTypeArgument> {
   isMutable: ToField<'bool'>
 }
 
+export type TokenPolicyCreatedReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  TokenPolicyCreated<ToPhantomTypeArgument<T0>>,
+  TokenPolicyCreatedFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TokenPolicyCreated<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::TokenPolicyCreated'
@@ -1042,10 +1058,7 @@ export class TokenPolicyCreated<T0 extends PhantomTypeArgument> {
 
   static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
-  ): Reified<
-    TokenPolicyCreated<ToPhantomTypeArgument<T0>>,
-    TokenPolicyCreatedFields<ToPhantomTypeArgument<T0>>
-  > {
+  ): TokenPolicyCreatedReified<T0> {
     return {
       typeName: TokenPolicyCreated.$typeName,
       fullTypeName: composeSuiType(

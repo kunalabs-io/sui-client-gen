@@ -39,6 +39,14 @@ export interface LinkedTableFields<K extends TypeArgument, V extends PhantomType
   tail: ToField<Option<K>>
 }
 
+export type LinkedTableReified<
+  K extends Reified<TypeArgument, any>,
+  V extends PhantomReified<PhantomTypeArgument>,
+> = Reified<
+  LinkedTable<ToTypeArgument<K>, ToPhantomTypeArgument<V>>,
+  LinkedTableFields<ToTypeArgument<K>, ToPhantomTypeArgument<V>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::linked_table::LinkedTable'
@@ -72,13 +80,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument> 
   static reified<
     K extends Reified<TypeArgument, any>,
     V extends PhantomReified<PhantomTypeArgument>,
-  >(
-    K: K,
-    V: V
-  ): Reified<
-    LinkedTable<ToTypeArgument<K>, ToPhantomTypeArgument<V>>,
-    LinkedTableFields<ToTypeArgument<K>, ToPhantomTypeArgument<V>>
-  > {
+  >(K: K, V: V): LinkedTableReified<K, V> {
     return {
       typeName: LinkedTable.$typeName,
       fullTypeName: composeSuiType(
@@ -264,6 +266,14 @@ export interface NodeFields<K extends TypeArgument, V extends TypeArgument> {
   value: ToField<V>
 }
 
+export type NodeReified<
+  K extends Reified<TypeArgument, any>,
+  V extends Reified<TypeArgument, any>,
+> = Reified<
+  Node<ToTypeArgument<K>, ToTypeArgument<V>>,
+  NodeFields<ToTypeArgument<K>, ToTypeArgument<V>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Node<K extends TypeArgument, V extends TypeArgument> {
   static readonly $typeName = '0x2::linked_table::Node'
@@ -295,10 +305,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> {
   static reified<K extends Reified<TypeArgument, any>, V extends Reified<TypeArgument, any>>(
     K: K,
     V: V
-  ): Reified<
-    Node<ToTypeArgument<K>, ToTypeArgument<V>>,
-    NodeFields<ToTypeArgument<K>, ToTypeArgument<V>>
-  > {
+  ): NodeReified<K, V> {
     return {
       typeName: Node.$typeName,
       fullTypeName: composeSuiType(

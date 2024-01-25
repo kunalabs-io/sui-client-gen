@@ -27,6 +27,8 @@ export interface CharFields {
   byte: ToField<'u8'>
 }
 
+export type CharReified = Reified<Char, CharFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Char {
   static readonly $typeName = '0x1::ascii::Char'
@@ -44,7 +46,7 @@ export class Char {
     this.byte = fields.byte
   }
 
-  static reified(): Reified<Char, CharFields> {
+  static reified(): CharReified {
     return {
       typeName: Char.$typeName,
       fullTypeName: composeSuiType(Char.$typeName, ...[]) as '0x1::ascii::Char',
@@ -152,6 +154,8 @@ export interface StringFields {
   bytes: ToField<Vector<'u8'>>
 }
 
+export type StringReified = Reified<String, StringFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class String {
   static readonly $typeName = '0x1::ascii::String'
@@ -169,7 +173,7 @@ export class String {
     this.bytes = fields.bytes
   }
 
-  static reified(): Reified<String, StringFields> {
+  static reified(): StringReified {
     return {
       typeName: String.$typeName,
       fullTypeName: composeSuiType(String.$typeName, ...[]) as '0x1::ascii::String',

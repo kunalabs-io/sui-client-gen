@@ -27,6 +27,8 @@ export interface BCSFields {
   bytes: ToField<Vector<'u8'>>
 }
 
+export type BCSReified = Reified<BCS, BCSFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class BCS {
   static readonly $typeName = '0x2::bcs::BCS'
@@ -44,7 +46,7 @@ export class BCS {
     this.bytes = fields.bytes
   }
 
-  static reified(): Reified<BCS, BCSFields> {
+  static reified(): BCSReified {
     return {
       typeName: BCS.$typeName,
       fullTypeName: composeSuiType(BCS.$typeName, ...[]) as '0x2::bcs::BCS',

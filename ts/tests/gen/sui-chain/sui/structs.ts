@@ -24,6 +24,8 @@ export interface SUIFields {
   dummyField: ToField<'bool'>
 }
 
+export type SUIReified = Reified<SUI, SUIFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class SUI {
   static readonly $typeName = '0x2::sui::SUI'
@@ -41,7 +43,7 @@ export class SUI {
     this.dummyField = fields.dummyField
   }
 
-  static reified(): Reified<SUI, SUIFields> {
+  static reified(): SUIReified {
     return {
       typeName: SUI.$typeName,
       fullTypeName: composeSuiType(SUI.$typeName, ...[]) as '0x2::sui::SUI',

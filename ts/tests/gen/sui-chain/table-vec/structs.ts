@@ -32,6 +32,11 @@ export interface TableVecFields<T0 extends PhantomTypeArgument> {
   contents: ToField<Table<'u64', T0>>
 }
 
+export type TableVecReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  TableVec<ToPhantomTypeArgument<T0>>,
+  TableVecFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TableVec<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::table_vec::TableVec'
@@ -56,9 +61,7 @@ export class TableVec<T0 extends PhantomTypeArgument> {
     this.contents = fields.contents
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): Reified<TableVec<ToPhantomTypeArgument<T0>>, TableVecFields<ToPhantomTypeArgument<T0>>> {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): TableVecReified<T0> {
     return {
       typeName: TableVec.$typeName,
       fullTypeName: composeSuiType(

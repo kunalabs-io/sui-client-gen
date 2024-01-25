@@ -26,6 +26,8 @@ export interface ClockFields {
   timestampMs: ToField<'u64'>
 }
 
+export type ClockReified = Reified<Clock, ClockFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Clock {
   static readonly $typeName = '0x2::clock::Clock'
@@ -45,7 +47,7 @@ export class Clock {
     this.timestampMs = fields.timestampMs
   }
 
-  static reified(): Reified<Clock, ClockFields> {
+  static reified(): ClockReified {
     return {
       typeName: Clock.$typeName,
       fullTypeName: composeSuiType(Clock.$typeName, ...[]) as '0x2::clock::Clock',

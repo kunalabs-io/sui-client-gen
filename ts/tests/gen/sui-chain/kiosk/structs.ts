@@ -36,6 +36,8 @@ export interface BorrowFields {
   itemId: ToField<ID>
 }
 
+export type BorrowReified = Reified<Borrow, BorrowFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Borrow {
   static readonly $typeName = '0x2::kiosk::Borrow'
@@ -55,7 +57,7 @@ export class Borrow {
     this.itemId = fields.itemId
   }
 
-  static reified(): Reified<Borrow, BorrowFields> {
+  static reified(): BorrowReified {
     return {
       typeName: Borrow.$typeName,
       fullTypeName: composeSuiType(Borrow.$typeName, ...[]) as '0x2::kiosk::Borrow',
@@ -178,6 +180,8 @@ export interface KioskFields {
   allowExtensions: ToField<'bool'>
 }
 
+export type KioskReified = Reified<Kiosk, KioskFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Kiosk {
   static readonly $typeName = '0x2::kiosk::Kiosk'
@@ -203,7 +207,7 @@ export class Kiosk {
     this.allowExtensions = fields.allowExtensions
   }
 
-  static reified(): Reified<Kiosk, KioskFields> {
+  static reified(): KioskReified {
     return {
       typeName: Kiosk.$typeName,
       fullTypeName: composeSuiType(Kiosk.$typeName, ...[]) as '0x2::kiosk::Kiosk',
@@ -344,6 +348,8 @@ export interface KioskOwnerCapFields {
   for: ToField<ID>
 }
 
+export type KioskOwnerCapReified = Reified<KioskOwnerCap, KioskOwnerCapFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class KioskOwnerCap {
   static readonly $typeName = '0x2::kiosk::KioskOwnerCap'
@@ -363,7 +369,7 @@ export class KioskOwnerCap {
     this.for = fields.for
   }
 
-  static reified(): Reified<KioskOwnerCap, KioskOwnerCapFields> {
+  static reified(): KioskOwnerCapReified {
     return {
       typeName: KioskOwnerCap.$typeName,
       fullTypeName: composeSuiType(KioskOwnerCap.$typeName, ...[]) as '0x2::kiosk::KioskOwnerCap',
@@ -485,6 +491,11 @@ export interface PurchaseCapFields<T0 extends PhantomTypeArgument> {
   minPrice: ToField<'u64'>
 }
 
+export type PurchaseCapReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  PurchaseCap<ToPhantomTypeArgument<T0>>,
+  PurchaseCapFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PurchaseCap<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk::PurchaseCap'
@@ -515,9 +526,7 @@ export class PurchaseCap<T0 extends PhantomTypeArgument> {
     this.minPrice = fields.minPrice
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): Reified<PurchaseCap<ToPhantomTypeArgument<T0>>, PurchaseCapFields<ToPhantomTypeArgument<T0>>> {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): PurchaseCapReified<T0> {
     return {
       typeName: PurchaseCap.$typeName,
       fullTypeName: composeSuiType(
@@ -679,6 +688,8 @@ export interface ItemFields {
   id: ToField<ID>
 }
 
+export type ItemReified = Reified<Item, ItemFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Item {
   static readonly $typeName = '0x2::kiosk::Item'
@@ -696,7 +707,7 @@ export class Item {
     this.id = fields.id
   }
 
-  static reified(): Reified<Item, ItemFields> {
+  static reified(): ItemReified {
     return {
       typeName: Item.$typeName,
       fullTypeName: composeSuiType(Item.$typeName, ...[]) as '0x2::kiosk::Item',
@@ -805,6 +816,8 @@ export interface ListingFields {
   isExclusive: ToField<'bool'>
 }
 
+export type ListingReified = Reified<Listing, ListingFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Listing {
   static readonly $typeName = '0x2::kiosk::Listing'
@@ -824,7 +837,7 @@ export class Listing {
     this.isExclusive = fields.isExclusive
   }
 
-  static reified(): Reified<Listing, ListingFields> {
+  static reified(): ListingReified {
     return {
       typeName: Listing.$typeName,
       fullTypeName: composeSuiType(Listing.$typeName, ...[]) as '0x2::kiosk::Listing',
@@ -943,6 +956,8 @@ export interface LockFields {
   id: ToField<ID>
 }
 
+export type LockReified = Reified<Lock, LockFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Lock {
   static readonly $typeName = '0x2::kiosk::Lock'
@@ -960,7 +975,7 @@ export class Lock {
     this.id = fields.id
   }
 
-  static reified(): Reified<Lock, LockFields> {
+  static reified(): LockReified {
     return {
       typeName: Lock.$typeName,
       fullTypeName: composeSuiType(Lock.$typeName, ...[]) as '0x2::kiosk::Lock',
@@ -1070,6 +1085,11 @@ export interface ItemListedFields<T0 extends PhantomTypeArgument> {
   price: ToField<'u64'>
 }
 
+export type ItemListedReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  ItemListed<ToPhantomTypeArgument<T0>>,
+  ItemListedFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ItemListed<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk::ItemListed'
@@ -1098,9 +1118,7 @@ export class ItemListed<T0 extends PhantomTypeArgument> {
     this.price = fields.price
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): Reified<ItemListed<ToPhantomTypeArgument<T0>>, ItemListedFields<ToPhantomTypeArgument<T0>>> {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): ItemListedReified<T0> {
     return {
       typeName: ItemListed.$typeName,
       fullTypeName: composeSuiType(
@@ -1259,6 +1277,11 @@ export interface ItemPurchasedFields<T0 extends PhantomTypeArgument> {
   price: ToField<'u64'>
 }
 
+export type ItemPurchasedReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  ItemPurchased<ToPhantomTypeArgument<T0>>,
+  ItemPurchasedFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ItemPurchased<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk::ItemPurchased'
@@ -1287,12 +1310,7 @@ export class ItemPurchased<T0 extends PhantomTypeArgument> {
     this.price = fields.price
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): Reified<
-    ItemPurchased<ToPhantomTypeArgument<T0>>,
-    ItemPurchasedFields<ToPhantomTypeArgument<T0>>
-  > {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): ItemPurchasedReified<T0> {
     return {
       typeName: ItemPurchased.$typeName,
       fullTypeName: composeSuiType(
@@ -1450,6 +1468,11 @@ export interface ItemDelistedFields<T0 extends PhantomTypeArgument> {
   id: ToField<ID>
 }
 
+export type ItemDelistedReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  ItemDelisted<ToPhantomTypeArgument<T0>>,
+  ItemDelistedFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ItemDelisted<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk::ItemDelisted'
@@ -1476,12 +1499,7 @@ export class ItemDelisted<T0 extends PhantomTypeArgument> {
     this.id = fields.id
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): Reified<
-    ItemDelisted<ToPhantomTypeArgument<T0>>,
-    ItemDelistedFields<ToPhantomTypeArgument<T0>>
-  > {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): ItemDelistedReified<T0> {
     return {
       typeName: ItemDelisted.$typeName,
       fullTypeName: composeSuiType(

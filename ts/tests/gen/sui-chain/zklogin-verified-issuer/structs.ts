@@ -28,6 +28,8 @@ export interface VerifiedIssuerFields {
   issuer: ToField<String>
 }
 
+export type VerifiedIssuerReified = Reified<VerifiedIssuer, VerifiedIssuerFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class VerifiedIssuer {
   static readonly $typeName = '0x2::zklogin_verified_issuer::VerifiedIssuer'
@@ -49,7 +51,7 @@ export class VerifiedIssuer {
     this.issuer = fields.issuer
   }
 
-  static reified(): Reified<VerifiedIssuer, VerifiedIssuerFields> {
+  static reified(): VerifiedIssuerReified {
     return {
       typeName: VerifiedIssuer.$typeName,
       fullTypeName: composeSuiType(

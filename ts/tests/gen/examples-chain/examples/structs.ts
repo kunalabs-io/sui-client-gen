@@ -34,6 +34,8 @@ export interface ExampleStructFields {
   dummyField: ToField<'bool'>
 }
 
+export type ExampleStructReified = Reified<ExampleStruct, ExampleStructFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ExampleStruct {
   static readonly $typeName =
@@ -52,7 +54,7 @@ export class ExampleStruct {
     this.dummyField = fields.dummyField
   }
 
-  static reified(): Reified<ExampleStruct, ExampleStructFields> {
+  static reified(): ExampleStructReified {
     return {
       typeName: ExampleStruct.$typeName,
       fullTypeName: composeSuiType(
@@ -178,6 +180,8 @@ export interface SpecialTypesStructFields {
   optionNone: ToField<Option<'u64'>>
 }
 
+export type SpecialTypesStructReified = Reified<SpecialTypesStruct, SpecialTypesStructFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class SpecialTypesStruct {
   static readonly $typeName =
@@ -212,7 +216,7 @@ export class SpecialTypesStruct {
     this.optionNone = fields.optionNone
   }
 
-  static reified(): Reified<SpecialTypesStruct, SpecialTypesStructFields> {
+  static reified(): SpecialTypesStructReified {
     return {
       typeName: SpecialTypesStruct.$typeName,
       fullTypeName: composeSuiType(

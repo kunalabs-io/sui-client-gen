@@ -31,6 +31,8 @@ export interface PublisherFields {
   moduleName: ToField<String>
 }
 
+export type PublisherReified = Reified<Publisher, PublisherFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Publisher {
   static readonly $typeName = '0x2::package::Publisher'
@@ -52,7 +54,7 @@ export class Publisher {
     this.moduleName = fields.moduleName
   }
 
-  static reified(): Reified<Publisher, PublisherFields> {
+  static reified(): PublisherReified {
     return {
       typeName: Publisher.$typeName,
       fullTypeName: composeSuiType(Publisher.$typeName, ...[]) as '0x2::package::Publisher',
@@ -179,6 +181,8 @@ export interface UpgradeCapFields {
   policy: ToField<'u8'>
 }
 
+export type UpgradeCapReified = Reified<UpgradeCap, UpgradeCapFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class UpgradeCap {
   static readonly $typeName = '0x2::package::UpgradeCap'
@@ -202,7 +206,7 @@ export class UpgradeCap {
     this.policy = fields.policy
   }
 
-  static reified(): Reified<UpgradeCap, UpgradeCapFields> {
+  static reified(): UpgradeCapReified {
     return {
       typeName: UpgradeCap.$typeName,
       fullTypeName: composeSuiType(UpgradeCap.$typeName, ...[]) as '0x2::package::UpgradeCap',
@@ -332,6 +336,8 @@ export interface UpgradeReceiptFields {
   package: ToField<ID>
 }
 
+export type UpgradeReceiptReified = Reified<UpgradeReceipt, UpgradeReceiptFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class UpgradeReceipt {
   static readonly $typeName = '0x2::package::UpgradeReceipt'
@@ -351,7 +357,7 @@ export class UpgradeReceipt {
     this.package = fields.package
   }
 
-  static reified(): Reified<UpgradeReceipt, UpgradeReceiptFields> {
+  static reified(): UpgradeReceiptReified {
     return {
       typeName: UpgradeReceipt.$typeName,
       fullTypeName: composeSuiType(
@@ -476,6 +482,8 @@ export interface UpgradeTicketFields {
   digest: ToField<Vector<'u8'>>
 }
 
+export type UpgradeTicketReified = Reified<UpgradeTicket, UpgradeTicketFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class UpgradeTicket {
   static readonly $typeName = '0x2::package::UpgradeTicket'
@@ -499,7 +507,7 @@ export class UpgradeTicket {
     this.digest = fields.digest
   }
 
-  static reified(): Reified<UpgradeTicket, UpgradeTicketFields> {
+  static reified(): UpgradeTicketReified {
     return {
       typeName: UpgradeTicket.$typeName,
       fullTypeName: composeSuiType(UpgradeTicket.$typeName, ...[]) as '0x2::package::UpgradeTicket',

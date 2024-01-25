@@ -34,6 +34,8 @@ export interface BorrowFields {
   obj: ToField<ID>
 }
 
+export type BorrowReified = Reified<Borrow, BorrowFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Borrow {
   static readonly $typeName = '0x2::borrow::Borrow'
@@ -53,7 +55,7 @@ export class Borrow {
     this.obj = fields.obj
   }
 
-  static reified(): Reified<Borrow, BorrowFields> {
+  static reified(): BorrowReified {
     return {
       typeName: Borrow.$typeName,
       fullTypeName: composeSuiType(Borrow.$typeName, ...[]) as '0x2::borrow::Borrow',
@@ -176,6 +178,11 @@ export interface ReferentFields<T extends TypeArgument> {
   value: ToField<Option<T>>
 }
 
+export type ReferentReified<T extends Reified<TypeArgument, any>> = Reified<
+  Referent<ToTypeArgument<T>>,
+  ReferentFields<ToTypeArgument<T>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Referent<T extends TypeArgument> {
   static readonly $typeName = '0x2::borrow::Referent'
@@ -202,9 +209,7 @@ export class Referent<T extends TypeArgument> {
     this.value = fields.value
   }
 
-  static reified<T extends Reified<TypeArgument, any>>(
-    T: T
-  ): Reified<Referent<ToTypeArgument<T>>, ReferentFields<ToTypeArgument<T>>> {
+  static reified<T extends Reified<TypeArgument, any>>(T: T): ReferentReified<T> {
     return {
       typeName: Referent.$typeName,
       fullTypeName: composeSuiType(

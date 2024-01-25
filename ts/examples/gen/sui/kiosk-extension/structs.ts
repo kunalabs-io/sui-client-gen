@@ -33,6 +33,8 @@ export interface ExtensionFields {
   isEnabled: ToField<'bool'>
 }
 
+export type ExtensionReified = Reified<Extension, ExtensionFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Extension {
   static readonly $typeName = '0x2::kiosk_extension::Extension'
@@ -54,7 +56,7 @@ export class Extension {
     this.isEnabled = fields.isEnabled
   }
 
-  static reified(): Reified<Extension, ExtensionFields> {
+  static reified(): ExtensionReified {
     return {
       typeName: Extension.$typeName,
       fullTypeName: composeSuiType(Extension.$typeName, ...[]) as '0x2::kiosk_extension::Extension',
@@ -178,6 +180,11 @@ export interface ExtensionKeyFields<Ext extends PhantomTypeArgument> {
   dummyField: ToField<'bool'>
 }
 
+export type ExtensionKeyReified<Ext extends PhantomReified<PhantomTypeArgument>> = Reified<
+  ExtensionKey<ToPhantomTypeArgument<Ext>>,
+  ExtensionKeyFields<ToPhantomTypeArgument<Ext>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ExtensionKey<Ext extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk_extension::ExtensionKey'
@@ -204,10 +211,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> {
 
   static reified<Ext extends PhantomReified<PhantomTypeArgument>>(
     Ext: Ext
-  ): Reified<
-    ExtensionKey<ToPhantomTypeArgument<Ext>>,
-    ExtensionKeyFields<ToPhantomTypeArgument<Ext>>
-  > {
+  ): ExtensionKeyReified<Ext> {
     return {
       typeName: ExtensionKey.$typeName,
       fullTypeName: composeSuiType(

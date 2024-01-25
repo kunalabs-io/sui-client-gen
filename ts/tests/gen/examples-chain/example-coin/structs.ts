@@ -31,6 +31,8 @@ export interface EXAMPLE_COINFields {
   dummyField: ToField<'bool'>
 }
 
+export type EXAMPLE_COINReified = Reified<EXAMPLE_COIN, EXAMPLE_COINFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class EXAMPLE_COIN {
   static readonly $typeName =
@@ -49,7 +51,7 @@ export class EXAMPLE_COIN {
     this.dummyField = fields.dummyField
   }
 
-  static reified(): Reified<EXAMPLE_COIN, EXAMPLE_COINFields> {
+  static reified(): EXAMPLE_COINReified {
     return {
       typeName: EXAMPLE_COIN.$typeName,
       fullTypeName: composeSuiType(
@@ -166,6 +168,8 @@ export interface FaucetFields {
   cap: ToField<TreasuryCap<ToPhantom<EXAMPLE_COIN>>>
 }
 
+export type FaucetReified = Reified<Faucet, FaucetFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Faucet {
   static readonly $typeName =
@@ -186,7 +190,7 @@ export class Faucet {
     this.cap = fields.cap
   }
 
-  static reified(): Reified<Faucet, FaucetFields> {
+  static reified(): FaucetReified {
     return {
       typeName: Faucet.$typeName,
       fullTypeName: composeSuiType(

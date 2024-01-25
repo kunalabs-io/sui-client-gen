@@ -37,6 +37,11 @@ export interface RuleKeyFields<T extends PhantomTypeArgument> {
   dummyField: ToField<'bool'>
 }
 
+export type RuleKeyReified<T extends PhantomReified<PhantomTypeArgument>> = Reified<
+  RuleKey<ToPhantomTypeArgument<T>>,
+  RuleKeyFields<ToPhantomTypeArgument<T>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class RuleKey<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::RuleKey'
@@ -61,9 +66,7 @@ export class RuleKey<T extends PhantomTypeArgument> {
     this.dummyField = fields.dummyField
   }
 
-  static reified<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
-  ): Reified<RuleKey<ToPhantomTypeArgument<T>>, RuleKeyFields<ToPhantomTypeArgument<T>>> {
+  static reified<T extends PhantomReified<PhantomTypeArgument>>(T: T): RuleKeyReified<T> {
     return {
       typeName: RuleKey.$typeName,
       fullTypeName: composeSuiType(
@@ -212,6 +215,11 @@ export interface TransferPolicyFields<T extends PhantomTypeArgument> {
   rules: ToField<VecSet<TypeName>>
 }
 
+export type TransferPolicyReified<T extends PhantomReified<PhantomTypeArgument>> = Reified<
+  TransferPolicy<ToPhantomTypeArgument<T>>,
+  TransferPolicyFields<ToPhantomTypeArgument<T>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TransferPolicy<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicy'
@@ -240,12 +248,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> {
     this.rules = fields.rules
   }
 
-  static reified<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
-  ): Reified<
-    TransferPolicy<ToPhantomTypeArgument<T>>,
-    TransferPolicyFields<ToPhantomTypeArgument<T>>
-  > {
+  static reified<T extends PhantomReified<PhantomTypeArgument>>(T: T): TransferPolicyReified<T> {
     return {
       typeName: TransferPolicy.$typeName,
       fullTypeName: composeSuiType(
@@ -406,6 +409,11 @@ export interface TransferPolicyCapFields<T extends PhantomTypeArgument> {
   policyId: ToField<ID>
 }
 
+export type TransferPolicyCapReified<T extends PhantomReified<PhantomTypeArgument>> = Reified<
+  TransferPolicyCap<ToPhantomTypeArgument<T>>,
+  TransferPolicyCapFields<ToPhantomTypeArgument<T>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TransferPolicyCap<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyCap'
@@ -432,12 +440,7 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> {
     this.policyId = fields.policyId
   }
 
-  static reified<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
-  ): Reified<
-    TransferPolicyCap<ToPhantomTypeArgument<T>>,
-    TransferPolicyCapFields<ToPhantomTypeArgument<T>>
-  > {
+  static reified<T extends PhantomReified<PhantomTypeArgument>>(T: T): TransferPolicyCapReified<T> {
     return {
       typeName: TransferPolicyCap.$typeName,
       fullTypeName: composeSuiType(
@@ -590,6 +593,11 @@ export interface TransferPolicyCreatedFields<T extends PhantomTypeArgument> {
   id: ToField<ID>
 }
 
+export type TransferPolicyCreatedReified<T extends PhantomReified<PhantomTypeArgument>> = Reified<
+  TransferPolicyCreated<ToPhantomTypeArgument<T>>,
+  TransferPolicyCreatedFields<ToPhantomTypeArgument<T>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TransferPolicyCreated<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyCreated'
@@ -616,10 +624,7 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> {
 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
-  ): Reified<
-    TransferPolicyCreated<ToPhantomTypeArgument<T>>,
-    TransferPolicyCreatedFields<ToPhantomTypeArgument<T>>
-  > {
+  ): TransferPolicyCreatedReified<T> {
     return {
       typeName: TransferPolicyCreated.$typeName,
       fullTypeName: composeSuiType(
@@ -771,6 +776,11 @@ export interface TransferPolicyDestroyedFields<T extends PhantomTypeArgument> {
   id: ToField<ID>
 }
 
+export type TransferPolicyDestroyedReified<T extends PhantomReified<PhantomTypeArgument>> = Reified<
+  TransferPolicyDestroyed<ToPhantomTypeArgument<T>>,
+  TransferPolicyDestroyedFields<ToPhantomTypeArgument<T>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TransferPolicyDestroyed<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyDestroyed'
@@ -797,10 +807,7 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> {
 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
-  ): Reified<
-    TransferPolicyDestroyed<ToPhantomTypeArgument<T>>,
-    TransferPolicyDestroyedFields<ToPhantomTypeArgument<T>>
-  > {
+  ): TransferPolicyDestroyedReified<T> {
     return {
       typeName: TransferPolicyDestroyed.$typeName,
       fullTypeName: composeSuiType(
@@ -957,6 +964,11 @@ export interface TransferRequestFields<T extends PhantomTypeArgument> {
   receipts: ToField<VecSet<TypeName>>
 }
 
+export type TransferRequestReified<T extends PhantomReified<PhantomTypeArgument>> = Reified<
+  TransferRequest<ToPhantomTypeArgument<T>>,
+  TransferRequestFields<ToPhantomTypeArgument<T>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TransferRequest<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferRequest'
@@ -987,12 +999,7 @@ export class TransferRequest<T extends PhantomTypeArgument> {
     this.receipts = fields.receipts
   }
 
-  static reified<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
-  ): Reified<
-    TransferRequest<ToPhantomTypeArgument<T>>,
-    TransferRequestFields<ToPhantomTypeArgument<T>>
-  > {
+  static reified<T extends PhantomReified<PhantomTypeArgument>>(T: T): TransferRequestReified<T> {
     return {
       typeName: TransferRequest.$typeName,
       fullTypeName: composeSuiType(

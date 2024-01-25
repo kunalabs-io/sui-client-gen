@@ -26,6 +26,8 @@ export interface ObjectBagFields {
   size: ToField<'u64'>
 }
 
+export type ObjectBagReified = Reified<ObjectBag, ObjectBagFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ObjectBag {
   static readonly $typeName = '0x2::object_bag::ObjectBag'
@@ -45,7 +47,7 @@ export class ObjectBag {
     this.size = fields.size
   }
 
-  static reified(): Reified<ObjectBag, ObjectBagFields> {
+  static reified(): ObjectBagReified {
     return {
       typeName: ObjectBag.$typeName,
       fullTypeName: composeSuiType(ObjectBag.$typeName, ...[]) as '0x2::object_bag::ObjectBag',

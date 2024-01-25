@@ -35,6 +35,11 @@ export interface DisplayFields<T0 extends PhantomTypeArgument> {
   version: ToField<'u16'>
 }
 
+export type DisplayReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  Display<ToPhantomTypeArgument<T0>>,
+  DisplayFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Display<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::Display'
@@ -63,9 +68,7 @@ export class Display<T0 extends PhantomTypeArgument> {
     this.version = fields.version
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): Reified<Display<ToPhantomTypeArgument<T0>>, DisplayFields<ToPhantomTypeArgument<T0>>> {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): DisplayReified<T0> {
     return {
       typeName: Display.$typeName,
       fullTypeName: composeSuiType(
@@ -225,6 +228,11 @@ export interface DisplayCreatedFields<T0 extends PhantomTypeArgument> {
   id: ToField<ID>
 }
 
+export type DisplayCreatedReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  DisplayCreated<ToPhantomTypeArgument<T0>>,
+  DisplayCreatedFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class DisplayCreated<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::DisplayCreated'
@@ -251,10 +259,7 @@ export class DisplayCreated<T0 extends PhantomTypeArgument> {
 
   static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
-  ): Reified<
-    DisplayCreated<ToPhantomTypeArgument<T0>>,
-    DisplayCreatedFields<ToPhantomTypeArgument<T0>>
-  > {
+  ): DisplayCreatedReified<T0> {
     return {
       typeName: DisplayCreated.$typeName,
       fullTypeName: composeSuiType(
@@ -399,6 +404,11 @@ export interface VersionUpdatedFields<T0 extends PhantomTypeArgument> {
   fields: ToField<VecMap<String, String>>
 }
 
+export type VersionUpdatedReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
+  VersionUpdated<ToPhantomTypeArgument<T0>>,
+  VersionUpdatedFields<ToPhantomTypeArgument<T0>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class VersionUpdated<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::VersionUpdated'
@@ -429,10 +439,7 @@ export class VersionUpdated<T0 extends PhantomTypeArgument> {
 
   static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
-  ): Reified<
-    VersionUpdated<ToPhantomTypeArgument<T0>>,
-    VersionUpdatedFields<ToPhantomTypeArgument<T0>>
-  > {
+  ): VersionUpdatedReified<T0> {
     return {
       typeName: VersionUpdated.$typeName,
       fullTypeName: composeSuiType(

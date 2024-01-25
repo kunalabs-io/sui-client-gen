@@ -31,6 +31,8 @@ export interface TxContextFields {
   idsCreated: ToField<'u64'>
 }
 
+export type TxContextReified = Reified<TxContext, TxContextFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TxContext {
   static readonly $typeName = '0x2::tx_context::TxContext'
@@ -56,7 +58,7 @@ export class TxContext {
     this.idsCreated = fields.idsCreated
   }
 
-  static reified(): Reified<TxContext, TxContextFields> {
+  static reified(): TxContextReified {
     return {
       typeName: TxContext.$typeName,
       fullTypeName: composeSuiType(TxContext.$typeName, ...[]) as '0x2::tx_context::TxContext',

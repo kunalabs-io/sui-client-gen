@@ -25,6 +25,8 @@ export interface TypeNameFields {
   name: ToField<String>
 }
 
+export type TypeNameReified = Reified<TypeName, TypeNameFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TypeName {
   static readonly $typeName = '0x1::type_name::TypeName'
@@ -42,7 +44,7 @@ export class TypeName {
     this.name = fields.name
   }
 
-  static reified(): Reified<TypeName, TypeNameFields> {
+  static reified(): TypeNameReified {
     return {
       typeName: TypeName.$typeName,
       fullTypeName: composeSuiType(TypeName.$typeName, ...[]) as '0x1::type_name::TypeName',

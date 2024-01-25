@@ -25,6 +25,8 @@ export interface UrlFields {
   url: ToField<String>
 }
 
+export type UrlReified = Reified<Url, UrlFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Url {
   static readonly $typeName = '0x2::url::Url'
@@ -42,7 +44,7 @@ export class Url {
     this.url = fields.url
   }
 
-  static reified(): Reified<Url, UrlFields> {
+  static reified(): UrlReified {
     return {
       typeName: Url.$typeName,
       fullTypeName: composeSuiType(Url.$typeName, ...[]) as '0x2::url::Url',

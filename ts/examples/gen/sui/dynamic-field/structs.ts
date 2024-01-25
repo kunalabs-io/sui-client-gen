@@ -34,6 +34,14 @@ export interface FieldFields<Name extends TypeArgument, Value extends TypeArgume
   value: ToField<Value>
 }
 
+export type FieldReified<
+  Name extends Reified<TypeArgument, any>,
+  Value extends Reified<TypeArgument, any>,
+> = Reified<
+  Field<ToTypeArgument<Name>, ToTypeArgument<Value>>,
+  FieldFields<ToTypeArgument<Name>, ToTypeArgument<Value>>
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Field<Name extends TypeArgument, Value extends TypeArgument> {
   static readonly $typeName = '0x2::dynamic_field::Field'
@@ -65,10 +73,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> {
   static reified<Name extends Reified<TypeArgument, any>, Value extends Reified<TypeArgument, any>>(
     Name: Name,
     Value: Value
-  ): Reified<
-    Field<ToTypeArgument<Name>, ToTypeArgument<Value>>,
-    FieldFields<ToTypeArgument<Name>, ToTypeArgument<Value>>
-  > {
+  ): FieldReified<Name, Value> {
     return {
       typeName: Field.$typeName,
       fullTypeName: composeSuiType(

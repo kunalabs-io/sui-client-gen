@@ -26,6 +26,8 @@ export interface VersionedFields {
   version: ToField<'u64'>
 }
 
+export type VersionedReified = Reified<Versioned, VersionedFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Versioned {
   static readonly $typeName = '0x2::versioned::Versioned'
@@ -45,7 +47,7 @@ export class Versioned {
     this.version = fields.version
   }
 
-  static reified(): Reified<Versioned, VersionedFields> {
+  static reified(): VersionedReified {
     return {
       typeName: Versioned.$typeName,
       fullTypeName: composeSuiType(Versioned.$typeName, ...[]) as '0x2::versioned::Versioned',
@@ -165,6 +167,8 @@ export interface VersionChangeCapFields {
   oldVersion: ToField<'u64'>
 }
 
+export type VersionChangeCapReified = Reified<VersionChangeCap, VersionChangeCapFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class VersionChangeCap {
   static readonly $typeName = '0x2::versioned::VersionChangeCap'
@@ -184,7 +188,7 @@ export class VersionChangeCap {
     this.oldVersion = fields.oldVersion
   }
 
-  static reified(): Reified<VersionChangeCap, VersionChangeCapFields> {
+  static reified(): VersionChangeCapReified {
     return {
       typeName: VersionChangeCap.$typeName,
       fullTypeName: composeSuiType(

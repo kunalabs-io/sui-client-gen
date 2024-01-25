@@ -31,6 +31,8 @@ export interface VerifiedIDFields {
   audience: ToField<String>
 }
 
+export type VerifiedIDReified = Reified<VerifiedID, VerifiedIDFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class VerifiedID {
   static readonly $typeName = '0x2::zklogin_verified_id::VerifiedID'
@@ -58,7 +60,7 @@ export class VerifiedID {
     this.audience = fields.audience
   }
 
-  static reified(): Reified<VerifiedID, VerifiedIDFields> {
+  static reified(): VerifiedIDReified {
     return {
       typeName: VerifiedID.$typeName,
       fullTypeName: composeSuiType(

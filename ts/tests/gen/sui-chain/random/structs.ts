@@ -30,6 +30,8 @@ export interface RandomFields {
   inner: ToField<Versioned>
 }
 
+export type RandomReified = Reified<Random, RandomFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Random {
   static readonly $typeName = '0x2::random::Random'
@@ -49,7 +51,7 @@ export class Random {
     this.inner = fields.inner
   }
 
-  static reified(): Reified<Random, RandomFields> {
+  static reified(): RandomReified {
     return {
       typeName: Random.$typeName,
       fullTypeName: composeSuiType(Random.$typeName, ...[]) as '0x2::random::Random',
@@ -171,6 +173,8 @@ export interface RandomInnerFields {
   randomBytes: ToField<Vector<'u8'>>
 }
 
+export type RandomInnerReified = Reified<RandomInner, RandomInnerFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class RandomInner {
   static readonly $typeName = '0x2::random::RandomInner'
@@ -194,7 +198,7 @@ export class RandomInner {
     this.randomBytes = fields.randomBytes
   }
 
-  static reified(): Reified<RandomInner, RandomInnerFields> {
+  static reified(): RandomInnerReified {
     return {
       typeName: RandomInner.$typeName,
       fullTypeName: composeSuiType(RandomInner.$typeName, ...[]) as '0x2::random::RandomInner',

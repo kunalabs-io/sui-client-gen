@@ -27,6 +27,11 @@ export interface StructFromOtherModuleFields {
   dummyField: ToField<'bool'>
 }
 
+export type StructFromOtherModuleReified = Reified<
+  StructFromOtherModule,
+  StructFromOtherModuleFields
+>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class StructFromOtherModule {
   static readonly $typeName =
@@ -45,7 +50,7 @@ export class StructFromOtherModule {
     this.dummyField = fields.dummyField
   }
 
-  static reified(): Reified<StructFromOtherModule, StructFromOtherModuleFields> {
+  static reified(): StructFromOtherModuleReified {
     return {
       typeName: StructFromOtherModule.$typeName,
       fullTypeName: composeSuiType(
@@ -168,6 +173,8 @@ export interface AddedInAnUpgradeFields {
   dummyField: ToField<'bool'>
 }
 
+export type AddedInAnUpgradeReified = Reified<AddedInAnUpgrade, AddedInAnUpgradeFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class AddedInAnUpgrade {
   static readonly $typeName =
@@ -186,7 +193,7 @@ export class AddedInAnUpgrade {
     this.dummyField = fields.dummyField
   }
 
-  static reified(): Reified<AddedInAnUpgrade, AddedInAnUpgradeFields> {
+  static reified(): AddedInAnUpgradeReified {
     return {
       typeName: AddedInAnUpgrade.$typeName,
       fullTypeName: composeSuiType(

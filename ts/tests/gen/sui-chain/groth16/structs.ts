@@ -27,6 +27,8 @@ export interface CurveFields {
   id: ToField<'u8'>
 }
 
+export type CurveReified = Reified<Curve, CurveFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Curve {
   static readonly $typeName = '0x2::groth16::Curve'
@@ -44,7 +46,7 @@ export class Curve {
     this.id = fields.id
   }
 
-  static reified(): Reified<Curve, CurveFields> {
+  static reified(): CurveReified {
     return {
       typeName: Curve.$typeName,
       fullTypeName: composeSuiType(Curve.$typeName, ...[]) as '0x2::groth16::Curve',
@@ -155,6 +157,8 @@ export interface PreparedVerifyingKeyFields {
   deltaG2NegPcBytes: ToField<Vector<'u8'>>
 }
 
+export type PreparedVerifyingKeyReified = Reified<PreparedVerifyingKey, PreparedVerifyingKeyFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PreparedVerifyingKey {
   static readonly $typeName = '0x2::groth16::PreparedVerifyingKey'
@@ -178,7 +182,7 @@ export class PreparedVerifyingKey {
     this.deltaG2NegPcBytes = fields.deltaG2NegPcBytes
   }
 
-  static reified(): Reified<PreparedVerifyingKey, PreparedVerifyingKeyFields> {
+  static reified(): PreparedVerifyingKeyReified {
     return {
       typeName: PreparedVerifyingKey.$typeName,
       fullTypeName: composeSuiType(
@@ -325,6 +329,8 @@ export interface PublicProofInputsFields {
   bytes: ToField<Vector<'u8'>>
 }
 
+export type PublicProofInputsReified = Reified<PublicProofInputs, PublicProofInputsFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PublicProofInputs {
   static readonly $typeName = '0x2::groth16::PublicProofInputs'
@@ -342,7 +348,7 @@ export class PublicProofInputs {
     this.bytes = fields.bytes
   }
 
-  static reified(): Reified<PublicProofInputs, PublicProofInputsFields> {
+  static reified(): PublicProofInputsReified {
     return {
       typeName: PublicProofInputs.$typeName,
       fullTypeName: composeSuiType(
@@ -459,6 +465,8 @@ export interface ProofPointsFields {
   bytes: ToField<Vector<'u8'>>
 }
 
+export type ProofPointsReified = Reified<ProofPoints, ProofPointsFields>
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ProofPoints {
   static readonly $typeName = '0x2::groth16::ProofPoints'
@@ -476,7 +484,7 @@ export class ProofPoints {
     this.bytes = fields.bytes
   }
 
-  static reified(): Reified<ProofPoints, ProofPointsFields> {
+  static reified(): ProofPointsReified {
     return {
       typeName: ProofPoints.$typeName,
       fullTypeName: composeSuiType(ProofPoints.$typeName, ...[]) as '0x2::groth16::ProofPoints',
