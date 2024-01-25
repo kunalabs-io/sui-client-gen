@@ -33,12 +33,9 @@ export interface ObjectTableFields<K extends PhantomTypeArgument, V extends Phan
 }
 
 export type ObjectTableReified<
-  K extends PhantomReified<PhantomTypeArgument>,
-  V extends PhantomReified<PhantomTypeArgument>,
-> = Reified<
-  ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>,
-  ObjectTableFields<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>
->
+  K extends PhantomTypeArgument,
+  V extends PhantomTypeArgument,
+> = Reified<ObjectTable<K, V>, ObjectTableFields<K, V>>
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArgument> {
@@ -69,7 +66,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
   static reified<
     K extends PhantomReified<PhantomTypeArgument>,
     V extends PhantomReified<PhantomTypeArgument>,
-  >(K: K, V: V): ObjectTableReified<K, V> {
+  >(K: K, V: V): ObjectTableReified<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     return {
       typeName: ObjectTable.$typeName,
       fullTypeName: composeSuiType(

@@ -34,12 +34,9 @@ export interface EntryFields<K extends TypeArgument, V extends TypeArgument> {
   value: ToField<V>
 }
 
-export type EntryReified<
-  K extends Reified<TypeArgument, any>,
-  V extends Reified<TypeArgument, any>,
-> = Reified<
-  Entry<ToTypeArgument<K>, ToTypeArgument<V>>,
-  EntryFields<ToTypeArgument<K>, ToTypeArgument<V>>
+export type EntryReified<K extends TypeArgument, V extends TypeArgument> = Reified<
+  Entry<K, V>,
+  EntryFields<K, V>
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -71,7 +68,7 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> {
   static reified<K extends Reified<TypeArgument, any>, V extends Reified<TypeArgument, any>>(
     K: K,
     V: V
-  ): EntryReified<K, V> {
+  ): EntryReified<ToTypeArgument<K>, ToTypeArgument<V>> {
     return {
       typeName: Entry.$typeName,
       fullTypeName: composeSuiType(
@@ -225,12 +222,9 @@ export interface VecMapFields<K extends TypeArgument, V extends TypeArgument> {
   contents: ToField<Vector<Entry<K, V>>>
 }
 
-export type VecMapReified<
-  K extends Reified<TypeArgument, any>,
-  V extends Reified<TypeArgument, any>,
-> = Reified<
-  VecMap<ToTypeArgument<K>, ToTypeArgument<V>>,
-  VecMapFields<ToTypeArgument<K>, ToTypeArgument<V>>
+export type VecMapReified<K extends TypeArgument, V extends TypeArgument> = Reified<
+  VecMap<K, V>,
+  VecMapFields<K, V>
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -260,7 +254,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> {
   static reified<K extends Reified<TypeArgument, any>, V extends Reified<TypeArgument, any>>(
     K: K,
     V: V
-  ): VecMapReified<K, V> {
+  ): VecMapReified<ToTypeArgument<K>, ToTypeArgument<V>> {
     return {
       typeName: VecMap.$typeName,
       fullTypeName: composeSuiType(

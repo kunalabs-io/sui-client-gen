@@ -171,12 +171,9 @@ export interface LPFields<A extends PhantomTypeArgument, B extends PhantomTypeAr
   dummyField: ToField<'bool'>
 }
 
-export type LPReified<
-  A extends PhantomReified<PhantomTypeArgument>,
-  B extends PhantomReified<PhantomTypeArgument>,
-> = Reified<
-  LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>,
-  LPFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>
+export type LPReified<A extends PhantomTypeArgument, B extends PhantomTypeArgument> = Reified<
+  LP<A, B>,
+  LPFields<A, B>
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -207,7 +204,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
   static reified<
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
-  >(A: A, B: B): LPReified<A, B> {
+  >(A: A, B: B): LPReified<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return {
       typeName: LP.$typeName,
       fullTypeName: composeSuiType(
@@ -380,12 +377,9 @@ export interface PoolFields<A extends PhantomTypeArgument, B extends PhantomType
   adminFeeBalance: ToField<Balance<ToPhantom<LP<A, B>>>>
 }
 
-export type PoolReified<
-  A extends PhantomReified<PhantomTypeArgument>,
-  B extends PhantomReified<PhantomTypeArgument>,
-> = Reified<
-  Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>,
-  PoolFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>
+export type PoolReified<A extends PhantomTypeArgument, B extends PhantomTypeArgument> = Reified<
+  Pool<A, B>,
+  PoolFields<A, B>
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -428,7 +422,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
   static reified<
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
-  >(A: A, B: B): PoolReified<A, B> {
+  >(A: A, B: B): PoolReified<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return {
       typeName: Pool.$typeName,
       fullTypeName: composeSuiType(

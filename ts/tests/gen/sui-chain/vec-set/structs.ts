@@ -33,10 +33,7 @@ export interface VecSetFields<T0 extends TypeArgument> {
   contents: ToField<Vector<T0>>
 }
 
-export type VecSetReified<T0 extends Reified<TypeArgument, any>> = Reified<
-  VecSet<ToTypeArgument<T0>>,
-  VecSetFields<ToTypeArgument<T0>>
->
+export type VecSetReified<T0 extends TypeArgument> = Reified<VecSet<T0>, VecSetFields<T0>>
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class VecSet<T0 extends TypeArgument> {
@@ -62,7 +59,7 @@ export class VecSet<T0 extends TypeArgument> {
     this.contents = fields.contents
   }
 
-  static reified<T0 extends Reified<TypeArgument, any>>(T0: T0): VecSetReified<T0> {
+  static reified<T0 extends Reified<TypeArgument, any>>(T0: T0): VecSetReified<ToTypeArgument<T0>> {
     return {
       typeName: VecSet.$typeName,
       fullTypeName: composeSuiType(

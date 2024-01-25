@@ -39,12 +39,9 @@ export interface LinkedTableFields<T0 extends TypeArgument, T1 extends PhantomTy
   tail: ToField<Option<T0>>
 }
 
-export type LinkedTableReified<
-  T0 extends Reified<TypeArgument, any>,
-  T1 extends PhantomReified<PhantomTypeArgument>,
-> = Reified<
-  LinkedTable<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>>,
-  LinkedTableFields<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>>
+export type LinkedTableReified<T0 extends TypeArgument, T1 extends PhantomTypeArgument> = Reified<
+  LinkedTable<T0, T1>,
+  LinkedTableFields<T0, T1>
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -80,7 +77,7 @@ export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument
   static reified<
     T0 extends Reified<TypeArgument, any>,
     T1 extends PhantomReified<PhantomTypeArgument>,
-  >(T0: T0, T1: T1): LinkedTableReified<T0, T1> {
+  >(T0: T0, T1: T1): LinkedTableReified<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
     return {
       typeName: LinkedTable.$typeName,
       fullTypeName: composeSuiType(
@@ -270,12 +267,9 @@ export interface NodeFields<T0 extends TypeArgument, T1 extends TypeArgument> {
   value: ToField<T1>
 }
 
-export type NodeReified<
-  T0 extends Reified<TypeArgument, any>,
-  T1 extends Reified<TypeArgument, any>,
-> = Reified<
-  Node<ToTypeArgument<T0>, ToTypeArgument<T1>>,
-  NodeFields<ToTypeArgument<T0>, ToTypeArgument<T1>>
+export type NodeReified<T0 extends TypeArgument, T1 extends TypeArgument> = Reified<
+  Node<T0, T1>,
+  NodeFields<T0, T1>
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -309,7 +303,7 @@ export class Node<T0 extends TypeArgument, T1 extends TypeArgument> {
   static reified<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     T0: T0,
     T1: T1
-  ): NodeReified<T0, T1> {
+  ): NodeReified<ToTypeArgument<T0>, ToTypeArgument<T1>> {
     return {
       typeName: Node.$typeName,
       fullTypeName: composeSuiType(

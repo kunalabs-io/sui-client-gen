@@ -30,10 +30,7 @@ export interface SupplyFields<T0 extends PhantomTypeArgument> {
   value: ToField<'u64'>
 }
 
-export type SupplyReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
-  Supply<ToPhantomTypeArgument<T0>>,
-  SupplyFields<ToPhantomTypeArgument<T0>>
->
+export type SupplyReified<T0 extends PhantomTypeArgument> = Reified<Supply<T0>, SupplyFields<T0>>
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Supply<T0 extends PhantomTypeArgument> {
@@ -59,7 +56,9 @@ export class Supply<T0 extends PhantomTypeArgument> {
     this.value = fields.value
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): SupplyReified<T0> {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): SupplyReified<ToPhantomTypeArgument<T0>> {
     return {
       typeName: Supply.$typeName,
       fullTypeName: composeSuiType(
@@ -202,10 +201,7 @@ export interface BalanceFields<T0 extends PhantomTypeArgument> {
   value: ToField<'u64'>
 }
 
-export type BalanceReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
-  Balance<ToPhantomTypeArgument<T0>>,
-  BalanceFields<ToPhantomTypeArgument<T0>>
->
+export type BalanceReified<T0 extends PhantomTypeArgument> = Reified<Balance<T0>, BalanceFields<T0>>
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Balance<T0 extends PhantomTypeArgument> {
@@ -231,7 +227,9 @@ export class Balance<T0 extends PhantomTypeArgument> {
     this.value = fields.value
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): BalanceReified<T0> {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): BalanceReified<ToPhantomTypeArgument<T0>> {
     return {
       typeName: Balance.$typeName,
       fullTypeName: composeSuiType(

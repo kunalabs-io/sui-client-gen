@@ -34,10 +34,7 @@ export interface ReferentFields<T0 extends TypeArgument> {
   value: ToField<Option<T0>>
 }
 
-export type ReferentReified<T0 extends Reified<TypeArgument, any>> = Reified<
-  Referent<ToTypeArgument<T0>>,
-  ReferentFields<ToTypeArgument<T0>>
->
+export type ReferentReified<T0 extends TypeArgument> = Reified<Referent<T0>, ReferentFields<T0>>
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Referent<T0 extends TypeArgument> {
@@ -65,7 +62,9 @@ export class Referent<T0 extends TypeArgument> {
     this.value = fields.value
   }
 
-  static reified<T0 extends Reified<TypeArgument, any>>(T0: T0): ReferentReified<T0> {
+  static reified<T0 extends Reified<TypeArgument, any>>(
+    T0: T0
+  ): ReferentReified<ToTypeArgument<T0>> {
     return {
       typeName: Referent.$typeName,
       fullTypeName: composeSuiType(

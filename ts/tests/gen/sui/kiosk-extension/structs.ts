@@ -180,9 +180,9 @@ export interface ExtensionKeyFields<Ext extends PhantomTypeArgument> {
   dummyField: ToField<'bool'>
 }
 
-export type ExtensionKeyReified<Ext extends PhantomReified<PhantomTypeArgument>> = Reified<
-  ExtensionKey<ToPhantomTypeArgument<Ext>>,
-  ExtensionKeyFields<ToPhantomTypeArgument<Ext>>
+export type ExtensionKeyReified<Ext extends PhantomTypeArgument> = Reified<
+  ExtensionKey<Ext>,
+  ExtensionKeyFields<Ext>
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -211,7 +211,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> {
 
   static reified<Ext extends PhantomReified<PhantomTypeArgument>>(
     Ext: Ext
-  ): ExtensionKeyReified<Ext> {
+  ): ExtensionKeyReified<ToPhantomTypeArgument<Ext>> {
     return {
       typeName: ExtensionKey.$typeName,
       fullTypeName: composeSuiType(

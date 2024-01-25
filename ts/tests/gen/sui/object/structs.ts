@@ -33,9 +33,9 @@ export interface DynamicFieldsFields<K extends TypeArgument> {
   names: ToField<Vector<K>>
 }
 
-export type DynamicFieldsReified<K extends Reified<TypeArgument, any>> = Reified<
-  DynamicFields<ToTypeArgument<K>>,
-  DynamicFieldsFields<ToTypeArgument<K>>
+export type DynamicFieldsReified<K extends TypeArgument> = Reified<
+  DynamicFields<K>,
+  DynamicFieldsFields<K>
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -62,7 +62,9 @@ export class DynamicFields<K extends TypeArgument> {
     this.names = fields.names
   }
 
-  static reified<K extends Reified<TypeArgument, any>>(K: K): DynamicFieldsReified<K> {
+  static reified<K extends Reified<TypeArgument, any>>(
+    K: K
+  ): DynamicFieldsReified<ToTypeArgument<K>> {
     return {
       typeName: DynamicFields.$typeName,
       fullTypeName: composeSuiType(

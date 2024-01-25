@@ -34,10 +34,7 @@ export interface EntryFields<T extends TypeArgument> {
   value: ToField<T>
 }
 
-export type EntryReified<T extends Reified<TypeArgument, any>> = Reified<
-  Entry<ToTypeArgument<T>>,
-  EntryFields<ToTypeArgument<T>>
->
+export type EntryReified<T extends TypeArgument> = Reified<Entry<T>, EntryFields<T>>
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Entry<T extends TypeArgument> {
@@ -65,7 +62,7 @@ export class Entry<T extends TypeArgument> {
     this.value = fields.value
   }
 
-  static reified<T extends Reified<TypeArgument, any>>(T: T): EntryReified<T> {
+  static reified<T extends Reified<TypeArgument, any>>(T: T): EntryReified<ToTypeArgument<T>> {
     return {
       typeName: Entry.$typeName,
       fullTypeName: composeSuiType(
@@ -220,9 +217,9 @@ export interface PriorityQueueFields<T extends TypeArgument> {
   entries: ToField<Vector<Entry<T>>>
 }
 
-export type PriorityQueueReified<T extends Reified<TypeArgument, any>> = Reified<
-  PriorityQueue<ToTypeArgument<T>>,
-  PriorityQueueFields<ToTypeArgument<T>>
+export type PriorityQueueReified<T extends TypeArgument> = Reified<
+  PriorityQueue<T>,
+  PriorityQueueFields<T>
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -249,7 +246,9 @@ export class PriorityQueue<T extends TypeArgument> {
     this.entries = fields.entries
   }
 
-  static reified<T extends Reified<TypeArgument, any>>(T: T): PriorityQueueReified<T> {
+  static reified<T extends Reified<TypeArgument, any>>(
+    T: T
+  ): PriorityQueueReified<ToTypeArgument<T>> {
     return {
       typeName: PriorityQueue.$typeName,
       fullTypeName: composeSuiType(

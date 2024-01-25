@@ -31,10 +31,7 @@ export interface WrapperFields<T0 extends TypeArgument> {
   name: ToField<T0>
 }
 
-export type WrapperReified<T0 extends Reified<TypeArgument, any>> = Reified<
-  Wrapper<ToTypeArgument<T0>>,
-  WrapperFields<ToTypeArgument<T0>>
->
+export type WrapperReified<T0 extends TypeArgument> = Reified<Wrapper<T0>, WrapperFields<T0>>
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Wrapper<T0 extends TypeArgument> {
@@ -60,7 +57,9 @@ export class Wrapper<T0 extends TypeArgument> {
     this.name = fields.name
   }
 
-  static reified<T0 extends Reified<TypeArgument, any>>(T0: T0): WrapperReified<T0> {
+  static reified<T0 extends Reified<TypeArgument, any>>(
+    T0: T0
+  ): WrapperReified<ToTypeArgument<T0>> {
     return {
       typeName: Wrapper.$typeName,
       fullTypeName: composeSuiType(

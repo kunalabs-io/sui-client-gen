@@ -32,9 +32,9 @@ export interface ReceivingFields<T extends PhantomTypeArgument> {
   version: ToField<'u64'>
 }
 
-export type ReceivingReified<T extends PhantomReified<PhantomTypeArgument>> = Reified<
-  Receiving<ToPhantomTypeArgument<T>>,
-  ReceivingFields<ToPhantomTypeArgument<T>>
+export type ReceivingReified<T extends PhantomTypeArgument> = Reified<
+  Receiving<T>,
+  ReceivingFields<T>
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -63,7 +63,9 @@ export class Receiving<T extends PhantomTypeArgument> {
     this.version = fields.version
   }
 
-  static reified<T extends PhantomReified<PhantomTypeArgument>>(T: T): ReceivingReified<T> {
+  static reified<T extends PhantomReified<PhantomTypeArgument>>(
+    T: T
+  ): ReceivingReified<ToPhantomTypeArgument<T>> {
     return {
       typeName: Receiving.$typeName,
       fullTypeName: composeSuiType(

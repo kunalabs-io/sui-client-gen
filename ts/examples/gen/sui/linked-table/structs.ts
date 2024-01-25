@@ -39,12 +39,9 @@ export interface LinkedTableFields<K extends TypeArgument, V extends PhantomType
   tail: ToField<Option<K>>
 }
 
-export type LinkedTableReified<
-  K extends Reified<TypeArgument, any>,
-  V extends PhantomReified<PhantomTypeArgument>,
-> = Reified<
-  LinkedTable<ToTypeArgument<K>, ToPhantomTypeArgument<V>>,
-  LinkedTableFields<ToTypeArgument<K>, ToPhantomTypeArgument<V>>
+export type LinkedTableReified<K extends TypeArgument, V extends PhantomTypeArgument> = Reified<
+  LinkedTable<K, V>,
+  LinkedTableFields<K, V>
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -80,7 +77,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument> 
   static reified<
     K extends Reified<TypeArgument, any>,
     V extends PhantomReified<PhantomTypeArgument>,
-  >(K: K, V: V): LinkedTableReified<K, V> {
+  >(K: K, V: V): LinkedTableReified<ToTypeArgument<K>, ToPhantomTypeArgument<V>> {
     return {
       typeName: LinkedTable.$typeName,
       fullTypeName: composeSuiType(
@@ -266,12 +263,9 @@ export interface NodeFields<K extends TypeArgument, V extends TypeArgument> {
   value: ToField<V>
 }
 
-export type NodeReified<
-  K extends Reified<TypeArgument, any>,
-  V extends Reified<TypeArgument, any>,
-> = Reified<
-  Node<ToTypeArgument<K>, ToTypeArgument<V>>,
-  NodeFields<ToTypeArgument<K>, ToTypeArgument<V>>
+export type NodeReified<K extends TypeArgument, V extends TypeArgument> = Reified<
+  Node<K, V>,
+  NodeFields<K, V>
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -305,7 +299,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> {
   static reified<K extends Reified<TypeArgument, any>, V extends Reified<TypeArgument, any>>(
     K: K,
     V: V
-  ): NodeReified<K, V> {
+  ): NodeReified<ToTypeArgument<K>, ToTypeArgument<V>> {
     return {
       typeName: Node.$typeName,
       fullTypeName: composeSuiType(

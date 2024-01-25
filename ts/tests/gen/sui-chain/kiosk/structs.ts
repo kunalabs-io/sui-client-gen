@@ -491,9 +491,9 @@ export interface PurchaseCapFields<T0 extends PhantomTypeArgument> {
   minPrice: ToField<'u64'>
 }
 
-export type PurchaseCapReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
-  PurchaseCap<ToPhantomTypeArgument<T0>>,
-  PurchaseCapFields<ToPhantomTypeArgument<T0>>
+export type PurchaseCapReified<T0 extends PhantomTypeArgument> = Reified<
+  PurchaseCap<T0>,
+  PurchaseCapFields<T0>
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -526,7 +526,9 @@ export class PurchaseCap<T0 extends PhantomTypeArgument> {
     this.minPrice = fields.minPrice
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): PurchaseCapReified<T0> {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PurchaseCapReified<ToPhantomTypeArgument<T0>> {
     return {
       typeName: PurchaseCap.$typeName,
       fullTypeName: composeSuiType(
@@ -1085,9 +1087,9 @@ export interface ItemListedFields<T0 extends PhantomTypeArgument> {
   price: ToField<'u64'>
 }
 
-export type ItemListedReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
-  ItemListed<ToPhantomTypeArgument<T0>>,
-  ItemListedFields<ToPhantomTypeArgument<T0>>
+export type ItemListedReified<T0 extends PhantomTypeArgument> = Reified<
+  ItemListed<T0>,
+  ItemListedFields<T0>
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1118,7 +1120,9 @@ export class ItemListed<T0 extends PhantomTypeArgument> {
     this.price = fields.price
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): ItemListedReified<T0> {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): ItemListedReified<ToPhantomTypeArgument<T0>> {
     return {
       typeName: ItemListed.$typeName,
       fullTypeName: composeSuiType(
@@ -1277,9 +1281,9 @@ export interface ItemPurchasedFields<T0 extends PhantomTypeArgument> {
   price: ToField<'u64'>
 }
 
-export type ItemPurchasedReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
-  ItemPurchased<ToPhantomTypeArgument<T0>>,
-  ItemPurchasedFields<ToPhantomTypeArgument<T0>>
+export type ItemPurchasedReified<T0 extends PhantomTypeArgument> = Reified<
+  ItemPurchased<T0>,
+  ItemPurchasedFields<T0>
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1310,7 +1314,9 @@ export class ItemPurchased<T0 extends PhantomTypeArgument> {
     this.price = fields.price
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): ItemPurchasedReified<T0> {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): ItemPurchasedReified<ToPhantomTypeArgument<T0>> {
     return {
       typeName: ItemPurchased.$typeName,
       fullTypeName: composeSuiType(
@@ -1468,9 +1474,9 @@ export interface ItemDelistedFields<T0 extends PhantomTypeArgument> {
   id: ToField<ID>
 }
 
-export type ItemDelistedReified<T0 extends PhantomReified<PhantomTypeArgument>> = Reified<
-  ItemDelisted<ToPhantomTypeArgument<T0>>,
-  ItemDelistedFields<ToPhantomTypeArgument<T0>>
+export type ItemDelistedReified<T0 extends PhantomTypeArgument> = Reified<
+  ItemDelisted<T0>,
+  ItemDelistedFields<T0>
 >
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1499,7 +1505,9 @@ export class ItemDelisted<T0 extends PhantomTypeArgument> {
     this.id = fields.id
   }
 
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(T0: T0): ItemDelistedReified<T0> {
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): ItemDelistedReified<ToPhantomTypeArgument<T0>> {
     return {
       typeName: ItemDelisted.$typeName,
       fullTypeName: composeSuiType(
