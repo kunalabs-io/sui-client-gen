@@ -42,7 +42,7 @@ export class VecSet<T0 extends TypeArgument> {
 
   readonly $typeName = VecSet.$typeName
 
-  readonly $fullTypeName: `0x2::vec_set::VecSet<${string}>`
+  readonly $fullTypeName: `0x2::vec_set::VecSet<${ToTypeStr<T0>}>`
 
   readonly $typeArg: string
 

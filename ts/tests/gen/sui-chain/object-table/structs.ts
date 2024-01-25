@@ -44,7 +44,7 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
 
   readonly $typeName = ObjectTable.$typeName
 
-  readonly $fullTypeName: `0x2::object_table::ObjectTable<${string}, ${string}>`
+  readonly $fullTypeName: `0x2::object_table::ObjectTable<${PhantomToTypeStr<T0>}, ${PhantomToTypeStr<T1>}>`
 
   readonly $typeArgs: [string, string]
 

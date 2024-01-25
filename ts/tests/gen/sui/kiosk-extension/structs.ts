@@ -192,7 +192,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> {
 
   readonly $typeName = ExtensionKey.$typeName
 
-  readonly $fullTypeName: `0x2::kiosk_extension::ExtensionKey<${string}>`
+  readonly $fullTypeName: `0x2::kiosk_extension::ExtensionKey<${PhantomToTypeStr<Ext>}>`
 
   readonly $typeArg: string
 

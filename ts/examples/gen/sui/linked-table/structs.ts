@@ -51,7 +51,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument> 
 
   readonly $typeName = LinkedTable.$typeName
 
-  readonly $fullTypeName: `0x2::linked_table::LinkedTable<${string}, ${string}>`
+  readonly $fullTypeName: `0x2::linked_table::LinkedTable<${ToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
 
   readonly $typeArgs: [string, string]
 
@@ -275,7 +275,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> {
 
   readonly $typeName = Node.$typeName
 
-  readonly $fullTypeName: `0x2::linked_table::Node<${string}, ${string}>`
+  readonly $fullTypeName: `0x2::linked_table::Node<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
 
   readonly $typeArgs: [string, string]
 

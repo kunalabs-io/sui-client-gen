@@ -47,7 +47,7 @@ export class RuleKey<T extends PhantomTypeArgument> {
 
   readonly $typeName = RuleKey.$typeName
 
-  readonly $fullTypeName: `0x2::token::RuleKey<${string}>`
+  readonly $fullTypeName: `0x2::token::RuleKey<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 
@@ -230,7 +230,7 @@ export class ActionRequest<T extends PhantomTypeArgument> {
 
   readonly $typeName = ActionRequest.$typeName
 
-  readonly $fullTypeName: `0x2::token::ActionRequest<${string}>`
+  readonly $fullTypeName: `0x2::token::ActionRequest<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 
@@ -464,7 +464,7 @@ export class Token<T extends PhantomTypeArgument> {
 
   readonly $typeName = Token.$typeName
 
-  readonly $fullTypeName: `0x2::token::Token<${string}>`
+  readonly $fullTypeName: `0x2::token::Token<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 
@@ -651,7 +651,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> {
 
   readonly $typeName = TokenPolicy.$typeName
 
-  readonly $fullTypeName: `0x2::token::TokenPolicy<${string}>`
+  readonly $fullTypeName: `0x2::token::TokenPolicy<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 
@@ -853,7 +853,7 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> {
 
   readonly $typeName = TokenPolicyCap.$typeName
 
-  readonly $fullTypeName: `0x2::token::TokenPolicyCap<${string}>`
+  readonly $fullTypeName: `0x2::token::TokenPolicyCap<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 
@@ -1039,7 +1039,7 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> {
 
   readonly $typeName = TokenPolicyCreated.$typeName
 
-  readonly $fullTypeName: `0x2::token::TokenPolicyCreated<${string}>`
+  readonly $fullTypeName: `0x2::token::TokenPolicyCreated<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 

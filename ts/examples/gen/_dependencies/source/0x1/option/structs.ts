@@ -47,7 +47,7 @@ export class Option<Element extends TypeArgument> {
 
   readonly $typeName = Option.$typeName
 
-  readonly $fullTypeName: `0x1::option::Option<${string}>`
+  readonly $fullTypeName: `0x1::option::Option<${ToTypeStr<Element>}>`
 
   readonly $typeArg: string
 

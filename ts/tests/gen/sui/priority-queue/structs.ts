@@ -43,7 +43,7 @@ export class Entry<T extends TypeArgument> {
 
   readonly $typeName = Entry.$typeName
 
-  readonly $fullTypeName: `0x2::priority_queue::Entry<${string}>`
+  readonly $fullTypeName: `0x2::priority_queue::Entry<${ToTypeStr<T>}>`
 
   readonly $typeArg: string
 
@@ -229,7 +229,7 @@ export class PriorityQueue<T extends TypeArgument> {
 
   readonly $typeName = PriorityQueue.$typeName
 
-  readonly $fullTypeName: `0x2::priority_queue::PriorityQueue<${string}>`
+  readonly $fullTypeName: `0x2::priority_queue::PriorityQueue<${ToTypeStr<T>}>`
 
   readonly $typeArg: string
 

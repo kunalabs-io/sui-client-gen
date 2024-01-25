@@ -46,7 +46,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> {
 
   readonly $typeName = Field.$typeName
 
-  readonly $fullTypeName: `0x2::dynamic_field::Field<${string}, ${string}>`
+  readonly $fullTypeName: `0x2::dynamic_field::Field<${ToTypeStr<Name>}, ${ToTypeStr<Value>}>`
 
   readonly $typeArgs: [string, string]
 

@@ -46,7 +46,7 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> {
 
   readonly $typeName = Entry.$typeName
 
-  readonly $fullTypeName: `0x2::vec_map::Entry<${string}, ${string}>`
+  readonly $fullTypeName: `0x2::vec_map::Entry<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
 
   readonly $typeArgs: [string, string]
 
@@ -236,7 +236,7 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> {
 
   readonly $typeName = VecMap.$typeName
 
-  readonly $fullTypeName: `0x2::vec_map::VecMap<${string}, ${string}>`
+  readonly $fullTypeName: `0x2::vec_map::VecMap<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
 
   readonly $typeArgs: [string, string]
 

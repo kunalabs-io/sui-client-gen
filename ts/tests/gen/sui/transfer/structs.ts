@@ -44,7 +44,7 @@ export class Receiving<T extends PhantomTypeArgument> {
 
   readonly $typeName = Receiving.$typeName
 
-  readonly $fullTypeName: `0x2::transfer::Receiving<${string}>`
+  readonly $fullTypeName: `0x2::transfer::Receiving<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 

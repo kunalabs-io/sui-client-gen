@@ -44,7 +44,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
 
   readonly $typeName = Table.$typeName
 
-  readonly $fullTypeName: `0x2::table::Table<${string}, ${string}>`
+  readonly $fullTypeName: `0x2::table::Table<${PhantomToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
 
   readonly $typeArgs: [string, string]
 

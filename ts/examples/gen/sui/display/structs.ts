@@ -44,7 +44,7 @@ export class Display<T extends PhantomTypeArgument> {
 
   readonly $typeName = Display.$typeName
 
-  readonly $fullTypeName: `0x2::display::Display<${string}>`
+  readonly $fullTypeName: `0x2::display::Display<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 
@@ -239,7 +239,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> {
 
   readonly $typeName = DisplayCreated.$typeName
 
-  readonly $fullTypeName: `0x2::display::DisplayCreated<${string}>`
+  readonly $fullTypeName: `0x2::display::DisplayCreated<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 
@@ -415,7 +415,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> {
 
   readonly $typeName = VersionUpdated.$typeName
 
-  readonly $fullTypeName: `0x2::display::VersionUpdated<${string}>`
+  readonly $fullTypeName: `0x2::display::VersionUpdated<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 

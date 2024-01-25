@@ -40,7 +40,7 @@ export class Wrapper<Name extends TypeArgument> {
 
   readonly $typeName = Wrapper.$typeName
 
-  readonly $fullTypeName: `0x2::dynamic_object_field::Wrapper<${string}>`
+  readonly $fullTypeName: `0x2::dynamic_object_field::Wrapper<${ToTypeStr<Name>}>`
 
   readonly $typeArg: string
 

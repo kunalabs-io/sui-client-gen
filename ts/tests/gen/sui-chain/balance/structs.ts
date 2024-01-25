@@ -39,7 +39,7 @@ export class Supply<T0 extends PhantomTypeArgument> {
 
   readonly $typeName = Supply.$typeName
 
-  readonly $fullTypeName: `0x2::balance::Supply<${string}>`
+  readonly $fullTypeName: `0x2::balance::Supply<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArg: string
 
@@ -210,7 +210,7 @@ export class Balance<T0 extends PhantomTypeArgument> {
 
   readonly $typeName = Balance.$typeName
 
-  readonly $fullTypeName: `0x2::balance::Balance<${string}>`
+  readonly $fullTypeName: `0x2::balance::Balance<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArg: string
 

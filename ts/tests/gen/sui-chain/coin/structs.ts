@@ -47,7 +47,7 @@ export class Coin<T0 extends PhantomTypeArgument> {
 
   readonly $typeName = Coin.$typeName
 
-  readonly $fullTypeName: `0x2::coin::Coin<${string}>`
+  readonly $fullTypeName: `0x2::coin::Coin<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArg: string
 
@@ -237,7 +237,7 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> {
 
   readonly $typeName = CoinMetadata.$typeName
 
-  readonly $fullTypeName: `0x2::coin::CoinMetadata<${string}>`
+  readonly $fullTypeName: `0x2::coin::CoinMetadata<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArg: string
 
@@ -452,7 +452,7 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> {
 
   readonly $typeName = RegulatedCoinMetadata.$typeName
 
-  readonly $fullTypeName: `0x2::coin::RegulatedCoinMetadata<${string}>`
+  readonly $fullTypeName: `0x2::coin::RegulatedCoinMetadata<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArg: string
 
@@ -648,7 +648,7 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> {
 
   readonly $typeName = TreasuryCap.$typeName
 
-  readonly $fullTypeName: `0x2::coin::TreasuryCap<${string}>`
+  readonly $fullTypeName: `0x2::coin::TreasuryCap<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArg: string
 
@@ -830,7 +830,7 @@ export class DenyCap<T0 extends PhantomTypeArgument> {
 
   readonly $typeName = DenyCap.$typeName
 
-  readonly $fullTypeName: `0x2::coin::DenyCap<${string}>`
+  readonly $fullTypeName: `0x2::coin::DenyCap<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArg: string
 
@@ -1004,7 +1004,7 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> {
 
   readonly $typeName = CurrencyCreated.$typeName
 
-  readonly $fullTypeName: `0x2::coin::CurrencyCreated<${string}>`
+  readonly $fullTypeName: `0x2::coin::CurrencyCreated<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArg: string
 

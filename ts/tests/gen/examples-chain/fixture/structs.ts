@@ -196,7 +196,7 @@ export class WithGenericField<T0 extends TypeArgument> {
 
   readonly $typeName = WithGenericField.$typeName
 
-  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<${string}>`
+  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<${ToTypeStr<T0>}>`
 
   readonly $typeArg: string
 
@@ -525,7 +525,7 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument> {
 
   readonly $typeName = WithTwoGenerics.$typeName
 
-  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${string}, ${string}>`
+  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
 
   readonly $typeArgs: [string, string]
 
@@ -738,7 +738,7 @@ export class Foo<T0 extends TypeArgument> {
 
   readonly $typeName = Foo.$typeName
 
-  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<${string}>`
+  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<${ToTypeStr<T0>}>`
 
   readonly $typeArg: string
 
@@ -1127,7 +1127,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
 
   readonly $typeName = WithSpecialTypes.$typeName
 
-  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<${string}, ${string}>`
+  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<${PhantomToTypeStr<T0>}, ${ToTypeStr<T1>}>`
 
   readonly $typeArgs: [string, string]
 
@@ -1481,7 +1481,7 @@ export class WithSpecialTypesAsGenerics<
 
   readonly $typeName = WithSpecialTypesAsGenerics.$typeName
 
-  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<${string}, ${string}, ${string}, ${string}, ${string}, ${string}, ${string}, ${string}>`
+  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<${ToTypeStr<T0>}, ${ToTypeStr<T1>}, ${ToTypeStr<T2>}, ${ToTypeStr<T3>}, ${ToTypeStr<T4>}, ${ToTypeStr<T5>}, ${ToTypeStr<T6>}, ${ToTypeStr<T7>}>`
 
   readonly $typeArgs: [string, string, string, string, string, string, string, string]
 
@@ -2030,7 +2030,7 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> {
 
   readonly $typeName = WithSpecialTypesInVectors.$typeName
 
-  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<${string}>`
+  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<${ToTypeStr<T0>}>`
 
   readonly $typeArg: string
 

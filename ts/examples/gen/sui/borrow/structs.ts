@@ -187,7 +187,7 @@ export class Referent<T extends TypeArgument> {
 
   readonly $typeName = Referent.$typeName
 
-  readonly $fullTypeName: `0x2::borrow::Referent<${string}>`
+  readonly $fullTypeName: `0x2::borrow::Referent<${ToTypeStr<T>}>`
 
   readonly $typeArg: string
 

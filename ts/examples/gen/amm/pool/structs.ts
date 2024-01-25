@@ -184,7 +184,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
 
   readonly $typeName = LP.$typeName
 
-  readonly $fullTypeName: `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${string}, ${string}>`
+  readonly $fullTypeName: `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
 
   readonly $typeArgs: [string, string]
 
@@ -390,7 +390,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
 
   readonly $typeName = Pool.$typeName
 
-  readonly $fullTypeName: `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${string}, ${string}>`
+  readonly $fullTypeName: `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
 
   readonly $typeArgs: [string, string]
 

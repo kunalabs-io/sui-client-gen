@@ -46,7 +46,7 @@ export class RuleKey<T0 extends PhantomTypeArgument> {
 
   readonly $typeName = RuleKey.$typeName
 
-  readonly $fullTypeName: `0x2::transfer_policy::RuleKey<${string}>`
+  readonly $fullTypeName: `0x2::transfer_policy::RuleKey<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArg: string
 
@@ -227,7 +227,7 @@ export class TransferRequest<T0 extends PhantomTypeArgument> {
 
   readonly $typeName = TransferRequest.$typeName
 
-  readonly $fullTypeName: `0x2::transfer_policy::TransferRequest<${string}>`
+  readonly $fullTypeName: `0x2::transfer_policy::TransferRequest<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArg: string
 
@@ -428,7 +428,7 @@ export class TransferPolicy<T0 extends PhantomTypeArgument> {
 
   readonly $typeName = TransferPolicy.$typeName
 
-  readonly $fullTypeName: `0x2::transfer_policy::TransferPolicy<${string}>`
+  readonly $fullTypeName: `0x2::transfer_policy::TransferPolicy<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArg: string
 
@@ -624,7 +624,7 @@ export class TransferPolicyCap<T0 extends PhantomTypeArgument> {
 
   readonly $typeName = TransferPolicyCap.$typeName
 
-  readonly $fullTypeName: `0x2::transfer_policy::TransferPolicyCap<${string}>`
+  readonly $fullTypeName: `0x2::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArg: string
 
@@ -812,7 +812,7 @@ export class TransferPolicyCreated<T0 extends PhantomTypeArgument> {
 
   readonly $typeName = TransferPolicyCreated.$typeName
 
-  readonly $fullTypeName: `0x2::transfer_policy::TransferPolicyCreated<${string}>`
+  readonly $fullTypeName: `0x2::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArg: string
 
@@ -995,7 +995,7 @@ export class TransferPolicyDestroyed<T0 extends PhantomTypeArgument> {
 
   readonly $typeName = TransferPolicyDestroyed.$typeName
 
-  readonly $fullTypeName: `0x2::transfer_policy::TransferPolicyDestroyed<${string}>`
+  readonly $fullTypeName: `0x2::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArg: string
 

@@ -316,7 +316,7 @@ export class ItemDelisted<T extends PhantomTypeArgument> {
 
   readonly $typeName = ItemDelisted.$typeName
 
-  readonly $fullTypeName: `0x2::kiosk::ItemDelisted<${string}>`
+  readonly $fullTypeName: `0x2::kiosk::ItemDelisted<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 
@@ -503,7 +503,7 @@ export class ItemListed<T extends PhantomTypeArgument> {
 
   readonly $typeName = ItemListed.$typeName
 
-  readonly $fullTypeName: `0x2::kiosk::ItemListed<${string}>`
+  readonly $fullTypeName: `0x2::kiosk::ItemListed<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 
@@ -697,7 +697,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> {
 
   readonly $typeName = ItemPurchased.$typeName
 
-  readonly $fullTypeName: `0x2::kiosk::ItemPurchased<${string}>`
+  readonly $fullTypeName: `0x2::kiosk::ItemPurchased<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 
@@ -1472,7 +1472,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> {
 
   readonly $typeName = PurchaseCap.$typeName
 
-  readonly $fullTypeName: `0x2::kiosk::PurchaseCap<${string}>`
+  readonly $fullTypeName: `0x2::kiosk::PurchaseCap<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 

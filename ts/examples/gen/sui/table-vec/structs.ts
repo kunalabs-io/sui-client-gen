@@ -44,7 +44,7 @@ export class TableVec<Element extends PhantomTypeArgument> {
 
   readonly $typeName = TableVec.$typeName
 
-  readonly $fullTypeName: `0x2::table_vec::TableVec<${string}>`
+  readonly $fullTypeName: `0x2::table_vec::TableVec<${PhantomToTypeStr<Element>}>`
 
   readonly $typeArg: string
 

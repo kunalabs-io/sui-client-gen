@@ -47,7 +47,7 @@ export class Coin<T extends PhantomTypeArgument> {
 
   readonly $typeName = Coin.$typeName
 
-  readonly $fullTypeName: `0x2::coin::Coin<${string}>`
+  readonly $fullTypeName: `0x2::coin::Coin<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 
@@ -237,7 +237,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> {
 
   readonly $typeName = CoinMetadata.$typeName
 
-  readonly $fullTypeName: `0x2::coin::CoinMetadata<${string}>`
+  readonly $fullTypeName: `0x2::coin::CoinMetadata<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 
@@ -450,7 +450,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> {
 
   readonly $typeName = CurrencyCreated.$typeName
 
-  readonly $fullTypeName: `0x2::coin::CurrencyCreated<${string}>`
+  readonly $fullTypeName: `0x2::coin::CurrencyCreated<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 
@@ -629,7 +629,7 @@ export class TreasuryCap<T extends PhantomTypeArgument> {
 
   readonly $typeName = TreasuryCap.$typeName
 
-  readonly $fullTypeName: `0x2::coin::TreasuryCap<${string}>`
+  readonly $fullTypeName: `0x2::coin::TreasuryCap<${PhantomToTypeStr<T>}>`
 
   readonly $typeArg: string
 
