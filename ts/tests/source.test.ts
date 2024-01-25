@@ -443,7 +443,7 @@ it('decodes special-cased types correctly', async () => {
 
   expect(fromFieldsWithTypes).toEqual(exp)
   expect(fromBcs).toEqual(exp)
-  expect(WithSpecialTypes.fromJSON(reifiedArgs, exp.toJSON())).toEqual(exp)
+  expect(WithSpecialTypes.r(...reifiedArgs).fromJSON(exp.toJSON())).toEqual(exp)
 })
 
 it('decodes special-cased types as generics correctly', async () => {
@@ -528,7 +528,7 @@ it('decodes special-cased types as generics correctly', async () => {
 
   expect(fromBcs).toEqual(exp)
   expect(fromFieldsWithTypes).toEqual(exp)
-  expect(WithSpecialTypesAsGenerics.fromJSON(reifiedArgs, exp.toJSON())).toEqual(exp)
+  expect(WithSpecialTypesAsGenerics.r(...reifiedArgs).fromJSON(exp.toJSON())).toEqual(exp)
 })
 
 it('calls function correctly when special types are used', async () => {
