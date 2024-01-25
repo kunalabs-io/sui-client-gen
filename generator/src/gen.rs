@@ -1471,7 +1471,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let wraps_phantom_to_type_argument = ExtendsOrWraps::Wraps(quote!($to_phantom_type_argument));
 
         // FooFields<ToTypeArgument<T>, PhantomToTypeArgument<PhantomTypeArgument>>
-        let fields_if_for_reified = quote!($(
+        let fields_if_for_reified = &quote!($(
             self.gen_fields_if_name_with_params(strct, &wraps_to_type_argument, &wraps_phantom_to_type_argument)
         ));
 
@@ -1582,6 +1582,11 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
         let is_option = self.get_full_name_with_address(strct) == "0x1::option::Option";
 
+        quote_in! { *tokens =>
+            export type $(&struct_name)Reified$(params_toks_for_reified) =
+                $reified<$(&struct_name)$(params_toks_for_to_type_argument), $fields_if_for_reified>;$['\n']
+        }
+
         tokens.append("// eslint-disable-next-line @typescript-eslint/no-unused-vars");
         tokens.push();
         quote_in! { *tokens =>
@@ -1642,7 +1647,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
                 static reified$(params_toks_for_reified)(
                     $(for param in type_params_str.iter() join (, ) => $param: $param)
-                ): $reified<$(&struct_name)$(params_toks_for_to_type_argument), $fields_if_for_reified> {
+                ): $(&struct_name)Reified$(
+                    self.gen_params_toks(strct, type_params_str.clone(), &ExtendsOrWraps::None, &ExtendsOrWraps::None)
+                ) {
                     return {
                         typeName: $(&struct_name).$$typeName,
                         fullTypeName: $compose_sui_type(
