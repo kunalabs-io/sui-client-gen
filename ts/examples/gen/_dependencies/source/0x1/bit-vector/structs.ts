@@ -30,30 +30,21 @@ export class BitVector {
   static readonly $typeName = '0x1::bit_vector::BitVector'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x1::bit_vector::BitVector'
-
   readonly $typeName = BitVector.$typeName
 
-  static get bcs() {
-    return bcs.struct('BitVector', {
-      length: bcs.u64(),
-      bit_field: bcs.vector(bcs.bool()),
-    })
-  }
+  readonly $fullTypeName: '0x1::bit_vector::BitVector'
 
   readonly length: ToField<'u64'>
   readonly bitField: ToField<Vector<'bool'>>
 
   private constructor(fields: BitVectorFields) {
+    this.$fullTypeName = BitVector.$typeName
+
     this.length = fields.length
     this.bitField = fields.bitField
   }
 
-  static new(fields: BitVectorFields): BitVector {
-    return new BitVector(fields)
-  }
-
-  static reified(): Reified<BitVector> {
+  static reified(): Reified<BitVector, BitVectorFields> {
     return {
       typeName: BitVector.$typeName,
       fullTypeName: composeSuiType(BitVector.$typeName, ...[]) as '0x1::bit_vector::BitVector',
@@ -64,6 +55,9 @@ export class BitVector {
       bcs: BitVector.bcs,
       fromJSONField: (field: any) => BitVector.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => BitVector.fetch(client, id),
+      new: (fields: BitVectorFields) => {
+        return new BitVector(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -72,8 +66,15 @@ export class BitVector {
     return BitVector.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('BitVector', {
+      length: bcs.u64(),
+      bit_field: bcs.vector(bcs.bool()),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): BitVector {
-    return BitVector.new({
+    return BitVector.reified().new({
       length: decodeFromFields('u64', fields.length),
       bitField: decodeFromFields(reified.vector('bool'), fields.bit_field),
     })
@@ -84,7 +85,7 @@ export class BitVector {
       throw new Error('not a BitVector type')
     }
 
-    return BitVector.new({
+    return BitVector.reified().new({
       length: decodeFromFieldsWithTypes('u64', item.fields.length),
       bitField: decodeFromFieldsWithTypes(reified.vector('bool'), item.fields.bit_field),
     })
@@ -106,7 +107,7 @@ export class BitVector {
   }
 
   static fromJSONField(field: any): BitVector {
-    return BitVector.new({
+    return BitVector.reified().new({
       length: decodeFromJSONField('u64', field.length),
       bitField: decodeFromJSONField(reified.vector('bool'), field.bitField),
     })

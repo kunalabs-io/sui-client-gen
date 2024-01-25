@@ -29,27 +29,19 @@ export class BCS {
   static readonly $typeName = '0x2::bcs::BCS'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::bcs::BCS'
-
   readonly $typeName = BCS.$typeName
 
-  static get bcs() {
-    return bcs.struct('BCS', {
-      bytes: bcs.vector(bcs.u8()),
-    })
-  }
+  readonly $fullTypeName: '0x2::bcs::BCS'
 
   readonly bytes: ToField<Vector<'u8'>>
 
-  private constructor(bytes: ToField<Vector<'u8'>>) {
-    this.bytes = bytes
+  private constructor(fields: BCSFields) {
+    this.$fullTypeName = BCS.$typeName
+
+    this.bytes = fields.bytes
   }
 
-  static new(bytes: ToField<Vector<'u8'>>): BCS {
-    return new BCS(bytes)
-  }
-
-  static reified(): Reified<BCS> {
+  static reified(): Reified<BCS, BCSFields> {
     return {
       typeName: BCS.$typeName,
       fullTypeName: composeSuiType(BCS.$typeName, ...[]) as '0x2::bcs::BCS',
@@ -60,6 +52,9 @@ export class BCS {
       bcs: BCS.bcs,
       fromJSONField: (field: any) => BCS.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => BCS.fetch(client, id),
+      new: (fields: BCSFields) => {
+        return new BCS(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -68,8 +63,14 @@ export class BCS {
     return BCS.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('BCS', {
+      bytes: bcs.vector(bcs.u8()),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): BCS {
-    return BCS.new(decodeFromFields(reified.vector('u8'), fields.bytes))
+    return BCS.reified().new({ bytes: decodeFromFields(reified.vector('u8'), fields.bytes) })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): BCS {
@@ -77,7 +78,9 @@ export class BCS {
       throw new Error('not a BCS type')
     }
 
-    return BCS.new(decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.bytes))
+    return BCS.reified().new({
+      bytes: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.bytes),
+    })
   }
 
   static fromBcs(data: Uint8Array): BCS {
@@ -95,7 +98,7 @@ export class BCS {
   }
 
   static fromJSONField(field: any): BCS {
-    return BCS.new(decodeFromJSONField(reified.vector('u8'), field.bytes))
+    return BCS.reified().new({ bytes: decodeFromJSONField(reified.vector('u8'), field.bytes) })
   }
 
   static fromJSON(json: Record<string, any>): BCS {

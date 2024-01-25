@@ -34,30 +34,21 @@ export class DenyList {
   static readonly $typeName = '0x2::deny_list::DenyList'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::deny_list::DenyList'
-
   readonly $typeName = DenyList.$typeName
 
-  static get bcs() {
-    return bcs.struct('DenyList', {
-      id: UID.bcs,
-      lists: Bag.bcs,
-    })
-  }
+  readonly $fullTypeName: '0x2::deny_list::DenyList'
 
   readonly id: ToField<UID>
   readonly lists: ToField<Bag>
 
   private constructor(fields: DenyListFields) {
+    this.$fullTypeName = DenyList.$typeName
+
     this.id = fields.id
     this.lists = fields.lists
   }
 
-  static new(fields: DenyListFields): DenyList {
-    return new DenyList(fields)
-  }
-
-  static reified(): Reified<DenyList> {
+  static reified(): Reified<DenyList, DenyListFields> {
     return {
       typeName: DenyList.$typeName,
       fullTypeName: composeSuiType(DenyList.$typeName, ...[]) as '0x2::deny_list::DenyList',
@@ -68,6 +59,9 @@ export class DenyList {
       bcs: DenyList.bcs,
       fromJSONField: (field: any) => DenyList.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => DenyList.fetch(client, id),
+      new: (fields: DenyListFields) => {
+        return new DenyList(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -76,8 +70,15 @@ export class DenyList {
     return DenyList.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('DenyList', {
+      id: UID.bcs,
+      lists: Bag.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): DenyList {
-    return DenyList.new({
+    return DenyList.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       lists: decodeFromFields(Bag.reified(), fields.lists),
     })
@@ -88,7 +89,7 @@ export class DenyList {
       throw new Error('not a DenyList type')
     }
 
-    return DenyList.new({
+    return DenyList.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       lists: decodeFromFieldsWithTypes(Bag.reified(), item.fields.lists),
     })
@@ -110,7 +111,7 @@ export class DenyList {
   }
 
   static fromJSONField(field: any): DenyList {
-    return DenyList.new({
+    return DenyList.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       lists: decodeFromJSONField(Bag.reified(), field.lists),
     })
@@ -165,33 +166,23 @@ export class PerTypeList {
   static readonly $typeName = '0x2::deny_list::PerTypeList'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::deny_list::PerTypeList'
-
   readonly $typeName = PerTypeList.$typeName
 
-  static get bcs() {
-    return bcs.struct('PerTypeList', {
-      id: UID.bcs,
-      denied_count: Table.bcs,
-      denied_addresses: Table.bcs,
-    })
-  }
+  readonly $fullTypeName: '0x2::deny_list::PerTypeList'
 
   readonly id: ToField<UID>
   readonly deniedCount: ToField<Table<'address', 'u64'>>
   readonly deniedAddresses: ToField<Table<ToPhantom<Vector<'u8'>>, ToPhantom<VecSet<'address'>>>>
 
   private constructor(fields: PerTypeListFields) {
+    this.$fullTypeName = PerTypeList.$typeName
+
     this.id = fields.id
     this.deniedCount = fields.deniedCount
     this.deniedAddresses = fields.deniedAddresses
   }
 
-  static new(fields: PerTypeListFields): PerTypeList {
-    return new PerTypeList(fields)
-  }
-
-  static reified(): Reified<PerTypeList> {
+  static reified(): Reified<PerTypeList, PerTypeListFields> {
     return {
       typeName: PerTypeList.$typeName,
       fullTypeName: composeSuiType(PerTypeList.$typeName, ...[]) as '0x2::deny_list::PerTypeList',
@@ -202,6 +193,9 @@ export class PerTypeList {
       bcs: PerTypeList.bcs,
       fromJSONField: (field: any) => PerTypeList.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => PerTypeList.fetch(client, id),
+      new: (fields: PerTypeListFields) => {
+        return new PerTypeList(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -210,15 +204,26 @@ export class PerTypeList {
     return PerTypeList.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('PerTypeList', {
+      id: UID.bcs,
+      denied_count: Table.bcs,
+      denied_addresses: Table.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): PerTypeList {
-    return PerTypeList.new({
+    return PerTypeList.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       deniedCount: decodeFromFields(
         Table.reified(reified.phantom('address'), reified.phantom('u64')),
         fields.denied_count
       ),
       deniedAddresses: decodeFromFields(
-        Table.reified(reified.phantom(reified.vector('u8')), VecSet.reified('address')),
+        Table.reified(
+          reified.phantom(reified.vector('u8')),
+          reified.phantom(VecSet.reified('address'))
+        ),
         fields.denied_addresses
       ),
     })
@@ -229,14 +234,17 @@ export class PerTypeList {
       throw new Error('not a PerTypeList type')
     }
 
-    return PerTypeList.new({
+    return PerTypeList.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       deniedCount: decodeFromFieldsWithTypes(
         Table.reified(reified.phantom('address'), reified.phantom('u64')),
         item.fields.denied_count
       ),
       deniedAddresses: decodeFromFieldsWithTypes(
-        Table.reified(reified.phantom(reified.vector('u8')), VecSet.reified('address')),
+        Table.reified(
+          reified.phantom(reified.vector('u8')),
+          reified.phantom(VecSet.reified('address'))
+        ),
         item.fields.denied_addresses
       ),
     })
@@ -259,14 +267,17 @@ export class PerTypeList {
   }
 
   static fromJSONField(field: any): PerTypeList {
-    return PerTypeList.new({
+    return PerTypeList.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       deniedCount: decodeFromJSONField(
         Table.reified(reified.phantom('address'), reified.phantom('u64')),
         field.deniedCount
       ),
       deniedAddresses: decodeFromJSONField(
-        Table.reified(reified.phantom(reified.vector('u8')), VecSet.reified('address')),
+        Table.reified(
+          reified.phantom(reified.vector('u8')),
+          reified.phantom(VecSet.reified('address'))
+        ),
         field.deniedAddresses
       ),
     })

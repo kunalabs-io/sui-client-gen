@@ -37,18 +37,9 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> {
   static readonly $typeName = '0x2::vec_map::Entry'
   static readonly $numTypeParams = 2
 
-  readonly $fullTypeName =
-    null as unknown as `0x2::vec_map::Entry<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
-
   readonly $typeName = Entry.$typeName
 
-  static get bcs() {
-    return <T0 extends BcsType<any>, T1 extends BcsType<any>>(T0: T0, T1: T1) =>
-      bcs.struct(`Entry<${T0.name}, ${T1.name}>`, {
-        key: T0,
-        value: T1,
-      })
-  }
+  readonly $fullTypeName: `0x2::vec_map::Entry<${string}, ${string}>`
 
   readonly $typeArgs: [string, string]
 
@@ -56,23 +47,24 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> {
   readonly value: ToField<T1>
 
   private constructor(typeArgs: [string, string], fields: EntryFields<T0, T1>) {
+    this.$fullTypeName = composeSuiType(
+      Entry.$typeName,
+      ...typeArgs
+    ) as `0x2::vec_map::Entry<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
+
     this.$typeArgs = typeArgs
 
     this.key = fields.key
     this.value = fields.value
   }
 
-  static new<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
-    typeArgs: [T0, T1],
-    fields: EntryFields<ToTypeArgument<T0>, ToTypeArgument<T1>>
-  ): Entry<ToTypeArgument<T0>, ToTypeArgument<T1>> {
-    return new Entry(typeArgs.map(extractType) as [string, string], fields)
-  }
-
-  static reified<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+  static reified<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     T0: T0,
     T1: T1
-  ): Reified<Entry<ToTypeArgument<T0>, ToTypeArgument<T1>>> {
+  ): Reified<
+    Entry<ToTypeArgument<T0>, ToTypeArgument<T1>>,
+    EntryFields<ToTypeArgument<T0>, ToTypeArgument<T1>>
+  > {
     return {
       typeName: Entry.$typeName,
       fullTypeName: composeSuiType(
@@ -88,6 +80,9 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> {
       bcs: Entry.bcs(toBcs(T0), toBcs(T1)),
       fromJSONField: (field: any) => Entry.fromJSONField([T0, T1], field),
       fetch: async (client: SuiClient, id: string) => Entry.fetch(client, [T0, T1], id),
+      new: (fields: EntryFields<ToTypeArgument<T0>, ToTypeArgument<T1>>) => {
+        return new Entry([extractType(T0), extractType(T1)], fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -96,32 +91,40 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> {
     return Entry.reified
   }
 
-  static fromFields<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+  static get bcs() {
+    return <T0 extends BcsType<any>, T1 extends BcsType<any>>(T0: T0, T1: T1) =>
+      bcs.struct(`Entry<${T0.name}, ${T1.name}>`, {
+        key: T0,
+        value: T1,
+      })
+  }
+
+  static fromFields<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     typeArgs: [T0, T1],
     fields: Record<string, any>
   ): Entry<ToTypeArgument<T0>, ToTypeArgument<T1>> {
-    return Entry.new(typeArgs, {
+    return Entry.reified(typeArgs[0], typeArgs[1]).new({
       key: decodeFromFields(typeArgs[0], fields.key),
       value: decodeFromFields(typeArgs[1], fields.value),
     })
   }
 
-  static fromFieldsWithTypes<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
-    typeArgs: [T0, T1],
-    item: FieldsWithTypes
-  ): Entry<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+  static fromFieldsWithTypes<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends Reified<TypeArgument, any>,
+  >(typeArgs: [T0, T1], item: FieldsWithTypes): Entry<ToTypeArgument<T0>, ToTypeArgument<T1>> {
     if (!isEntry(item.type)) {
       throw new Error('not a Entry type')
     }
     assertFieldsWithTypesArgsMatch(item, typeArgs)
 
-    return Entry.new(typeArgs, {
+    return Entry.reified(typeArgs[0], typeArgs[1]).new({
       key: decodeFromFieldsWithTypes(typeArgs[0], item.fields.key),
       value: decodeFromFieldsWithTypes(typeArgs[1], item.fields.value),
     })
   }
 
-  static fromBcs<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+  static fromBcs<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     typeArgs: [T0, T1],
     data: Uint8Array
   ): Entry<ToTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -139,17 +142,17 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
-    typeArgs: [T0, T1],
-    field: any
-  ): Entry<ToTypeArgument<T0>, ToTypeArgument<T1>> {
-    return Entry.new(typeArgs, {
+  static fromJSONField<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends Reified<TypeArgument, any>,
+  >(typeArgs: [T0, T1], field: any): Entry<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    return Entry.reified(typeArgs[0], typeArgs[1]).new({
       key: decodeFromJSONField(typeArgs[0], field.key),
       value: decodeFromJSONField(typeArgs[1], field.value),
     })
   }
 
-  static fromJSON<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+  static fromJSON<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     typeArgs: [T0, T1],
     json: Record<string, any>
   ): Entry<ToTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -165,10 +168,10 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> {
     return Entry.fromJSONField(typeArgs, json)
   }
 
-  static fromSuiParsedData<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
-    typeArgs: [T0, T1],
-    content: SuiParsedData
-  ): Entry<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+  static fromSuiParsedData<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends Reified<TypeArgument, any>,
+  >(typeArgs: [T0, T1], content: SuiParsedData): Entry<ToTypeArgument<T0>, ToTypeArgument<T1>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -178,7 +181,7 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> {
     return Entry.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+  static async fetch<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArgs: [T0, T1],
     id: string
@@ -211,39 +214,32 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> {
   static readonly $typeName = '0x2::vec_map::VecMap'
   static readonly $numTypeParams = 2
 
-  readonly $fullTypeName =
-    null as unknown as `0x2::vec_map::VecMap<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
-
   readonly $typeName = VecMap.$typeName
 
-  static get bcs() {
-    return <T0 extends BcsType<any>, T1 extends BcsType<any>>(T0: T0, T1: T1) =>
-      bcs.struct(`VecMap<${T0.name}, ${T1.name}>`, {
-        contents: bcs.vector(Entry.bcs(T0, T1)),
-      })
-  }
+  readonly $fullTypeName: `0x2::vec_map::VecMap<${string}, ${string}>`
 
   readonly $typeArgs: [string, string]
 
   readonly contents: ToField<Vector<Entry<T0, T1>>>
 
-  private constructor(typeArgs: [string, string], contents: ToField<Vector<Entry<T0, T1>>>) {
+  private constructor(typeArgs: [string, string], fields: VecMapFields<T0, T1>) {
+    this.$fullTypeName = composeSuiType(
+      VecMap.$typeName,
+      ...typeArgs
+    ) as `0x2::vec_map::VecMap<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
+
     this.$typeArgs = typeArgs
 
-    this.contents = contents
+    this.contents = fields.contents
   }
 
-  static new<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
-    typeArgs: [T0, T1],
-    contents: ToField<Vector<Entry<ToTypeArgument<T0>, ToTypeArgument<T1>>>>
-  ): VecMap<ToTypeArgument<T0>, ToTypeArgument<T1>> {
-    return new VecMap(typeArgs.map(extractType) as [string, string], contents)
-  }
-
-  static reified<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+  static reified<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     T0: T0,
     T1: T1
-  ): Reified<VecMap<ToTypeArgument<T0>, ToTypeArgument<T1>>> {
+  ): Reified<
+    VecMap<ToTypeArgument<T0>, ToTypeArgument<T1>>,
+    VecMapFields<ToTypeArgument<T0>, ToTypeArgument<T1>>
+  > {
     return {
       typeName: VecMap.$typeName,
       fullTypeName: composeSuiType(
@@ -259,6 +255,9 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> {
       bcs: VecMap.bcs(toBcs(T0), toBcs(T1)),
       fromJSONField: (field: any) => VecMap.fromJSONField([T0, T1], field),
       fetch: async (client: SuiClient, id: string) => VecMap.fetch(client, [T0, T1], id),
+      new: (fields: VecMapFields<ToTypeArgument<T0>, ToTypeArgument<T1>>) => {
+        return new VecMap([extractType(T0), extractType(T1)], fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -267,35 +266,43 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> {
     return VecMap.reified
   }
 
-  static fromFields<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+  static get bcs() {
+    return <T0 extends BcsType<any>, T1 extends BcsType<any>>(T0: T0, T1: T1) =>
+      bcs.struct(`VecMap<${T0.name}, ${T1.name}>`, {
+        contents: bcs.vector(Entry.bcs(T0, T1)),
+      })
+  }
+
+  static fromFields<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     typeArgs: [T0, T1],
     fields: Record<string, any>
   ): VecMap<ToTypeArgument<T0>, ToTypeArgument<T1>> {
-    return VecMap.new(
-      typeArgs,
-      decodeFromFields(reified.vector(Entry.reified(typeArgs[0], typeArgs[1])), fields.contents)
-    )
+    return VecMap.reified(typeArgs[0], typeArgs[1]).new({
+      contents: decodeFromFields(
+        reified.vector(Entry.reified(typeArgs[0], typeArgs[1])),
+        fields.contents
+      ),
+    })
   }
 
-  static fromFieldsWithTypes<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
-    typeArgs: [T0, T1],
-    item: FieldsWithTypes
-  ): VecMap<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+  static fromFieldsWithTypes<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends Reified<TypeArgument, any>,
+  >(typeArgs: [T0, T1], item: FieldsWithTypes): VecMap<ToTypeArgument<T0>, ToTypeArgument<T1>> {
     if (!isVecMap(item.type)) {
       throw new Error('not a VecMap type')
     }
     assertFieldsWithTypesArgsMatch(item, typeArgs)
 
-    return VecMap.new(
-      typeArgs,
-      decodeFromFieldsWithTypes(
+    return VecMap.reified(typeArgs[0], typeArgs[1]).new({
+      contents: decodeFromFieldsWithTypes(
         reified.vector(Entry.reified(typeArgs[0], typeArgs[1])),
         item.fields.contents
-      )
-    )
+      ),
+    })
   }
 
-  static fromBcs<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+  static fromBcs<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     typeArgs: [T0, T1],
     data: Uint8Array
   ): VecMap<ToTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -318,17 +325,19 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
-    typeArgs: [T0, T1],
-    field: any
-  ): VecMap<ToTypeArgument<T0>, ToTypeArgument<T1>> {
-    return VecMap.new(
-      typeArgs,
-      decodeFromJSONField(reified.vector(Entry.reified(typeArgs[0], typeArgs[1])), field.contents)
-    )
+  static fromJSONField<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends Reified<TypeArgument, any>,
+  >(typeArgs: [T0, T1], field: any): VecMap<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    return VecMap.reified(typeArgs[0], typeArgs[1]).new({
+      contents: decodeFromJSONField(
+        reified.vector(Entry.reified(typeArgs[0], typeArgs[1])),
+        field.contents
+      ),
+    })
   }
 
-  static fromJSON<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+  static fromJSON<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     typeArgs: [T0, T1],
     json: Record<string, any>
   ): VecMap<ToTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -344,10 +353,10 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> {
     return VecMap.fromJSONField(typeArgs, json)
   }
 
-  static fromSuiParsedData<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
-    typeArgs: [T0, T1],
-    content: SuiParsedData
-  ): VecMap<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+  static fromSuiParsedData<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends Reified<TypeArgument, any>,
+  >(typeArgs: [T0, T1], content: SuiParsedData): VecMap<ToTypeArgument<T0>, ToTypeArgument<T1>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -357,7 +366,7 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> {
     return VecMap.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+  static async fetch<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArgs: [T0, T1],
     id: string

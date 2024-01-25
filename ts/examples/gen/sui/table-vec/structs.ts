@@ -1,11 +1,11 @@
 import * as reified from '../../_framework/reified'
 import {
+  PhantomReified,
+  PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
-  ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -35,42 +35,37 @@ export class TableVec<Element extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::table_vec::TableVec'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::table_vec::TableVec<${ToTypeStr<Element>}>`
-
   readonly $typeName = TableVec.$typeName
 
-  static get bcs() {
-    return bcs.struct('TableVec', {
-      contents: Table.bcs,
-    })
-  }
+  readonly $fullTypeName: `0x2::table_vec::TableVec<${string}>`
 
   readonly $typeArg: string
 
   readonly contents: ToField<Table<'u64', Element>>
 
-  private constructor(typeArg: string, contents: ToField<Table<'u64', Element>>) {
+  private constructor(typeArg: string, fields: TableVecFields<Element>) {
+    this.$fullTypeName = composeSuiType(
+      TableVec.$typeName,
+      typeArg
+    ) as `0x2::table_vec::TableVec<${PhantomToTypeStr<Element>}>`
+
     this.$typeArg = typeArg
 
-    this.contents = contents
+    this.contents = fields.contents
   }
 
-  static new<Element extends ReifiedPhantomTypeArgument>(
-    typeArg: Element,
-    contents: ToField<Table<'u64', ToPhantomTypeArgument<Element>>>
-  ): TableVec<ToPhantomTypeArgument<Element>> {
-    return new TableVec(extractType(typeArg), contents)
-  }
-
-  static reified<Element extends ReifiedPhantomTypeArgument>(
+  static reified<Element extends PhantomReified<PhantomTypeArgument>>(
     Element: Element
-  ): Reified<TableVec<ToPhantomTypeArgument<Element>>> {
+  ): Reified<
+    TableVec<ToPhantomTypeArgument<Element>>,
+    TableVecFields<ToPhantomTypeArgument<Element>>
+  > {
     return {
       typeName: TableVec.$typeName,
       fullTypeName: composeSuiType(
         TableVec.$typeName,
         ...[extractType(Element)]
-      ) as `0x2::table_vec::TableVec<${ToTypeStr<ToPhantomTypeArgument<Element>>}>`,
+      ) as `0x2::table_vec::TableVec<${PhantomToTypeStr<ToPhantomTypeArgument<Element>>}>`,
       typeArgs: [Element],
       fromFields: (fields: Record<string, any>) => TableVec.fromFields(Element, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TableVec.fromFieldsWithTypes(Element, item),
@@ -78,6 +73,9 @@ export class TableVec<Element extends PhantomTypeArgument> {
       bcs: TableVec.bcs,
       fromJSONField: (field: any) => TableVec.fromJSONField(Element, field),
       fetch: async (client: SuiClient, id: string) => TableVec.fetch(client, Element, id),
+      new: (fields: TableVecFields<ToPhantomTypeArgument<Element>>) => {
+        return new TableVec(extractType(Element), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -86,17 +84,22 @@ export class TableVec<Element extends PhantomTypeArgument> {
     return TableVec.reified
   }
 
-  static fromFields<Element extends ReifiedPhantomTypeArgument>(
+  static get bcs() {
+    return bcs.struct('TableVec', {
+      contents: Table.bcs,
+    })
+  }
+
+  static fromFields<Element extends PhantomReified<PhantomTypeArgument>>(
     typeArg: Element,
     fields: Record<string, any>
   ): TableVec<ToPhantomTypeArgument<Element>> {
-    return TableVec.new(
-      typeArg,
-      decodeFromFields(Table.reified(reified.phantom('u64'), typeArg), fields.contents)
-    )
+    return TableVec.reified(typeArg).new({
+      contents: decodeFromFields(Table.reified(reified.phantom('u64'), typeArg), fields.contents),
+    })
   }
 
-  static fromFieldsWithTypes<Element extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<Element extends PhantomReified<PhantomTypeArgument>>(
     typeArg: Element,
     item: FieldsWithTypes
   ): TableVec<ToPhantomTypeArgument<Element>> {
@@ -105,16 +108,15 @@ export class TableVec<Element extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return TableVec.new(
-      typeArg,
-      decodeFromFieldsWithTypes(
+    return TableVec.reified(typeArg).new({
+      contents: decodeFromFieldsWithTypes(
         Table.reified(reified.phantom('u64'), typeArg),
         item.fields.contents
-      )
-    )
+      ),
+    })
   }
 
-  static fromBcs<Element extends ReifiedPhantomTypeArgument>(
+  static fromBcs<Element extends PhantomReified<PhantomTypeArgument>>(
     typeArg: Element,
     data: Uint8Array
   ): TableVec<ToPhantomTypeArgument<Element>> {
@@ -131,17 +133,16 @@ export class TableVec<Element extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<Element extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<Element extends PhantomReified<PhantomTypeArgument>>(
     typeArg: Element,
     field: any
   ): TableVec<ToPhantomTypeArgument<Element>> {
-    return TableVec.new(
-      typeArg,
-      decodeFromJSONField(Table.reified(reified.phantom('u64'), typeArg), field.contents)
-    )
+    return TableVec.reified(typeArg).new({
+      contents: decodeFromJSONField(Table.reified(reified.phantom('u64'), typeArg), field.contents),
+    })
   }
 
-  static fromJSON<Element extends ReifiedPhantomTypeArgument>(
+  static fromJSON<Element extends PhantomReified<PhantomTypeArgument>>(
     typeArg: Element,
     json: Record<string, any>
   ): TableVec<ToPhantomTypeArgument<Element>> {
@@ -157,7 +158,7 @@ export class TableVec<Element extends PhantomTypeArgument> {
     return TableVec.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<Element extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<Element extends PhantomReified<PhantomTypeArgument>>(
     typeArg: Element,
     content: SuiParsedData
   ): TableVec<ToPhantomTypeArgument<Element>> {
@@ -170,7 +171,7 @@ export class TableVec<Element extends PhantomTypeArgument> {
     return TableVec.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<Element extends ReifiedPhantomTypeArgument>(
+  static async fetch<Element extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: Element,
     id: string

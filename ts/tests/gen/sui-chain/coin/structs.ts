@@ -1,10 +1,10 @@
 import {
+  PhantomReified,
+  PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
-  ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -41,16 +41,9 @@ export class Coin<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::Coin'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::coin::Coin<${ToTypeStr<T0>}>`
-
   readonly $typeName = Coin.$typeName
 
-  static get bcs() {
-    return bcs.struct('Coin', {
-      id: UID.bcs,
-      balance: Balance.bcs,
-    })
-  }
+  readonly $fullTypeName: `0x2::coin::Coin<${string}>`
 
   readonly $typeArg: string
 
@@ -58,28 +51,26 @@ export class Coin<T0 extends PhantomTypeArgument> {
   readonly balance: ToField<Balance<T0>>
 
   private constructor(typeArg: string, fields: CoinFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      Coin.$typeName,
+      typeArg
+    ) as `0x2::coin::Coin<${PhantomToTypeStr<T0>}>`
+
     this.$typeArg = typeArg
 
     this.id = fields.id
     this.balance = fields.balance
   }
 
-  static new<T0 extends ReifiedPhantomTypeArgument>(
-    typeArg: T0,
-    fields: CoinFields<ToPhantomTypeArgument<T0>>
-  ): Coin<ToPhantomTypeArgument<T0>> {
-    return new Coin(extractType(typeArg), fields)
-  }
-
-  static reified<T0 extends ReifiedPhantomTypeArgument>(
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
-  ): Reified<Coin<ToPhantomTypeArgument<T0>>> {
+  ): Reified<Coin<ToPhantomTypeArgument<T0>>, CoinFields<ToPhantomTypeArgument<T0>>> {
     return {
       typeName: Coin.$typeName,
       fullTypeName: composeSuiType(
         Coin.$typeName,
         ...[extractType(T0)]
-      ) as `0x2::coin::Coin<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::coin::Coin<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Coin.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Coin.fromFieldsWithTypes(T0, item),
@@ -87,6 +78,9 @@ export class Coin<T0 extends PhantomTypeArgument> {
       bcs: Coin.bcs,
       fromJSONField: (field: any) => Coin.fromJSONField(T0, field),
       fetch: async (client: SuiClient, id: string) => Coin.fetch(client, T0, id),
+      new: (fields: CoinFields<ToPhantomTypeArgument<T0>>) => {
+        return new Coin(extractType(T0), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -95,17 +89,24 @@ export class Coin<T0 extends PhantomTypeArgument> {
     return Coin.reified
   }
 
-  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+  static get bcs() {
+    return bcs.struct('Coin', {
+      id: UID.bcs,
+      balance: Balance.bcs,
+    })
+  }
+
+  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     fields: Record<string, any>
   ): Coin<ToPhantomTypeArgument<T0>> {
-    return Coin.new(typeArg, {
+    return Coin.reified(typeArg).new({
       id: decodeFromFields(UID.reified(), fields.id),
       balance: decodeFromFields(Balance.reified(typeArg), fields.balance),
     })
   }
 
-  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     item: FieldsWithTypes
   ): Coin<ToPhantomTypeArgument<T0>> {
@@ -114,13 +115,13 @@ export class Coin<T0 extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return Coin.new(typeArg, {
+    return Coin.reified(typeArg).new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       balance: decodeFromFieldsWithTypes(Balance.reified(typeArg), item.fields.balance),
     })
   }
 
-  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     data: Uint8Array
   ): Coin<ToPhantomTypeArgument<T0>> {
@@ -138,17 +139,17 @@ export class Coin<T0 extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     field: any
   ): Coin<ToPhantomTypeArgument<T0>> {
-    return Coin.new(typeArg, {
+    return Coin.reified(typeArg).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       balance: decodeFromJSONField(Balance.reified(typeArg), field.balance),
     })
   }
 
-  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     json: Record<string, any>
   ): Coin<ToPhantomTypeArgument<T0>> {
@@ -164,7 +165,7 @@ export class Coin<T0 extends PhantomTypeArgument> {
     return Coin.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     content: SuiParsedData
   ): Coin<ToPhantomTypeArgument<T0>> {
@@ -177,7 +178,7 @@ export class Coin<T0 extends PhantomTypeArgument> {
     return Coin.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
     id: string
@@ -215,9 +216,64 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::CoinMetadata'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::coin::CoinMetadata<${ToTypeStr<T0>}>`
-
   readonly $typeName = CoinMetadata.$typeName
+
+  readonly $fullTypeName: `0x2::coin::CoinMetadata<${string}>`
+
+  readonly $typeArg: string
+
+  readonly id: ToField<UID>
+  readonly decimals: ToField<'u8'>
+  readonly name: ToField<String>
+  readonly symbol: ToField<String1>
+  readonly description: ToField<String>
+  readonly iconUrl: ToField<Option<Url>>
+
+  private constructor(typeArg: string, fields: CoinMetadataFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      CoinMetadata.$typeName,
+      typeArg
+    ) as `0x2::coin::CoinMetadata<${PhantomToTypeStr<T0>}>`
+
+    this.$typeArg = typeArg
+
+    this.id = fields.id
+    this.decimals = fields.decimals
+    this.name = fields.name
+    this.symbol = fields.symbol
+    this.description = fields.description
+    this.iconUrl = fields.iconUrl
+  }
+
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): Reified<
+    CoinMetadata<ToPhantomTypeArgument<T0>>,
+    CoinMetadataFields<ToPhantomTypeArgument<T0>>
+  > {
+    return {
+      typeName: CoinMetadata.$typeName,
+      fullTypeName: composeSuiType(
+        CoinMetadata.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::coin::CoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [T0],
+      fromFields: (fields: Record<string, any>) => CoinMetadata.fromFields(T0, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => CoinMetadata.fromFieldsWithTypes(T0, item),
+      fromBcs: (data: Uint8Array) => CoinMetadata.fromBcs(T0, data),
+      bcs: CoinMetadata.bcs,
+      fromJSONField: (field: any) => CoinMetadata.fromJSONField(T0, field),
+      fetch: async (client: SuiClient, id: string) => CoinMetadata.fetch(client, T0, id),
+      new: (fields: CoinMetadataFields<ToPhantomTypeArgument<T0>>) => {
+        return new CoinMetadata(extractType(T0), fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return CoinMetadata.reified
+  }
 
   static get bcs() {
     return bcs.struct('CoinMetadata', {
@@ -230,62 +286,11 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> {
     })
   }
 
-  readonly $typeArg: string
-
-  readonly id: ToField<UID>
-  readonly decimals: ToField<'u8'>
-  readonly name: ToField<String>
-  readonly symbol: ToField<String1>
-  readonly description: ToField<String>
-  readonly iconUrl: ToField<Option<Url>>
-
-  private constructor(typeArg: string, fields: CoinMetadataFields<T0>) {
-    this.$typeArg = typeArg
-
-    this.id = fields.id
-    this.decimals = fields.decimals
-    this.name = fields.name
-    this.symbol = fields.symbol
-    this.description = fields.description
-    this.iconUrl = fields.iconUrl
-  }
-
-  static new<T0 extends ReifiedPhantomTypeArgument>(
-    typeArg: T0,
-    fields: CoinMetadataFields<ToPhantomTypeArgument<T0>>
-  ): CoinMetadata<ToPhantomTypeArgument<T0>> {
-    return new CoinMetadata(extractType(typeArg), fields)
-  }
-
-  static reified<T0 extends ReifiedPhantomTypeArgument>(
-    T0: T0
-  ): Reified<CoinMetadata<ToPhantomTypeArgument<T0>>> {
-    return {
-      typeName: CoinMetadata.$typeName,
-      fullTypeName: composeSuiType(
-        CoinMetadata.$typeName,
-        ...[extractType(T0)]
-      ) as `0x2::coin::CoinMetadata<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
-      typeArgs: [T0],
-      fromFields: (fields: Record<string, any>) => CoinMetadata.fromFields(T0, fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => CoinMetadata.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => CoinMetadata.fromBcs(T0, data),
-      bcs: CoinMetadata.bcs,
-      fromJSONField: (field: any) => CoinMetadata.fromJSONField(T0, field),
-      fetch: async (client: SuiClient, id: string) => CoinMetadata.fetch(client, T0, id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return CoinMetadata.reified
-  }
-
-  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     fields: Record<string, any>
   ): CoinMetadata<ToPhantomTypeArgument<T0>> {
-    return CoinMetadata.new(typeArg, {
+    return CoinMetadata.reified(typeArg).new({
       id: decodeFromFields(UID.reified(), fields.id),
       decimals: decodeFromFields('u8', fields.decimals),
       name: decodeFromFields(String.reified(), fields.name),
@@ -295,7 +300,7 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> {
     })
   }
 
-  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     item: FieldsWithTypes
   ): CoinMetadata<ToPhantomTypeArgument<T0>> {
@@ -304,7 +309,7 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return CoinMetadata.new(typeArg, {
+    return CoinMetadata.reified(typeArg).new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       decimals: decodeFromFieldsWithTypes('u8', item.fields.decimals),
       name: decodeFromFieldsWithTypes(String.reified(), item.fields.name),
@@ -314,7 +319,7 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> {
     })
   }
 
-  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     data: Uint8Array
   ): CoinMetadata<ToPhantomTypeArgument<T0>> {
@@ -336,11 +341,11 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     field: any
   ): CoinMetadata<ToPhantomTypeArgument<T0>> {
-    return CoinMetadata.new(typeArg, {
+    return CoinMetadata.reified(typeArg).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       decimals: decodeFromJSONField('u8', field.decimals),
       name: decodeFromJSONField(String.reified(), field.name),
@@ -350,7 +355,7 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> {
     })
   }
 
-  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     json: Record<string, any>
   ): CoinMetadata<ToPhantomTypeArgument<T0>> {
@@ -366,7 +371,7 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> {
     return CoinMetadata.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     content: SuiParsedData
   ): CoinMetadata<ToPhantomTypeArgument<T0>> {
@@ -379,7 +384,7 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> {
     return CoinMetadata.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
     id: string
@@ -414,9 +419,59 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::RegulatedCoinMetadata'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::coin::RegulatedCoinMetadata<${ToTypeStr<T0>}>`
-
   readonly $typeName = RegulatedCoinMetadata.$typeName
+
+  readonly $fullTypeName: `0x2::coin::RegulatedCoinMetadata<${string}>`
+
+  readonly $typeArg: string
+
+  readonly id: ToField<UID>
+  readonly coinMetadataObject: ToField<ID>
+  readonly denyCapObject: ToField<ID>
+
+  private constructor(typeArg: string, fields: RegulatedCoinMetadataFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      RegulatedCoinMetadata.$typeName,
+      typeArg
+    ) as `0x2::coin::RegulatedCoinMetadata<${PhantomToTypeStr<T0>}>`
+
+    this.$typeArg = typeArg
+
+    this.id = fields.id
+    this.coinMetadataObject = fields.coinMetadataObject
+    this.denyCapObject = fields.denyCapObject
+  }
+
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): Reified<
+    RegulatedCoinMetadata<ToPhantomTypeArgument<T0>>,
+    RegulatedCoinMetadataFields<ToPhantomTypeArgument<T0>>
+  > {
+    return {
+      typeName: RegulatedCoinMetadata.$typeName,
+      fullTypeName: composeSuiType(
+        RegulatedCoinMetadata.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::coin::RegulatedCoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [T0],
+      fromFields: (fields: Record<string, any>) => RegulatedCoinMetadata.fromFields(T0, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) =>
+        RegulatedCoinMetadata.fromFieldsWithTypes(T0, item),
+      fromBcs: (data: Uint8Array) => RegulatedCoinMetadata.fromBcs(T0, data),
+      bcs: RegulatedCoinMetadata.bcs,
+      fromJSONField: (field: any) => RegulatedCoinMetadata.fromJSONField(T0, field),
+      fetch: async (client: SuiClient, id: string) => RegulatedCoinMetadata.fetch(client, T0, id),
+      new: (fields: RegulatedCoinMetadataFields<ToPhantomTypeArgument<T0>>) => {
+        return new RegulatedCoinMetadata(extractType(T0), fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return RegulatedCoinMetadata.reified
+  }
 
   static get bcs() {
     return bcs.struct('RegulatedCoinMetadata', {
@@ -426,64 +481,18 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> {
     })
   }
 
-  readonly $typeArg: string
-
-  readonly id: ToField<UID>
-  readonly coinMetadataObject: ToField<ID>
-  readonly denyCapObject: ToField<ID>
-
-  private constructor(typeArg: string, fields: RegulatedCoinMetadataFields<T0>) {
-    this.$typeArg = typeArg
-
-    this.id = fields.id
-    this.coinMetadataObject = fields.coinMetadataObject
-    this.denyCapObject = fields.denyCapObject
-  }
-
-  static new<T0 extends ReifiedPhantomTypeArgument>(
-    typeArg: T0,
-    fields: RegulatedCoinMetadataFields<ToPhantomTypeArgument<T0>>
-  ): RegulatedCoinMetadata<ToPhantomTypeArgument<T0>> {
-    return new RegulatedCoinMetadata(extractType(typeArg), fields)
-  }
-
-  static reified<T0 extends ReifiedPhantomTypeArgument>(
-    T0: T0
-  ): Reified<RegulatedCoinMetadata<ToPhantomTypeArgument<T0>>> {
-    return {
-      typeName: RegulatedCoinMetadata.$typeName,
-      fullTypeName: composeSuiType(
-        RegulatedCoinMetadata.$typeName,
-        ...[extractType(T0)]
-      ) as `0x2::coin::RegulatedCoinMetadata<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
-      typeArgs: [T0],
-      fromFields: (fields: Record<string, any>) => RegulatedCoinMetadata.fromFields(T0, fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) =>
-        RegulatedCoinMetadata.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => RegulatedCoinMetadata.fromBcs(T0, data),
-      bcs: RegulatedCoinMetadata.bcs,
-      fromJSONField: (field: any) => RegulatedCoinMetadata.fromJSONField(T0, field),
-      fetch: async (client: SuiClient, id: string) => RegulatedCoinMetadata.fetch(client, T0, id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return RegulatedCoinMetadata.reified
-  }
-
-  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     fields: Record<string, any>
   ): RegulatedCoinMetadata<ToPhantomTypeArgument<T0>> {
-    return RegulatedCoinMetadata.new(typeArg, {
+    return RegulatedCoinMetadata.reified(typeArg).new({
       id: decodeFromFields(UID.reified(), fields.id),
       coinMetadataObject: decodeFromFields(ID.reified(), fields.coin_metadata_object),
       denyCapObject: decodeFromFields(ID.reified(), fields.deny_cap_object),
     })
   }
 
-  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     item: FieldsWithTypes
   ): RegulatedCoinMetadata<ToPhantomTypeArgument<T0>> {
@@ -492,14 +501,14 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return RegulatedCoinMetadata.new(typeArg, {
+    return RegulatedCoinMetadata.reified(typeArg).new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       coinMetadataObject: decodeFromFieldsWithTypes(ID.reified(), item.fields.coin_metadata_object),
       denyCapObject: decodeFromFieldsWithTypes(ID.reified(), item.fields.deny_cap_object),
     })
   }
 
-  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     data: Uint8Array
   ): RegulatedCoinMetadata<ToPhantomTypeArgument<T0>> {
@@ -518,18 +527,18 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     field: any
   ): RegulatedCoinMetadata<ToPhantomTypeArgument<T0>> {
-    return RegulatedCoinMetadata.new(typeArg, {
+    return RegulatedCoinMetadata.reified(typeArg).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       coinMetadataObject: decodeFromJSONField(ID.reified(), field.coinMetadataObject),
       denyCapObject: decodeFromJSONField(ID.reified(), field.denyCapObject),
     })
   }
 
-  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     json: Record<string, any>
   ): RegulatedCoinMetadata<ToPhantomTypeArgument<T0>> {
@@ -545,7 +554,7 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> {
     return RegulatedCoinMetadata.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     content: SuiParsedData
   ): RegulatedCoinMetadata<ToPhantomTypeArgument<T0>> {
@@ -560,7 +569,7 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> {
     return RegulatedCoinMetadata.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
     id: string
@@ -597,16 +606,9 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::TreasuryCap'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::coin::TreasuryCap<${ToTypeStr<T0>}>`
-
   readonly $typeName = TreasuryCap.$typeName
 
-  static get bcs() {
-    return bcs.struct('TreasuryCap', {
-      id: UID.bcs,
-      total_supply: Supply.bcs,
-    })
-  }
+  readonly $fullTypeName: `0x2::coin::TreasuryCap<${string}>`
 
   readonly $typeArg: string
 
@@ -614,28 +616,26 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> {
   readonly totalSupply: ToField<Supply<T0>>
 
   private constructor(typeArg: string, fields: TreasuryCapFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      TreasuryCap.$typeName,
+      typeArg
+    ) as `0x2::coin::TreasuryCap<${PhantomToTypeStr<T0>}>`
+
     this.$typeArg = typeArg
 
     this.id = fields.id
     this.totalSupply = fields.totalSupply
   }
 
-  static new<T0 extends ReifiedPhantomTypeArgument>(
-    typeArg: T0,
-    fields: TreasuryCapFields<ToPhantomTypeArgument<T0>>
-  ): TreasuryCap<ToPhantomTypeArgument<T0>> {
-    return new TreasuryCap(extractType(typeArg), fields)
-  }
-
-  static reified<T0 extends ReifiedPhantomTypeArgument>(
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
-  ): Reified<TreasuryCap<ToPhantomTypeArgument<T0>>> {
+  ): Reified<TreasuryCap<ToPhantomTypeArgument<T0>>, TreasuryCapFields<ToPhantomTypeArgument<T0>>> {
     return {
       typeName: TreasuryCap.$typeName,
       fullTypeName: composeSuiType(
         TreasuryCap.$typeName,
         ...[extractType(T0)]
-      ) as `0x2::coin::TreasuryCap<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::coin::TreasuryCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => TreasuryCap.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TreasuryCap.fromFieldsWithTypes(T0, item),
@@ -643,6 +643,9 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> {
       bcs: TreasuryCap.bcs,
       fromJSONField: (field: any) => TreasuryCap.fromJSONField(T0, field),
       fetch: async (client: SuiClient, id: string) => TreasuryCap.fetch(client, T0, id),
+      new: (fields: TreasuryCapFields<ToPhantomTypeArgument<T0>>) => {
+        return new TreasuryCap(extractType(T0), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -651,17 +654,24 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> {
     return TreasuryCap.reified
   }
 
-  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+  static get bcs() {
+    return bcs.struct('TreasuryCap', {
+      id: UID.bcs,
+      total_supply: Supply.bcs,
+    })
+  }
+
+  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     fields: Record<string, any>
   ): TreasuryCap<ToPhantomTypeArgument<T0>> {
-    return TreasuryCap.new(typeArg, {
+    return TreasuryCap.reified(typeArg).new({
       id: decodeFromFields(UID.reified(), fields.id),
       totalSupply: decodeFromFields(Supply.reified(typeArg), fields.total_supply),
     })
   }
 
-  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     item: FieldsWithTypes
   ): TreasuryCap<ToPhantomTypeArgument<T0>> {
@@ -670,13 +680,13 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return TreasuryCap.new(typeArg, {
+    return TreasuryCap.reified(typeArg).new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       totalSupply: decodeFromFieldsWithTypes(Supply.reified(typeArg), item.fields.total_supply),
     })
   }
 
-  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     data: Uint8Array
   ): TreasuryCap<ToPhantomTypeArgument<T0>> {
@@ -694,17 +704,17 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     field: any
   ): TreasuryCap<ToPhantomTypeArgument<T0>> {
-    return TreasuryCap.new(typeArg, {
+    return TreasuryCap.reified(typeArg).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       totalSupply: decodeFromJSONField(Supply.reified(typeArg), field.totalSupply),
     })
   }
 
-  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     json: Record<string, any>
   ): TreasuryCap<ToPhantomTypeArgument<T0>> {
@@ -720,7 +730,7 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> {
     return TreasuryCap.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     content: SuiParsedData
   ): TreasuryCap<ToPhantomTypeArgument<T0>> {
@@ -733,7 +743,7 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> {
     return TreasuryCap.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
     id: string
@@ -766,42 +776,34 @@ export class DenyCap<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::DenyCap'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::coin::DenyCap<${ToTypeStr<T0>}>`
-
   readonly $typeName = DenyCap.$typeName
 
-  static get bcs() {
-    return bcs.struct('DenyCap', {
-      id: UID.bcs,
-    })
-  }
+  readonly $fullTypeName: `0x2::coin::DenyCap<${string}>`
 
   readonly $typeArg: string
 
   readonly id: ToField<UID>
 
-  private constructor(typeArg: string, id: ToField<UID>) {
+  private constructor(typeArg: string, fields: DenyCapFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      DenyCap.$typeName,
+      typeArg
+    ) as `0x2::coin::DenyCap<${PhantomToTypeStr<T0>}>`
+
     this.$typeArg = typeArg
 
-    this.id = id
+    this.id = fields.id
   }
 
-  static new<T0 extends ReifiedPhantomTypeArgument>(
-    typeArg: T0,
-    id: ToField<UID>
-  ): DenyCap<ToPhantomTypeArgument<T0>> {
-    return new DenyCap(extractType(typeArg), id)
-  }
-
-  static reified<T0 extends ReifiedPhantomTypeArgument>(
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
-  ): Reified<DenyCap<ToPhantomTypeArgument<T0>>> {
+  ): Reified<DenyCap<ToPhantomTypeArgument<T0>>, DenyCapFields<ToPhantomTypeArgument<T0>>> {
     return {
       typeName: DenyCap.$typeName,
       fullTypeName: composeSuiType(
         DenyCap.$typeName,
         ...[extractType(T0)]
-      ) as `0x2::coin::DenyCap<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::coin::DenyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => DenyCap.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => DenyCap.fromFieldsWithTypes(T0, item),
@@ -809,6 +811,9 @@ export class DenyCap<T0 extends PhantomTypeArgument> {
       bcs: DenyCap.bcs,
       fromJSONField: (field: any) => DenyCap.fromJSONField(T0, field),
       fetch: async (client: SuiClient, id: string) => DenyCap.fetch(client, T0, id),
+      new: (fields: DenyCapFields<ToPhantomTypeArgument<T0>>) => {
+        return new DenyCap(extractType(T0), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -817,14 +822,20 @@ export class DenyCap<T0 extends PhantomTypeArgument> {
     return DenyCap.reified
   }
 
-  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+  static get bcs() {
+    return bcs.struct('DenyCap', {
+      id: UID.bcs,
+    })
+  }
+
+  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     fields: Record<string, any>
   ): DenyCap<ToPhantomTypeArgument<T0>> {
-    return DenyCap.new(typeArg, decodeFromFields(UID.reified(), fields.id))
+    return DenyCap.reified(typeArg).new({ id: decodeFromFields(UID.reified(), fields.id) })
   }
 
-  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     item: FieldsWithTypes
   ): DenyCap<ToPhantomTypeArgument<T0>> {
@@ -833,10 +844,12 @@ export class DenyCap<T0 extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return DenyCap.new(typeArg, decodeFromFieldsWithTypes(UID.reified(), item.fields.id))
+    return DenyCap.reified(typeArg).new({
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+    })
   }
 
-  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     data: Uint8Array
   ): DenyCap<ToPhantomTypeArgument<T0>> {
@@ -853,14 +866,14 @@ export class DenyCap<T0 extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     field: any
   ): DenyCap<ToPhantomTypeArgument<T0>> {
-    return DenyCap.new(typeArg, decodeFromJSONField(UID.reified(), field.id))
+    return DenyCap.reified(typeArg).new({ id: decodeFromJSONField(UID.reified(), field.id) })
   }
 
-  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     json: Record<string, any>
   ): DenyCap<ToPhantomTypeArgument<T0>> {
@@ -876,7 +889,7 @@ export class DenyCap<T0 extends PhantomTypeArgument> {
     return DenyCap.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     content: SuiParsedData
   ): DenyCap<ToPhantomTypeArgument<T0>> {
@@ -889,7 +902,7 @@ export class DenyCap<T0 extends PhantomTypeArgument> {
     return DenyCap.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
     id: string
@@ -922,42 +935,37 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::CurrencyCreated'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::coin::CurrencyCreated<${ToTypeStr<T0>}>`
-
   readonly $typeName = CurrencyCreated.$typeName
 
-  static get bcs() {
-    return bcs.struct('CurrencyCreated', {
-      decimals: bcs.u8(),
-    })
-  }
+  readonly $fullTypeName: `0x2::coin::CurrencyCreated<${string}>`
 
   readonly $typeArg: string
 
   readonly decimals: ToField<'u8'>
 
-  private constructor(typeArg: string, decimals: ToField<'u8'>) {
+  private constructor(typeArg: string, fields: CurrencyCreatedFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      CurrencyCreated.$typeName,
+      typeArg
+    ) as `0x2::coin::CurrencyCreated<${PhantomToTypeStr<T0>}>`
+
     this.$typeArg = typeArg
 
-    this.decimals = decimals
+    this.decimals = fields.decimals
   }
 
-  static new<T0 extends ReifiedPhantomTypeArgument>(
-    typeArg: T0,
-    decimals: ToField<'u8'>
-  ): CurrencyCreated<ToPhantomTypeArgument<T0>> {
-    return new CurrencyCreated(extractType(typeArg), decimals)
-  }
-
-  static reified<T0 extends ReifiedPhantomTypeArgument>(
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
-  ): Reified<CurrencyCreated<ToPhantomTypeArgument<T0>>> {
+  ): Reified<
+    CurrencyCreated<ToPhantomTypeArgument<T0>>,
+    CurrencyCreatedFields<ToPhantomTypeArgument<T0>>
+  > {
     return {
       typeName: CurrencyCreated.$typeName,
       fullTypeName: composeSuiType(
         CurrencyCreated.$typeName,
         ...[extractType(T0)]
-      ) as `0x2::coin::CurrencyCreated<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::coin::CurrencyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => CurrencyCreated.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => CurrencyCreated.fromFieldsWithTypes(T0, item),
@@ -965,6 +973,9 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> {
       bcs: CurrencyCreated.bcs,
       fromJSONField: (field: any) => CurrencyCreated.fromJSONField(T0, field),
       fetch: async (client: SuiClient, id: string) => CurrencyCreated.fetch(client, T0, id),
+      new: (fields: CurrencyCreatedFields<ToPhantomTypeArgument<T0>>) => {
+        return new CurrencyCreated(extractType(T0), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -973,14 +984,22 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> {
     return CurrencyCreated.reified
   }
 
-  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+  static get bcs() {
+    return bcs.struct('CurrencyCreated', {
+      decimals: bcs.u8(),
+    })
+  }
+
+  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     fields: Record<string, any>
   ): CurrencyCreated<ToPhantomTypeArgument<T0>> {
-    return CurrencyCreated.new(typeArg, decodeFromFields('u8', fields.decimals))
+    return CurrencyCreated.reified(typeArg).new({
+      decimals: decodeFromFields('u8', fields.decimals),
+    })
   }
 
-  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     item: FieldsWithTypes
   ): CurrencyCreated<ToPhantomTypeArgument<T0>> {
@@ -989,10 +1008,12 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return CurrencyCreated.new(typeArg, decodeFromFieldsWithTypes('u8', item.fields.decimals))
+    return CurrencyCreated.reified(typeArg).new({
+      decimals: decodeFromFieldsWithTypes('u8', item.fields.decimals),
+    })
   }
 
-  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     data: Uint8Array
   ): CurrencyCreated<ToPhantomTypeArgument<T0>> {
@@ -1009,14 +1030,16 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     field: any
   ): CurrencyCreated<ToPhantomTypeArgument<T0>> {
-    return CurrencyCreated.new(typeArg, decodeFromJSONField('u8', field.decimals))
+    return CurrencyCreated.reified(typeArg).new({
+      decimals: decodeFromJSONField('u8', field.decimals),
+    })
   }
 
-  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     json: Record<string, any>
   ): CurrencyCreated<ToPhantomTypeArgument<T0>> {
@@ -1032,7 +1055,7 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> {
     return CurrencyCreated.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     content: SuiParsedData
   ): CurrencyCreated<ToPhantomTypeArgument<T0>> {
@@ -1045,7 +1068,7 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> {
     return CurrencyCreated.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
     id: string

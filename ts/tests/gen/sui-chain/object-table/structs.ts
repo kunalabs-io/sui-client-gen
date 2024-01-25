@@ -1,10 +1,10 @@
 import {
+  PhantomReified,
+  PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
-  ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -35,17 +35,9 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
   static readonly $typeName = '0x2::object_table::ObjectTable'
   static readonly $numTypeParams = 2
 
-  readonly $fullTypeName =
-    null as unknown as `0x2::object_table::ObjectTable<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
-
   readonly $typeName = ObjectTable.$typeName
 
-  static get bcs() {
-    return bcs.struct('ObjectTable', {
-      id: UID.bcs,
-      size: bcs.u64(),
-    })
-  }
+  readonly $fullTypeName: `0x2::object_table::ObjectTable<${string}, ${string}>`
 
   readonly $typeArgs: [string, string]
 
@@ -53,31 +45,35 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
   readonly size: ToField<'u64'>
 
   private constructor(typeArgs: [string, string], fields: ObjectTableFields<T0, T1>) {
+    this.$fullTypeName = composeSuiType(
+      ObjectTable.$typeName,
+      ...typeArgs
+    ) as `0x2::object_table::ObjectTable<${PhantomToTypeStr<T0>}, ${PhantomToTypeStr<T1>}>`
+
     this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.size = fields.size
   }
 
-  static new<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
-    typeArgs: [T0, T1],
-    fields: ObjectTableFields<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>
-  ): ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
-    return new ObjectTable(typeArgs.map(extractType) as [string, string], fields)
-  }
-
-  static reified<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
+  static reified<
+    T0 extends PhantomReified<PhantomTypeArgument>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
+  >(
     T0: T0,
     T1: T1
-  ): Reified<ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>> {
+  ): Reified<
+    ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>,
+    ObjectTableFields<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>
+  > {
     return {
       typeName: ObjectTable.$typeName,
       fullTypeName: composeSuiType(
         ObjectTable.$typeName,
         ...[extractType(T0), extractType(T1)]
-      ) as `0x2::object_table::ObjectTable<${ToTypeStr<ToPhantomTypeArgument<T0>>}, ${ToTypeStr<
-        ToPhantomTypeArgument<T1>
-      >}>`,
+      ) as `0x2::object_table::ObjectTable<${PhantomToTypeStr<
+        ToPhantomTypeArgument<T0>
+      >}, ${PhantomToTypeStr<ToPhantomTypeArgument<T1>>}>`,
       typeArgs: [T0, T1],
       fromFields: (fields: Record<string, any>) => ObjectTable.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
@@ -86,6 +82,9 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
       bcs: ObjectTable.bcs,
       fromJSONField: (field: any) => ObjectTable.fromJSONField([T0, T1], field),
       fetch: async (client: SuiClient, id: string) => ObjectTable.fetch(client, [T0, T1], id),
+      new: (fields: ObjectTableFields<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>>) => {
+        return new ObjectTable([extractType(T0), extractType(T1)], fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -94,19 +93,29 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
     return ObjectTable.reified
   }
 
-  static fromFields<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
+  static get bcs() {
+    return bcs.struct('ObjectTable', {
+      id: UID.bcs,
+      size: bcs.u64(),
+    })
+  }
+
+  static fromFields<
+    T0 extends PhantomReified<PhantomTypeArgument>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
+  >(
     typeArgs: [T0, T1],
     fields: Record<string, any>
   ): ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
-    return ObjectTable.new(typeArgs, {
+    return ObjectTable.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromFields(UID.reified(), fields.id),
       size: decodeFromFields('u64', fields.size),
     })
   }
 
   static fromFieldsWithTypes<
-    T0 extends ReifiedPhantomTypeArgument,
-    T1 extends ReifiedPhantomTypeArgument,
+    T0 extends PhantomReified<PhantomTypeArgument>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [T0, T1],
     item: FieldsWithTypes
@@ -116,13 +125,16 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
     }
     assertFieldsWithTypesArgsMatch(item, typeArgs)
 
-    return ObjectTable.new(typeArgs, {
+    return ObjectTable.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       size: decodeFromFieldsWithTypes('u64', item.fields.size),
     })
   }
 
-  static fromBcs<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
+  static fromBcs<
+    T0 extends PhantomReified<PhantomTypeArgument>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
+  >(
     typeArgs: [T0, T1],
     data: Uint8Array
   ): ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
@@ -141,19 +153,22 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
   }
 
   static fromJSONField<
-    T0 extends ReifiedPhantomTypeArgument,
-    T1 extends ReifiedPhantomTypeArgument,
+    T0 extends PhantomReified<PhantomTypeArgument>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [T0, T1],
     field: any
   ): ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
-    return ObjectTable.new(typeArgs, {
+    return ObjectTable.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       size: decodeFromJSONField('u64', field.size),
     })
   }
 
-  static fromJSON<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
+  static fromJSON<
+    T0 extends PhantomReified<PhantomTypeArgument>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
+  >(
     typeArgs: [T0, T1],
     json: Record<string, any>
   ): ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
@@ -170,8 +185,8 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
   }
 
   static fromSuiParsedData<
-    T0 extends ReifiedPhantomTypeArgument,
-    T1 extends ReifiedPhantomTypeArgument,
+    T0 extends PhantomReified<PhantomTypeArgument>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [T0, T1],
     content: SuiParsedData
@@ -185,7 +200,10 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
     return ObjectTable.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch<T0 extends ReifiedPhantomTypeArgument, T1 extends ReifiedPhantomTypeArgument>(
+  static async fetch<
+    T0 extends PhantomReified<PhantomTypeArgument>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
+  >(
     client: SuiClient,
     typeArgs: [T0, T1],
     id: string

@@ -28,30 +28,21 @@ export class Clock {
   static readonly $typeName = '0x2::clock::Clock'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::clock::Clock'
-
   readonly $typeName = Clock.$typeName
 
-  static get bcs() {
-    return bcs.struct('Clock', {
-      id: UID.bcs,
-      timestamp_ms: bcs.u64(),
-    })
-  }
+  readonly $fullTypeName: '0x2::clock::Clock'
 
   readonly id: ToField<UID>
   readonly timestampMs: ToField<'u64'>
 
   private constructor(fields: ClockFields) {
+    this.$fullTypeName = Clock.$typeName
+
     this.id = fields.id
     this.timestampMs = fields.timestampMs
   }
 
-  static new(fields: ClockFields): Clock {
-    return new Clock(fields)
-  }
-
-  static reified(): Reified<Clock> {
+  static reified(): Reified<Clock, ClockFields> {
     return {
       typeName: Clock.$typeName,
       fullTypeName: composeSuiType(Clock.$typeName, ...[]) as '0x2::clock::Clock',
@@ -62,6 +53,9 @@ export class Clock {
       bcs: Clock.bcs,
       fromJSONField: (field: any) => Clock.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => Clock.fetch(client, id),
+      new: (fields: ClockFields) => {
+        return new Clock(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -70,8 +64,15 @@ export class Clock {
     return Clock.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('Clock', {
+      id: UID.bcs,
+      timestamp_ms: bcs.u64(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): Clock {
-    return Clock.new({
+    return Clock.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       timestampMs: decodeFromFields('u64', fields.timestamp_ms),
     })
@@ -82,7 +83,7 @@ export class Clock {
       throw new Error('not a Clock type')
     }
 
-    return Clock.new({
+    return Clock.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       timestampMs: decodeFromFieldsWithTypes('u64', item.fields.timestamp_ms),
     })
@@ -104,7 +105,7 @@ export class Clock {
   }
 
   static fromJSONField(field: any): Clock {
-    return Clock.new({
+    return Clock.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       timestampMs: decodeFromJSONField('u64', field.timestampMs),
     })

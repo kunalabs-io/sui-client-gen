@@ -28,30 +28,21 @@ export class Versioned {
   static readonly $typeName = '0x2::versioned::Versioned'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::versioned::Versioned'
-
   readonly $typeName = Versioned.$typeName
 
-  static get bcs() {
-    return bcs.struct('Versioned', {
-      id: UID.bcs,
-      version: bcs.u64(),
-    })
-  }
+  readonly $fullTypeName: '0x2::versioned::Versioned'
 
   readonly id: ToField<UID>
   readonly version: ToField<'u64'>
 
   private constructor(fields: VersionedFields) {
+    this.$fullTypeName = Versioned.$typeName
+
     this.id = fields.id
     this.version = fields.version
   }
 
-  static new(fields: VersionedFields): Versioned {
-    return new Versioned(fields)
-  }
-
-  static reified(): Reified<Versioned> {
+  static reified(): Reified<Versioned, VersionedFields> {
     return {
       typeName: Versioned.$typeName,
       fullTypeName: composeSuiType(Versioned.$typeName, ...[]) as '0x2::versioned::Versioned',
@@ -62,6 +53,9 @@ export class Versioned {
       bcs: Versioned.bcs,
       fromJSONField: (field: any) => Versioned.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => Versioned.fetch(client, id),
+      new: (fields: VersionedFields) => {
+        return new Versioned(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -70,8 +64,15 @@ export class Versioned {
     return Versioned.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('Versioned', {
+      id: UID.bcs,
+      version: bcs.u64(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): Versioned {
-    return Versioned.new({
+    return Versioned.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       version: decodeFromFields('u64', fields.version),
     })
@@ -82,7 +83,7 @@ export class Versioned {
       throw new Error('not a Versioned type')
     }
 
-    return Versioned.new({
+    return Versioned.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       version: decodeFromFieldsWithTypes('u64', item.fields.version),
     })
@@ -104,7 +105,7 @@ export class Versioned {
   }
 
   static fromJSONField(field: any): Versioned {
-    return Versioned.new({
+    return Versioned.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       version: decodeFromJSONField('u64', field.version),
     })
@@ -158,30 +159,21 @@ export class VersionChangeCap {
   static readonly $typeName = '0x2::versioned::VersionChangeCap'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::versioned::VersionChangeCap'
-
   readonly $typeName = VersionChangeCap.$typeName
 
-  static get bcs() {
-    return bcs.struct('VersionChangeCap', {
-      versioned_id: ID.bcs,
-      old_version: bcs.u64(),
-    })
-  }
+  readonly $fullTypeName: '0x2::versioned::VersionChangeCap'
 
   readonly versionedId: ToField<ID>
   readonly oldVersion: ToField<'u64'>
 
   private constructor(fields: VersionChangeCapFields) {
+    this.$fullTypeName = VersionChangeCap.$typeName
+
     this.versionedId = fields.versionedId
     this.oldVersion = fields.oldVersion
   }
 
-  static new(fields: VersionChangeCapFields): VersionChangeCap {
-    return new VersionChangeCap(fields)
-  }
-
-  static reified(): Reified<VersionChangeCap> {
+  static reified(): Reified<VersionChangeCap, VersionChangeCapFields> {
     return {
       typeName: VersionChangeCap.$typeName,
       fullTypeName: composeSuiType(
@@ -195,6 +187,9 @@ export class VersionChangeCap {
       bcs: VersionChangeCap.bcs,
       fromJSONField: (field: any) => VersionChangeCap.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => VersionChangeCap.fetch(client, id),
+      new: (fields: VersionChangeCapFields) => {
+        return new VersionChangeCap(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -203,8 +198,15 @@ export class VersionChangeCap {
     return VersionChangeCap.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('VersionChangeCap', {
+      versioned_id: ID.bcs,
+      old_version: bcs.u64(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): VersionChangeCap {
-    return VersionChangeCap.new({
+    return VersionChangeCap.reified().new({
       versionedId: decodeFromFields(ID.reified(), fields.versioned_id),
       oldVersion: decodeFromFields('u64', fields.old_version),
     })
@@ -215,7 +217,7 @@ export class VersionChangeCap {
       throw new Error('not a VersionChangeCap type')
     }
 
-    return VersionChangeCap.new({
+    return VersionChangeCap.reified().new({
       versionedId: decodeFromFieldsWithTypes(ID.reified(), item.fields.versioned_id),
       oldVersion: decodeFromFieldsWithTypes('u64', item.fields.old_version),
     })
@@ -237,7 +239,7 @@ export class VersionChangeCap {
   }
 
   static fromJSONField(field: any): VersionChangeCap {
-    return VersionChangeCap.new({
+    return VersionChangeCap.reified().new({
       versionedId: decodeFromJSONField(ID.reified(), field.versionedId),
       oldVersion: decodeFromJSONField('u64', field.oldVersion),
     })

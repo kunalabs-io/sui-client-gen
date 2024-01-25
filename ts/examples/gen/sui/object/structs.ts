@@ -36,35 +36,28 @@ export class DynamicFields<K extends TypeArgument> {
   static readonly $typeName = '0x2::object::DynamicFields'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::object::DynamicFields<${ToTypeStr<K>}>`
-
   readonly $typeName = DynamicFields.$typeName
 
-  static get bcs() {
-    return <K extends BcsType<any>>(K: K) =>
-      bcs.struct(`DynamicFields<${K.name}>`, {
-        names: bcs.vector(K),
-      })
-  }
+  readonly $fullTypeName: `0x2::object::DynamicFields<${string}>`
 
   readonly $typeArg: string
 
   readonly names: ToField<Vector<K>>
 
-  private constructor(typeArg: string, names: ToField<Vector<K>>) {
+  private constructor(typeArg: string, fields: DynamicFieldsFields<K>) {
+    this.$fullTypeName = composeSuiType(
+      DynamicFields.$typeName,
+      typeArg
+    ) as `0x2::object::DynamicFields<${ToTypeStr<K>}>`
+
     this.$typeArg = typeArg
 
-    this.names = names
+    this.names = fields.names
   }
 
-  static new<K extends Reified<TypeArgument>>(
-    typeArg: K,
-    names: ToField<Vector<ToTypeArgument<K>>>
-  ): DynamicFields<ToTypeArgument<K>> {
-    return new DynamicFields(extractType(typeArg), names)
-  }
-
-  static reified<K extends Reified<TypeArgument>>(K: K): Reified<DynamicFields<ToTypeArgument<K>>> {
+  static reified<K extends Reified<TypeArgument, any>>(
+    K: K
+  ): Reified<DynamicFields<ToTypeArgument<K>>, DynamicFieldsFields<ToTypeArgument<K>>> {
     return {
       typeName: DynamicFields.$typeName,
       fullTypeName: composeSuiType(
@@ -78,6 +71,9 @@ export class DynamicFields<K extends TypeArgument> {
       bcs: DynamicFields.bcs(toBcs(K)),
       fromJSONField: (field: any) => DynamicFields.fromJSONField(K, field),
       fetch: async (client: SuiClient, id: string) => DynamicFields.fetch(client, K, id),
+      new: (fields: DynamicFieldsFields<ToTypeArgument<K>>) => {
+        return new DynamicFields(extractType(K), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -86,14 +82,23 @@ export class DynamicFields<K extends TypeArgument> {
     return DynamicFields.reified
   }
 
-  static fromFields<K extends Reified<TypeArgument>>(
+  static get bcs() {
+    return <K extends BcsType<any>>(K: K) =>
+      bcs.struct(`DynamicFields<${K.name}>`, {
+        names: bcs.vector(K),
+      })
+  }
+
+  static fromFields<K extends Reified<TypeArgument, any>>(
     typeArg: K,
     fields: Record<string, any>
   ): DynamicFields<ToTypeArgument<K>> {
-    return DynamicFields.new(typeArg, decodeFromFields(reified.vector(typeArg), fields.names))
+    return DynamicFields.reified(typeArg).new({
+      names: decodeFromFields(reified.vector(typeArg), fields.names),
+    })
   }
 
-  static fromFieldsWithTypes<K extends Reified<TypeArgument>>(
+  static fromFieldsWithTypes<K extends Reified<TypeArgument, any>>(
     typeArg: K,
     item: FieldsWithTypes
   ): DynamicFields<ToTypeArgument<K>> {
@@ -102,13 +107,12 @@ export class DynamicFields<K extends TypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return DynamicFields.new(
-      typeArg,
-      decodeFromFieldsWithTypes(reified.vector(typeArg), item.fields.names)
-    )
+    return DynamicFields.reified(typeArg).new({
+      names: decodeFromFieldsWithTypes(reified.vector(typeArg), item.fields.names),
+    })
   }
 
-  static fromBcs<K extends Reified<TypeArgument>>(
+  static fromBcs<K extends Reified<TypeArgument, any>>(
     typeArg: K,
     data: Uint8Array
   ): DynamicFields<ToTypeArgument<K>> {
@@ -127,14 +131,16 @@ export class DynamicFields<K extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<K extends Reified<TypeArgument>>(
+  static fromJSONField<K extends Reified<TypeArgument, any>>(
     typeArg: K,
     field: any
   ): DynamicFields<ToTypeArgument<K>> {
-    return DynamicFields.new(typeArg, decodeFromJSONField(reified.vector(typeArg), field.names))
+    return DynamicFields.reified(typeArg).new({
+      names: decodeFromJSONField(reified.vector(typeArg), field.names),
+    })
   }
 
-  static fromJSON<K extends Reified<TypeArgument>>(
+  static fromJSON<K extends Reified<TypeArgument, any>>(
     typeArg: K,
     json: Record<string, any>
   ): DynamicFields<ToTypeArgument<K>> {
@@ -150,7 +156,7 @@ export class DynamicFields<K extends TypeArgument> {
     return DynamicFields.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<K extends Reified<TypeArgument>>(
+  static fromSuiParsedData<K extends Reified<TypeArgument, any>>(
     typeArg: K,
     content: SuiParsedData
   ): DynamicFields<ToTypeArgument<K>> {
@@ -163,7 +169,7 @@ export class DynamicFields<K extends TypeArgument> {
     return DynamicFields.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<K extends Reified<TypeArgument>>(
+  static async fetch<K extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArg: K,
     id: string
@@ -196,30 +202,19 @@ export class ID {
   static readonly $typeName = '0x2::object::ID'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::object::ID'
-
   readonly $typeName = ID.$typeName
 
-  static get bcs() {
-    return bcs.struct('ID', {
-      bytes: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
-      }),
-    })
-  }
+  readonly $fullTypeName: '0x2::object::ID'
 
   readonly bytes: ToField<'address'>
 
-  private constructor(bytes: ToField<'address'>) {
-    this.bytes = bytes
+  private constructor(fields: IDFields) {
+    this.$fullTypeName = ID.$typeName
+
+    this.bytes = fields.bytes
   }
 
-  static new(bytes: ToField<'address'>): ID {
-    return new ID(bytes)
-  }
-
-  static reified(): Reified<ID> {
+  static reified(): Reified<ID, IDFields> {
     return {
       typeName: ID.$typeName,
       fullTypeName: composeSuiType(ID.$typeName, ...[]) as '0x2::object::ID',
@@ -230,6 +225,9 @@ export class ID {
       bcs: ID.bcs,
       fromJSONField: (field: any) => ID.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => ID.fetch(client, id),
+      new: (fields: IDFields) => {
+        return new ID(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -238,8 +236,17 @@ export class ID {
     return ID.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('ID', {
+      bytes: bcs.bytes(32).transform({
+        input: (val: string) => fromHEX(val),
+        output: (val: Uint8Array) => toHEX(val),
+      }),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): ID {
-    return ID.new(decodeFromFields('address', fields.bytes))
+    return ID.reified().new({ bytes: decodeFromFields('address', fields.bytes) })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): ID {
@@ -247,7 +254,7 @@ export class ID {
       throw new Error('not a ID type')
     }
 
-    return ID.new(decodeFromFieldsWithTypes('address', item.fields.bytes))
+    return ID.reified().new({ bytes: decodeFromFieldsWithTypes('address', item.fields.bytes) })
   }
 
   static fromBcs(data: Uint8Array): ID {
@@ -265,7 +272,7 @@ export class ID {
   }
 
   static fromJSONField(field: any): ID {
-    return ID.new(decodeFromJSONField('address', field.bytes))
+    return ID.reified().new({ bytes: decodeFromJSONField('address', field.bytes) })
   }
 
   static fromJSON(json: Record<string, any>): ID {
@@ -316,9 +323,41 @@ export class Ownership {
   static readonly $typeName = '0x2::object::Ownership'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::object::Ownership'
-
   readonly $typeName = Ownership.$typeName
+
+  readonly $fullTypeName: '0x2::object::Ownership'
+
+  readonly owner: ToField<'address'>
+  readonly status: ToField<'u64'>
+
+  private constructor(fields: OwnershipFields) {
+    this.$fullTypeName = Ownership.$typeName
+
+    this.owner = fields.owner
+    this.status = fields.status
+  }
+
+  static reified(): Reified<Ownership, OwnershipFields> {
+    return {
+      typeName: Ownership.$typeName,
+      fullTypeName: composeSuiType(Ownership.$typeName, ...[]) as '0x2::object::Ownership',
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => Ownership.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Ownership.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => Ownership.fromBcs(data),
+      bcs: Ownership.bcs,
+      fromJSONField: (field: any) => Ownership.fromJSONField(field),
+      fetch: async (client: SuiClient, id: string) => Ownership.fetch(client, id),
+      new: (fields: OwnershipFields) => {
+        return new Ownership(fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return Ownership.reified()
+  }
 
   static get bcs() {
     return bcs.struct('Ownership', {
@@ -330,39 +369,8 @@ export class Ownership {
     })
   }
 
-  readonly owner: ToField<'address'>
-  readonly status: ToField<'u64'>
-
-  private constructor(fields: OwnershipFields) {
-    this.owner = fields.owner
-    this.status = fields.status
-  }
-
-  static new(fields: OwnershipFields): Ownership {
-    return new Ownership(fields)
-  }
-
-  static reified(): Reified<Ownership> {
-    return {
-      typeName: Ownership.$typeName,
-      fullTypeName: composeSuiType(Ownership.$typeName, ...[]) as '0x2::object::Ownership',
-      typeArgs: [],
-      fromFields: (fields: Record<string, any>) => Ownership.fromFields(fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => Ownership.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Ownership.fromBcs(data),
-      bcs: Ownership.bcs,
-      fromJSONField: (field: any) => Ownership.fromJSONField(field),
-      fetch: async (client: SuiClient, id: string) => Ownership.fetch(client, id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return Ownership.reified()
-  }
-
   static fromFields(fields: Record<string, any>): Ownership {
-    return Ownership.new({
+    return Ownership.reified().new({
       owner: decodeFromFields('address', fields.owner),
       status: decodeFromFields('u64', fields.status),
     })
@@ -373,7 +381,7 @@ export class Ownership {
       throw new Error('not a Ownership type')
     }
 
-    return Ownership.new({
+    return Ownership.reified().new({
       owner: decodeFromFieldsWithTypes('address', item.fields.owner),
       status: decodeFromFieldsWithTypes('u64', item.fields.status),
     })
@@ -395,7 +403,7 @@ export class Ownership {
   }
 
   static fromJSONField(field: any): Ownership {
-    return Ownership.new({
+    return Ownership.reified().new({
       owner: decodeFromJSONField('address', field.owner),
       status: decodeFromJSONField('u64', field.status),
     })
@@ -448,27 +456,19 @@ export class UID {
   static readonly $typeName = '0x2::object::UID'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::object::UID'
-
   readonly $typeName = UID.$typeName
 
-  static get bcs() {
-    return bcs.struct('UID', {
-      id: ID.bcs,
-    })
-  }
+  readonly $fullTypeName: '0x2::object::UID'
 
   readonly id: ToField<ID>
 
-  private constructor(id: ToField<ID>) {
-    this.id = id
+  private constructor(fields: UIDFields) {
+    this.$fullTypeName = UID.$typeName
+
+    this.id = fields.id
   }
 
-  static new(id: ToField<ID>): UID {
-    return new UID(id)
-  }
-
-  static reified(): Reified<UID> {
+  static reified(): Reified<UID, UIDFields> {
     return {
       typeName: UID.$typeName,
       fullTypeName: composeSuiType(UID.$typeName, ...[]) as '0x2::object::UID',
@@ -479,6 +479,9 @@ export class UID {
       bcs: UID.bcs,
       fromJSONField: (field: any) => UID.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => UID.fetch(client, id),
+      new: (fields: UIDFields) => {
+        return new UID(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -487,8 +490,14 @@ export class UID {
     return UID.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('UID', {
+      id: ID.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): UID {
-    return UID.new(decodeFromFields(ID.reified(), fields.id))
+    return UID.reified().new({ id: decodeFromFields(ID.reified(), fields.id) })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): UID {
@@ -496,7 +505,7 @@ export class UID {
       throw new Error('not a UID type')
     }
 
-    return UID.new(decodeFromFieldsWithTypes(ID.reified(), item.fields.id))
+    return UID.reified().new({ id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id) })
   }
 
   static fromBcs(data: Uint8Array): UID {
@@ -514,7 +523,7 @@ export class UID {
   }
 
   static fromJSONField(field: any): UID {
-    return UID.new(decodeFromJSONField(ID.reified(), field.id))
+    return UID.reified().new({ id: decodeFromJSONField(ID.reified(), field.id) })
   }
 
   static fromJSON(json: Record<string, any>): UID {

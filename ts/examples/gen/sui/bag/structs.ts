@@ -28,30 +28,21 @@ export class Bag {
   static readonly $typeName = '0x2::bag::Bag'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::bag::Bag'
-
   readonly $typeName = Bag.$typeName
 
-  static get bcs() {
-    return bcs.struct('Bag', {
-      id: UID.bcs,
-      size: bcs.u64(),
-    })
-  }
+  readonly $fullTypeName: '0x2::bag::Bag'
 
   readonly id: ToField<UID>
   readonly size: ToField<'u64'>
 
   private constructor(fields: BagFields) {
+    this.$fullTypeName = Bag.$typeName
+
     this.id = fields.id
     this.size = fields.size
   }
 
-  static new(fields: BagFields): Bag {
-    return new Bag(fields)
-  }
-
-  static reified(): Reified<Bag> {
+  static reified(): Reified<Bag, BagFields> {
     return {
       typeName: Bag.$typeName,
       fullTypeName: composeSuiType(Bag.$typeName, ...[]) as '0x2::bag::Bag',
@@ -62,6 +53,9 @@ export class Bag {
       bcs: Bag.bcs,
       fromJSONField: (field: any) => Bag.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => Bag.fetch(client, id),
+      new: (fields: BagFields) => {
+        return new Bag(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -70,8 +64,15 @@ export class Bag {
     return Bag.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('Bag', {
+      id: UID.bcs,
+      size: bcs.u64(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): Bag {
-    return Bag.new({
+    return Bag.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       size: decodeFromFields('u64', fields.size),
     })
@@ -82,7 +83,7 @@ export class Bag {
       throw new Error('not a Bag type')
     }
 
-    return Bag.new({
+    return Bag.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       size: decodeFromFieldsWithTypes('u64', item.fields.size),
     })
@@ -104,7 +105,7 @@ export class Bag {
   }
 
   static fromJSONField(field: any): Bag {
-    return Bag.new({
+    return Bag.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       size: decodeFromJSONField('u64', field.size),
     })

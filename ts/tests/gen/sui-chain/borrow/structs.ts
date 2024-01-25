@@ -37,20 +37,9 @@ export class Referent<T0 extends TypeArgument> {
   static readonly $typeName = '0x2::borrow::Referent'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::borrow::Referent<${ToTypeStr<T0>}>`
-
   readonly $typeName = Referent.$typeName
 
-  static get bcs() {
-    return <T0 extends BcsType<any>>(T0: T0) =>
-      bcs.struct(`Referent<${T0.name}>`, {
-        id: bcs.bytes(32).transform({
-          input: (val: string) => fromHEX(val),
-          output: (val: Uint8Array) => toHEX(val),
-        }),
-        value: Option.bcs(T0),
-      })
-  }
+  readonly $fullTypeName: `0x2::borrow::Referent<${string}>`
 
   readonly $typeArg: string
 
@@ -58,20 +47,20 @@ export class Referent<T0 extends TypeArgument> {
   readonly value: ToField<Option<T0>>
 
   private constructor(typeArg: string, fields: ReferentFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      Referent.$typeName,
+      typeArg
+    ) as `0x2::borrow::Referent<${ToTypeStr<T0>}>`
+
     this.$typeArg = typeArg
 
     this.id = fields.id
     this.value = fields.value
   }
 
-  static new<T0 extends Reified<TypeArgument>>(
-    typeArg: T0,
-    fields: ReferentFields<ToTypeArgument<T0>>
-  ): Referent<ToTypeArgument<T0>> {
-    return new Referent(extractType(typeArg), fields)
-  }
-
-  static reified<T0 extends Reified<TypeArgument>>(T0: T0): Reified<Referent<ToTypeArgument<T0>>> {
+  static reified<T0 extends Reified<TypeArgument, any>>(
+    T0: T0
+  ): Reified<Referent<ToTypeArgument<T0>>, ReferentFields<ToTypeArgument<T0>>> {
     return {
       typeName: Referent.$typeName,
       fullTypeName: composeSuiType(
@@ -85,6 +74,9 @@ export class Referent<T0 extends TypeArgument> {
       bcs: Referent.bcs(toBcs(T0)),
       fromJSONField: (field: any) => Referent.fromJSONField(T0, field),
       fetch: async (client: SuiClient, id: string) => Referent.fetch(client, T0, id),
+      new: (fields: ReferentFields<ToTypeArgument<T0>>) => {
+        return new Referent(extractType(T0), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -93,17 +85,28 @@ export class Referent<T0 extends TypeArgument> {
     return Referent.reified
   }
 
-  static fromFields<T0 extends Reified<TypeArgument>>(
+  static get bcs() {
+    return <T0 extends BcsType<any>>(T0: T0) =>
+      bcs.struct(`Referent<${T0.name}>`, {
+        id: bcs.bytes(32).transform({
+          input: (val: string) => fromHEX(val),
+          output: (val: Uint8Array) => toHEX(val),
+        }),
+        value: Option.bcs(T0),
+      })
+  }
+
+  static fromFields<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     fields: Record<string, any>
   ): Referent<ToTypeArgument<T0>> {
-    return Referent.new(typeArg, {
+    return Referent.reified(typeArg).new({
       id: decodeFromFields('address', fields.id),
       value: decodeFromFields(Option.reified(typeArg), fields.value),
     })
   }
 
-  static fromFieldsWithTypes<T0 extends Reified<TypeArgument>>(
+  static fromFieldsWithTypes<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     item: FieldsWithTypes
   ): Referent<ToTypeArgument<T0>> {
@@ -112,13 +115,13 @@ export class Referent<T0 extends TypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return Referent.new(typeArg, {
+    return Referent.reified(typeArg).new({
       id: decodeFromFieldsWithTypes('address', item.fields.id),
       value: decodeFromFieldsWithTypes(Option.reified(typeArg), item.fields.value),
     })
   }
 
-  static fromBcs<T0 extends Reified<TypeArgument>>(
+  static fromBcs<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     data: Uint8Array
   ): Referent<ToTypeArgument<T0>> {
@@ -138,17 +141,17 @@ export class Referent<T0 extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends Reified<TypeArgument>>(
+  static fromJSONField<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     field: any
   ): Referent<ToTypeArgument<T0>> {
-    return Referent.new(typeArg, {
+    return Referent.reified(typeArg).new({
       id: decodeFromJSONField('address', field.id),
       value: decodeFromJSONField(Option.reified(typeArg), field.value),
     })
   }
 
-  static fromJSON<T0 extends Reified<TypeArgument>>(
+  static fromJSON<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     json: Record<string, any>
   ): Referent<ToTypeArgument<T0>> {
@@ -164,7 +167,7 @@ export class Referent<T0 extends TypeArgument> {
     return Referent.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T0 extends Reified<TypeArgument>>(
+  static fromSuiParsedData<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     content: SuiParsedData
   ): Referent<ToTypeArgument<T0>> {
@@ -177,7 +180,7 @@ export class Referent<T0 extends TypeArgument> {
     return Referent.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T0 extends Reified<TypeArgument>>(
+  static async fetch<T0 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArg: T0,
     id: string
@@ -211,9 +214,41 @@ export class Borrow {
   static readonly $typeName = '0x2::borrow::Borrow'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::borrow::Borrow'
-
   readonly $typeName = Borrow.$typeName
+
+  readonly $fullTypeName: '0x2::borrow::Borrow'
+
+  readonly ref: ToField<'address'>
+  readonly obj: ToField<ID>
+
+  private constructor(fields: BorrowFields) {
+    this.$fullTypeName = Borrow.$typeName
+
+    this.ref = fields.ref
+    this.obj = fields.obj
+  }
+
+  static reified(): Reified<Borrow, BorrowFields> {
+    return {
+      typeName: Borrow.$typeName,
+      fullTypeName: composeSuiType(Borrow.$typeName, ...[]) as '0x2::borrow::Borrow',
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => Borrow.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Borrow.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => Borrow.fromBcs(data),
+      bcs: Borrow.bcs,
+      fromJSONField: (field: any) => Borrow.fromJSONField(field),
+      fetch: async (client: SuiClient, id: string) => Borrow.fetch(client, id),
+      new: (fields: BorrowFields) => {
+        return new Borrow(fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return Borrow.reified()
+  }
 
   static get bcs() {
     return bcs.struct('Borrow', {
@@ -225,39 +260,8 @@ export class Borrow {
     })
   }
 
-  readonly ref: ToField<'address'>
-  readonly obj: ToField<ID>
-
-  private constructor(fields: BorrowFields) {
-    this.ref = fields.ref
-    this.obj = fields.obj
-  }
-
-  static new(fields: BorrowFields): Borrow {
-    return new Borrow(fields)
-  }
-
-  static reified(): Reified<Borrow> {
-    return {
-      typeName: Borrow.$typeName,
-      fullTypeName: composeSuiType(Borrow.$typeName, ...[]) as '0x2::borrow::Borrow',
-      typeArgs: [],
-      fromFields: (fields: Record<string, any>) => Borrow.fromFields(fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => Borrow.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Borrow.fromBcs(data),
-      bcs: Borrow.bcs,
-      fromJSONField: (field: any) => Borrow.fromJSONField(field),
-      fetch: async (client: SuiClient, id: string) => Borrow.fetch(client, id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return Borrow.reified()
-  }
-
   static fromFields(fields: Record<string, any>): Borrow {
-    return Borrow.new({
+    return Borrow.reified().new({
       ref: decodeFromFields('address', fields.ref),
       obj: decodeFromFields(ID.reified(), fields.obj),
     })
@@ -268,7 +272,7 @@ export class Borrow {
       throw new Error('not a Borrow type')
     }
 
-    return Borrow.new({
+    return Borrow.reified().new({
       ref: decodeFromFieldsWithTypes('address', item.fields.ref),
       obj: decodeFromFieldsWithTypes(ID.reified(), item.fields.obj),
     })
@@ -290,7 +294,7 @@ export class Borrow {
   }
 
   static fromJSONField(field: any): Borrow {
-    return Borrow.new({
+    return Borrow.reified().new({
       ref: decodeFromJSONField('address', field.ref),
       obj: decodeFromJSONField(ID.reified(), field.obj),
     })

@@ -30,36 +30,23 @@ export class VerifiedIssuer {
   static readonly $typeName = '0x2::zklogin_verified_issuer::VerifiedIssuer'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::zklogin_verified_issuer::VerifiedIssuer'
-
   readonly $typeName = VerifiedIssuer.$typeName
 
-  static get bcs() {
-    return bcs.struct('VerifiedIssuer', {
-      id: UID.bcs,
-      owner: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
-      }),
-      issuer: String.bcs,
-    })
-  }
+  readonly $fullTypeName: '0x2::zklogin_verified_issuer::VerifiedIssuer'
 
   readonly id: ToField<UID>
   readonly owner: ToField<'address'>
   readonly issuer: ToField<String>
 
   private constructor(fields: VerifiedIssuerFields) {
+    this.$fullTypeName = VerifiedIssuer.$typeName
+
     this.id = fields.id
     this.owner = fields.owner
     this.issuer = fields.issuer
   }
 
-  static new(fields: VerifiedIssuerFields): VerifiedIssuer {
-    return new VerifiedIssuer(fields)
-  }
-
-  static reified(): Reified<VerifiedIssuer> {
+  static reified(): Reified<VerifiedIssuer, VerifiedIssuerFields> {
     return {
       typeName: VerifiedIssuer.$typeName,
       fullTypeName: composeSuiType(
@@ -73,6 +60,9 @@ export class VerifiedIssuer {
       bcs: VerifiedIssuer.bcs,
       fromJSONField: (field: any) => VerifiedIssuer.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => VerifiedIssuer.fetch(client, id),
+      new: (fields: VerifiedIssuerFields) => {
+        return new VerifiedIssuer(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -81,8 +71,19 @@ export class VerifiedIssuer {
     return VerifiedIssuer.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('VerifiedIssuer', {
+      id: UID.bcs,
+      owner: bcs.bytes(32).transform({
+        input: (val: string) => fromHEX(val),
+        output: (val: Uint8Array) => toHEX(val),
+      }),
+      issuer: String.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): VerifiedIssuer {
-    return VerifiedIssuer.new({
+    return VerifiedIssuer.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       owner: decodeFromFields('address', fields.owner),
       issuer: decodeFromFields(String.reified(), fields.issuer),
@@ -94,7 +95,7 @@ export class VerifiedIssuer {
       throw new Error('not a VerifiedIssuer type')
     }
 
-    return VerifiedIssuer.new({
+    return VerifiedIssuer.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       owner: decodeFromFieldsWithTypes('address', item.fields.owner),
       issuer: decodeFromFieldsWithTypes(String.reified(), item.fields.issuer),
@@ -118,7 +119,7 @@ export class VerifiedIssuer {
   }
 
   static fromJSONField(field: any): VerifiedIssuer {
-    return VerifiedIssuer.new({
+    return VerifiedIssuer.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       owner: decodeFromJSONField('address', field.owner),
       issuer: decodeFromJSONField(String.reified(), field.issuer),

@@ -1,12 +1,12 @@
 import * as reified from '../../_framework/reified'
 import { TypeName } from '../../_dependencies/source/0x1/type-name/structs'
 import {
+  PhantomReified,
+  PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
-  ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -42,28 +42,19 @@ export class AdminCap {
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName =
-    null as unknown as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
-
   readonly $typeName = AdminCap.$typeName
 
-  static get bcs() {
-    return bcs.struct('AdminCap', {
-      id: UID.bcs,
-    })
-  }
+  readonly $fullTypeName: '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
 
   readonly id: ToField<UID>
 
-  private constructor(id: ToField<UID>) {
-    this.id = id
+  private constructor(fields: AdminCapFields) {
+    this.$fullTypeName = AdminCap.$typeName
+
+    this.id = fields.id
   }
 
-  static new(id: ToField<UID>): AdminCap {
-    return new AdminCap(id)
-  }
-
-  static reified(): Reified<AdminCap> {
+  static reified(): Reified<AdminCap, AdminCapFields> {
     return {
       typeName: AdminCap.$typeName,
       fullTypeName: composeSuiType(
@@ -77,6 +68,9 @@ export class AdminCap {
       bcs: AdminCap.bcs,
       fromJSONField: (field: any) => AdminCap.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => AdminCap.fetch(client, id),
+      new: (fields: AdminCapFields) => {
+        return new AdminCap(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -85,8 +79,14 @@ export class AdminCap {
     return AdminCap.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('AdminCap', {
+      id: UID.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): AdminCap {
-    return AdminCap.new(decodeFromFields(UID.reified(), fields.id))
+    return AdminCap.reified().new({ id: decodeFromFields(UID.reified(), fields.id) })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): AdminCap {
@@ -94,7 +94,7 @@ export class AdminCap {
       throw new Error('not a AdminCap type')
     }
 
-    return AdminCap.new(decodeFromFieldsWithTypes(UID.reified(), item.fields.id))
+    return AdminCap.reified().new({ id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id) })
   }
 
   static fromBcs(data: Uint8Array): AdminCap {
@@ -112,7 +112,7 @@ export class AdminCap {
   }
 
   static fromJSONField(field: any): AdminCap {
-    return AdminCap.new(decodeFromJSONField(UID.reified(), field.id))
+    return AdminCap.reified().new({ id: decodeFromJSONField(UID.reified(), field.id) })
   }
 
   static fromJSON(json: Record<string, any>): AdminCap {
@@ -165,46 +165,43 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP'
   static readonly $numTypeParams = 2
 
-  readonly $fullTypeName =
-    null as unknown as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${ToTypeStr<A>}, ${ToTypeStr<B>}>`
-
   readonly $typeName = LP.$typeName
 
-  static get bcs() {
-    return bcs.struct('LP', {
-      dummy_field: bcs.bool(),
-    })
-  }
+  readonly $fullTypeName: `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${string}, ${string}>`
 
   readonly $typeArgs: [string, string]
 
   readonly dummyField: ToField<'bool'>
 
-  private constructor(typeArgs: [string, string], dummyField: ToField<'bool'>) {
+  private constructor(typeArgs: [string, string], fields: LPFields<A, B>) {
+    this.$fullTypeName = composeSuiType(
+      LP.$typeName,
+      ...typeArgs
+    ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
+
     this.$typeArgs = typeArgs
 
-    this.dummyField = dummyField
+    this.dummyField = fields.dummyField
   }
 
-  static new<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
-    typeArgs: [A, B],
-    dummyField: ToField<'bool'>
-  ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
-    return new LP(typeArgs.map(extractType) as [string, string], dummyField)
-  }
-
-  static reified<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+  static reified<
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
+  >(
     A: A,
     B: B
-  ): Reified<LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>> {
+  ): Reified<
+    LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>,
+    LPFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>
+  > {
     return {
       typeName: LP.$typeName,
       fullTypeName: composeSuiType(
         LP.$typeName,
         ...[extractType(A), extractType(B)]
-      ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${ToTypeStr<
+      ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${PhantomToTypeStr<
         ToPhantomTypeArgument<A>
-      >}, ${ToTypeStr<ToPhantomTypeArgument<B>>}>`,
+      >}, ${PhantomToTypeStr<ToPhantomTypeArgument<B>>}>`,
       typeArgs: [A, B],
       fromFields: (fields: Record<string, any>) => LP.fromFields([A, B], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => LP.fromFieldsWithTypes([A, B], item),
@@ -212,6 +209,9 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
       bcs: LP.bcs,
       fromJSONField: (field: any) => LP.fromJSONField([A, B], field),
       fetch: async (client: SuiClient, id: string) => LP.fetch(client, [A, B], id),
+      new: (fields: LPFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>) => {
+        return new LP([extractType(A), extractType(B)], fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -220,16 +220,27 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
     return LP.reified
   }
 
-  static fromFields<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+  static get bcs() {
+    return bcs.struct('LP', {
+      dummy_field: bcs.bool(),
+    })
+  }
+
+  static fromFields<
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
+  >(
     typeArgs: [A, B],
     fields: Record<string, any>
   ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
-    return LP.new(typeArgs, decodeFromFields('bool', fields.dummy_field))
+    return LP.reified(typeArgs[0], typeArgs[1]).new({
+      dummyField: decodeFromFields('bool', fields.dummy_field),
+    })
   }
 
   static fromFieldsWithTypes<
-    A extends ReifiedPhantomTypeArgument,
-    B extends ReifiedPhantomTypeArgument,
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [A, B],
     item: FieldsWithTypes
@@ -239,13 +250,15 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, typeArgs)
 
-    return LP.new(typeArgs, decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
+    return LP.reified(typeArgs[0], typeArgs[1]).new({
+      dummyField: decodeFromFieldsWithTypes('bool', item.fields.dummy_field),
+    })
   }
 
-  static fromBcs<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
-    typeArgs: [A, B],
-    data: Uint8Array
-  ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
+  static fromBcs<
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
+  >(typeArgs: [A, B], data: Uint8Array): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return LP.fromFields(typeArgs, LP.bcs.parse(data))
   }
 
@@ -259,14 +272,19 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
-  static fromJSONField<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
-    typeArgs: [A, B],
-    field: any
-  ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
-    return LP.new(typeArgs, decodeFromJSONField('bool', field.dummyField))
+  static fromJSONField<
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
+  >(typeArgs: [A, B], field: any): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
+    return LP.reified(typeArgs[0], typeArgs[1]).new({
+      dummyField: decodeFromJSONField('bool', field.dummyField),
+    })
   }
 
-  static fromJSON<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+  static fromJSON<
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
+  >(
     typeArgs: [A, B],
     json: Record<string, any>
   ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
@@ -283,8 +301,8 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
   }
 
   static fromSuiParsedData<
-    A extends ReifiedPhantomTypeArgument,
-    B extends ReifiedPhantomTypeArgument,
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [A, B],
     content: SuiParsedData
@@ -298,7 +316,10 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
     return LP.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+  static async fetch<
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
+  >(
     client: SuiClient,
     typeArgs: [A, B],
     id: string
@@ -340,10 +361,72 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool'
   static readonly $numTypeParams = 2
 
-  readonly $fullTypeName =
-    null as unknown as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${ToTypeStr<A>}, ${ToTypeStr<B>}>`
-
   readonly $typeName = Pool.$typeName
+
+  readonly $fullTypeName: `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${string}, ${string}>`
+
+  readonly $typeArgs: [string, string]
+
+  readonly id: ToField<UID>
+  readonly balanceA: ToField<Balance<A>>
+  readonly balanceB: ToField<Balance<B>>
+  readonly lpSupply: ToField<Supply<ToPhantom<LP<A, B>>>>
+  readonly lpFeeBps: ToField<'u64'>
+  readonly adminFeePct: ToField<'u64'>
+  readonly adminFeeBalance: ToField<Balance<ToPhantom<LP<A, B>>>>
+
+  private constructor(typeArgs: [string, string], fields: PoolFields<A, B>) {
+    this.$fullTypeName = composeSuiType(
+      Pool.$typeName,
+      ...typeArgs
+    ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
+
+    this.$typeArgs = typeArgs
+
+    this.id = fields.id
+    this.balanceA = fields.balanceA
+    this.balanceB = fields.balanceB
+    this.lpSupply = fields.lpSupply
+    this.lpFeeBps = fields.lpFeeBps
+    this.adminFeePct = fields.adminFeePct
+    this.adminFeeBalance = fields.adminFeeBalance
+  }
+
+  static reified<
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
+  >(
+    A: A,
+    B: B
+  ): Reified<
+    Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>,
+    PoolFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>
+  > {
+    return {
+      typeName: Pool.$typeName,
+      fullTypeName: composeSuiType(
+        Pool.$typeName,
+        ...[extractType(A), extractType(B)]
+      ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${PhantomToTypeStr<
+        ToPhantomTypeArgument<A>
+      >}, ${PhantomToTypeStr<ToPhantomTypeArgument<B>>}>`,
+      typeArgs: [A, B],
+      fromFields: (fields: Record<string, any>) => Pool.fromFields([A, B], fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Pool.fromFieldsWithTypes([A, B], item),
+      fromBcs: (data: Uint8Array) => Pool.fromBcs([A, B], data),
+      bcs: Pool.bcs,
+      fromJSONField: (field: any) => Pool.fromJSONField([A, B], field),
+      fetch: async (client: SuiClient, id: string) => Pool.fetch(client, [A, B], id),
+      new: (fields: PoolFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>) => {
+        return new Pool([extractType(A), extractType(B)], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return Pool.reified
+  }
 
   static get bcs() {
     return bcs.struct('Pool', {
@@ -357,86 +440,33 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
     })
   }
 
-  readonly $typeArgs: [string, string]
-
-  readonly id: ToField<UID>
-  readonly balanceA: ToField<Balance<A>>
-  readonly balanceB: ToField<Balance<B>>
-  readonly lpSupply: ToField<Supply<ToPhantom<LP<A, B>>>>
-  readonly lpFeeBps: ToField<'u64'>
-  readonly adminFeePct: ToField<'u64'>
-  readonly adminFeeBalance: ToField<Balance<ToPhantom<LP<A, B>>>>
-
-  private constructor(typeArgs: [string, string], fields: PoolFields<A, B>) {
-    this.$typeArgs = typeArgs
-
-    this.id = fields.id
-    this.balanceA = fields.balanceA
-    this.balanceB = fields.balanceB
-    this.lpSupply = fields.lpSupply
-    this.lpFeeBps = fields.lpFeeBps
-    this.adminFeePct = fields.adminFeePct
-    this.adminFeeBalance = fields.adminFeeBalance
-  }
-
-  static new<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
-    typeArgs: [A, B],
-    fields: PoolFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>
-  ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
-    return new Pool(typeArgs.map(extractType) as [string, string], fields)
-  }
-
-  static reified<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
-    A: A,
-    B: B
-  ): Reified<Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>> {
-    return {
-      typeName: Pool.$typeName,
-      fullTypeName: composeSuiType(
-        Pool.$typeName,
-        ...[extractType(A), extractType(B)]
-      ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${ToTypeStr<
-        ToPhantomTypeArgument<A>
-      >}, ${ToTypeStr<ToPhantomTypeArgument<B>>}>`,
-      typeArgs: [A, B],
-      fromFields: (fields: Record<string, any>) => Pool.fromFields([A, B], fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => Pool.fromFieldsWithTypes([A, B], item),
-      fromBcs: (data: Uint8Array) => Pool.fromBcs([A, B], data),
-      bcs: Pool.bcs,
-      fromJSONField: (field: any) => Pool.fromJSONField([A, B], field),
-      fetch: async (client: SuiClient, id: string) => Pool.fetch(client, [A, B], id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return Pool.reified
-  }
-
-  static fromFields<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+  static fromFields<
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
+  >(
     typeArgs: [A, B],
     fields: Record<string, any>
   ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
-    return Pool.new(typeArgs, {
+    return Pool.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromFields(UID.reified(), fields.id),
       balanceA: decodeFromFields(Balance.reified(typeArgs[0]), fields.balance_a),
       balanceB: decodeFromFields(Balance.reified(typeArgs[1]), fields.balance_b),
       lpSupply: decodeFromFields(
-        Supply.reified(LP.reified(typeArgs[0], typeArgs[1])),
+        Supply.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
         fields.lp_supply
       ),
       lpFeeBps: decodeFromFields('u64', fields.lp_fee_bps),
       adminFeePct: decodeFromFields('u64', fields.admin_fee_pct),
       adminFeeBalance: decodeFromFields(
-        Balance.reified(LP.reified(typeArgs[0], typeArgs[1])),
+        Balance.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
         fields.admin_fee_balance
       ),
     })
   }
 
   static fromFieldsWithTypes<
-    A extends ReifiedPhantomTypeArgument,
-    B extends ReifiedPhantomTypeArgument,
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [A, B],
     item: FieldsWithTypes
@@ -446,27 +476,27 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
     }
     assertFieldsWithTypesArgsMatch(item, typeArgs)
 
-    return Pool.new(typeArgs, {
+    return Pool.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       balanceA: decodeFromFieldsWithTypes(Balance.reified(typeArgs[0]), item.fields.balance_a),
       balanceB: decodeFromFieldsWithTypes(Balance.reified(typeArgs[1]), item.fields.balance_b),
       lpSupply: decodeFromFieldsWithTypes(
-        Supply.reified(LP.reified(typeArgs[0], typeArgs[1])),
+        Supply.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
         item.fields.lp_supply
       ),
       lpFeeBps: decodeFromFieldsWithTypes('u64', item.fields.lp_fee_bps),
       adminFeePct: decodeFromFieldsWithTypes('u64', item.fields.admin_fee_pct),
       adminFeeBalance: decodeFromFieldsWithTypes(
-        Balance.reified(LP.reified(typeArgs[0], typeArgs[1])),
+        Balance.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
         item.fields.admin_fee_balance
       ),
     })
   }
 
-  static fromBcs<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
-    typeArgs: [A, B],
-    data: Uint8Array
-  ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
+  static fromBcs<
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
+  >(typeArgs: [A, B], data: Uint8Array): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return Pool.fromFields(typeArgs, Pool.bcs.parse(data))
   }
 
@@ -486,28 +516,31 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
-  static fromJSONField<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
-    typeArgs: [A, B],
-    field: any
-  ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
-    return Pool.new(typeArgs, {
+  static fromJSONField<
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
+  >(typeArgs: [A, B], field: any): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
+    return Pool.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       balanceA: decodeFromJSONField(Balance.reified(typeArgs[0]), field.balanceA),
       balanceB: decodeFromJSONField(Balance.reified(typeArgs[1]), field.balanceB),
       lpSupply: decodeFromJSONField(
-        Supply.reified(LP.reified(typeArgs[0], typeArgs[1])),
+        Supply.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
         field.lpSupply
       ),
       lpFeeBps: decodeFromJSONField('u64', field.lpFeeBps),
       adminFeePct: decodeFromJSONField('u64', field.adminFeePct),
       adminFeeBalance: decodeFromJSONField(
-        Balance.reified(LP.reified(typeArgs[0], typeArgs[1])),
+        Balance.reified(reified.phantom(LP.reified(typeArgs[0], typeArgs[1]))),
         field.adminFeeBalance
       ),
     })
   }
 
-  static fromJSON<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+  static fromJSON<
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
+  >(
     typeArgs: [A, B],
     json: Record<string, any>
   ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
@@ -524,8 +557,8 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
   }
 
   static fromSuiParsedData<
-    A extends ReifiedPhantomTypeArgument,
-    B extends ReifiedPhantomTypeArgument,
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [A, B],
     content: SuiParsedData
@@ -539,7 +572,10 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
     return Pool.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch<A extends ReifiedPhantomTypeArgument, B extends ReifiedPhantomTypeArgument>(
+  static async fetch<
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
+  >(
     client: SuiClient,
     typeArgs: [A, B],
     id: string
@@ -576,28 +612,19 @@ export class PoolCreationEvent {
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName =
-    null as unknown as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
-
   readonly $typeName = PoolCreationEvent.$typeName
 
-  static get bcs() {
-    return bcs.struct('PoolCreationEvent', {
-      pool_id: ID.bcs,
-    })
-  }
+  readonly $fullTypeName: '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
 
   readonly poolId: ToField<ID>
 
-  private constructor(poolId: ToField<ID>) {
-    this.poolId = poolId
+  private constructor(fields: PoolCreationEventFields) {
+    this.$fullTypeName = PoolCreationEvent.$typeName
+
+    this.poolId = fields.poolId
   }
 
-  static new(poolId: ToField<ID>): PoolCreationEvent {
-    return new PoolCreationEvent(poolId)
-  }
-
-  static reified(): Reified<PoolCreationEvent> {
+  static reified(): Reified<PoolCreationEvent, PoolCreationEventFields> {
     return {
       typeName: PoolCreationEvent.$typeName,
       fullTypeName: composeSuiType(
@@ -611,6 +638,9 @@ export class PoolCreationEvent {
       bcs: PoolCreationEvent.bcs,
       fromJSONField: (field: any) => PoolCreationEvent.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => PoolCreationEvent.fetch(client, id),
+      new: (fields: PoolCreationEventFields) => {
+        return new PoolCreationEvent(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -619,8 +649,16 @@ export class PoolCreationEvent {
     return PoolCreationEvent.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('PoolCreationEvent', {
+      pool_id: ID.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): PoolCreationEvent {
-    return PoolCreationEvent.new(decodeFromFields(ID.reified(), fields.pool_id))
+    return PoolCreationEvent.reified().new({
+      poolId: decodeFromFields(ID.reified(), fields.pool_id),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): PoolCreationEvent {
@@ -628,7 +666,9 @@ export class PoolCreationEvent {
       throw new Error('not a PoolCreationEvent type')
     }
 
-    return PoolCreationEvent.new(decodeFromFieldsWithTypes(ID.reified(), item.fields.pool_id))
+    return PoolCreationEvent.reified().new({
+      poolId: decodeFromFieldsWithTypes(ID.reified(), item.fields.pool_id),
+    })
   }
 
   static fromBcs(data: Uint8Array): PoolCreationEvent {
@@ -646,7 +686,9 @@ export class PoolCreationEvent {
   }
 
   static fromJSONField(field: any): PoolCreationEvent {
-    return PoolCreationEvent.new(decodeFromJSONField(ID.reified(), field.poolId))
+    return PoolCreationEvent.reified().new({
+      poolId: decodeFromJSONField(ID.reified(), field.poolId),
+    })
   }
 
   static fromJSON(json: Record<string, any>): PoolCreationEvent {
@@ -704,31 +746,21 @@ export class PoolRegistry {
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName =
-    null as unknown as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
-
   readonly $typeName = PoolRegistry.$typeName
 
-  static get bcs() {
-    return bcs.struct('PoolRegistry', {
-      id: UID.bcs,
-      table: Table.bcs,
-    })
-  }
+  readonly $fullTypeName: '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
 
   readonly id: ToField<UID>
   readonly table: ToField<Table<ToPhantom<PoolRegistryItem>, 'bool'>>
 
   private constructor(fields: PoolRegistryFields) {
+    this.$fullTypeName = PoolRegistry.$typeName
+
     this.id = fields.id
     this.table = fields.table
   }
 
-  static new(fields: PoolRegistryFields): PoolRegistry {
-    return new PoolRegistry(fields)
-  }
-
-  static reified(): Reified<PoolRegistry> {
+  static reified(): Reified<PoolRegistry, PoolRegistryFields> {
     return {
       typeName: PoolRegistry.$typeName,
       fullTypeName: composeSuiType(
@@ -742,6 +774,9 @@ export class PoolRegistry {
       bcs: PoolRegistry.bcs,
       fromJSONField: (field: any) => PoolRegistry.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => PoolRegistry.fetch(client, id),
+      new: (fields: PoolRegistryFields) => {
+        return new PoolRegistry(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -750,11 +785,18 @@ export class PoolRegistry {
     return PoolRegistry.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('PoolRegistry', {
+      id: UID.bcs,
+      table: Table.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): PoolRegistry {
-    return PoolRegistry.new({
+    return PoolRegistry.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       table: decodeFromFields(
-        Table.reified(PoolRegistryItem.reified(), reified.phantom('bool')),
+        Table.reified(reified.phantom(PoolRegistryItem.reified()), reified.phantom('bool')),
         fields.table
       ),
     })
@@ -765,10 +807,10 @@ export class PoolRegistry {
       throw new Error('not a PoolRegistry type')
     }
 
-    return PoolRegistry.new({
+    return PoolRegistry.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       table: decodeFromFieldsWithTypes(
-        Table.reified(PoolRegistryItem.reified(), reified.phantom('bool')),
+        Table.reified(reified.phantom(PoolRegistryItem.reified()), reified.phantom('bool')),
         item.fields.table
       ),
     })
@@ -790,10 +832,10 @@ export class PoolRegistry {
   }
 
   static fromJSONField(field: any): PoolRegistry {
-    return PoolRegistry.new({
+    return PoolRegistry.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       table: decodeFromJSONField(
-        Table.reified(PoolRegistryItem.reified(), reified.phantom('bool')),
+        Table.reified(reified.phantom(PoolRegistryItem.reified()), reified.phantom('bool')),
         field.table
       ),
     })
@@ -851,31 +893,21 @@ export class PoolRegistryItem {
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName =
-    null as unknown as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
-
   readonly $typeName = PoolRegistryItem.$typeName
 
-  static get bcs() {
-    return bcs.struct('PoolRegistryItem', {
-      a: TypeName.bcs,
-      b: TypeName.bcs,
-    })
-  }
+  readonly $fullTypeName: '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
 
   readonly a: ToField<TypeName>
   readonly b: ToField<TypeName>
 
   private constructor(fields: PoolRegistryItemFields) {
+    this.$fullTypeName = PoolRegistryItem.$typeName
+
     this.a = fields.a
     this.b = fields.b
   }
 
-  static new(fields: PoolRegistryItemFields): PoolRegistryItem {
-    return new PoolRegistryItem(fields)
-  }
-
-  static reified(): Reified<PoolRegistryItem> {
+  static reified(): Reified<PoolRegistryItem, PoolRegistryItemFields> {
     return {
       typeName: PoolRegistryItem.$typeName,
       fullTypeName: composeSuiType(
@@ -889,6 +921,9 @@ export class PoolRegistryItem {
       bcs: PoolRegistryItem.bcs,
       fromJSONField: (field: any) => PoolRegistryItem.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => PoolRegistryItem.fetch(client, id),
+      new: (fields: PoolRegistryItemFields) => {
+        return new PoolRegistryItem(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -897,8 +932,15 @@ export class PoolRegistryItem {
     return PoolRegistryItem.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('PoolRegistryItem', {
+      a: TypeName.bcs,
+      b: TypeName.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): PoolRegistryItem {
-    return PoolRegistryItem.new({
+    return PoolRegistryItem.reified().new({
       a: decodeFromFields(TypeName.reified(), fields.a),
       b: decodeFromFields(TypeName.reified(), fields.b),
     })
@@ -909,7 +951,7 @@ export class PoolRegistryItem {
       throw new Error('not a PoolRegistryItem type')
     }
 
-    return PoolRegistryItem.new({
+    return PoolRegistryItem.reified().new({
       a: decodeFromFieldsWithTypes(TypeName.reified(), item.fields.a),
       b: decodeFromFieldsWithTypes(TypeName.reified(), item.fields.b),
     })
@@ -931,7 +973,7 @@ export class PoolRegistryItem {
   }
 
   static fromJSONField(field: any): PoolRegistryItem {
-    return PoolRegistryItem.new({
+    return PoolRegistryItem.reified().new({
       a: decodeFromJSONField(TypeName.reified(), field.a),
       b: decodeFromJSONField(TypeName.reified(), field.b),
     })

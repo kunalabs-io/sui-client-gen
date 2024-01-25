@@ -33,33 +33,23 @@ export class Publisher {
   static readonly $typeName = '0x2::package::Publisher'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::package::Publisher'
-
   readonly $typeName = Publisher.$typeName
 
-  static get bcs() {
-    return bcs.struct('Publisher', {
-      id: UID.bcs,
-      package: String.bcs,
-      module_name: String.bcs,
-    })
-  }
+  readonly $fullTypeName: '0x2::package::Publisher'
 
   readonly id: ToField<UID>
   readonly package: ToField<String>
   readonly moduleName: ToField<String>
 
   private constructor(fields: PublisherFields) {
+    this.$fullTypeName = Publisher.$typeName
+
     this.id = fields.id
     this.package = fields.package
     this.moduleName = fields.moduleName
   }
 
-  static new(fields: PublisherFields): Publisher {
-    return new Publisher(fields)
-  }
-
-  static reified(): Reified<Publisher> {
+  static reified(): Reified<Publisher, PublisherFields> {
     return {
       typeName: Publisher.$typeName,
       fullTypeName: composeSuiType(Publisher.$typeName, ...[]) as '0x2::package::Publisher',
@@ -70,6 +60,9 @@ export class Publisher {
       bcs: Publisher.bcs,
       fromJSONField: (field: any) => Publisher.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => Publisher.fetch(client, id),
+      new: (fields: PublisherFields) => {
+        return new Publisher(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -78,8 +71,16 @@ export class Publisher {
     return Publisher.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('Publisher', {
+      id: UID.bcs,
+      package: String.bcs,
+      module_name: String.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): Publisher {
-    return Publisher.new({
+    return Publisher.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       package: decodeFromFields(String.reified(), fields.package),
       moduleName: decodeFromFields(String.reified(), fields.module_name),
@@ -91,7 +92,7 @@ export class Publisher {
       throw new Error('not a Publisher type')
     }
 
-    return Publisher.new({
+    return Publisher.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       package: decodeFromFieldsWithTypes(String.reified(), item.fields.package),
       moduleName: decodeFromFieldsWithTypes(String.reified(), item.fields.module_name),
@@ -115,7 +116,7 @@ export class Publisher {
   }
 
   static fromJSONField(field: any): Publisher {
-    return Publisher.new({
+    return Publisher.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       package: decodeFromJSONField(String.reified(), field.package),
       moduleName: decodeFromJSONField(String.reified(), field.moduleName),
@@ -172,18 +173,9 @@ export class UpgradeCap {
   static readonly $typeName = '0x2::package::UpgradeCap'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::package::UpgradeCap'
-
   readonly $typeName = UpgradeCap.$typeName
 
-  static get bcs() {
-    return bcs.struct('UpgradeCap', {
-      id: UID.bcs,
-      package: ID.bcs,
-      version: bcs.u64(),
-      policy: bcs.u8(),
-    })
-  }
+  readonly $fullTypeName: '0x2::package::UpgradeCap'
 
   readonly id: ToField<UID>
   readonly package: ToField<ID>
@@ -191,17 +183,15 @@ export class UpgradeCap {
   readonly policy: ToField<'u8'>
 
   private constructor(fields: UpgradeCapFields) {
+    this.$fullTypeName = UpgradeCap.$typeName
+
     this.id = fields.id
     this.package = fields.package
     this.version = fields.version
     this.policy = fields.policy
   }
 
-  static new(fields: UpgradeCapFields): UpgradeCap {
-    return new UpgradeCap(fields)
-  }
-
-  static reified(): Reified<UpgradeCap> {
+  static reified(): Reified<UpgradeCap, UpgradeCapFields> {
     return {
       typeName: UpgradeCap.$typeName,
       fullTypeName: composeSuiType(UpgradeCap.$typeName, ...[]) as '0x2::package::UpgradeCap',
@@ -212,6 +202,9 @@ export class UpgradeCap {
       bcs: UpgradeCap.bcs,
       fromJSONField: (field: any) => UpgradeCap.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => UpgradeCap.fetch(client, id),
+      new: (fields: UpgradeCapFields) => {
+        return new UpgradeCap(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -220,8 +213,17 @@ export class UpgradeCap {
     return UpgradeCap.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('UpgradeCap', {
+      id: UID.bcs,
+      package: ID.bcs,
+      version: bcs.u64(),
+      policy: bcs.u8(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): UpgradeCap {
-    return UpgradeCap.new({
+    return UpgradeCap.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       package: decodeFromFields(ID.reified(), fields.package),
       version: decodeFromFields('u64', fields.version),
@@ -234,7 +236,7 @@ export class UpgradeCap {
       throw new Error('not a UpgradeCap type')
     }
 
-    return UpgradeCap.new({
+    return UpgradeCap.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       package: decodeFromFieldsWithTypes(ID.reified(), item.fields.package),
       version: decodeFromFieldsWithTypes('u64', item.fields.version),
@@ -260,7 +262,7 @@ export class UpgradeCap {
   }
 
   static fromJSONField(field: any): UpgradeCap {
-    return UpgradeCap.new({
+    return UpgradeCap.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       package: decodeFromJSONField(ID.reified(), field.package),
       version: decodeFromJSONField('u64', field.version),
@@ -316,30 +318,21 @@ export class UpgradeReceipt {
   static readonly $typeName = '0x2::package::UpgradeReceipt'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::package::UpgradeReceipt'
-
   readonly $typeName = UpgradeReceipt.$typeName
 
-  static get bcs() {
-    return bcs.struct('UpgradeReceipt', {
-      cap: ID.bcs,
-      package: ID.bcs,
-    })
-  }
+  readonly $fullTypeName: '0x2::package::UpgradeReceipt'
 
   readonly cap: ToField<ID>
   readonly package: ToField<ID>
 
   private constructor(fields: UpgradeReceiptFields) {
+    this.$fullTypeName = UpgradeReceipt.$typeName
+
     this.cap = fields.cap
     this.package = fields.package
   }
 
-  static new(fields: UpgradeReceiptFields): UpgradeReceipt {
-    return new UpgradeReceipt(fields)
-  }
-
-  static reified(): Reified<UpgradeReceipt> {
+  static reified(): Reified<UpgradeReceipt, UpgradeReceiptFields> {
     return {
       typeName: UpgradeReceipt.$typeName,
       fullTypeName: composeSuiType(
@@ -353,6 +346,9 @@ export class UpgradeReceipt {
       bcs: UpgradeReceipt.bcs,
       fromJSONField: (field: any) => UpgradeReceipt.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => UpgradeReceipt.fetch(client, id),
+      new: (fields: UpgradeReceiptFields) => {
+        return new UpgradeReceipt(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -361,8 +357,15 @@ export class UpgradeReceipt {
     return UpgradeReceipt.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('UpgradeReceipt', {
+      cap: ID.bcs,
+      package: ID.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): UpgradeReceipt {
-    return UpgradeReceipt.new({
+    return UpgradeReceipt.reified().new({
       cap: decodeFromFields(ID.reified(), fields.cap),
       package: decodeFromFields(ID.reified(), fields.package),
     })
@@ -373,7 +376,7 @@ export class UpgradeReceipt {
       throw new Error('not a UpgradeReceipt type')
     }
 
-    return UpgradeReceipt.new({
+    return UpgradeReceipt.reified().new({
       cap: decodeFromFieldsWithTypes(ID.reified(), item.fields.cap),
       package: decodeFromFieldsWithTypes(ID.reified(), item.fields.package),
     })
@@ -395,7 +398,7 @@ export class UpgradeReceipt {
   }
 
   static fromJSONField(field: any): UpgradeReceipt {
-    return UpgradeReceipt.new({
+    return UpgradeReceipt.reified().new({
       cap: decodeFromJSONField(ID.reified(), field.cap),
       package: decodeFromJSONField(ID.reified(), field.package),
     })
@@ -451,18 +454,9 @@ export class UpgradeTicket {
   static readonly $typeName = '0x2::package::UpgradeTicket'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::package::UpgradeTicket'
-
   readonly $typeName = UpgradeTicket.$typeName
 
-  static get bcs() {
-    return bcs.struct('UpgradeTicket', {
-      cap: ID.bcs,
-      package: ID.bcs,
-      policy: bcs.u8(),
-      digest: bcs.vector(bcs.u8()),
-    })
-  }
+  readonly $fullTypeName: '0x2::package::UpgradeTicket'
 
   readonly cap: ToField<ID>
   readonly package: ToField<ID>
@@ -470,17 +464,15 @@ export class UpgradeTicket {
   readonly digest: ToField<Vector<'u8'>>
 
   private constructor(fields: UpgradeTicketFields) {
+    this.$fullTypeName = UpgradeTicket.$typeName
+
     this.cap = fields.cap
     this.package = fields.package
     this.policy = fields.policy
     this.digest = fields.digest
   }
 
-  static new(fields: UpgradeTicketFields): UpgradeTicket {
-    return new UpgradeTicket(fields)
-  }
-
-  static reified(): Reified<UpgradeTicket> {
+  static reified(): Reified<UpgradeTicket, UpgradeTicketFields> {
     return {
       typeName: UpgradeTicket.$typeName,
       fullTypeName: composeSuiType(UpgradeTicket.$typeName, ...[]) as '0x2::package::UpgradeTicket',
@@ -491,6 +483,9 @@ export class UpgradeTicket {
       bcs: UpgradeTicket.bcs,
       fromJSONField: (field: any) => UpgradeTicket.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => UpgradeTicket.fetch(client, id),
+      new: (fields: UpgradeTicketFields) => {
+        return new UpgradeTicket(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -499,8 +494,17 @@ export class UpgradeTicket {
     return UpgradeTicket.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('UpgradeTicket', {
+      cap: ID.bcs,
+      package: ID.bcs,
+      policy: bcs.u8(),
+      digest: bcs.vector(bcs.u8()),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): UpgradeTicket {
-    return UpgradeTicket.new({
+    return UpgradeTicket.reified().new({
       cap: decodeFromFields(ID.reified(), fields.cap),
       package: decodeFromFields(ID.reified(), fields.package),
       policy: decodeFromFields('u8', fields.policy),
@@ -513,7 +517,7 @@ export class UpgradeTicket {
       throw new Error('not a UpgradeTicket type')
     }
 
-    return UpgradeTicket.new({
+    return UpgradeTicket.reified().new({
       cap: decodeFromFieldsWithTypes(ID.reified(), item.fields.cap),
       package: decodeFromFieldsWithTypes(ID.reified(), item.fields.package),
       policy: decodeFromFieldsWithTypes('u8', item.fields.policy),
@@ -539,7 +543,7 @@ export class UpgradeTicket {
   }
 
   static fromJSONField(field: any): UpgradeTicket {
-    return UpgradeTicket.new({
+    return UpgradeTicket.reified().new({
       cap: decodeFromJSONField(ID.reified(), field.cap),
       package: decodeFromJSONField(ID.reified(), field.package),
       policy: decodeFromJSONField('u8', field.policy),

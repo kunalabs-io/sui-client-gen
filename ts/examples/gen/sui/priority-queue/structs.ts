@@ -37,17 +37,9 @@ export class Entry<T extends TypeArgument> {
   static readonly $typeName = '0x2::priority_queue::Entry'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::priority_queue::Entry<${ToTypeStr<T>}>`
-
   readonly $typeName = Entry.$typeName
 
-  static get bcs() {
-    return <T extends BcsType<any>>(T: T) =>
-      bcs.struct(`Entry<${T.name}>`, {
-        priority: bcs.u64(),
-        value: T,
-      })
-  }
+  readonly $fullTypeName: `0x2::priority_queue::Entry<${string}>`
 
   readonly $typeArg: string
 
@@ -55,20 +47,20 @@ export class Entry<T extends TypeArgument> {
   readonly value: ToField<T>
 
   private constructor(typeArg: string, fields: EntryFields<T>) {
+    this.$fullTypeName = composeSuiType(
+      Entry.$typeName,
+      typeArg
+    ) as `0x2::priority_queue::Entry<${ToTypeStr<T>}>`
+
     this.$typeArg = typeArg
 
     this.priority = fields.priority
     this.value = fields.value
   }
 
-  static new<T extends Reified<TypeArgument>>(
-    typeArg: T,
-    fields: EntryFields<ToTypeArgument<T>>
-  ): Entry<ToTypeArgument<T>> {
-    return new Entry(extractType(typeArg), fields)
-  }
-
-  static reified<T extends Reified<TypeArgument>>(T: T): Reified<Entry<ToTypeArgument<T>>> {
+  static reified<T extends Reified<TypeArgument, any>>(
+    T: T
+  ): Reified<Entry<ToTypeArgument<T>>, EntryFields<ToTypeArgument<T>>> {
     return {
       typeName: Entry.$typeName,
       fullTypeName: composeSuiType(
@@ -82,6 +74,9 @@ export class Entry<T extends TypeArgument> {
       bcs: Entry.bcs(toBcs(T)),
       fromJSONField: (field: any) => Entry.fromJSONField(T, field),
       fetch: async (client: SuiClient, id: string) => Entry.fetch(client, T, id),
+      new: (fields: EntryFields<ToTypeArgument<T>>) => {
+        return new Entry(extractType(T), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -90,17 +85,25 @@ export class Entry<T extends TypeArgument> {
     return Entry.reified
   }
 
-  static fromFields<T extends Reified<TypeArgument>>(
+  static get bcs() {
+    return <T extends BcsType<any>>(T: T) =>
+      bcs.struct(`Entry<${T.name}>`, {
+        priority: bcs.u64(),
+        value: T,
+      })
+  }
+
+  static fromFields<T extends Reified<TypeArgument, any>>(
     typeArg: T,
     fields: Record<string, any>
   ): Entry<ToTypeArgument<T>> {
-    return Entry.new(typeArg, {
+    return Entry.reified(typeArg).new({
       priority: decodeFromFields('u64', fields.priority),
       value: decodeFromFields(typeArg, fields.value),
     })
   }
 
-  static fromFieldsWithTypes<T extends Reified<TypeArgument>>(
+  static fromFieldsWithTypes<T extends Reified<TypeArgument, any>>(
     typeArg: T,
     item: FieldsWithTypes
   ): Entry<ToTypeArgument<T>> {
@@ -109,13 +112,13 @@ export class Entry<T extends TypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return Entry.new(typeArg, {
+    return Entry.reified(typeArg).new({
       priority: decodeFromFieldsWithTypes('u64', item.fields.priority),
       value: decodeFromFieldsWithTypes(typeArg, item.fields.value),
     })
   }
 
-  static fromBcs<T extends Reified<TypeArgument>>(
+  static fromBcs<T extends Reified<TypeArgument, any>>(
     typeArg: T,
     data: Uint8Array
   ): Entry<ToTypeArgument<T>> {
@@ -135,17 +138,17 @@ export class Entry<T extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T extends Reified<TypeArgument>>(
+  static fromJSONField<T extends Reified<TypeArgument, any>>(
     typeArg: T,
     field: any
   ): Entry<ToTypeArgument<T>> {
-    return Entry.new(typeArg, {
+    return Entry.reified(typeArg).new({
       priority: decodeFromJSONField('u64', field.priority),
       value: decodeFromJSONField(typeArg, field.value),
     })
   }
 
-  static fromJSON<T extends Reified<TypeArgument>>(
+  static fromJSON<T extends Reified<TypeArgument, any>>(
     typeArg: T,
     json: Record<string, any>
   ): Entry<ToTypeArgument<T>> {
@@ -161,7 +164,7 @@ export class Entry<T extends TypeArgument> {
     return Entry.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T extends Reified<TypeArgument>>(
+  static fromSuiParsedData<T extends Reified<TypeArgument, any>>(
     typeArg: T,
     content: SuiParsedData
   ): Entry<ToTypeArgument<T>> {
@@ -174,7 +177,7 @@ export class Entry<T extends TypeArgument> {
     return Entry.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T extends Reified<TypeArgument>>(
+  static async fetch<T extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArg: T,
     id: string
@@ -207,35 +210,28 @@ export class PriorityQueue<T extends TypeArgument> {
   static readonly $typeName = '0x2::priority_queue::PriorityQueue'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::priority_queue::PriorityQueue<${ToTypeStr<T>}>`
-
   readonly $typeName = PriorityQueue.$typeName
 
-  static get bcs() {
-    return <T extends BcsType<any>>(T: T) =>
-      bcs.struct(`PriorityQueue<${T.name}>`, {
-        entries: bcs.vector(Entry.bcs(T)),
-      })
-  }
+  readonly $fullTypeName: `0x2::priority_queue::PriorityQueue<${string}>`
 
   readonly $typeArg: string
 
   readonly entries: ToField<Vector<Entry<T>>>
 
-  private constructor(typeArg: string, entries: ToField<Vector<Entry<T>>>) {
+  private constructor(typeArg: string, fields: PriorityQueueFields<T>) {
+    this.$fullTypeName = composeSuiType(
+      PriorityQueue.$typeName,
+      typeArg
+    ) as `0x2::priority_queue::PriorityQueue<${ToTypeStr<T>}>`
+
     this.$typeArg = typeArg
 
-    this.entries = entries
+    this.entries = fields.entries
   }
 
-  static new<T extends Reified<TypeArgument>>(
-    typeArg: T,
-    entries: ToField<Vector<Entry<ToTypeArgument<T>>>>
-  ): PriorityQueue<ToTypeArgument<T>> {
-    return new PriorityQueue(extractType(typeArg), entries)
-  }
-
-  static reified<T extends Reified<TypeArgument>>(T: T): Reified<PriorityQueue<ToTypeArgument<T>>> {
+  static reified<T extends Reified<TypeArgument, any>>(
+    T: T
+  ): Reified<PriorityQueue<ToTypeArgument<T>>, PriorityQueueFields<ToTypeArgument<T>>> {
     return {
       typeName: PriorityQueue.$typeName,
       fullTypeName: composeSuiType(
@@ -249,6 +245,9 @@ export class PriorityQueue<T extends TypeArgument> {
       bcs: PriorityQueue.bcs(toBcs(T)),
       fromJSONField: (field: any) => PriorityQueue.fromJSONField(T, field),
       fetch: async (client: SuiClient, id: string) => PriorityQueue.fetch(client, T, id),
+      new: (fields: PriorityQueueFields<ToTypeArgument<T>>) => {
+        return new PriorityQueue(extractType(T), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -257,17 +256,23 @@ export class PriorityQueue<T extends TypeArgument> {
     return PriorityQueue.reified
   }
 
-  static fromFields<T extends Reified<TypeArgument>>(
+  static get bcs() {
+    return <T extends BcsType<any>>(T: T) =>
+      bcs.struct(`PriorityQueue<${T.name}>`, {
+        entries: bcs.vector(Entry.bcs(T)),
+      })
+  }
+
+  static fromFields<T extends Reified<TypeArgument, any>>(
     typeArg: T,
     fields: Record<string, any>
   ): PriorityQueue<ToTypeArgument<T>> {
-    return PriorityQueue.new(
-      typeArg,
-      decodeFromFields(reified.vector(Entry.reified(typeArg)), fields.entries)
-    )
+    return PriorityQueue.reified(typeArg).new({
+      entries: decodeFromFields(reified.vector(Entry.reified(typeArg)), fields.entries),
+    })
   }
 
-  static fromFieldsWithTypes<T extends Reified<TypeArgument>>(
+  static fromFieldsWithTypes<T extends Reified<TypeArgument, any>>(
     typeArg: T,
     item: FieldsWithTypes
   ): PriorityQueue<ToTypeArgument<T>> {
@@ -276,13 +281,15 @@ export class PriorityQueue<T extends TypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return PriorityQueue.new(
-      typeArg,
-      decodeFromFieldsWithTypes(reified.vector(Entry.reified(typeArg)), item.fields.entries)
-    )
+    return PriorityQueue.reified(typeArg).new({
+      entries: decodeFromFieldsWithTypes(
+        reified.vector(Entry.reified(typeArg)),
+        item.fields.entries
+      ),
+    })
   }
 
-  static fromBcs<T extends Reified<TypeArgument>>(
+  static fromBcs<T extends Reified<TypeArgument, any>>(
     typeArg: T,
     data: Uint8Array
   ): PriorityQueue<ToTypeArgument<T>> {
@@ -304,17 +311,16 @@ export class PriorityQueue<T extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T extends Reified<TypeArgument>>(
+  static fromJSONField<T extends Reified<TypeArgument, any>>(
     typeArg: T,
     field: any
   ): PriorityQueue<ToTypeArgument<T>> {
-    return PriorityQueue.new(
-      typeArg,
-      decodeFromJSONField(reified.vector(Entry.reified(typeArg)), field.entries)
-    )
+    return PriorityQueue.reified(typeArg).new({
+      entries: decodeFromJSONField(reified.vector(Entry.reified(typeArg)), field.entries),
+    })
   }
 
-  static fromJSON<T extends Reified<TypeArgument>>(
+  static fromJSON<T extends Reified<TypeArgument, any>>(
     typeArg: T,
     json: Record<string, any>
   ): PriorityQueue<ToTypeArgument<T>> {
@@ -330,7 +336,7 @@ export class PriorityQueue<T extends TypeArgument> {
     return PriorityQueue.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T extends Reified<TypeArgument>>(
+  static fromSuiParsedData<T extends Reified<TypeArgument, any>>(
     typeArg: T,
     content: SuiParsedData
   ): PriorityQueue<ToTypeArgument<T>> {
@@ -343,7 +349,7 @@ export class PriorityQueue<T extends TypeArgument> {
     return PriorityQueue.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T extends Reified<TypeArgument>>(
+  static async fetch<T extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArg: T,
     id: string

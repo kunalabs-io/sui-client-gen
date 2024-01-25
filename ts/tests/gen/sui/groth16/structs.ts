@@ -29,27 +29,19 @@ export class Curve {
   static readonly $typeName = '0x2::groth16::Curve'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::groth16::Curve'
-
   readonly $typeName = Curve.$typeName
 
-  static get bcs() {
-    return bcs.struct('Curve', {
-      id: bcs.u8(),
-    })
-  }
+  readonly $fullTypeName: '0x2::groth16::Curve'
 
   readonly id: ToField<'u8'>
 
-  private constructor(id: ToField<'u8'>) {
-    this.id = id
+  private constructor(fields: CurveFields) {
+    this.$fullTypeName = Curve.$typeName
+
+    this.id = fields.id
   }
 
-  static new(id: ToField<'u8'>): Curve {
-    return new Curve(id)
-  }
-
-  static reified(): Reified<Curve> {
+  static reified(): Reified<Curve, CurveFields> {
     return {
       typeName: Curve.$typeName,
       fullTypeName: composeSuiType(Curve.$typeName, ...[]) as '0x2::groth16::Curve',
@@ -60,6 +52,9 @@ export class Curve {
       bcs: Curve.bcs,
       fromJSONField: (field: any) => Curve.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => Curve.fetch(client, id),
+      new: (fields: CurveFields) => {
+        return new Curve(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -68,8 +63,14 @@ export class Curve {
     return Curve.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('Curve', {
+      id: bcs.u8(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): Curve {
-    return Curve.new(decodeFromFields('u8', fields.id))
+    return Curve.reified().new({ id: decodeFromFields('u8', fields.id) })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Curve {
@@ -77,7 +78,7 @@ export class Curve {
       throw new Error('not a Curve type')
     }
 
-    return Curve.new(decodeFromFieldsWithTypes('u8', item.fields.id))
+    return Curve.reified().new({ id: decodeFromFieldsWithTypes('u8', item.fields.id) })
   }
 
   static fromBcs(data: Uint8Array): Curve {
@@ -95,7 +96,7 @@ export class Curve {
   }
 
   static fromJSONField(field: any): Curve {
-    return Curve.new(decodeFromJSONField('u8', field.id))
+    return Curve.reified().new({ id: decodeFromJSONField('u8', field.id) })
   }
 
   static fromJSON(json: Record<string, any>): Curve {
@@ -148,18 +149,9 @@ export class PreparedVerifyingKey {
   static readonly $typeName = '0x2::groth16::PreparedVerifyingKey'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::groth16::PreparedVerifyingKey'
-
   readonly $typeName = PreparedVerifyingKey.$typeName
 
-  static get bcs() {
-    return bcs.struct('PreparedVerifyingKey', {
-      vk_gamma_abc_g1_bytes: bcs.vector(bcs.u8()),
-      alpha_g1_beta_g2_bytes: bcs.vector(bcs.u8()),
-      gamma_g2_neg_pc_bytes: bcs.vector(bcs.u8()),
-      delta_g2_neg_pc_bytes: bcs.vector(bcs.u8()),
-    })
-  }
+  readonly $fullTypeName: '0x2::groth16::PreparedVerifyingKey'
 
   readonly vkGammaAbcG1Bytes: ToField<Vector<'u8'>>
   readonly alphaG1BetaG2Bytes: ToField<Vector<'u8'>>
@@ -167,17 +159,15 @@ export class PreparedVerifyingKey {
   readonly deltaG2NegPcBytes: ToField<Vector<'u8'>>
 
   private constructor(fields: PreparedVerifyingKeyFields) {
+    this.$fullTypeName = PreparedVerifyingKey.$typeName
+
     this.vkGammaAbcG1Bytes = fields.vkGammaAbcG1Bytes
     this.alphaG1BetaG2Bytes = fields.alphaG1BetaG2Bytes
     this.gammaG2NegPcBytes = fields.gammaG2NegPcBytes
     this.deltaG2NegPcBytes = fields.deltaG2NegPcBytes
   }
 
-  static new(fields: PreparedVerifyingKeyFields): PreparedVerifyingKey {
-    return new PreparedVerifyingKey(fields)
-  }
-
-  static reified(): Reified<PreparedVerifyingKey> {
+  static reified(): Reified<PreparedVerifyingKey, PreparedVerifyingKeyFields> {
     return {
       typeName: PreparedVerifyingKey.$typeName,
       fullTypeName: composeSuiType(
@@ -192,6 +182,9 @@ export class PreparedVerifyingKey {
       bcs: PreparedVerifyingKey.bcs,
       fromJSONField: (field: any) => PreparedVerifyingKey.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => PreparedVerifyingKey.fetch(client, id),
+      new: (fields: PreparedVerifyingKeyFields) => {
+        return new PreparedVerifyingKey(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -200,8 +193,17 @@ export class PreparedVerifyingKey {
     return PreparedVerifyingKey.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('PreparedVerifyingKey', {
+      vk_gamma_abc_g1_bytes: bcs.vector(bcs.u8()),
+      alpha_g1_beta_g2_bytes: bcs.vector(bcs.u8()),
+      gamma_g2_neg_pc_bytes: bcs.vector(bcs.u8()),
+      delta_g2_neg_pc_bytes: bcs.vector(bcs.u8()),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): PreparedVerifyingKey {
-    return PreparedVerifyingKey.new({
+    return PreparedVerifyingKey.reified().new({
       vkGammaAbcG1Bytes: decodeFromFields(reified.vector('u8'), fields.vk_gamma_abc_g1_bytes),
       alphaG1BetaG2Bytes: decodeFromFields(reified.vector('u8'), fields.alpha_g1_beta_g2_bytes),
       gammaG2NegPcBytes: decodeFromFields(reified.vector('u8'), fields.gamma_g2_neg_pc_bytes),
@@ -214,7 +216,7 @@ export class PreparedVerifyingKey {
       throw new Error('not a PreparedVerifyingKey type')
     }
 
-    return PreparedVerifyingKey.new({
+    return PreparedVerifyingKey.reified().new({
       vkGammaAbcG1Bytes: decodeFromFieldsWithTypes(
         reified.vector('u8'),
         item.fields.vk_gamma_abc_g1_bytes
@@ -252,7 +254,7 @@ export class PreparedVerifyingKey {
   }
 
   static fromJSONField(field: any): PreparedVerifyingKey {
-    return PreparedVerifyingKey.new({
+    return PreparedVerifyingKey.reified().new({
       vkGammaAbcG1Bytes: decodeFromJSONField(reified.vector('u8'), field.vkGammaAbcG1Bytes),
       alphaG1BetaG2Bytes: decodeFromJSONField(reified.vector('u8'), field.alphaG1BetaG2Bytes),
       gammaG2NegPcBytes: decodeFromJSONField(reified.vector('u8'), field.gammaG2NegPcBytes),
@@ -312,27 +314,19 @@ export class ProofPoints {
   static readonly $typeName = '0x2::groth16::ProofPoints'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::groth16::ProofPoints'
-
   readonly $typeName = ProofPoints.$typeName
 
-  static get bcs() {
-    return bcs.struct('ProofPoints', {
-      bytes: bcs.vector(bcs.u8()),
-    })
-  }
+  readonly $fullTypeName: '0x2::groth16::ProofPoints'
 
   readonly bytes: ToField<Vector<'u8'>>
 
-  private constructor(bytes: ToField<Vector<'u8'>>) {
-    this.bytes = bytes
+  private constructor(fields: ProofPointsFields) {
+    this.$fullTypeName = ProofPoints.$typeName
+
+    this.bytes = fields.bytes
   }
 
-  static new(bytes: ToField<Vector<'u8'>>): ProofPoints {
-    return new ProofPoints(bytes)
-  }
-
-  static reified(): Reified<ProofPoints> {
+  static reified(): Reified<ProofPoints, ProofPointsFields> {
     return {
       typeName: ProofPoints.$typeName,
       fullTypeName: composeSuiType(ProofPoints.$typeName, ...[]) as '0x2::groth16::ProofPoints',
@@ -343,6 +337,9 @@ export class ProofPoints {
       bcs: ProofPoints.bcs,
       fromJSONField: (field: any) => ProofPoints.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => ProofPoints.fetch(client, id),
+      new: (fields: ProofPointsFields) => {
+        return new ProofPoints(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -351,8 +348,16 @@ export class ProofPoints {
     return ProofPoints.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('ProofPoints', {
+      bytes: bcs.vector(bcs.u8()),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): ProofPoints {
-    return ProofPoints.new(decodeFromFields(reified.vector('u8'), fields.bytes))
+    return ProofPoints.reified().new({
+      bytes: decodeFromFields(reified.vector('u8'), fields.bytes),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): ProofPoints {
@@ -360,7 +365,9 @@ export class ProofPoints {
       throw new Error('not a ProofPoints type')
     }
 
-    return ProofPoints.new(decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.bytes))
+    return ProofPoints.reified().new({
+      bytes: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.bytes),
+    })
   }
 
   static fromBcs(data: Uint8Array): ProofPoints {
@@ -378,7 +385,9 @@ export class ProofPoints {
   }
 
   static fromJSONField(field: any): ProofPoints {
-    return ProofPoints.new(decodeFromJSONField(reified.vector('u8'), field.bytes))
+    return ProofPoints.reified().new({
+      bytes: decodeFromJSONField(reified.vector('u8'), field.bytes),
+    })
   }
 
   static fromJSON(json: Record<string, any>): ProofPoints {
@@ -428,27 +437,19 @@ export class PublicProofInputs {
   static readonly $typeName = '0x2::groth16::PublicProofInputs'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::groth16::PublicProofInputs'
-
   readonly $typeName = PublicProofInputs.$typeName
 
-  static get bcs() {
-    return bcs.struct('PublicProofInputs', {
-      bytes: bcs.vector(bcs.u8()),
-    })
-  }
+  readonly $fullTypeName: '0x2::groth16::PublicProofInputs'
 
   readonly bytes: ToField<Vector<'u8'>>
 
-  private constructor(bytes: ToField<Vector<'u8'>>) {
-    this.bytes = bytes
+  private constructor(fields: PublicProofInputsFields) {
+    this.$fullTypeName = PublicProofInputs.$typeName
+
+    this.bytes = fields.bytes
   }
 
-  static new(bytes: ToField<Vector<'u8'>>): PublicProofInputs {
-    return new PublicProofInputs(bytes)
-  }
-
-  static reified(): Reified<PublicProofInputs> {
+  static reified(): Reified<PublicProofInputs, PublicProofInputsFields> {
     return {
       typeName: PublicProofInputs.$typeName,
       fullTypeName: composeSuiType(
@@ -462,6 +463,9 @@ export class PublicProofInputs {
       bcs: PublicProofInputs.bcs,
       fromJSONField: (field: any) => PublicProofInputs.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => PublicProofInputs.fetch(client, id),
+      new: (fields: PublicProofInputsFields) => {
+        return new PublicProofInputs(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -470,8 +474,16 @@ export class PublicProofInputs {
     return PublicProofInputs.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('PublicProofInputs', {
+      bytes: bcs.vector(bcs.u8()),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): PublicProofInputs {
-    return PublicProofInputs.new(decodeFromFields(reified.vector('u8'), fields.bytes))
+    return PublicProofInputs.reified().new({
+      bytes: decodeFromFields(reified.vector('u8'), fields.bytes),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): PublicProofInputs {
@@ -479,7 +491,9 @@ export class PublicProofInputs {
       throw new Error('not a PublicProofInputs type')
     }
 
-    return PublicProofInputs.new(decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.bytes))
+    return PublicProofInputs.reified().new({
+      bytes: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.bytes),
+    })
   }
 
   static fromBcs(data: Uint8Array): PublicProofInputs {
@@ -497,7 +511,9 @@ export class PublicProofInputs {
   }
 
   static fromJSONField(field: any): PublicProofInputs {
-    return PublicProofInputs.new(decodeFromJSONField(reified.vector('u8'), field.bytes))
+    return PublicProofInputs.reified().new({
+      bytes: decodeFromJSONField(reified.vector('u8'), field.bytes),
+    })
   }
 
   static fromJSON(json: Record<string, any>): PublicProofInputs {

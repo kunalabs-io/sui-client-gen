@@ -1,10 +1,11 @@
+import * as reified from '../../_framework/reified'
 import {
+  PhantomReified,
+  PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
-  ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -38,30 +39,21 @@ export class Borrow {
   static readonly $typeName = '0x2::kiosk::Borrow'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::kiosk::Borrow'
-
   readonly $typeName = Borrow.$typeName
 
-  static get bcs() {
-    return bcs.struct('Borrow', {
-      kiosk_id: ID.bcs,
-      item_id: ID.bcs,
-    })
-  }
+  readonly $fullTypeName: '0x2::kiosk::Borrow'
 
   readonly kioskId: ToField<ID>
   readonly itemId: ToField<ID>
 
   private constructor(fields: BorrowFields) {
+    this.$fullTypeName = Borrow.$typeName
+
     this.kioskId = fields.kioskId
     this.itemId = fields.itemId
   }
 
-  static new(fields: BorrowFields): Borrow {
-    return new Borrow(fields)
-  }
-
-  static reified(): Reified<Borrow> {
+  static reified(): Reified<Borrow, BorrowFields> {
     return {
       typeName: Borrow.$typeName,
       fullTypeName: composeSuiType(Borrow.$typeName, ...[]) as '0x2::kiosk::Borrow',
@@ -72,6 +64,9 @@ export class Borrow {
       bcs: Borrow.bcs,
       fromJSONField: (field: any) => Borrow.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => Borrow.fetch(client, id),
+      new: (fields: BorrowFields) => {
+        return new Borrow(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -80,8 +75,15 @@ export class Borrow {
     return Borrow.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('Borrow', {
+      kiosk_id: ID.bcs,
+      item_id: ID.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): Borrow {
-    return Borrow.new({
+    return Borrow.reified().new({
       kioskId: decodeFromFields(ID.reified(), fields.kiosk_id),
       itemId: decodeFromFields(ID.reified(), fields.item_id),
     })
@@ -92,7 +94,7 @@ export class Borrow {
       throw new Error('not a Borrow type')
     }
 
-    return Borrow.new({
+    return Borrow.reified().new({
       kioskId: decodeFromFieldsWithTypes(ID.reified(), item.fields.kiosk_id),
       itemId: decodeFromFieldsWithTypes(ID.reified(), item.fields.item_id),
     })
@@ -114,7 +116,7 @@ export class Borrow {
   }
 
   static fromJSONField(field: any): Borrow {
-    return Borrow.new({
+    return Borrow.reified().new({
       kioskId: decodeFromJSONField(ID.reified(), field.kioskId),
       itemId: decodeFromJSONField(ID.reified(), field.itemId),
     })
@@ -167,27 +169,19 @@ export class Item {
   static readonly $typeName = '0x2::kiosk::Item'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::kiosk::Item'
-
   readonly $typeName = Item.$typeName
 
-  static get bcs() {
-    return bcs.struct('Item', {
-      id: ID.bcs,
-    })
-  }
+  readonly $fullTypeName: '0x2::kiosk::Item'
 
   readonly id: ToField<ID>
 
-  private constructor(id: ToField<ID>) {
-    this.id = id
+  private constructor(fields: ItemFields) {
+    this.$fullTypeName = Item.$typeName
+
+    this.id = fields.id
   }
 
-  static new(id: ToField<ID>): Item {
-    return new Item(id)
-  }
-
-  static reified(): Reified<Item> {
+  static reified(): Reified<Item, ItemFields> {
     return {
       typeName: Item.$typeName,
       fullTypeName: composeSuiType(Item.$typeName, ...[]) as '0x2::kiosk::Item',
@@ -198,6 +192,9 @@ export class Item {
       bcs: Item.bcs,
       fromJSONField: (field: any) => Item.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => Item.fetch(client, id),
+      new: (fields: ItemFields) => {
+        return new Item(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -206,8 +203,14 @@ export class Item {
     return Item.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('Item', {
+      id: ID.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): Item {
-    return Item.new(decodeFromFields(ID.reified(), fields.id))
+    return Item.reified().new({ id: decodeFromFields(ID.reified(), fields.id) })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Item {
@@ -215,7 +218,7 @@ export class Item {
       throw new Error('not a Item type')
     }
 
-    return Item.new(decodeFromFieldsWithTypes(ID.reified(), item.fields.id))
+    return Item.reified().new({ id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id) })
   }
 
   static fromBcs(data: Uint8Array): Item {
@@ -233,7 +236,7 @@ export class Item {
   }
 
   static fromJSONField(field: any): Item {
-    return Item.new(decodeFromJSONField(ID.reified(), field.id))
+    return Item.reified().new({ id: decodeFromJSONField(ID.reified(), field.id) })
   }
 
   static fromJSON(json: Record<string, any>): Item {
@@ -284,16 +287,9 @@ export class ItemDelisted<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk::ItemDelisted'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::kiosk::ItemDelisted<${ToTypeStr<T>}>`
-
   readonly $typeName = ItemDelisted.$typeName
 
-  static get bcs() {
-    return bcs.struct('ItemDelisted', {
-      kiosk: ID.bcs,
-      id: ID.bcs,
-    })
-  }
+  readonly $fullTypeName: `0x2::kiosk::ItemDelisted<${string}>`
 
   readonly $typeArg: string
 
@@ -301,28 +297,26 @@ export class ItemDelisted<T extends PhantomTypeArgument> {
   readonly id: ToField<ID>
 
   private constructor(typeArg: string, fields: ItemDelistedFields<T>) {
+    this.$fullTypeName = composeSuiType(
+      ItemDelisted.$typeName,
+      typeArg
+    ) as `0x2::kiosk::ItemDelisted<${PhantomToTypeStr<T>}>`
+
     this.$typeArg = typeArg
 
     this.kiosk = fields.kiosk
     this.id = fields.id
   }
 
-  static new<T extends ReifiedPhantomTypeArgument>(
-    typeArg: T,
-    fields: ItemDelistedFields<ToPhantomTypeArgument<T>>
-  ): ItemDelisted<ToPhantomTypeArgument<T>> {
-    return new ItemDelisted(extractType(typeArg), fields)
-  }
-
-  static reified<T extends ReifiedPhantomTypeArgument>(
+  static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
-  ): Reified<ItemDelisted<ToPhantomTypeArgument<T>>> {
+  ): Reified<ItemDelisted<ToPhantomTypeArgument<T>>, ItemDelistedFields<ToPhantomTypeArgument<T>>> {
     return {
       typeName: ItemDelisted.$typeName,
       fullTypeName: composeSuiType(
         ItemDelisted.$typeName,
         ...[extractType(T)]
-      ) as `0x2::kiosk::ItemDelisted<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `0x2::kiosk::ItemDelisted<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [T],
       fromFields: (fields: Record<string, any>) => ItemDelisted.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ItemDelisted.fromFieldsWithTypes(T, item),
@@ -330,6 +324,9 @@ export class ItemDelisted<T extends PhantomTypeArgument> {
       bcs: ItemDelisted.bcs,
       fromJSONField: (field: any) => ItemDelisted.fromJSONField(T, field),
       fetch: async (client: SuiClient, id: string) => ItemDelisted.fetch(client, T, id),
+      new: (fields: ItemDelistedFields<ToPhantomTypeArgument<T>>) => {
+        return new ItemDelisted(extractType(T), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -338,17 +335,24 @@ export class ItemDelisted<T extends PhantomTypeArgument> {
     return ItemDelisted.reified
   }
 
-  static fromFields<T extends ReifiedPhantomTypeArgument>(
+  static get bcs() {
+    return bcs.struct('ItemDelisted', {
+      kiosk: ID.bcs,
+      id: ID.bcs,
+    })
+  }
+
+  static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     fields: Record<string, any>
   ): ItemDelisted<ToPhantomTypeArgument<T>> {
-    return ItemDelisted.new(typeArg, {
+    return ItemDelisted.reified(typeArg).new({
       kiosk: decodeFromFields(ID.reified(), fields.kiosk),
       id: decodeFromFields(ID.reified(), fields.id),
     })
   }
 
-  static fromFieldsWithTypes<T extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     item: FieldsWithTypes
   ): ItemDelisted<ToPhantomTypeArgument<T>> {
@@ -357,13 +361,13 @@ export class ItemDelisted<T extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return ItemDelisted.new(typeArg, {
+    return ItemDelisted.reified(typeArg).new({
       kiosk: decodeFromFieldsWithTypes(ID.reified(), item.fields.kiosk),
       id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
     })
   }
 
-  static fromBcs<T extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: Uint8Array
   ): ItemDelisted<ToPhantomTypeArgument<T>> {
@@ -381,17 +385,17 @@ export class ItemDelisted<T extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     field: any
   ): ItemDelisted<ToPhantomTypeArgument<T>> {
-    return ItemDelisted.new(typeArg, {
+    return ItemDelisted.reified(typeArg).new({
       kiosk: decodeFromJSONField(ID.reified(), field.kiosk),
       id: decodeFromJSONField(ID.reified(), field.id),
     })
   }
 
-  static fromJSON<T extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     json: Record<string, any>
   ): ItemDelisted<ToPhantomTypeArgument<T>> {
@@ -407,7 +411,7 @@ export class ItemDelisted<T extends PhantomTypeArgument> {
     return ItemDelisted.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData
   ): ItemDelisted<ToPhantomTypeArgument<T>> {
@@ -420,7 +424,7 @@ export class ItemDelisted<T extends PhantomTypeArgument> {
     return ItemDelisted.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T extends ReifiedPhantomTypeArgument>(
+  static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
     id: string
@@ -455,9 +459,55 @@ export class ItemListed<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk::ItemListed'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::kiosk::ItemListed<${ToTypeStr<T>}>`
-
   readonly $typeName = ItemListed.$typeName
+
+  readonly $fullTypeName: `0x2::kiosk::ItemListed<${string}>`
+
+  readonly $typeArg: string
+
+  readonly kiosk: ToField<ID>
+  readonly id: ToField<ID>
+  readonly price: ToField<'u64'>
+
+  private constructor(typeArg: string, fields: ItemListedFields<T>) {
+    this.$fullTypeName = composeSuiType(
+      ItemListed.$typeName,
+      typeArg
+    ) as `0x2::kiosk::ItemListed<${PhantomToTypeStr<T>}>`
+
+    this.$typeArg = typeArg
+
+    this.kiosk = fields.kiosk
+    this.id = fields.id
+    this.price = fields.price
+  }
+
+  static reified<T extends PhantomReified<PhantomTypeArgument>>(
+    T: T
+  ): Reified<ItemListed<ToPhantomTypeArgument<T>>, ItemListedFields<ToPhantomTypeArgument<T>>> {
+    return {
+      typeName: ItemListed.$typeName,
+      fullTypeName: composeSuiType(
+        ItemListed.$typeName,
+        ...[extractType(T)]
+      ) as `0x2::kiosk::ItemListed<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => ItemListed.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => ItemListed.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => ItemListed.fromBcs(T, data),
+      bcs: ItemListed.bcs,
+      fromJSONField: (field: any) => ItemListed.fromJSONField(T, field),
+      fetch: async (client: SuiClient, id: string) => ItemListed.fetch(client, T, id),
+      new: (fields: ItemListedFields<ToPhantomTypeArgument<T>>) => {
+        return new ItemListed(extractType(T), fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return ItemListed.reified
+  }
 
   static get bcs() {
     return bcs.struct('ItemListed', {
@@ -467,63 +517,18 @@ export class ItemListed<T extends PhantomTypeArgument> {
     })
   }
 
-  readonly $typeArg: string
-
-  readonly kiosk: ToField<ID>
-  readonly id: ToField<ID>
-  readonly price: ToField<'u64'>
-
-  private constructor(typeArg: string, fields: ItemListedFields<T>) {
-    this.$typeArg = typeArg
-
-    this.kiosk = fields.kiosk
-    this.id = fields.id
-    this.price = fields.price
-  }
-
-  static new<T extends ReifiedPhantomTypeArgument>(
-    typeArg: T,
-    fields: ItemListedFields<ToPhantomTypeArgument<T>>
-  ): ItemListed<ToPhantomTypeArgument<T>> {
-    return new ItemListed(extractType(typeArg), fields)
-  }
-
-  static reified<T extends ReifiedPhantomTypeArgument>(
-    T: T
-  ): Reified<ItemListed<ToPhantomTypeArgument<T>>> {
-    return {
-      typeName: ItemListed.$typeName,
-      fullTypeName: composeSuiType(
-        ItemListed.$typeName,
-        ...[extractType(T)]
-      ) as `0x2::kiosk::ItemListed<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [T],
-      fromFields: (fields: Record<string, any>) => ItemListed.fromFields(T, fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => ItemListed.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => ItemListed.fromBcs(T, data),
-      bcs: ItemListed.bcs,
-      fromJSONField: (field: any) => ItemListed.fromJSONField(T, field),
-      fetch: async (client: SuiClient, id: string) => ItemListed.fetch(client, T, id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return ItemListed.reified
-  }
-
-  static fromFields<T extends ReifiedPhantomTypeArgument>(
+  static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     fields: Record<string, any>
   ): ItemListed<ToPhantomTypeArgument<T>> {
-    return ItemListed.new(typeArg, {
+    return ItemListed.reified(typeArg).new({
       kiosk: decodeFromFields(ID.reified(), fields.kiosk),
       id: decodeFromFields(ID.reified(), fields.id),
       price: decodeFromFields('u64', fields.price),
     })
   }
 
-  static fromFieldsWithTypes<T extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     item: FieldsWithTypes
   ): ItemListed<ToPhantomTypeArgument<T>> {
@@ -532,14 +537,14 @@ export class ItemListed<T extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return ItemListed.new(typeArg, {
+    return ItemListed.reified(typeArg).new({
       kiosk: decodeFromFieldsWithTypes(ID.reified(), item.fields.kiosk),
       id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
       price: decodeFromFieldsWithTypes('u64', item.fields.price),
     })
   }
 
-  static fromBcs<T extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: Uint8Array
   ): ItemListed<ToPhantomTypeArgument<T>> {
@@ -558,18 +563,18 @@ export class ItemListed<T extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     field: any
   ): ItemListed<ToPhantomTypeArgument<T>> {
-    return ItemListed.new(typeArg, {
+    return ItemListed.reified(typeArg).new({
       kiosk: decodeFromJSONField(ID.reified(), field.kiosk),
       id: decodeFromJSONField(ID.reified(), field.id),
       price: decodeFromJSONField('u64', field.price),
     })
   }
 
-  static fromJSON<T extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     json: Record<string, any>
   ): ItemListed<ToPhantomTypeArgument<T>> {
@@ -585,7 +590,7 @@ export class ItemListed<T extends PhantomTypeArgument> {
     return ItemListed.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData
   ): ItemListed<ToPhantomTypeArgument<T>> {
@@ -598,7 +603,7 @@ export class ItemListed<T extends PhantomTypeArgument> {
     return ItemListed.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T extends ReifiedPhantomTypeArgument>(
+  static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
     id: string
@@ -633,9 +638,58 @@ export class ItemPurchased<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk::ItemPurchased'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::kiosk::ItemPurchased<${ToTypeStr<T>}>`
-
   readonly $typeName = ItemPurchased.$typeName
+
+  readonly $fullTypeName: `0x2::kiosk::ItemPurchased<${string}>`
+
+  readonly $typeArg: string
+
+  readonly kiosk: ToField<ID>
+  readonly id: ToField<ID>
+  readonly price: ToField<'u64'>
+
+  private constructor(typeArg: string, fields: ItemPurchasedFields<T>) {
+    this.$fullTypeName = composeSuiType(
+      ItemPurchased.$typeName,
+      typeArg
+    ) as `0x2::kiosk::ItemPurchased<${PhantomToTypeStr<T>}>`
+
+    this.$typeArg = typeArg
+
+    this.kiosk = fields.kiosk
+    this.id = fields.id
+    this.price = fields.price
+  }
+
+  static reified<T extends PhantomReified<PhantomTypeArgument>>(
+    T: T
+  ): Reified<
+    ItemPurchased<ToPhantomTypeArgument<T>>,
+    ItemPurchasedFields<ToPhantomTypeArgument<T>>
+  > {
+    return {
+      typeName: ItemPurchased.$typeName,
+      fullTypeName: composeSuiType(
+        ItemPurchased.$typeName,
+        ...[extractType(T)]
+      ) as `0x2::kiosk::ItemPurchased<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => ItemPurchased.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => ItemPurchased.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => ItemPurchased.fromBcs(T, data),
+      bcs: ItemPurchased.bcs,
+      fromJSONField: (field: any) => ItemPurchased.fromJSONField(T, field),
+      fetch: async (client: SuiClient, id: string) => ItemPurchased.fetch(client, T, id),
+      new: (fields: ItemPurchasedFields<ToPhantomTypeArgument<T>>) => {
+        return new ItemPurchased(extractType(T), fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return ItemPurchased.reified
+  }
 
   static get bcs() {
     return bcs.struct('ItemPurchased', {
@@ -645,63 +699,18 @@ export class ItemPurchased<T extends PhantomTypeArgument> {
     })
   }
 
-  readonly $typeArg: string
-
-  readonly kiosk: ToField<ID>
-  readonly id: ToField<ID>
-  readonly price: ToField<'u64'>
-
-  private constructor(typeArg: string, fields: ItemPurchasedFields<T>) {
-    this.$typeArg = typeArg
-
-    this.kiosk = fields.kiosk
-    this.id = fields.id
-    this.price = fields.price
-  }
-
-  static new<T extends ReifiedPhantomTypeArgument>(
-    typeArg: T,
-    fields: ItemPurchasedFields<ToPhantomTypeArgument<T>>
-  ): ItemPurchased<ToPhantomTypeArgument<T>> {
-    return new ItemPurchased(extractType(typeArg), fields)
-  }
-
-  static reified<T extends ReifiedPhantomTypeArgument>(
-    T: T
-  ): Reified<ItemPurchased<ToPhantomTypeArgument<T>>> {
-    return {
-      typeName: ItemPurchased.$typeName,
-      fullTypeName: composeSuiType(
-        ItemPurchased.$typeName,
-        ...[extractType(T)]
-      ) as `0x2::kiosk::ItemPurchased<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [T],
-      fromFields: (fields: Record<string, any>) => ItemPurchased.fromFields(T, fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => ItemPurchased.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => ItemPurchased.fromBcs(T, data),
-      bcs: ItemPurchased.bcs,
-      fromJSONField: (field: any) => ItemPurchased.fromJSONField(T, field),
-      fetch: async (client: SuiClient, id: string) => ItemPurchased.fetch(client, T, id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return ItemPurchased.reified
-  }
-
-  static fromFields<T extends ReifiedPhantomTypeArgument>(
+  static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     fields: Record<string, any>
   ): ItemPurchased<ToPhantomTypeArgument<T>> {
-    return ItemPurchased.new(typeArg, {
+    return ItemPurchased.reified(typeArg).new({
       kiosk: decodeFromFields(ID.reified(), fields.kiosk),
       id: decodeFromFields(ID.reified(), fields.id),
       price: decodeFromFields('u64', fields.price),
     })
   }
 
-  static fromFieldsWithTypes<T extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     item: FieldsWithTypes
   ): ItemPurchased<ToPhantomTypeArgument<T>> {
@@ -710,14 +719,14 @@ export class ItemPurchased<T extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return ItemPurchased.new(typeArg, {
+    return ItemPurchased.reified(typeArg).new({
       kiosk: decodeFromFieldsWithTypes(ID.reified(), item.fields.kiosk),
       id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
       price: decodeFromFieldsWithTypes('u64', item.fields.price),
     })
   }
 
-  static fromBcs<T extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: Uint8Array
   ): ItemPurchased<ToPhantomTypeArgument<T>> {
@@ -736,18 +745,18 @@ export class ItemPurchased<T extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     field: any
   ): ItemPurchased<ToPhantomTypeArgument<T>> {
-    return ItemPurchased.new(typeArg, {
+    return ItemPurchased.reified(typeArg).new({
       kiosk: decodeFromJSONField(ID.reified(), field.kiosk),
       id: decodeFromJSONField(ID.reified(), field.id),
       price: decodeFromJSONField('u64', field.price),
     })
   }
 
-  static fromJSON<T extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     json: Record<string, any>
   ): ItemPurchased<ToPhantomTypeArgument<T>> {
@@ -763,7 +772,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> {
     return ItemPurchased.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData
   ): ItemPurchased<ToPhantomTypeArgument<T>> {
@@ -776,7 +785,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> {
     return ItemPurchased.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T extends ReifiedPhantomTypeArgument>(
+  static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
     id: string
@@ -813,9 +822,47 @@ export class Kiosk {
   static readonly $typeName = '0x2::kiosk::Kiosk'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::kiosk::Kiosk'
-
   readonly $typeName = Kiosk.$typeName
+
+  readonly $fullTypeName: '0x2::kiosk::Kiosk'
+
+  readonly id: ToField<UID>
+  readonly profits: ToField<Balance<ToPhantom<SUI>>>
+  readonly owner: ToField<'address'>
+  readonly itemCount: ToField<'u32'>
+  readonly allowExtensions: ToField<'bool'>
+
+  private constructor(fields: KioskFields) {
+    this.$fullTypeName = Kiosk.$typeName
+
+    this.id = fields.id
+    this.profits = fields.profits
+    this.owner = fields.owner
+    this.itemCount = fields.itemCount
+    this.allowExtensions = fields.allowExtensions
+  }
+
+  static reified(): Reified<Kiosk, KioskFields> {
+    return {
+      typeName: Kiosk.$typeName,
+      fullTypeName: composeSuiType(Kiosk.$typeName, ...[]) as '0x2::kiosk::Kiosk',
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => Kiosk.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Kiosk.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => Kiosk.fromBcs(data),
+      bcs: Kiosk.bcs,
+      fromJSONField: (field: any) => Kiosk.fromJSONField(field),
+      fetch: async (client: SuiClient, id: string) => Kiosk.fetch(client, id),
+      new: (fields: KioskFields) => {
+        return new Kiosk(fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return Kiosk.reified()
+  }
 
   static get bcs() {
     return bcs.struct('Kiosk', {
@@ -830,47 +877,10 @@ export class Kiosk {
     })
   }
 
-  readonly id: ToField<UID>
-  readonly profits: ToField<Balance<ToPhantom<SUI>>>
-  readonly owner: ToField<'address'>
-  readonly itemCount: ToField<'u32'>
-  readonly allowExtensions: ToField<'bool'>
-
-  private constructor(fields: KioskFields) {
-    this.id = fields.id
-    this.profits = fields.profits
-    this.owner = fields.owner
-    this.itemCount = fields.itemCount
-    this.allowExtensions = fields.allowExtensions
-  }
-
-  static new(fields: KioskFields): Kiosk {
-    return new Kiosk(fields)
-  }
-
-  static reified(): Reified<Kiosk> {
-    return {
-      typeName: Kiosk.$typeName,
-      fullTypeName: composeSuiType(Kiosk.$typeName, ...[]) as '0x2::kiosk::Kiosk',
-      typeArgs: [],
-      fromFields: (fields: Record<string, any>) => Kiosk.fromFields(fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => Kiosk.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Kiosk.fromBcs(data),
-      bcs: Kiosk.bcs,
-      fromJSONField: (field: any) => Kiosk.fromJSONField(field),
-      fetch: async (client: SuiClient, id: string) => Kiosk.fetch(client, id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return Kiosk.reified()
-  }
-
   static fromFields(fields: Record<string, any>): Kiosk {
-    return Kiosk.new({
+    return Kiosk.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
-      profits: decodeFromFields(Balance.reified(SUI.reified()), fields.profits),
+      profits: decodeFromFields(Balance.reified(reified.phantom(SUI.reified())), fields.profits),
       owner: decodeFromFields('address', fields.owner),
       itemCount: decodeFromFields('u32', fields.item_count),
       allowExtensions: decodeFromFields('bool', fields.allow_extensions),
@@ -882,9 +892,12 @@ export class Kiosk {
       throw new Error('not a Kiosk type')
     }
 
-    return Kiosk.new({
+    return Kiosk.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
-      profits: decodeFromFieldsWithTypes(Balance.reified(SUI.reified()), item.fields.profits),
+      profits: decodeFromFieldsWithTypes(
+        Balance.reified(reified.phantom(SUI.reified())),
+        item.fields.profits
+      ),
       owner: decodeFromFieldsWithTypes('address', item.fields.owner),
       itemCount: decodeFromFieldsWithTypes('u32', item.fields.item_count),
       allowExtensions: decodeFromFieldsWithTypes('bool', item.fields.allow_extensions),
@@ -910,9 +923,9 @@ export class Kiosk {
   }
 
   static fromJSONField(field: any): Kiosk {
-    return Kiosk.new({
+    return Kiosk.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
-      profits: decodeFromJSONField(Balance.reified(SUI.reified()), field.profits),
+      profits: decodeFromJSONField(Balance.reified(reified.phantom(SUI.reified())), field.profits),
       owner: decodeFromJSONField('address', field.owner),
       itemCount: decodeFromJSONField('u32', field.itemCount),
       allowExtensions: decodeFromJSONField('bool', field.allowExtensions),
@@ -967,30 +980,21 @@ export class KioskOwnerCap {
   static readonly $typeName = '0x2::kiosk::KioskOwnerCap'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::kiosk::KioskOwnerCap'
-
   readonly $typeName = KioskOwnerCap.$typeName
 
-  static get bcs() {
-    return bcs.struct('KioskOwnerCap', {
-      id: UID.bcs,
-      for: ID.bcs,
-    })
-  }
+  readonly $fullTypeName: '0x2::kiosk::KioskOwnerCap'
 
   readonly id: ToField<UID>
   readonly for: ToField<ID>
 
   private constructor(fields: KioskOwnerCapFields) {
+    this.$fullTypeName = KioskOwnerCap.$typeName
+
     this.id = fields.id
     this.for = fields.for
   }
 
-  static new(fields: KioskOwnerCapFields): KioskOwnerCap {
-    return new KioskOwnerCap(fields)
-  }
-
-  static reified(): Reified<KioskOwnerCap> {
+  static reified(): Reified<KioskOwnerCap, KioskOwnerCapFields> {
     return {
       typeName: KioskOwnerCap.$typeName,
       fullTypeName: composeSuiType(KioskOwnerCap.$typeName, ...[]) as '0x2::kiosk::KioskOwnerCap',
@@ -1001,6 +1005,9 @@ export class KioskOwnerCap {
       bcs: KioskOwnerCap.bcs,
       fromJSONField: (field: any) => KioskOwnerCap.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => KioskOwnerCap.fetch(client, id),
+      new: (fields: KioskOwnerCapFields) => {
+        return new KioskOwnerCap(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -1009,8 +1016,15 @@ export class KioskOwnerCap {
     return KioskOwnerCap.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('KioskOwnerCap', {
+      id: UID.bcs,
+      for: ID.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): KioskOwnerCap {
-    return KioskOwnerCap.new({
+    return KioskOwnerCap.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       for: decodeFromFields(ID.reified(), fields.for),
     })
@@ -1021,7 +1035,7 @@ export class KioskOwnerCap {
       throw new Error('not a KioskOwnerCap type')
     }
 
-    return KioskOwnerCap.new({
+    return KioskOwnerCap.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       for: decodeFromFieldsWithTypes(ID.reified(), item.fields.for),
     })
@@ -1043,7 +1057,7 @@ export class KioskOwnerCap {
   }
 
   static fromJSONField(field: any): KioskOwnerCap {
-    return KioskOwnerCap.new({
+    return KioskOwnerCap.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       for: decodeFromJSONField(ID.reified(), field.for),
     })
@@ -1097,30 +1111,21 @@ export class Listing {
   static readonly $typeName = '0x2::kiosk::Listing'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::kiosk::Listing'
-
   readonly $typeName = Listing.$typeName
 
-  static get bcs() {
-    return bcs.struct('Listing', {
-      id: ID.bcs,
-      is_exclusive: bcs.bool(),
-    })
-  }
+  readonly $fullTypeName: '0x2::kiosk::Listing'
 
   readonly id: ToField<ID>
   readonly isExclusive: ToField<'bool'>
 
   private constructor(fields: ListingFields) {
+    this.$fullTypeName = Listing.$typeName
+
     this.id = fields.id
     this.isExclusive = fields.isExclusive
   }
 
-  static new(fields: ListingFields): Listing {
-    return new Listing(fields)
-  }
-
-  static reified(): Reified<Listing> {
+  static reified(): Reified<Listing, ListingFields> {
     return {
       typeName: Listing.$typeName,
       fullTypeName: composeSuiType(Listing.$typeName, ...[]) as '0x2::kiosk::Listing',
@@ -1131,6 +1136,9 @@ export class Listing {
       bcs: Listing.bcs,
       fromJSONField: (field: any) => Listing.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => Listing.fetch(client, id),
+      new: (fields: ListingFields) => {
+        return new Listing(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -1139,8 +1147,15 @@ export class Listing {
     return Listing.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('Listing', {
+      id: ID.bcs,
+      is_exclusive: bcs.bool(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): Listing {
-    return Listing.new({
+    return Listing.reified().new({
       id: decodeFromFields(ID.reified(), fields.id),
       isExclusive: decodeFromFields('bool', fields.is_exclusive),
     })
@@ -1151,7 +1166,7 @@ export class Listing {
       throw new Error('not a Listing type')
     }
 
-    return Listing.new({
+    return Listing.reified().new({
       id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
       isExclusive: decodeFromFieldsWithTypes('bool', item.fields.is_exclusive),
     })
@@ -1173,7 +1188,7 @@ export class Listing {
   }
 
   static fromJSONField(field: any): Listing {
-    return Listing.new({
+    return Listing.reified().new({
       id: decodeFromJSONField(ID.reified(), field.id),
       isExclusive: decodeFromJSONField('bool', field.isExclusive),
     })
@@ -1226,27 +1241,19 @@ export class Lock {
   static readonly $typeName = '0x2::kiosk::Lock'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::kiosk::Lock'
-
   readonly $typeName = Lock.$typeName
 
-  static get bcs() {
-    return bcs.struct('Lock', {
-      id: ID.bcs,
-    })
-  }
+  readonly $fullTypeName: '0x2::kiosk::Lock'
 
   readonly id: ToField<ID>
 
-  private constructor(id: ToField<ID>) {
-    this.id = id
+  private constructor(fields: LockFields) {
+    this.$fullTypeName = Lock.$typeName
+
+    this.id = fields.id
   }
 
-  static new(id: ToField<ID>): Lock {
-    return new Lock(id)
-  }
-
-  static reified(): Reified<Lock> {
+  static reified(): Reified<Lock, LockFields> {
     return {
       typeName: Lock.$typeName,
       fullTypeName: composeSuiType(Lock.$typeName, ...[]) as '0x2::kiosk::Lock',
@@ -1257,6 +1264,9 @@ export class Lock {
       bcs: Lock.bcs,
       fromJSONField: (field: any) => Lock.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => Lock.fetch(client, id),
+      new: (fields: LockFields) => {
+        return new Lock(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -1265,8 +1275,14 @@ export class Lock {
     return Lock.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('Lock', {
+      id: ID.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): Lock {
-    return Lock.new(decodeFromFields(ID.reified(), fields.id))
+    return Lock.reified().new({ id: decodeFromFields(ID.reified(), fields.id) })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Lock {
@@ -1274,7 +1290,7 @@ export class Lock {
       throw new Error('not a Lock type')
     }
 
-    return Lock.new(decodeFromFieldsWithTypes(ID.reified(), item.fields.id))
+    return Lock.reified().new({ id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id) })
   }
 
   static fromBcs(data: Uint8Array): Lock {
@@ -1292,7 +1308,7 @@ export class Lock {
   }
 
   static fromJSONField(field: any): Lock {
-    return Lock.new(decodeFromJSONField(ID.reified(), field.id))
+    return Lock.reified().new({ id: decodeFromJSONField(ID.reified(), field.id) })
   }
 
   static fromJSON(json: Record<string, any>): Lock {
@@ -1345,9 +1361,57 @@ export class PurchaseCap<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk::PurchaseCap'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::kiosk::PurchaseCap<${ToTypeStr<T>}>`
-
   readonly $typeName = PurchaseCap.$typeName
+
+  readonly $fullTypeName: `0x2::kiosk::PurchaseCap<${string}>`
+
+  readonly $typeArg: string
+
+  readonly id: ToField<UID>
+  readonly kioskId: ToField<ID>
+  readonly itemId: ToField<ID>
+  readonly minPrice: ToField<'u64'>
+
+  private constructor(typeArg: string, fields: PurchaseCapFields<T>) {
+    this.$fullTypeName = composeSuiType(
+      PurchaseCap.$typeName,
+      typeArg
+    ) as `0x2::kiosk::PurchaseCap<${PhantomToTypeStr<T>}>`
+
+    this.$typeArg = typeArg
+
+    this.id = fields.id
+    this.kioskId = fields.kioskId
+    this.itemId = fields.itemId
+    this.minPrice = fields.minPrice
+  }
+
+  static reified<T extends PhantomReified<PhantomTypeArgument>>(
+    T: T
+  ): Reified<PurchaseCap<ToPhantomTypeArgument<T>>, PurchaseCapFields<ToPhantomTypeArgument<T>>> {
+    return {
+      typeName: PurchaseCap.$typeName,
+      fullTypeName: composeSuiType(
+        PurchaseCap.$typeName,
+        ...[extractType(T)]
+      ) as `0x2::kiosk::PurchaseCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => PurchaseCap.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => PurchaseCap.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => PurchaseCap.fromBcs(T, data),
+      bcs: PurchaseCap.bcs,
+      fromJSONField: (field: any) => PurchaseCap.fromJSONField(T, field),
+      fetch: async (client: SuiClient, id: string) => PurchaseCap.fetch(client, T, id),
+      new: (fields: PurchaseCapFields<ToPhantomTypeArgument<T>>) => {
+        return new PurchaseCap(extractType(T), fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return PurchaseCap.reified
+  }
 
   static get bcs() {
     return bcs.struct('PurchaseCap', {
@@ -1358,58 +1422,11 @@ export class PurchaseCap<T extends PhantomTypeArgument> {
     })
   }
 
-  readonly $typeArg: string
-
-  readonly id: ToField<UID>
-  readonly kioskId: ToField<ID>
-  readonly itemId: ToField<ID>
-  readonly minPrice: ToField<'u64'>
-
-  private constructor(typeArg: string, fields: PurchaseCapFields<T>) {
-    this.$typeArg = typeArg
-
-    this.id = fields.id
-    this.kioskId = fields.kioskId
-    this.itemId = fields.itemId
-    this.minPrice = fields.minPrice
-  }
-
-  static new<T extends ReifiedPhantomTypeArgument>(
-    typeArg: T,
-    fields: PurchaseCapFields<ToPhantomTypeArgument<T>>
-  ): PurchaseCap<ToPhantomTypeArgument<T>> {
-    return new PurchaseCap(extractType(typeArg), fields)
-  }
-
-  static reified<T extends ReifiedPhantomTypeArgument>(
-    T: T
-  ): Reified<PurchaseCap<ToPhantomTypeArgument<T>>> {
-    return {
-      typeName: PurchaseCap.$typeName,
-      fullTypeName: composeSuiType(
-        PurchaseCap.$typeName,
-        ...[extractType(T)]
-      ) as `0x2::kiosk::PurchaseCap<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [T],
-      fromFields: (fields: Record<string, any>) => PurchaseCap.fromFields(T, fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => PurchaseCap.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => PurchaseCap.fromBcs(T, data),
-      bcs: PurchaseCap.bcs,
-      fromJSONField: (field: any) => PurchaseCap.fromJSONField(T, field),
-      fetch: async (client: SuiClient, id: string) => PurchaseCap.fetch(client, T, id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return PurchaseCap.reified
-  }
-
-  static fromFields<T extends ReifiedPhantomTypeArgument>(
+  static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     fields: Record<string, any>
   ): PurchaseCap<ToPhantomTypeArgument<T>> {
-    return PurchaseCap.new(typeArg, {
+    return PurchaseCap.reified(typeArg).new({
       id: decodeFromFields(UID.reified(), fields.id),
       kioskId: decodeFromFields(ID.reified(), fields.kiosk_id),
       itemId: decodeFromFields(ID.reified(), fields.item_id),
@@ -1417,7 +1434,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> {
     })
   }
 
-  static fromFieldsWithTypes<T extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     item: FieldsWithTypes
   ): PurchaseCap<ToPhantomTypeArgument<T>> {
@@ -1426,7 +1443,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return PurchaseCap.new(typeArg, {
+    return PurchaseCap.reified(typeArg).new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       kioskId: decodeFromFieldsWithTypes(ID.reified(), item.fields.kiosk_id),
       itemId: decodeFromFieldsWithTypes(ID.reified(), item.fields.item_id),
@@ -1434,7 +1451,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> {
     })
   }
 
-  static fromBcs<T extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: Uint8Array
   ): PurchaseCap<ToPhantomTypeArgument<T>> {
@@ -1454,11 +1471,11 @@ export class PurchaseCap<T extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     field: any
   ): PurchaseCap<ToPhantomTypeArgument<T>> {
-    return PurchaseCap.new(typeArg, {
+    return PurchaseCap.reified(typeArg).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       kioskId: decodeFromJSONField(ID.reified(), field.kioskId),
       itemId: decodeFromJSONField(ID.reified(), field.itemId),
@@ -1466,7 +1483,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> {
     })
   }
 
-  static fromJSON<T extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     json: Record<string, any>
   ): PurchaseCap<ToPhantomTypeArgument<T>> {
@@ -1482,7 +1499,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> {
     return PurchaseCap.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData
   ): PurchaseCap<ToPhantomTypeArgument<T>> {
@@ -1495,7 +1512,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> {
     return PurchaseCap.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T extends ReifiedPhantomTypeArgument>(
+  static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
     id: string

@@ -27,27 +27,19 @@ export class TypeName {
   static readonly $typeName = '0x1::type_name::TypeName'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x1::type_name::TypeName'
-
   readonly $typeName = TypeName.$typeName
 
-  static get bcs() {
-    return bcs.struct('TypeName', {
-      name: String.bcs,
-    })
-  }
+  readonly $fullTypeName: '0x1::type_name::TypeName'
 
   readonly name: ToField<String>
 
-  private constructor(name: ToField<String>) {
-    this.name = name
+  private constructor(fields: TypeNameFields) {
+    this.$fullTypeName = TypeName.$typeName
+
+    this.name = fields.name
   }
 
-  static new(name: ToField<String>): TypeName {
-    return new TypeName(name)
-  }
-
-  static reified(): Reified<TypeName> {
+  static reified(): Reified<TypeName, TypeNameFields> {
     return {
       typeName: TypeName.$typeName,
       fullTypeName: composeSuiType(TypeName.$typeName, ...[]) as '0x1::type_name::TypeName',
@@ -58,6 +50,9 @@ export class TypeName {
       bcs: TypeName.bcs,
       fromJSONField: (field: any) => TypeName.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => TypeName.fetch(client, id),
+      new: (fields: TypeNameFields) => {
+        return new TypeName(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -66,8 +61,14 @@ export class TypeName {
     return TypeName.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('TypeName', {
+      name: String.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): TypeName {
-    return TypeName.new(decodeFromFields(String.reified(), fields.name))
+    return TypeName.reified().new({ name: decodeFromFields(String.reified(), fields.name) })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): TypeName {
@@ -75,7 +76,9 @@ export class TypeName {
       throw new Error('not a TypeName type')
     }
 
-    return TypeName.new(decodeFromFieldsWithTypes(String.reified(), item.fields.name))
+    return TypeName.reified().new({
+      name: decodeFromFieldsWithTypes(String.reified(), item.fields.name),
+    })
   }
 
   static fromBcs(data: Uint8Array): TypeName {
@@ -93,7 +96,7 @@ export class TypeName {
   }
 
   static fromJSONField(field: any): TypeName {
-    return TypeName.new(decodeFromJSONField(String.reified(), field.name))
+    return TypeName.reified().new({ name: decodeFromJSONField(String.reified(), field.name) })
   }
 
   static fromJSON(json: Record<string, any>): TypeName {

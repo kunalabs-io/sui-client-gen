@@ -33,33 +33,23 @@ export class ActiveJwk {
   static readonly $typeName = '0x2::authenticator_state::ActiveJwk'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::authenticator_state::ActiveJwk'
-
   readonly $typeName = ActiveJwk.$typeName
 
-  static get bcs() {
-    return bcs.struct('ActiveJwk', {
-      jwk_id: JwkId.bcs,
-      jwk: JWK.bcs,
-      epoch: bcs.u64(),
-    })
-  }
+  readonly $fullTypeName: '0x2::authenticator_state::ActiveJwk'
 
   readonly jwkId: ToField<JwkId>
   readonly jwk: ToField<JWK>
   readonly epoch: ToField<'u64'>
 
   private constructor(fields: ActiveJwkFields) {
+    this.$fullTypeName = ActiveJwk.$typeName
+
     this.jwkId = fields.jwkId
     this.jwk = fields.jwk
     this.epoch = fields.epoch
   }
 
-  static new(fields: ActiveJwkFields): ActiveJwk {
-    return new ActiveJwk(fields)
-  }
-
-  static reified(): Reified<ActiveJwk> {
+  static reified(): Reified<ActiveJwk, ActiveJwkFields> {
     return {
       typeName: ActiveJwk.$typeName,
       fullTypeName: composeSuiType(
@@ -73,6 +63,9 @@ export class ActiveJwk {
       bcs: ActiveJwk.bcs,
       fromJSONField: (field: any) => ActiveJwk.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => ActiveJwk.fetch(client, id),
+      new: (fields: ActiveJwkFields) => {
+        return new ActiveJwk(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -81,8 +74,16 @@ export class ActiveJwk {
     return ActiveJwk.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('ActiveJwk', {
+      jwk_id: JwkId.bcs,
+      jwk: JWK.bcs,
+      epoch: bcs.u64(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): ActiveJwk {
-    return ActiveJwk.new({
+    return ActiveJwk.reified().new({
       jwkId: decodeFromFields(JwkId.reified(), fields.jwk_id),
       jwk: decodeFromFields(JWK.reified(), fields.jwk),
       epoch: decodeFromFields('u64', fields.epoch),
@@ -94,7 +95,7 @@ export class ActiveJwk {
       throw new Error('not a ActiveJwk type')
     }
 
-    return ActiveJwk.new({
+    return ActiveJwk.reified().new({
       jwkId: decodeFromFieldsWithTypes(JwkId.reified(), item.fields.jwk_id),
       jwk: decodeFromFieldsWithTypes(JWK.reified(), item.fields.jwk),
       epoch: decodeFromFieldsWithTypes('u64', item.fields.epoch),
@@ -118,7 +119,7 @@ export class ActiveJwk {
   }
 
   static fromJSONField(field: any): ActiveJwk {
-    return ActiveJwk.new({
+    return ActiveJwk.reified().new({
       jwkId: decodeFromJSONField(JwkId.reified(), field.jwkId),
       jwk: decodeFromJSONField(JWK.reified(), field.jwk),
       epoch: decodeFromJSONField('u64', field.epoch),
@@ -173,30 +174,21 @@ export class AuthenticatorState {
   static readonly $typeName = '0x2::authenticator_state::AuthenticatorState'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::authenticator_state::AuthenticatorState'
-
   readonly $typeName = AuthenticatorState.$typeName
 
-  static get bcs() {
-    return bcs.struct('AuthenticatorState', {
-      id: UID.bcs,
-      version: bcs.u64(),
-    })
-  }
+  readonly $fullTypeName: '0x2::authenticator_state::AuthenticatorState'
 
   readonly id: ToField<UID>
   readonly version: ToField<'u64'>
 
   private constructor(fields: AuthenticatorStateFields) {
+    this.$fullTypeName = AuthenticatorState.$typeName
+
     this.id = fields.id
     this.version = fields.version
   }
 
-  static new(fields: AuthenticatorStateFields): AuthenticatorState {
-    return new AuthenticatorState(fields)
-  }
-
-  static reified(): Reified<AuthenticatorState> {
+  static reified(): Reified<AuthenticatorState, AuthenticatorStateFields> {
     return {
       typeName: AuthenticatorState.$typeName,
       fullTypeName: composeSuiType(
@@ -210,6 +202,9 @@ export class AuthenticatorState {
       bcs: AuthenticatorState.bcs,
       fromJSONField: (field: any) => AuthenticatorState.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => AuthenticatorState.fetch(client, id),
+      new: (fields: AuthenticatorStateFields) => {
+        return new AuthenticatorState(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -218,8 +213,15 @@ export class AuthenticatorState {
     return AuthenticatorState.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('AuthenticatorState', {
+      id: UID.bcs,
+      version: bcs.u64(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): AuthenticatorState {
-    return AuthenticatorState.new({
+    return AuthenticatorState.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       version: decodeFromFields('u64', fields.version),
     })
@@ -230,7 +232,7 @@ export class AuthenticatorState {
       throw new Error('not a AuthenticatorState type')
     }
 
-    return AuthenticatorState.new({
+    return AuthenticatorState.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       version: decodeFromFieldsWithTypes('u64', item.fields.version),
     })
@@ -252,7 +254,7 @@ export class AuthenticatorState {
   }
 
   static fromJSONField(field: any): AuthenticatorState {
-    return AuthenticatorState.new({
+    return AuthenticatorState.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       version: decodeFromJSONField('u64', field.version),
     })
@@ -309,30 +311,21 @@ export class AuthenticatorStateInner {
   static readonly $typeName = '0x2::authenticator_state::AuthenticatorStateInner'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::authenticator_state::AuthenticatorStateInner'
-
   readonly $typeName = AuthenticatorStateInner.$typeName
 
-  static get bcs() {
-    return bcs.struct('AuthenticatorStateInner', {
-      version: bcs.u64(),
-      active_jwks: bcs.vector(ActiveJwk.bcs),
-    })
-  }
+  readonly $fullTypeName: '0x2::authenticator_state::AuthenticatorStateInner'
 
   readonly version: ToField<'u64'>
   readonly activeJwks: ToField<Vector<ActiveJwk>>
 
   private constructor(fields: AuthenticatorStateInnerFields) {
+    this.$fullTypeName = AuthenticatorStateInner.$typeName
+
     this.version = fields.version
     this.activeJwks = fields.activeJwks
   }
 
-  static new(fields: AuthenticatorStateInnerFields): AuthenticatorStateInner {
-    return new AuthenticatorStateInner(fields)
-  }
-
-  static reified(): Reified<AuthenticatorStateInner> {
+  static reified(): Reified<AuthenticatorStateInner, AuthenticatorStateInnerFields> {
     return {
       typeName: AuthenticatorStateInner.$typeName,
       fullTypeName: composeSuiType(
@@ -347,6 +340,9 @@ export class AuthenticatorStateInner {
       bcs: AuthenticatorStateInner.bcs,
       fromJSONField: (field: any) => AuthenticatorStateInner.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => AuthenticatorStateInner.fetch(client, id),
+      new: (fields: AuthenticatorStateInnerFields) => {
+        return new AuthenticatorStateInner(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -355,8 +351,15 @@ export class AuthenticatorStateInner {
     return AuthenticatorStateInner.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('AuthenticatorStateInner', {
+      version: bcs.u64(),
+      active_jwks: bcs.vector(ActiveJwk.bcs),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): AuthenticatorStateInner {
-    return AuthenticatorStateInner.new({
+    return AuthenticatorStateInner.reified().new({
       version: decodeFromFields('u64', fields.version),
       activeJwks: decodeFromFields(reified.vector(ActiveJwk.reified()), fields.active_jwks),
     })
@@ -367,7 +370,7 @@ export class AuthenticatorStateInner {
       throw new Error('not a AuthenticatorStateInner type')
     }
 
-    return AuthenticatorStateInner.new({
+    return AuthenticatorStateInner.reified().new({
       version: decodeFromFieldsWithTypes('u64', item.fields.version),
       activeJwks: decodeFromFieldsWithTypes(
         reified.vector(ActiveJwk.reified()),
@@ -395,7 +398,7 @@ export class AuthenticatorStateInner {
   }
 
   static fromJSONField(field: any): AuthenticatorStateInner {
-    return AuthenticatorStateInner.new({
+    return AuthenticatorStateInner.reified().new({
       version: decodeFromJSONField('u64', field.version),
       activeJwks: decodeFromJSONField(reified.vector(ActiveJwk.reified()), field.activeJwks),
     })
@@ -458,18 +461,9 @@ export class JWK {
   static readonly $typeName = '0x2::authenticator_state::JWK'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::authenticator_state::JWK'
-
   readonly $typeName = JWK.$typeName
 
-  static get bcs() {
-    return bcs.struct('JWK', {
-      kty: String.bcs,
-      e: String.bcs,
-      n: String.bcs,
-      alg: String.bcs,
-    })
-  }
+  readonly $fullTypeName: '0x2::authenticator_state::JWK'
 
   readonly kty: ToField<String>
   readonly e: ToField<String>
@@ -477,17 +471,15 @@ export class JWK {
   readonly alg: ToField<String>
 
   private constructor(fields: JWKFields) {
+    this.$fullTypeName = JWK.$typeName
+
     this.kty = fields.kty
     this.e = fields.e
     this.n = fields.n
     this.alg = fields.alg
   }
 
-  static new(fields: JWKFields): JWK {
-    return new JWK(fields)
-  }
-
-  static reified(): Reified<JWK> {
+  static reified(): Reified<JWK, JWKFields> {
     return {
       typeName: JWK.$typeName,
       fullTypeName: composeSuiType(JWK.$typeName, ...[]) as '0x2::authenticator_state::JWK',
@@ -498,6 +490,9 @@ export class JWK {
       bcs: JWK.bcs,
       fromJSONField: (field: any) => JWK.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => JWK.fetch(client, id),
+      new: (fields: JWKFields) => {
+        return new JWK(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -506,8 +501,17 @@ export class JWK {
     return JWK.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('JWK', {
+      kty: String.bcs,
+      e: String.bcs,
+      n: String.bcs,
+      alg: String.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): JWK {
-    return JWK.new({
+    return JWK.reified().new({
       kty: decodeFromFields(String.reified(), fields.kty),
       e: decodeFromFields(String.reified(), fields.e),
       n: decodeFromFields(String.reified(), fields.n),
@@ -520,7 +524,7 @@ export class JWK {
       throw new Error('not a JWK type')
     }
 
-    return JWK.new({
+    return JWK.reified().new({
       kty: decodeFromFieldsWithTypes(String.reified(), item.fields.kty),
       e: decodeFromFieldsWithTypes(String.reified(), item.fields.e),
       n: decodeFromFieldsWithTypes(String.reified(), item.fields.n),
@@ -546,7 +550,7 @@ export class JWK {
   }
 
   static fromJSONField(field: any): JWK {
-    return JWK.new({
+    return JWK.reified().new({
       kty: decodeFromJSONField(String.reified(), field.kty),
       e: decodeFromJSONField(String.reified(), field.e),
       n: decodeFromJSONField(String.reified(), field.n),
@@ -602,30 +606,21 @@ export class JwkId {
   static readonly $typeName = '0x2::authenticator_state::JwkId'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::authenticator_state::JwkId'
-
   readonly $typeName = JwkId.$typeName
 
-  static get bcs() {
-    return bcs.struct('JwkId', {
-      iss: String.bcs,
-      kid: String.bcs,
-    })
-  }
+  readonly $fullTypeName: '0x2::authenticator_state::JwkId'
 
   readonly iss: ToField<String>
   readonly kid: ToField<String>
 
   private constructor(fields: JwkIdFields) {
+    this.$fullTypeName = JwkId.$typeName
+
     this.iss = fields.iss
     this.kid = fields.kid
   }
 
-  static new(fields: JwkIdFields): JwkId {
-    return new JwkId(fields)
-  }
-
-  static reified(): Reified<JwkId> {
+  static reified(): Reified<JwkId, JwkIdFields> {
     return {
       typeName: JwkId.$typeName,
       fullTypeName: composeSuiType(JwkId.$typeName, ...[]) as '0x2::authenticator_state::JwkId',
@@ -636,6 +631,9 @@ export class JwkId {
       bcs: JwkId.bcs,
       fromJSONField: (field: any) => JwkId.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => JwkId.fetch(client, id),
+      new: (fields: JwkIdFields) => {
+        return new JwkId(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -644,8 +642,15 @@ export class JwkId {
     return JwkId.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('JwkId', {
+      iss: String.bcs,
+      kid: String.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): JwkId {
-    return JwkId.new({
+    return JwkId.reified().new({
       iss: decodeFromFields(String.reified(), fields.iss),
       kid: decodeFromFields(String.reified(), fields.kid),
     })
@@ -656,7 +661,7 @@ export class JwkId {
       throw new Error('not a JwkId type')
     }
 
-    return JwkId.new({
+    return JwkId.reified().new({
       iss: decodeFromFieldsWithTypes(String.reified(), item.fields.iss),
       kid: decodeFromFieldsWithTypes(String.reified(), item.fields.kid),
     })
@@ -678,7 +683,7 @@ export class JwkId {
   }
 
   static fromJSONField(field: any): JwkId {
-    return JwkId.new({
+    return JwkId.reified().new({
       iss: decodeFromJSONField(String.reified(), field.iss),
       kid: decodeFromJSONField(String.reified(), field.kid),
     })

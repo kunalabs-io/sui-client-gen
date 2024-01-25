@@ -33,9 +33,52 @@ export class VerifiedID {
   static readonly $typeName = '0x2::zklogin_verified_id::VerifiedID'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::zklogin_verified_id::VerifiedID'
-
   readonly $typeName = VerifiedID.$typeName
+
+  readonly $fullTypeName: '0x2::zklogin_verified_id::VerifiedID'
+
+  readonly id: ToField<UID>
+  readonly owner: ToField<'address'>
+  readonly keyClaimName: ToField<String>
+  readonly keyClaimValue: ToField<String>
+  readonly issuer: ToField<String>
+  readonly audience: ToField<String>
+
+  private constructor(fields: VerifiedIDFields) {
+    this.$fullTypeName = VerifiedID.$typeName
+
+    this.id = fields.id
+    this.owner = fields.owner
+    this.keyClaimName = fields.keyClaimName
+    this.keyClaimValue = fields.keyClaimValue
+    this.issuer = fields.issuer
+    this.audience = fields.audience
+  }
+
+  static reified(): Reified<VerifiedID, VerifiedIDFields> {
+    return {
+      typeName: VerifiedID.$typeName,
+      fullTypeName: composeSuiType(
+        VerifiedID.$typeName,
+        ...[]
+      ) as '0x2::zklogin_verified_id::VerifiedID',
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => VerifiedID.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => VerifiedID.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => VerifiedID.fromBcs(data),
+      bcs: VerifiedID.bcs,
+      fromJSONField: (field: any) => VerifiedID.fromJSONField(field),
+      fetch: async (client: SuiClient, id: string) => VerifiedID.fetch(client, id),
+      new: (fields: VerifiedIDFields) => {
+        return new VerifiedID(fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return VerifiedID.reified()
+  }
 
   static get bcs() {
     return bcs.struct('VerifiedID', {
@@ -51,50 +94,8 @@ export class VerifiedID {
     })
   }
 
-  readonly id: ToField<UID>
-  readonly owner: ToField<'address'>
-  readonly keyClaimName: ToField<String>
-  readonly keyClaimValue: ToField<String>
-  readonly issuer: ToField<String>
-  readonly audience: ToField<String>
-
-  private constructor(fields: VerifiedIDFields) {
-    this.id = fields.id
-    this.owner = fields.owner
-    this.keyClaimName = fields.keyClaimName
-    this.keyClaimValue = fields.keyClaimValue
-    this.issuer = fields.issuer
-    this.audience = fields.audience
-  }
-
-  static new(fields: VerifiedIDFields): VerifiedID {
-    return new VerifiedID(fields)
-  }
-
-  static reified(): Reified<VerifiedID> {
-    return {
-      typeName: VerifiedID.$typeName,
-      fullTypeName: composeSuiType(
-        VerifiedID.$typeName,
-        ...[]
-      ) as '0x2::zklogin_verified_id::VerifiedID',
-      typeArgs: [],
-      fromFields: (fields: Record<string, any>) => VerifiedID.fromFields(fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => VerifiedID.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => VerifiedID.fromBcs(data),
-      bcs: VerifiedID.bcs,
-      fromJSONField: (field: any) => VerifiedID.fromJSONField(field),
-      fetch: async (client: SuiClient, id: string) => VerifiedID.fetch(client, id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return VerifiedID.reified()
-  }
-
   static fromFields(fields: Record<string, any>): VerifiedID {
-    return VerifiedID.new({
+    return VerifiedID.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       owner: decodeFromFields('address', fields.owner),
       keyClaimName: decodeFromFields(String.reified(), fields.key_claim_name),
@@ -109,7 +110,7 @@ export class VerifiedID {
       throw new Error('not a VerifiedID type')
     }
 
-    return VerifiedID.new({
+    return VerifiedID.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       owner: decodeFromFieldsWithTypes('address', item.fields.owner),
       keyClaimName: decodeFromFieldsWithTypes(String.reified(), item.fields.key_claim_name),
@@ -139,7 +140,7 @@ export class VerifiedID {
   }
 
   static fromJSONField(field: any): VerifiedID {
-    return VerifiedID.new({
+    return VerifiedID.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       owner: decodeFromJSONField('address', field.owner),
       keyClaimName: decodeFromJSONField(String.reified(), field.keyClaimName),

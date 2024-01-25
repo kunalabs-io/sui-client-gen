@@ -38,35 +38,28 @@ export class Option<T0 extends TypeArgument> {
 
   __inner: T0 = null as unknown as T0 // for type checking in reified.ts
 
-  readonly $fullTypeName = null as unknown as `0x1::option::Option<${ToTypeStr<T0>}>`
-
   readonly $typeName = Option.$typeName
 
-  static get bcs() {
-    return <T0 extends BcsType<any>>(T0: T0) =>
-      bcs.struct(`Option<${T0.name}>`, {
-        vec: bcs.vector(T0),
-      })
-  }
+  readonly $fullTypeName: `0x1::option::Option<${string}>`
 
   readonly $typeArg: string
 
   readonly vec: ToField<Vector<T0>>
 
-  private constructor(typeArg: string, vec: ToField<Vector<T0>>) {
+  private constructor(typeArg: string, fields: OptionFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      Option.$typeName,
+      typeArg
+    ) as `0x1::option::Option<${ToTypeStr<T0>}>`
+
     this.$typeArg = typeArg
 
-    this.vec = vec
+    this.vec = fields.vec
   }
 
-  static new<T0 extends Reified<TypeArgument>>(
-    typeArg: T0,
-    vec: ToField<Vector<ToTypeArgument<T0>>>
-  ): Option<ToTypeArgument<T0>> {
-    return new Option(extractType(typeArg), vec)
-  }
-
-  static reified<T0 extends Reified<TypeArgument>>(T0: T0): Reified<Option<ToTypeArgument<T0>>> {
+  static reified<T0 extends Reified<TypeArgument, any>>(
+    T0: T0
+  ): Reified<Option<ToTypeArgument<T0>>, OptionFields<ToTypeArgument<T0>>> {
     return {
       typeName: Option.$typeName,
       fullTypeName: composeSuiType(
@@ -80,6 +73,9 @@ export class Option<T0 extends TypeArgument> {
       bcs: Option.bcs(toBcs(T0)),
       fromJSONField: (field: any) => Option.fromJSONField(T0, field),
       fetch: async (client: SuiClient, id: string) => Option.fetch(client, T0, id),
+      new: (fields: OptionFields<ToTypeArgument<T0>>) => {
+        return new Option(extractType(T0), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -88,14 +84,23 @@ export class Option<T0 extends TypeArgument> {
     return Option.reified
   }
 
-  static fromFields<T0 extends Reified<TypeArgument>>(
+  static get bcs() {
+    return <T0 extends BcsType<any>>(T0: T0) =>
+      bcs.struct(`Option<${T0.name}>`, {
+        vec: bcs.vector(T0),
+      })
+  }
+
+  static fromFields<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     fields: Record<string, any>
   ): Option<ToTypeArgument<T0>> {
-    return Option.new(typeArg, decodeFromFields(reified.vector(typeArg), fields.vec))
+    return Option.reified(typeArg).new({
+      vec: decodeFromFields(reified.vector(typeArg), fields.vec),
+    })
   }
 
-  static fromFieldsWithTypes<T0 extends Reified<TypeArgument>>(
+  static fromFieldsWithTypes<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     item: FieldsWithTypes
   ): Option<ToTypeArgument<T0>> {
@@ -104,10 +109,12 @@ export class Option<T0 extends TypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return Option.new(typeArg, decodeFromFieldsWithTypes(reified.vector(typeArg), item.fields.vec))
+    return Option.reified(typeArg).new({
+      vec: decodeFromFieldsWithTypes(reified.vector(typeArg), item.fields.vec),
+    })
   }
 
-  static fromBcs<T0 extends Reified<TypeArgument>>(
+  static fromBcs<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     data: Uint8Array
   ): Option<ToTypeArgument<T0>> {
@@ -126,14 +133,16 @@ export class Option<T0 extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends Reified<TypeArgument>>(
+  static fromJSONField<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     field: any
   ): Option<ToTypeArgument<T0>> {
-    return Option.new(typeArg, decodeFromJSONField(reified.vector(typeArg), field.vec))
+    return Option.reified(typeArg).new({
+      vec: decodeFromJSONField(reified.vector(typeArg), field.vec),
+    })
   }
 
-  static fromJSON<T0 extends Reified<TypeArgument>>(
+  static fromJSON<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     json: Record<string, any>
   ): Option<ToTypeArgument<T0>> {
@@ -149,7 +158,7 @@ export class Option<T0 extends TypeArgument> {
     return Option.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T0 extends Reified<TypeArgument>>(
+  static fromSuiParsedData<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     content: SuiParsedData
   ): Option<ToTypeArgument<T0>> {
@@ -162,7 +171,7 @@ export class Option<T0 extends TypeArgument> {
     return Option.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T0 extends Reified<TypeArgument>>(
+  static async fetch<T0 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArg: T0,
     id: string

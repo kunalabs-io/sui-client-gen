@@ -26,27 +26,19 @@ export class SUI {
   static readonly $typeName = '0x2::sui::SUI'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::sui::SUI'
-
   readonly $typeName = SUI.$typeName
 
-  static get bcs() {
-    return bcs.struct('SUI', {
-      dummy_field: bcs.bool(),
-    })
-  }
+  readonly $fullTypeName: '0x2::sui::SUI'
 
   readonly dummyField: ToField<'bool'>
 
-  private constructor(dummyField: ToField<'bool'>) {
-    this.dummyField = dummyField
+  private constructor(fields: SUIFields) {
+    this.$fullTypeName = SUI.$typeName
+
+    this.dummyField = fields.dummyField
   }
 
-  static new(dummyField: ToField<'bool'>): SUI {
-    return new SUI(dummyField)
-  }
-
-  static reified(): Reified<SUI> {
+  static reified(): Reified<SUI, SUIFields> {
     return {
       typeName: SUI.$typeName,
       fullTypeName: composeSuiType(SUI.$typeName, ...[]) as '0x2::sui::SUI',
@@ -57,6 +49,9 @@ export class SUI {
       bcs: SUI.bcs,
       fromJSONField: (field: any) => SUI.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => SUI.fetch(client, id),
+      new: (fields: SUIFields) => {
+        return new SUI(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -65,8 +60,14 @@ export class SUI {
     return SUI.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('SUI', {
+      dummy_field: bcs.bool(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): SUI {
-    return SUI.new(decodeFromFields('bool', fields.dummy_field))
+    return SUI.reified().new({ dummyField: decodeFromFields('bool', fields.dummy_field) })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): SUI {
@@ -74,7 +75,9 @@ export class SUI {
       throw new Error('not a SUI type')
     }
 
-    return SUI.new(decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
+    return SUI.reified().new({
+      dummyField: decodeFromFieldsWithTypes('bool', item.fields.dummy_field),
+    })
   }
 
   static fromBcs(data: Uint8Array): SUI {
@@ -92,7 +95,7 @@ export class SUI {
   }
 
   static fromJSONField(field: any): SUI {
-    return SUI.new(decodeFromJSONField('bool', field.dummyField))
+    return SUI.reified().new({ dummyField: decodeFromJSONField('bool', field.dummyField) })
   }
 
   static fromJSON(json: Record<string, any>): SUI {

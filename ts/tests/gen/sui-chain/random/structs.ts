@@ -32,30 +32,21 @@ export class Random {
   static readonly $typeName = '0x2::random::Random'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::random::Random'
-
   readonly $typeName = Random.$typeName
 
-  static get bcs() {
-    return bcs.struct('Random', {
-      id: UID.bcs,
-      inner: Versioned.bcs,
-    })
-  }
+  readonly $fullTypeName: '0x2::random::Random'
 
   readonly id: ToField<UID>
   readonly inner: ToField<Versioned>
 
   private constructor(fields: RandomFields) {
+    this.$fullTypeName = Random.$typeName
+
     this.id = fields.id
     this.inner = fields.inner
   }
 
-  static new(fields: RandomFields): Random {
-    return new Random(fields)
-  }
-
-  static reified(): Reified<Random> {
+  static reified(): Reified<Random, RandomFields> {
     return {
       typeName: Random.$typeName,
       fullTypeName: composeSuiType(Random.$typeName, ...[]) as '0x2::random::Random',
@@ -66,6 +57,9 @@ export class Random {
       bcs: Random.bcs,
       fromJSONField: (field: any) => Random.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => Random.fetch(client, id),
+      new: (fields: RandomFields) => {
+        return new Random(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -74,8 +68,15 @@ export class Random {
     return Random.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('Random', {
+      id: UID.bcs,
+      inner: Versioned.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): Random {
-    return Random.new({
+    return Random.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       inner: decodeFromFields(Versioned.reified(), fields.inner),
     })
@@ -86,7 +87,7 @@ export class Random {
       throw new Error('not a Random type')
     }
 
-    return Random.new({
+    return Random.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       inner: decodeFromFieldsWithTypes(Versioned.reified(), item.fields.inner),
     })
@@ -108,7 +109,7 @@ export class Random {
   }
 
   static fromJSONField(field: any): Random {
-    return Random.new({
+    return Random.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       inner: decodeFromJSONField(Versioned.reified(), field.inner),
     })
@@ -164,18 +165,9 @@ export class RandomInner {
   static readonly $typeName = '0x2::random::RandomInner'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::random::RandomInner'
-
   readonly $typeName = RandomInner.$typeName
 
-  static get bcs() {
-    return bcs.struct('RandomInner', {
-      version: bcs.u64(),
-      epoch: bcs.u64(),
-      randomness_round: bcs.u64(),
-      random_bytes: bcs.vector(bcs.u8()),
-    })
-  }
+  readonly $fullTypeName: '0x2::random::RandomInner'
 
   readonly version: ToField<'u64'>
   readonly epoch: ToField<'u64'>
@@ -183,17 +175,15 @@ export class RandomInner {
   readonly randomBytes: ToField<Vector<'u8'>>
 
   private constructor(fields: RandomInnerFields) {
+    this.$fullTypeName = RandomInner.$typeName
+
     this.version = fields.version
     this.epoch = fields.epoch
     this.randomnessRound = fields.randomnessRound
     this.randomBytes = fields.randomBytes
   }
 
-  static new(fields: RandomInnerFields): RandomInner {
-    return new RandomInner(fields)
-  }
-
-  static reified(): Reified<RandomInner> {
+  static reified(): Reified<RandomInner, RandomInnerFields> {
     return {
       typeName: RandomInner.$typeName,
       fullTypeName: composeSuiType(RandomInner.$typeName, ...[]) as '0x2::random::RandomInner',
@@ -204,6 +194,9 @@ export class RandomInner {
       bcs: RandomInner.bcs,
       fromJSONField: (field: any) => RandomInner.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => RandomInner.fetch(client, id),
+      new: (fields: RandomInnerFields) => {
+        return new RandomInner(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -212,8 +205,17 @@ export class RandomInner {
     return RandomInner.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('RandomInner', {
+      version: bcs.u64(),
+      epoch: bcs.u64(),
+      randomness_round: bcs.u64(),
+      random_bytes: bcs.vector(bcs.u8()),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): RandomInner {
-    return RandomInner.new({
+    return RandomInner.reified().new({
       version: decodeFromFields('u64', fields.version),
       epoch: decodeFromFields('u64', fields.epoch),
       randomnessRound: decodeFromFields('u64', fields.randomness_round),
@@ -226,7 +228,7 @@ export class RandomInner {
       throw new Error('not a RandomInner type')
     }
 
-    return RandomInner.new({
+    return RandomInner.reified().new({
       version: decodeFromFieldsWithTypes('u64', item.fields.version),
       epoch: decodeFromFieldsWithTypes('u64', item.fields.epoch),
       randomnessRound: decodeFromFieldsWithTypes('u64', item.fields.randomness_round),
@@ -252,7 +254,7 @@ export class RandomInner {
   }
 
   static fromJSONField(field: any): RandomInner {
-    return RandomInner.new({
+    return RandomInner.reified().new({
       version: decodeFromJSONField('u64', field.version),
       epoch: decodeFromJSONField('u64', field.epoch),
       randomnessRound: decodeFromJSONField('u64', field.randomnessRound),

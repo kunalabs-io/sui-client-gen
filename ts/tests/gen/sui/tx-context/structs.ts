@@ -33,9 +33,47 @@ export class TxContext {
   static readonly $typeName = '0x2::tx_context::TxContext'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::tx_context::TxContext'
-
   readonly $typeName = TxContext.$typeName
+
+  readonly $fullTypeName: '0x2::tx_context::TxContext'
+
+  readonly sender: ToField<'address'>
+  readonly txHash: ToField<Vector<'u8'>>
+  readonly epoch: ToField<'u64'>
+  readonly epochTimestampMs: ToField<'u64'>
+  readonly idsCreated: ToField<'u64'>
+
+  private constructor(fields: TxContextFields) {
+    this.$fullTypeName = TxContext.$typeName
+
+    this.sender = fields.sender
+    this.txHash = fields.txHash
+    this.epoch = fields.epoch
+    this.epochTimestampMs = fields.epochTimestampMs
+    this.idsCreated = fields.idsCreated
+  }
+
+  static reified(): Reified<TxContext, TxContextFields> {
+    return {
+      typeName: TxContext.$typeName,
+      fullTypeName: composeSuiType(TxContext.$typeName, ...[]) as '0x2::tx_context::TxContext',
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => TxContext.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => TxContext.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => TxContext.fromBcs(data),
+      bcs: TxContext.bcs,
+      fromJSONField: (field: any) => TxContext.fromJSONField(field),
+      fetch: async (client: SuiClient, id: string) => TxContext.fetch(client, id),
+      new: (fields: TxContextFields) => {
+        return new TxContext(fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return TxContext.reified()
+  }
 
   static get bcs() {
     return bcs.struct('TxContext', {
@@ -50,45 +88,8 @@ export class TxContext {
     })
   }
 
-  readonly sender: ToField<'address'>
-  readonly txHash: ToField<Vector<'u8'>>
-  readonly epoch: ToField<'u64'>
-  readonly epochTimestampMs: ToField<'u64'>
-  readonly idsCreated: ToField<'u64'>
-
-  private constructor(fields: TxContextFields) {
-    this.sender = fields.sender
-    this.txHash = fields.txHash
-    this.epoch = fields.epoch
-    this.epochTimestampMs = fields.epochTimestampMs
-    this.idsCreated = fields.idsCreated
-  }
-
-  static new(fields: TxContextFields): TxContext {
-    return new TxContext(fields)
-  }
-
-  static reified(): Reified<TxContext> {
-    return {
-      typeName: TxContext.$typeName,
-      fullTypeName: composeSuiType(TxContext.$typeName, ...[]) as '0x2::tx_context::TxContext',
-      typeArgs: [],
-      fromFields: (fields: Record<string, any>) => TxContext.fromFields(fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => TxContext.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => TxContext.fromBcs(data),
-      bcs: TxContext.bcs,
-      fromJSONField: (field: any) => TxContext.fromJSONField(field),
-      fetch: async (client: SuiClient, id: string) => TxContext.fetch(client, id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return TxContext.reified()
-  }
-
   static fromFields(fields: Record<string, any>): TxContext {
-    return TxContext.new({
+    return TxContext.reified().new({
       sender: decodeFromFields('address', fields.sender),
       txHash: decodeFromFields(reified.vector('u8'), fields.tx_hash),
       epoch: decodeFromFields('u64', fields.epoch),
@@ -102,7 +103,7 @@ export class TxContext {
       throw new Error('not a TxContext type')
     }
 
-    return TxContext.new({
+    return TxContext.reified().new({
       sender: decodeFromFieldsWithTypes('address', item.fields.sender),
       txHash: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.tx_hash),
       epoch: decodeFromFieldsWithTypes('u64', item.fields.epoch),
@@ -130,7 +131,7 @@ export class TxContext {
   }
 
   static fromJSONField(field: any): TxContext {
-    return TxContext.new({
+    return TxContext.reified().new({
       sender: decodeFromJSONField('address', field.sender),
       txHash: decodeFromJSONField(reified.vector('u8'), field.txHash),
       epoch: decodeFromJSONField('u64', field.epoch),

@@ -1,10 +1,11 @@
+import * as reified from '../../_framework/reified'
 import {
+  PhantomReified,
+  PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
-  ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -39,42 +40,34 @@ export class RuleKey<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::RuleKey'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::transfer_policy::RuleKey<${ToTypeStr<T>}>`
-
   readonly $typeName = RuleKey.$typeName
 
-  static get bcs() {
-    return bcs.struct('RuleKey', {
-      dummy_field: bcs.bool(),
-    })
-  }
+  readonly $fullTypeName: `0x2::transfer_policy::RuleKey<${string}>`
 
   readonly $typeArg: string
 
   readonly dummyField: ToField<'bool'>
 
-  private constructor(typeArg: string, dummyField: ToField<'bool'>) {
+  private constructor(typeArg: string, fields: RuleKeyFields<T>) {
+    this.$fullTypeName = composeSuiType(
+      RuleKey.$typeName,
+      typeArg
+    ) as `0x2::transfer_policy::RuleKey<${PhantomToTypeStr<T>}>`
+
     this.$typeArg = typeArg
 
-    this.dummyField = dummyField
+    this.dummyField = fields.dummyField
   }
 
-  static new<T extends ReifiedPhantomTypeArgument>(
-    typeArg: T,
-    dummyField: ToField<'bool'>
-  ): RuleKey<ToPhantomTypeArgument<T>> {
-    return new RuleKey(extractType(typeArg), dummyField)
-  }
-
-  static reified<T extends ReifiedPhantomTypeArgument>(
+  static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
-  ): Reified<RuleKey<ToPhantomTypeArgument<T>>> {
+  ): Reified<RuleKey<ToPhantomTypeArgument<T>>, RuleKeyFields<ToPhantomTypeArgument<T>>> {
     return {
       typeName: RuleKey.$typeName,
       fullTypeName: composeSuiType(
         RuleKey.$typeName,
         ...[extractType(T)]
-      ) as `0x2::transfer_policy::RuleKey<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `0x2::transfer_policy::RuleKey<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [T],
       fromFields: (fields: Record<string, any>) => RuleKey.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => RuleKey.fromFieldsWithTypes(T, item),
@@ -82,6 +75,9 @@ export class RuleKey<T extends PhantomTypeArgument> {
       bcs: RuleKey.bcs,
       fromJSONField: (field: any) => RuleKey.fromJSONField(T, field),
       fetch: async (client: SuiClient, id: string) => RuleKey.fetch(client, T, id),
+      new: (fields: RuleKeyFields<ToPhantomTypeArgument<T>>) => {
+        return new RuleKey(extractType(T), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -90,14 +86,22 @@ export class RuleKey<T extends PhantomTypeArgument> {
     return RuleKey.reified
   }
 
-  static fromFields<T extends ReifiedPhantomTypeArgument>(
+  static get bcs() {
+    return bcs.struct('RuleKey', {
+      dummy_field: bcs.bool(),
+    })
+  }
+
+  static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     fields: Record<string, any>
   ): RuleKey<ToPhantomTypeArgument<T>> {
-    return RuleKey.new(typeArg, decodeFromFields('bool', fields.dummy_field))
+    return RuleKey.reified(typeArg).new({
+      dummyField: decodeFromFields('bool', fields.dummy_field),
+    })
   }
 
-  static fromFieldsWithTypes<T extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     item: FieldsWithTypes
   ): RuleKey<ToPhantomTypeArgument<T>> {
@@ -106,10 +110,12 @@ export class RuleKey<T extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return RuleKey.new(typeArg, decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
+    return RuleKey.reified(typeArg).new({
+      dummyField: decodeFromFieldsWithTypes('bool', item.fields.dummy_field),
+    })
   }
 
-  static fromBcs<T extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: Uint8Array
   ): RuleKey<ToPhantomTypeArgument<T>> {
@@ -126,14 +132,16 @@ export class RuleKey<T extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     field: any
   ): RuleKey<ToPhantomTypeArgument<T>> {
-    return RuleKey.new(typeArg, decodeFromJSONField('bool', field.dummyField))
+    return RuleKey.reified(typeArg).new({
+      dummyField: decodeFromJSONField('bool', field.dummyField),
+    })
   }
 
-  static fromJSON<T extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     json: Record<string, any>
   ): RuleKey<ToPhantomTypeArgument<T>> {
@@ -149,7 +157,7 @@ export class RuleKey<T extends PhantomTypeArgument> {
     return RuleKey.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData
   ): RuleKey<ToPhantomTypeArgument<T>> {
@@ -162,7 +170,7 @@ export class RuleKey<T extends PhantomTypeArgument> {
     return RuleKey.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T extends ReifiedPhantomTypeArgument>(
+  static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
     id: string
@@ -197,10 +205,58 @@ export class TransferPolicy<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicy'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName =
-    null as unknown as `0x2::transfer_policy::TransferPolicy<${ToTypeStr<T>}>`
-
   readonly $typeName = TransferPolicy.$typeName
+
+  readonly $fullTypeName: `0x2::transfer_policy::TransferPolicy<${string}>`
+
+  readonly $typeArg: string
+
+  readonly id: ToField<UID>
+  readonly balance: ToField<Balance<ToPhantom<SUI>>>
+  readonly rules: ToField<VecSet<TypeName>>
+
+  private constructor(typeArg: string, fields: TransferPolicyFields<T>) {
+    this.$fullTypeName = composeSuiType(
+      TransferPolicy.$typeName,
+      typeArg
+    ) as `0x2::transfer_policy::TransferPolicy<${PhantomToTypeStr<T>}>`
+
+    this.$typeArg = typeArg
+
+    this.id = fields.id
+    this.balance = fields.balance
+    this.rules = fields.rules
+  }
+
+  static reified<T extends PhantomReified<PhantomTypeArgument>>(
+    T: T
+  ): Reified<
+    TransferPolicy<ToPhantomTypeArgument<T>>,
+    TransferPolicyFields<ToPhantomTypeArgument<T>>
+  > {
+    return {
+      typeName: TransferPolicy.$typeName,
+      fullTypeName: composeSuiType(
+        TransferPolicy.$typeName,
+        ...[extractType(T)]
+      ) as `0x2::transfer_policy::TransferPolicy<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => TransferPolicy.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => TransferPolicy.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => TransferPolicy.fromBcs(T, data),
+      bcs: TransferPolicy.bcs,
+      fromJSONField: (field: any) => TransferPolicy.fromJSONField(T, field),
+      fetch: async (client: SuiClient, id: string) => TransferPolicy.fetch(client, T, id),
+      new: (fields: TransferPolicyFields<ToPhantomTypeArgument<T>>) => {
+        return new TransferPolicy(extractType(T), fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return TransferPolicy.reified
+  }
 
   static get bcs() {
     return bcs.struct('TransferPolicy', {
@@ -210,63 +266,18 @@ export class TransferPolicy<T extends PhantomTypeArgument> {
     })
   }
 
-  readonly $typeArg: string
-
-  readonly id: ToField<UID>
-  readonly balance: ToField<Balance<ToPhantom<SUI>>>
-  readonly rules: ToField<VecSet<TypeName>>
-
-  private constructor(typeArg: string, fields: TransferPolicyFields<T>) {
-    this.$typeArg = typeArg
-
-    this.id = fields.id
-    this.balance = fields.balance
-    this.rules = fields.rules
-  }
-
-  static new<T extends ReifiedPhantomTypeArgument>(
-    typeArg: T,
-    fields: TransferPolicyFields<ToPhantomTypeArgument<T>>
-  ): TransferPolicy<ToPhantomTypeArgument<T>> {
-    return new TransferPolicy(extractType(typeArg), fields)
-  }
-
-  static reified<T extends ReifiedPhantomTypeArgument>(
-    T: T
-  ): Reified<TransferPolicy<ToPhantomTypeArgument<T>>> {
-    return {
-      typeName: TransferPolicy.$typeName,
-      fullTypeName: composeSuiType(
-        TransferPolicy.$typeName,
-        ...[extractType(T)]
-      ) as `0x2::transfer_policy::TransferPolicy<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [T],
-      fromFields: (fields: Record<string, any>) => TransferPolicy.fromFields(T, fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => TransferPolicy.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => TransferPolicy.fromBcs(T, data),
-      bcs: TransferPolicy.bcs,
-      fromJSONField: (field: any) => TransferPolicy.fromJSONField(T, field),
-      fetch: async (client: SuiClient, id: string) => TransferPolicy.fetch(client, T, id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return TransferPolicy.reified
-  }
-
-  static fromFields<T extends ReifiedPhantomTypeArgument>(
+  static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     fields: Record<string, any>
   ): TransferPolicy<ToPhantomTypeArgument<T>> {
-    return TransferPolicy.new(typeArg, {
+    return TransferPolicy.reified(typeArg).new({
       id: decodeFromFields(UID.reified(), fields.id),
-      balance: decodeFromFields(Balance.reified(SUI.reified()), fields.balance),
+      balance: decodeFromFields(Balance.reified(reified.phantom(SUI.reified())), fields.balance),
       rules: decodeFromFields(VecSet.reified(TypeName.reified()), fields.rules),
     })
   }
 
-  static fromFieldsWithTypes<T extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     item: FieldsWithTypes
   ): TransferPolicy<ToPhantomTypeArgument<T>> {
@@ -275,14 +286,17 @@ export class TransferPolicy<T extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return TransferPolicy.new(typeArg, {
+    return TransferPolicy.reified(typeArg).new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
-      balance: decodeFromFieldsWithTypes(Balance.reified(SUI.reified()), item.fields.balance),
+      balance: decodeFromFieldsWithTypes(
+        Balance.reified(reified.phantom(SUI.reified())),
+        item.fields.balance
+      ),
       rules: decodeFromFieldsWithTypes(VecSet.reified(TypeName.reified()), item.fields.rules),
     })
   }
 
-  static fromBcs<T extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: Uint8Array
   ): TransferPolicy<ToPhantomTypeArgument<T>> {
@@ -301,18 +315,18 @@ export class TransferPolicy<T extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     field: any
   ): TransferPolicy<ToPhantomTypeArgument<T>> {
-    return TransferPolicy.new(typeArg, {
+    return TransferPolicy.reified(typeArg).new({
       id: decodeFromJSONField(UID.reified(), field.id),
-      balance: decodeFromJSONField(Balance.reified(SUI.reified()), field.balance),
+      balance: decodeFromJSONField(Balance.reified(reified.phantom(SUI.reified())), field.balance),
       rules: decodeFromJSONField(VecSet.reified(TypeName.reified()), field.rules),
     })
   }
 
-  static fromJSON<T extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     json: Record<string, any>
   ): TransferPolicy<ToPhantomTypeArgument<T>> {
@@ -328,7 +342,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> {
     return TransferPolicy.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData
   ): TransferPolicy<ToPhantomTypeArgument<T>> {
@@ -341,7 +355,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> {
     return TransferPolicy.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T extends ReifiedPhantomTypeArgument>(
+  static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
     id: string
@@ -375,17 +389,9 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyCap'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName =
-    null as unknown as `0x2::transfer_policy::TransferPolicyCap<${ToTypeStr<T>}>`
-
   readonly $typeName = TransferPolicyCap.$typeName
 
-  static get bcs() {
-    return bcs.struct('TransferPolicyCap', {
-      id: UID.bcs,
-      policy_id: ID.bcs,
-    })
-  }
+  readonly $fullTypeName: `0x2::transfer_policy::TransferPolicyCap<${string}>`
 
   readonly $typeArg: string
 
@@ -393,28 +399,29 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> {
   readonly policyId: ToField<ID>
 
   private constructor(typeArg: string, fields: TransferPolicyCapFields<T>) {
+    this.$fullTypeName = composeSuiType(
+      TransferPolicyCap.$typeName,
+      typeArg
+    ) as `0x2::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<T>}>`
+
     this.$typeArg = typeArg
 
     this.id = fields.id
     this.policyId = fields.policyId
   }
 
-  static new<T extends ReifiedPhantomTypeArgument>(
-    typeArg: T,
-    fields: TransferPolicyCapFields<ToPhantomTypeArgument<T>>
-  ): TransferPolicyCap<ToPhantomTypeArgument<T>> {
-    return new TransferPolicyCap(extractType(typeArg), fields)
-  }
-
-  static reified<T extends ReifiedPhantomTypeArgument>(
+  static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
-  ): Reified<TransferPolicyCap<ToPhantomTypeArgument<T>>> {
+  ): Reified<
+    TransferPolicyCap<ToPhantomTypeArgument<T>>,
+    TransferPolicyCapFields<ToPhantomTypeArgument<T>>
+  > {
     return {
       typeName: TransferPolicyCap.$typeName,
       fullTypeName: composeSuiType(
         TransferPolicyCap.$typeName,
         ...[extractType(T)]
-      ) as `0x2::transfer_policy::TransferPolicyCap<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `0x2::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [T],
       fromFields: (fields: Record<string, any>) => TransferPolicyCap.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
@@ -423,6 +430,9 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> {
       bcs: TransferPolicyCap.bcs,
       fromJSONField: (field: any) => TransferPolicyCap.fromJSONField(T, field),
       fetch: async (client: SuiClient, id: string) => TransferPolicyCap.fetch(client, T, id),
+      new: (fields: TransferPolicyCapFields<ToPhantomTypeArgument<T>>) => {
+        return new TransferPolicyCap(extractType(T), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -431,17 +441,24 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> {
     return TransferPolicyCap.reified
   }
 
-  static fromFields<T extends ReifiedPhantomTypeArgument>(
+  static get bcs() {
+    return bcs.struct('TransferPolicyCap', {
+      id: UID.bcs,
+      policy_id: ID.bcs,
+    })
+  }
+
+  static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     fields: Record<string, any>
   ): TransferPolicyCap<ToPhantomTypeArgument<T>> {
-    return TransferPolicyCap.new(typeArg, {
+    return TransferPolicyCap.reified(typeArg).new({
       id: decodeFromFields(UID.reified(), fields.id),
       policyId: decodeFromFields(ID.reified(), fields.policy_id),
     })
   }
 
-  static fromFieldsWithTypes<T extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     item: FieldsWithTypes
   ): TransferPolicyCap<ToPhantomTypeArgument<T>> {
@@ -450,13 +467,13 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return TransferPolicyCap.new(typeArg, {
+    return TransferPolicyCap.reified(typeArg).new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       policyId: decodeFromFieldsWithTypes(ID.reified(), item.fields.policy_id),
     })
   }
 
-  static fromBcs<T extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: Uint8Array
   ): TransferPolicyCap<ToPhantomTypeArgument<T>> {
@@ -474,17 +491,17 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     field: any
   ): TransferPolicyCap<ToPhantomTypeArgument<T>> {
-    return TransferPolicyCap.new(typeArg, {
+    return TransferPolicyCap.reified(typeArg).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       policyId: decodeFromJSONField(ID.reified(), field.policyId),
     })
   }
 
-  static fromJSON<T extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     json: Record<string, any>
   ): TransferPolicyCap<ToPhantomTypeArgument<T>> {
@@ -500,7 +517,7 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> {
     return TransferPolicyCap.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData
   ): TransferPolicyCap<ToPhantomTypeArgument<T>> {
@@ -513,7 +530,7 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> {
     return TransferPolicyCap.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T extends ReifiedPhantomTypeArgument>(
+  static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
     id: string
@@ -549,43 +566,39 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyCreated'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName =
-    null as unknown as `0x2::transfer_policy::TransferPolicyCreated<${ToTypeStr<T>}>`
-
   readonly $typeName = TransferPolicyCreated.$typeName
 
-  static get bcs() {
-    return bcs.struct('TransferPolicyCreated', {
-      id: ID.bcs,
-    })
-  }
+  readonly $fullTypeName: `0x2::transfer_policy::TransferPolicyCreated<${string}>`
 
   readonly $typeArg: string
 
   readonly id: ToField<ID>
 
-  private constructor(typeArg: string, id: ToField<ID>) {
+  private constructor(typeArg: string, fields: TransferPolicyCreatedFields<T>) {
+    this.$fullTypeName = composeSuiType(
+      TransferPolicyCreated.$typeName,
+      typeArg
+    ) as `0x2::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<T>}>`
+
     this.$typeArg = typeArg
 
-    this.id = id
+    this.id = fields.id
   }
 
-  static new<T extends ReifiedPhantomTypeArgument>(
-    typeArg: T,
-    id: ToField<ID>
-  ): TransferPolicyCreated<ToPhantomTypeArgument<T>> {
-    return new TransferPolicyCreated(extractType(typeArg), id)
-  }
-
-  static reified<T extends ReifiedPhantomTypeArgument>(
+  static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
-  ): Reified<TransferPolicyCreated<ToPhantomTypeArgument<T>>> {
+  ): Reified<
+    TransferPolicyCreated<ToPhantomTypeArgument<T>>,
+    TransferPolicyCreatedFields<ToPhantomTypeArgument<T>>
+  > {
     return {
       typeName: TransferPolicyCreated.$typeName,
       fullTypeName: composeSuiType(
         TransferPolicyCreated.$typeName,
         ...[extractType(T)]
-      ) as `0x2::transfer_policy::TransferPolicyCreated<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `0x2::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<
+        ToPhantomTypeArgument<T>
+      >}>`,
       typeArgs: [T],
       fromFields: (fields: Record<string, any>) => TransferPolicyCreated.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
@@ -594,6 +607,9 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> {
       bcs: TransferPolicyCreated.bcs,
       fromJSONField: (field: any) => TransferPolicyCreated.fromJSONField(T, field),
       fetch: async (client: SuiClient, id: string) => TransferPolicyCreated.fetch(client, T, id),
+      new: (fields: TransferPolicyCreatedFields<ToPhantomTypeArgument<T>>) => {
+        return new TransferPolicyCreated(extractType(T), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -602,14 +618,22 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> {
     return TransferPolicyCreated.reified
   }
 
-  static fromFields<T extends ReifiedPhantomTypeArgument>(
+  static get bcs() {
+    return bcs.struct('TransferPolicyCreated', {
+      id: ID.bcs,
+    })
+  }
+
+  static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     fields: Record<string, any>
   ): TransferPolicyCreated<ToPhantomTypeArgument<T>> {
-    return TransferPolicyCreated.new(typeArg, decodeFromFields(ID.reified(), fields.id))
+    return TransferPolicyCreated.reified(typeArg).new({
+      id: decodeFromFields(ID.reified(), fields.id),
+    })
   }
 
-  static fromFieldsWithTypes<T extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     item: FieldsWithTypes
   ): TransferPolicyCreated<ToPhantomTypeArgument<T>> {
@@ -618,13 +642,12 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return TransferPolicyCreated.new(
-      typeArg,
-      decodeFromFieldsWithTypes(ID.reified(), item.fields.id)
-    )
+    return TransferPolicyCreated.reified(typeArg).new({
+      id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
+    })
   }
 
-  static fromBcs<T extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: Uint8Array
   ): TransferPolicyCreated<ToPhantomTypeArgument<T>> {
@@ -641,14 +664,16 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     field: any
   ): TransferPolicyCreated<ToPhantomTypeArgument<T>> {
-    return TransferPolicyCreated.new(typeArg, decodeFromJSONField(ID.reified(), field.id))
+    return TransferPolicyCreated.reified(typeArg).new({
+      id: decodeFromJSONField(ID.reified(), field.id),
+    })
   }
 
-  static fromJSON<T extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     json: Record<string, any>
   ): TransferPolicyCreated<ToPhantomTypeArgument<T>> {
@@ -664,7 +689,7 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> {
     return TransferPolicyCreated.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData
   ): TransferPolicyCreated<ToPhantomTypeArgument<T>> {
@@ -679,7 +704,7 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> {
     return TransferPolicyCreated.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T extends ReifiedPhantomTypeArgument>(
+  static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
     id: string
@@ -715,43 +740,39 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyDestroyed'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName =
-    null as unknown as `0x2::transfer_policy::TransferPolicyDestroyed<${ToTypeStr<T>}>`
-
   readonly $typeName = TransferPolicyDestroyed.$typeName
 
-  static get bcs() {
-    return bcs.struct('TransferPolicyDestroyed', {
-      id: ID.bcs,
-    })
-  }
+  readonly $fullTypeName: `0x2::transfer_policy::TransferPolicyDestroyed<${string}>`
 
   readonly $typeArg: string
 
   readonly id: ToField<ID>
 
-  private constructor(typeArg: string, id: ToField<ID>) {
+  private constructor(typeArg: string, fields: TransferPolicyDestroyedFields<T>) {
+    this.$fullTypeName = composeSuiType(
+      TransferPolicyDestroyed.$typeName,
+      typeArg
+    ) as `0x2::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<T>}>`
+
     this.$typeArg = typeArg
 
-    this.id = id
+    this.id = fields.id
   }
 
-  static new<T extends ReifiedPhantomTypeArgument>(
-    typeArg: T,
-    id: ToField<ID>
-  ): TransferPolicyDestroyed<ToPhantomTypeArgument<T>> {
-    return new TransferPolicyDestroyed(extractType(typeArg), id)
-  }
-
-  static reified<T extends ReifiedPhantomTypeArgument>(
+  static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
-  ): Reified<TransferPolicyDestroyed<ToPhantomTypeArgument<T>>> {
+  ): Reified<
+    TransferPolicyDestroyed<ToPhantomTypeArgument<T>>,
+    TransferPolicyDestroyedFields<ToPhantomTypeArgument<T>>
+  > {
     return {
       typeName: TransferPolicyDestroyed.$typeName,
       fullTypeName: composeSuiType(
         TransferPolicyDestroyed.$typeName,
         ...[extractType(T)]
-      ) as `0x2::transfer_policy::TransferPolicyDestroyed<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `0x2::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<
+        ToPhantomTypeArgument<T>
+      >}>`,
       typeArgs: [T],
       fromFields: (fields: Record<string, any>) => TransferPolicyDestroyed.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
@@ -760,6 +781,9 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> {
       bcs: TransferPolicyDestroyed.bcs,
       fromJSONField: (field: any) => TransferPolicyDestroyed.fromJSONField(T, field),
       fetch: async (client: SuiClient, id: string) => TransferPolicyDestroyed.fetch(client, T, id),
+      new: (fields: TransferPolicyDestroyedFields<ToPhantomTypeArgument<T>>) => {
+        return new TransferPolicyDestroyed(extractType(T), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -768,14 +792,22 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> {
     return TransferPolicyDestroyed.reified
   }
 
-  static fromFields<T extends ReifiedPhantomTypeArgument>(
+  static get bcs() {
+    return bcs.struct('TransferPolicyDestroyed', {
+      id: ID.bcs,
+    })
+  }
+
+  static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     fields: Record<string, any>
   ): TransferPolicyDestroyed<ToPhantomTypeArgument<T>> {
-    return TransferPolicyDestroyed.new(typeArg, decodeFromFields(ID.reified(), fields.id))
+    return TransferPolicyDestroyed.reified(typeArg).new({
+      id: decodeFromFields(ID.reified(), fields.id),
+    })
   }
 
-  static fromFieldsWithTypes<T extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     item: FieldsWithTypes
   ): TransferPolicyDestroyed<ToPhantomTypeArgument<T>> {
@@ -784,13 +816,12 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return TransferPolicyDestroyed.new(
-      typeArg,
-      decodeFromFieldsWithTypes(ID.reified(), item.fields.id)
-    )
+    return TransferPolicyDestroyed.reified(typeArg).new({
+      id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
+    })
   }
 
-  static fromBcs<T extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: Uint8Array
   ): TransferPolicyDestroyed<ToPhantomTypeArgument<T>> {
@@ -807,14 +838,16 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     field: any
   ): TransferPolicyDestroyed<ToPhantomTypeArgument<T>> {
-    return TransferPolicyDestroyed.new(typeArg, decodeFromJSONField(ID.reified(), field.id))
+    return TransferPolicyDestroyed.reified(typeArg).new({
+      id: decodeFromJSONField(ID.reified(), field.id),
+    })
   }
 
-  static fromJSON<T extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     json: Record<string, any>
   ): TransferPolicyDestroyed<ToPhantomTypeArgument<T>> {
@@ -830,7 +863,7 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> {
     return TransferPolicyDestroyed.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData
   ): TransferPolicyDestroyed<ToPhantomTypeArgument<T>> {
@@ -845,7 +878,7 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> {
     return TransferPolicyDestroyed.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T extends ReifiedPhantomTypeArgument>(
+  static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
     id: string
@@ -886,10 +919,60 @@ export class TransferRequest<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferRequest'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName =
-    null as unknown as `0x2::transfer_policy::TransferRequest<${ToTypeStr<T>}>`
-
   readonly $typeName = TransferRequest.$typeName
+
+  readonly $fullTypeName: `0x2::transfer_policy::TransferRequest<${string}>`
+
+  readonly $typeArg: string
+
+  readonly item: ToField<ID>
+  readonly paid: ToField<'u64'>
+  readonly from: ToField<ID>
+  readonly receipts: ToField<VecSet<TypeName>>
+
+  private constructor(typeArg: string, fields: TransferRequestFields<T>) {
+    this.$fullTypeName = composeSuiType(
+      TransferRequest.$typeName,
+      typeArg
+    ) as `0x2::transfer_policy::TransferRequest<${PhantomToTypeStr<T>}>`
+
+    this.$typeArg = typeArg
+
+    this.item = fields.item
+    this.paid = fields.paid
+    this.from = fields.from
+    this.receipts = fields.receipts
+  }
+
+  static reified<T extends PhantomReified<PhantomTypeArgument>>(
+    T: T
+  ): Reified<
+    TransferRequest<ToPhantomTypeArgument<T>>,
+    TransferRequestFields<ToPhantomTypeArgument<T>>
+  > {
+    return {
+      typeName: TransferRequest.$typeName,
+      fullTypeName: composeSuiType(
+        TransferRequest.$typeName,
+        ...[extractType(T)]
+      ) as `0x2::transfer_policy::TransferRequest<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      typeArgs: [T],
+      fromFields: (fields: Record<string, any>) => TransferRequest.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => TransferRequest.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => TransferRequest.fromBcs(T, data),
+      bcs: TransferRequest.bcs,
+      fromJSONField: (field: any) => TransferRequest.fromJSONField(T, field),
+      fetch: async (client: SuiClient, id: string) => TransferRequest.fetch(client, T, id),
+      new: (fields: TransferRequestFields<ToPhantomTypeArgument<T>>) => {
+        return new TransferRequest(extractType(T), fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return TransferRequest.reified
+  }
 
   static get bcs() {
     return bcs.struct('TransferRequest', {
@@ -900,58 +983,11 @@ export class TransferRequest<T extends PhantomTypeArgument> {
     })
   }
 
-  readonly $typeArg: string
-
-  readonly item: ToField<ID>
-  readonly paid: ToField<'u64'>
-  readonly from: ToField<ID>
-  readonly receipts: ToField<VecSet<TypeName>>
-
-  private constructor(typeArg: string, fields: TransferRequestFields<T>) {
-    this.$typeArg = typeArg
-
-    this.item = fields.item
-    this.paid = fields.paid
-    this.from = fields.from
-    this.receipts = fields.receipts
-  }
-
-  static new<T extends ReifiedPhantomTypeArgument>(
-    typeArg: T,
-    fields: TransferRequestFields<ToPhantomTypeArgument<T>>
-  ): TransferRequest<ToPhantomTypeArgument<T>> {
-    return new TransferRequest(extractType(typeArg), fields)
-  }
-
-  static reified<T extends ReifiedPhantomTypeArgument>(
-    T: T
-  ): Reified<TransferRequest<ToPhantomTypeArgument<T>>> {
-    return {
-      typeName: TransferRequest.$typeName,
-      fullTypeName: composeSuiType(
-        TransferRequest.$typeName,
-        ...[extractType(T)]
-      ) as `0x2::transfer_policy::TransferRequest<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [T],
-      fromFields: (fields: Record<string, any>) => TransferRequest.fromFields(T, fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => TransferRequest.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => TransferRequest.fromBcs(T, data),
-      bcs: TransferRequest.bcs,
-      fromJSONField: (field: any) => TransferRequest.fromJSONField(T, field),
-      fetch: async (client: SuiClient, id: string) => TransferRequest.fetch(client, T, id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return TransferRequest.reified
-  }
-
-  static fromFields<T extends ReifiedPhantomTypeArgument>(
+  static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     fields: Record<string, any>
   ): TransferRequest<ToPhantomTypeArgument<T>> {
-    return TransferRequest.new(typeArg, {
+    return TransferRequest.reified(typeArg).new({
       item: decodeFromFields(ID.reified(), fields.item),
       paid: decodeFromFields('u64', fields.paid),
       from: decodeFromFields(ID.reified(), fields.from),
@@ -959,7 +995,7 @@ export class TransferRequest<T extends PhantomTypeArgument> {
     })
   }
 
-  static fromFieldsWithTypes<T extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     item: FieldsWithTypes
   ): TransferRequest<ToPhantomTypeArgument<T>> {
@@ -968,7 +1004,7 @@ export class TransferRequest<T extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return TransferRequest.new(typeArg, {
+    return TransferRequest.reified(typeArg).new({
       item: decodeFromFieldsWithTypes(ID.reified(), item.fields.item),
       paid: decodeFromFieldsWithTypes('u64', item.fields.paid),
       from: decodeFromFieldsWithTypes(ID.reified(), item.fields.from),
@@ -976,7 +1012,7 @@ export class TransferRequest<T extends PhantomTypeArgument> {
     })
   }
 
-  static fromBcs<T extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: Uint8Array
   ): TransferRequest<ToPhantomTypeArgument<T>> {
@@ -996,11 +1032,11 @@ export class TransferRequest<T extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     field: any
   ): TransferRequest<ToPhantomTypeArgument<T>> {
-    return TransferRequest.new(typeArg, {
+    return TransferRequest.reified(typeArg).new({
       item: decodeFromJSONField(ID.reified(), field.item),
       paid: decodeFromJSONField('u64', field.paid),
       from: decodeFromJSONField(ID.reified(), field.from),
@@ -1008,7 +1044,7 @@ export class TransferRequest<T extends PhantomTypeArgument> {
     })
   }
 
-  static fromJSON<T extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     json: Record<string, any>
   ): TransferRequest<ToPhantomTypeArgument<T>> {
@@ -1024,7 +1060,7 @@ export class TransferRequest<T extends PhantomTypeArgument> {
     return TransferRequest.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData
   ): TransferRequest<ToPhantomTypeArgument<T>> {
@@ -1037,7 +1073,7 @@ export class TransferRequest<T extends PhantomTypeArgument> {
     return TransferRequest.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T extends ReifiedPhantomTypeArgument>(
+  static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
     id: string

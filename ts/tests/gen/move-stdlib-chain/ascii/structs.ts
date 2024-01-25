@@ -29,27 +29,19 @@ export class String {
   static readonly $typeName = '0x1::ascii::String'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x1::ascii::String'
-
   readonly $typeName = String.$typeName
 
-  static get bcs() {
-    return bcs.struct('String', {
-      bytes: bcs.vector(bcs.u8()),
-    })
-  }
+  readonly $fullTypeName: '0x1::ascii::String'
 
   readonly bytes: ToField<Vector<'u8'>>
 
-  private constructor(bytes: ToField<Vector<'u8'>>) {
-    this.bytes = bytes
+  private constructor(fields: StringFields) {
+    this.$fullTypeName = String.$typeName
+
+    this.bytes = fields.bytes
   }
 
-  static new(bytes: ToField<Vector<'u8'>>): String {
-    return new String(bytes)
-  }
-
-  static reified(): Reified<String> {
+  static reified(): Reified<String, StringFields> {
     return {
       typeName: String.$typeName,
       fullTypeName: composeSuiType(String.$typeName, ...[]) as '0x1::ascii::String',
@@ -60,6 +52,9 @@ export class String {
       bcs: String.bcs,
       fromJSONField: (field: any) => String.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => String.fetch(client, id),
+      new: (fields: StringFields) => {
+        return new String(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -68,8 +63,14 @@ export class String {
     return String.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('String', {
+      bytes: bcs.vector(bcs.u8()),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): String {
-    return String.new(decodeFromFields(reified.vector('u8'), fields.bytes))
+    return String.reified().new({ bytes: decodeFromFields(reified.vector('u8'), fields.bytes) })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): String {
@@ -77,7 +78,9 @@ export class String {
       throw new Error('not a String type')
     }
 
-    return String.new(decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.bytes))
+    return String.reified().new({
+      bytes: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.bytes),
+    })
   }
 
   static fromBcs(data: Uint8Array): String {
@@ -95,7 +98,7 @@ export class String {
   }
 
   static fromJSONField(field: any): String {
-    return String.new(decodeFromJSONField(reified.vector('u8'), field.bytes))
+    return String.reified().new({ bytes: decodeFromJSONField(reified.vector('u8'), field.bytes) })
   }
 
   static fromJSON(json: Record<string, any>): String {
@@ -145,27 +148,19 @@ export class Char {
   static readonly $typeName = '0x1::ascii::Char'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x1::ascii::Char'
-
   readonly $typeName = Char.$typeName
 
-  static get bcs() {
-    return bcs.struct('Char', {
-      byte: bcs.u8(),
-    })
-  }
+  readonly $fullTypeName: '0x1::ascii::Char'
 
   readonly byte: ToField<'u8'>
 
-  private constructor(byte_: ToField<'u8'>) {
-    this.byte = byte_
+  private constructor(fields: CharFields) {
+    this.$fullTypeName = Char.$typeName
+
+    this.byte = fields.byte
   }
 
-  static new(byte_: ToField<'u8'>): Char {
-    return new Char(byte_)
-  }
-
-  static reified(): Reified<Char> {
+  static reified(): Reified<Char, CharFields> {
     return {
       typeName: Char.$typeName,
       fullTypeName: composeSuiType(Char.$typeName, ...[]) as '0x1::ascii::Char',
@@ -176,6 +171,9 @@ export class Char {
       bcs: Char.bcs,
       fromJSONField: (field: any) => Char.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => Char.fetch(client, id),
+      new: (fields: CharFields) => {
+        return new Char(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -184,8 +182,14 @@ export class Char {
     return Char.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('Char', {
+      byte: bcs.u8(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): Char {
-    return Char.new(decodeFromFields('u8', fields.byte))
+    return Char.reified().new({ byte: decodeFromFields('u8', fields.byte) })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Char {
@@ -193,7 +197,7 @@ export class Char {
       throw new Error('not a Char type')
     }
 
-    return Char.new(decodeFromFieldsWithTypes('u8', item.fields.byte))
+    return Char.reified().new({ byte: decodeFromFieldsWithTypes('u8', item.fields.byte) })
   }
 
   static fromBcs(data: Uint8Array): Char {
@@ -211,7 +215,7 @@ export class Char {
   }
 
   static fromJSONField(field: any): Char {
-    return Char.new(decodeFromJSONField('u8', field.byte))
+    return Char.reified().new({ byte: decodeFromJSONField('u8', field.byte) })
   }
 
   static fromJSON(json: Record<string, any>): Char {

@@ -37,28 +37,19 @@ export class ExampleStruct {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName =
-    null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
-
   readonly $typeName = ExampleStruct.$typeName
 
-  static get bcs() {
-    return bcs.struct('ExampleStruct', {
-      dummy_field: bcs.bool(),
-    })
-  }
+  readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
 
   readonly dummyField: ToField<'bool'>
 
-  private constructor(dummyField: ToField<'bool'>) {
-    this.dummyField = dummyField
+  private constructor(fields: ExampleStructFields) {
+    this.$fullTypeName = ExampleStruct.$typeName
+
+    this.dummyField = fields.dummyField
   }
 
-  static new(dummyField: ToField<'bool'>): ExampleStruct {
-    return new ExampleStruct(dummyField)
-  }
-
-  static reified(): Reified<ExampleStruct> {
+  static reified(): Reified<ExampleStruct, ExampleStructFields> {
     return {
       typeName: ExampleStruct.$typeName,
       fullTypeName: composeSuiType(
@@ -72,6 +63,9 @@ export class ExampleStruct {
       bcs: ExampleStruct.bcs,
       fromJSONField: (field: any) => ExampleStruct.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => ExampleStruct.fetch(client, id),
+      new: (fields: ExampleStructFields) => {
+        return new ExampleStruct(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -80,8 +74,14 @@ export class ExampleStruct {
     return ExampleStruct.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('ExampleStruct', {
+      dummy_field: bcs.bool(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): ExampleStruct {
-    return ExampleStruct.new(decodeFromFields('bool', fields.dummy_field))
+    return ExampleStruct.reified().new({ dummyField: decodeFromFields('bool', fields.dummy_field) })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): ExampleStruct {
@@ -89,7 +89,9 @@ export class ExampleStruct {
       throw new Error('not a ExampleStruct type')
     }
 
-    return ExampleStruct.new(decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
+    return ExampleStruct.reified().new({
+      dummyField: decodeFromFieldsWithTypes('bool', item.fields.dummy_field),
+    })
   }
 
   static fromBcs(data: Uint8Array): ExampleStruct {
@@ -107,7 +109,9 @@ export class ExampleStruct {
   }
 
   static fromJSONField(field: any): ExampleStruct {
-    return ExampleStruct.new(decodeFromJSONField('bool', field.dummyField))
+    return ExampleStruct.reified().new({
+      dummyField: decodeFromJSONField('bool', field.dummyField),
+    })
   }
 
   static fromJSON(json: Record<string, any>): ExampleStruct {
@@ -169,10 +173,58 @@ export class SpecialTypesStruct {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName =
-    null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
-
   readonly $typeName = SpecialTypesStruct.$typeName
+
+  readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
+
+  readonly id: ToField<UID>
+  readonly asciiString: ToField<String>
+  readonly utf8String: ToField<String1>
+  readonly vectorOfU64: ToField<Vector<'u64'>>
+  readonly vectorOfObjects: ToField<Vector<ExampleStruct>>
+  readonly idField: ToField<ID>
+  readonly address: ToField<'address'>
+  readonly optionSome: ToField<Option<'u64'>>
+  readonly optionNone: ToField<Option<'u64'>>
+
+  private constructor(fields: SpecialTypesStructFields) {
+    this.$fullTypeName = SpecialTypesStruct.$typeName
+
+    this.id = fields.id
+    this.asciiString = fields.asciiString
+    this.utf8String = fields.utf8String
+    this.vectorOfU64 = fields.vectorOfU64
+    this.vectorOfObjects = fields.vectorOfObjects
+    this.idField = fields.idField
+    this.address = fields.address
+    this.optionSome = fields.optionSome
+    this.optionNone = fields.optionNone
+  }
+
+  static reified(): Reified<SpecialTypesStruct, SpecialTypesStructFields> {
+    return {
+      typeName: SpecialTypesStruct.$typeName,
+      fullTypeName: composeSuiType(
+        SpecialTypesStruct.$typeName,
+        ...[]
+      ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct',
+      typeArgs: [],
+      fromFields: (fields: Record<string, any>) => SpecialTypesStruct.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => SpecialTypesStruct.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => SpecialTypesStruct.fromBcs(data),
+      bcs: SpecialTypesStruct.bcs,
+      fromJSONField: (field: any) => SpecialTypesStruct.fromJSONField(field),
+      fetch: async (client: SuiClient, id: string) => SpecialTypesStruct.fetch(client, id),
+      new: (fields: SpecialTypesStructFields) => {
+        return new SpecialTypesStruct(fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return SpecialTypesStruct.reified()
+  }
 
   static get bcs() {
     return bcs.struct('SpecialTypesStruct', {
@@ -191,56 +243,8 @@ export class SpecialTypesStruct {
     })
   }
 
-  readonly id: ToField<UID>
-  readonly asciiString: ToField<String>
-  readonly utf8String: ToField<String1>
-  readonly vectorOfU64: ToField<Vector<'u64'>>
-  readonly vectorOfObjects: ToField<Vector<ExampleStruct>>
-  readonly idField: ToField<ID>
-  readonly address: ToField<'address'>
-  readonly optionSome: ToField<Option<'u64'>>
-  readonly optionNone: ToField<Option<'u64'>>
-
-  private constructor(fields: SpecialTypesStructFields) {
-    this.id = fields.id
-    this.asciiString = fields.asciiString
-    this.utf8String = fields.utf8String
-    this.vectorOfU64 = fields.vectorOfU64
-    this.vectorOfObjects = fields.vectorOfObjects
-    this.idField = fields.idField
-    this.address = fields.address
-    this.optionSome = fields.optionSome
-    this.optionNone = fields.optionNone
-  }
-
-  static new(fields: SpecialTypesStructFields): SpecialTypesStruct {
-    return new SpecialTypesStruct(fields)
-  }
-
-  static reified(): Reified<SpecialTypesStruct> {
-    return {
-      typeName: SpecialTypesStruct.$typeName,
-      fullTypeName: composeSuiType(
-        SpecialTypesStruct.$typeName,
-        ...[]
-      ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct',
-      typeArgs: [],
-      fromFields: (fields: Record<string, any>) => SpecialTypesStruct.fromFields(fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => SpecialTypesStruct.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => SpecialTypesStruct.fromBcs(data),
-      bcs: SpecialTypesStruct.bcs,
-      fromJSONField: (field: any) => SpecialTypesStruct.fromJSONField(field),
-      fetch: async (client: SuiClient, id: string) => SpecialTypesStruct.fetch(client, id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return SpecialTypesStruct.reified()
-  }
-
   static fromFields(fields: Record<string, any>): SpecialTypesStruct {
-    return SpecialTypesStruct.new({
+    return SpecialTypesStruct.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       asciiString: decodeFromFields(String.reified(), fields.ascii_string),
       utf8String: decodeFromFields(String1.reified(), fields.utf8_string),
@@ -261,7 +265,7 @@ export class SpecialTypesStruct {
       throw new Error('not a SpecialTypesStruct type')
     }
 
-    return SpecialTypesStruct.new({
+    return SpecialTypesStruct.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       asciiString: decodeFromFieldsWithTypes(String.reified(), item.fields.ascii_string),
       utf8String: decodeFromFieldsWithTypes(String1.reified(), item.fields.utf8_string),
@@ -303,7 +307,7 @@ export class SpecialTypesStruct {
   }
 
   static fromJSONField(field: any): SpecialTypesStruct {
-    return SpecialTypesStruct.new({
+    return SpecialTypesStruct.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       asciiString: decodeFromJSONField(String.reified(), field.asciiString),
       utf8String: decodeFromJSONField(String1.reified(), field.utf8String),

@@ -26,27 +26,19 @@ export class FixedPoint32 {
   static readonly $typeName = '0x1::fixed_point32::FixedPoint32'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x1::fixed_point32::FixedPoint32'
-
   readonly $typeName = FixedPoint32.$typeName
 
-  static get bcs() {
-    return bcs.struct('FixedPoint32', {
-      value: bcs.u64(),
-    })
-  }
+  readonly $fullTypeName: '0x1::fixed_point32::FixedPoint32'
 
   readonly value: ToField<'u64'>
 
-  private constructor(value: ToField<'u64'>) {
-    this.value = value
+  private constructor(fields: FixedPoint32Fields) {
+    this.$fullTypeName = FixedPoint32.$typeName
+
+    this.value = fields.value
   }
 
-  static new(value: ToField<'u64'>): FixedPoint32 {
-    return new FixedPoint32(value)
-  }
-
-  static reified(): Reified<FixedPoint32> {
+  static reified(): Reified<FixedPoint32, FixedPoint32Fields> {
     return {
       typeName: FixedPoint32.$typeName,
       fullTypeName: composeSuiType(
@@ -60,6 +52,9 @@ export class FixedPoint32 {
       bcs: FixedPoint32.bcs,
       fromJSONField: (field: any) => FixedPoint32.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => FixedPoint32.fetch(client, id),
+      new: (fields: FixedPoint32Fields) => {
+        return new FixedPoint32(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -68,8 +63,14 @@ export class FixedPoint32 {
     return FixedPoint32.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('FixedPoint32', {
+      value: bcs.u64(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): FixedPoint32 {
-    return FixedPoint32.new(decodeFromFields('u64', fields.value))
+    return FixedPoint32.reified().new({ value: decodeFromFields('u64', fields.value) })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): FixedPoint32 {
@@ -77,7 +78,9 @@ export class FixedPoint32 {
       throw new Error('not a FixedPoint32 type')
     }
 
-    return FixedPoint32.new(decodeFromFieldsWithTypes('u64', item.fields.value))
+    return FixedPoint32.reified().new({
+      value: decodeFromFieldsWithTypes('u64', item.fields.value),
+    })
   }
 
   static fromBcs(data: Uint8Array): FixedPoint32 {
@@ -95,7 +98,7 @@ export class FixedPoint32 {
   }
 
   static fromJSONField(field: any): FixedPoint32 {
-    return FixedPoint32.new(decodeFromJSONField('u64', field.value))
+    return FixedPoint32.reified().new({ value: decodeFromJSONField('u64', field.value) })
   }
 
   static fromJSON(json: Record<string, any>): FixedPoint32 {

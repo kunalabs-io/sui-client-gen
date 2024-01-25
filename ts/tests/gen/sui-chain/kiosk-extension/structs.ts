@@ -1,10 +1,10 @@
 import {
+  PhantomReified,
+  PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
-  ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -36,33 +36,23 @@ export class Extension {
   static readonly $typeName = '0x2::kiosk_extension::Extension'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::kiosk_extension::Extension'
-
   readonly $typeName = Extension.$typeName
 
-  static get bcs() {
-    return bcs.struct('Extension', {
-      storage: Bag.bcs,
-      permissions: bcs.u128(),
-      is_enabled: bcs.bool(),
-    })
-  }
+  readonly $fullTypeName: '0x2::kiosk_extension::Extension'
 
   readonly storage: ToField<Bag>
   readonly permissions: ToField<'u128'>
   readonly isEnabled: ToField<'bool'>
 
   private constructor(fields: ExtensionFields) {
+    this.$fullTypeName = Extension.$typeName
+
     this.storage = fields.storage
     this.permissions = fields.permissions
     this.isEnabled = fields.isEnabled
   }
 
-  static new(fields: ExtensionFields): Extension {
-    return new Extension(fields)
-  }
-
-  static reified(): Reified<Extension> {
+  static reified(): Reified<Extension, ExtensionFields> {
     return {
       typeName: Extension.$typeName,
       fullTypeName: composeSuiType(Extension.$typeName, ...[]) as '0x2::kiosk_extension::Extension',
@@ -73,6 +63,9 @@ export class Extension {
       bcs: Extension.bcs,
       fromJSONField: (field: any) => Extension.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => Extension.fetch(client, id),
+      new: (fields: ExtensionFields) => {
+        return new Extension(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -81,8 +74,16 @@ export class Extension {
     return Extension.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('Extension', {
+      storage: Bag.bcs,
+      permissions: bcs.u128(),
+      is_enabled: bcs.bool(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): Extension {
-    return Extension.new({
+    return Extension.reified().new({
       storage: decodeFromFields(Bag.reified(), fields.storage),
       permissions: decodeFromFields('u128', fields.permissions),
       isEnabled: decodeFromFields('bool', fields.is_enabled),
@@ -94,7 +95,7 @@ export class Extension {
       throw new Error('not a Extension type')
     }
 
-    return Extension.new({
+    return Extension.reified().new({
       storage: decodeFromFieldsWithTypes(Bag.reified(), item.fields.storage),
       permissions: decodeFromFieldsWithTypes('u128', item.fields.permissions),
       isEnabled: decodeFromFieldsWithTypes('bool', item.fields.is_enabled),
@@ -118,7 +119,7 @@ export class Extension {
   }
 
   static fromJSONField(field: any): Extension {
-    return Extension.new({
+    return Extension.reified().new({
       storage: decodeFromJSONField(Bag.reified(), field.storage),
       permissions: decodeFromJSONField('u128', field.permissions),
       isEnabled: decodeFromJSONField('bool', field.isEnabled),
@@ -172,42 +173,37 @@ export class ExtensionKey<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk_extension::ExtensionKey'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::kiosk_extension::ExtensionKey<${ToTypeStr<T0>}>`
-
   readonly $typeName = ExtensionKey.$typeName
 
-  static get bcs() {
-    return bcs.struct('ExtensionKey', {
-      dummy_field: bcs.bool(),
-    })
-  }
+  readonly $fullTypeName: `0x2::kiosk_extension::ExtensionKey<${string}>`
 
   readonly $typeArg: string
 
   readonly dummyField: ToField<'bool'>
 
-  private constructor(typeArg: string, dummyField: ToField<'bool'>) {
+  private constructor(typeArg: string, fields: ExtensionKeyFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      ExtensionKey.$typeName,
+      typeArg
+    ) as `0x2::kiosk_extension::ExtensionKey<${PhantomToTypeStr<T0>}>`
+
     this.$typeArg = typeArg
 
-    this.dummyField = dummyField
+    this.dummyField = fields.dummyField
   }
 
-  static new<T0 extends ReifiedPhantomTypeArgument>(
-    typeArg: T0,
-    dummyField: ToField<'bool'>
-  ): ExtensionKey<ToPhantomTypeArgument<T0>> {
-    return new ExtensionKey(extractType(typeArg), dummyField)
-  }
-
-  static reified<T0 extends ReifiedPhantomTypeArgument>(
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
-  ): Reified<ExtensionKey<ToPhantomTypeArgument<T0>>> {
+  ): Reified<
+    ExtensionKey<ToPhantomTypeArgument<T0>>,
+    ExtensionKeyFields<ToPhantomTypeArgument<T0>>
+  > {
     return {
       typeName: ExtensionKey.$typeName,
       fullTypeName: composeSuiType(
         ExtensionKey.$typeName,
         ...[extractType(T0)]
-      ) as `0x2::kiosk_extension::ExtensionKey<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::kiosk_extension::ExtensionKey<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => ExtensionKey.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ExtensionKey.fromFieldsWithTypes(T0, item),
@@ -215,6 +211,9 @@ export class ExtensionKey<T0 extends PhantomTypeArgument> {
       bcs: ExtensionKey.bcs,
       fromJSONField: (field: any) => ExtensionKey.fromJSONField(T0, field),
       fetch: async (client: SuiClient, id: string) => ExtensionKey.fetch(client, T0, id),
+      new: (fields: ExtensionKeyFields<ToPhantomTypeArgument<T0>>) => {
+        return new ExtensionKey(extractType(T0), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -223,14 +222,22 @@ export class ExtensionKey<T0 extends PhantomTypeArgument> {
     return ExtensionKey.reified
   }
 
-  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+  static get bcs() {
+    return bcs.struct('ExtensionKey', {
+      dummy_field: bcs.bool(),
+    })
+  }
+
+  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     fields: Record<string, any>
   ): ExtensionKey<ToPhantomTypeArgument<T0>> {
-    return ExtensionKey.new(typeArg, decodeFromFields('bool', fields.dummy_field))
+    return ExtensionKey.reified(typeArg).new({
+      dummyField: decodeFromFields('bool', fields.dummy_field),
+    })
   }
 
-  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     item: FieldsWithTypes
   ): ExtensionKey<ToPhantomTypeArgument<T0>> {
@@ -239,10 +246,12 @@ export class ExtensionKey<T0 extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return ExtensionKey.new(typeArg, decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
+    return ExtensionKey.reified(typeArg).new({
+      dummyField: decodeFromFieldsWithTypes('bool', item.fields.dummy_field),
+    })
   }
 
-  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     data: Uint8Array
   ): ExtensionKey<ToPhantomTypeArgument<T0>> {
@@ -259,14 +268,16 @@ export class ExtensionKey<T0 extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     field: any
   ): ExtensionKey<ToPhantomTypeArgument<T0>> {
-    return ExtensionKey.new(typeArg, decodeFromJSONField('bool', field.dummyField))
+    return ExtensionKey.reified(typeArg).new({
+      dummyField: decodeFromJSONField('bool', field.dummyField),
+    })
   }
 
-  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     json: Record<string, any>
   ): ExtensionKey<ToPhantomTypeArgument<T0>> {
@@ -282,7 +293,7 @@ export class ExtensionKey<T0 extends PhantomTypeArgument> {
     return ExtensionKey.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     content: SuiParsedData
   ): ExtensionKey<ToPhantomTypeArgument<T0>> {
@@ -295,7 +306,7 @@ export class ExtensionKey<T0 extends PhantomTypeArgument> {
     return ExtensionKey.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
     id: string

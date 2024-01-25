@@ -37,16 +37,17 @@ export class Vector<T extends TypeArgument> implements VectorClass {
 export type Primitive = 'bool' | 'u8' | 'u16' | 'u32' | 'u64' | 'u128' | 'u256' | 'address'
 export type TypeArgument = StructClass | Primitive | VectorClass
 
-export interface StructClassReified<T extends StructClass> {
+export interface StructClassReified<T extends StructClass, Fields> {
   typeName: T['$typeName'] // e.g., '0x2::balance::Balance', without type arguments
   fullTypeName: ToTypeStr<T> // e.g., '0x2::balance::Balance<0x2::sui:SUI>'
-  typeArgs: Array<Reified<TypeArgument> | PhantomReified<string>>
+  typeArgs: Array<Reified<TypeArgument, Fields> | PhantomReified<string>>
   bcs: BcsType<any>
   fromFields(fields: Record<string, any>): T
   fromFieldsWithTypes(item: FieldsWithTypes): T
   fromBcs(data: Uint8Array): T
   fromJSONField: (field: any) => T
   fetch: (client: SuiClient, id: string) => Promise<T>
+  new: (fields: Fields) => T
   kind: 'StructClassReified'
 }
 
@@ -59,32 +60,26 @@ export interface VectorClassReified<T extends VectorClass> {
   kind: 'VectorClassReified'
 }
 
-export type Reified<T extends TypeArgument> = T extends Primitive
+export type Reified<T extends TypeArgument, Fields> = T extends Primitive
   ? Primitive
   : T extends StructClass
-  ? StructClassReified<T>
+  ? StructClassReified<T, Fields>
   : T extends VectorClass
   ? VectorClassReified<T>
   : never
 
 export type ToTypeArgument<
-  T extends Primitive | StructClassReified<StructClass> | VectorClassReified<VectorClass>,
+  T extends Primitive | StructClassReified<StructClass, any> | VectorClassReified<VectorClass>,
 > = T extends Primitive
   ? T
-  : T extends StructClassReified<infer U>
+  : T extends StructClassReified<infer U, any>
   ? U
   : T extends VectorClassReified<infer U>
   ? U
   : never
 
-export type ToPhantomTypeArgument<T extends PhantomReified<string> | Reified<TypeArgument>> =
-  T extends PhantomReified<infer U>
-    ? U
-    : T extends StructClassReified<infer U>
-    ? ToTypeStr<U>
-    : T extends Primitive
-    ? T
-    : never
+export type ToPhantomTypeArgument<T extends PhantomReified<PhantomTypeArgument>> =
+  T extends PhantomReified<infer U> ? U : never
 
 export type PhantomTypeArgument = string
 
@@ -93,11 +88,11 @@ export interface PhantomReified<P> {
   kind: 'PhantomReified'
 }
 
-export function phantom<T extends Reified<TypeArgument>>(
+export function phantom<T extends Reified<TypeArgument, any>>(
   reified: T
 ): PhantomReified<ToTypeStr<ToTypeArgument<T>>>
-export function phantom<P extends string>(phantomType: P): PhantomReified<P>
-export function phantom(type: string | Reified<TypeArgument>): PhantomReified<string> {
+export function phantom<P extends PhantomTypeArgument>(phantomType: P): PhantomReified<P>
+export function phantom(type: string | Reified<TypeArgument, any>): PhantomReified<string> {
   if (typeof type === 'string') {
     return {
       phantomType: type,
@@ -111,19 +106,19 @@ export function phantom(type: string | Reified<TypeArgument>): PhantomReified<st
   }
 }
 
-export type ReifiedPhantomTypeArgument = Reified<StructClass> | PhantomReified<string>
-
-export type ToTypeStr<T extends TypeArgument | PhantomTypeArgument> = T extends Primitive
+export type ToTypeStr<T extends TypeArgument> = T extends Primitive
   ? T
   : T extends StructClass
   ? T['$fullTypeName']
   : T extends VectorClass
   ? T['$fullTypeName']
-  : T extends PhantomTypeArgument
+  : never
+
+export type PhantomToTypeStr<T extends PhantomTypeArgument> = T extends PhantomTypeArgument
   ? T
   : never
 
-export function vector<T extends Reified<TypeArgument>>(
+export function vector<T extends Reified<TypeArgument, any>>(
   T: T
 ): VectorClassReified<Vector<ToTypeArgument<T>>> {
   const fullTypeName = `vector<${extractType(T)}>` as `vector<${ToTypeStr<ToTypeArgument<T>>}>`
@@ -232,7 +227,7 @@ const Address = bcs.bytes(32).transform({
   output: val => toHEX(val),
 })
 
-export function toBcs<T extends Reified<TypeArgument>>(arg: T): BcsType<any> {
+export function toBcs<T extends Reified<TypeArgument, any>>(arg: T): BcsType<any> {
   switch (arg) {
     case 'bool':
       return bcs.bool()
@@ -255,7 +250,7 @@ export function toBcs<T extends Reified<TypeArgument>>(arg: T): BcsType<any> {
   }
 }
 
-export function extractType(reified: Reified<TypeArgument> | PhantomReified<string>): string {
+export function extractType(reified: Reified<TypeArgument, any> | PhantomReified<string>): string {
   switch (reified) {
     case 'u8':
     case 'u16':
@@ -279,7 +274,7 @@ export function extractType(reified: Reified<TypeArgument> | PhantomReified<stri
   throw new Error('unreachable')
 }
 
-export function decodeFromFields(reified: Reified<TypeArgument>, field: any) {
+export function decodeFromFields(reified: Reified<TypeArgument, any>, field: any) {
   switch (reified) {
     case 'bool':
     case 'u8':
@@ -317,7 +312,7 @@ export function decodeFromFields(reified: Reified<TypeArgument>, field: any) {
   }
 }
 
-export function decodeFromFieldsWithTypes(reified: Reified<TypeArgument>, item: any) {
+export function decodeFromFieldsWithTypes(reified: Reified<TypeArgument, any>, item: any) {
   switch (reified) {
     case 'bool':
     case 'u8':
@@ -358,7 +353,7 @@ export function decodeFromFieldsWithTypes(reified: Reified<TypeArgument>, item: 
 export function assertReifiedTypeArgsMatch(
   fullType: string,
   typeArgs: string[],
-  reifiedTypeArgs: Array<Reified<TypeArgument> | PhantomReified<string>>
+  reifiedTypeArgs: Array<Reified<TypeArgument, any> | PhantomReified<string>>
 ) {
   if (reifiedTypeArgs.length !== typeArgs.length) {
     throw new Error(
@@ -378,7 +373,7 @@ export function assertReifiedTypeArgsMatch(
 
 export function assertFieldsWithTypesArgsMatch(
   item: FieldsWithTypes,
-  reifiedTypeArgs: Array<Reified<TypeArgument> | PhantomReified<string>>
+  reifiedTypeArgs: Array<Reified<TypeArgument, any> | PhantomReified<string>>
 ) {
   const { typeArgs: itemTypeArgs } = parseTypeName(item.type)
   assertReifiedTypeArgsMatch(item.type, itemTypeArgs, reifiedTypeArgs)
@@ -420,7 +415,7 @@ export function fieldToJSON<T extends TypeArgument>(type: string, field: ToField
   }
 }
 
-export function decodeFromJSONField(typeArg: Reified<TypeArgument>, field: any) {
+export function decodeFromJSONField(typeArg: Reified<TypeArgument, any>, field: any) {
   switch (typeArg) {
     case 'bool':
     case 'u8':

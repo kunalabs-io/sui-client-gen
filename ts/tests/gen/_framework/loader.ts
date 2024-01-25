@@ -18,8 +18,8 @@ interface _StructClass {
   $typeName: string
   $numTypeParams: number
   reified(
-    ...Ts: Array<Reified<TypeArgument> | PhantomReified<PhantomTypeArgument>>
-  ): StructClassReified<StructClass>
+    ...Ts: Array<Reified<TypeArgument, any> | PhantomReified<PhantomTypeArgument>>
+  ): StructClassReified<StructClass, any>
 }
 
 export class StructClassLoader {
@@ -33,10 +33,10 @@ export class StructClassLoader {
 
   reified<T extends Primitive>(type: T): T
   reified(type: `vector<${string}>`): VectorClassReified<VectorClass>
-  reified(type: string): StructClassReified<StructClass>
+  reified(type: string): StructClassReified<StructClass, any>
   reified(
     type: string
-  ): StructClassReified<StructClass> | VectorClassReified<VectorClass> | string {
+  ): StructClassReified<StructClass, any> | VectorClassReified<VectorClass> | string {
     const { typeName, typeArgs } = parseTypeName(compressSuiType(type))
     switch (typeName) {
       case 'bool':

@@ -30,28 +30,19 @@ export class AddedInAnUpgrade {
     '0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe::other_module::AddedInAnUpgrade'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName =
-    null as unknown as '0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe::other_module::AddedInAnUpgrade'
-
   readonly $typeName = AddedInAnUpgrade.$typeName
 
-  static get bcs() {
-    return bcs.struct('AddedInAnUpgrade', {
-      dummy_field: bcs.bool(),
-    })
-  }
+  readonly $fullTypeName: '0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe::other_module::AddedInAnUpgrade'
 
   readonly dummyField: ToField<'bool'>
 
-  private constructor(dummyField: ToField<'bool'>) {
-    this.dummyField = dummyField
+  private constructor(fields: AddedInAnUpgradeFields) {
+    this.$fullTypeName = AddedInAnUpgrade.$typeName
+
+    this.dummyField = fields.dummyField
   }
 
-  static new(dummyField: ToField<'bool'>): AddedInAnUpgrade {
-    return new AddedInAnUpgrade(dummyField)
-  }
-
-  static reified(): Reified<AddedInAnUpgrade> {
+  static reified(): Reified<AddedInAnUpgrade, AddedInAnUpgradeFields> {
     return {
       typeName: AddedInAnUpgrade.$typeName,
       fullTypeName: composeSuiType(
@@ -65,6 +56,9 @@ export class AddedInAnUpgrade {
       bcs: AddedInAnUpgrade.bcs,
       fromJSONField: (field: any) => AddedInAnUpgrade.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => AddedInAnUpgrade.fetch(client, id),
+      new: (fields: AddedInAnUpgradeFields) => {
+        return new AddedInAnUpgrade(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -73,8 +67,16 @@ export class AddedInAnUpgrade {
     return AddedInAnUpgrade.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('AddedInAnUpgrade', {
+      dummy_field: bcs.bool(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): AddedInAnUpgrade {
-    return AddedInAnUpgrade.new(decodeFromFields('bool', fields.dummy_field))
+    return AddedInAnUpgrade.reified().new({
+      dummyField: decodeFromFields('bool', fields.dummy_field),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): AddedInAnUpgrade {
@@ -82,7 +84,9 @@ export class AddedInAnUpgrade {
       throw new Error('not a AddedInAnUpgrade type')
     }
 
-    return AddedInAnUpgrade.new(decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
+    return AddedInAnUpgrade.reified().new({
+      dummyField: decodeFromFieldsWithTypes('bool', item.fields.dummy_field),
+    })
   }
 
   static fromBcs(data: Uint8Array): AddedInAnUpgrade {
@@ -100,7 +104,9 @@ export class AddedInAnUpgrade {
   }
 
   static fromJSONField(field: any): AddedInAnUpgrade {
-    return AddedInAnUpgrade.new(decodeFromJSONField('bool', field.dummyField))
+    return AddedInAnUpgrade.reified().new({
+      dummyField: decodeFromJSONField('bool', field.dummyField),
+    })
   }
 
   static fromJSON(json: Record<string, any>): AddedInAnUpgrade {
@@ -157,28 +163,19 @@ export class StructFromOtherModule {
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName =
-    null as unknown as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
-
   readonly $typeName = StructFromOtherModule.$typeName
 
-  static get bcs() {
-    return bcs.struct('StructFromOtherModule', {
-      dummy_field: bcs.bool(),
-    })
-  }
+  readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
 
   readonly dummyField: ToField<'bool'>
 
-  private constructor(dummyField: ToField<'bool'>) {
-    this.dummyField = dummyField
+  private constructor(fields: StructFromOtherModuleFields) {
+    this.$fullTypeName = StructFromOtherModule.$typeName
+
+    this.dummyField = fields.dummyField
   }
 
-  static new(dummyField: ToField<'bool'>): StructFromOtherModule {
-    return new StructFromOtherModule(dummyField)
-  }
-
-  static reified(): Reified<StructFromOtherModule> {
+  static reified(): Reified<StructFromOtherModule, StructFromOtherModuleFields> {
     return {
       typeName: StructFromOtherModule.$typeName,
       fullTypeName: composeSuiType(
@@ -193,6 +190,9 @@ export class StructFromOtherModule {
       bcs: StructFromOtherModule.bcs,
       fromJSONField: (field: any) => StructFromOtherModule.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => StructFromOtherModule.fetch(client, id),
+      new: (fields: StructFromOtherModuleFields) => {
+        return new StructFromOtherModule(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -201,8 +201,16 @@ export class StructFromOtherModule {
     return StructFromOtherModule.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('StructFromOtherModule', {
+      dummy_field: bcs.bool(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): StructFromOtherModule {
-    return StructFromOtherModule.new(decodeFromFields('bool', fields.dummy_field))
+    return StructFromOtherModule.reified().new({
+      dummyField: decodeFromFields('bool', fields.dummy_field),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): StructFromOtherModule {
@@ -210,7 +218,9 @@ export class StructFromOtherModule {
       throw new Error('not a StructFromOtherModule type')
     }
 
-    return StructFromOtherModule.new(decodeFromFieldsWithTypes('bool', item.fields.dummy_field))
+    return StructFromOtherModule.reified().new({
+      dummyField: decodeFromFieldsWithTypes('bool', item.fields.dummy_field),
+    })
   }
 
   static fromBcs(data: Uint8Array): StructFromOtherModule {
@@ -228,7 +238,9 @@ export class StructFromOtherModule {
   }
 
   static fromJSONField(field: any): StructFromOtherModule {
-    return StructFromOtherModule.new(decodeFromJSONField('bool', field.dummyField))
+    return StructFromOtherModule.reified().new({
+      dummyField: decodeFromJSONField('bool', field.dummyField),
+    })
   }
 
   static fromJSON(json: Record<string, any>): StructFromOtherModule {

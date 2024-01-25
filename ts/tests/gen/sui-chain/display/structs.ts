@@ -1,10 +1,10 @@
 import {
+  PhantomReified,
+  PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
-  ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -38,9 +38,55 @@ export class Display<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::Display'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::display::Display<${ToTypeStr<T0>}>`
-
   readonly $typeName = Display.$typeName
+
+  readonly $fullTypeName: `0x2::display::Display<${string}>`
+
+  readonly $typeArg: string
+
+  readonly id: ToField<UID>
+  readonly fields: ToField<VecMap<String, String>>
+  readonly version: ToField<'u16'>
+
+  private constructor(typeArg: string, fields: DisplayFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      Display.$typeName,
+      typeArg
+    ) as `0x2::display::Display<${PhantomToTypeStr<T0>}>`
+
+    this.$typeArg = typeArg
+
+    this.id = fields.id
+    this.fields = fields.fields
+    this.version = fields.version
+  }
+
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): Reified<Display<ToPhantomTypeArgument<T0>>, DisplayFields<ToPhantomTypeArgument<T0>>> {
+    return {
+      typeName: Display.$typeName,
+      fullTypeName: composeSuiType(
+        Display.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::display::Display<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [T0],
+      fromFields: (fields: Record<string, any>) => Display.fromFields(T0, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Display.fromFieldsWithTypes(T0, item),
+      fromBcs: (data: Uint8Array) => Display.fromBcs(T0, data),
+      bcs: Display.bcs,
+      fromJSONField: (field: any) => Display.fromJSONField(T0, field),
+      fetch: async (client: SuiClient, id: string) => Display.fetch(client, T0, id),
+      new: (fields: DisplayFields<ToPhantomTypeArgument<T0>>) => {
+        return new Display(extractType(T0), fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return Display.reified
+  }
 
   static get bcs() {
     return bcs.struct('Display', {
@@ -50,63 +96,18 @@ export class Display<T0 extends PhantomTypeArgument> {
     })
   }
 
-  readonly $typeArg: string
-
-  readonly id: ToField<UID>
-  readonly fields: ToField<VecMap<String, String>>
-  readonly version: ToField<'u16'>
-
-  private constructor(typeArg: string, fields: DisplayFields<T0>) {
-    this.$typeArg = typeArg
-
-    this.id = fields.id
-    this.fields = fields.fields
-    this.version = fields.version
-  }
-
-  static new<T0 extends ReifiedPhantomTypeArgument>(
-    typeArg: T0,
-    fields: DisplayFields<ToPhantomTypeArgument<T0>>
-  ): Display<ToPhantomTypeArgument<T0>> {
-    return new Display(extractType(typeArg), fields)
-  }
-
-  static reified<T0 extends ReifiedPhantomTypeArgument>(
-    T0: T0
-  ): Reified<Display<ToPhantomTypeArgument<T0>>> {
-    return {
-      typeName: Display.$typeName,
-      fullTypeName: composeSuiType(
-        Display.$typeName,
-        ...[extractType(T0)]
-      ) as `0x2::display::Display<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
-      typeArgs: [T0],
-      fromFields: (fields: Record<string, any>) => Display.fromFields(T0, fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => Display.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => Display.fromBcs(T0, data),
-      bcs: Display.bcs,
-      fromJSONField: (field: any) => Display.fromJSONField(T0, field),
-      fetch: async (client: SuiClient, id: string) => Display.fetch(client, T0, id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return Display.reified
-  }
-
-  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     fields: Record<string, any>
   ): Display<ToPhantomTypeArgument<T0>> {
-    return Display.new(typeArg, {
+    return Display.reified(typeArg).new({
       id: decodeFromFields(UID.reified(), fields.id),
       fields: decodeFromFields(VecMap.reified(String.reified(), String.reified()), fields.fields),
       version: decodeFromFields('u16', fields.version),
     })
   }
 
-  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     item: FieldsWithTypes
   ): Display<ToPhantomTypeArgument<T0>> {
@@ -115,7 +116,7 @@ export class Display<T0 extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return Display.new(typeArg, {
+    return Display.reified(typeArg).new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       fields: decodeFromFieldsWithTypes(
         VecMap.reified(String.reified(), String.reified()),
@@ -125,7 +126,7 @@ export class Display<T0 extends PhantomTypeArgument> {
     })
   }
 
-  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     data: Uint8Array
   ): Display<ToPhantomTypeArgument<T0>> {
@@ -144,18 +145,18 @@ export class Display<T0 extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     field: any
   ): Display<ToPhantomTypeArgument<T0>> {
-    return Display.new(typeArg, {
+    return Display.reified(typeArg).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       fields: decodeFromJSONField(VecMap.reified(String.reified(), String.reified()), field.fields),
       version: decodeFromJSONField('u16', field.version),
     })
   }
 
-  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     json: Record<string, any>
   ): Display<ToPhantomTypeArgument<T0>> {
@@ -171,7 +172,7 @@ export class Display<T0 extends PhantomTypeArgument> {
     return Display.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     content: SuiParsedData
   ): Display<ToPhantomTypeArgument<T0>> {
@@ -184,7 +185,7 @@ export class Display<T0 extends PhantomTypeArgument> {
     return Display.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
     id: string
@@ -217,42 +218,37 @@ export class DisplayCreated<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::DisplayCreated'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::display::DisplayCreated<${ToTypeStr<T0>}>`
-
   readonly $typeName = DisplayCreated.$typeName
 
-  static get bcs() {
-    return bcs.struct('DisplayCreated', {
-      id: ID.bcs,
-    })
-  }
+  readonly $fullTypeName: `0x2::display::DisplayCreated<${string}>`
 
   readonly $typeArg: string
 
   readonly id: ToField<ID>
 
-  private constructor(typeArg: string, id: ToField<ID>) {
+  private constructor(typeArg: string, fields: DisplayCreatedFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      DisplayCreated.$typeName,
+      typeArg
+    ) as `0x2::display::DisplayCreated<${PhantomToTypeStr<T0>}>`
+
     this.$typeArg = typeArg
 
-    this.id = id
+    this.id = fields.id
   }
 
-  static new<T0 extends ReifiedPhantomTypeArgument>(
-    typeArg: T0,
-    id: ToField<ID>
-  ): DisplayCreated<ToPhantomTypeArgument<T0>> {
-    return new DisplayCreated(extractType(typeArg), id)
-  }
-
-  static reified<T0 extends ReifiedPhantomTypeArgument>(
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
-  ): Reified<DisplayCreated<ToPhantomTypeArgument<T0>>> {
+  ): Reified<
+    DisplayCreated<ToPhantomTypeArgument<T0>>,
+    DisplayCreatedFields<ToPhantomTypeArgument<T0>>
+  > {
     return {
       typeName: DisplayCreated.$typeName,
       fullTypeName: composeSuiType(
         DisplayCreated.$typeName,
         ...[extractType(T0)]
-      ) as `0x2::display::DisplayCreated<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::display::DisplayCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [T0],
       fromFields: (fields: Record<string, any>) => DisplayCreated.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => DisplayCreated.fromFieldsWithTypes(T0, item),
@@ -260,6 +256,9 @@ export class DisplayCreated<T0 extends PhantomTypeArgument> {
       bcs: DisplayCreated.bcs,
       fromJSONField: (field: any) => DisplayCreated.fromJSONField(T0, field),
       fetch: async (client: SuiClient, id: string) => DisplayCreated.fetch(client, T0, id),
+      new: (fields: DisplayCreatedFields<ToPhantomTypeArgument<T0>>) => {
+        return new DisplayCreated(extractType(T0), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -268,14 +267,20 @@ export class DisplayCreated<T0 extends PhantomTypeArgument> {
     return DisplayCreated.reified
   }
 
-  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+  static get bcs() {
+    return bcs.struct('DisplayCreated', {
+      id: ID.bcs,
+    })
+  }
+
+  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     fields: Record<string, any>
   ): DisplayCreated<ToPhantomTypeArgument<T0>> {
-    return DisplayCreated.new(typeArg, decodeFromFields(ID.reified(), fields.id))
+    return DisplayCreated.reified(typeArg).new({ id: decodeFromFields(ID.reified(), fields.id) })
   }
 
-  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     item: FieldsWithTypes
   ): DisplayCreated<ToPhantomTypeArgument<T0>> {
@@ -284,10 +289,12 @@ export class DisplayCreated<T0 extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return DisplayCreated.new(typeArg, decodeFromFieldsWithTypes(ID.reified(), item.fields.id))
+    return DisplayCreated.reified(typeArg).new({
+      id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
+    })
   }
 
-  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     data: Uint8Array
   ): DisplayCreated<ToPhantomTypeArgument<T0>> {
@@ -304,14 +311,14 @@ export class DisplayCreated<T0 extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     field: any
   ): DisplayCreated<ToPhantomTypeArgument<T0>> {
-    return DisplayCreated.new(typeArg, decodeFromJSONField(ID.reified(), field.id))
+    return DisplayCreated.reified(typeArg).new({ id: decodeFromJSONField(ID.reified(), field.id) })
   }
 
-  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     json: Record<string, any>
   ): DisplayCreated<ToPhantomTypeArgument<T0>> {
@@ -327,7 +334,7 @@ export class DisplayCreated<T0 extends PhantomTypeArgument> {
     return DisplayCreated.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     content: SuiParsedData
   ): DisplayCreated<ToPhantomTypeArgument<T0>> {
@@ -340,7 +347,7 @@ export class DisplayCreated<T0 extends PhantomTypeArgument> {
     return DisplayCreated.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
     id: string
@@ -375,9 +382,58 @@ export class VersionUpdated<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::VersionUpdated'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::display::VersionUpdated<${ToTypeStr<T0>}>`
-
   readonly $typeName = VersionUpdated.$typeName
+
+  readonly $fullTypeName: `0x2::display::VersionUpdated<${string}>`
+
+  readonly $typeArg: string
+
+  readonly id: ToField<ID>
+  readonly version: ToField<'u16'>
+  readonly fields: ToField<VecMap<String, String>>
+
+  private constructor(typeArg: string, fields: VersionUpdatedFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      VersionUpdated.$typeName,
+      typeArg
+    ) as `0x2::display::VersionUpdated<${PhantomToTypeStr<T0>}>`
+
+    this.$typeArg = typeArg
+
+    this.id = fields.id
+    this.version = fields.version
+    this.fields = fields.fields
+  }
+
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): Reified<
+    VersionUpdated<ToPhantomTypeArgument<T0>>,
+    VersionUpdatedFields<ToPhantomTypeArgument<T0>>
+  > {
+    return {
+      typeName: VersionUpdated.$typeName,
+      fullTypeName: composeSuiType(
+        VersionUpdated.$typeName,
+        ...[extractType(T0)]
+      ) as `0x2::display::VersionUpdated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [T0],
+      fromFields: (fields: Record<string, any>) => VersionUpdated.fromFields(T0, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => VersionUpdated.fromFieldsWithTypes(T0, item),
+      fromBcs: (data: Uint8Array) => VersionUpdated.fromBcs(T0, data),
+      bcs: VersionUpdated.bcs,
+      fromJSONField: (field: any) => VersionUpdated.fromJSONField(T0, field),
+      fetch: async (client: SuiClient, id: string) => VersionUpdated.fetch(client, T0, id),
+      new: (fields: VersionUpdatedFields<ToPhantomTypeArgument<T0>>) => {
+        return new VersionUpdated(extractType(T0), fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return VersionUpdated.reified
+  }
 
   static get bcs() {
     return bcs.struct('VersionUpdated', {
@@ -387,63 +443,18 @@ export class VersionUpdated<T0 extends PhantomTypeArgument> {
     })
   }
 
-  readonly $typeArg: string
-
-  readonly id: ToField<ID>
-  readonly version: ToField<'u16'>
-  readonly fields: ToField<VecMap<String, String>>
-
-  private constructor(typeArg: string, fields: VersionUpdatedFields<T0>) {
-    this.$typeArg = typeArg
-
-    this.id = fields.id
-    this.version = fields.version
-    this.fields = fields.fields
-  }
-
-  static new<T0 extends ReifiedPhantomTypeArgument>(
-    typeArg: T0,
-    fields: VersionUpdatedFields<ToPhantomTypeArgument<T0>>
-  ): VersionUpdated<ToPhantomTypeArgument<T0>> {
-    return new VersionUpdated(extractType(typeArg), fields)
-  }
-
-  static reified<T0 extends ReifiedPhantomTypeArgument>(
-    T0: T0
-  ): Reified<VersionUpdated<ToPhantomTypeArgument<T0>>> {
-    return {
-      typeName: VersionUpdated.$typeName,
-      fullTypeName: composeSuiType(
-        VersionUpdated.$typeName,
-        ...[extractType(T0)]
-      ) as `0x2::display::VersionUpdated<${ToTypeStr<ToPhantomTypeArgument<T0>>}>`,
-      typeArgs: [T0],
-      fromFields: (fields: Record<string, any>) => VersionUpdated.fromFields(T0, fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => VersionUpdated.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => VersionUpdated.fromBcs(T0, data),
-      bcs: VersionUpdated.bcs,
-      fromJSONField: (field: any) => VersionUpdated.fromJSONField(T0, field),
-      fetch: async (client: SuiClient, id: string) => VersionUpdated.fetch(client, T0, id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return VersionUpdated.reified
-  }
-
-  static fromFields<T0 extends ReifiedPhantomTypeArgument>(
+  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     fields: Record<string, any>
   ): VersionUpdated<ToPhantomTypeArgument<T0>> {
-    return VersionUpdated.new(typeArg, {
+    return VersionUpdated.reified(typeArg).new({
       id: decodeFromFields(ID.reified(), fields.id),
       version: decodeFromFields('u16', fields.version),
       fields: decodeFromFields(VecMap.reified(String.reified(), String.reified()), fields.fields),
     })
   }
 
-  static fromFieldsWithTypes<T0 extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     item: FieldsWithTypes
   ): VersionUpdated<ToPhantomTypeArgument<T0>> {
@@ -452,7 +463,7 @@ export class VersionUpdated<T0 extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return VersionUpdated.new(typeArg, {
+    return VersionUpdated.reified(typeArg).new({
       id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
       version: decodeFromFieldsWithTypes('u16', item.fields.version),
       fields: decodeFromFieldsWithTypes(
@@ -462,7 +473,7 @@ export class VersionUpdated<T0 extends PhantomTypeArgument> {
     })
   }
 
-  static fromBcs<T0 extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     data: Uint8Array
   ): VersionUpdated<ToPhantomTypeArgument<T0>> {
@@ -481,18 +492,18 @@ export class VersionUpdated<T0 extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     field: any
   ): VersionUpdated<ToPhantomTypeArgument<T0>> {
-    return VersionUpdated.new(typeArg, {
+    return VersionUpdated.reified(typeArg).new({
       id: decodeFromJSONField(ID.reified(), field.id),
       version: decodeFromJSONField('u16', field.version),
       fields: decodeFromJSONField(VecMap.reified(String.reified(), String.reified()), field.fields),
     })
   }
 
-  static fromJSON<T0 extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     json: Record<string, any>
   ): VersionUpdated<ToPhantomTypeArgument<T0>> {
@@ -508,7 +519,7 @@ export class VersionUpdated<T0 extends PhantomTypeArgument> {
     return VersionUpdated.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T0 extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     content: SuiParsedData
   ): VersionUpdated<ToPhantomTypeArgument<T0>> {
@@ -521,7 +532,7 @@ export class VersionUpdated<T0 extends PhantomTypeArgument> {
     return VersionUpdated.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T0 extends ReifiedPhantomTypeArgument>(
+  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
     id: string

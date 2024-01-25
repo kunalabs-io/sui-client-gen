@@ -1,10 +1,10 @@
 import {
+  PhantomReified,
+  PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
-  ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
-  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -35,16 +35,9 @@ export class Receiving<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer::Receiving'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::transfer::Receiving<${ToTypeStr<T>}>`
-
   readonly $typeName = Receiving.$typeName
 
-  static get bcs() {
-    return bcs.struct('Receiving', {
-      id: ID.bcs,
-      version: bcs.u64(),
-    })
-  }
+  readonly $fullTypeName: `0x2::transfer::Receiving<${string}>`
 
   readonly $typeArg: string
 
@@ -52,28 +45,26 @@ export class Receiving<T extends PhantomTypeArgument> {
   readonly version: ToField<'u64'>
 
   private constructor(typeArg: string, fields: ReceivingFields<T>) {
+    this.$fullTypeName = composeSuiType(
+      Receiving.$typeName,
+      typeArg
+    ) as `0x2::transfer::Receiving<${PhantomToTypeStr<T>}>`
+
     this.$typeArg = typeArg
 
     this.id = fields.id
     this.version = fields.version
   }
 
-  static new<T extends ReifiedPhantomTypeArgument>(
-    typeArg: T,
-    fields: ReceivingFields<ToPhantomTypeArgument<T>>
-  ): Receiving<ToPhantomTypeArgument<T>> {
-    return new Receiving(extractType(typeArg), fields)
-  }
-
-  static reified<T extends ReifiedPhantomTypeArgument>(
+  static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
-  ): Reified<Receiving<ToPhantomTypeArgument<T>>> {
+  ): Reified<Receiving<ToPhantomTypeArgument<T>>, ReceivingFields<ToPhantomTypeArgument<T>>> {
     return {
       typeName: Receiving.$typeName,
       fullTypeName: composeSuiType(
         Receiving.$typeName,
         ...[extractType(T)]
-      ) as `0x2::transfer::Receiving<${ToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `0x2::transfer::Receiving<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [T],
       fromFields: (fields: Record<string, any>) => Receiving.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Receiving.fromFieldsWithTypes(T, item),
@@ -81,6 +72,9 @@ export class Receiving<T extends PhantomTypeArgument> {
       bcs: Receiving.bcs,
       fromJSONField: (field: any) => Receiving.fromJSONField(T, field),
       fetch: async (client: SuiClient, id: string) => Receiving.fetch(client, T, id),
+      new: (fields: ReceivingFields<ToPhantomTypeArgument<T>>) => {
+        return new Receiving(extractType(T), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -89,17 +83,24 @@ export class Receiving<T extends PhantomTypeArgument> {
     return Receiving.reified
   }
 
-  static fromFields<T extends ReifiedPhantomTypeArgument>(
+  static get bcs() {
+    return bcs.struct('Receiving', {
+      id: ID.bcs,
+      version: bcs.u64(),
+    })
+  }
+
+  static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     fields: Record<string, any>
   ): Receiving<ToPhantomTypeArgument<T>> {
-    return Receiving.new(typeArg, {
+    return Receiving.reified(typeArg).new({
       id: decodeFromFields(ID.reified(), fields.id),
       version: decodeFromFields('u64', fields.version),
     })
   }
 
-  static fromFieldsWithTypes<T extends ReifiedPhantomTypeArgument>(
+  static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     item: FieldsWithTypes
   ): Receiving<ToPhantomTypeArgument<T>> {
@@ -108,13 +109,13 @@ export class Receiving<T extends PhantomTypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return Receiving.new(typeArg, {
+    return Receiving.reified(typeArg).new({
       id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
       version: decodeFromFieldsWithTypes('u64', item.fields.version),
     })
   }
 
-  static fromBcs<T extends ReifiedPhantomTypeArgument>(
+  static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: Uint8Array
   ): Receiving<ToPhantomTypeArgument<T>> {
@@ -132,17 +133,17 @@ export class Receiving<T extends PhantomTypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T extends ReifiedPhantomTypeArgument>(
+  static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     field: any
   ): Receiving<ToPhantomTypeArgument<T>> {
-    return Receiving.new(typeArg, {
+    return Receiving.reified(typeArg).new({
       id: decodeFromJSONField(ID.reified(), field.id),
       version: decodeFromJSONField('u64', field.version),
     })
   }
 
-  static fromJSON<T extends ReifiedPhantomTypeArgument>(
+  static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     json: Record<string, any>
   ): Receiving<ToPhantomTypeArgument<T>> {
@@ -158,7 +159,7 @@ export class Receiving<T extends PhantomTypeArgument> {
     return Receiving.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData
   ): Receiving<ToPhantomTypeArgument<T>> {
@@ -171,7 +172,7 @@ export class Receiving<T extends PhantomTypeArgument> {
     return Receiving.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T extends ReifiedPhantomTypeArgument>(
+  static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
     id: string

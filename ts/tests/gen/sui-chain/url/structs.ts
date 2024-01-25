@@ -27,27 +27,19 @@ export class Url {
   static readonly $typeName = '0x2::url::Url'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::url::Url'
-
   readonly $typeName = Url.$typeName
 
-  static get bcs() {
-    return bcs.struct('Url', {
-      url: String.bcs,
-    })
-  }
+  readonly $fullTypeName: '0x2::url::Url'
 
   readonly url: ToField<String>
 
-  private constructor(url: ToField<String>) {
-    this.url = url
+  private constructor(fields: UrlFields) {
+    this.$fullTypeName = Url.$typeName
+
+    this.url = fields.url
   }
 
-  static new(url: ToField<String>): Url {
-    return new Url(url)
-  }
-
-  static reified(): Reified<Url> {
+  static reified(): Reified<Url, UrlFields> {
     return {
       typeName: Url.$typeName,
       fullTypeName: composeSuiType(Url.$typeName, ...[]) as '0x2::url::Url',
@@ -58,6 +50,9 @@ export class Url {
       bcs: Url.bcs,
       fromJSONField: (field: any) => Url.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => Url.fetch(client, id),
+      new: (fields: UrlFields) => {
+        return new Url(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -66,8 +61,14 @@ export class Url {
     return Url.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('Url', {
+      url: String.bcs,
+    })
+  }
+
   static fromFields(fields: Record<string, any>): Url {
-    return Url.new(decodeFromFields(String.reified(), fields.url))
+    return Url.reified().new({ url: decodeFromFields(String.reified(), fields.url) })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Url {
@@ -75,7 +76,7 @@ export class Url {
       throw new Error('not a Url type')
     }
 
-    return Url.new(decodeFromFieldsWithTypes(String.reified(), item.fields.url))
+    return Url.reified().new({ url: decodeFromFieldsWithTypes(String.reified(), item.fields.url) })
   }
 
   static fromBcs(data: Uint8Array): Url {
@@ -93,7 +94,7 @@ export class Url {
   }
 
   static fromJSONField(field: any): Url {
-    return Url.new(decodeFromJSONField(String.reified(), field.url))
+    return Url.reified().new({ url: decodeFromJSONField(String.reified(), field.url) })
   }
 
   static fromJSON(json: Record<string, any>): Url {

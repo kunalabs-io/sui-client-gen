@@ -36,35 +36,28 @@ export class VecSet<T0 extends TypeArgument> {
   static readonly $typeName = '0x2::vec_set::VecSet'
   static readonly $numTypeParams = 1
 
-  readonly $fullTypeName = null as unknown as `0x2::vec_set::VecSet<${ToTypeStr<T0>}>`
-
   readonly $typeName = VecSet.$typeName
 
-  static get bcs() {
-    return <T0 extends BcsType<any>>(T0: T0) =>
-      bcs.struct(`VecSet<${T0.name}>`, {
-        contents: bcs.vector(T0),
-      })
-  }
+  readonly $fullTypeName: `0x2::vec_set::VecSet<${string}>`
 
   readonly $typeArg: string
 
   readonly contents: ToField<Vector<T0>>
 
-  private constructor(typeArg: string, contents: ToField<Vector<T0>>) {
+  private constructor(typeArg: string, fields: VecSetFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      VecSet.$typeName,
+      typeArg
+    ) as `0x2::vec_set::VecSet<${ToTypeStr<T0>}>`
+
     this.$typeArg = typeArg
 
-    this.contents = contents
+    this.contents = fields.contents
   }
 
-  static new<T0 extends Reified<TypeArgument>>(
-    typeArg: T0,
-    contents: ToField<Vector<ToTypeArgument<T0>>>
-  ): VecSet<ToTypeArgument<T0>> {
-    return new VecSet(extractType(typeArg), contents)
-  }
-
-  static reified<T0 extends Reified<TypeArgument>>(T0: T0): Reified<VecSet<ToTypeArgument<T0>>> {
+  static reified<T0 extends Reified<TypeArgument, any>>(
+    T0: T0
+  ): Reified<VecSet<ToTypeArgument<T0>>, VecSetFields<ToTypeArgument<T0>>> {
     return {
       typeName: VecSet.$typeName,
       fullTypeName: composeSuiType(
@@ -78,6 +71,9 @@ export class VecSet<T0 extends TypeArgument> {
       bcs: VecSet.bcs(toBcs(T0)),
       fromJSONField: (field: any) => VecSet.fromJSONField(T0, field),
       fetch: async (client: SuiClient, id: string) => VecSet.fetch(client, T0, id),
+      new: (fields: VecSetFields<ToTypeArgument<T0>>) => {
+        return new VecSet(extractType(T0), fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -86,14 +82,23 @@ export class VecSet<T0 extends TypeArgument> {
     return VecSet.reified
   }
 
-  static fromFields<T0 extends Reified<TypeArgument>>(
+  static get bcs() {
+    return <T0 extends BcsType<any>>(T0: T0) =>
+      bcs.struct(`VecSet<${T0.name}>`, {
+        contents: bcs.vector(T0),
+      })
+  }
+
+  static fromFields<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     fields: Record<string, any>
   ): VecSet<ToTypeArgument<T0>> {
-    return VecSet.new(typeArg, decodeFromFields(reified.vector(typeArg), fields.contents))
+    return VecSet.reified(typeArg).new({
+      contents: decodeFromFields(reified.vector(typeArg), fields.contents),
+    })
   }
 
-  static fromFieldsWithTypes<T0 extends Reified<TypeArgument>>(
+  static fromFieldsWithTypes<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     item: FieldsWithTypes
   ): VecSet<ToTypeArgument<T0>> {
@@ -102,13 +107,12 @@ export class VecSet<T0 extends TypeArgument> {
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return VecSet.new(
-      typeArg,
-      decodeFromFieldsWithTypes(reified.vector(typeArg), item.fields.contents)
-    )
+    return VecSet.reified(typeArg).new({
+      contents: decodeFromFieldsWithTypes(reified.vector(typeArg), item.fields.contents),
+    })
   }
 
-  static fromBcs<T0 extends Reified<TypeArgument>>(
+  static fromBcs<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     data: Uint8Array
   ): VecSet<ToTypeArgument<T0>> {
@@ -127,14 +131,16 @@ export class VecSet<T0 extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends Reified<TypeArgument>>(
+  static fromJSONField<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     field: any
   ): VecSet<ToTypeArgument<T0>> {
-    return VecSet.new(typeArg, decodeFromJSONField(reified.vector(typeArg), field.contents))
+    return VecSet.reified(typeArg).new({
+      contents: decodeFromJSONField(reified.vector(typeArg), field.contents),
+    })
   }
 
-  static fromJSON<T0 extends Reified<TypeArgument>>(
+  static fromJSON<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     json: Record<string, any>
   ): VecSet<ToTypeArgument<T0>> {
@@ -150,7 +156,7 @@ export class VecSet<T0 extends TypeArgument> {
     return VecSet.fromJSONField(typeArg, json)
   }
 
-  static fromSuiParsedData<T0 extends Reified<TypeArgument>>(
+  static fromSuiParsedData<T0 extends Reified<TypeArgument, any>>(
     typeArg: T0,
     content: SuiParsedData
   ): VecSet<ToTypeArgument<T0>> {
@@ -163,7 +169,7 @@ export class VecSet<T0 extends TypeArgument> {
     return VecSet.fromFieldsWithTypes(typeArg, content)
   }
 
-  static async fetch<T0 extends Reified<TypeArgument>>(
+  static async fetch<T0 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArg: T0,
     id: string

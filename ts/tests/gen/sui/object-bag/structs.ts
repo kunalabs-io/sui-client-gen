@@ -28,30 +28,21 @@ export class ObjectBag {
   static readonly $typeName = '0x2::object_bag::ObjectBag'
   static readonly $numTypeParams = 0
 
-  readonly $fullTypeName = null as unknown as '0x2::object_bag::ObjectBag'
-
   readonly $typeName = ObjectBag.$typeName
 
-  static get bcs() {
-    return bcs.struct('ObjectBag', {
-      id: UID.bcs,
-      size: bcs.u64(),
-    })
-  }
+  readonly $fullTypeName: '0x2::object_bag::ObjectBag'
 
   readonly id: ToField<UID>
   readonly size: ToField<'u64'>
 
   private constructor(fields: ObjectBagFields) {
+    this.$fullTypeName = ObjectBag.$typeName
+
     this.id = fields.id
     this.size = fields.size
   }
 
-  static new(fields: ObjectBagFields): ObjectBag {
-    return new ObjectBag(fields)
-  }
-
-  static reified(): Reified<ObjectBag> {
+  static reified(): Reified<ObjectBag, ObjectBagFields> {
     return {
       typeName: ObjectBag.$typeName,
       fullTypeName: composeSuiType(ObjectBag.$typeName, ...[]) as '0x2::object_bag::ObjectBag',
@@ -62,6 +53,9 @@ export class ObjectBag {
       bcs: ObjectBag.bcs,
       fromJSONField: (field: any) => ObjectBag.fromJSONField(field),
       fetch: async (client: SuiClient, id: string) => ObjectBag.fetch(client, id),
+      new: (fields: ObjectBagFields) => {
+        return new ObjectBag(fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -70,8 +64,15 @@ export class ObjectBag {
     return ObjectBag.reified()
   }
 
+  static get bcs() {
+    return bcs.struct('ObjectBag', {
+      id: UID.bcs,
+      size: bcs.u64(),
+    })
+  }
+
   static fromFields(fields: Record<string, any>): ObjectBag {
-    return ObjectBag.new({
+    return ObjectBag.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       size: decodeFromFields('u64', fields.size),
     })
@@ -82,7 +83,7 @@ export class ObjectBag {
       throw new Error('not a ObjectBag type')
     }
 
-    return ObjectBag.new({
+    return ObjectBag.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       size: decodeFromFieldsWithTypes('u64', item.fields.size),
     })
@@ -104,7 +105,7 @@ export class ObjectBag {
   }
 
   static fromJSONField(field: any): ObjectBag {
-    return ObjectBag.new({
+    return ObjectBag.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       size: decodeFromJSONField('u64', field.size),
     })

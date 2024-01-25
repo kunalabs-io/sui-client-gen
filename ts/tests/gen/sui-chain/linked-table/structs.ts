@@ -1,7 +1,8 @@
 import {
+  PhantomReified,
+  PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
-  ReifiedPhantomTypeArgument,
   ToField,
   ToPhantomTypeArgument,
   ToTypeArgument,
@@ -42,10 +43,67 @@ export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument
   static readonly $typeName = '0x2::linked_table::LinkedTable'
   static readonly $numTypeParams = 2
 
-  readonly $fullTypeName =
-    null as unknown as `0x2::linked_table::LinkedTable<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
-
   readonly $typeName = LinkedTable.$typeName
+
+  readonly $fullTypeName: `0x2::linked_table::LinkedTable<${string}, ${string}>`
+
+  readonly $typeArgs: [string, string]
+
+  readonly id: ToField<UID>
+  readonly size: ToField<'u64'>
+  readonly head: ToField<Option<T0>>
+  readonly tail: ToField<Option<T0>>
+
+  private constructor(typeArgs: [string, string], fields: LinkedTableFields<T0, T1>) {
+    this.$fullTypeName = composeSuiType(
+      LinkedTable.$typeName,
+      ...typeArgs
+    ) as `0x2::linked_table::LinkedTable<${ToTypeStr<T0>}, ${PhantomToTypeStr<T1>}>`
+
+    this.$typeArgs = typeArgs
+
+    this.id = fields.id
+    this.size = fields.size
+    this.head = fields.head
+    this.tail = fields.tail
+  }
+
+  static reified<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
+  >(
+    T0: T0,
+    T1: T1
+  ): Reified<
+    LinkedTable<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>>,
+    LinkedTableFields<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>>
+  > {
+    return {
+      typeName: LinkedTable.$typeName,
+      fullTypeName: composeSuiType(
+        LinkedTable.$typeName,
+        ...[extractType(T0), extractType(T1)]
+      ) as `0x2::linked_table::LinkedTable<${ToTypeStr<ToTypeArgument<T0>>}, ${PhantomToTypeStr<
+        ToPhantomTypeArgument<T1>
+      >}>`,
+      typeArgs: [T0, T1],
+      fromFields: (fields: Record<string, any>) => LinkedTable.fromFields([T0, T1], fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) =>
+        LinkedTable.fromFieldsWithTypes([T0, T1], item),
+      fromBcs: (data: Uint8Array) => LinkedTable.fromBcs([T0, T1], data),
+      bcs: LinkedTable.bcs(toBcs(T0)),
+      fromJSONField: (field: any) => LinkedTable.fromJSONField([T0, T1], field),
+      fetch: async (client: SuiClient, id: string) => LinkedTable.fetch(client, [T0, T1], id),
+      new: (fields: LinkedTableFields<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>>) => {
+        return new LinkedTable([extractType(T0), extractType(T1)], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return LinkedTable.reified
+  }
 
   static get bcs() {
     return <T0 extends BcsType<any>>(T0: T0) =>
@@ -57,62 +115,14 @@ export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument
       })
   }
 
-  readonly $typeArgs: [string, string]
-
-  readonly id: ToField<UID>
-  readonly size: ToField<'u64'>
-  readonly head: ToField<Option<T0>>
-  readonly tail: ToField<Option<T0>>
-
-  private constructor(typeArgs: [string, string], fields: LinkedTableFields<T0, T1>) {
-    this.$typeArgs = typeArgs
-
-    this.id = fields.id
-    this.size = fields.size
-    this.head = fields.head
-    this.tail = fields.tail
-  }
-
-  static new<T0 extends Reified<TypeArgument>, T1 extends ReifiedPhantomTypeArgument>(
-    typeArgs: [T0, T1],
-    fields: LinkedTableFields<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>>
-  ): LinkedTable<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
-    return new LinkedTable(typeArgs.map(extractType) as [string, string], fields)
-  }
-
-  static reified<T0 extends Reified<TypeArgument>, T1 extends ReifiedPhantomTypeArgument>(
-    T0: T0,
-    T1: T1
-  ): Reified<LinkedTable<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>>> {
-    return {
-      typeName: LinkedTable.$typeName,
-      fullTypeName: composeSuiType(
-        LinkedTable.$typeName,
-        ...[extractType(T0), extractType(T1)]
-      ) as `0x2::linked_table::LinkedTable<${ToTypeStr<ToTypeArgument<T0>>}, ${ToTypeStr<
-        ToPhantomTypeArgument<T1>
-      >}>`,
-      typeArgs: [T0, T1],
-      fromFields: (fields: Record<string, any>) => LinkedTable.fromFields([T0, T1], fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) =>
-        LinkedTable.fromFieldsWithTypes([T0, T1], item),
-      fromBcs: (data: Uint8Array) => LinkedTable.fromBcs([T0, T1], data),
-      bcs: LinkedTable.bcs(toBcs(T0)),
-      fromJSONField: (field: any) => LinkedTable.fromJSONField([T0, T1], field),
-      fetch: async (client: SuiClient, id: string) => LinkedTable.fetch(client, [T0, T1], id),
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return LinkedTable.reified
-  }
-
-  static fromFields<T0 extends Reified<TypeArgument>, T1 extends ReifiedPhantomTypeArgument>(
+  static fromFields<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
+  >(
     typeArgs: [T0, T1],
     fields: Record<string, any>
   ): LinkedTable<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
-    return LinkedTable.new(typeArgs, {
+    return LinkedTable.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromFields(UID.reified(), fields.id),
       size: decodeFromFields('u64', fields.size),
       head: decodeFromFields(Option.reified(typeArgs[0]), fields.head),
@@ -121,8 +131,8 @@ export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument
   }
 
   static fromFieldsWithTypes<
-    T0 extends Reified<TypeArgument>,
-    T1 extends ReifiedPhantomTypeArgument,
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [T0, T1],
     item: FieldsWithTypes
@@ -132,7 +142,7 @@ export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument
     }
     assertFieldsWithTypesArgsMatch(item, typeArgs)
 
-    return LinkedTable.new(typeArgs, {
+    return LinkedTable.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       size: decodeFromFieldsWithTypes('u64', item.fields.size),
       head: decodeFromFieldsWithTypes(Option.reified(typeArgs[0]), item.fields.head),
@@ -140,7 +150,10 @@ export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument
     })
   }
 
-  static fromBcs<T0 extends Reified<TypeArgument>, T1 extends ReifiedPhantomTypeArgument>(
+  static fromBcs<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
+  >(
     typeArgs: [T0, T1],
     data: Uint8Array
   ): LinkedTable<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
@@ -160,11 +173,11 @@ export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends Reified<TypeArgument>, T1 extends ReifiedPhantomTypeArgument>(
-    typeArgs: [T0, T1],
-    field: any
-  ): LinkedTable<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
-    return LinkedTable.new(typeArgs, {
+  static fromJSONField<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
+  >(typeArgs: [T0, T1], field: any): LinkedTable<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
+    return LinkedTable.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       size: decodeFromJSONField('u64', field.size),
       head: decodeFromJSONField(Option.reified(typeArgs[0]), field.head),
@@ -172,7 +185,10 @@ export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument
     })
   }
 
-  static fromJSON<T0 extends Reified<TypeArgument>, T1 extends ReifiedPhantomTypeArgument>(
+  static fromJSON<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
+  >(
     typeArgs: [T0, T1],
     json: Record<string, any>
   ): LinkedTable<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
@@ -188,7 +204,10 @@ export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument
     return LinkedTable.fromJSONField(typeArgs, json)
   }
 
-  static fromSuiParsedData<T0 extends Reified<TypeArgument>, T1 extends ReifiedPhantomTypeArgument>(
+  static fromSuiParsedData<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
+  >(
     typeArgs: [T0, T1],
     content: SuiParsedData
   ): LinkedTable<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
@@ -201,7 +220,10 @@ export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument
     return LinkedTable.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch<T0 extends Reified<TypeArgument>, T1 extends ReifiedPhantomTypeArgument>(
+  static async fetch<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
+  >(
     client: SuiClient,
     typeArgs: [T0, T1],
     id: string
@@ -236,19 +258,9 @@ export class Node<T0 extends TypeArgument, T1 extends TypeArgument> {
   static readonly $typeName = '0x2::linked_table::Node'
   static readonly $numTypeParams = 2
 
-  readonly $fullTypeName =
-    null as unknown as `0x2::linked_table::Node<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
-
   readonly $typeName = Node.$typeName
 
-  static get bcs() {
-    return <T0 extends BcsType<any>, T1 extends BcsType<any>>(T0: T0, T1: T1) =>
-      bcs.struct(`Node<${T0.name}, ${T1.name}>`, {
-        prev: Option.bcs(T0),
-        next: Option.bcs(T0),
-        value: T1,
-      })
-  }
+  readonly $fullTypeName: `0x2::linked_table::Node<${string}, ${string}>`
 
   readonly $typeArgs: [string, string]
 
@@ -257,6 +269,11 @@ export class Node<T0 extends TypeArgument, T1 extends TypeArgument> {
   readonly value: ToField<T1>
 
   private constructor(typeArgs: [string, string], fields: NodeFields<T0, T1>) {
+    this.$fullTypeName = composeSuiType(
+      Node.$typeName,
+      ...typeArgs
+    ) as `0x2::linked_table::Node<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
+
     this.$typeArgs = typeArgs
 
     this.prev = fields.prev
@@ -264,17 +281,13 @@ export class Node<T0 extends TypeArgument, T1 extends TypeArgument> {
     this.value = fields.value
   }
 
-  static new<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
-    typeArgs: [T0, T1],
-    fields: NodeFields<ToTypeArgument<T0>, ToTypeArgument<T1>>
-  ): Node<ToTypeArgument<T0>, ToTypeArgument<T1>> {
-    return new Node(typeArgs.map(extractType) as [string, string], fields)
-  }
-
-  static reified<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+  static reified<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     T0: T0,
     T1: T1
-  ): Reified<Node<ToTypeArgument<T0>, ToTypeArgument<T1>>> {
+  ): Reified<
+    Node<ToTypeArgument<T0>, ToTypeArgument<T1>>,
+    NodeFields<ToTypeArgument<T0>, ToTypeArgument<T1>>
+  > {
     return {
       typeName: Node.$typeName,
       fullTypeName: composeSuiType(
@@ -290,6 +303,9 @@ export class Node<T0 extends TypeArgument, T1 extends TypeArgument> {
       bcs: Node.bcs(toBcs(T0), toBcs(T1)),
       fromJSONField: (field: any) => Node.fromJSONField([T0, T1], field),
       fetch: async (client: SuiClient, id: string) => Node.fetch(client, [T0, T1], id),
+      new: (fields: NodeFields<ToTypeArgument<T0>, ToTypeArgument<T1>>) => {
+        return new Node([extractType(T0), extractType(T1)], fields)
+      },
       kind: 'StructClassReified',
     }
   }
@@ -298,34 +314,43 @@ export class Node<T0 extends TypeArgument, T1 extends TypeArgument> {
     return Node.reified
   }
 
-  static fromFields<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+  static get bcs() {
+    return <T0 extends BcsType<any>, T1 extends BcsType<any>>(T0: T0, T1: T1) =>
+      bcs.struct(`Node<${T0.name}, ${T1.name}>`, {
+        prev: Option.bcs(T0),
+        next: Option.bcs(T0),
+        value: T1,
+      })
+  }
+
+  static fromFields<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     typeArgs: [T0, T1],
     fields: Record<string, any>
   ): Node<ToTypeArgument<T0>, ToTypeArgument<T1>> {
-    return Node.new(typeArgs, {
+    return Node.reified(typeArgs[0], typeArgs[1]).new({
       prev: decodeFromFields(Option.reified(typeArgs[0]), fields.prev),
       next: decodeFromFields(Option.reified(typeArgs[0]), fields.next),
       value: decodeFromFields(typeArgs[1], fields.value),
     })
   }
 
-  static fromFieldsWithTypes<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
-    typeArgs: [T0, T1],
-    item: FieldsWithTypes
-  ): Node<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+  static fromFieldsWithTypes<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends Reified<TypeArgument, any>,
+  >(typeArgs: [T0, T1], item: FieldsWithTypes): Node<ToTypeArgument<T0>, ToTypeArgument<T1>> {
     if (!isNode(item.type)) {
       throw new Error('not a Node type')
     }
     assertFieldsWithTypesArgsMatch(item, typeArgs)
 
-    return Node.new(typeArgs, {
+    return Node.reified(typeArgs[0], typeArgs[1]).new({
       prev: decodeFromFieldsWithTypes(Option.reified(typeArgs[0]), item.fields.prev),
       next: decodeFromFieldsWithTypes(Option.reified(typeArgs[0]), item.fields.next),
       value: decodeFromFieldsWithTypes(typeArgs[1], item.fields.value),
     })
   }
 
-  static fromBcs<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+  static fromBcs<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     typeArgs: [T0, T1],
     data: Uint8Array
   ): Node<ToTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -344,18 +369,18 @@ export class Node<T0 extends TypeArgument, T1 extends TypeArgument> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
-  static fromJSONField<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
-    typeArgs: [T0, T1],
-    field: any
-  ): Node<ToTypeArgument<T0>, ToTypeArgument<T1>> {
-    return Node.new(typeArgs, {
+  static fromJSONField<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends Reified<TypeArgument, any>,
+  >(typeArgs: [T0, T1], field: any): Node<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    return Node.reified(typeArgs[0], typeArgs[1]).new({
       prev: decodeFromJSONField(Option.reified(typeArgs[0]), field.prev),
       next: decodeFromJSONField(Option.reified(typeArgs[0]), field.next),
       value: decodeFromJSONField(typeArgs[1], field.value),
     })
   }
 
-  static fromJSON<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+  static fromJSON<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     typeArgs: [T0, T1],
     json: Record<string, any>
   ): Node<ToTypeArgument<T0>, ToTypeArgument<T1>> {
@@ -371,10 +396,10 @@ export class Node<T0 extends TypeArgument, T1 extends TypeArgument> {
     return Node.fromJSONField(typeArgs, json)
   }
 
-  static fromSuiParsedData<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
-    typeArgs: [T0, T1],
-    content: SuiParsedData
-  ): Node<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+  static fromSuiParsedData<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends Reified<TypeArgument, any>,
+  >(typeArgs: [T0, T1], content: SuiParsedData): Node<ToTypeArgument<T0>, ToTypeArgument<T1>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
@@ -384,7 +409,7 @@ export class Node<T0 extends TypeArgument, T1 extends TypeArgument> {
     return Node.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static async fetch<T0 extends Reified<TypeArgument>, T1 extends Reified<TypeArgument>>(
+  static async fetch<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArgs: [T0, T1],
     id: string
