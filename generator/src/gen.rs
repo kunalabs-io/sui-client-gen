@@ -936,21 +936,6 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         }
     }
 
-    fn gen_field_name_non_reserved(&self, field: &FieldEnv) -> impl FormatInto<JavaScript> {
-        let name = field
-            .get_name()
-            .display(self.symbol_pool())
-            .to_string()
-            .to_case(Case::Camel);
-        let name = if JS_RESERVED_WORDS.contains(&name.as_str()) {
-            name + "_"
-        } else {
-            name
-        };
-        quote_fn! {
-            $name
-        }
-    }
 
     /// Generates a TS interface field type for a struct field. References class structs generated
     /// in other modules by importing them when needed.
@@ -1173,9 +1158,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 for (idx, ty) in ts.iter().enumerate() {
                     let wrap_to_phantom = field_strct.is_phantom_parameter(idx) && match &ts[idx] {
                         Type::TypeParameter(t_idx) => !strct.is_phantom_parameter(*t_idx as usize),
-                        Type::Primitive(_) => true,
-                        Type::Vector(_) => true,
-                        _ => false,
+                        _ => true,
                     };
 
                     let inner = self.gen_reified(strct, ty, type_param_names);
@@ -1298,10 +1281,10 @@ impl<'env, 'a> StructsGen<'env, 'a> {
     /// E.g. for `struct Foo<T, P>`, this generates `<T, P>`.
     fn gen_params_toks(
         &self, strct: &StructEnv,
+        param_names: Vec<impl FormatInto<JavaScript>>,
         extends_or_wraps_non_phantom: &ExtendsOrWraps,
         extends_or_wraps_phantom: &ExtendsOrWraps
     ) -> js::Tokens {
-        let param_names = self.strct_type_param_names(strct);
         if param_names.is_empty() {
             return quote!();
         }
@@ -1319,13 +1302,13 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 let extend_or_wrap = extend_or_wrap(idx);
                 match extend_or_wrap {
                     ExtendsOrWraps::Extends(extends) => {
-                        quote!($(param_name.display(self.symbol_pool()).to_string()) extends $extends)
+                        quote!($param_name extends $extends)
                     },
                     ExtendsOrWraps::Wraps(wraps) => {
-                        quote!($wraps<$(param_name.display(self.symbol_pool()).to_string())>)
+                        quote!($wraps<$param_name>)
                     }
                     ExtendsOrWraps::None => {
-                        quote!($(param_name.display(self.symbol_pool()).to_string()))
+                        quote!($param_name)
                     }
                 }
             }
@@ -1339,15 +1322,19 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         format!("{}Fields", &struct_name)
     }
 
-    /// Generates the `<StructName>Fields` interface name including it's (non-phantom) type parameters.
+    /// Generates the `<StructName>Fields` interface name including its type parameters.
     fn gen_fields_if_name_with_params(
         &self,
         strct: &StructEnv,
         extends_or_wraps_non_phantom: &ExtendsOrWraps,
         extends_or_wraps_phantom: &ExtendsOrWraps
     ) -> js::Tokens {
+        let type_params_str = self.strct_type_param_names(strct)
+            .iter()
+            .map(|param| param.display(self.symbol_pool()).to_string())
+            .collect::<Vec<_>>();
         quote! { $(self.fields_if_name(strct))$(
-            self.gen_params_toks(strct, extends_or_wraps_non_phantom, extends_or_wraps_phantom)
+            self.gen_params_toks(strct, type_params_str, extends_or_wraps_non_phantom, extends_or_wraps_phantom)
         ) }
     }
 
@@ -1390,10 +1377,11 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let type_argument = &self.framework.import("reified", "TypeArgument");
         let phantom_type_argument = &self.framework.import("reified", "PhantomTypeArgument");
         let reified = &self.framework.import("reified", "Reified");
-        let reified_phantom_type_argument = &self.framework.import("reified", "ReifiedPhantomTypeArgument");
+        let phantom_reified = &self.framework.import("reified", "PhantomReified");
         let to_type_argument = &self.framework.import("reified", "ToTypeArgument");
         let to_phantom_type_argument = &self.framework.import("reified", "ToPhantomTypeArgument");
         let to_type_str = &self.framework.import("reified", "ToTypeStr");
+        let phantom_to_type_str = &self.framework.import("reified", "PhantomToTypeStr");
         let to_bcs = &self.framework.import("reified", "toBcs");
         let extract_type = &self.framework.import("reified", "extractType");
         let assert_reified_type_args_match = &self.framework.import("reified", "assertReifiedTypeArgsMatch");
@@ -1477,19 +1465,34 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
         let extends_type_argument = ExtendsOrWraps::Extends(quote!($type_argument));
         let extends_phantom_type_argument = ExtendsOrWraps::Extends(quote!($phantom_type_argument));
-        let extends_reified_type_argument = ExtendsOrWraps::Extends(quote!($reified<$type_argument>));
-        let extends_reified_phantom_type_argument = ExtendsOrWraps::Extends(quote!($reified_phantom_type_argument));
         let wraps_to_type_argument = ExtendsOrWraps::Wraps(quote!($to_type_argument));
         let wraps_phantom_to_type_argument = ExtendsOrWraps::Wraps(quote!($to_phantom_type_argument));
 
-        // <T extends ReifiedTypeArgument, P extends ReifiedPhantomTypeArgument>
-        let params_toks_for_reified = &self.gen_params_toks(
-            strct, &extends_reified_type_argument, &extends_reified_phantom_type_argument
-        );
+        // FooFields<ToTypeArgument<T>, PhantomToTypeArgument<PhantomTypeArgument>>
+        let fields_if_for_reified = quote!($(
+            self.gen_fields_if_name_with_params(strct, &wraps_to_type_argument, &wraps_phantom_to_type_argument)
+        ));
+
+        // <T extends Reified<TypeArgument, any>, P extends PhantomReified<PhantomTypeArgument>>
+        let params_toks_for_reified = &{
+            let toks = type_params_str.iter().enumerate().map(|(idx, param)| {
+                if strct.is_phantom_parameter(idx) {
+                    quote!($param extends $phantom_reified<$phantom_type_argument>)
+                } else {
+                    quote!($param extends $reified<$type_argument, any>)
+                }
+            });
+
+            if type_params_str.is_empty() {
+                quote!()
+            } else {
+                quote!(<$(for tok in toks join (, ) => $tok)>)
+            }
+        };
 
         // <ToTypeArgument<T>, ToPhantomTypeArgument<P>>
         let params_toks_for_to_type_argument = &self.gen_params_toks(
-            strct, &wraps_to_type_argument, &wraps_phantom_to_type_argument
+            strct, type_params_str.clone(), &wraps_to_type_argument, &wraps_phantom_to_type_argument
         );
 
         // `0x2::foo::Bar<${ToTypeStr<ToTypeArgument<T>>}, ${ToTypeStr<ToTypeArgument<P>>}>`
@@ -1505,7 +1508,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
                     toks.append(Item::Literal(ItemStr::from("${")));
                     if is_phantom {
-                        quote_in!(toks => $to_type_str<$to_phantom_type_argument<$param>>);
+                        quote_in!(toks => $phantom_to_type_str<$to_phantom_type_argument<$param>>);
                     } else {
                         quote_in!(toks => $to_type_str<$to_type_argument<$param>>);
                     }
@@ -1523,8 +1526,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         };
 
         // `0x2::foo::Bar<${ToTypeStr<T>}, ${ToTypeStr<P>}>`
-        let is_option = self.get_full_name_with_address(strct) == "0x1::option::Option";
-        let full_type_name_as_toks = match type_params.len() {
+        let static_full_type_name_as_toks = &match type_params.len() {
             0 => quote!($[str]($[const](self.get_full_name_with_address(strct)))),
             _ => {
                 let mut toks = js::Tokens::new();
@@ -1532,9 +1534,12 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 toks.append(Item::Literal(ItemStr::from(self.get_full_name_with_address(strct))));
                 toks.append(Item::Literal(ItemStr::from("<")));
                 for (idx, param) in type_params_str.iter().enumerate() {
-
                     toks.append(Item::Literal(ItemStr::from("${")));
-                    quote_in!(toks => $to_type_str<$param>);
+                    if strct.is_phantom_parameter(idx) {
+                        quote_in!(toks => $phantom_to_type_str<$param>);
+                    } else {
+                        quote_in!(toks => $to_type_str<$param>);
+                    }
                     toks.append(Item::Literal(ItemStr::from("}")));
 
                     let is_last = idx == &type_params_str.len() - 1;
@@ -1548,10 +1553,37 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             },
         };
 
+        // `0x2::foo::Bar<${string}, ${string}>`
+        let full_type_name_as_toks = &match type_params.len() {
+            0 => quote!($[str]($[const](self.get_full_name_with_address(strct)))),
+            _ => {
+                let mut toks = js::Tokens::new();
+                toks.append(Item::OpenQuote(true));
+                toks.append(Item::Literal(ItemStr::from(self.get_full_name_with_address(strct))));
+                toks.append(Item::Literal(ItemStr::from("<")));
+                for idx in 0..type_params_str.len() {
+                    toks.append(Item::Literal(ItemStr::from("${")));
+                    quote_in!(toks => string);
+                    toks.append(Item::Literal(ItemStr::from("}")));
+
+                    let is_last = idx == &type_params_str.len() - 1;
+                    if !is_last {
+                        toks.append(Item::Literal(ItemStr::from(", ")));
+                    }
+                }
+                toks.append(Item::Literal(ItemStr::from(">")));
+                toks.append(Item::CloseQuote);
+                quote!($toks)
+            },
+        };
+
+
+        let is_option = self.get_full_name_with_address(strct) == "0x1::option::Option";
+
         tokens.append("// eslint-disable-next-line @typescript-eslint/no-unused-vars");
         tokens.push();
         quote_in! { *tokens =>
-            export class $(&struct_name)$(self.gen_params_toks(strct, &extends_type_argument, &extends_phantom_type_argument)) {
+            export class $(&struct_name)$(self.gen_params_toks(strct, type_params_str.clone(), &extends_type_argument, &extends_phantom_type_argument)) {
                 static readonly $$typeName = $[str]($[const](self.get_full_name_with_address(strct)));
                 static readonly $$numTypeParams = $(type_params.len());$['\n']
 
@@ -1561,24 +1593,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     })$['\n'];
                 })
 
-                readonly $$fullTypeName = null as unknown as $full_type_name_as_toks;$['\n']
-
                 readonly $$typeName = $(&struct_name).$$typeName;$['\n']
-
-                static get bcs() {
-                    return $(if !non_phantom_params.is_empty() {
-                        <$(for param in non_phantom_param_strs.iter() join (, ) =>
-                            $param extends $bcs_type<any>
-                        )>($(for param in non_phantom_param_strs.iter() join (, ) =>
-                            $param: $param
-                        )) =>
-                    }) $bcs.struct($bcs_def_name, {$['\n']
-                        $(for field in strct.get_fields() join (, ) =>
-                            $(field.get_name().display(self.symbol_pool()).to_string()):
-                                $(self.gen_struct_bcs_def_field_value(&field.get_type(), self.strct_type_param_names(strct)))
-                        )$['\n']
-                    $['\n']})
-                };$['\n']
+                readonly $$fullTypeName: $full_type_name_as_toks;$['\n']
 
                 $type_args_field_if_any;
 
@@ -1591,16 +1607,20 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
                 private constructor($type_args_param_for_constructor_if_any $(match fields.len() {
                         0 => (),
-                        1 => {
-                            $(self.gen_field_name_non_reserved(&fields[0])): $(
-                                self.gen_struct_class_field_type(
-                                    strct, &fields[0].get_type(), self.strct_type_param_names(strct), None, None
-                                )
-                            ),
-                        },
                         _ => { fields: $(self.gen_fields_if_name_with_params(strct, &ExtendsOrWraps::None, &ExtendsOrWraps::None)), }
                     })
                 ) {
+                    this.$$fullTypeName = $(match type_params.len() {
+                        0 => $(&struct_name).$$typeName,
+                        1 => $compose_sui_type(
+                            $(&struct_name).$$typeName,
+                            typeArg
+                        ) as $static_full_type_name_as_toks,
+                        _ => $compose_sui_type(
+                            $(&struct_name).$$typeName,
+                            ...typeArgs
+                        ) as $static_full_type_name_as_toks,
+                    });$['\n']
                     $(match type_params.len() {
                         0 => (),
                         1 => this.$$typeArg = typeArg;$['\n'],
@@ -1609,7 +1629,6 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
                     $(match fields.len() {
                         0 => (),
-                        1 => this.$(self.gen_field_name(&fields[0])) = $(self.gen_field_name_non_reserved(&fields[0]));,
                         _ => {
                             $(for field in &fields join (; ) =>
                                 this.$(self.gen_field_name(field)) = fields.$(self.gen_field_name(field));
@@ -1618,37 +1637,10 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     })
                 }$['\n']
 
-                static new$(params_toks_for_reified)(
-                    $type_args_param_if_any $(match fields.len() {
-                        0 => (),
-                        1 => {
-                            $(self.gen_field_name_non_reserved(&fields[0])): $(
-                                self.gen_struct_class_field_type(
-                                    strct, &fields[0].get_type(), self.strct_type_param_names(strct),
-                                    Some(quote!($to_type_argument)), Some(quote!($to_phantom_type_argument))
-                                )
-                            )
-                        },
-                        _ => { fields: $(self.gen_fields_if_name_with_params(strct, &wraps_to_type_argument, &wraps_phantom_to_type_argument)), }
-                    })
-                ): $(&struct_name)$(params_toks_for_to_type_argument) {
-                    return new $(&struct_name)(
-                        $(match type_params.len() {
-                            0 => (),
-                            1 => { $extract_type(typeArg), },
-                            _ => { typeArgs.map($extract_type) as $type_args_type, },
-                        })
-                        $(match fields.len() {
-                            0 => (),
-                            1 => $(self.gen_field_name_non_reserved(&fields[0])),
-                            _ => fields,
-                        })
-                    )
-                }$['\n']
 
                 static reified$(params_toks_for_reified)(
                     $(for param in type_params_str.iter() join (, ) => $param: $param)
-                ): $reified<$(&struct_name)$(params_toks_for_to_type_argument)> {
+                ): $reified<$(&struct_name)$(params_toks_for_to_type_argument), $fields_if_for_reified> {
                     return {
                         typeName: $(&struct_name).$$typeName,
                         fullTypeName: $compose_sui_type(
@@ -1704,6 +1696,24 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             })
                             id,
                         ),
+                        new: (
+                            $(match fields.len() {
+                                0 => (),
+                                _ => { fields: $(self.gen_fields_if_name_with_params(strct, &wraps_to_type_argument, &wraps_phantom_to_type_argument)), }
+                            })
+                        ) => {
+                            return new $(&struct_name)(
+                                $(match type_params.len() {
+                                    0 => (),
+                                    1 => { $extract_type($(&type_params_str[0])), },
+                                    _ => { [$(for param in &type_params_str join (, ) => $extract_type($param))], }, 
+                                })
+                                $(match fields.len() {
+                                    0 => (),
+                                    _ => fields,
+                                })
+                            )
+                        },
                         kind: "StructClassReified",
                     }
                 }$['\n']
@@ -1716,18 +1726,33 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     })
                 }$['\n']
 
+                static get bcs() {
+                    return $(if !non_phantom_params.is_empty() {
+                        <$(for param in non_phantom_param_strs.iter() join (, ) =>
+                            $param extends $bcs_type<any>
+                        )>($(for param in non_phantom_param_strs.iter() join (, ) =>
+                            $param: $param
+                        )) =>
+                    }) $bcs.struct($bcs_def_name, {$['\n']
+                        $(for field in strct.get_fields() join (, ) =>
+                            $(field.get_name().display(self.symbol_pool()).to_string()):
+                                $(self.gen_struct_bcs_def_field_value(&field.get_type(), self.strct_type_param_names(strct)))
+                        )$['\n']
+                    $['\n']})
+                };$['\n']
+
                 static fromFields$(params_toks_for_reified)(
                     $type_args_param_if_any fields: Record<string, any>
                 ): $(&struct_name)$(params_toks_for_to_type_argument) {
-                    return $(&struct_name).new(
+                    return $(&struct_name).reified(
                         $(match type_params.len() {
                             0 => (),
                             1 => { typeArg, },
-                            _ => { typeArgs, },
+                            _ => { $(for idx in 0..type_params.len() join (, ) => typeArgs[$idx]), },
                         })
+                    ).new(
                         $(match fields.len() {
                             0 => (),
-                            1 => $(self.gen_from_fields_field_decode(&fields[0])),
                             _ => {{
                                 $(for field in &fields join (, ) =>
                                     $(self.gen_field_name(field)): $(self.gen_from_fields_field_decode(field))
@@ -1755,15 +1780,15 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                         }
                     })$['\n']
 
-                    return $(&struct_name).new(
+                    return $(&struct_name).reified(
                         $(match type_params.len() {
                             0 => (),
                             1 => { typeArg, },
-                            _ => { typeArgs, },
+                            _ => { $(for idx in 0..type_params.len() join (, ) => typeArgs[$idx]), },
                         })
+                    ).new(
                         $(match fields.len() {
                             0 => (),
-                            1 => $(self.gen_from_fields_with_types_field_decode(&fields[0])),
                             _ => {{
                                 $(for field in &fields join (, ) =>
                                     $(self.gen_field_name(field)): $(self.gen_from_fields_with_types_field_decode(field))
@@ -1887,15 +1912,15 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 static fromJSONField$(params_toks_for_reified)(
                     $type_args_param_if_any field: any
                 ): $(&struct_name)$(params_toks_for_to_type_argument) {
-                    return $(&struct_name).new(
+                    return $(&struct_name).reified(
                         $(match type_params.len() {
                             0 => (),
                             1 => { typeArg, },
-                            _ => { typeArgs, },
+                            _ => { $(for idx in 0..type_params.len() join (, ) => typeArgs[$idx]), },
                         })
+                    ).new(
                         $(match fields.len() {
                             0 => (),
-                            1 => $(self.gen_from_json_field_field_decode(&fields[0])),
                             _ => {{
                                 $(for field in &fields join (, ) =>
                                     $(self.gen_field_name(field)): $(self.gen_from_json_field_field_decode(field))
