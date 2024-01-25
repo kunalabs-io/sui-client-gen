@@ -26,7 +26,6 @@ export function isDenyList(type: string): boolean {
   return type === '0x2::deny_list::DenyList'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface DenyListFields {
   id: ToField<UID>
   lists: ToField<Bag>
@@ -34,7 +33,6 @@ export interface DenyListFields {
 
 export type DenyListReified = Reified<DenyList, DenyListFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class DenyList {
   static readonly $typeName = '0x2::deny_list::DenyList'
   static readonly $numTypeParams = 0
@@ -167,7 +165,6 @@ export function isPerTypeList(type: string): boolean {
   return type === '0x2::deny_list::PerTypeList'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PerTypeListFields {
   id: ToField<UID>
   deniedCount: ToField<Table<'address', 'u64'>>
@@ -176,7 +173,6 @@ export interface PerTypeListFields {
 
 export type PerTypeListReified = Reified<PerTypeList, PerTypeListFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PerTypeList {
   static readonly $typeName = '0x2::deny_list::PerTypeList'
   static readonly $numTypeParams = 0

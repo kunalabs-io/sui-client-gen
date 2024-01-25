@@ -19,14 +19,12 @@ export function isSUI(type: string): boolean {
   return type === '0x2::sui::SUI'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface SUIFields {
   dummyField: ToField<'bool'>
 }
 
 export type SUIReified = Reified<SUI, SUIFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class SUI {
   static readonly $typeName = '0x2::sui::SUI'
   static readonly $numTypeParams = 0

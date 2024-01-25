@@ -22,7 +22,6 @@ export function isStructFromOtherModule(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface StructFromOtherModuleFields {
   dummyField: ToField<'bool'>
 }
@@ -32,7 +31,6 @@ export type StructFromOtherModuleReified = Reified<
   StructFromOtherModuleFields
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class StructFromOtherModule {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
@@ -168,14 +166,12 @@ export function isAddedInAnUpgrade(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface AddedInAnUpgradeFields {
   dummyField: ToField<'bool'>
 }
 
 export type AddedInAnUpgradeReified = Reified<AddedInAnUpgrade, AddedInAnUpgradeFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class AddedInAnUpgrade {
   static readonly $typeName =
     '0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe::other_module::AddedInAnUpgrade'

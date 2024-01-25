@@ -25,14 +25,12 @@ export function isBalance(type: string): boolean {
   return type.startsWith('0x2::balance::Balance<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface BalanceFields<T extends PhantomTypeArgument> {
   value: ToField<'u64'>
 }
 
 export type BalanceReified<T extends PhantomTypeArgument> = Reified<Balance<T>, BalanceFields<T>>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Balance<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::balance::Balance'
   static readonly $numTypeParams = 1
@@ -196,14 +194,12 @@ export function isSupply(type: string): boolean {
   return type.startsWith('0x2::balance::Supply<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface SupplyFields<T extends PhantomTypeArgument> {
   value: ToField<'u64'>
 }
 
 export type SupplyReified<T extends PhantomTypeArgument> = Reified<Supply<T>, SupplyFields<T>>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Supply<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::balance::Supply'
   static readonly $numTypeParams = 1

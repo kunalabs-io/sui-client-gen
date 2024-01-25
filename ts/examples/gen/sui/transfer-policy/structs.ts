@@ -32,14 +32,12 @@ export function isRuleKey(type: string): boolean {
   return type.startsWith('0x2::transfer_policy::RuleKey<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface RuleKeyFields<T extends PhantomTypeArgument> {
   dummyField: ToField<'bool'>
 }
 
 export type RuleKeyReified<T extends PhantomTypeArgument> = Reified<RuleKey<T>, RuleKeyFields<T>>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class RuleKey<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::RuleKey'
   static readonly $numTypeParams = 1
@@ -207,7 +205,6 @@ export function isTransferPolicy(type: string): boolean {
   return type.startsWith('0x2::transfer_policy::TransferPolicy<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TransferPolicyFields<T extends PhantomTypeArgument> {
   id: ToField<UID>
   balance: ToField<Balance<ToPhantom<SUI>>>
@@ -219,7 +216,6 @@ export type TransferPolicyReified<T extends PhantomTypeArgument> = Reified<
   TransferPolicyFields<T>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TransferPolicy<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicy'
   static readonly $numTypeParams = 1
@@ -404,7 +400,6 @@ export function isTransferPolicyCap(type: string): boolean {
   return type.startsWith('0x2::transfer_policy::TransferPolicyCap<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TransferPolicyCapFields<T extends PhantomTypeArgument> {
   id: ToField<UID>
   policyId: ToField<ID>
@@ -415,7 +410,6 @@ export type TransferPolicyCapReified<T extends PhantomTypeArgument> = Reified<
   TransferPolicyCapFields<T>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TransferPolicyCap<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyCap'
   static readonly $numTypeParams = 1
@@ -591,7 +585,6 @@ export function isTransferPolicyCreated(type: string): boolean {
   return type.startsWith('0x2::transfer_policy::TransferPolicyCreated<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TransferPolicyCreatedFields<T extends PhantomTypeArgument> {
   id: ToField<ID>
 }
@@ -601,7 +594,6 @@ export type TransferPolicyCreatedReified<T extends PhantomTypeArgument> = Reifie
   TransferPolicyCreatedFields<T>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TransferPolicyCreated<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyCreated'
   static readonly $numTypeParams = 1
@@ -774,7 +766,6 @@ export function isTransferPolicyDestroyed(type: string): boolean {
   return type.startsWith('0x2::transfer_policy::TransferPolicyDestroyed<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TransferPolicyDestroyedFields<T extends PhantomTypeArgument> {
   id: ToField<ID>
 }
@@ -784,7 +775,6 @@ export type TransferPolicyDestroyedReified<T extends PhantomTypeArgument> = Reif
   TransferPolicyDestroyedFields<T>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TransferPolicyDestroyed<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyDestroyed'
   static readonly $numTypeParams = 1
@@ -959,7 +949,6 @@ export function isTransferRequest(type: string): boolean {
   return type.startsWith('0x2::transfer_policy::TransferRequest<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TransferRequestFields<T extends PhantomTypeArgument> {
   item: ToField<ID>
   paid: ToField<'u64'>
@@ -972,7 +961,6 @@ export type TransferRequestReified<T extends PhantomTypeArgument> = Reified<
   TransferRequestFields<T>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TransferRequest<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer_policy::TransferRequest'
   static readonly $numTypeParams = 1

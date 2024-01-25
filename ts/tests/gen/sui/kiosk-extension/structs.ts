@@ -26,7 +26,6 @@ export function isExtension(type: string): boolean {
   return type === '0x2::kiosk_extension::Extension'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ExtensionFields {
   storage: ToField<Bag>
   permissions: ToField<'u128'>
@@ -35,7 +34,6 @@ export interface ExtensionFields {
 
 export type ExtensionReified = Reified<Extension, ExtensionFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Extension {
   static readonly $typeName = '0x2::kiosk_extension::Extension'
   static readonly $numTypeParams = 0
@@ -175,7 +173,6 @@ export function isExtensionKey(type: string): boolean {
   return type.startsWith('0x2::kiosk_extension::ExtensionKey<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ExtensionKeyFields<Ext extends PhantomTypeArgument> {
   dummyField: ToField<'bool'>
 }
@@ -185,7 +182,6 @@ export type ExtensionKeyReified<Ext extends PhantomTypeArgument> = Reified<
   ExtensionKeyFields<Ext>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ExtensionKey<Ext extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk_extension::ExtensionKey'
   static readonly $numTypeParams = 1

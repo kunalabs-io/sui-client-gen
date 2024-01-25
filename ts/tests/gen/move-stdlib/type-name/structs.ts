@@ -20,14 +20,12 @@ export function isTypeName(type: string): boolean {
   return type === '0x1::type_name::TypeName'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TypeNameFields {
   name: ToField<String>
 }
 
 export type TypeNameReified = Reified<TypeName, TypeNameFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TypeName {
   static readonly $typeName = '0x1::type_name::TypeName'
   static readonly $numTypeParams = 0

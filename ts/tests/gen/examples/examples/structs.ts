@@ -29,14 +29,12 @@ export function isExampleStruct(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ExampleStructFields {
   dummyField: ToField<'bool'>
 }
 
 export type ExampleStructReified = Reified<ExampleStruct, ExampleStructFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ExampleStruct {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
@@ -167,7 +165,6 @@ export function isSpecialTypesStruct(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface SpecialTypesStructFields {
   id: ToField<UID>
   asciiString: ToField<String>
@@ -182,7 +179,6 @@ export interface SpecialTypesStructFields {
 
 export type SpecialTypesStructReified = Reified<SpecialTypesStruct, SpecialTypesStructFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class SpecialTypesStruct {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'

@@ -21,7 +21,6 @@ export function isVerifiedIssuer(type: string): boolean {
   return type === '0x2::zklogin_verified_issuer::VerifiedIssuer'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface VerifiedIssuerFields {
   id: ToField<UID>
   owner: ToField<'address'>
@@ -30,7 +29,6 @@ export interface VerifiedIssuerFields {
 
 export type VerifiedIssuerReified = Reified<VerifiedIssuer, VerifiedIssuerFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class VerifiedIssuer {
   static readonly $typeName = '0x2::zklogin_verified_issuer::VerifiedIssuer'
   static readonly $numTypeParams = 0

@@ -22,14 +22,12 @@ export function isCurve(type: string): boolean {
   return type === '0x2::groth16::Curve'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface CurveFields {
   id: ToField<'u8'>
 }
 
 export type CurveReified = Reified<Curve, CurveFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Curve {
   static readonly $typeName = '0x2::groth16::Curve'
   static readonly $numTypeParams = 0
@@ -149,7 +147,6 @@ export function isPreparedVerifyingKey(type: string): boolean {
   return type === '0x2::groth16::PreparedVerifyingKey'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PreparedVerifyingKeyFields {
   vkGammaAbcG1Bytes: ToField<Vector<'u8'>>
   alphaG1BetaG2Bytes: ToField<Vector<'u8'>>
@@ -159,7 +156,6 @@ export interface PreparedVerifyingKeyFields {
 
 export type PreparedVerifyingKeyReified = Reified<PreparedVerifyingKey, PreparedVerifyingKeyFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PreparedVerifyingKey {
   static readonly $typeName = '0x2::groth16::PreparedVerifyingKey'
   static readonly $numTypeParams = 0
@@ -324,14 +320,12 @@ export function isProofPoints(type: string): boolean {
   return type === '0x2::groth16::ProofPoints'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ProofPointsFields {
   bytes: ToField<Vector<'u8'>>
 }
 
 export type ProofPointsReified = Reified<ProofPoints, ProofPointsFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ProofPoints {
   static readonly $typeName = '0x2::groth16::ProofPoints'
   static readonly $numTypeParams = 0
@@ -457,14 +451,12 @@ export function isPublicProofInputs(type: string): boolean {
   return type === '0x2::groth16::PublicProofInputs'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PublicProofInputsFields {
   bytes: ToField<Vector<'u8'>>
 }
 
 export type PublicProofInputsReified = Reified<PublicProofInputs, PublicProofInputsFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PublicProofInputs {
   static readonly $typeName = '0x2::groth16::PublicProofInputs'
   static readonly $numTypeParams = 0

@@ -28,7 +28,6 @@ export function isReferent(type: string): boolean {
   return type.startsWith('0x2::borrow::Referent<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ReferentFields<T0 extends TypeArgument> {
   id: ToField<'address'>
   value: ToField<Option<T0>>
@@ -36,7 +35,6 @@ export interface ReferentFields<T0 extends TypeArgument> {
 
 export type ReferentReified<T0 extends TypeArgument> = Reified<Referent<T0>, ReferentFields<T0>>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Referent<T0 extends TypeArgument> {
   static readonly $typeName = '0x2::borrow::Referent'
   static readonly $numTypeParams = 1
@@ -217,7 +215,6 @@ export function isBorrow(type: string): boolean {
   return type === '0x2::borrow::Borrow'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface BorrowFields {
   ref: ToField<'address'>
   obj: ToField<ID>
@@ -225,7 +222,6 @@ export interface BorrowFields {
 
 export type BorrowReified = Reified<Borrow, BorrowFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Borrow {
   static readonly $typeName = '0x2::borrow::Borrow'
   static readonly $numTypeParams = 0

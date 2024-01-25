@@ -27,7 +27,6 @@ export function isTableVec(type: string): boolean {
   return type.startsWith('0x2::table_vec::TableVec<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TableVecFields<T0 extends PhantomTypeArgument> {
   contents: ToField<Table<'u64', T0>>
 }
@@ -37,7 +36,6 @@ export type TableVecReified<T0 extends PhantomTypeArgument> = Reified<
   TableVecFields<T0>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TableVec<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::table_vec::TableVec'
   static readonly $numTypeParams = 1

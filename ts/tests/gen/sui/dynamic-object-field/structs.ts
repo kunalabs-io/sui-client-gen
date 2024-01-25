@@ -26,14 +26,12 @@ export function isWrapper(type: string): boolean {
   return type.startsWith('0x2::dynamic_object_field::Wrapper<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface WrapperFields<Name extends TypeArgument> {
   name: ToField<Name>
 }
 
 export type WrapperReified<Name extends TypeArgument> = Reified<Wrapper<Name>, WrapperFields<Name>>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Wrapper<Name extends TypeArgument> {
   static readonly $typeName = '0x2::dynamic_object_field::Wrapper'
   static readonly $numTypeParams = 1

@@ -22,14 +22,12 @@ export function isChar(type: string): boolean {
   return type === '0x1::ascii::Char'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface CharFields {
   byte: ToField<'u8'>
 }
 
 export type CharReified = Reified<Char, CharFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Char {
   static readonly $typeName = '0x1::ascii::Char'
   static readonly $numTypeParams = 0
@@ -149,14 +147,12 @@ export function isString(type: string): boolean {
   return type === '0x1::ascii::String'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface StringFields {
   bytes: ToField<Vector<'u8'>>
 }
 
 export type StringReified = Reified<String, StringFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class String {
   static readonly $typeName = '0x1::ascii::String'
   static readonly $numTypeParams = 0

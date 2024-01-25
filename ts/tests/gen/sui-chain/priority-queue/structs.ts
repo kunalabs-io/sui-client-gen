@@ -28,7 +28,6 @@ export function isPriorityQueue(type: string): boolean {
   return type.startsWith('0x2::priority_queue::PriorityQueue<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PriorityQueueFields<T0 extends TypeArgument> {
   entries: ToField<Vector<Entry<T0>>>
 }
@@ -38,7 +37,6 @@ export type PriorityQueueReified<T0 extends TypeArgument> = Reified<
   PriorityQueueFields<T0>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PriorityQueue<T0 extends TypeArgument> {
   static readonly $typeName = '0x2::priority_queue::PriorityQueue'
   static readonly $numTypeParams = 1
@@ -215,7 +213,6 @@ export function isEntry(type: string): boolean {
   return type.startsWith('0x2::priority_queue::Entry<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface EntryFields<T0 extends TypeArgument> {
   priority: ToField<'u64'>
   value: ToField<T0>
@@ -223,7 +220,6 @@ export interface EntryFields<T0 extends TypeArgument> {
 
 export type EntryReified<T0 extends TypeArgument> = Reified<Entry<T0>, EntryFields<T0>>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Entry<T0 extends TypeArgument> {
   static readonly $typeName = '0x2::priority_queue::Entry'
   static readonly $numTypeParams = 1

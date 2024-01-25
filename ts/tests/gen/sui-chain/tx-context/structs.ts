@@ -22,7 +22,6 @@ export function isTxContext(type: string): boolean {
   return type === '0x2::tx_context::TxContext'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TxContextFields {
   sender: ToField<'address'>
   txHash: ToField<Vector<'u8'>>
@@ -33,7 +32,6 @@ export interface TxContextFields {
 
 export type TxContextReified = Reified<TxContext, TxContextFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TxContext {
   static readonly $typeName = '0x2::tx_context::TxContext'
   static readonly $numTypeParams = 0

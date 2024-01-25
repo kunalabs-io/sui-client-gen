@@ -31,7 +31,6 @@ export function isLinkedTable(type: string): boolean {
   return type.startsWith('0x2::linked_table::LinkedTable<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface LinkedTableFields<T0 extends TypeArgument, T1 extends PhantomTypeArgument> {
   id: ToField<UID>
   size: ToField<'u64'>
@@ -44,7 +43,6 @@ export type LinkedTableReified<T0 extends TypeArgument, T1 extends PhantomTypeAr
   LinkedTableFields<T0, T1>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::linked_table::LinkedTable'
   static readonly $numTypeParams = 2
@@ -260,7 +258,6 @@ export function isNode(type: string): boolean {
   return type.startsWith('0x2::linked_table::Node<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface NodeFields<T0 extends TypeArgument, T1 extends TypeArgument> {
   prev: ToField<Option<T0>>
   next: ToField<Option<T0>>
@@ -272,7 +269,6 @@ export type NodeReified<T0 extends TypeArgument, T1 extends TypeArgument> = Reif
   NodeFields<T0, T1>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Node<T0 extends TypeArgument, T1 extends TypeArgument> {
   static readonly $typeName = '0x2::linked_table::Node'
   static readonly $numTypeParams = 2

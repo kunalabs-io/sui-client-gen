@@ -26,14 +26,12 @@ export function isEXAMPLE_COIN(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface EXAMPLE_COINFields {
   dummyField: ToField<'bool'>
 }
 
 export type EXAMPLE_COINReified = Reified<EXAMPLE_COIN, EXAMPLE_COINFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class EXAMPLE_COIN {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
@@ -162,7 +160,6 @@ export function isFaucet(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface FaucetFields {
   id: ToField<UID>
   cap: ToField<TreasuryCap<ToPhantom<EXAMPLE_COIN>>>
@@ -170,7 +167,6 @@ export interface FaucetFields {
 
 export type FaucetReified = Reified<Faucet, FaucetFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Faucet {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'

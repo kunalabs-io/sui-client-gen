@@ -40,14 +40,12 @@ export function isBar(type: string): boolean {
   return type === '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface BarFields {
   value: ToField<'u64'>
 }
 
 export type BarReified = Reified<Bar, BarFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Bar {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
@@ -173,14 +171,12 @@ export function isDummy(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface DummyFields {
   dummyField: ToField<'bool'>
 }
 
 export type DummyReified = Reified<Dummy, DummyFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Dummy {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
@@ -308,7 +304,6 @@ export function isFoo(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface FooFields<T extends TypeArgument> {
   id: ToField<UID>
   generic: ToField<T>
@@ -328,7 +323,6 @@ export interface FooFields<T extends TypeArgument> {
 
 export type FooReified<T extends TypeArgument> = Reified<Foo<T>, FooFields<T>>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Foo<T extends TypeArgument> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo'
@@ -695,7 +689,6 @@ export function isWithGenericField(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface WithGenericFieldFields<T extends TypeArgument> {
   id: ToField<UID>
   genericField: ToField<T>
@@ -706,7 +699,6 @@ export type WithGenericFieldReified<T extends TypeArgument> = Reified<
   WithGenericFieldFields<T>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WithGenericField<T extends TypeArgument> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField'
@@ -892,7 +884,6 @@ export function isWithSpecialTypes(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface WithSpecialTypesFields<T extends PhantomTypeArgument, U extends TypeArgument> {
   id: ToField<UID>
   string: ToField<String>
@@ -914,7 +905,6 @@ export type WithSpecialTypesReified<
   U extends TypeArgument,
 > = Reified<WithSpecialTypes<T, U>, WithSpecialTypesFields<T, U>>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgument> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes'
@@ -1220,7 +1210,6 @@ export function isWithSpecialTypesAsGenerics(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface WithSpecialTypesAsGenericsFields<
   T0 extends TypeArgument,
   T1 extends TypeArgument,
@@ -1256,7 +1245,6 @@ export type WithSpecialTypesAsGenericsReified<
   WithSpecialTypesAsGenericsFields<T0, T1, T2, T3, T4, T5, T6, T7>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WithSpecialTypesAsGenerics<
   T0 extends TypeArgument,
   T1 extends TypeArgument,
@@ -1798,7 +1786,6 @@ export function isWithSpecialTypesInVectors(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface WithSpecialTypesInVectorsFields<T extends TypeArgument> {
   id: ToField<UID>
   string: ToField<Vector<String>>
@@ -1814,7 +1801,6 @@ export type WithSpecialTypesInVectorsReified<T extends TypeArgument> = Reified<
   WithSpecialTypesInVectorsFields<T>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WithSpecialTypesInVectors<T extends TypeArgument> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors'
@@ -2062,7 +2048,6 @@ export function isWithTwoGenerics(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface WithTwoGenericsFields<T extends TypeArgument, U extends TypeArgument> {
   genericField1: ToField<T>
   genericField2: ToField<U>
@@ -2073,7 +2058,6 @@ export type WithTwoGenericsReified<T extends TypeArgument, U extends TypeArgumen
   WithTwoGenericsFields<T, U>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics'

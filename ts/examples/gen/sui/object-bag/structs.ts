@@ -20,7 +20,6 @@ export function isObjectBag(type: string): boolean {
   return type === '0x2::object_bag::ObjectBag'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ObjectBagFields {
   id: ToField<UID>
   size: ToField<'u64'>
@@ -28,7 +27,6 @@ export interface ObjectBagFields {
 
 export type ObjectBagReified = Reified<ObjectBag, ObjectBagFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ObjectBag {
   static readonly $typeName = '0x2::object_bag::ObjectBag'
   static readonly $numTypeParams = 0

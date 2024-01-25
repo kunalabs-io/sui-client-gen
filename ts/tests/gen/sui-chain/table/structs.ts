@@ -26,7 +26,6 @@ export function isTable(type: string): boolean {
   return type.startsWith('0x2::table::Table<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TableFields<T0 extends PhantomTypeArgument, T1 extends PhantomTypeArgument> {
   id: ToField<UID>
   size: ToField<'u64'>
@@ -37,7 +36,6 @@ export type TableReified<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
   TableFields<T0, T1>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Table<T0 extends PhantomTypeArgument, T1 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::table::Table'
   static readonly $numTypeParams = 2

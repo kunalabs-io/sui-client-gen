@@ -27,7 +27,6 @@ export function isField(type: string): boolean {
   return type.startsWith('0x2::dynamic_field::Field<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface FieldFields<Name extends TypeArgument, Value extends TypeArgument> {
   id: ToField<UID>
   name: ToField<Name>
@@ -39,7 +38,6 @@ export type FieldReified<Name extends TypeArgument, Value extends TypeArgument> 
   FieldFields<Name, Value>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Field<Name extends TypeArgument, Value extends TypeArgument> {
   static readonly $typeName = '0x2::dynamic_field::Field'
   static readonly $numTypeParams = 2

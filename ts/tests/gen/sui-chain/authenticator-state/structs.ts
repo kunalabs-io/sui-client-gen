@@ -24,7 +24,6 @@ export function isAuthenticatorState(type: string): boolean {
   return type === '0x2::authenticator_state::AuthenticatorState'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface AuthenticatorStateFields {
   id: ToField<UID>
   version: ToField<'u64'>
@@ -32,7 +31,6 @@ export interface AuthenticatorStateFields {
 
 export type AuthenticatorStateReified = Reified<AuthenticatorState, AuthenticatorStateFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class AuthenticatorState {
   static readonly $typeName = '0x2::authenticator_state::AuthenticatorState'
   static readonly $numTypeParams = 0
@@ -168,7 +166,6 @@ export function isAuthenticatorStateInner(type: string): boolean {
   return type === '0x2::authenticator_state::AuthenticatorStateInner'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface AuthenticatorStateInnerFields {
   version: ToField<'u64'>
   activeJwks: ToField<Vector<ActiveJwk>>
@@ -179,7 +176,6 @@ export type AuthenticatorStateInnerReified = Reified<
   AuthenticatorStateInnerFields
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class AuthenticatorStateInner {
   static readonly $typeName = '0x2::authenticator_state::AuthenticatorStateInner'
   static readonly $numTypeParams = 0
@@ -326,7 +322,6 @@ export function isJWK(type: string): boolean {
   return type === '0x2::authenticator_state::JWK'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface JWKFields {
   kty: ToField<String>
   e: ToField<String>
@@ -336,7 +331,6 @@ export interface JWKFields {
 
 export type JWKReified = Reified<JWK, JWKFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class JWK {
   static readonly $typeName = '0x2::authenticator_state::JWK'
   static readonly $numTypeParams = 0
@@ -483,7 +477,6 @@ export function isJwkId(type: string): boolean {
   return type === '0x2::authenticator_state::JwkId'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface JwkIdFields {
   iss: ToField<String>
   kid: ToField<String>
@@ -491,7 +484,6 @@ export interface JwkIdFields {
 
 export type JwkIdReified = Reified<JwkId, JwkIdFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class JwkId {
   static readonly $typeName = '0x2::authenticator_state::JwkId'
   static readonly $numTypeParams = 0
@@ -624,7 +616,6 @@ export function isActiveJwk(type: string): boolean {
   return type === '0x2::authenticator_state::ActiveJwk'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ActiveJwkFields {
   jwkId: ToField<JwkId>
   jwk: ToField<JWK>
@@ -633,7 +624,6 @@ export interface ActiveJwkFields {
 
 export type ActiveJwkReified = Reified<ActiveJwk, ActiveJwkFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ActiveJwk {
   static readonly $typeName = '0x2::authenticator_state::ActiveJwk'
   static readonly $numTypeParams = 0

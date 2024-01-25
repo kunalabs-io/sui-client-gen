@@ -28,7 +28,6 @@ export function isEntry(type: string): boolean {
   return type.startsWith('0x2::vec_map::Entry<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface EntryFields<K extends TypeArgument, V extends TypeArgument> {
   key: ToField<K>
   value: ToField<V>
@@ -39,7 +38,6 @@ export type EntryReified<K extends TypeArgument, V extends TypeArgument> = Reifi
   EntryFields<K, V>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Entry<K extends TypeArgument, V extends TypeArgument> {
   static readonly $typeName = '0x2::vec_map::Entry'
   static readonly $numTypeParams = 2
@@ -217,7 +215,6 @@ export function isVecMap(type: string): boolean {
   return type.startsWith('0x2::vec_map::VecMap<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface VecMapFields<K extends TypeArgument, V extends TypeArgument> {
   contents: ToField<Vector<Entry<K, V>>>
 }
@@ -227,7 +224,6 @@ export type VecMapReified<K extends TypeArgument, V extends TypeArgument> = Reif
   VecMapFields<K, V>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class VecMap<K extends TypeArgument, V extends TypeArgument> {
   static readonly $typeName = '0x2::vec_map::VecMap'
   static readonly $numTypeParams = 2

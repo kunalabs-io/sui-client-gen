@@ -28,7 +28,6 @@ export function isDisplay(type: string): boolean {
   return type.startsWith('0x2::display::Display<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface DisplayFields<T0 extends PhantomTypeArgument> {
   id: ToField<UID>
   fields: ToField<VecMap<String, String>>
@@ -37,7 +36,6 @@ export interface DisplayFields<T0 extends PhantomTypeArgument> {
 
 export type DisplayReified<T0 extends PhantomTypeArgument> = Reified<Display<T0>, DisplayFields<T0>>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Display<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::Display'
   static readonly $numTypeParams = 1
@@ -222,7 +220,6 @@ export function isDisplayCreated(type: string): boolean {
   return type.startsWith('0x2::display::DisplayCreated<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface DisplayCreatedFields<T0 extends PhantomTypeArgument> {
   id: ToField<ID>
 }
@@ -232,7 +229,6 @@ export type DisplayCreatedReified<T0 extends PhantomTypeArgument> = Reified<
   DisplayCreatedFields<T0>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class DisplayCreated<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::DisplayCreated'
   static readonly $numTypeParams = 1
@@ -396,7 +392,6 @@ export function isVersionUpdated(type: string): boolean {
   return type.startsWith('0x2::display::VersionUpdated<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface VersionUpdatedFields<T0 extends PhantomTypeArgument> {
   id: ToField<ID>
   version: ToField<'u16'>
@@ -408,7 +403,6 @@ export type VersionUpdatedReified<T0 extends PhantomTypeArgument> = Reified<
   VersionUpdatedFields<T0>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class VersionUpdated<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::VersionUpdated'
   static readonly $numTypeParams = 1

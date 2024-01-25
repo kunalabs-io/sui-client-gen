@@ -20,7 +20,6 @@ export function isClock(type: string): boolean {
   return type === '0x2::clock::Clock'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ClockFields {
   id: ToField<UID>
   timestampMs: ToField<'u64'>
@@ -28,7 +27,6 @@ export interface ClockFields {
 
 export type ClockReified = Reified<Clock, ClockFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Clock {
   static readonly $typeName = '0x2::clock::Clock'
   static readonly $numTypeParams = 0

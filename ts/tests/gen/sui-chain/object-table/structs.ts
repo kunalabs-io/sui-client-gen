@@ -26,7 +26,6 @@ export function isObjectTable(type: string): boolean {
   return type.startsWith('0x2::object_table::ObjectTable<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ObjectTableFields<T0 extends PhantomTypeArgument, T1 extends PhantomTypeArgument> {
   id: ToField<UID>
   size: ToField<'u64'>
@@ -37,7 +36,6 @@ export type ObjectTableReified<
   T1 extends PhantomTypeArgument,
 > = Reified<ObjectTable<T0, T1>, ObjectTableFields<T0, T1>>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::object_table::ObjectTable'
   static readonly $numTypeParams = 2

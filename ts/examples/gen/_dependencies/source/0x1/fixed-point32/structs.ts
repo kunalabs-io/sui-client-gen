@@ -19,14 +19,12 @@ export function isFixedPoint32(type: string): boolean {
   return type === '0x1::fixed_point32::FixedPoint32'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface FixedPoint32Fields {
   value: ToField<'u64'>
 }
 
 export type FixedPoint32Reified = Reified<FixedPoint32, FixedPoint32Fields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class FixedPoint32 {
   static readonly $typeName = '0x1::fixed_point32::FixedPoint32'
   static readonly $numTypeParams = 0

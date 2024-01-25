@@ -20,7 +20,6 @@ export function isVersioned(type: string): boolean {
   return type === '0x2::versioned::Versioned'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface VersionedFields {
   id: ToField<UID>
   version: ToField<'u64'>
@@ -28,7 +27,6 @@ export interface VersionedFields {
 
 export type VersionedReified = Reified<Versioned, VersionedFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Versioned {
   static readonly $typeName = '0x2::versioned::Versioned'
   static readonly $numTypeParams = 0
@@ -161,7 +159,6 @@ export function isVersionChangeCap(type: string): boolean {
   return type === '0x2::versioned::VersionChangeCap'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface VersionChangeCapFields {
   versionedId: ToField<ID>
   oldVersion: ToField<'u64'>
@@ -169,7 +166,6 @@ export interface VersionChangeCapFields {
 
 export type VersionChangeCapReified = Reified<VersionChangeCap, VersionChangeCapFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class VersionChangeCap {
   static readonly $typeName = '0x2::versioned::VersionChangeCap'
   static readonly $numTypeParams = 0

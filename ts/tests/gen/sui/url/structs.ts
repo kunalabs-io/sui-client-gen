@@ -20,14 +20,12 @@ export function isUrl(type: string): boolean {
   return type === '0x2::url::Url'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface UrlFields {
   url: ToField<String>
 }
 
 export type UrlReified = Reified<Url, UrlFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Url {
   static readonly $typeName = '0x2::url::Url'
   static readonly $numTypeParams = 0

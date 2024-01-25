@@ -33,7 +33,6 @@ export function isToken(type: string): boolean {
   return type.startsWith('0x2::token::Token<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TokenFields<T0 extends PhantomTypeArgument> {
   id: ToField<UID>
   balance: ToField<Balance<T0>>
@@ -41,7 +40,6 @@ export interface TokenFields<T0 extends PhantomTypeArgument> {
 
 export type TokenReified<T0 extends PhantomTypeArgument> = Reified<Token<T0>, TokenFields<T0>>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Token<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::Token'
   static readonly $numTypeParams = 1
@@ -216,7 +214,6 @@ export function isTokenPolicyCap(type: string): boolean {
   return type.startsWith('0x2::token::TokenPolicyCap<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TokenPolicyCapFields<T0 extends PhantomTypeArgument> {
   id: ToField<UID>
   for: ToField<ID>
@@ -227,7 +224,6 @@ export type TokenPolicyCapReified<T0 extends PhantomTypeArgument> = Reified<
   TokenPolicyCapFields<T0>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TokenPolicyCap<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::TokenPolicyCap'
   static readonly $numTypeParams = 1
@@ -402,7 +398,6 @@ export function isTokenPolicy(type: string): boolean {
   return type.startsWith('0x2::token::TokenPolicy<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TokenPolicyFields<T0 extends PhantomTypeArgument> {
   id: ToField<UID>
   spentBalance: ToField<Balance<T0>>
@@ -414,7 +409,6 @@ export type TokenPolicyReified<T0 extends PhantomTypeArgument> = Reified<
   TokenPolicyFields<T0>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TokenPolicy<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::TokenPolicy'
   static readonly $numTypeParams = 1
@@ -605,7 +599,6 @@ export function isActionRequest(type: string): boolean {
   return type.startsWith('0x2::token::ActionRequest<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ActionRequestFields<T0 extends PhantomTypeArgument> {
   name: ToField<String>
   amount: ToField<'u64'>
@@ -620,7 +613,6 @@ export type ActionRequestReified<T0 extends PhantomTypeArgument> = Reified<
   ActionRequestFields<T0>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ActionRequest<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::ActionRequest'
   static readonly $numTypeParams = 1
@@ -846,14 +838,12 @@ export function isRuleKey(type: string): boolean {
   return type.startsWith('0x2::token::RuleKey<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface RuleKeyFields<T0 extends PhantomTypeArgument> {
   isProtected: ToField<'bool'>
 }
 
 export type RuleKeyReified<T0 extends PhantomTypeArgument> = Reified<RuleKey<T0>, RuleKeyFields<T0>>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class RuleKey<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::RuleKey'
   static readonly $numTypeParams = 1
@@ -1021,7 +1011,6 @@ export function isTokenPolicyCreated(type: string): boolean {
   return type.startsWith('0x2::token::TokenPolicyCreated<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TokenPolicyCreatedFields<T0 extends PhantomTypeArgument> {
   id: ToField<ID>
   isMutable: ToField<'bool'>
@@ -1032,7 +1021,6 @@ export type TokenPolicyCreatedReified<T0 extends PhantomTypeArgument> = Reified<
   TokenPolicyCreatedFields<T0>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TokenPolicyCreated<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::token::TokenPolicyCreated'
   static readonly $numTypeParams = 1

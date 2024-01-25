@@ -24,7 +24,6 @@ export function isPublisher(type: string): boolean {
   return type === '0x2::package::Publisher'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PublisherFields {
   id: ToField<UID>
   package: ToField<String>
@@ -33,7 +32,6 @@ export interface PublisherFields {
 
 export type PublisherReified = Reified<Publisher, PublisherFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Publisher {
   static readonly $typeName = '0x2::package::Publisher'
   static readonly $numTypeParams = 0
@@ -173,7 +171,6 @@ export function isUpgradeCap(type: string): boolean {
   return type === '0x2::package::UpgradeCap'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface UpgradeCapFields {
   id: ToField<UID>
   package: ToField<ID>
@@ -183,7 +180,6 @@ export interface UpgradeCapFields {
 
 export type UpgradeCapReified = Reified<UpgradeCap, UpgradeCapFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class UpgradeCap {
   static readonly $typeName = '0x2::package::UpgradeCap'
   static readonly $numTypeParams = 0
@@ -330,7 +326,6 @@ export function isUpgradeTicket(type: string): boolean {
   return type === '0x2::package::UpgradeTicket'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface UpgradeTicketFields {
   cap: ToField<ID>
   package: ToField<ID>
@@ -340,7 +335,6 @@ export interface UpgradeTicketFields {
 
 export type UpgradeTicketReified = Reified<UpgradeTicket, UpgradeTicketFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class UpgradeTicket {
   static readonly $typeName = '0x2::package::UpgradeTicket'
   static readonly $numTypeParams = 0
@@ -487,7 +481,6 @@ export function isUpgradeReceipt(type: string): boolean {
   return type === '0x2::package::UpgradeReceipt'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface UpgradeReceiptFields {
   cap: ToField<ID>
   package: ToField<ID>
@@ -495,7 +488,6 @@ export interface UpgradeReceiptFields {
 
 export type UpgradeReceiptReified = Reified<UpgradeReceipt, UpgradeReceiptFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class UpgradeReceipt {
   static readonly $typeName = '0x2::package::UpgradeReceipt'
   static readonly $numTypeParams = 0

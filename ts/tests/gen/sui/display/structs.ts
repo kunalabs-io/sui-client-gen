@@ -28,7 +28,6 @@ export function isDisplay(type: string): boolean {
   return type.startsWith('0x2::display::Display<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface DisplayFields<T extends PhantomTypeArgument> {
   id: ToField<UID>
   fields: ToField<VecMap<String, String>>
@@ -37,7 +36,6 @@ export interface DisplayFields<T extends PhantomTypeArgument> {
 
 export type DisplayReified<T extends PhantomTypeArgument> = Reified<Display<T>, DisplayFields<T>>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Display<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::Display'
   static readonly $numTypeParams = 1
@@ -222,7 +220,6 @@ export function isDisplayCreated(type: string): boolean {
   return type.startsWith('0x2::display::DisplayCreated<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface DisplayCreatedFields<T extends PhantomTypeArgument> {
   id: ToField<ID>
 }
@@ -232,7 +229,6 @@ export type DisplayCreatedReified<T extends PhantomTypeArgument> = Reified<
   DisplayCreatedFields<T>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class DisplayCreated<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::DisplayCreated'
   static readonly $numTypeParams = 1
@@ -396,7 +392,6 @@ export function isVersionUpdated(type: string): boolean {
   return type.startsWith('0x2::display::VersionUpdated<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface VersionUpdatedFields<T extends PhantomTypeArgument> {
   id: ToField<ID>
   version: ToField<'u16'>
@@ -408,7 +403,6 @@ export type VersionUpdatedReified<T extends PhantomTypeArgument> = Reified<
   VersionUpdatedFields<T>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class VersionUpdated<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::display::VersionUpdated'
   static readonly $numTypeParams = 1

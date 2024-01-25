@@ -26,7 +26,6 @@ export function isReceiving(type: string): boolean {
   return type.startsWith('0x2::transfer::Receiving<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ReceivingFields<T0 extends PhantomTypeArgument> {
   id: ToField<ID>
   version: ToField<'u64'>
@@ -37,7 +36,6 @@ export type ReceivingReified<T0 extends PhantomTypeArgument> = Reified<
   ReceivingFields<T0>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Receiving<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::transfer::Receiving'
   static readonly $numTypeParams = 1

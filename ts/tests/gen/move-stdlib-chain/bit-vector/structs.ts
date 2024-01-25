@@ -22,7 +22,6 @@ export function isBitVector(type: string): boolean {
   return type === '0x1::bit_vector::BitVector'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface BitVectorFields {
   length: ToField<'u64'>
   bitField: ToField<Vector<'bool'>>
@@ -30,7 +29,6 @@ export interface BitVectorFields {
 
 export type BitVectorReified = Reified<BitVector, BitVectorFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class BitVector {
   static readonly $typeName = '0x1::bit_vector::BitVector'
   static readonly $numTypeParams = 0

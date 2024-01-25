@@ -30,7 +30,6 @@ export function isBorrow(type: string): boolean {
   return type === '0x2::kiosk::Borrow'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface BorrowFields {
   kioskId: ToField<ID>
   itemId: ToField<ID>
@@ -38,7 +37,6 @@ export interface BorrowFields {
 
 export type BorrowReified = Reified<Borrow, BorrowFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Borrow {
   static readonly $typeName = '0x2::kiosk::Borrow'
   static readonly $numTypeParams = 0
@@ -171,14 +169,12 @@ export function isItem(type: string): boolean {
   return type === '0x2::kiosk::Item'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ItemFields {
   id: ToField<ID>
 }
 
 export type ItemReified = Reified<Item, ItemFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Item {
   static readonly $typeName = '0x2::kiosk::Item'
   static readonly $numTypeParams = 0
@@ -298,7 +294,6 @@ export function isItemDelisted(type: string): boolean {
   return type.startsWith('0x2::kiosk::ItemDelisted<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ItemDelistedFields<T extends PhantomTypeArgument> {
   kiosk: ToField<ID>
   id: ToField<ID>
@@ -309,7 +304,6 @@ export type ItemDelistedReified<T extends PhantomTypeArgument> = Reified<
   ItemDelistedFields<T>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ItemDelisted<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk::ItemDelisted'
   static readonly $numTypeParams = 1
@@ -484,7 +478,6 @@ export function isItemListed(type: string): boolean {
   return type.startsWith('0x2::kiosk::ItemListed<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ItemListedFields<T extends PhantomTypeArgument> {
   kiosk: ToField<ID>
   id: ToField<ID>
@@ -496,7 +489,6 @@ export type ItemListedReified<T extends PhantomTypeArgument> = Reified<
   ItemListedFields<T>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ItemListed<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk::ItemListed'
   static readonly $numTypeParams = 1
@@ -678,7 +670,6 @@ export function isItemPurchased(type: string): boolean {
   return type.startsWith('0x2::kiosk::ItemPurchased<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ItemPurchasedFields<T extends PhantomTypeArgument> {
   kiosk: ToField<ID>
   id: ToField<ID>
@@ -690,7 +681,6 @@ export type ItemPurchasedReified<T extends PhantomTypeArgument> = Reified<
   ItemPurchasedFields<T>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ItemPurchased<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk::ItemPurchased'
   static readonly $numTypeParams = 1
@@ -872,7 +862,6 @@ export function isKiosk(type: string): boolean {
   return type === '0x2::kiosk::Kiosk'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface KioskFields {
   id: ToField<UID>
   profits: ToField<Balance<ToPhantom<SUI>>>
@@ -883,7 +872,6 @@ export interface KioskFields {
 
 export type KioskReified = Reified<Kiosk, KioskFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Kiosk {
   static readonly $typeName = '0x2::kiosk::Kiosk'
   static readonly $numTypeParams = 0
@@ -1043,7 +1031,6 @@ export function isKioskOwnerCap(type: string): boolean {
   return type === '0x2::kiosk::KioskOwnerCap'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface KioskOwnerCapFields {
   id: ToField<UID>
   for: ToField<ID>
@@ -1051,7 +1038,6 @@ export interface KioskOwnerCapFields {
 
 export type KioskOwnerCapReified = Reified<KioskOwnerCap, KioskOwnerCapFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class KioskOwnerCap {
   static readonly $typeName = '0x2::kiosk::KioskOwnerCap'
   static readonly $numTypeParams = 0
@@ -1184,7 +1170,6 @@ export function isListing(type: string): boolean {
   return type === '0x2::kiosk::Listing'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface ListingFields {
   id: ToField<ID>
   isExclusive: ToField<'bool'>
@@ -1192,7 +1177,6 @@ export interface ListingFields {
 
 export type ListingReified = Reified<Listing, ListingFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Listing {
   static readonly $typeName = '0x2::kiosk::Listing'
   static readonly $numTypeParams = 0
@@ -1325,14 +1309,12 @@ export function isLock(type: string): boolean {
   return type === '0x2::kiosk::Lock'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface LockFields {
   id: ToField<ID>
 }
 
 export type LockReified = Reified<Lock, LockFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Lock {
   static readonly $typeName = '0x2::kiosk::Lock'
   static readonly $numTypeParams = 0
@@ -1452,7 +1434,6 @@ export function isPurchaseCap(type: string): boolean {
   return type.startsWith('0x2::kiosk::PurchaseCap<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PurchaseCapFields<T extends PhantomTypeArgument> {
   id: ToField<UID>
   kioskId: ToField<ID>
@@ -1465,7 +1446,6 @@ export type PurchaseCapReified<T extends PhantomTypeArgument> = Reified<
   PurchaseCapFields<T>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PurchaseCap<T extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::kiosk::PurchaseCap'
   static readonly $numTypeParams = 1

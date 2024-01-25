@@ -19,14 +19,12 @@ export function isID(type: string): boolean {
   return type === '0x2::object::ID'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface IDFields {
   bytes: ToField<'address'>
 }
 
 export type IDReified = Reified<ID, IDFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class ID {
   static readonly $typeName = '0x2::object::ID'
   static readonly $numTypeParams = 0
@@ -149,14 +147,12 @@ export function isUID(type: string): boolean {
   return type === '0x2::object::UID'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface UIDFields {
   id: ToField<ID>
 }
 
 export type UIDReified = Reified<UID, UIDFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class UID {
   static readonly $typeName = '0x2::object::UID'
   static readonly $numTypeParams = 0

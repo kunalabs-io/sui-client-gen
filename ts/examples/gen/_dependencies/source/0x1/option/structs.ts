@@ -28,7 +28,6 @@ export function isOption(type: string): boolean {
   return type.startsWith('0x1::option::Option<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface OptionFields<Element extends TypeArgument> {
   vec: ToField<Vector<Element>>
 }
@@ -38,7 +37,6 @@ export type OptionReified<Element extends TypeArgument> = Reified<
   OptionFields<Element>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Option<Element extends TypeArgument> {
   static readonly $typeName = '0x1::option::Option'
   static readonly $numTypeParams = 1

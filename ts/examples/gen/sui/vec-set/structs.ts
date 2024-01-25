@@ -28,14 +28,12 @@ export function isVecSet(type: string): boolean {
   return type.startsWith('0x2::vec_set::VecSet<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface VecSetFields<K extends TypeArgument> {
   contents: ToField<Vector<K>>
 }
 
 export type VecSetReified<K extends TypeArgument> = Reified<VecSet<K>, VecSetFields<K>>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class VecSet<K extends TypeArgument> {
   static readonly $typeName = '0x2::vec_set::VecSet'
   static readonly $numTypeParams = 1

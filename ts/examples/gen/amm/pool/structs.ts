@@ -33,14 +33,12 @@ export function isAdminCap(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface AdminCapFields {
   id: ToField<UID>
 }
 
 export type AdminCapReified = Reified<AdminCap, AdminCapFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class AdminCap {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
@@ -166,7 +164,6 @@ export function isLP(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface LPFields<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
   dummyField: ToField<'bool'>
 }
@@ -176,7 +173,6 @@ export type LPReified<A extends PhantomTypeArgument, B extends PhantomTypeArgume
   LPFields<A, B>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP'
@@ -366,7 +362,6 @@ export function isPool(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PoolFields<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
   id: ToField<UID>
   balanceA: ToField<Balance<A>>
@@ -382,7 +377,6 @@ export type PoolReified<A extends PhantomTypeArgument, B extends PhantomTypeArgu
   PoolFields<A, B>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool'
@@ -636,14 +630,12 @@ export function isPoolCreationEvent(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PoolCreationEventFields {
   poolId: ToField<ID>
 }
 
 export type PoolCreationEventReified = Reified<PoolCreationEvent, PoolCreationEventFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PoolCreationEvent {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
@@ -776,7 +768,6 @@ export function isPoolRegistry(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PoolRegistryFields {
   id: ToField<UID>
   table: ToField<Table<ToPhantom<PoolRegistryItem>, 'bool'>>
@@ -784,7 +775,6 @@ export interface PoolRegistryFields {
 
 export type PoolRegistryReified = Reified<PoolRegistry, PoolRegistryFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PoolRegistry {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
@@ -933,7 +923,6 @@ export function isPoolRegistryItem(type: string): boolean {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface PoolRegistryItemFields {
   a: ToField<TypeName>
   b: ToField<TypeName>
@@ -941,7 +930,6 @@ export interface PoolRegistryItemFields {
 
 export type PoolRegistryItemReified = Reified<PoolRegistryItem, PoolRegistryItemFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class PoolRegistryItem {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'

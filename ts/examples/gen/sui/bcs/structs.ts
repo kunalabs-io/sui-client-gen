@@ -22,14 +22,12 @@ export function isBCS(type: string): boolean {
   return type === '0x2::bcs::BCS'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface BCSFields {
   bytes: ToField<Vector<'u8'>>
 }
 
 export type BCSReified = Reified<BCS, BCSFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class BCS {
   static readonly $typeName = '0x2::bcs::BCS'
   static readonly $numTypeParams = 0

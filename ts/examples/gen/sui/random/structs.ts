@@ -24,7 +24,6 @@ export function isRandom(type: string): boolean {
   return type === '0x2::random::Random'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface RandomFields {
   id: ToField<UID>
   inner: ToField<Versioned>
@@ -32,7 +31,6 @@ export interface RandomFields {
 
 export type RandomReified = Reified<Random, RandomFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Random {
   static readonly $typeName = '0x2::random::Random'
   static readonly $numTypeParams = 0
@@ -165,7 +163,6 @@ export function isRandomInner(type: string): boolean {
   return type === '0x2::random::RandomInner'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface RandomInnerFields {
   version: ToField<'u64'>
   epoch: ToField<'u64'>
@@ -175,7 +172,6 @@ export interface RandomInnerFields {
 
 export type RandomInnerReified = Reified<RandomInner, RandomInnerFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class RandomInner {
   static readonly $typeName = '0x2::random::RandomInner'
   static readonly $numTypeParams = 0

@@ -22,14 +22,12 @@ export function isString(type: string): boolean {
   return type === '0x1::string::String'
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface StringFields {
   bytes: ToField<Vector<'u8'>>
 }
 
 export type StringReified = Reified<String, StringFields>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class String {
   static readonly $typeName = '0x1::string::String'
   static readonly $numTypeParams = 0

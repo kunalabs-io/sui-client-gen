@@ -32,7 +32,6 @@ export function isCoin(type: string): boolean {
   return type.startsWith('0x2::coin::Coin<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface CoinFields<T0 extends PhantomTypeArgument> {
   id: ToField<UID>
   balance: ToField<Balance<T0>>
@@ -40,7 +39,6 @@ export interface CoinFields<T0 extends PhantomTypeArgument> {
 
 export type CoinReified<T0 extends PhantomTypeArgument> = Reified<Coin<T0>, CoinFields<T0>>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class Coin<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::Coin'
   static readonly $numTypeParams = 1
@@ -215,7 +213,6 @@ export function isCoinMetadata(type: string): boolean {
   return type.startsWith('0x2::coin::CoinMetadata<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface CoinMetadataFields<T0 extends PhantomTypeArgument> {
   id: ToField<UID>
   decimals: ToField<'u8'>
@@ -230,7 +227,6 @@ export type CoinMetadataReified<T0 extends PhantomTypeArgument> = Reified<
   CoinMetadataFields<T0>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class CoinMetadata<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::CoinMetadata'
   static readonly $numTypeParams = 1
@@ -433,7 +429,6 @@ export function isRegulatedCoinMetadata(type: string): boolean {
   return type.startsWith('0x2::coin::RegulatedCoinMetadata<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface RegulatedCoinMetadataFields<T0 extends PhantomTypeArgument> {
   id: ToField<UID>
   coinMetadataObject: ToField<ID>
@@ -445,7 +440,6 @@ export type RegulatedCoinMetadataReified<T0 extends PhantomTypeArgument> = Reifi
   RegulatedCoinMetadataFields<T0>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::RegulatedCoinMetadata'
   static readonly $numTypeParams = 1
@@ -630,7 +624,6 @@ export function isTreasuryCap(type: string): boolean {
   return type.startsWith('0x2::coin::TreasuryCap<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface TreasuryCapFields<T0 extends PhantomTypeArgument> {
   id: ToField<UID>
   totalSupply: ToField<Supply<T0>>
@@ -641,7 +634,6 @@ export type TreasuryCapReified<T0 extends PhantomTypeArgument> = Reified<
   TreasuryCapFields<T0>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class TreasuryCap<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::TreasuryCap'
   static readonly $numTypeParams = 1
@@ -816,14 +808,12 @@ export function isDenyCap(type: string): boolean {
   return type.startsWith('0x2::coin::DenyCap<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface DenyCapFields<T0 extends PhantomTypeArgument> {
   id: ToField<UID>
 }
 
 export type DenyCapReified<T0 extends PhantomTypeArgument> = Reified<DenyCap<T0>, DenyCapFields<T0>>
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class DenyCap<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::DenyCap'
   static readonly $numTypeParams = 1
@@ -987,7 +977,6 @@ export function isCurrencyCreated(type: string): boolean {
   return type.startsWith('0x2::coin::CurrencyCreated<')
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface CurrencyCreatedFields<T0 extends PhantomTypeArgument> {
   decimals: ToField<'u8'>
 }
@@ -997,7 +986,6 @@ export type CurrencyCreatedReified<T0 extends PhantomTypeArgument> = Reified<
   CurrencyCreatedFields<T0>
 >
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export class CurrencyCreated<T0 extends PhantomTypeArgument> {
   static readonly $typeName = '0x2::coin::CurrencyCreated'
   static readonly $numTypeParams = 1
