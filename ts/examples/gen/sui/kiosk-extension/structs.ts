@@ -5,12 +5,14 @@ import {
   Reified,
   ToField,
   ToPhantomTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Bag } from '../bag/structs'
@@ -73,6 +75,13 @@ export class Extension {
 
   static get r() {
     return Extension.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Extension>> {
+    return phantom(Extension.reified())
+  }
+  static get p() {
+    return Extension.phantom()
   }
 
   static get bcs() {
@@ -222,6 +231,15 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> {
 
   static get r() {
     return ExtensionKey.reified
+  }
+
+  static phantom<Ext extends PhantomReified<PhantomTypeArgument>>(
+    Ext: Ext
+  ): PhantomReified<ToTypeStr<ExtensionKey<ToPhantomTypeArgument<Ext>>>> {
+    return phantom(ExtensionKey.reified(Ext))
+  }
+  static get p() {
+    return ExtensionKey.phantom
   }
 
   static get bcs() {

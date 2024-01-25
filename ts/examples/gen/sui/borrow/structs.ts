@@ -1,5 +1,6 @@
 import { Option } from '../../_dependencies/source/0x1/option/structs'
 import {
+  PhantomReified,
   Reified,
   ToField,
   ToTypeArgument,
@@ -12,6 +13,7 @@ import {
   decodeFromJSONField,
   extractType,
   fieldToJSON,
+  phantom,
   toBcs,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
@@ -72,6 +74,13 @@ export class Borrow {
 
   static get r() {
     return Borrow.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Borrow>> {
+    return phantom(Borrow.reified())
+  }
+  static get p() {
+    return Borrow.phantom()
   }
 
   static get bcs() {
@@ -219,6 +228,15 @@ export class Referent<T extends TypeArgument> {
 
   static get r() {
     return Referent.reified
+  }
+
+  static phantom<T extends Reified<TypeArgument, any>>(
+    T: T
+  ): PhantomReified<ToTypeStr<Referent<ToTypeArgument<T>>>> {
+    return phantom(Referent.reified(T))
+  }
+  static get p() {
+    return Referent.phantom
   }
 
   static get bcs() {

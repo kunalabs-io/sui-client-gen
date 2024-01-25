@@ -1,12 +1,15 @@
 import * as reified from '../../_framework/reified'
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
@@ -67,6 +70,13 @@ export class Random {
 
   static get r() {
     return Random.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Random>> {
+    return phantom(Random.reified())
+  }
+  static get p() {
+    return Random.phantom()
   }
 
   static get bcs() {
@@ -205,6 +215,13 @@ export class RandomInner {
 
   static get r() {
     return RandomInner.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<RandomInner>> {
+    return phantom(RandomInner.reified())
+  }
+  static get p() {
+    return RandomInner.phantom()
   }
 
   static get bcs() {

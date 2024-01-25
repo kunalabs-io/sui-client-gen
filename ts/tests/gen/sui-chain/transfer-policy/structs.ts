@@ -6,12 +6,14 @@ import {
   Reified,
   ToField,
   ToPhantomTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
+  phantom,
   ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
@@ -85,6 +87,15 @@ export class RuleKey<T0 extends PhantomTypeArgument> {
 
   static get r() {
     return RuleKey.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<RuleKey<ToPhantomTypeArgument<T0>>>> {
+    return phantom(RuleKey.reified(T0))
+  }
+  static get p() {
+    return RuleKey.phantom
   }
 
   static get bcs() {
@@ -261,6 +272,15 @@ export class TransferRequest<T0 extends PhantomTypeArgument> {
 
   static get r() {
     return TransferRequest.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<TransferRequest<ToPhantomTypeArgument<T0>>>> {
+    return phantom(TransferRequest.reified(T0))
+  }
+  static get p() {
+    return TransferRequest.phantom
   }
 
   static get bcs() {
@@ -451,6 +471,15 @@ export class TransferPolicy<T0 extends PhantomTypeArgument> {
     return TransferPolicy.reified
   }
 
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<TransferPolicy<ToPhantomTypeArgument<T0>>>> {
+    return phantom(TransferPolicy.reified(T0))
+  }
+  static get p() {
+    return TransferPolicy.phantom
+  }
+
   static get bcs() {
     return bcs.struct('TransferPolicy', {
       id: UID.bcs,
@@ -637,6 +666,15 @@ export class TransferPolicyCap<T0 extends PhantomTypeArgument> {
     return TransferPolicyCap.reified
   }
 
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<TransferPolicyCap<ToPhantomTypeArgument<T0>>>> {
+    return phantom(TransferPolicyCap.reified(T0))
+  }
+  static get p() {
+    return TransferPolicyCap.phantom
+  }
+
   static get bcs() {
     return bcs.struct('TransferPolicyCap', {
       id: UID.bcs,
@@ -812,6 +850,15 @@ export class TransferPolicyCreated<T0 extends PhantomTypeArgument> {
     return TransferPolicyCreated.reified
   }
 
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<TransferPolicyCreated<ToPhantomTypeArgument<T0>>>> {
+    return phantom(TransferPolicyCreated.reified(T0))
+  }
+  static get p() {
+    return TransferPolicyCreated.phantom
+  }
+
   static get bcs() {
     return bcs.struct('TransferPolicyCreated', {
       id: ID.bcs,
@@ -982,6 +1029,15 @@ export class TransferPolicyDestroyed<T0 extends PhantomTypeArgument> {
 
   static get r() {
     return TransferPolicyDestroyed.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<TransferPolicyDestroyed<ToPhantomTypeArgument<T0>>>> {
+    return phantom(TransferPolicyDestroyed.reified(T0))
+  }
+  static get p() {
+    return TransferPolicyDestroyed.phantom
   }
 
   static get bcs() {

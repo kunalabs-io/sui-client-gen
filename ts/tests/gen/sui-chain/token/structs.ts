@@ -5,6 +5,7 @@ import {
   Reified,
   ToField,
   ToPhantomTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -12,6 +13,7 @@ import {
   decodeFromJSONField,
   extractType,
   fieldToJSON,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Option } from '../../move-stdlib-chain/option/structs'
@@ -89,6 +91,15 @@ export class Token<T0 extends PhantomTypeArgument> {
 
   static get r() {
     return Token.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<Token<ToPhantomTypeArgument<T0>>>> {
+    return phantom(Token.reified(T0))
+  }
+  static get p() {
+    return Token.phantom
   }
 
   static get bcs() {
@@ -266,6 +277,15 @@ export class TokenPolicyCap<T0 extends PhantomTypeArgument> {
     return TokenPolicyCap.reified
   }
 
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<TokenPolicyCap<ToPhantomTypeArgument<T0>>>> {
+    return phantom(TokenPolicyCap.reified(T0))
+  }
+  static get p() {
+    return TokenPolicyCap.phantom
+  }
+
   static get bcs() {
     return bcs.struct('TokenPolicyCap', {
       id: UID.bcs,
@@ -439,6 +459,15 @@ export class TokenPolicy<T0 extends PhantomTypeArgument> {
 
   static get r() {
     return TokenPolicy.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<TokenPolicy<ToPhantomTypeArgument<T0>>>> {
+    return phantom(TokenPolicy.reified(T0))
+  }
+  static get p() {
+    return TokenPolicy.phantom
   }
 
   static get bcs() {
@@ -640,6 +669,15 @@ export class ActionRequest<T0 extends PhantomTypeArgument> {
 
   static get r() {
     return ActionRequest.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<ActionRequest<ToPhantomTypeArgument<T0>>>> {
+    return phantom(ActionRequest.reified(T0))
+  }
+  static get p() {
+    return ActionRequest.phantom
   }
 
   static get bcs() {
@@ -854,6 +892,15 @@ export class RuleKey<T0 extends PhantomTypeArgument> {
     return RuleKey.reified
   }
 
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<RuleKey<ToPhantomTypeArgument<T0>>>> {
+    return phantom(RuleKey.reified(T0))
+  }
+  static get p() {
+    return RuleKey.phantom
+  }
+
   static get bcs() {
     return bcs.struct('RuleKey', {
       is_protected: bcs.bool(),
@@ -1023,6 +1070,15 @@ export class TokenPolicyCreated<T0 extends PhantomTypeArgument> {
 
   static get r() {
     return TokenPolicyCreated.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<TokenPolicyCreated<ToPhantomTypeArgument<T0>>>> {
+    return phantom(TokenPolicyCreated.reified(T0))
+  }
+  static get p() {
+    return TokenPolicyCreated.phantom
   }
 
   static get bcs() {

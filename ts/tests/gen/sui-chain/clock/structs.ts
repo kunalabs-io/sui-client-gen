@@ -1,9 +1,12 @@
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
@@ -63,6 +66,13 @@ export class Clock {
 
   static get r() {
     return Clock.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Clock>> {
+    return phantom(Clock.reified())
+  }
+  static get p() {
+    return Clock.phantom()
   }
 
   static get bcs() {

@@ -17,6 +17,7 @@ import {
   decodeFromJSONField,
   extractType,
   fieldToJSON,
+  phantom,
   toBcs,
   ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
@@ -86,6 +87,13 @@ export class Bar {
 
   static get r() {
     return Bar.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Bar>> {
+    return phantom(Bar.reified())
+  }
+  static get p() {
+    return Bar.phantom()
   }
 
   static get bcs() {
@@ -210,6 +218,13 @@ export class Dummy {
 
   static get r() {
     return Dummy.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Dummy>> {
+    return phantom(Dummy.reified())
+  }
+  static get p() {
+    return Dummy.phantom()
   }
 
   static get bcs() {
@@ -388,6 +403,15 @@ export class Foo<T extends TypeArgument> {
 
   static get r() {
     return Foo.reified
+  }
+
+  static phantom<T extends Reified<TypeArgument, any>>(
+    T: T
+  ): PhantomReified<ToTypeStr<Foo<ToTypeArgument<T>>>> {
+    return phantom(Foo.reified(T))
+  }
+  static get p() {
+    return Foo.phantom
   }
 
   static get bcs() {
@@ -730,6 +754,15 @@ export class WithGenericField<T extends TypeArgument> {
     return WithGenericField.reified
   }
 
+  static phantom<T extends Reified<TypeArgument, any>>(
+    T: T
+  ): PhantomReified<ToTypeStr<WithGenericField<ToTypeArgument<T>>>> {
+    return phantom(WithGenericField.reified(T))
+  }
+  static get p() {
+    return WithGenericField.phantom
+  }
+
   static get bcs() {
     return <T extends BcsType<any>>(T: T) =>
       bcs.struct(`WithGenericField<${T.name}>`, {
@@ -952,6 +985,19 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
 
   static get r() {
     return WithSpecialTypes.reified
+  }
+
+  static phantom<
+    T extends PhantomReified<PhantomTypeArgument>,
+    U extends Reified<TypeArgument, any>,
+  >(
+    T: T,
+    U: U
+  ): PhantomReified<ToTypeStr<WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>>>> {
+    return phantom(WithSpecialTypes.reified(T, U))
+  }
+  static get p() {
+    return WithSpecialTypes.phantom
   }
 
   static get bcs() {
@@ -1357,6 +1403,44 @@ export class WithSpecialTypesAsGenerics<
 
   static get r() {
     return WithSpecialTypesAsGenerics.reified
+  }
+
+  static phantom<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends Reified<TypeArgument, any>,
+    T2 extends Reified<TypeArgument, any>,
+    T3 extends Reified<TypeArgument, any>,
+    T4 extends Reified<TypeArgument, any>,
+    T5 extends Reified<TypeArgument, any>,
+    T6 extends Reified<TypeArgument, any>,
+    T7 extends Reified<TypeArgument, any>,
+  >(
+    T0: T0,
+    T1: T1,
+    T2: T2,
+    T3: T3,
+    T4: T4,
+    T5: T5,
+    T6: T6,
+    T7: T7
+  ): PhantomReified<
+    ToTypeStr<
+      WithSpecialTypesAsGenerics<
+        ToTypeArgument<T0>,
+        ToTypeArgument<T1>,
+        ToTypeArgument<T2>,
+        ToTypeArgument<T3>,
+        ToTypeArgument<T4>,
+        ToTypeArgument<T5>,
+        ToTypeArgument<T6>,
+        ToTypeArgument<T7>
+      >
+    >
+  > {
+    return phantom(WithSpecialTypesAsGenerics.reified(T0, T1, T2, T3, T4, T5, T6, T7))
+  }
+  static get p() {
+    return WithSpecialTypesAsGenerics.phantom
   }
 
   static get bcs() {
@@ -1787,6 +1871,15 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> {
     return WithSpecialTypesInVectors.reified
   }
 
+  static phantom<T extends Reified<TypeArgument, any>>(
+    T: T
+  ): PhantomReified<ToTypeStr<WithSpecialTypesInVectors<ToTypeArgument<T>>>> {
+    return phantom(WithSpecialTypesInVectors.reified(T))
+  }
+  static get p() {
+    return WithSpecialTypesInVectors.phantom
+  }
+
   static get bcs() {
     return <T extends BcsType<any>>(T: T) =>
       bcs.struct(`WithSpecialTypesInVectors<${T.name}>`, {
@@ -2023,6 +2116,16 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> {
 
   static get r() {
     return WithTwoGenerics.reified
+  }
+
+  static phantom<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
+    T: T,
+    U: U
+  ): PhantomReified<ToTypeStr<WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>>>> {
+    return phantom(WithTwoGenerics.reified(T, U))
+  }
+  static get p() {
+    return WithTwoGenerics.phantom
   }
 
   static get bcs() {

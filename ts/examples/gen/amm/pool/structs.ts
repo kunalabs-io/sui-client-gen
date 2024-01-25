@@ -7,12 +7,14 @@ import {
   Reified,
   ToField,
   ToPhantomTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
+  phantom,
   ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
@@ -78,6 +80,13 @@ export class AdminCap {
 
   static get r() {
     return AdminCap.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<AdminCap>> {
+    return phantom(AdminCap.reified())
+  }
+  static get p() {
+    return AdminCap.phantom()
   }
 
   static get bcs() {
@@ -220,6 +229,16 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
 
   static get r() {
     return LP.reified
+  }
+
+  static phantom<
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
+  >(A: A, B: B): PhantomReified<ToTypeStr<LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>>> {
+    return phantom(LP.reified(A, B))
+  }
+  static get p() {
+    return LP.phantom
   }
 
   static get bcs() {
@@ -429,6 +448,19 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> 
 
   static get r() {
     return Pool.reified
+  }
+
+  static phantom<
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
+  >(
+    A: A,
+    B: B
+  ): PhantomReified<ToTypeStr<Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>>> {
+    return phantom(Pool.reified(A, B))
+  }
+  static get p() {
+    return Pool.phantom
   }
 
   static get bcs() {
@@ -653,6 +685,13 @@ export class PoolCreationEvent {
     return PoolCreationEvent.reified()
   }
 
+  static phantom(): PhantomReified<ToTypeStr<PoolCreationEvent>> {
+    return phantom(PoolCreationEvent.reified())
+  }
+  static get p() {
+    return PoolCreationEvent.phantom()
+  }
+
   static get bcs() {
     return bcs.struct('PoolCreationEvent', {
       pool_id: ID.bcs,
@@ -785,6 +824,13 @@ export class PoolRegistry {
 
   static get r() {
     return PoolRegistry.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<PoolRegistry>> {
+    return phantom(PoolRegistry.reified())
+  }
+  static get p() {
+    return PoolRegistry.phantom()
   }
 
   static get bcs() {
@@ -933,6 +979,13 @@ export class PoolRegistryItem {
 
   static get r() {
     return PoolRegistryItem.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<PoolRegistryItem>> {
+    return phantom(PoolRegistryItem.reified())
+  }
+  static get p() {
+    return PoolRegistryItem.phantom()
   }
 
   static get bcs() {

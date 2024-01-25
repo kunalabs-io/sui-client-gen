@@ -6,12 +6,14 @@ import {
   Reified,
   ToField,
   ToPhantomTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Table } from '../table/structs'
@@ -83,6 +85,15 @@ export class TableVec<Element extends PhantomTypeArgument> {
 
   static get r() {
     return TableVec.reified
+  }
+
+  static phantom<Element extends PhantomReified<PhantomTypeArgument>>(
+    Element: Element
+  ): PhantomReified<ToTypeStr<TableVec<ToPhantomTypeArgument<Element>>>> {
+    return phantom(TableVec.reified(Element))
+  }
+  static get p() {
+    return TableVec.phantom
   }
 
   static get bcs() {

@@ -1,9 +1,12 @@
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
@@ -63,6 +66,13 @@ export class Bag {
 
   static get r() {
     return Bag.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Bag>> {
+    return phantom(Bag.reified())
+  }
+  static get p() {
+    return Bag.phantom()
   }
 
   static get bcs() {

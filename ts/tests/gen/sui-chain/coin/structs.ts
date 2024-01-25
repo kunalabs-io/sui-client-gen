@@ -5,6 +5,7 @@ import {
   Reified,
   ToField,
   ToPhantomTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -12,6 +13,7 @@ import {
   decodeFromJSONField,
   extractType,
   fieldToJSON,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String as String1 } from '../../move-stdlib-chain/ascii/structs'
@@ -88,6 +90,15 @@ export class Coin<T0 extends PhantomTypeArgument> {
 
   static get r() {
     return Coin.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<Coin<ToPhantomTypeArgument<T0>>>> {
+    return phantom(Coin.reified(T0))
+  }
+  static get p() {
+    return Coin.phantom
   }
 
   static get bcs() {
@@ -275,6 +286,15 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> {
 
   static get r() {
     return CoinMetadata.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<CoinMetadata<ToPhantomTypeArgument<T0>>>> {
+    return phantom(CoinMetadata.reified(T0))
+  }
+  static get p() {
+    return CoinMetadata.phantom
   }
 
   static get bcs() {
@@ -476,6 +496,15 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> {
     return RegulatedCoinMetadata.reified
   }
 
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<RegulatedCoinMetadata<ToPhantomTypeArgument<T0>>>> {
+    return phantom(RegulatedCoinMetadata.reified(T0))
+  }
+  static get p() {
+    return RegulatedCoinMetadata.phantom
+  }
+
   static get bcs() {
     return bcs.struct('RegulatedCoinMetadata', {
       id: UID.bcs,
@@ -655,6 +684,15 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> {
     return TreasuryCap.reified
   }
 
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<TreasuryCap<ToPhantomTypeArgument<T0>>>> {
+    return phantom(TreasuryCap.reified(T0))
+  }
+  static get p() {
+    return TreasuryCap.phantom
+  }
+
   static get bcs() {
     return bcs.struct('TreasuryCap', {
       id: UID.bcs,
@@ -824,6 +862,15 @@ export class DenyCap<T0 extends PhantomTypeArgument> {
     return DenyCap.reified
   }
 
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<DenyCap<ToPhantomTypeArgument<T0>>>> {
+    return phantom(DenyCap.reified(T0))
+  }
+  static get p() {
+    return DenyCap.phantom
+  }
+
   static get bcs() {
     return bcs.struct('DenyCap', {
       id: UID.bcs,
@@ -985,6 +1032,15 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> {
 
   static get r() {
     return CurrencyCreated.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<CurrencyCreated<ToPhantomTypeArgument<T0>>>> {
+    return phantom(CurrencyCreated.reified(T0))
+  }
+  static get p() {
+    return CurrencyCreated.phantom
   }
 
   static get bcs() {

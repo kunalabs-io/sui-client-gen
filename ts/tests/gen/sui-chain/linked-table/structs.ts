@@ -15,6 +15,7 @@ import {
   decodeFromJSONField,
   extractType,
   fieldToJSON,
+  phantom,
   toBcs,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
@@ -104,6 +105,19 @@ export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument
 
   static get r() {
     return LinkedTable.reified
+  }
+
+  static phantom<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends PhantomReified<PhantomTypeArgument>,
+  >(
+    T0: T0,
+    T1: T1
+  ): PhantomReified<ToTypeStr<LinkedTable<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>>>> {
+    return phantom(LinkedTable.reified(T0, T1))
+  }
+  static get p() {
+    return LinkedTable.phantom
   }
 
   static get bcs() {
@@ -314,6 +328,16 @@ export class Node<T0 extends TypeArgument, T1 extends TypeArgument> {
 
   static get r() {
     return Node.reified
+  }
+
+  static phantom<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
+    T0: T0,
+    T1: T1
+  ): PhantomReified<ToTypeStr<Node<ToTypeArgument<T0>, ToTypeArgument<T1>>>> {
+    return phantom(Node.reified(T0, T1))
+  }
+  static get p() {
+    return Node.phantom
   }
 
   static get bcs() {

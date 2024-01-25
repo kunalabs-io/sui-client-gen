@@ -1,9 +1,12 @@
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/ascii/structs'
@@ -60,6 +63,13 @@ export class Url {
 
   static get r() {
     return Url.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Url>> {
+    return phantom(Url.reified())
+  }
+  static get p() {
+    return Url.phantom()
   }
 
   static get bcs() {

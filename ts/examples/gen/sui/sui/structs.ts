@@ -1,9 +1,12 @@
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs, fromB64 } from '@mysten/bcs'
@@ -59,6 +62,13 @@ export class SUI {
 
   static get r() {
     return SUI.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<SUI>> {
+    return phantom(SUI.reified())
+  }
+  static get p() {
+    return SUI.phantom()
   }
 
   static get bcs() {

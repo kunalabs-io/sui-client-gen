@@ -1,12 +1,15 @@
 import * as reified from '../../_framework/reified'
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs, fromB64 } from '@mysten/bcs'
@@ -62,6 +65,13 @@ export class String {
 
   static get r() {
     return String.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<String>> {
+    return phantom(String.reified())
+  }
+  static get p() {
+    return String.phantom()
   }
 
   static get bcs() {
@@ -182,6 +192,13 @@ export class Char {
 
   static get r() {
     return Char.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Char>> {
+    return phantom(Char.reified())
+  }
+  static get p() {
+    return Char.phantom()
   }
 
   static get bcs() {

@@ -17,6 +17,7 @@ import {
   decodeFromJSONField,
   extractType,
   fieldToJSON,
+  phantom,
   toBcs,
   ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
@@ -88,6 +89,13 @@ export class Dummy {
 
   static get r() {
     return Dummy.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Dummy>> {
+    return phantom(Dummy.reified())
+  }
+  static get p() {
+    return Dummy.phantom()
   }
 
   static get bcs() {
@@ -229,6 +237,15 @@ export class WithGenericField<T0 extends TypeArgument> {
 
   static get r() {
     return WithGenericField.reified
+  }
+
+  static phantom<T0 extends Reified<TypeArgument, any>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<WithGenericField<ToTypeArgument<T0>>>> {
+    return phantom(WithGenericField.reified(T0))
+  }
+  static get p() {
+    return WithGenericField.phantom
   }
 
   static get bcs() {
@@ -398,6 +415,13 @@ export class Bar {
     return Bar.reified()
   }
 
+  static phantom(): PhantomReified<ToTypeStr<Bar>> {
+    return phantom(Bar.reified())
+  }
+  static get p() {
+    return Bar.phantom()
+  }
+
   static get bcs() {
     return bcs.struct('Bar', {
       value: bcs.u64(),
@@ -539,6 +563,16 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument> {
 
   static get r() {
     return WithTwoGenerics.reified
+  }
+
+  static phantom<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
+    T0: T0,
+    T1: T1
+  ): PhantomReified<ToTypeStr<WithTwoGenerics<ToTypeArgument<T0>, ToTypeArgument<T1>>>> {
+    return phantom(WithTwoGenerics.reified(T0, T1))
+  }
+  static get p() {
+    return WithTwoGenerics.phantom
   }
 
   static get bcs() {
@@ -764,6 +798,15 @@ export class Foo<T0 extends TypeArgument> {
 
   static get r() {
     return Foo.reified
+  }
+
+  static phantom<T0 extends Reified<TypeArgument, any>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<Foo<ToTypeArgument<T0>>>> {
+    return phantom(Foo.reified(T0))
+  }
+  static get p() {
+    return Foo.phantom
   }
 
   static get bcs() {
@@ -1145,6 +1188,19 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
 
   static get r() {
     return WithSpecialTypes.reified
+  }
+
+  static phantom<
+    T0 extends PhantomReified<PhantomTypeArgument>,
+    T1 extends Reified<TypeArgument, any>,
+  >(
+    T0: T0,
+    T1: T1
+  ): PhantomReified<ToTypeStr<WithSpecialTypes<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>>>> {
+    return phantom(WithSpecialTypes.reified(T0, T1))
+  }
+  static get p() {
+    return WithSpecialTypes.phantom
   }
 
   static get bcs() {
@@ -1553,6 +1609,44 @@ export class WithSpecialTypesAsGenerics<
 
   static get r() {
     return WithSpecialTypesAsGenerics.reified
+  }
+
+  static phantom<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends Reified<TypeArgument, any>,
+    T2 extends Reified<TypeArgument, any>,
+    T3 extends Reified<TypeArgument, any>,
+    T4 extends Reified<TypeArgument, any>,
+    T5 extends Reified<TypeArgument, any>,
+    T6 extends Reified<TypeArgument, any>,
+    T7 extends Reified<TypeArgument, any>,
+  >(
+    T0: T0,
+    T1: T1,
+    T2: T2,
+    T3: T3,
+    T4: T4,
+    T5: T5,
+    T6: T6,
+    T7: T7
+  ): PhantomReified<
+    ToTypeStr<
+      WithSpecialTypesAsGenerics<
+        ToTypeArgument<T0>,
+        ToTypeArgument<T1>,
+        ToTypeArgument<T2>,
+        ToTypeArgument<T3>,
+        ToTypeArgument<T4>,
+        ToTypeArgument<T5>,
+        ToTypeArgument<T6>,
+        ToTypeArgument<T7>
+      >
+    >
+  > {
+    return phantom(WithSpecialTypesAsGenerics.reified(T0, T1, T2, T3, T4, T5, T6, T7))
+  }
+  static get p() {
+    return WithSpecialTypesAsGenerics.phantom
   }
 
   static get bcs() {
@@ -1981,6 +2075,15 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> {
 
   static get r() {
     return WithSpecialTypesInVectors.reified
+  }
+
+  static phantom<T0 extends Reified<TypeArgument, any>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<WithSpecialTypesInVectors<ToTypeArgument<T0>>>> {
+    return phantom(WithSpecialTypesInVectors.reified(T0))
+  }
+  static get p() {
+    return WithSpecialTypesInVectors.phantom
   }
 
   static get bcs() {

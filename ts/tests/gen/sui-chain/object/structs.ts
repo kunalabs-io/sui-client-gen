@@ -1,9 +1,12 @@
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs, fromB64, fromHEX, toHEX } from '@mysten/bcs'
@@ -59,6 +62,13 @@ export class ID {
 
   static get r() {
     return ID.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<ID>> {
+    return phantom(ID.reified())
+  }
+  static get p() {
+    return ID.phantom()
   }
 
   static get bcs() {
@@ -180,6 +190,13 @@ export class UID {
 
   static get r() {
     return UID.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<UID>> {
+    return phantom(UID.reified())
+  }
+  static get p() {
+    return UID.phantom()
   }
 
   static get bcs() {

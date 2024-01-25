@@ -1,5 +1,6 @@
 import * as reified from '../../_framework/reified'
 import {
+  PhantomReified,
   Reified,
   ToField,
   ToTypeArgument,
@@ -13,6 +14,7 @@ import {
   decodeFromJSONField,
   extractType,
   fieldToJSON,
+  phantom,
   toBcs,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
@@ -88,6 +90,16 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> {
 
   static get r() {
     return Entry.reified
+  }
+
+  static phantom<K extends Reified<TypeArgument, any>, V extends Reified<TypeArgument, any>>(
+    K: K,
+    V: V
+  ): PhantomReified<ToTypeStr<Entry<ToTypeArgument<K>, ToTypeArgument<V>>>> {
+    return phantom(Entry.reified(K, V))
+  }
+  static get p() {
+    return Entry.phantom
   }
 
   static get bcs() {
@@ -262,6 +274,16 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> {
 
   static get r() {
     return VecMap.reified
+  }
+
+  static phantom<K extends Reified<TypeArgument, any>, V extends Reified<TypeArgument, any>>(
+    K: K,
+    V: V
+  ): PhantomReified<ToTypeStr<VecMap<ToTypeArgument<K>, ToTypeArgument<V>>>> {
+    return phantom(VecMap.reified(K, V))
+  }
+  static get p() {
+    return VecMap.phantom
   }
 
   static get bcs() {

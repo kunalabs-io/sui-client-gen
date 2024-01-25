@@ -1,5 +1,6 @@
 import * as reified from '../../_framework/reified'
 import {
+  PhantomReified,
   Reified,
   ToField,
   ToTypeArgument,
@@ -13,6 +14,7 @@ import {
   decodeFromJSONField,
   extractType,
   fieldToJSON,
+  phantom,
   toBcs,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
@@ -84,6 +86,15 @@ export class Entry<T extends TypeArgument> {
 
   static get r() {
     return Entry.reified
+  }
+
+  static phantom<T extends Reified<TypeArgument, any>>(
+    T: T
+  ): PhantomReified<ToTypeStr<Entry<ToTypeArgument<T>>>> {
+    return phantom(Entry.reified(T))
+  }
+  static get p() {
+    return Entry.phantom
   }
 
   static get bcs() {
@@ -256,6 +267,15 @@ export class PriorityQueue<T extends TypeArgument> {
 
   static get r() {
     return PriorityQueue.reified
+  }
+
+  static phantom<T extends Reified<TypeArgument, any>>(
+    T: T
+  ): PhantomReified<ToTypeStr<PriorityQueue<ToTypeArgument<T>>>> {
+    return phantom(PriorityQueue.reified(T))
+  }
+  static get p() {
+    return PriorityQueue.phantom
   }
 
   static get bcs() {

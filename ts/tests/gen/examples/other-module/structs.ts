@@ -1,9 +1,12 @@
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs, fromB64 } from '@mysten/bcs'
@@ -66,6 +69,13 @@ export class AddedInAnUpgrade {
 
   static get r() {
     return AddedInAnUpgrade.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<AddedInAnUpgrade>> {
+    return phantom(AddedInAnUpgrade.reified())
+  }
+  static get p() {
+    return AddedInAnUpgrade.phantom()
   }
 
   static get bcs() {
@@ -198,6 +208,13 @@ export class StructFromOtherModule {
 
   static get r() {
     return StructFromOtherModule.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<StructFromOtherModule>> {
+    return phantom(StructFromOtherModule.reified())
+  }
+  static get p() {
+    return StructFromOtherModule.phantom()
   }
 
   static get bcs() {

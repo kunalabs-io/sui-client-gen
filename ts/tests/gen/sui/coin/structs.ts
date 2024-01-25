@@ -5,6 +5,7 @@ import {
   Reified,
   ToField,
   ToPhantomTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -12,6 +13,7 @@ import {
   decodeFromJSONField,
   extractType,
   fieldToJSON,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String as String1 } from '../../move-stdlib/ascii/structs'
@@ -88,6 +90,15 @@ export class Coin<T extends PhantomTypeArgument> {
 
   static get r() {
     return Coin.reified
+  }
+
+  static phantom<T extends PhantomReified<PhantomTypeArgument>>(
+    T: T
+  ): PhantomReified<ToTypeStr<Coin<ToPhantomTypeArgument<T>>>> {
+    return phantom(Coin.reified(T))
+  }
+  static get p() {
+    return Coin.phantom
   }
 
   static get bcs() {
@@ -272,6 +283,15 @@ export class CoinMetadata<T extends PhantomTypeArgument> {
 
   static get r() {
     return CoinMetadata.reified
+  }
+
+  static phantom<T extends PhantomReified<PhantomTypeArgument>>(
+    T: T
+  ): PhantomReified<ToTypeStr<CoinMetadata<ToPhantomTypeArgument<T>>>> {
+    return phantom(CoinMetadata.reified(T))
+  }
+  static get p() {
+    return CoinMetadata.phantom
   }
 
   static get bcs() {
@@ -466,6 +486,15 @@ export class CurrencyCreated<T extends PhantomTypeArgument> {
     return CurrencyCreated.reified
   }
 
+  static phantom<T extends PhantomReified<PhantomTypeArgument>>(
+    T: T
+  ): PhantomReified<ToTypeStr<CurrencyCreated<ToPhantomTypeArgument<T>>>> {
+    return phantom(CurrencyCreated.reified(T))
+  }
+  static get p() {
+    return CurrencyCreated.phantom
+  }
+
   static get bcs() {
     return bcs.struct('CurrencyCreated', {
       decimals: bcs.u8(),
@@ -631,6 +660,15 @@ export class TreasuryCap<T extends PhantomTypeArgument> {
 
   static get r() {
     return TreasuryCap.reified
+  }
+
+  static phantom<T extends PhantomReified<PhantomTypeArgument>>(
+    T: T
+  ): PhantomReified<ToTypeStr<TreasuryCap<ToPhantomTypeArgument<T>>>> {
+    return phantom(TreasuryCap.reified(T))
+  }
+  static get p() {
+    return TreasuryCap.phantom
   }
 
   static get bcs() {

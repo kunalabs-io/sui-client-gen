@@ -1,12 +1,15 @@
 import * as reified from '../../_framework/reified'
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/string/structs'
@@ -70,6 +73,13 @@ export class AuthenticatorState {
 
   static get r() {
     return AuthenticatorState.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<AuthenticatorState>> {
+    return phantom(AuthenticatorState.reified())
+  }
+  static get p() {
+    return AuthenticatorState.phantom()
   }
 
   static get bcs() {
@@ -206,6 +216,13 @@ export class AuthenticatorStateInner {
 
   static get r() {
     return AuthenticatorStateInner.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<AuthenticatorStateInner>> {
+    return phantom(AuthenticatorStateInner.reified())
+  }
+  static get p() {
+    return AuthenticatorStateInner.phantom()
   }
 
   static get bcs() {
@@ -356,6 +373,13 @@ export class JWK {
     return JWK.reified()
   }
 
+  static phantom(): PhantomReified<ToTypeStr<JWK>> {
+    return phantom(JWK.reified())
+  }
+  static get p() {
+    return JWK.phantom()
+  }
+
   static get bcs() {
     return bcs.struct('JWK', {
       kty: String.bcs,
@@ -498,6 +522,13 @@ export class JwkId {
     return JwkId.reified()
   }
 
+  static phantom(): PhantomReified<ToTypeStr<JwkId>> {
+    return phantom(JwkId.reified())
+  }
+  static get p() {
+    return JwkId.phantom()
+  }
+
   static get bcs() {
     return bcs.struct('JwkId', {
       iss: String.bcs,
@@ -634,6 +665,13 @@ export class ActiveJwk {
 
   static get r() {
     return ActiveJwk.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<ActiveJwk>> {
+    return phantom(ActiveJwk.reified())
+  }
+  static get p() {
+    return ActiveJwk.phantom()
   }
 
   static get bcs() {

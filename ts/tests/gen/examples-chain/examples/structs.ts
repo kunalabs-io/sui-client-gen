@@ -1,12 +1,15 @@
 import * as reified from '../../_framework/reified'
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/ascii/structs'
@@ -73,6 +76,13 @@ export class ExampleStruct {
 
   static get r() {
     return ExampleStruct.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<ExampleStruct>> {
+    return phantom(ExampleStruct.reified())
+  }
+  static get p() {
+    return ExampleStruct.phantom()
   }
 
   static get bcs() {
@@ -226,6 +236,13 @@ export class SpecialTypesStruct {
 
   static get r() {
     return SpecialTypesStruct.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<SpecialTypesStruct>> {
+    return phantom(SpecialTypesStruct.reified())
+  }
+  static get p() {
+    return SpecialTypesStruct.phantom()
   }
 
   static get bcs() {

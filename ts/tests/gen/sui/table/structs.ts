@@ -5,12 +5,14 @@ import {
   Reified,
   ToField,
   ToPhantomTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
@@ -91,6 +93,19 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
 
   static get r() {
     return Table.reified
+  }
+
+  static phantom<
+    K extends PhantomReified<PhantomTypeArgument>,
+    V extends PhantomReified<PhantomTypeArgument>,
+  >(
+    K: K,
+    V: V
+  ): PhantomReified<ToTypeStr<Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>>> {
+    return phantom(Table.reified(K, V))
+  }
+  static get p() {
+    return Table.phantom
   }
 
   static get bcs() {

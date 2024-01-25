@@ -1,12 +1,15 @@
 import * as reified from '../../_framework/reified'
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs, fromB64 } from '@mysten/bcs'
@@ -62,6 +65,13 @@ export class Curve {
 
   static get r() {
     return Curve.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Curve>> {
+    return phantom(Curve.reified())
+  }
+  static get p() {
+    return Curve.phantom()
   }
 
   static get bcs() {
@@ -193,6 +203,13 @@ export class PreparedVerifyingKey {
 
   static get r() {
     return PreparedVerifyingKey.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<PreparedVerifyingKey>> {
+    return phantom(PreparedVerifyingKey.reified())
+  }
+  static get p() {
+    return PreparedVerifyingKey.phantom()
   }
 
   static get bcs() {
@@ -351,6 +368,13 @@ export class PublicProofInputs {
     return PublicProofInputs.reified()
   }
 
+  static phantom(): PhantomReified<ToTypeStr<PublicProofInputs>> {
+    return phantom(PublicProofInputs.reified())
+  }
+  static get p() {
+    return PublicProofInputs.phantom()
+  }
+
   static get bcs() {
     return bcs.struct('PublicProofInputs', {
       bytes: bcs.vector(bcs.u8()),
@@ -473,6 +497,13 @@ export class ProofPoints {
 
   static get r() {
     return ProofPoints.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<ProofPoints>> {
+    return phantom(ProofPoints.reified())
+  }
+  static get p() {
+    return ProofPoints.phantom()
   }
 
   static get bcs() {

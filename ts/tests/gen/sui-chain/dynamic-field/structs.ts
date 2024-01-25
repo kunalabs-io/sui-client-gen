@@ -1,4 +1,5 @@
 import {
+  PhantomReified,
   Reified,
   ToField,
   ToTypeArgument,
@@ -11,6 +12,7 @@ import {
   decodeFromJSONField,
   extractType,
   fieldToJSON,
+  phantom,
   toBcs,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
@@ -92,6 +94,16 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> {
 
   static get r() {
     return Field.reified
+  }
+
+  static phantom<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
+    T0: T0,
+    T1: T1
+  ): PhantomReified<ToTypeStr<Field<ToTypeArgument<T0>, ToTypeArgument<T1>>>> {
+    return phantom(Field.reified(T0, T1))
+  }
+  static get p() {
+    return Field.phantom
   }
 
   static get bcs() {

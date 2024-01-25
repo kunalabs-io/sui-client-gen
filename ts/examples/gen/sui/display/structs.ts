@@ -6,12 +6,14 @@ import {
   Reified,
   ToField,
   ToPhantomTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { ID, UID } from '../object/structs'
@@ -87,6 +89,15 @@ export class Display<T extends PhantomTypeArgument> {
 
   static get r() {
     return Display.reified
+  }
+
+  static phantom<T extends PhantomReified<PhantomTypeArgument>>(
+    T: T
+  ): PhantomReified<ToTypeStr<Display<ToPhantomTypeArgument<T>>>> {
+    return phantom(Display.reified(T))
+  }
+  static get p() {
+    return Display.phantom
   }
 
   static get bcs() {
@@ -269,6 +280,15 @@ export class DisplayCreated<T extends PhantomTypeArgument> {
     return DisplayCreated.reified
   }
 
+  static phantom<T extends PhantomReified<PhantomTypeArgument>>(
+    T: T
+  ): PhantomReified<ToTypeStr<DisplayCreated<ToPhantomTypeArgument<T>>>> {
+    return phantom(DisplayCreated.reified(T))
+  }
+  static get p() {
+    return DisplayCreated.phantom
+  }
+
   static get bcs() {
     return bcs.struct('DisplayCreated', {
       id: ID.bcs,
@@ -436,6 +456,15 @@ export class VersionUpdated<T extends PhantomTypeArgument> {
 
   static get r() {
     return VersionUpdated.reified
+  }
+
+  static phantom<T extends PhantomReified<PhantomTypeArgument>>(
+    T: T
+  ): PhantomReified<ToTypeStr<VersionUpdated<ToPhantomTypeArgument<T>>>> {
+    return phantom(VersionUpdated.reified(T))
+  }
+  static get p() {
+    return VersionUpdated.phantom
   }
 
   static get bcs() {

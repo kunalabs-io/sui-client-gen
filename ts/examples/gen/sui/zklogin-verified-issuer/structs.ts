@@ -1,10 +1,13 @@
 import { String } from '../../_dependencies/source/0x1/string/structs'
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { UID } from '../object/structs'
@@ -70,6 +73,13 @@ export class VerifiedIssuer {
 
   static get r() {
     return VerifiedIssuer.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<VerifiedIssuer>> {
+    return phantom(VerifiedIssuer.reified())
+  }
+  static get p() {
+    return VerifiedIssuer.phantom()
   }
 
   static get bcs() {

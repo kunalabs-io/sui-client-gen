@@ -1,12 +1,15 @@
 import * as reified from '../../_framework/reified'
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/ascii/structs'
@@ -70,6 +73,13 @@ export class Publisher {
 
   static get r() {
     return Publisher.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Publisher>> {
+    return phantom(Publisher.reified())
+  }
+  static get p() {
+    return Publisher.phantom()
   }
 
   static get bcs() {
@@ -213,6 +223,13 @@ export class UpgradeCap {
 
   static get r() {
     return UpgradeCap.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<UpgradeCap>> {
+    return phantom(UpgradeCap.reified())
+  }
+  static get p() {
+    return UpgradeCap.phantom()
   }
 
   static get bcs() {
@@ -363,6 +380,13 @@ export class UpgradeTicket {
     return UpgradeTicket.reified()
   }
 
+  static phantom(): PhantomReified<ToTypeStr<UpgradeTicket>> {
+    return phantom(UpgradeTicket.reified())
+  }
+  static get p() {
+    return UpgradeTicket.phantom()
+  }
+
   static get bcs() {
     return bcs.struct('UpgradeTicket', {
       cap: ID.bcs,
@@ -506,6 +530,13 @@ export class UpgradeReceipt {
 
   static get r() {
     return UpgradeReceipt.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<UpgradeReceipt>> {
+    return phantom(UpgradeReceipt.reified())
+  }
+  static get p() {
+    return UpgradeReceipt.phantom()
   }
 
   static get bcs() {

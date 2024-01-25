@@ -1,11 +1,14 @@
 import * as reified from '../../_framework/reified'
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
+  phantom,
   ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
@@ -69,6 +72,13 @@ export class DenyList {
 
   static get r() {
     return DenyList.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<DenyList>> {
+    return phantom(DenyList.reified())
+  }
+  static get p() {
+    return DenyList.phantom()
   }
 
   static get bcs() {
@@ -204,6 +214,13 @@ export class PerTypeList {
 
   static get r() {
     return PerTypeList.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<PerTypeList>> {
+    return phantom(PerTypeList.reified())
+  }
+  static get p() {
+    return PerTypeList.phantom()
   }
 
   static get bcs() {

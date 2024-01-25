@@ -6,12 +6,14 @@ import {
   Reified,
   ToField,
   ToPhantomTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
+  phantom,
   ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
@@ -74,6 +76,13 @@ export class Borrow {
 
   static get r() {
     return Borrow.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Borrow>> {
+    return phantom(Borrow.reified())
+  }
+  static get p() {
+    return Borrow.phantom()
   }
 
   static get bcs() {
@@ -215,6 +224,13 @@ export class Kiosk {
 
   static get r() {
     return Kiosk.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Kiosk>> {
+    return phantom(Kiosk.reified())
+  }
+  static get p() {
+    return Kiosk.phantom()
   }
 
   static get bcs() {
@@ -370,6 +386,13 @@ export class KioskOwnerCap {
     return KioskOwnerCap.reified()
   }
 
+  static phantom(): PhantomReified<ToTypeStr<KioskOwnerCap>> {
+    return phantom(KioskOwnerCap.reified())
+  }
+  static get p() {
+    return KioskOwnerCap.phantom()
+  }
+
   static get bcs() {
     return bcs.struct('KioskOwnerCap', {
       id: UID.bcs,
@@ -518,6 +541,15 @@ export class PurchaseCap<T0 extends PhantomTypeArgument> {
 
   static get r() {
     return PurchaseCap.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<PurchaseCap<ToPhantomTypeArgument<T0>>>> {
+    return phantom(PurchaseCap.reified(T0))
+  }
+  static get p() {
+    return PurchaseCap.phantom
   }
 
   static get bcs() {
@@ -687,6 +719,13 @@ export class Item {
     return Item.reified()
   }
 
+  static phantom(): PhantomReified<ToTypeStr<Item>> {
+    return phantom(Item.reified())
+  }
+  static get p() {
+    return Item.phantom()
+  }
+
   static get bcs() {
     return bcs.struct('Item', {
       id: ID.bcs,
@@ -806,6 +845,13 @@ export class Listing {
 
   static get r() {
     return Listing.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Listing>> {
+    return phantom(Listing.reified())
+  }
+  static get p() {
+    return Listing.phantom()
   }
 
   static get bcs() {
@@ -935,6 +981,13 @@ export class Lock {
 
   static get r() {
     return Lock.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Lock>> {
+    return phantom(Lock.reified())
+  }
+  static get p() {
+    return Lock.phantom()
   }
 
   static get bcs() {
@@ -1071,6 +1124,15 @@ export class ItemListed<T0 extends PhantomTypeArgument> {
 
   static get r() {
     return ItemListed.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<ItemListed<ToPhantomTypeArgument<T0>>>> {
+    return phantom(ItemListed.reified(T0))
+  }
+  static get p() {
+    return ItemListed.phantom
   }
 
   static get bcs() {
@@ -1256,6 +1318,15 @@ export class ItemPurchased<T0 extends PhantomTypeArgument> {
     return ItemPurchased.reified
   }
 
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<ItemPurchased<ToPhantomTypeArgument<T0>>>> {
+    return phantom(ItemPurchased.reified(T0))
+  }
+  static get p() {
+    return ItemPurchased.phantom
+  }
+
   static get bcs() {
     return bcs.struct('ItemPurchased', {
       kiosk: ID.bcs,
@@ -1434,6 +1505,15 @@ export class ItemDelisted<T0 extends PhantomTypeArgument> {
 
   static get r() {
     return ItemDelisted.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<ItemDelisted<ToPhantomTypeArgument<T0>>>> {
+    return phantom(ItemDelisted.reified(T0))
+  }
+  static get p() {
+    return ItemDelisted.phantom
   }
 
   static get bcs() {

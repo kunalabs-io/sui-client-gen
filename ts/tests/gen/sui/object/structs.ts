@@ -1,5 +1,6 @@
 import * as reified from '../../_framework/reified'
 import {
+  PhantomReified,
   Reified,
   ToField,
   ToTypeArgument,
@@ -13,6 +14,7 @@ import {
   decodeFromJSONField,
   extractType,
   fieldToJSON,
+  phantom,
   toBcs,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
@@ -81,6 +83,15 @@ export class DynamicFields<K extends TypeArgument> {
 
   static get r() {
     return DynamicFields.reified
+  }
+
+  static phantom<K extends Reified<TypeArgument, any>>(
+    K: K
+  ): PhantomReified<ToTypeStr<DynamicFields<ToTypeArgument<K>>>> {
+    return phantom(DynamicFields.reified(K))
+  }
+  static get p() {
+    return DynamicFields.phantom
   }
 
   static get bcs() {
@@ -238,6 +249,13 @@ export class ID {
     return ID.reified()
   }
 
+  static phantom(): PhantomReified<ToTypeStr<ID>> {
+    return phantom(ID.reified())
+  }
+  static get p() {
+    return ID.phantom()
+  }
+
   static get bcs() {
     return bcs.struct('ID', {
       bytes: bcs.bytes(32).transform({
@@ -360,6 +378,13 @@ export class Ownership {
 
   static get r() {
     return Ownership.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Ownership>> {
+    return phantom(Ownership.reified())
+  }
+  static get p() {
+    return Ownership.phantom()
   }
 
   static get bcs() {
@@ -492,6 +517,13 @@ export class UID {
 
   static get r() {
     return UID.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<UID>> {
+    return phantom(UID.reified())
+  }
+  static get p() {
+    return UID.phantom()
   }
 
   static get bcs() {

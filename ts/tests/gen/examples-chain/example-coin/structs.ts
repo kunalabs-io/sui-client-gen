@@ -1,10 +1,13 @@
 import * as reified from '../../_framework/reified'
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
+  phantom,
   ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
@@ -70,6 +73,13 @@ export class EXAMPLE_COIN {
 
   static get r() {
     return EXAMPLE_COIN.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<EXAMPLE_COIN>> {
+    return phantom(EXAMPLE_COIN.reified())
+  }
+  static get p() {
+    return EXAMPLE_COIN.phantom()
   }
 
   static get bcs() {
@@ -200,6 +210,13 @@ export class Faucet {
 
   static get r() {
     return Faucet.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Faucet>> {
+    return phantom(Faucet.reified())
+  }
+  static get p() {
+    return Faucet.phantom()
   }
 
   static get bcs() {

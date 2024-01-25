@@ -5,12 +5,14 @@ import {
   Reified,
   ToField,
   ToPhantomTypeArgument,
+  ToTypeStr,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs, fromB64 } from '@mysten/bcs'
@@ -78,6 +80,15 @@ export class Balance<T extends PhantomTypeArgument> {
 
   static get r() {
     return Balance.reified
+  }
+
+  static phantom<T extends PhantomReified<PhantomTypeArgument>>(
+    T: T
+  ): PhantomReified<ToTypeStr<Balance<ToPhantomTypeArgument<T>>>> {
+    return phantom(Balance.reified(T))
+  }
+  static get p() {
+    return Balance.phantom
   }
 
   static get bcs() {
@@ -238,6 +249,15 @@ export class Supply<T extends PhantomTypeArgument> {
 
   static get r() {
     return Supply.reified
+  }
+
+  static phantom<T extends PhantomReified<PhantomTypeArgument>>(
+    T: T
+  ): PhantomReified<ToTypeStr<Supply<ToPhantomTypeArgument<T>>>> {
+    return phantom(Supply.reified(T))
+  }
+  static get p() {
+    return Supply.phantom
   }
 
   static get bcs() {

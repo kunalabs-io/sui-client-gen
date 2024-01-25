@@ -1,9 +1,12 @@
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs, fromB64 } from '@mysten/bcs'
@@ -62,6 +65,13 @@ export class FixedPoint32 {
 
   static get r() {
     return FixedPoint32.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<FixedPoint32>> {
+    return phantom(FixedPoint32.reified())
+  }
+  static get p() {
+    return FixedPoint32.phantom()
   }
 
   static get bcs() {

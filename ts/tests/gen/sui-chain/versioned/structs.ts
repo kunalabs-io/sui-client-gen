@@ -1,9 +1,12 @@
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
+  phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { ID, UID } from '../object/structs'
@@ -63,6 +66,13 @@ export class Versioned {
 
   static get r() {
     return Versioned.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Versioned>> {
+    return phantom(Versioned.reified())
+  }
+  static get p() {
+    return Versioned.phantom()
   }
 
   static get bcs() {
@@ -198,6 +208,13 @@ export class VersionChangeCap {
 
   static get r() {
     return VersionChangeCap.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<VersionChangeCap>> {
+    return phantom(VersionChangeCap.reified())
+  }
+  static get p() {
+    return VersionChangeCap.phantom()
   }
 
   static get bcs() {

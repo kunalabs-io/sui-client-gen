@@ -1,9 +1,12 @@
 import {
+  PhantomReified,
   Reified,
   ToField,
+  ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
+  phantom,
 } from '../../../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { String } from '../ascii/structs'
@@ -60,6 +63,13 @@ export class TypeName {
 
   static get r() {
     return TypeName.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<TypeName>> {
+    return phantom(TypeName.reified())
+  }
+  static get p() {
+    return TypeName.phantom()
   }
 
   static get bcs() {
