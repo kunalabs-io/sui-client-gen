@@ -1392,6 +1392,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let sui_client = &js::import("@mysten/sui.js/client", "SuiClient");
         let bcs = &js::import("@mysten/bcs", "bcs");
         let bcs_type = &js::import("@mysten/bcs", "BcsType");
+        let from_b64 = &js::import("@mysten/bcs", "fromB64");
 
         strct.get_abilities().has_key();
 
@@ -2000,7 +2001,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     const res = await client.getObject({
                         id,
                         options: {
-                            showContent: true,
+                            showBcs: true,
                         },
                     });
                     if (res.error) {
@@ -2008,19 +2009,19 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             format!("error fetching {} object at id ${{id}}: ${{res.error.code}}", &struct_name))
                         ));
                     }
-                    if (res.data?.content?.dataType !== "moveObject" || !is$(&struct_name)(res.data.content.type)) {
+                    if (res.data?.bcs?.dataType !== "moveObject" || !is$(&struct_name)(res.data.bcs.type)) {
                         throw new Error($(self.interpolate(
                             format!("object at id ${{id}} is not a {} object", &struct_name))
                         ));
                     }$['\r']
 
-                    return $(&struct_name).fromFieldsWithTypes(
+                    return $(&struct_name).fromBcs(
                         $(match type_params.len() {
                             0 => (),
                             1 => { typeArg, },
                             _ => { typeArgs, },
                         })
-                        res.data.content
+                        $from_b64(res.data.bcs.bcsBytes)
                     );
                 }$['\n']
             }
