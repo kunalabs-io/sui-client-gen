@@ -82,6 +82,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> {
       fromBcs: (data: Uint8Array) => Field.fromBcs([Name, Value], data),
       bcs: Field.bcs(toBcs(Name), toBcs(Value)),
       fromJSONField: (field: any) => Field.fromJSONField([Name, Value], field),
+      fromJSON: (json: Record<string, any>) => Field.fromJSON([Name, Value], json),
       fetch: async (client: SuiClient, id: string) => Field.fetch(client, [Name, Value], id),
       new: (fields: FieldFields<ToTypeArgument<Name>, ToTypeArgument<Value>>) => {
         return new Field([extractType(Name), extractType(Value)], fields)

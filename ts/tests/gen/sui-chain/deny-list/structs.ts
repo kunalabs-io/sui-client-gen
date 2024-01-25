@@ -58,6 +58,7 @@ export class DenyList {
       fromBcs: (data: Uint8Array) => DenyList.fromBcs(data),
       bcs: DenyList.bcs,
       fromJSONField: (field: any) => DenyList.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => DenyList.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => DenyList.fetch(client, id),
       new: (fields: DenyListFields) => {
         return new DenyList(fields)
@@ -192,6 +193,7 @@ export class PerTypeList {
       fromBcs: (data: Uint8Array) => PerTypeList.fromBcs(data),
       bcs: PerTypeList.bcs,
       fromJSONField: (field: any) => PerTypeList.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => PerTypeList.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => PerTypeList.fetch(client, id),
       new: (fields: PerTypeListFields) => {
         return new PerTypeList(fields)

@@ -48,6 +48,7 @@ export class SUI {
       fromBcs: (data: Uint8Array) => SUI.fromBcs(data),
       bcs: SUI.bcs,
       fromJSONField: (field: any) => SUI.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => SUI.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => SUI.fetch(client, id),
       new: (fields: SUIFields) => {
         return new SUI(fields)

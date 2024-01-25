@@ -61,6 +61,7 @@ export class Borrow {
       fromBcs: (data: Uint8Array) => Borrow.fromBcs(data),
       bcs: Borrow.bcs,
       fromJSONField: (field: any) => Borrow.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Borrow.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Borrow.fetch(client, id),
       new: (fields: BorrowFields) => {
         return new Borrow(fields)
@@ -207,6 +208,7 @@ export class Referent<T extends TypeArgument> {
       fromBcs: (data: Uint8Array) => Referent.fromBcs(T, data),
       bcs: Referent.bcs(toBcs(T)),
       fromJSONField: (field: any) => Referent.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => Referent.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => Referent.fetch(client, T, id),
       new: (fields: ReferentFields<ToTypeArgument<T>>) => {
         return new Referent(extractType(T), fields)

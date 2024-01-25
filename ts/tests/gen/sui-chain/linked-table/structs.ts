@@ -93,6 +93,7 @@ export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument
       fromBcs: (data: Uint8Array) => LinkedTable.fromBcs([T0, T1], data),
       bcs: LinkedTable.bcs(toBcs(T0)),
       fromJSONField: (field: any) => LinkedTable.fromJSONField([T0, T1], field),
+      fromJSON: (json: Record<string, any>) => LinkedTable.fromJSON([T0, T1], json),
       fetch: async (client: SuiClient, id: string) => LinkedTable.fetch(client, [T0, T1], id),
       new: (fields: LinkedTableFields<ToTypeArgument<T0>, ToPhantomTypeArgument<T1>>) => {
         return new LinkedTable([extractType(T0), extractType(T1)], fields)
@@ -302,6 +303,7 @@ export class Node<T0 extends TypeArgument, T1 extends TypeArgument> {
       fromBcs: (data: Uint8Array) => Node.fromBcs([T0, T1], data),
       bcs: Node.bcs(toBcs(T0), toBcs(T1)),
       fromJSONField: (field: any) => Node.fromJSONField([T0, T1], field),
+      fromJSON: (json: Record<string, any>) => Node.fromJSON([T0, T1], json),
       fetch: async (client: SuiClient, id: string) => Node.fetch(client, [T0, T1], id),
       new: (fields: NodeFields<ToTypeArgument<T0>, ToTypeArgument<T1>>) => {
         return new Node([extractType(T0), extractType(T1)], fields)

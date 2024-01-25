@@ -59,6 +59,7 @@ export class Publisher {
       fromBcs: (data: Uint8Array) => Publisher.fromBcs(data),
       bcs: Publisher.bcs,
       fromJSONField: (field: any) => Publisher.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Publisher.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Publisher.fetch(client, id),
       new: (fields: PublisherFields) => {
         return new Publisher(fields)
@@ -201,6 +202,7 @@ export class UpgradeCap {
       fromBcs: (data: Uint8Array) => UpgradeCap.fromBcs(data),
       bcs: UpgradeCap.bcs,
       fromJSONField: (field: any) => UpgradeCap.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => UpgradeCap.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => UpgradeCap.fetch(client, id),
       new: (fields: UpgradeCapFields) => {
         return new UpgradeCap(fields)
@@ -348,6 +350,7 @@ export class UpgradeTicket {
       fromBcs: (data: Uint8Array) => UpgradeTicket.fromBcs(data),
       bcs: UpgradeTicket.bcs,
       fromJSONField: (field: any) => UpgradeTicket.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => UpgradeTicket.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => UpgradeTicket.fetch(client, id),
       new: (fields: UpgradeTicketFields) => {
         return new UpgradeTicket(fields)
@@ -492,6 +495,7 @@ export class UpgradeReceipt {
       fromBcs: (data: Uint8Array) => UpgradeReceipt.fromBcs(data),
       bcs: UpgradeReceipt.bcs,
       fromJSONField: (field: any) => UpgradeReceipt.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => UpgradeReceipt.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => UpgradeReceipt.fetch(client, id),
       new: (fields: UpgradeReceiptFields) => {
         return new UpgradeReceipt(fields)

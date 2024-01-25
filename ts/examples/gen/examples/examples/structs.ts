@@ -62,6 +62,7 @@ export class ExampleStruct {
       fromBcs: (data: Uint8Array) => ExampleStruct.fromBcs(data),
       bcs: ExampleStruct.bcs,
       fromJSONField: (field: any) => ExampleStruct.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => ExampleStruct.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => ExampleStruct.fetch(client, id),
       new: (fields: ExampleStructFields) => {
         return new ExampleStruct(fields)
@@ -214,6 +215,7 @@ export class SpecialTypesStruct {
       fromBcs: (data: Uint8Array) => SpecialTypesStruct.fromBcs(data),
       bcs: SpecialTypesStruct.bcs,
       fromJSONField: (field: any) => SpecialTypesStruct.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => SpecialTypesStruct.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => SpecialTypesStruct.fetch(client, id),
       new: (fields: SpecialTypesStructFields) => {
         return new SpecialTypesStruct(fields)

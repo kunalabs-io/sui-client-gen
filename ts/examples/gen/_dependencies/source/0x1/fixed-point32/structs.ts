@@ -51,6 +51,7 @@ export class FixedPoint32 {
       fromBcs: (data: Uint8Array) => FixedPoint32.fromBcs(data),
       bcs: FixedPoint32.bcs,
       fromJSONField: (field: any) => FixedPoint32.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => FixedPoint32.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => FixedPoint32.fetch(client, id),
       new: (fields: FixedPoint32Fields) => {
         return new FixedPoint32(fields)

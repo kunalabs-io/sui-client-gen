@@ -70,6 +70,7 @@ export class DynamicFields<K extends TypeArgument> {
       fromBcs: (data: Uint8Array) => DynamicFields.fromBcs(K, data),
       bcs: DynamicFields.bcs(toBcs(K)),
       fromJSONField: (field: any) => DynamicFields.fromJSONField(K, field),
+      fromJSON: (json: Record<string, any>) => DynamicFields.fromJSON(K, json),
       fetch: async (client: SuiClient, id: string) => DynamicFields.fetch(client, K, id),
       new: (fields: DynamicFieldsFields<ToTypeArgument<K>>) => {
         return new DynamicFields(extractType(K), fields)
@@ -224,6 +225,7 @@ export class ID {
       fromBcs: (data: Uint8Array) => ID.fromBcs(data),
       bcs: ID.bcs,
       fromJSONField: (field: any) => ID.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => ID.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => ID.fetch(client, id),
       new: (fields: IDFields) => {
         return new ID(fields)
@@ -347,6 +349,7 @@ export class Ownership {
       fromBcs: (data: Uint8Array) => Ownership.fromBcs(data),
       bcs: Ownership.bcs,
       fromJSONField: (field: any) => Ownership.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Ownership.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Ownership.fetch(client, id),
       new: (fields: OwnershipFields) => {
         return new Ownership(fields)
@@ -478,6 +481,7 @@ export class UID {
       fromBcs: (data: Uint8Array) => UID.fromBcs(data),
       bcs: UID.bcs,
       fromJSONField: (field: any) => UID.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => UID.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => UID.fetch(client, id),
       new: (fields: UIDFields) => {
         return new UID(fields)

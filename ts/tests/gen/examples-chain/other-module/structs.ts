@@ -56,6 +56,7 @@ export class StructFromOtherModule {
       fromBcs: (data: Uint8Array) => StructFromOtherModule.fromBcs(data),
       bcs: StructFromOtherModule.bcs,
       fromJSONField: (field: any) => StructFromOtherModule.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => StructFromOtherModule.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => StructFromOtherModule.fetch(client, id),
       new: (fields: StructFromOtherModuleFields) => {
         return new StructFromOtherModule(fields)
@@ -191,6 +192,7 @@ export class AddedInAnUpgrade {
       fromBcs: (data: Uint8Array) => AddedInAnUpgrade.fromBcs(data),
       bcs: AddedInAnUpgrade.bcs,
       fromJSONField: (field: any) => AddedInAnUpgrade.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => AddedInAnUpgrade.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => AddedInAnUpgrade.fetch(client, id),
       new: (fields: AddedInAnUpgradeFields) => {
         return new AddedInAnUpgrade(fields)

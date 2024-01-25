@@ -55,6 +55,7 @@ export class VersionChangeCap {
       fromBcs: (data: Uint8Array) => VersionChangeCap.fromBcs(data),
       bcs: VersionChangeCap.bcs,
       fromJSONField: (field: any) => VersionChangeCap.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => VersionChangeCap.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => VersionChangeCap.fetch(client, id),
       new: (fields: VersionChangeCapFields) => {
         return new VersionChangeCap(fields)
@@ -189,6 +190,7 @@ export class Versioned {
       fromBcs: (data: Uint8Array) => Versioned.fromBcs(data),
       bcs: Versioned.bcs,
       fromJSONField: (field: any) => Versioned.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Versioned.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Versioned.fetch(client, id),
       new: (fields: VersionedFields) => {
         return new Versioned(fields)

@@ -77,6 +77,7 @@ export class Coin<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => Coin.fromBcs(T, data),
       bcs: Coin.bcs,
       fromJSONField: (field: any) => Coin.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => Coin.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => Coin.fetch(client, T, id),
       new: (fields: CoinFields<ToPhantomTypeArgument<T>>) => {
         return new Coin(extractType(T), fields)
@@ -260,6 +261,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => CoinMetadata.fromBcs(T, data),
       bcs: CoinMetadata.bcs,
       fromJSONField: (field: any) => CoinMetadata.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => CoinMetadata.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => CoinMetadata.fetch(client, T, id),
       new: (fields: CoinMetadataFields<ToPhantomTypeArgument<T>>) => {
         return new CoinMetadata(extractType(T), fields)
@@ -451,6 +453,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => CurrencyCreated.fromBcs(T, data),
       bcs: CurrencyCreated.bcs,
       fromJSONField: (field: any) => CurrencyCreated.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => CurrencyCreated.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => CurrencyCreated.fetch(client, T, id),
       new: (fields: CurrencyCreatedFields<ToPhantomTypeArgument<T>>) => {
         return new CurrencyCreated(extractType(T), fields)
@@ -617,6 +620,7 @@ export class TreasuryCap<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => TreasuryCap.fromBcs(T, data),
       bcs: TreasuryCap.bcs,
       fromJSONField: (field: any) => TreasuryCap.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => TreasuryCap.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => TreasuryCap.fetch(client, T, id),
       new: (fields: TreasuryCapFields<ToPhantomTypeArgument<T>>) => {
         return new TreasuryCap(extractType(T), fields)

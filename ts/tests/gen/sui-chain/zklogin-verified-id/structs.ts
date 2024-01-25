@@ -68,6 +68,7 @@ export class VerifiedID {
       fromBcs: (data: Uint8Array) => VerifiedID.fromBcs(data),
       bcs: VerifiedID.bcs,
       fromJSONField: (field: any) => VerifiedID.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => VerifiedID.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => VerifiedID.fetch(client, id),
       new: (fields: VerifiedIDFields) => {
         return new VerifiedID(fields)

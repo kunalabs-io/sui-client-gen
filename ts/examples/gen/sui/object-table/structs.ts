@@ -80,6 +80,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
       fromBcs: (data: Uint8Array) => ObjectTable.fromBcs([K, V], data),
       bcs: ObjectTable.bcs,
       fromJSONField: (field: any) => ObjectTable.fromJSONField([K, V], field),
+      fromJSON: (json: Record<string, any>) => ObjectTable.fromJSON([K, V], json),
       fetch: async (client: SuiClient, id: string) => ObjectTable.fetch(client, [K, V], id),
       new: (fields: ObjectTableFields<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>) => {
         return new ObjectTable([extractType(K), extractType(V)], fields)

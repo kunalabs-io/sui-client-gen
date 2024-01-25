@@ -75,6 +75,7 @@ export class RuleKey<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => RuleKey.fromBcs(T, data),
       bcs: RuleKey.bcs,
       fromJSONField: (field: any) => RuleKey.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => RuleKey.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => RuleKey.fetch(client, T, id),
       new: (fields: RuleKeyFields<ToPhantomTypeArgument<T>>) => {
         return new RuleKey(extractType(T), fields)
@@ -256,6 +257,7 @@ export class ActionRequest<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => ActionRequest.fromBcs(T, data),
       bcs: ActionRequest.bcs,
       fromJSONField: (field: any) => ActionRequest.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => ActionRequest.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => ActionRequest.fetch(client, T, id),
       new: (fields: ActionRequestFields<ToPhantomTypeArgument<T>>) => {
         return new ActionRequest(extractType(T), fields)
@@ -470,6 +472,7 @@ export class Token<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => Token.fromBcs(T, data),
       bcs: Token.bcs,
       fromJSONField: (field: any) => Token.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => Token.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => Token.fetch(client, T, id),
       new: (fields: TokenFields<ToPhantomTypeArgument<T>>) => {
         return new Token(extractType(T), fields)
@@ -644,6 +647,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => TokenPolicy.fromBcs(T, data),
       bcs: TokenPolicy.bcs,
       fromJSONField: (field: any) => TokenPolicy.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => TokenPolicy.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => TokenPolicy.fetch(client, T, id),
       new: (fields: TokenPolicyFields<ToPhantomTypeArgument<T>>) => {
         return new TokenPolicy(extractType(T), fields)
@@ -832,6 +836,7 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => TokenPolicyCap.fromBcs(T, data),
       bcs: TokenPolicyCap.bcs,
       fromJSONField: (field: any) => TokenPolicyCap.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => TokenPolicyCap.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => TokenPolicyCap.fetch(client, T, id),
       new: (fields: TokenPolicyCapFields<ToPhantomTypeArgument<T>>) => {
         return new TokenPolicyCap(extractType(T), fields)
@@ -1007,6 +1012,7 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => TokenPolicyCreated.fromBcs(T, data),
       bcs: TokenPolicyCreated.bcs,
       fromJSONField: (field: any) => TokenPolicyCreated.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => TokenPolicyCreated.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => TokenPolicyCreated.fetch(client, T, id),
       new: (fields: TokenPolicyCreatedFields<ToPhantomTypeArgument<T>>) => {
         return new TokenPolicyCreated(extractType(T), fields)

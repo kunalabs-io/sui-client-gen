@@ -49,6 +49,7 @@ export class TypeName {
       fromBcs: (data: Uint8Array) => TypeName.fromBcs(data),
       bcs: TypeName.bcs,
       fromJSONField: (field: any) => TypeName.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => TypeName.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => TypeName.fetch(client, id),
       new: (fields: TypeNameFields) => {
         return new TypeName(fields)

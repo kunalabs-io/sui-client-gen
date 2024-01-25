@@ -51,6 +51,7 @@ export class Curve {
       fromBcs: (data: Uint8Array) => Curve.fromBcs(data),
       bcs: Curve.bcs,
       fromJSONField: (field: any) => Curve.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Curve.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Curve.fetch(client, id),
       new: (fields: CurveFields) => {
         return new Curve(fields)
@@ -181,6 +182,7 @@ export class PreparedVerifyingKey {
       fromBcs: (data: Uint8Array) => PreparedVerifyingKey.fromBcs(data),
       bcs: PreparedVerifyingKey.bcs,
       fromJSONField: (field: any) => PreparedVerifyingKey.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => PreparedVerifyingKey.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => PreparedVerifyingKey.fetch(client, id),
       new: (fields: PreparedVerifyingKeyFields) => {
         return new PreparedVerifyingKey(fields)
@@ -339,6 +341,7 @@ export class PublicProofInputs {
       fromBcs: (data: Uint8Array) => PublicProofInputs.fromBcs(data),
       bcs: PublicProofInputs.bcs,
       fromJSONField: (field: any) => PublicProofInputs.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => PublicProofInputs.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => PublicProofInputs.fetch(client, id),
       new: (fields: PublicProofInputsFields) => {
         return new PublicProofInputs(fields)
@@ -465,6 +468,7 @@ export class ProofPoints {
       fromBcs: (data: Uint8Array) => ProofPoints.fromBcs(data),
       bcs: ProofPoints.bcs,
       fromJSONField: (field: any) => ProofPoints.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => ProofPoints.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => ProofPoints.fetch(client, id),
       new: (fields: ProofPointsFields) => {
         return new ProofPoints(fields)

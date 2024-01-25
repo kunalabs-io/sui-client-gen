@@ -68,6 +68,7 @@ export class Wrapper<Name extends TypeArgument> {
       fromBcs: (data: Uint8Array) => Wrapper.fromBcs(Name, data),
       bcs: Wrapper.bcs(toBcs(Name)),
       fromJSONField: (field: any) => Wrapper.fromJSONField(Name, field),
+      fromJSON: (json: Record<string, any>) => Wrapper.fromJSON(Name, json),
       fetch: async (client: SuiClient, id: string) => Wrapper.fetch(client, Name, id),
       new: (fields: WrapperFields<ToTypeArgument<Name>>) => {
         return new Wrapper(extractType(Name), fields)

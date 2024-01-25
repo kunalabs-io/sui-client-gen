@@ -54,6 +54,7 @@ export class BitVector {
       fromBcs: (data: Uint8Array) => BitVector.fromBcs(data),
       bcs: BitVector.bcs,
       fromJSONField: (field: any) => BitVector.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => BitVector.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => BitVector.fetch(client, id),
       new: (fields: BitVectorFields) => {
         return new BitVector(fields)

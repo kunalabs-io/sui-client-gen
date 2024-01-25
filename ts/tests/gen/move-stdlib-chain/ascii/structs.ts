@@ -51,6 +51,7 @@ export class String {
       fromBcs: (data: Uint8Array) => String.fromBcs(data),
       bcs: String.bcs,
       fromJSONField: (field: any) => String.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => String.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => String.fetch(client, id),
       new: (fields: StringFields) => {
         return new String(fields)
@@ -170,6 +171,7 @@ export class Char {
       fromBcs: (data: Uint8Array) => Char.fromBcs(data),
       bcs: Char.bcs,
       fromJSONField: (field: any) => Char.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Char.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Char.fetch(client, id),
       new: (fields: CharFields) => {
         return new Char(fields)

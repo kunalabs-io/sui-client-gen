@@ -59,6 +59,7 @@ export class VerifiedIssuer {
       fromBcs: (data: Uint8Array) => VerifiedIssuer.fromBcs(data),
       bcs: VerifiedIssuer.bcs,
       fromJSONField: (field: any) => VerifiedIssuer.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => VerifiedIssuer.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => VerifiedIssuer.fetch(client, id),
       new: (fields: VerifiedIssuerFields) => {
         return new VerifiedIssuer(fields)

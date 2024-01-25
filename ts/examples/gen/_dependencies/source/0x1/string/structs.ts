@@ -51,6 +51,7 @@ export class String {
       fromBcs: (data: Uint8Array) => String.fromBcs(data),
       bcs: String.bcs,
       fromJSONField: (field: any) => String.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => String.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => String.fetch(client, id),
       new: (fields: StringFields) => {
         return new String(fields)

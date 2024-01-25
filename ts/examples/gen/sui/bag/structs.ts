@@ -52,6 +52,7 @@ export class Bag {
       fromBcs: (data: Uint8Array) => Bag.fromBcs(data),
       bcs: Bag.bcs,
       fromJSONField: (field: any) => Bag.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Bag.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Bag.fetch(client, id),
       new: (fields: BagFields) => {
         return new Bag(fields)

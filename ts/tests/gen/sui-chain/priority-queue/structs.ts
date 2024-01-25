@@ -70,6 +70,7 @@ export class PriorityQueue<T0 extends TypeArgument> {
       fromBcs: (data: Uint8Array) => PriorityQueue.fromBcs(T0, data),
       bcs: PriorityQueue.bcs(toBcs(T0)),
       fromJSONField: (field: any) => PriorityQueue.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => PriorityQueue.fromJSON(T0, json),
       fetch: async (client: SuiClient, id: string) => PriorityQueue.fetch(client, T0, id),
       new: (fields: PriorityQueueFields<ToTypeArgument<T0>>) => {
         return new PriorityQueue(extractType(T0), fields)
@@ -245,6 +246,7 @@ export class Entry<T0 extends TypeArgument> {
       fromBcs: (data: Uint8Array) => Entry.fromBcs(T0, data),
       bcs: Entry.bcs(toBcs(T0)),
       fromJSONField: (field: any) => Entry.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => Entry.fromJSON(T0, json),
       fetch: async (client: SuiClient, id: string) => Entry.fetch(client, T0, id),
       new: (fields: EntryFields<ToTypeArgument<T0>>) => {
         return new Entry(extractType(T0), fields)

@@ -62,6 +62,7 @@ export class Extension {
       fromBcs: (data: Uint8Array) => Extension.fromBcs(data),
       bcs: Extension.bcs,
       fromJSONField: (field: any) => Extension.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Extension.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Extension.fetch(client, id),
       new: (fields: ExtensionFields) => {
         return new Extension(fields)
@@ -210,6 +211,7 @@ export class ExtensionKey<T0 extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => ExtensionKey.fromBcs(T0, data),
       bcs: ExtensionKey.bcs,
       fromJSONField: (field: any) => ExtensionKey.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => ExtensionKey.fromJSON(T0, json),
       fetch: async (client: SuiClient, id: string) => ExtensionKey.fetch(client, T0, id),
       new: (fields: ExtensionKeyFields<ToPhantomTypeArgument<T0>>) => {
         return new ExtensionKey(extractType(T0), fields)

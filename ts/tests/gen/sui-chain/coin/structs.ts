@@ -77,6 +77,7 @@ export class Coin<T0 extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => Coin.fromBcs(T0, data),
       bcs: Coin.bcs,
       fromJSONField: (field: any) => Coin.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => Coin.fromJSON(T0, json),
       fetch: async (client: SuiClient, id: string) => Coin.fetch(client, T0, id),
       new: (fields: CoinFields<ToPhantomTypeArgument<T0>>) => {
         return new Coin(extractType(T0), fields)
@@ -263,6 +264,7 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => CoinMetadata.fromBcs(T0, data),
       bcs: CoinMetadata.bcs,
       fromJSONField: (field: any) => CoinMetadata.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => CoinMetadata.fromJSON(T0, json),
       fetch: async (client: SuiClient, id: string) => CoinMetadata.fetch(client, T0, id),
       new: (fields: CoinMetadataFields<ToPhantomTypeArgument<T0>>) => {
         return new CoinMetadata(extractType(T0), fields)
@@ -461,6 +463,7 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => RegulatedCoinMetadata.fromBcs(T0, data),
       bcs: RegulatedCoinMetadata.bcs,
       fromJSONField: (field: any) => RegulatedCoinMetadata.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => RegulatedCoinMetadata.fromJSON(T0, json),
       fetch: async (client: SuiClient, id: string) => RegulatedCoinMetadata.fetch(client, T0, id),
       new: (fields: RegulatedCoinMetadataFields<ToPhantomTypeArgument<T0>>) => {
         return new RegulatedCoinMetadata(extractType(T0), fields)
@@ -642,6 +645,7 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => TreasuryCap.fromBcs(T0, data),
       bcs: TreasuryCap.bcs,
       fromJSONField: (field: any) => TreasuryCap.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => TreasuryCap.fromJSON(T0, json),
       fetch: async (client: SuiClient, id: string) => TreasuryCap.fetch(client, T0, id),
       new: (fields: TreasuryCapFields<ToPhantomTypeArgument<T0>>) => {
         return new TreasuryCap(extractType(T0), fields)
@@ -810,6 +814,7 @@ export class DenyCap<T0 extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => DenyCap.fromBcs(T0, data),
       bcs: DenyCap.bcs,
       fromJSONField: (field: any) => DenyCap.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => DenyCap.fromJSON(T0, json),
       fetch: async (client: SuiClient, id: string) => DenyCap.fetch(client, T0, id),
       new: (fields: DenyCapFields<ToPhantomTypeArgument<T0>>) => {
         return new DenyCap(extractType(T0), fields)
@@ -972,6 +977,7 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => CurrencyCreated.fromBcs(T0, data),
       bcs: CurrencyCreated.bcs,
       fromJSONField: (field: any) => CurrencyCreated.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => CurrencyCreated.fromJSON(T0, json),
       fetch: async (client: SuiClient, id: string) => CurrencyCreated.fetch(client, T0, id),
       new: (fields: CurrencyCreatedFields<ToPhantomTypeArgument<T0>>) => {
         return new CurrencyCreated(extractType(T0), fields)

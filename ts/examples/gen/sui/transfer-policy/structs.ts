@@ -74,6 +74,7 @@ export class RuleKey<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => RuleKey.fromBcs(T, data),
       bcs: RuleKey.bcs,
       fromJSONField: (field: any) => RuleKey.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => RuleKey.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => RuleKey.fetch(client, T, id),
       new: (fields: RuleKeyFields<ToPhantomTypeArgument<T>>) => {
         return new RuleKey(extractType(T), fields)
@@ -246,6 +247,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => TransferPolicy.fromBcs(T, data),
       bcs: TransferPolicy.bcs,
       fromJSONField: (field: any) => TransferPolicy.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => TransferPolicy.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => TransferPolicy.fetch(client, T, id),
       new: (fields: TransferPolicyFields<ToPhantomTypeArgument<T>>) => {
         return new TransferPolicy(extractType(T), fields)
@@ -429,6 +431,7 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => TransferPolicyCap.fromBcs(T, data),
       bcs: TransferPolicyCap.bcs,
       fromJSONField: (field: any) => TransferPolicyCap.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => TransferPolicyCap.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => TransferPolicyCap.fetch(client, T, id),
       new: (fields: TransferPolicyCapFields<ToPhantomTypeArgument<T>>) => {
         return new TransferPolicyCap(extractType(T), fields)
@@ -606,6 +609,7 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => TransferPolicyCreated.fromBcs(T, data),
       bcs: TransferPolicyCreated.bcs,
       fromJSONField: (field: any) => TransferPolicyCreated.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => TransferPolicyCreated.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => TransferPolicyCreated.fetch(client, T, id),
       new: (fields: TransferPolicyCreatedFields<ToPhantomTypeArgument<T>>) => {
         return new TransferPolicyCreated(extractType(T), fields)
@@ -780,6 +784,7 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => TransferPolicyDestroyed.fromBcs(T, data),
       bcs: TransferPolicyDestroyed.bcs,
       fromJSONField: (field: any) => TransferPolicyDestroyed.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => TransferPolicyDestroyed.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => TransferPolicyDestroyed.fetch(client, T, id),
       new: (fields: TransferPolicyDestroyedFields<ToPhantomTypeArgument<T>>) => {
         return new TransferPolicyDestroyed(extractType(T), fields)
@@ -962,6 +967,7 @@ export class TransferRequest<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => TransferRequest.fromBcs(T, data),
       bcs: TransferRequest.bcs,
       fromJSONField: (field: any) => TransferRequest.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => TransferRequest.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => TransferRequest.fetch(client, T, id),
       new: (fields: TransferRequestFields<ToPhantomTypeArgument<T>>) => {
         return new TransferRequest(extractType(T), fields)

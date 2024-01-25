@@ -56,6 +56,7 @@ export class Random {
       fromBcs: (data: Uint8Array) => Random.fromBcs(data),
       bcs: Random.bcs,
       fromJSONField: (field: any) => Random.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Random.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Random.fetch(client, id),
       new: (fields: RandomFields) => {
         return new Random(fields)
@@ -193,6 +194,7 @@ export class RandomInner {
       fromBcs: (data: Uint8Array) => RandomInner.fromBcs(data),
       bcs: RandomInner.bcs,
       fromJSONField: (field: any) => RandomInner.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => RandomInner.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => RandomInner.fetch(client, id),
       new: (fields: RandomInnerFields) => {
         return new RandomInner(fields)

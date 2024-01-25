@@ -70,6 +70,7 @@ export class VecSet<K extends TypeArgument> {
       fromBcs: (data: Uint8Array) => VecSet.fromBcs(K, data),
       bcs: VecSet.bcs(toBcs(K)),
       fromJSONField: (field: any) => VecSet.fromJSONField(K, field),
+      fromJSON: (json: Record<string, any>) => VecSet.fromJSON(K, json),
       fetch: async (client: SuiClient, id: string) => VecSet.fetch(client, K, id),
       new: (fields: VecSetFields<ToTypeArgument<K>>) => {
         return new VecSet(extractType(K), fields)

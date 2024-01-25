@@ -72,6 +72,7 @@ export class Option<Element extends TypeArgument> {
       fromBcs: (data: Uint8Array) => Option.fromBcs(Element, data),
       bcs: Option.bcs(toBcs(Element)),
       fromJSONField: (field: any) => Option.fromJSONField(Element, field),
+      fromJSON: (json: Record<string, any>) => Option.fromJSON(Element, json),
       fetch: async (client: SuiClient, id: string) => Option.fetch(client, Element, id),
       new: (fields: OptionFields<ToTypeArgument<Element>>) => {
         return new Option(extractType(Element), fields)

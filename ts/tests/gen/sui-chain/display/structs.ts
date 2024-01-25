@@ -76,6 +76,7 @@ export class Display<T0 extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => Display.fromBcs(T0, data),
       bcs: Display.bcs,
       fromJSONField: (field: any) => Display.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => Display.fromJSON(T0, json),
       fetch: async (client: SuiClient, id: string) => Display.fetch(client, T0, id),
       new: (fields: DisplayFields<ToPhantomTypeArgument<T0>>) => {
         return new Display(extractType(T0), fields)
@@ -255,6 +256,7 @@ export class DisplayCreated<T0 extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => DisplayCreated.fromBcs(T0, data),
       bcs: DisplayCreated.bcs,
       fromJSONField: (field: any) => DisplayCreated.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => DisplayCreated.fromJSON(T0, json),
       fetch: async (client: SuiClient, id: string) => DisplayCreated.fetch(client, T0, id),
       new: (fields: DisplayCreatedFields<ToPhantomTypeArgument<T0>>) => {
         return new DisplayCreated(extractType(T0), fields)
@@ -423,6 +425,7 @@ export class VersionUpdated<T0 extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => VersionUpdated.fromBcs(T0, data),
       bcs: VersionUpdated.bcs,
       fromJSONField: (field: any) => VersionUpdated.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => VersionUpdated.fromJSON(T0, json),
       fetch: async (client: SuiClient, id: string) => VersionUpdated.fetch(client, T0, id),
       new: (fields: VersionUpdatedFields<ToPhantomTypeArgument<T0>>) => {
         return new VersionUpdated(extractType(T0), fields)

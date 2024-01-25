@@ -48,6 +48,7 @@ export class ID {
       fromBcs: (data: Uint8Array) => ID.fromBcs(data),
       bcs: ID.bcs,
       fromJSONField: (field: any) => ID.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => ID.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => ID.fetch(client, id),
       new: (fields: IDFields) => {
         return new ID(fields)
@@ -168,6 +169,7 @@ export class UID {
       fromBcs: (data: Uint8Array) => UID.fromBcs(data),
       bcs: UID.bcs,
       fromJSONField: (field: any) => UID.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => UID.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => UID.fetch(client, id),
       new: (fields: UIDFields) => {
         return new UID(fields)

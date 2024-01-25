@@ -63,6 +63,7 @@ export class Borrow {
       fromBcs: (data: Uint8Array) => Borrow.fromBcs(data),
       bcs: Borrow.bcs,
       fromJSONField: (field: any) => Borrow.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Borrow.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Borrow.fetch(client, id),
       new: (fields: BorrowFields) => {
         return new Borrow(fields)
@@ -191,6 +192,7 @@ export class Item {
       fromBcs: (data: Uint8Array) => Item.fromBcs(data),
       bcs: Item.bcs,
       fromJSONField: (field: any) => Item.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Item.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Item.fetch(client, id),
       new: (fields: ItemFields) => {
         return new Item(fields)
@@ -323,6 +325,7 @@ export class ItemDelisted<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => ItemDelisted.fromBcs(T, data),
       bcs: ItemDelisted.bcs,
       fromJSONField: (field: any) => ItemDelisted.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => ItemDelisted.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => ItemDelisted.fetch(client, T, id),
       new: (fields: ItemDelistedFields<ToPhantomTypeArgument<T>>) => {
         return new ItemDelisted(extractType(T), fields)
@@ -497,6 +500,7 @@ export class ItemListed<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => ItemListed.fromBcs(T, data),
       bcs: ItemListed.bcs,
       fromJSONField: (field: any) => ItemListed.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => ItemListed.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => ItemListed.fetch(client, T, id),
       new: (fields: ItemListedFields<ToPhantomTypeArgument<T>>) => {
         return new ItemListed(extractType(T), fields)
@@ -679,6 +683,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => ItemPurchased.fromBcs(T, data),
       bcs: ItemPurchased.bcs,
       fromJSONField: (field: any) => ItemPurchased.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => ItemPurchased.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => ItemPurchased.fetch(client, T, id),
       new: (fields: ItemPurchasedFields<ToPhantomTypeArgument<T>>) => {
         return new ItemPurchased(extractType(T), fields)
@@ -852,6 +857,7 @@ export class Kiosk {
       fromBcs: (data: Uint8Array) => Kiosk.fromBcs(data),
       bcs: Kiosk.bcs,
       fromJSONField: (field: any) => Kiosk.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Kiosk.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Kiosk.fetch(client, id),
       new: (fields: KioskFields) => {
         return new Kiosk(fields)
@@ -1004,6 +1010,7 @@ export class KioskOwnerCap {
       fromBcs: (data: Uint8Array) => KioskOwnerCap.fromBcs(data),
       bcs: KioskOwnerCap.bcs,
       fromJSONField: (field: any) => KioskOwnerCap.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => KioskOwnerCap.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => KioskOwnerCap.fetch(client, id),
       new: (fields: KioskOwnerCapFields) => {
         return new KioskOwnerCap(fields)
@@ -1135,6 +1142,7 @@ export class Listing {
       fromBcs: (data: Uint8Array) => Listing.fromBcs(data),
       bcs: Listing.bcs,
       fromJSONField: (field: any) => Listing.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Listing.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Listing.fetch(client, id),
       new: (fields: ListingFields) => {
         return new Listing(fields)
@@ -1263,6 +1271,7 @@ export class Lock {
       fromBcs: (data: Uint8Array) => Lock.fromBcs(data),
       bcs: Lock.bcs,
       fromJSONField: (field: any) => Lock.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Lock.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Lock.fetch(client, id),
       new: (fields: LockFields) => {
         return new Lock(fields)
@@ -1401,6 +1410,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> {
       fromBcs: (data: Uint8Array) => PurchaseCap.fromBcs(T, data),
       bcs: PurchaseCap.bcs,
       fromJSONField: (field: any) => PurchaseCap.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => PurchaseCap.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => PurchaseCap.fetch(client, T, id),
       new: (fields: PurchaseCapFields<ToPhantomTypeArgument<T>>) => {
         return new PurchaseCap(extractType(T), fields)

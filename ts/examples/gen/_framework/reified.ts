@@ -46,6 +46,7 @@ export interface StructClassReified<T extends StructClass, Fields> {
   fromFieldsWithTypes(item: FieldsWithTypes): T
   fromBcs(data: Uint8Array): T
   fromJSONField: (field: any) => T
+  fromJSON: (json: Record<string, any>) => T
   fetch: (client: SuiClient, id: string) => Promise<T>
   new: (fields: Fields) => T
   kind: 'StructClassReified'

@@ -52,6 +52,7 @@ export class Clock {
       fromBcs: (data: Uint8Array) => Clock.fromBcs(data),
       bcs: Clock.bcs,
       fromJSONField: (field: any) => Clock.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Clock.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Clock.fetch(client, id),
       new: (fields: ClockFields) => {
         return new Clock(fields)

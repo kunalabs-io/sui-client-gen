@@ -59,6 +59,7 @@ export class EXAMPLE_COIN {
       fromBcs: (data: Uint8Array) => EXAMPLE_COIN.fromBcs(data),
       bcs: EXAMPLE_COIN.bcs,
       fromJSONField: (field: any) => EXAMPLE_COIN.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => EXAMPLE_COIN.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => EXAMPLE_COIN.fetch(client, id),
       new: (fields: EXAMPLE_COINFields) => {
         return new EXAMPLE_COIN(fields)
@@ -188,6 +189,7 @@ export class Faucet {
       fromBcs: (data: Uint8Array) => Faucet.fromBcs(data),
       bcs: Faucet.bcs,
       fromJSONField: (field: any) => Faucet.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Faucet.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Faucet.fetch(client, id),
       new: (fields: FaucetFields) => {
         return new Faucet(fields)

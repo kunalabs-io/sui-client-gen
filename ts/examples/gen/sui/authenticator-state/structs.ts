@@ -62,6 +62,7 @@ export class ActiveJwk {
       fromBcs: (data: Uint8Array) => ActiveJwk.fromBcs(data),
       bcs: ActiveJwk.bcs,
       fromJSONField: (field: any) => ActiveJwk.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => ActiveJwk.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => ActiveJwk.fetch(client, id),
       new: (fields: ActiveJwkFields) => {
         return new ActiveJwk(fields)
@@ -201,6 +202,7 @@ export class AuthenticatorState {
       fromBcs: (data: Uint8Array) => AuthenticatorState.fromBcs(data),
       bcs: AuthenticatorState.bcs,
       fromJSONField: (field: any) => AuthenticatorState.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => AuthenticatorState.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => AuthenticatorState.fetch(client, id),
       new: (fields: AuthenticatorStateFields) => {
         return new AuthenticatorState(fields)
@@ -339,6 +341,7 @@ export class AuthenticatorStateInner {
       fromBcs: (data: Uint8Array) => AuthenticatorStateInner.fromBcs(data),
       bcs: AuthenticatorStateInner.bcs,
       fromJSONField: (field: any) => AuthenticatorStateInner.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => AuthenticatorStateInner.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => AuthenticatorStateInner.fetch(client, id),
       new: (fields: AuthenticatorStateInnerFields) => {
         return new AuthenticatorStateInner(fields)
@@ -489,6 +492,7 @@ export class JWK {
       fromBcs: (data: Uint8Array) => JWK.fromBcs(data),
       bcs: JWK.bcs,
       fromJSONField: (field: any) => JWK.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => JWK.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => JWK.fetch(client, id),
       new: (fields: JWKFields) => {
         return new JWK(fields)
@@ -630,6 +634,7 @@ export class JwkId {
       fromBcs: (data: Uint8Array) => JwkId.fromBcs(data),
       bcs: JwkId.bcs,
       fromJSONField: (field: any) => JwkId.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => JwkId.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => JwkId.fetch(client, id),
       new: (fields: JwkIdFields) => {
         return new JwkId(fields)

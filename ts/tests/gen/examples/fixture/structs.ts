@@ -75,6 +75,7 @@ export class Bar {
       fromBcs: (data: Uint8Array) => Bar.fromBcs(data),
       bcs: Bar.bcs,
       fromJSONField: (field: any) => Bar.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Bar.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Bar.fetch(client, id),
       new: (fields: BarFields) => {
         return new Bar(fields)
@@ -198,6 +199,7 @@ export class Dummy {
       fromBcs: (data: Uint8Array) => Dummy.fromBcs(data),
       bcs: Dummy.bcs,
       fromJSONField: (field: any) => Dummy.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Dummy.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Dummy.fetch(client, id),
       new: (fields: DummyFields) => {
         return new Dummy(fields)
@@ -375,6 +377,7 @@ export class Foo<T extends TypeArgument> {
       fromBcs: (data: Uint8Array) => Foo.fromBcs(T, data),
       bcs: Foo.bcs(toBcs(T)),
       fromJSONField: (field: any) => Foo.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => Foo.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => Foo.fetch(client, T, id),
       new: (fields: FooFields<ToTypeArgument<T>>) => {
         return new Foo(extractType(T), fields)
@@ -714,6 +717,7 @@ export class WithGenericField<T extends TypeArgument> {
       fromBcs: (data: Uint8Array) => WithGenericField.fromBcs(T, data),
       bcs: WithGenericField.bcs(toBcs(T)),
       fromJSONField: (field: any) => WithGenericField.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => WithGenericField.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => WithGenericField.fetch(client, T, id),
       new: (fields: WithGenericFieldFields<ToTypeArgument<T>>) => {
         return new WithGenericField(extractType(T), fields)
@@ -940,6 +944,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
       fromBcs: (data: Uint8Array) => WithSpecialTypes.fromBcs([T, U], data),
       bcs: WithSpecialTypes.bcs(toBcs(U)),
       fromJSONField: (field: any) => WithSpecialTypes.fromJSONField([T, U], field),
+      fromJSON: (json: Record<string, any>) => WithSpecialTypes.fromJSON([T, U], json),
       fetch: async (client: SuiClient, id: string) => WithSpecialTypes.fetch(client, [T, U], id),
       new: (fields: WithSpecialTypesFields<ToPhantomTypeArgument<T>, ToTypeArgument<U>>) => {
         return new WithSpecialTypes([extractType(T), extractType(U)], fields)
@@ -1322,6 +1327,8 @@ export class WithSpecialTypesAsGenerics<
       ),
       fromJSONField: (field: any) =>
         WithSpecialTypesAsGenerics.fromJSONField([T0, T1, T2, T3, T4, T5, T6, T7], field),
+      fromJSON: (json: Record<string, any>) =>
+        WithSpecialTypesAsGenerics.fromJSON([T0, T1, T2, T3, T4, T5, T6, T7], json),
       fetch: async (client: SuiClient, id: string) =>
         WithSpecialTypesAsGenerics.fetch(client, [T0, T1, T2, T3, T4, T5, T6, T7], id),
       new: (
@@ -1772,6 +1779,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> {
       fromBcs: (data: Uint8Array) => WithSpecialTypesInVectors.fromBcs(T, data),
       bcs: WithSpecialTypesInVectors.bcs(toBcs(T)),
       fromJSONField: (field: any) => WithSpecialTypesInVectors.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => WithSpecialTypesInVectors.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) =>
         WithSpecialTypesInVectors.fetch(client, T, id),
       new: (fields: WithSpecialTypesInVectorsFields<ToTypeArgument<T>>) => {
@@ -2010,6 +2018,7 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> {
       fromBcs: (data: Uint8Array) => WithTwoGenerics.fromBcs([T, U], data),
       bcs: WithTwoGenerics.bcs(toBcs(T), toBcs(U)),
       fromJSONField: (field: any) => WithTwoGenerics.fromJSONField([T, U], field),
+      fromJSON: (json: Record<string, any>) => WithTwoGenerics.fromJSON([T, U], json),
       fetch: async (client: SuiClient, id: string) => WithTwoGenerics.fetch(client, [T, U], id),
       new: (fields: WithTwoGenericsFields<ToTypeArgument<T>, ToTypeArgument<U>>) => {
         return new WithTwoGenerics([extractType(T), extractType(U)], fields)
