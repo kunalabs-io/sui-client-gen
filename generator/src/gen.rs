@@ -1470,11 +1470,6 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let wraps_to_type_argument = ExtendsOrWraps::Wraps(quote!($to_type_argument));
         let wraps_phantom_to_type_argument = ExtendsOrWraps::Wraps(quote!($to_phantom_type_argument));
 
-        // FooFields<ToTypeArgument<T>, PhantomToTypeArgument<PhantomTypeArgument>>
-        let fields_if_for_reified = &quote!($(
-            self.gen_fields_if_name_with_params(strct, &wraps_to_type_argument, &wraps_phantom_to_type_argument)
-        ));
-
         // <T extends Reified<TypeArgument, any>, P extends PhantomReified<PhantomTypeArgument>>
         let params_toks_for_reified = &{
             let toks = type_params_str.iter().enumerate().map(|(idx, param)| {
@@ -1583,8 +1578,12 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let is_option = self.get_full_name_with_address(strct) == "0x1::option::Option";
 
         quote_in! { *tokens =>
-            export type $(&struct_name)Reified$(params_toks_for_reified) =
-                $reified<$(&struct_name)$(params_toks_for_to_type_argument), $fields_if_for_reified>;$['\n']
+            export type $(&struct_name)Reified$(self.gen_params_toks(
+                strct, type_params_str.clone(), &extends_type_argument, &extends_phantom_type_argument
+            )) = $reified<
+                $(&struct_name)$(self.gen_params_toks(strct, type_params_str.clone(), &ExtendsOrWraps::None, &ExtendsOrWraps::None)),
+                $(&struct_name)Fields$(self.gen_params_toks(strct, type_params_str.clone(), &ExtendsOrWraps::None, &ExtendsOrWraps::None))
+            >;$['\n']
         }
 
         tokens.append("// eslint-disable-next-line @typescript-eslint/no-unused-vars");
@@ -1648,7 +1647,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 static reified$(params_toks_for_reified)(
                     $(for param in type_params_str.iter() join (, ) => $param: $param)
                 ): $(&struct_name)Reified$(
-                    self.gen_params_toks(strct, type_params_str.clone(), &ExtendsOrWraps::None, &ExtendsOrWraps::None)
+                    self.gen_params_toks(strct, type_params_str.clone(), &wraps_to_type_argument, &wraps_phantom_to_type_argument)
                 ) {
                     return {
                         typeName: $(&struct_name).$$typeName,
