@@ -2055,7 +2055,8 @@ export interface WithTwoGenericsFields<T extends TypeArgument, U extends TypeArg
 
 export type WithTwoGenericsReified<T extends TypeArgument, U extends TypeArgument> = Reified<
   WithTwoGenerics<T, U>,
-  WithTwoGenericsFields<T, U>
+  WithTwoGenericsFields<T, U>,
+  'key+store'
 >
 
 export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> {
@@ -2084,10 +2085,10 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> {
     this.genericField2 = fields.genericField2
   }
 
-  static reified<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
-    T: T,
-    U: U
-  ): WithTwoGenericsReified<ToTypeArgument<T>, ToTypeArgument<U>> {
+  static reified<
+    T extends Reified<TypeArgument, any, 'store'>,
+    U extends Reified<TypeArgument, any, 'store'>,
+  >(T: T, U: U): WithTwoGenericsReified<ToTypeArgument<T>, ToTypeArgument<U>> {
     return {
       typeName: WithTwoGenerics.$typeName,
       fullTypeName: composeSuiType(
@@ -2108,6 +2109,7 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> {
       new: (fields: WithTwoGenericsFields<ToTypeArgument<T>, ToTypeArgument<U>>) => {
         return new WithTwoGenerics([extractType(T), extractType(U)], fields)
       },
+      caps: 'key+store',
       kind: 'StructClassReified',
     }
   }

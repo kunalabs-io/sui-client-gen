@@ -37,10 +37,12 @@ export class Vector<T extends TypeArgument> implements VectorClass {
 export type Primitive = 'bool' | 'u8' | 'u16' | 'u32' | 'u64' | 'u128' | 'u256' | 'address'
 export type TypeArgument = StructClass | Primitive | VectorClass
 
-export interface StructClassReified<T extends StructClass, Fields> {
+export type Capabilities = '' | 'key' | 'key+store' | 'store+copy' | 'store' // ... + all other possible combinations
+
+export interface StructClassReified<T extends StructClass, Fields, Caps extends Capabilities> {
   typeName: T['$typeName'] // e.g., '0x2::balance::Balance', without type arguments
   fullTypeName: ToTypeStr<T> // e.g., '0x2::balance::Balance<0x2::sui:SUI>'
-  typeArgs: Array<Reified<TypeArgument, Fields> | PhantomReified<string>>
+  typeArgs: Array<Reified<TypeArgument, any, any> | PhantomReified<string>>
   bcs: BcsType<any>
   fromFields(fields: Record<string, any>): T
   fromFieldsWithTypes(item: FieldsWithTypes): T
@@ -49,6 +51,7 @@ export interface StructClassReified<T extends StructClass, Fields> {
   fromJSON: (json: Record<string, any>) => T
   fetch: (client: SuiClient, id: string) => Promise<T>
   new: (fields: Fields) => T
+  caps: Caps // we can also store the caps here to access them at runtime
   kind: 'StructClassReified'
 }
 
@@ -61,10 +64,10 @@ export interface VectorClassReified<T extends VectorClass> {
   kind: 'VectorClassReified'
 }
 
-export type Reified<T extends TypeArgument, Fields> = T extends Primitive
+export type Reified<T extends TypeArgument, Fields, Caps extends Capabilities> = T extends Primitive
   ? Primitive
   : T extends StructClass
-  ? StructClassReified<T, Fields>
+  ? StructClassReified<T, Fields, Caps>
   : T extends VectorClass
   ? VectorClassReified<T>
   : never
