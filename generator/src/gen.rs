@@ -1372,6 +1372,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
     pub fn gen_struct_class(&mut self, tokens: &mut js::Tokens, strct: &StructEnv) {
         let fields_with_types = &self.framework.import("util", "FieldsWithTypes");
         let compose_sui_type = &self.framework.import("util", "composeSuiType");
+        let struct_class = &self.framework.import("reified", "StructClass");
         let field_to_json = &self.framework.import("reified", "fieldToJSON");
         let type_argument = &self.framework.import("reified", "TypeArgument");
         let phantom_type_argument = &self.framework.import("reified", "PhantomTypeArgument");
@@ -1562,7 +1563,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
         tokens.push();
         quote_in! { *tokens =>
-            export class $(&struct_name)$(self.gen_params_toks(strct, type_params_str.clone(), &extends_type_argument, &extends_phantom_type_argument)) {
+            export class $(&struct_name)$(self.gen_params_toks(strct, type_params_str.clone(), &extends_type_argument, &extends_phantom_type_argument)) implements $struct_class {
                 static readonly $$typeName = $[str]($[const](self.get_full_name_with_address(strct)));
                 static readonly $$numTypeParams = $(type_params.len());$['\n']
 
