@@ -1,6 +1,7 @@
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   decodeFromFields,
@@ -27,7 +28,7 @@ export interface ClockFields {
 
 export type ClockReified = Reified<Clock, ClockFields>
 
-export class Clock {
+export class Clock implements StructClass {
   static readonly $typeName = '0x2::clock::Clock'
   static readonly $numTypeParams = 0
 

@@ -1,6 +1,7 @@
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeArgument,
   ToTypeStr,
@@ -38,7 +39,7 @@ export type FieldReified<Name extends TypeArgument, Value extends TypeArgument> 
   FieldFields<Name, Value>
 >
 
-export class Field<Name extends TypeArgument, Value extends TypeArgument> {
+export class Field<Name extends TypeArgument, Value extends TypeArgument> implements StructClass {
   static readonly $typeName = '0x2::dynamic_field::Field'
   static readonly $numTypeParams = 2
 

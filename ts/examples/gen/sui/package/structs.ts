@@ -3,6 +3,7 @@ import { String } from '../../_dependencies/source/0x1/ascii/structs'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   Vector,
@@ -32,7 +33,7 @@ export interface PublisherFields {
 
 export type PublisherReified = Reified<Publisher, PublisherFields>
 
-export class Publisher {
+export class Publisher implements StructClass {
   static readonly $typeName = '0x2::package::Publisher'
   static readonly $numTypeParams = 0
 
@@ -180,7 +181,7 @@ export interface UpgradeCapFields {
 
 export type UpgradeCapReified = Reified<UpgradeCap, UpgradeCapFields>
 
-export class UpgradeCap {
+export class UpgradeCap implements StructClass {
   static readonly $typeName = '0x2::package::UpgradeCap'
   static readonly $numTypeParams = 0
 
@@ -333,7 +334,7 @@ export interface UpgradeReceiptFields {
 
 export type UpgradeReceiptReified = Reified<UpgradeReceipt, UpgradeReceiptFields>
 
-export class UpgradeReceipt {
+export class UpgradeReceipt implements StructClass {
   static readonly $typeName = '0x2::package::UpgradeReceipt'
   static readonly $numTypeParams = 0
 
@@ -477,7 +478,7 @@ export interface UpgradeTicketFields {
 
 export type UpgradeTicketReified = Reified<UpgradeTicket, UpgradeTicketFields>
 
-export class UpgradeTicket {
+export class UpgradeTicket implements StructClass {
   static readonly $typeName = '0x2::package::UpgradeTicket'
   static readonly $numTypeParams = 0
 

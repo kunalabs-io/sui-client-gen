@@ -5,6 +5,7 @@ import {
   PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
+  StructClass,
   ToField,
   ToPhantomTypeArgument,
   ToTypeStr,
@@ -38,7 +39,7 @@ export interface RuleKeyFields<T extends PhantomTypeArgument> {
 
 export type RuleKeyReified<T extends PhantomTypeArgument> = Reified<RuleKey<T>, RuleKeyFields<T>>
 
-export class RuleKey<T extends PhantomTypeArgument> {
+export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::transfer_policy::RuleKey'
   static readonly $numTypeParams = 1
 
@@ -216,7 +217,7 @@ export type TransferPolicyReified<T extends PhantomTypeArgument> = Reified<
   TransferPolicyFields<T>
 >
 
-export class TransferPolicy<T extends PhantomTypeArgument> {
+export class TransferPolicy<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicy'
   static readonly $numTypeParams = 1
 
@@ -410,7 +411,7 @@ export type TransferPolicyCapReified<T extends PhantomTypeArgument> = Reified<
   TransferPolicyCapFields<T>
 >
 
-export class TransferPolicyCap<T extends PhantomTypeArgument> {
+export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyCap'
   static readonly $numTypeParams = 1
 
@@ -594,7 +595,7 @@ export type TransferPolicyCreatedReified<T extends PhantomTypeArgument> = Reifie
   TransferPolicyCreatedFields<T>
 >
 
-export class TransferPolicyCreated<T extends PhantomTypeArgument> {
+export class TransferPolicyCreated<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyCreated'
   static readonly $numTypeParams = 1
 
@@ -775,7 +776,7 @@ export type TransferPolicyDestroyedReified<T extends PhantomTypeArgument> = Reif
   TransferPolicyDestroyedFields<T>
 >
 
-export class TransferPolicyDestroyed<T extends PhantomTypeArgument> {
+export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::transfer_policy::TransferPolicyDestroyed'
   static readonly $numTypeParams = 1
 
@@ -961,7 +962,7 @@ export type TransferRequestReified<T extends PhantomTypeArgument> = Reified<
   TransferRequestFields<T>
 >
 
-export class TransferRequest<T extends PhantomTypeArgument> {
+export class TransferRequest<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::transfer_policy::TransferRequest'
   static readonly $numTypeParams = 1
 

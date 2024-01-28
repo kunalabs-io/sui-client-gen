@@ -3,6 +3,7 @@ import {
   PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
+  StructClass,
   ToField,
   ToPhantomTypeArgument,
   ToTypeStr,
@@ -31,7 +32,7 @@ export interface SupplyFields<T0 extends PhantomTypeArgument> {
 
 export type SupplyReified<T0 extends PhantomTypeArgument> = Reified<Supply<T0>, SupplyFields<T0>>
 
-export class Supply<T0 extends PhantomTypeArgument> {
+export class Supply<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::balance::Supply'
   static readonly $numTypeParams = 1
 
@@ -200,7 +201,7 @@ export interface BalanceFields<T0 extends PhantomTypeArgument> {
 
 export type BalanceReified<T0 extends PhantomTypeArgument> = Reified<Balance<T0>, BalanceFields<T0>>
 
-export class Balance<T0 extends PhantomTypeArgument> {
+export class Balance<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::balance::Balance'
   static readonly $numTypeParams = 1
 

@@ -3,6 +3,7 @@ import {
   PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
+  StructClass,
   ToField,
   ToPhantomTypeArgument,
   ToTypeStr,
@@ -36,7 +37,7 @@ export type ReceivingReified<T extends PhantomTypeArgument> = Reified<
   ReceivingFields<T>
 >
 
-export class Receiving<T extends PhantomTypeArgument> {
+export class Receiving<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::transfer::Receiving'
   static readonly $numTypeParams = 1
 

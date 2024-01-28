@@ -2,6 +2,7 @@ import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeArgument,
   ToTypeStr,
@@ -37,7 +38,7 @@ export type DynamicFieldsReified<K extends TypeArgument> = Reified<
   DynamicFieldsFields<K>
 >
 
-export class DynamicFields<K extends TypeArgument> {
+export class DynamicFields<K extends TypeArgument> implements StructClass {
   static readonly $typeName = '0x2::object::DynamicFields'
   static readonly $numTypeParams = 1
 
@@ -213,7 +214,7 @@ export interface IDFields {
 
 export type IDReified = Reified<ID, IDFields>
 
-export class ID {
+export class ID implements StructClass {
   static readonly $typeName = '0x2::object::ID'
   static readonly $numTypeParams = 0
 
@@ -342,7 +343,7 @@ export interface OwnershipFields {
 
 export type OwnershipReified = Reified<Ownership, OwnershipFields>
 
-export class Ownership {
+export class Ownership implements StructClass {
   static readonly $typeName = '0x2::object::Ownership'
   static readonly $numTypeParams = 0
 
@@ -483,7 +484,7 @@ export interface UIDFields {
 
 export type UIDReified = Reified<UID, UIDFields>
 
-export class UID {
+export class UID implements StructClass {
   static readonly $typeName = '0x2::object::UID'
   static readonly $numTypeParams = 0
 

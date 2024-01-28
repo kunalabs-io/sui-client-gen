@@ -4,6 +4,7 @@ import {
   PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
+  StructClass,
   ToField,
   ToPhantomTypeArgument,
   ToTypeArgument,
@@ -43,7 +44,9 @@ export type LinkedTableReified<K extends TypeArgument, V extends PhantomTypeArgu
   LinkedTableFields<K, V>
 >
 
-export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument> {
+export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
+  implements StructClass
+{
   static readonly $typeName = '0x2::linked_table::LinkedTable'
   static readonly $numTypeParams = 2
 
@@ -265,7 +268,7 @@ export type NodeReified<K extends TypeArgument, V extends TypeArgument> = Reifie
   NodeFields<K, V>
 >
 
-export class Node<K extends TypeArgument, V extends TypeArgument> {
+export class Node<K extends TypeArgument, V extends TypeArgument> implements StructClass {
   static readonly $typeName = '0x2::linked_table::Node'
   static readonly $numTypeParams = 2
 

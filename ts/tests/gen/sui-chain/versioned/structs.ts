@@ -1,6 +1,7 @@
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   decodeFromFields,
@@ -27,7 +28,7 @@ export interface VersionedFields {
 
 export type VersionedReified = Reified<Versioned, VersionedFields>
 
-export class Versioned {
+export class Versioned implements StructClass {
   static readonly $typeName = '0x2::versioned::Versioned'
   static readonly $numTypeParams = 0
 
@@ -166,7 +167,7 @@ export interface VersionChangeCapFields {
 
 export type VersionChangeCapReified = Reified<VersionChangeCap, VersionChangeCapFields>
 
-export class VersionChangeCap {
+export class VersionChangeCap implements StructClass {
   static readonly $typeName = '0x2::versioned::VersionChangeCap'
   static readonly $numTypeParams = 0
 

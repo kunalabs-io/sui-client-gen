@@ -1,6 +1,7 @@
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   decodeFromFields,
@@ -31,7 +32,7 @@ export type StructFromOtherModuleReified = Reified<
   StructFromOtherModuleFields
 >
 
-export class StructFromOtherModule {
+export class StructFromOtherModule implements StructClass {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
   static readonly $numTypeParams = 0
@@ -172,7 +173,7 @@ export interface AddedInAnUpgradeFields {
 
 export type AddedInAnUpgradeReified = Reified<AddedInAnUpgrade, AddedInAnUpgradeFields>
 
-export class AddedInAnUpgrade {
+export class AddedInAnUpgrade implements StructClass {
   static readonly $typeName =
     '0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe::other_module::AddedInAnUpgrade'
   static readonly $numTypeParams = 0

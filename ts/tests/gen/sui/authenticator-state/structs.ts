@@ -2,6 +2,7 @@ import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   Vector,
@@ -32,7 +33,7 @@ export interface ActiveJwkFields {
 
 export type ActiveJwkReified = Reified<ActiveJwk, ActiveJwkFields>
 
-export class ActiveJwk {
+export class ActiveJwk implements StructClass {
   static readonly $typeName = '0x2::authenticator_state::ActiveJwk'
   static readonly $numTypeParams = 0
 
@@ -181,7 +182,7 @@ export interface AuthenticatorStateFields {
 
 export type AuthenticatorStateReified = Reified<AuthenticatorState, AuthenticatorStateFields>
 
-export class AuthenticatorState {
+export class AuthenticatorState implements StructClass {
   static readonly $typeName = '0x2::authenticator_state::AuthenticatorState'
   static readonly $numTypeParams = 0
 
@@ -326,7 +327,7 @@ export type AuthenticatorStateInnerReified = Reified<
   AuthenticatorStateInnerFields
 >
 
-export class AuthenticatorStateInner {
+export class AuthenticatorStateInner implements StructClass {
   static readonly $typeName = '0x2::authenticator_state::AuthenticatorStateInner'
   static readonly $numTypeParams = 0
 
@@ -481,7 +482,7 @@ export interface JWKFields {
 
 export type JWKReified = Reified<JWK, JWKFields>
 
-export class JWK {
+export class JWK implements StructClass {
   static readonly $typeName = '0x2::authenticator_state::JWK'
   static readonly $numTypeParams = 0
 
@@ -634,7 +635,7 @@ export interface JwkIdFields {
 
 export type JwkIdReified = Reified<JwkId, JwkIdFields>
 
-export class JwkId {
+export class JwkId implements StructClass {
   static readonly $typeName = '0x2::authenticator_state::JwkId'
   static readonly $numTypeParams = 0
 

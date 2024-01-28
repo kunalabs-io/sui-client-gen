@@ -3,6 +3,7 @@ import {
   PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
+  StructClass,
   ToField,
   ToPhantomTypeArgument,
   ToTypeStr,
@@ -34,7 +35,7 @@ export interface ExtensionFields {
 
 export type ExtensionReified = Reified<Extension, ExtensionFields>
 
-export class Extension {
+export class Extension implements StructClass {
   static readonly $typeName = '0x2::kiosk_extension::Extension'
   static readonly $numTypeParams = 0
 
@@ -182,7 +183,7 @@ export type ExtensionKeyReified<Ext extends PhantomTypeArgument> = Reified<
   ExtensionKeyFields<Ext>
 >
 
-export class ExtensionKey<Ext extends PhantomTypeArgument> {
+export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::kiosk_extension::ExtensionKey'
   static readonly $numTypeParams = 1
 

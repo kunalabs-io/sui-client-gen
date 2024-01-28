@@ -4,6 +4,7 @@ import {
   PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
+  StructClass,
   ToField,
   ToPhantomTypeArgument,
   ToTypeStr,
@@ -37,7 +38,7 @@ export interface BorrowFields {
 
 export type BorrowReified = Reified<Borrow, BorrowFields>
 
-export class Borrow {
+export class Borrow implements StructClass {
   static readonly $typeName = '0x2::kiosk::Borrow'
   static readonly $numTypeParams = 0
 
@@ -175,7 +176,7 @@ export interface ItemFields {
 
 export type ItemReified = Reified<Item, ItemFields>
 
-export class Item {
+export class Item implements StructClass {
   static readonly $typeName = '0x2::kiosk::Item'
   static readonly $numTypeParams = 0
 
@@ -304,7 +305,7 @@ export type ItemDelistedReified<T extends PhantomTypeArgument> = Reified<
   ItemDelistedFields<T>
 >
 
-export class ItemDelisted<T extends PhantomTypeArgument> {
+export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::kiosk::ItemDelisted'
   static readonly $numTypeParams = 1
 
@@ -489,7 +490,7 @@ export type ItemListedReified<T extends PhantomTypeArgument> = Reified<
   ItemListedFields<T>
 >
 
-export class ItemListed<T extends PhantomTypeArgument> {
+export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::kiosk::ItemListed'
   static readonly $numTypeParams = 1
 
@@ -681,7 +682,7 @@ export type ItemPurchasedReified<T extends PhantomTypeArgument> = Reified<
   ItemPurchasedFields<T>
 >
 
-export class ItemPurchased<T extends PhantomTypeArgument> {
+export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::kiosk::ItemPurchased'
   static readonly $numTypeParams = 1
 
@@ -872,7 +873,7 @@ export interface KioskFields {
 
 export type KioskReified = Reified<Kiosk, KioskFields>
 
-export class Kiosk {
+export class Kiosk implements StructClass {
   static readonly $typeName = '0x2::kiosk::Kiosk'
   static readonly $numTypeParams = 0
 
@@ -1038,7 +1039,7 @@ export interface KioskOwnerCapFields {
 
 export type KioskOwnerCapReified = Reified<KioskOwnerCap, KioskOwnerCapFields>
 
-export class KioskOwnerCap {
+export class KioskOwnerCap implements StructClass {
   static readonly $typeName = '0x2::kiosk::KioskOwnerCap'
   static readonly $numTypeParams = 0
 
@@ -1177,7 +1178,7 @@ export interface ListingFields {
 
 export type ListingReified = Reified<Listing, ListingFields>
 
-export class Listing {
+export class Listing implements StructClass {
   static readonly $typeName = '0x2::kiosk::Listing'
   static readonly $numTypeParams = 0
 
@@ -1315,7 +1316,7 @@ export interface LockFields {
 
 export type LockReified = Reified<Lock, LockFields>
 
-export class Lock {
+export class Lock implements StructClass {
   static readonly $typeName = '0x2::kiosk::Lock'
   static readonly $numTypeParams = 0
 
@@ -1446,7 +1447,7 @@ export type PurchaseCapReified<T extends PhantomTypeArgument> = Reified<
   PurchaseCapFields<T>
 >
 
-export class PurchaseCap<T extends PhantomTypeArgument> {
+export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::kiosk::PurchaseCap'
   static readonly $numTypeParams = 1
 

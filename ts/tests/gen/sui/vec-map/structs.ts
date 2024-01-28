@@ -2,6 +2,7 @@ import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeArgument,
   ToTypeStr,
@@ -38,7 +39,7 @@ export type EntryReified<K extends TypeArgument, V extends TypeArgument> = Reifi
   EntryFields<K, V>
 >
 
-export class Entry<K extends TypeArgument, V extends TypeArgument> {
+export class Entry<K extends TypeArgument, V extends TypeArgument> implements StructClass {
   static readonly $typeName = '0x2::vec_map::Entry'
   static readonly $numTypeParams = 2
 
@@ -224,7 +225,7 @@ export type VecMapReified<K extends TypeArgument, V extends TypeArgument> = Reif
   VecMapFields<K, V>
 >
 
-export class VecMap<K extends TypeArgument, V extends TypeArgument> {
+export class VecMap<K extends TypeArgument, V extends TypeArgument> implements StructClass {
   static readonly $typeName = '0x2::vec_map::VecMap'
   static readonly $numTypeParams = 2
 

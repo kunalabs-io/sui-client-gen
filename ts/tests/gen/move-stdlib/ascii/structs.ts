@@ -2,6 +2,7 @@ import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   Vector,
@@ -28,7 +29,7 @@ export interface CharFields {
 
 export type CharReified = Reified<Char, CharFields>
 
-export class Char {
+export class Char implements StructClass {
   static readonly $typeName = '0x1::ascii::Char'
   static readonly $numTypeParams = 0
 
@@ -153,7 +154,7 @@ export interface StringFields {
 
 export type StringReified = Reified<String, StringFields>
 
-export class String {
+export class String implements StructClass {
   static readonly $typeName = '0x1::ascii::String'
   static readonly $numTypeParams = 0
 

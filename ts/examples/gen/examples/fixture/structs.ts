@@ -7,6 +7,7 @@ import {
   PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
+  StructClass,
   ToField,
   ToPhantomTypeArgument,
   ToTypeArgument,
@@ -46,7 +47,7 @@ export interface BarFields {
 
 export type BarReified = Reified<Bar, BarFields>
 
-export class Bar {
+export class Bar implements StructClass {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
   static readonly $numTypeParams = 0
@@ -177,7 +178,7 @@ export interface DummyFields {
 
 export type DummyReified = Reified<Dummy, DummyFields>
 
-export class Dummy {
+export class Dummy implements StructClass {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
   static readonly $numTypeParams = 0
@@ -323,7 +324,7 @@ export interface FooFields<T extends TypeArgument> {
 
 export type FooReified<T extends TypeArgument> = Reified<Foo<T>, FooFields<T>>
 
-export class Foo<T extends TypeArgument> {
+export class Foo<T extends TypeArgument> implements StructClass {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo'
   static readonly $numTypeParams = 1
@@ -699,7 +700,7 @@ export type WithGenericFieldReified<T extends TypeArgument> = Reified<
   WithGenericFieldFields<T>
 >
 
-export class WithGenericField<T extends TypeArgument> {
+export class WithGenericField<T extends TypeArgument> implements StructClass {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField'
   static readonly $numTypeParams = 1
@@ -905,7 +906,9 @@ export type WithSpecialTypesReified<
   U extends TypeArgument,
 > = Reified<WithSpecialTypes<T, U>, WithSpecialTypesFields<T, U>>
 
-export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgument> {
+export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgument>
+  implements StructClass
+{
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes'
   static readonly $numTypeParams = 2
@@ -1254,7 +1257,8 @@ export class WithSpecialTypesAsGenerics<
   T5 extends TypeArgument,
   T6 extends TypeArgument,
   T7 extends TypeArgument,
-> {
+> implements StructClass
+{
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics'
   static readonly $numTypeParams = 8
@@ -1801,7 +1805,7 @@ export type WithSpecialTypesInVectorsReified<T extends TypeArgument> = Reified<
   WithSpecialTypesInVectorsFields<T>
 >
 
-export class WithSpecialTypesInVectors<T extends TypeArgument> {
+export class WithSpecialTypesInVectors<T extends TypeArgument> implements StructClass {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors'
   static readonly $numTypeParams = 1
@@ -2058,7 +2062,9 @@ export type WithTwoGenericsReified<T extends TypeArgument, U extends TypeArgumen
   WithTwoGenericsFields<T, U>
 >
 
-export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> {
+export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
+  implements StructClass
+{
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics'
   static readonly $numTypeParams = 2

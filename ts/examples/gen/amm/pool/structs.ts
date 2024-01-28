@@ -5,6 +5,7 @@ import {
   PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
+  StructClass,
   ToField,
   ToPhantomTypeArgument,
   ToTypeStr,
@@ -39,7 +40,7 @@ export interface AdminCapFields {
 
 export type AdminCapReified = Reified<AdminCap, AdminCapFields>
 
-export class AdminCap {
+export class AdminCap implements StructClass {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
   static readonly $numTypeParams = 0
@@ -173,7 +174,9 @@ export type LPReified<A extends PhantomTypeArgument, B extends PhantomTypeArgume
   LPFields<A, B>
 >
 
-export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
+export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
+  implements StructClass
+{
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP'
   static readonly $numTypeParams = 2
@@ -377,7 +380,9 @@ export type PoolReified<A extends PhantomTypeArgument, B extends PhantomTypeArgu
   PoolFields<A, B>
 >
 
-export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
+export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
+  implements StructClass
+{
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool'
   static readonly $numTypeParams = 2
@@ -636,7 +641,7 @@ export interface PoolCreationEventFields {
 
 export type PoolCreationEventReified = Reified<PoolCreationEvent, PoolCreationEventFields>
 
-export class PoolCreationEvent {
+export class PoolCreationEvent implements StructClass {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
   static readonly $numTypeParams = 0
@@ -775,7 +780,7 @@ export interface PoolRegistryFields {
 
 export type PoolRegistryReified = Reified<PoolRegistry, PoolRegistryFields>
 
-export class PoolRegistry {
+export class PoolRegistry implements StructClass {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
   static readonly $numTypeParams = 0
@@ -930,7 +935,7 @@ export interface PoolRegistryItemFields {
 
 export type PoolRegistryItemReified = Reified<PoolRegistryItem, PoolRegistryItemFields>
 
-export class PoolRegistryItem {
+export class PoolRegistryItem implements StructClass {
   static readonly $typeName =
     '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
   static readonly $numTypeParams = 0

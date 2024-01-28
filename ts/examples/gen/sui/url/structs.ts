@@ -2,6 +2,7 @@ import { String } from '../../_dependencies/source/0x1/ascii/structs'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   decodeFromFields,
@@ -26,7 +27,7 @@ export interface UrlFields {
 
 export type UrlReified = Reified<Url, UrlFields>
 
-export class Url {
+export class Url implements StructClass {
   static readonly $typeName = '0x2::url::Url'
   static readonly $numTypeParams = 0
 

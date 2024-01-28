@@ -1,6 +1,7 @@
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   decodeFromFields,
@@ -27,7 +28,7 @@ export interface ObjectBagFields {
 
 export type ObjectBagReified = Reified<ObjectBag, ObjectBagFields>
 
-export class ObjectBag {
+export class ObjectBag implements StructClass {
   static readonly $typeName = '0x2::object_bag::ObjectBag'
   static readonly $numTypeParams = 0
 

@@ -3,6 +3,7 @@ import {
   PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
+  StructClass,
   ToField,
   ToPhantomTypeArgument,
   ToTypeStr,
@@ -39,7 +40,7 @@ export interface RuleKeyFields<T extends PhantomTypeArgument> {
 
 export type RuleKeyReified<T extends PhantomTypeArgument> = Reified<RuleKey<T>, RuleKeyFields<T>>
 
-export class RuleKey<T extends PhantomTypeArgument> {
+export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::token::RuleKey'
   static readonly $numTypeParams = 1
 
@@ -220,7 +221,7 @@ export type ActionRequestReified<T extends PhantomTypeArgument> = Reified<
   ActionRequestFields<T>
 >
 
-export class ActionRequest<T extends PhantomTypeArgument> {
+export class ActionRequest<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::token::ActionRequest'
   static readonly $numTypeParams = 1
 
@@ -452,7 +453,7 @@ export interface TokenFields<T extends PhantomTypeArgument> {
 
 export type TokenReified<T extends PhantomTypeArgument> = Reified<Token<T>, TokenFields<T>>
 
-export class Token<T extends PhantomTypeArgument> {
+export class Token<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::token::Token'
   static readonly $numTypeParams = 1
 
@@ -637,7 +638,7 @@ export type TokenPolicyReified<T extends PhantomTypeArgument> = Reified<
   TokenPolicyFields<T>
 >
 
-export class TokenPolicy<T extends PhantomTypeArgument> {
+export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::token::TokenPolicy'
   static readonly $numTypeParams = 1
 
@@ -837,7 +838,7 @@ export type TokenPolicyCapReified<T extends PhantomTypeArgument> = Reified<
   TokenPolicyCapFields<T>
 >
 
-export class TokenPolicyCap<T extends PhantomTypeArgument> {
+export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::token::TokenPolicyCap'
   static readonly $numTypeParams = 1
 
@@ -1021,7 +1022,7 @@ export type TokenPolicyCreatedReified<T extends PhantomTypeArgument> = Reified<
   TokenPolicyCreatedFields<T>
 >
 
-export class TokenPolicyCreated<T extends PhantomTypeArgument> {
+export class TokenPolicyCreated<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::token::TokenPolicyCreated'
   static readonly $numTypeParams = 1
 

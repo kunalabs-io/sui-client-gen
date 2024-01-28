@@ -6,6 +6,7 @@ import {
   PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
+  StructClass,
   ToField,
   ToPhantomTypeArgument,
   ToTypeStr,
@@ -39,7 +40,7 @@ export interface CoinFields<T extends PhantomTypeArgument> {
 
 export type CoinReified<T extends PhantomTypeArgument> = Reified<Coin<T>, CoinFields<T>>
 
-export class Coin<T extends PhantomTypeArgument> {
+export class Coin<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::coin::Coin'
   static readonly $numTypeParams = 1
 
@@ -227,7 +228,7 @@ export type CoinMetadataReified<T extends PhantomTypeArgument> = Reified<
   CoinMetadataFields<T>
 >
 
-export class CoinMetadata<T extends PhantomTypeArgument> {
+export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::coin::CoinMetadata'
   static readonly $numTypeParams = 1
 
@@ -438,7 +439,7 @@ export type CurrencyCreatedReified<T extends PhantomTypeArgument> = Reified<
   CurrencyCreatedFields<T>
 >
 
-export class CurrencyCreated<T extends PhantomTypeArgument> {
+export class CurrencyCreated<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::coin::CurrencyCreated'
   static readonly $numTypeParams = 1
 
@@ -615,7 +616,7 @@ export type TreasuryCapReified<T extends PhantomTypeArgument> = Reified<
   TreasuryCapFields<T>
 >
 
-export class TreasuryCap<T extends PhantomTypeArgument> {
+export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::coin::TreasuryCap'
   static readonly $numTypeParams = 1
 

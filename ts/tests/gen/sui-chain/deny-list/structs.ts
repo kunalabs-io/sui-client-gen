@@ -2,6 +2,7 @@ import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   Vector,
@@ -33,7 +34,7 @@ export interface DenyListFields {
 
 export type DenyListReified = Reified<DenyList, DenyListFields>
 
-export class DenyList {
+export class DenyList implements StructClass {
   static readonly $typeName = '0x2::deny_list::DenyList'
   static readonly $numTypeParams = 0
 
@@ -173,7 +174,7 @@ export interface PerTypeListFields {
 
 export type PerTypeListReified = Reified<PerTypeList, PerTypeListFields>
 
-export class PerTypeList {
+export class PerTypeList implements StructClass {
   static readonly $typeName = '0x2::deny_list::PerTypeList'
   static readonly $numTypeParams = 0
 

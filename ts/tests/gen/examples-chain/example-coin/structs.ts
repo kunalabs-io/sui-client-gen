@@ -2,6 +2,7 @@ import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   decodeFromFields,
@@ -32,7 +33,7 @@ export interface EXAMPLE_COINFields {
 
 export type EXAMPLE_COINReified = Reified<EXAMPLE_COIN, EXAMPLE_COINFields>
 
-export class EXAMPLE_COIN {
+export class EXAMPLE_COIN implements StructClass {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
   static readonly $numTypeParams = 0
@@ -167,7 +168,7 @@ export interface FaucetFields {
 
 export type FaucetReified = Reified<Faucet, FaucetFields>
 
-export class Faucet {
+export class Faucet implements StructClass {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'
   static readonly $numTypeParams = 0

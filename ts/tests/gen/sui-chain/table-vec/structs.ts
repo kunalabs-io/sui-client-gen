@@ -4,6 +4,7 @@ import {
   PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
+  StructClass,
   ToField,
   ToPhantomTypeArgument,
   ToTypeStr,
@@ -36,7 +37,7 @@ export type TableVecReified<T0 extends PhantomTypeArgument> = Reified<
   TableVecFields<T0>
 >
 
-export class TableVec<T0 extends PhantomTypeArgument> {
+export class TableVec<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::table_vec::TableVec'
   static readonly $numTypeParams = 1
 

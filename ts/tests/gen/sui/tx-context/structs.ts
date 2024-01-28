@@ -2,6 +2,7 @@ import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   Vector,
@@ -32,7 +33,7 @@ export interface TxContextFields {
 
 export type TxContextReified = Reified<TxContext, TxContextFields>
 
-export class TxContext {
+export class TxContext implements StructClass {
   static readonly $typeName = '0x2::tx_context::TxContext'
   static readonly $numTypeParams = 0
 

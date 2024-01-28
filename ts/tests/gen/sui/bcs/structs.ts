@@ -2,6 +2,7 @@ import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   Vector,
@@ -28,7 +29,7 @@ export interface BCSFields {
 
 export type BCSReified = Reified<BCS, BCSFields>
 
-export class BCS {
+export class BCS implements StructClass {
   static readonly $typeName = '0x2::bcs::BCS'
   static readonly $numTypeParams = 0
 

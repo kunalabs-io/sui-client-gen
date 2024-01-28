@@ -2,6 +2,7 @@ import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeArgument,
   ToTypeStr,
@@ -35,7 +36,7 @@ export interface EntryFields<T extends TypeArgument> {
 
 export type EntryReified<T extends TypeArgument> = Reified<Entry<T>, EntryFields<T>>
 
-export class Entry<T extends TypeArgument> {
+export class Entry<T extends TypeArgument> implements StructClass {
   static readonly $typeName = '0x2::priority_queue::Entry'
   static readonly $numTypeParams = 1
 
@@ -219,7 +220,7 @@ export type PriorityQueueReified<T extends TypeArgument> = Reified<
   PriorityQueueFields<T>
 >
 
-export class PriorityQueue<T extends TypeArgument> {
+export class PriorityQueue<T extends TypeArgument> implements StructClass {
   static readonly $typeName = '0x2::priority_queue::PriorityQueue'
   static readonly $numTypeParams = 1
 

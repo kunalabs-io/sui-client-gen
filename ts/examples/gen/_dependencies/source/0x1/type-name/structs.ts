@@ -1,6 +1,7 @@
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   decodeFromFields,
@@ -26,7 +27,7 @@ export interface TypeNameFields {
 
 export type TypeNameReified = Reified<TypeName, TypeNameFields>
 
-export class TypeName {
+export class TypeName implements StructClass {
   static readonly $typeName = '0x1::type_name::TypeName'
   static readonly $numTypeParams = 0
 

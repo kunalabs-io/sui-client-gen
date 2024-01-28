@@ -2,6 +2,7 @@ import * as reified from '../../../../_framework/reified'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   Vector,
@@ -29,7 +30,7 @@ export interface BitVectorFields {
 
 export type BitVectorReified = Reified<BitVector, BitVectorFields>
 
-export class BitVector {
+export class BitVector implements StructClass {
   static readonly $typeName = '0x1::bit_vector::BitVector'
   static readonly $numTypeParams = 0
 

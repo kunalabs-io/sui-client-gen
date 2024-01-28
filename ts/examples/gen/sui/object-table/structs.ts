@@ -3,6 +3,7 @@ import {
   PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
+  StructClass,
   ToField,
   ToPhantomTypeArgument,
   ToTypeStr,
@@ -36,7 +37,9 @@ export type ObjectTableReified<
   V extends PhantomTypeArgument,
 > = Reified<ObjectTable<K, V>, ObjectTableFields<K, V>>
 
-export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArgument> {
+export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
+  implements StructClass
+{
   static readonly $typeName = '0x2::object_table::ObjectTable'
   static readonly $numTypeParams = 2
 

@@ -3,6 +3,7 @@ import {
   PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
+  StructClass,
   ToField,
   ToPhantomTypeArgument,
   ToTypeStr,
@@ -36,7 +37,7 @@ export interface DisplayFields<T extends PhantomTypeArgument> {
 
 export type DisplayReified<T extends PhantomTypeArgument> = Reified<Display<T>, DisplayFields<T>>
 
-export class Display<T extends PhantomTypeArgument> {
+export class Display<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::display::Display'
   static readonly $numTypeParams = 1
 
@@ -229,7 +230,7 @@ export type DisplayCreatedReified<T extends PhantomTypeArgument> = Reified<
   DisplayCreatedFields<T>
 >
 
-export class DisplayCreated<T extends PhantomTypeArgument> {
+export class DisplayCreated<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::display::DisplayCreated'
   static readonly $numTypeParams = 1
 
@@ -403,7 +404,7 @@ export type VersionUpdatedReified<T extends PhantomTypeArgument> = Reified<
   VersionUpdatedFields<T>
 >
 
-export class VersionUpdated<T extends PhantomTypeArgument> {
+export class VersionUpdated<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = '0x2::display::VersionUpdated'
   static readonly $numTypeParams = 1
 

@@ -1,6 +1,7 @@
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   decodeFromFields,
@@ -25,7 +26,7 @@ export interface IDFields {
 
 export type IDReified = Reified<ID, IDFields>
 
-export class ID {
+export class ID implements StructClass {
   static readonly $typeName = '0x2::object::ID'
   static readonly $numTypeParams = 0
 
@@ -153,7 +154,7 @@ export interface UIDFields {
 
 export type UIDReified = Reified<UID, UIDFields>
 
-export class UID {
+export class UID implements StructClass {
   static readonly $typeName = '0x2::object::UID'
   static readonly $numTypeParams = 0
 

@@ -5,6 +5,7 @@ import { String as String1 } from '../../_dependencies/source/0x1/string/structs
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   Vector,
@@ -35,7 +36,7 @@ export interface ExampleStructFields {
 
 export type ExampleStructReified = Reified<ExampleStruct, ExampleStructFields>
 
-export class ExampleStruct {
+export class ExampleStruct implements StructClass {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
   static readonly $numTypeParams = 0
@@ -179,7 +180,7 @@ export interface SpecialTypesStructFields {
 
 export type SpecialTypesStructReified = Reified<SpecialTypesStruct, SpecialTypesStructFields>
 
-export class SpecialTypesStruct {
+export class SpecialTypesStruct implements StructClass {
   static readonly $typeName =
     '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
   static readonly $numTypeParams = 0

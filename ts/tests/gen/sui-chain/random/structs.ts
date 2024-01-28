@@ -2,6 +2,7 @@ import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   Vector,
@@ -31,7 +32,7 @@ export interface RandomFields {
 
 export type RandomReified = Reified<Random, RandomFields>
 
-export class Random {
+export class Random implements StructClass {
   static readonly $typeName = '0x2::random::Random'
   static readonly $numTypeParams = 0
 
@@ -172,7 +173,7 @@ export interface RandomInnerFields {
 
 export type RandomInnerReified = Reified<RandomInner, RandomInnerFields>
 
-export class RandomInner {
+export class RandomInner implements StructClass {
   static readonly $typeName = '0x2::random::RandomInner'
   static readonly $numTypeParams = 0
 

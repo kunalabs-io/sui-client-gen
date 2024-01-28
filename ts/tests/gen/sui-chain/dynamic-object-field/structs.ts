@@ -1,6 +1,7 @@
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeArgument,
   ToTypeStr,
@@ -32,7 +33,7 @@ export interface WrapperFields<T0 extends TypeArgument> {
 
 export type WrapperReified<T0 extends TypeArgument> = Reified<Wrapper<T0>, WrapperFields<T0>>
 
-export class Wrapper<T0 extends TypeArgument> {
+export class Wrapper<T0 extends TypeArgument> implements StructClass {
   static readonly $typeName = '0x2::dynamic_object_field::Wrapper'
   static readonly $numTypeParams = 1
 

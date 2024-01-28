@@ -2,6 +2,7 @@ import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeArgument,
   ToTypeStr,
@@ -34,7 +35,7 @@ export interface OptionFields<T0 extends TypeArgument> {
 
 export type OptionReified<T0 extends TypeArgument> = Reified<Option<T0>, OptionFields<T0>>
 
-export class Option<T0 extends TypeArgument> {
+export class Option<T0 extends TypeArgument> implements StructClass {
   static readonly $typeName = '0x1::option::Option'
   static readonly $numTypeParams = 1
 

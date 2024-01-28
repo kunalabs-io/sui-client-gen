@@ -2,6 +2,7 @@ import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeArgument,
   ToTypeStr,
@@ -34,7 +35,7 @@ export interface VecSetFields<K extends TypeArgument> {
 
 export type VecSetReified<K extends TypeArgument> = Reified<VecSet<K>, VecSetFields<K>>
 
-export class VecSet<K extends TypeArgument> {
+export class VecSet<K extends TypeArgument> implements StructClass {
   static readonly $typeName = '0x2::vec_set::VecSet'
   static readonly $numTypeParams = 1
 

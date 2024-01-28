@@ -1,6 +1,7 @@
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   decodeFromFields,
@@ -25,7 +26,7 @@ export interface FixedPoint32Fields {
 
 export type FixedPoint32Reified = Reified<FixedPoint32, FixedPoint32Fields>
 
-export class FixedPoint32 {
+export class FixedPoint32 implements StructClass {
   static readonly $typeName = '0x1::fixed_point32::FixedPoint32'
   static readonly $numTypeParams = 0
 

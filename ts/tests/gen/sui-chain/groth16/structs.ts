@@ -2,6 +2,7 @@ import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   Vector,
@@ -28,7 +29,7 @@ export interface CurveFields {
 
 export type CurveReified = Reified<Curve, CurveFields>
 
-export class Curve {
+export class Curve implements StructClass {
   static readonly $typeName = '0x2::groth16::Curve'
   static readonly $numTypeParams = 0
 
@@ -156,7 +157,7 @@ export interface PreparedVerifyingKeyFields {
 
 export type PreparedVerifyingKeyReified = Reified<PreparedVerifyingKey, PreparedVerifyingKeyFields>
 
-export class PreparedVerifyingKey {
+export class PreparedVerifyingKey implements StructClass {
   static readonly $typeName = '0x2::groth16::PreparedVerifyingKey'
   static readonly $numTypeParams = 0
 
@@ -326,7 +327,7 @@ export interface PublicProofInputsFields {
 
 export type PublicProofInputsReified = Reified<PublicProofInputs, PublicProofInputsFields>
 
-export class PublicProofInputs {
+export class PublicProofInputs implements StructClass {
   static readonly $typeName = '0x2::groth16::PublicProofInputs'
   static readonly $numTypeParams = 0
 
@@ -460,7 +461,7 @@ export interface ProofPointsFields {
 
 export type ProofPointsReified = Reified<ProofPoints, ProofPointsFields>
 
-export class ProofPoints {
+export class ProofPoints implements StructClass {
   static readonly $typeName = '0x2::groth16::ProofPoints'
   static readonly $numTypeParams = 0
 

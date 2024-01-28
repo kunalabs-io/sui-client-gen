@@ -2,6 +2,7 @@ import { String } from '../../_dependencies/source/0x1/string/structs'
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   decodeFromFields,
@@ -29,7 +30,7 @@ export interface VerifiedIssuerFields {
 
 export type VerifiedIssuerReified = Reified<VerifiedIssuer, VerifiedIssuerFields>
 
-export class VerifiedIssuer {
+export class VerifiedIssuer implements StructClass {
   static readonly $typeName = '0x2::zklogin_verified_issuer::VerifiedIssuer'
   static readonly $numTypeParams = 0
 

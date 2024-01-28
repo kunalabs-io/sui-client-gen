@@ -1,6 +1,7 @@
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   decodeFromFields,
@@ -32,7 +33,7 @@ export interface VerifiedIDFields {
 
 export type VerifiedIDReified = Reified<VerifiedID, VerifiedIDFields>
 
-export class VerifiedID {
+export class VerifiedID implements StructClass {
   static readonly $typeName = '0x2::zklogin_verified_id::VerifiedID'
   static readonly $numTypeParams = 0
 

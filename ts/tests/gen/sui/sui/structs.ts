@@ -1,6 +1,7 @@
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeStr,
   decodeFromFields,
@@ -25,7 +26,7 @@ export interface SUIFields {
 
 export type SUIReified = Reified<SUI, SUIFields>
 
-export class SUI {
+export class SUI implements StructClass {
   static readonly $typeName = '0x2::sui::SUI'
   static readonly $numTypeParams = 0
 

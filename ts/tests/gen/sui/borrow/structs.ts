@@ -1,6 +1,7 @@
 import {
   PhantomReified,
   Reified,
+  StructClass,
   ToField,
   ToTypeArgument,
   ToTypeStr,
@@ -35,7 +36,7 @@ export interface BorrowFields {
 
 export type BorrowReified = Reified<Borrow, BorrowFields>
 
-export class Borrow {
+export class Borrow implements StructClass {
   static readonly $typeName = '0x2::borrow::Borrow'
   static readonly $numTypeParams = 0
 
@@ -177,7 +178,7 @@ export interface ReferentFields<T extends TypeArgument> {
 
 export type ReferentReified<T extends TypeArgument> = Reified<Referent<T>, ReferentFields<T>>
 
-export class Referent<T extends TypeArgument> {
+export class Referent<T extends TypeArgument> implements StructClass {
   static readonly $typeName = '0x2::borrow::Referent'
   static readonly $numTypeParams = 1
 
