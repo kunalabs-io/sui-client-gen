@@ -377,7 +377,7 @@ export function composeSuiType(typeName: string, ...typeArgs: string[]): string 
 pub static REIFIED: &str = r#"
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
 import { FieldsWithTypes, compressSuiType, parseTypeName } from './util'
-import { SuiClient } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
 
 export interface StructClass {
   $typeName: string
@@ -426,6 +426,7 @@ export interface StructClassReified<T extends StructClass, Fields> {
   fromBcs(data: Uint8Array): T
   fromJSONField: (field: any) => T
   fromJSON: (json: Record<string, any>) => T
+  fromSuiParsedData: (content: SuiParsedData) => T
   fetch: (client: SuiClient, id: string) => Promise<T>
   new: (fields: Fields) => T
   kind: 'StructClassReified'

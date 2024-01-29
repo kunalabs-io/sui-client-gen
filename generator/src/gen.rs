@@ -1663,6 +1663,15 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                                 })
                                 json,
                             ),
+                        fromSuiParsedData: (content: $sui_parsed_data) =>
+                            $(&struct_name).fromSuiParsedData(
+                                $(match type_params.len() {
+                                    0 => (),
+                                    1 => { $(type_params_str[0].clone()), },
+                                    _ => { [$(for param in &type_params_str join (, ) => $param)], },
+                                })
+                                content,
+                            ),
                         fetch: async (client: $sui_client, id: string) => $(&struct_name).fetch(
                             client,
                             $(match type_params.len() {
