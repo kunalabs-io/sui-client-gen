@@ -38,12 +38,18 @@ export class VerifiedIssuer implements StructClass {
 
   readonly $fullTypeName: '0x2::zklogin_verified_issuer::VerifiedIssuer'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<UID>
   readonly owner: ToField<'address'>
   readonly issuer: ToField<String>
 
-  private constructor(fields: VerifiedIssuerFields) {
-    this.$fullTypeName = VerifiedIssuer.$typeName
+  private constructor(typeArgs: [], fields: VerifiedIssuerFields) {
+    this.$fullTypeName = composeSuiType(
+      VerifiedIssuer.$typeName,
+      ...typeArgs
+    ) as '0x2::zklogin_verified_issuer::VerifiedIssuer'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.owner = fields.owner
@@ -57,7 +63,8 @@ export class VerifiedIssuer implements StructClass {
         VerifiedIssuer.$typeName,
         ...[]
       ) as '0x2::zklogin_verified_issuer::VerifiedIssuer',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => VerifiedIssuer.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VerifiedIssuer.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => VerifiedIssuer.fromBcs(data),
@@ -66,7 +73,7 @@ export class VerifiedIssuer implements StructClass {
       fromJSON: (json: Record<string, any>) => VerifiedIssuer.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => VerifiedIssuer.fetch(client, id),
       new: (fields: VerifiedIssuerFields) => {
-        return new VerifiedIssuer(fields)
+        return new VerifiedIssuer([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -127,7 +134,7 @@ export class VerifiedIssuer implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): VerifiedIssuer {

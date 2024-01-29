@@ -40,11 +40,17 @@ export class AuthenticatorState implements StructClass {
 
   readonly $fullTypeName: '0x2::authenticator_state::AuthenticatorState'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<UID>
   readonly version: ToField<'u64'>
 
-  private constructor(fields: AuthenticatorStateFields) {
-    this.$fullTypeName = AuthenticatorState.$typeName
+  private constructor(typeArgs: [], fields: AuthenticatorStateFields) {
+    this.$fullTypeName = composeSuiType(
+      AuthenticatorState.$typeName,
+      ...typeArgs
+    ) as '0x2::authenticator_state::AuthenticatorState'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.version = fields.version
@@ -57,7 +63,8 @@ export class AuthenticatorState implements StructClass {
         AuthenticatorState.$typeName,
         ...[]
       ) as '0x2::authenticator_state::AuthenticatorState',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AuthenticatorState.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => AuthenticatorState.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => AuthenticatorState.fromBcs(data),
@@ -66,7 +73,7 @@ export class AuthenticatorState implements StructClass {
       fromJSON: (json: Record<string, any>) => AuthenticatorState.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => AuthenticatorState.fetch(client, id),
       new: (fields: AuthenticatorStateFields) => {
-        return new AuthenticatorState(fields)
+        return new AuthenticatorState([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -120,7 +127,7 @@ export class AuthenticatorState implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): AuthenticatorState {
@@ -185,11 +192,17 @@ export class AuthenticatorStateInner implements StructClass {
 
   readonly $fullTypeName: '0x2::authenticator_state::AuthenticatorStateInner'
 
+  readonly $typeArgs: []
+
   readonly version: ToField<'u64'>
   readonly activeJwks: ToField<Vector<ActiveJwk>>
 
-  private constructor(fields: AuthenticatorStateInnerFields) {
-    this.$fullTypeName = AuthenticatorStateInner.$typeName
+  private constructor(typeArgs: [], fields: AuthenticatorStateInnerFields) {
+    this.$fullTypeName = composeSuiType(
+      AuthenticatorStateInner.$typeName,
+      ...typeArgs
+    ) as '0x2::authenticator_state::AuthenticatorStateInner'
+    this.$typeArgs = typeArgs
 
     this.version = fields.version
     this.activeJwks = fields.activeJwks
@@ -202,7 +215,8 @@ export class AuthenticatorStateInner implements StructClass {
         AuthenticatorStateInner.$typeName,
         ...[]
       ) as '0x2::authenticator_state::AuthenticatorStateInner',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AuthenticatorStateInner.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         AuthenticatorStateInner.fromFieldsWithTypes(item),
@@ -212,7 +226,7 @@ export class AuthenticatorStateInner implements StructClass {
       fromJSON: (json: Record<string, any>) => AuthenticatorStateInner.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => AuthenticatorStateInner.fetch(client, id),
       new: (fields: AuthenticatorStateInnerFields) => {
-        return new AuthenticatorStateInner(fields)
+        return new AuthenticatorStateInner([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -272,7 +286,7 @@ export class AuthenticatorStateInner implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): AuthenticatorStateInner {
@@ -340,13 +354,19 @@ export class JWK implements StructClass {
 
   readonly $fullTypeName: '0x2::authenticator_state::JWK'
 
+  readonly $typeArgs: []
+
   readonly kty: ToField<String>
   readonly e: ToField<String>
   readonly n: ToField<String>
   readonly alg: ToField<String>
 
-  private constructor(fields: JWKFields) {
-    this.$fullTypeName = JWK.$typeName
+  private constructor(typeArgs: [], fields: JWKFields) {
+    this.$fullTypeName = composeSuiType(
+      JWK.$typeName,
+      ...typeArgs
+    ) as '0x2::authenticator_state::JWK'
+    this.$typeArgs = typeArgs
 
     this.kty = fields.kty
     this.e = fields.e
@@ -358,7 +378,8 @@ export class JWK implements StructClass {
     return {
       typeName: JWK.$typeName,
       fullTypeName: composeSuiType(JWK.$typeName, ...[]) as '0x2::authenticator_state::JWK',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => JWK.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => JWK.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => JWK.fromBcs(data),
@@ -367,7 +388,7 @@ export class JWK implements StructClass {
       fromJSON: (json: Record<string, any>) => JWK.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => JWK.fetch(client, id),
       new: (fields: JWKFields) => {
-        return new JWK(fields)
+        return new JWK([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -429,7 +450,7 @@ export class JWK implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): JWK {
@@ -493,11 +514,17 @@ export class JwkId implements StructClass {
 
   readonly $fullTypeName: '0x2::authenticator_state::JwkId'
 
+  readonly $typeArgs: []
+
   readonly iss: ToField<String>
   readonly kid: ToField<String>
 
-  private constructor(fields: JwkIdFields) {
-    this.$fullTypeName = JwkId.$typeName
+  private constructor(typeArgs: [], fields: JwkIdFields) {
+    this.$fullTypeName = composeSuiType(
+      JwkId.$typeName,
+      ...typeArgs
+    ) as '0x2::authenticator_state::JwkId'
+    this.$typeArgs = typeArgs
 
     this.iss = fields.iss
     this.kid = fields.kid
@@ -507,7 +534,8 @@ export class JwkId implements StructClass {
     return {
       typeName: JwkId.$typeName,
       fullTypeName: composeSuiType(JwkId.$typeName, ...[]) as '0x2::authenticator_state::JwkId',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => JwkId.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => JwkId.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => JwkId.fromBcs(data),
@@ -516,7 +544,7 @@ export class JwkId implements StructClass {
       fromJSON: (json: Record<string, any>) => JwkId.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => JwkId.fetch(client, id),
       new: (fields: JwkIdFields) => {
-        return new JwkId(fields)
+        return new JwkId([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -570,7 +598,7 @@ export class JwkId implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): JwkId {
@@ -633,12 +661,18 @@ export class ActiveJwk implements StructClass {
 
   readonly $fullTypeName: '0x2::authenticator_state::ActiveJwk'
 
+  readonly $typeArgs: []
+
   readonly jwkId: ToField<JwkId>
   readonly jwk: ToField<JWK>
   readonly epoch: ToField<'u64'>
 
-  private constructor(fields: ActiveJwkFields) {
-    this.$fullTypeName = ActiveJwk.$typeName
+  private constructor(typeArgs: [], fields: ActiveJwkFields) {
+    this.$fullTypeName = composeSuiType(
+      ActiveJwk.$typeName,
+      ...typeArgs
+    ) as '0x2::authenticator_state::ActiveJwk'
+    this.$typeArgs = typeArgs
 
     this.jwkId = fields.jwkId
     this.jwk = fields.jwk
@@ -652,7 +686,8 @@ export class ActiveJwk implements StructClass {
         ActiveJwk.$typeName,
         ...[]
       ) as '0x2::authenticator_state::ActiveJwk',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ActiveJwk.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ActiveJwk.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ActiveJwk.fromBcs(data),
@@ -661,7 +696,7 @@ export class ActiveJwk implements StructClass {
       fromJSON: (json: Record<string, any>) => ActiveJwk.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => ActiveJwk.fetch(client, id),
       new: (fields: ActiveJwkFields) => {
-        return new ActiveJwk(fields)
+        return new ActiveJwk([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -719,7 +754,7 @@ export class ActiveJwk implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): ActiveJwk {

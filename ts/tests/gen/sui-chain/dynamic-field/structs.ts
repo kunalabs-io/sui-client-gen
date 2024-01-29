@@ -47,18 +47,17 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements 
 
   readonly $fullTypeName: `0x2::dynamic_field::Field<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
 
-  readonly $typeArgs: [string, string]
+  readonly $typeArgs: [ToTypeStr<T0>, ToTypeStr<T1>]
 
   readonly id: ToField<UID>
   readonly name: ToField<T0>
   readonly value: ToField<T1>
 
-  private constructor(typeArgs: [string, string], fields: FieldFields<T0, T1>) {
+  private constructor(typeArgs: [ToTypeStr<T0>, ToTypeStr<T1>], fields: FieldFields<T0, T1>) {
     this.$fullTypeName = composeSuiType(
       Field.$typeName,
       ...typeArgs
     ) as `0x2::dynamic_field::Field<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
-
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -78,7 +77,11 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements 
       ) as `0x2::dynamic_field::Field<${ToTypeStr<ToTypeArgument<T0>>}, ${ToTypeStr<
         ToTypeArgument<T1>
       >}>`,
-      typeArgs: [T0, T1],
+      typeArgs: [extractType(T0), extractType(T1)] as [
+        ToTypeStr<ToTypeArgument<T0>>,
+        ToTypeStr<ToTypeArgument<T1>>,
+      ],
+      reifiedTypeArgs: [T0, T1],
       fromFields: (fields: Record<string, any>) => Field.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Field.fromFieldsWithTypes([T0, T1], item),
       fromBcs: (data: Uint8Array) => Field.fromBcs([T0, T1], data),

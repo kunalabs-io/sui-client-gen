@@ -42,11 +42,17 @@ export class DenyList implements StructClass {
 
   readonly $fullTypeName: '0x2::deny_list::DenyList'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<UID>
   readonly lists: ToField<Bag>
 
-  private constructor(fields: DenyListFields) {
-    this.$fullTypeName = DenyList.$typeName
+  private constructor(typeArgs: [], fields: DenyListFields) {
+    this.$fullTypeName = composeSuiType(
+      DenyList.$typeName,
+      ...typeArgs
+    ) as '0x2::deny_list::DenyList'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.lists = fields.lists
@@ -56,7 +62,8 @@ export class DenyList implements StructClass {
     return {
       typeName: DenyList.$typeName,
       fullTypeName: composeSuiType(DenyList.$typeName, ...[]) as '0x2::deny_list::DenyList',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => DenyList.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => DenyList.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => DenyList.fromBcs(data),
@@ -65,7 +72,7 @@ export class DenyList implements StructClass {
       fromJSON: (json: Record<string, any>) => DenyList.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => DenyList.fetch(client, id),
       new: (fields: DenyListFields) => {
-        return new DenyList(fields)
+        return new DenyList([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -119,7 +126,7 @@ export class DenyList implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): DenyList {
@@ -182,12 +189,18 @@ export class PerTypeList implements StructClass {
 
   readonly $fullTypeName: '0x2::deny_list::PerTypeList'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<UID>
   readonly deniedCount: ToField<Table<'address', 'u64'>>
   readonly deniedAddresses: ToField<Table<ToPhantom<Vector<'u8'>>, ToPhantom<VecSet<'address'>>>>
 
-  private constructor(fields: PerTypeListFields) {
-    this.$fullTypeName = PerTypeList.$typeName
+  private constructor(typeArgs: [], fields: PerTypeListFields) {
+    this.$fullTypeName = composeSuiType(
+      PerTypeList.$typeName,
+      ...typeArgs
+    ) as '0x2::deny_list::PerTypeList'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.deniedCount = fields.deniedCount
@@ -198,7 +211,8 @@ export class PerTypeList implements StructClass {
     return {
       typeName: PerTypeList.$typeName,
       fullTypeName: composeSuiType(PerTypeList.$typeName, ...[]) as '0x2::deny_list::PerTypeList',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PerTypeList.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PerTypeList.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PerTypeList.fromBcs(data),
@@ -207,7 +221,7 @@ export class PerTypeList implements StructClass {
       fromJSON: (json: Record<string, any>) => PerTypeList.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => PerTypeList.fetch(client, id),
       new: (fields: PerTypeListFields) => {
-        return new PerTypeList(fields)
+        return new PerTypeList([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -283,7 +297,7 @@ export class PerTypeList implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): PerTypeList {

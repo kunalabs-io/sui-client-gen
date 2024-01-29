@@ -41,14 +41,20 @@ export class TxContext implements StructClass {
 
   readonly $fullTypeName: '0x2::tx_context::TxContext'
 
+  readonly $typeArgs: []
+
   readonly sender: ToField<'address'>
   readonly txHash: ToField<Vector<'u8'>>
   readonly epoch: ToField<'u64'>
   readonly epochTimestampMs: ToField<'u64'>
   readonly idsCreated: ToField<'u64'>
 
-  private constructor(fields: TxContextFields) {
-    this.$fullTypeName = TxContext.$typeName
+  private constructor(typeArgs: [], fields: TxContextFields) {
+    this.$fullTypeName = composeSuiType(
+      TxContext.$typeName,
+      ...typeArgs
+    ) as '0x2::tx_context::TxContext'
+    this.$typeArgs = typeArgs
 
     this.sender = fields.sender
     this.txHash = fields.txHash
@@ -61,7 +67,8 @@ export class TxContext implements StructClass {
     return {
       typeName: TxContext.$typeName,
       fullTypeName: composeSuiType(TxContext.$typeName, ...[]) as '0x2::tx_context::TxContext',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => TxContext.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TxContext.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => TxContext.fromBcs(data),
@@ -70,7 +77,7 @@ export class TxContext implements StructClass {
       fromJSON: (json: Record<string, any>) => TxContext.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => TxContext.fetch(client, id),
       new: (fields: TxContextFields) => {
-        return new TxContext(fields)
+        return new TxContext([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -139,7 +146,7 @@ export class TxContext implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): TxContext {

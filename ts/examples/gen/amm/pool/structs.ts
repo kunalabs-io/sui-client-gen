@@ -49,10 +49,16 @@ export class AdminCap implements StructClass {
 
   readonly $fullTypeName: '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<UID>
 
-  private constructor(fields: AdminCapFields) {
-    this.$fullTypeName = AdminCap.$typeName
+  private constructor(typeArgs: [], fields: AdminCapFields) {
+    this.$fullTypeName = composeSuiType(
+      AdminCap.$typeName,
+      ...typeArgs
+    ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
   }
@@ -64,7 +70,8 @@ export class AdminCap implements StructClass {
         AdminCap.$typeName,
         ...[]
       ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AdminCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => AdminCap.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => AdminCap.fromBcs(data),
@@ -73,7 +80,7 @@ export class AdminCap implements StructClass {
       fromJSON: (json: Record<string, any>) => AdminCap.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => AdminCap.fetch(client, id),
       new: (fields: AdminCapFields) => {
-        return new AdminCap(fields)
+        return new AdminCap([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -119,7 +126,7 @@ export class AdminCap implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): AdminCap {
@@ -185,16 +192,18 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 
   readonly $fullTypeName: `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
 
-  readonly $typeArgs: [string, string]
+  readonly $typeArgs: [PhantomToTypeStr<A>, PhantomToTypeStr<B>]
 
   readonly dummyField: ToField<'bool'>
 
-  private constructor(typeArgs: [string, string], fields: LPFields<A, B>) {
+  private constructor(
+    typeArgs: [PhantomToTypeStr<A>, PhantomToTypeStr<B>],
+    fields: LPFields<A, B>
+  ) {
     this.$fullTypeName = composeSuiType(
       LP.$typeName,
       ...typeArgs
     ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
-
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -212,7 +221,11 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${PhantomToTypeStr<
         ToPhantomTypeArgument<A>
       >}, ${PhantomToTypeStr<ToPhantomTypeArgument<B>>}>`,
-      typeArgs: [A, B],
+      typeArgs: [extractType(A), extractType(B)] as [
+        PhantomToTypeStr<ToPhantomTypeArgument<A>>,
+        PhantomToTypeStr<ToPhantomTypeArgument<B>>,
+      ],
+      reifiedTypeArgs: [A, B],
       fromFields: (fields: Record<string, any>) => LP.fromFields([A, B], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => LP.fromFieldsWithTypes([A, B], item),
       fromBcs: (data: Uint8Array) => LP.fromBcs([A, B], data),
@@ -391,7 +404,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 
   readonly $fullTypeName: `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
 
-  readonly $typeArgs: [string, string]
+  readonly $typeArgs: [PhantomToTypeStr<A>, PhantomToTypeStr<B>]
 
   readonly id: ToField<UID>
   readonly balanceA: ToField<Balance<A>>
@@ -401,12 +414,14 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   readonly adminFeePct: ToField<'u64'>
   readonly adminFeeBalance: ToField<Balance<ToPhantom<LP<A, B>>>>
 
-  private constructor(typeArgs: [string, string], fields: PoolFields<A, B>) {
+  private constructor(
+    typeArgs: [PhantomToTypeStr<A>, PhantomToTypeStr<B>],
+    fields: PoolFields<A, B>
+  ) {
     this.$fullTypeName = composeSuiType(
       Pool.$typeName,
       ...typeArgs
     ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
-
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -430,7 +445,11 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${PhantomToTypeStr<
         ToPhantomTypeArgument<A>
       >}, ${PhantomToTypeStr<ToPhantomTypeArgument<B>>}>`,
-      typeArgs: [A, B],
+      typeArgs: [extractType(A), extractType(B)] as [
+        PhantomToTypeStr<ToPhantomTypeArgument<A>>,
+        PhantomToTypeStr<ToPhantomTypeArgument<B>>,
+      ],
+      reifiedTypeArgs: [A, B],
       fromFields: (fields: Record<string, any>) => Pool.fromFields([A, B], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Pool.fromFieldsWithTypes([A, B], item),
       fromBcs: (data: Uint8Array) => Pool.fromBcs([A, B], data),
@@ -650,10 +669,16 @@ export class PoolCreationEvent implements StructClass {
 
   readonly $fullTypeName: '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
 
+  readonly $typeArgs: []
+
   readonly poolId: ToField<ID>
 
-  private constructor(fields: PoolCreationEventFields) {
-    this.$fullTypeName = PoolCreationEvent.$typeName
+  private constructor(typeArgs: [], fields: PoolCreationEventFields) {
+    this.$fullTypeName = composeSuiType(
+      PoolCreationEvent.$typeName,
+      ...typeArgs
+    ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
+    this.$typeArgs = typeArgs
 
     this.poolId = fields.poolId
   }
@@ -665,7 +690,8 @@ export class PoolCreationEvent implements StructClass {
         PoolCreationEvent.$typeName,
         ...[]
       ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PoolCreationEvent.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PoolCreationEvent.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PoolCreationEvent.fromBcs(data),
@@ -674,7 +700,7 @@ export class PoolCreationEvent implements StructClass {
       fromJSON: (json: Record<string, any>) => PoolCreationEvent.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => PoolCreationEvent.fetch(client, id),
       new: (fields: PoolCreationEventFields) => {
-        return new PoolCreationEvent(fields)
+        return new PoolCreationEvent([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -724,7 +750,7 @@ export class PoolCreationEvent implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): PoolCreationEvent {
@@ -789,11 +815,17 @@ export class PoolRegistry implements StructClass {
 
   readonly $fullTypeName: '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<UID>
   readonly table: ToField<Table<ToPhantom<PoolRegistryItem>, 'bool'>>
 
-  private constructor(fields: PoolRegistryFields) {
-    this.$fullTypeName = PoolRegistry.$typeName
+  private constructor(typeArgs: [], fields: PoolRegistryFields) {
+    this.$fullTypeName = composeSuiType(
+      PoolRegistry.$typeName,
+      ...typeArgs
+    ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.table = fields.table
@@ -806,7 +838,8 @@ export class PoolRegistry implements StructClass {
         PoolRegistry.$typeName,
         ...[]
       ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PoolRegistry.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PoolRegistry.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PoolRegistry.fromBcs(data),
@@ -815,7 +848,7 @@ export class PoolRegistry implements StructClass {
       fromJSON: (json: Record<string, any>) => PoolRegistry.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => PoolRegistry.fetch(client, id),
       new: (fields: PoolRegistryFields) => {
-        return new PoolRegistry(fields)
+        return new PoolRegistry([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -875,7 +908,7 @@ export class PoolRegistry implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): PoolRegistry {
@@ -944,11 +977,17 @@ export class PoolRegistryItem implements StructClass {
 
   readonly $fullTypeName: '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
 
+  readonly $typeArgs: []
+
   readonly a: ToField<TypeName>
   readonly b: ToField<TypeName>
 
-  private constructor(fields: PoolRegistryItemFields) {
-    this.$fullTypeName = PoolRegistryItem.$typeName
+  private constructor(typeArgs: [], fields: PoolRegistryItemFields) {
+    this.$fullTypeName = composeSuiType(
+      PoolRegistryItem.$typeName,
+      ...typeArgs
+    ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
+    this.$typeArgs = typeArgs
 
     this.a = fields.a
     this.b = fields.b
@@ -961,7 +1000,8 @@ export class PoolRegistryItem implements StructClass {
         PoolRegistryItem.$typeName,
         ...[]
       ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PoolRegistryItem.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PoolRegistryItem.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PoolRegistryItem.fromBcs(data),
@@ -970,7 +1010,7 @@ export class PoolRegistryItem implements StructClass {
       fromJSON: (json: Record<string, any>) => PoolRegistryItem.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => PoolRegistryItem.fetch(client, id),
       new: (fields: PoolRegistryItemFields) => {
-        return new PoolRegistryItem(fields)
+        return new PoolRegistryItem([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -1024,7 +1064,7 @@ export class PoolRegistryItem implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): PoolRegistryItem {

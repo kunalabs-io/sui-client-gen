@@ -37,10 +37,13 @@ export class Curve implements StructClass {
 
   readonly $fullTypeName: '0x2::groth16::Curve'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<'u8'>
 
-  private constructor(fields: CurveFields) {
-    this.$fullTypeName = Curve.$typeName
+  private constructor(typeArgs: [], fields: CurveFields) {
+    this.$fullTypeName = composeSuiType(Curve.$typeName, ...typeArgs) as '0x2::groth16::Curve'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
   }
@@ -49,7 +52,8 @@ export class Curve implements StructClass {
     return {
       typeName: Curve.$typeName,
       fullTypeName: composeSuiType(Curve.$typeName, ...[]) as '0x2::groth16::Curve',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Curve.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Curve.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Curve.fromBcs(data),
@@ -58,7 +62,7 @@ export class Curve implements StructClass {
       fromJSON: (json: Record<string, any>) => Curve.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Curve.fetch(client, id),
       new: (fields: CurveFields) => {
-        return new Curve(fields)
+        return new Curve([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -104,7 +108,7 @@ export class Curve implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): Curve {
@@ -165,13 +169,19 @@ export class PreparedVerifyingKey implements StructClass {
 
   readonly $fullTypeName: '0x2::groth16::PreparedVerifyingKey'
 
+  readonly $typeArgs: []
+
   readonly vkGammaAbcG1Bytes: ToField<Vector<'u8'>>
   readonly alphaG1BetaG2Bytes: ToField<Vector<'u8'>>
   readonly gammaG2NegPcBytes: ToField<Vector<'u8'>>
   readonly deltaG2NegPcBytes: ToField<Vector<'u8'>>
 
-  private constructor(fields: PreparedVerifyingKeyFields) {
-    this.$fullTypeName = PreparedVerifyingKey.$typeName
+  private constructor(typeArgs: [], fields: PreparedVerifyingKeyFields) {
+    this.$fullTypeName = composeSuiType(
+      PreparedVerifyingKey.$typeName,
+      ...typeArgs
+    ) as '0x2::groth16::PreparedVerifyingKey'
+    this.$typeArgs = typeArgs
 
     this.vkGammaAbcG1Bytes = fields.vkGammaAbcG1Bytes
     this.alphaG1BetaG2Bytes = fields.alphaG1BetaG2Bytes
@@ -186,7 +196,8 @@ export class PreparedVerifyingKey implements StructClass {
         PreparedVerifyingKey.$typeName,
         ...[]
       ) as '0x2::groth16::PreparedVerifyingKey',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PreparedVerifyingKey.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         PreparedVerifyingKey.fromFieldsWithTypes(item),
@@ -196,7 +207,7 @@ export class PreparedVerifyingKey implements StructClass {
       fromJSON: (json: Record<string, any>) => PreparedVerifyingKey.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => PreparedVerifyingKey.fetch(client, id),
       new: (fields: PreparedVerifyingKeyFields) => {
-        return new PreparedVerifyingKey(fields)
+        return new PreparedVerifyingKey([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -270,7 +281,7 @@ export class PreparedVerifyingKey implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): PreparedVerifyingKey {
@@ -335,10 +346,16 @@ export class ProofPoints implements StructClass {
 
   readonly $fullTypeName: '0x2::groth16::ProofPoints'
 
+  readonly $typeArgs: []
+
   readonly bytes: ToField<Vector<'u8'>>
 
-  private constructor(fields: ProofPointsFields) {
-    this.$fullTypeName = ProofPoints.$typeName
+  private constructor(typeArgs: [], fields: ProofPointsFields) {
+    this.$fullTypeName = composeSuiType(
+      ProofPoints.$typeName,
+      ...typeArgs
+    ) as '0x2::groth16::ProofPoints'
+    this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
   }
@@ -347,7 +364,8 @@ export class ProofPoints implements StructClass {
     return {
       typeName: ProofPoints.$typeName,
       fullTypeName: composeSuiType(ProofPoints.$typeName, ...[]) as '0x2::groth16::ProofPoints',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ProofPoints.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ProofPoints.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ProofPoints.fromBcs(data),
@@ -356,7 +374,7 @@ export class ProofPoints implements StructClass {
       fromJSON: (json: Record<string, any>) => ProofPoints.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => ProofPoints.fetch(client, id),
       new: (fields: ProofPointsFields) => {
-        return new ProofPoints(fields)
+        return new ProofPoints([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -406,7 +424,7 @@ export class ProofPoints implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): ProofPoints {
@@ -466,10 +484,16 @@ export class PublicProofInputs implements StructClass {
 
   readonly $fullTypeName: '0x2::groth16::PublicProofInputs'
 
+  readonly $typeArgs: []
+
   readonly bytes: ToField<Vector<'u8'>>
 
-  private constructor(fields: PublicProofInputsFields) {
-    this.$fullTypeName = PublicProofInputs.$typeName
+  private constructor(typeArgs: [], fields: PublicProofInputsFields) {
+    this.$fullTypeName = composeSuiType(
+      PublicProofInputs.$typeName,
+      ...typeArgs
+    ) as '0x2::groth16::PublicProofInputs'
+    this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
   }
@@ -481,7 +505,8 @@ export class PublicProofInputs implements StructClass {
         PublicProofInputs.$typeName,
         ...[]
       ) as '0x2::groth16::PublicProofInputs',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PublicProofInputs.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PublicProofInputs.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => PublicProofInputs.fromBcs(data),
@@ -490,7 +515,7 @@ export class PublicProofInputs implements StructClass {
       fromJSON: (json: Record<string, any>) => PublicProofInputs.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => PublicProofInputs.fetch(client, id),
       new: (fields: PublicProofInputsFields) => {
-        return new PublicProofInputs(fields)
+        return new PublicProofInputs([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -540,7 +565,7 @@ export class PublicProofInputs implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): PublicProofInputs {

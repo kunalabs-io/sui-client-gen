@@ -43,12 +43,18 @@ export class Extension implements StructClass {
 
   readonly $fullTypeName: '0x2::kiosk_extension::Extension'
 
+  readonly $typeArgs: []
+
   readonly storage: ToField<Bag>
   readonly permissions: ToField<'u128'>
   readonly isEnabled: ToField<'bool'>
 
-  private constructor(fields: ExtensionFields) {
-    this.$fullTypeName = Extension.$typeName
+  private constructor(typeArgs: [], fields: ExtensionFields) {
+    this.$fullTypeName = composeSuiType(
+      Extension.$typeName,
+      ...typeArgs
+    ) as '0x2::kiosk_extension::Extension'
+    this.$typeArgs = typeArgs
 
     this.storage = fields.storage
     this.permissions = fields.permissions
@@ -59,7 +65,8 @@ export class Extension implements StructClass {
     return {
       typeName: Extension.$typeName,
       fullTypeName: composeSuiType(Extension.$typeName, ...[]) as '0x2::kiosk_extension::Extension',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Extension.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Extension.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Extension.fromBcs(data),
@@ -68,7 +75,7 @@ export class Extension implements StructClass {
       fromJSON: (json: Record<string, any>) => Extension.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Extension.fetch(client, id),
       new: (fields: ExtensionFields) => {
-        return new Extension(fields)
+        return new Extension([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -126,7 +133,7 @@ export class Extension implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): Extension {
@@ -191,17 +198,16 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
 
   readonly $fullTypeName: `0x2::kiosk_extension::ExtensionKey<${PhantomToTypeStr<Ext>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [PhantomToTypeStr<Ext>]
 
   readonly dummyField: ToField<'bool'>
 
-  private constructor(typeArg: string, fields: ExtensionKeyFields<Ext>) {
+  private constructor(typeArgs: [PhantomToTypeStr<Ext>], fields: ExtensionKeyFields<Ext>) {
     this.$fullTypeName = composeSuiType(
       ExtensionKey.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x2::kiosk_extension::ExtensionKey<${PhantomToTypeStr<Ext>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
   }
@@ -215,7 +221,8 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
         ExtensionKey.$typeName,
         ...[extractType(Ext)]
       ) as `0x2::kiosk_extension::ExtensionKey<${PhantomToTypeStr<ToPhantomTypeArgument<Ext>>}>`,
-      typeArgs: [Ext],
+      typeArgs: [extractType(Ext)] as [PhantomToTypeStr<ToPhantomTypeArgument<Ext>>],
+      reifiedTypeArgs: [Ext],
       fromFields: (fields: Record<string, any>) => ExtensionKey.fromFields(Ext, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ExtensionKey.fromFieldsWithTypes(Ext, item),
       fromBcs: (data: Uint8Array) => ExtensionKey.fromBcs(Ext, data),
@@ -224,7 +231,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
       fromJSON: (json: Record<string, any>) => ExtensionKey.fromJSON(Ext, json),
       fetch: async (client: SuiClient, id: string) => ExtensionKey.fetch(client, Ext, id),
       new: (fields: ExtensionKeyFields<ToPhantomTypeArgument<Ext>>) => {
-        return new ExtensionKey(extractType(Ext), fields)
+        return new ExtensionKey([extractType(Ext)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -286,7 +293,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<Ext extends PhantomReified<PhantomTypeArgument>>(
@@ -307,7 +314,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(ExtensionKey.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 

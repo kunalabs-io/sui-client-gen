@@ -45,10 +45,16 @@ export class ExampleStruct implements StructClass {
 
   readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
 
+  readonly $typeArgs: []
+
   readonly dummyField: ToField<'bool'>
 
-  private constructor(fields: ExampleStructFields) {
-    this.$fullTypeName = ExampleStruct.$typeName
+  private constructor(typeArgs: [], fields: ExampleStructFields) {
+    this.$fullTypeName = composeSuiType(
+      ExampleStruct.$typeName,
+      ...typeArgs
+    ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
+    this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
   }
@@ -60,7 +66,8 @@ export class ExampleStruct implements StructClass {
         ExampleStruct.$typeName,
         ...[]
       ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ExampleStruct.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ExampleStruct.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ExampleStruct.fromBcs(data),
@@ -69,7 +76,7 @@ export class ExampleStruct implements StructClass {
       fromJSON: (json: Record<string, any>) => ExampleStruct.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => ExampleStruct.fetch(client, id),
       new: (fields: ExampleStructFields) => {
-        return new ExampleStruct(fields)
+        return new ExampleStruct([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -117,7 +124,7 @@ export class ExampleStruct implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): ExampleStruct {
@@ -189,6 +196,8 @@ export class SpecialTypesStruct implements StructClass {
 
   readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<UID>
   readonly asciiString: ToField<String>
   readonly utf8String: ToField<String1>
@@ -199,8 +208,12 @@ export class SpecialTypesStruct implements StructClass {
   readonly optionSome: ToField<Option<'u64'>>
   readonly optionNone: ToField<Option<'u64'>>
 
-  private constructor(fields: SpecialTypesStructFields) {
-    this.$fullTypeName = SpecialTypesStruct.$typeName
+  private constructor(typeArgs: [], fields: SpecialTypesStructFields) {
+    this.$fullTypeName = composeSuiType(
+      SpecialTypesStruct.$typeName,
+      ...typeArgs
+    ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.asciiString = fields.asciiString
@@ -220,7 +233,8 @@ export class SpecialTypesStruct implements StructClass {
         SpecialTypesStruct.$typeName,
         ...[]
       ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => SpecialTypesStruct.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => SpecialTypesStruct.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => SpecialTypesStruct.fromBcs(data),
@@ -229,7 +243,7 @@ export class SpecialTypesStruct implements StructClass {
       fromJSON: (json: Record<string, any>) => SpecialTypesStruct.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => SpecialTypesStruct.fetch(client, id),
       new: (fields: SpecialTypesStructFields) => {
-        return new SpecialTypesStruct(fields)
+        return new SpecialTypesStruct([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -323,7 +337,7 @@ export class SpecialTypesStruct implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): SpecialTypesStruct {

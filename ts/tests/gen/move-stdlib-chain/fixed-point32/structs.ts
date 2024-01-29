@@ -34,10 +34,16 @@ export class FixedPoint32 implements StructClass {
 
   readonly $fullTypeName: '0x1::fixed_point32::FixedPoint32'
 
+  readonly $typeArgs: []
+
   readonly value: ToField<'u64'>
 
-  private constructor(fields: FixedPoint32Fields) {
-    this.$fullTypeName = FixedPoint32.$typeName
+  private constructor(typeArgs: [], fields: FixedPoint32Fields) {
+    this.$fullTypeName = composeSuiType(
+      FixedPoint32.$typeName,
+      ...typeArgs
+    ) as '0x1::fixed_point32::FixedPoint32'
+    this.$typeArgs = typeArgs
 
     this.value = fields.value
   }
@@ -49,7 +55,8 @@ export class FixedPoint32 implements StructClass {
         FixedPoint32.$typeName,
         ...[]
       ) as '0x1::fixed_point32::FixedPoint32',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => FixedPoint32.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => FixedPoint32.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => FixedPoint32.fromBcs(data),
@@ -58,7 +65,7 @@ export class FixedPoint32 implements StructClass {
       fromJSON: (json: Record<string, any>) => FixedPoint32.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => FixedPoint32.fetch(client, id),
       new: (fields: FixedPoint32Fields) => {
-        return new FixedPoint32(fields)
+        return new FixedPoint32([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -106,7 +113,7 @@ export class FixedPoint32 implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): FixedPoint32 {

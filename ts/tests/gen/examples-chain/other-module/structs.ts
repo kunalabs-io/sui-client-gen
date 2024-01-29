@@ -41,10 +41,16 @@ export class StructFromOtherModule implements StructClass {
 
   readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
 
+  readonly $typeArgs: []
+
   readonly dummyField: ToField<'bool'>
 
-  private constructor(fields: StructFromOtherModuleFields) {
-    this.$fullTypeName = StructFromOtherModule.$typeName
+  private constructor(typeArgs: [], fields: StructFromOtherModuleFields) {
+    this.$fullTypeName = composeSuiType(
+      StructFromOtherModule.$typeName,
+      ...typeArgs
+    ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
+    this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
   }
@@ -56,7 +62,8 @@ export class StructFromOtherModule implements StructClass {
         StructFromOtherModule.$typeName,
         ...[]
       ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => StructFromOtherModule.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         StructFromOtherModule.fromFieldsWithTypes(item),
@@ -66,7 +73,7 @@ export class StructFromOtherModule implements StructClass {
       fromJSON: (json: Record<string, any>) => StructFromOtherModule.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => StructFromOtherModule.fetch(client, id),
       new: (fields: StructFromOtherModuleFields) => {
-        return new StructFromOtherModule(fields)
+        return new StructFromOtherModule([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -116,7 +123,7 @@ export class StructFromOtherModule implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): StructFromOtherModule {
@@ -182,10 +189,16 @@ export class AddedInAnUpgrade implements StructClass {
 
   readonly $fullTypeName: '0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe::other_module::AddedInAnUpgrade'
 
+  readonly $typeArgs: []
+
   readonly dummyField: ToField<'bool'>
 
-  private constructor(fields: AddedInAnUpgradeFields) {
-    this.$fullTypeName = AddedInAnUpgrade.$typeName
+  private constructor(typeArgs: [], fields: AddedInAnUpgradeFields) {
+    this.$fullTypeName = composeSuiType(
+      AddedInAnUpgrade.$typeName,
+      ...typeArgs
+    ) as '0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe::other_module::AddedInAnUpgrade'
+    this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
   }
@@ -197,7 +210,8 @@ export class AddedInAnUpgrade implements StructClass {
         AddedInAnUpgrade.$typeName,
         ...[]
       ) as '0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe::other_module::AddedInAnUpgrade',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AddedInAnUpgrade.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => AddedInAnUpgrade.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => AddedInAnUpgrade.fromBcs(data),
@@ -206,7 +220,7 @@ export class AddedInAnUpgrade implements StructClass {
       fromJSON: (json: Record<string, any>) => AddedInAnUpgrade.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => AddedInAnUpgrade.fetch(client, id),
       new: (fields: AddedInAnUpgradeFields) => {
-        return new AddedInAnUpgrade(fields)
+        return new AddedInAnUpgrade([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -256,7 +270,7 @@ export class AddedInAnUpgrade implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): AddedInAnUpgrade {

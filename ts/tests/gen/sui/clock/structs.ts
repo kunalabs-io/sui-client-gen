@@ -36,11 +36,14 @@ export class Clock implements StructClass {
 
   readonly $fullTypeName: '0x2::clock::Clock'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<UID>
   readonly timestampMs: ToField<'u64'>
 
-  private constructor(fields: ClockFields) {
-    this.$fullTypeName = Clock.$typeName
+  private constructor(typeArgs: [], fields: ClockFields) {
+    this.$fullTypeName = composeSuiType(Clock.$typeName, ...typeArgs) as '0x2::clock::Clock'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.timestampMs = fields.timestampMs
@@ -50,7 +53,8 @@ export class Clock implements StructClass {
     return {
       typeName: Clock.$typeName,
       fullTypeName: composeSuiType(Clock.$typeName, ...[]) as '0x2::clock::Clock',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Clock.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Clock.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Clock.fromBcs(data),
@@ -59,7 +63,7 @@ export class Clock implements StructClass {
       fromJSON: (json: Record<string, any>) => Clock.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Clock.fetch(client, id),
       new: (fields: ClockFields) => {
-        return new Clock(fields)
+        return new Clock([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -113,7 +117,7 @@ export class Clock implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): Clock {

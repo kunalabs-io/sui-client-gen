@@ -44,18 +44,17 @@ export class Referent<T0 extends TypeArgument> implements StructClass {
 
   readonly $fullTypeName: `0x2::borrow::Referent<${ToTypeStr<T0>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [ToTypeStr<T0>]
 
   readonly id: ToField<'address'>
   readonly value: ToField<Option<T0>>
 
-  private constructor(typeArg: string, fields: ReferentFields<T0>) {
+  private constructor(typeArgs: [ToTypeStr<T0>], fields: ReferentFields<T0>) {
     this.$fullTypeName = composeSuiType(
       Referent.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x2::borrow::Referent<${ToTypeStr<T0>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.value = fields.value
@@ -70,7 +69,8 @@ export class Referent<T0 extends TypeArgument> implements StructClass {
         Referent.$typeName,
         ...[extractType(T0)]
       ) as `0x2::borrow::Referent<${ToTypeStr<ToTypeArgument<T0>>}>`,
-      typeArgs: [T0],
+      typeArgs: [extractType(T0)] as [ToTypeStr<ToTypeArgument<T0>>],
+      reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Referent.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Referent.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => Referent.fromBcs(T0, data),
@@ -79,7 +79,7 @@ export class Referent<T0 extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Referent.fromJSON(T0, json),
       fetch: async (client: SuiClient, id: string) => Referent.fetch(client, T0, id),
       new: (fields: ReferentFields<ToTypeArgument<T0>>) => {
-        return new Referent(extractType(T0), fields)
+        return new Referent([extractType(T0)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -146,12 +146,12 @@ export class Referent<T0 extends TypeArgument> implements StructClass {
   toJSONField() {
     return {
       id: this.id,
-      value: fieldToJSON<Option<T0>>(`0x1::option::Option<${this.$typeArg}>`, this.value),
+      value: fieldToJSON<Option<T0>>(`0x1::option::Option<${this.$typeArgs[0]}>`, this.value),
     }
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<T0 extends Reified<TypeArgument, any>>(
@@ -173,7 +173,7 @@ export class Referent<T0 extends TypeArgument> implements StructClass {
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Referent.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 
@@ -231,11 +231,14 @@ export class Borrow implements StructClass {
 
   readonly $fullTypeName: '0x2::borrow::Borrow'
 
+  readonly $typeArgs: []
+
   readonly ref: ToField<'address'>
   readonly obj: ToField<ID>
 
-  private constructor(fields: BorrowFields) {
-    this.$fullTypeName = Borrow.$typeName
+  private constructor(typeArgs: [], fields: BorrowFields) {
+    this.$fullTypeName = composeSuiType(Borrow.$typeName, ...typeArgs) as '0x2::borrow::Borrow'
+    this.$typeArgs = typeArgs
 
     this.ref = fields.ref
     this.obj = fields.obj
@@ -245,7 +248,8 @@ export class Borrow implements StructClass {
     return {
       typeName: Borrow.$typeName,
       fullTypeName: composeSuiType(Borrow.$typeName, ...[]) as '0x2::borrow::Borrow',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Borrow.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Borrow.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Borrow.fromBcs(data),
@@ -254,7 +258,7 @@ export class Borrow implements StructClass {
       fromJSON: (json: Record<string, any>) => Borrow.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Borrow.fetch(client, id),
       new: (fields: BorrowFields) => {
-        return new Borrow(fields)
+        return new Borrow([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -311,7 +315,7 @@ export class Borrow implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): Borrow {

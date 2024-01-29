@@ -56,10 +56,16 @@ export class Bar implements StructClass {
 
   readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
 
+  readonly $typeArgs: []
+
   readonly value: ToField<'u64'>
 
-  private constructor(fields: BarFields) {
-    this.$fullTypeName = Bar.$typeName
+  private constructor(typeArgs: [], fields: BarFields) {
+    this.$fullTypeName = composeSuiType(
+      Bar.$typeName,
+      ...typeArgs
+    ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
+    this.$typeArgs = typeArgs
 
     this.value = fields.value
   }
@@ -71,7 +77,8 @@ export class Bar implements StructClass {
         Bar.$typeName,
         ...[]
       ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Bar.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Bar.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Bar.fromBcs(data),
@@ -80,7 +87,7 @@ export class Bar implements StructClass {
       fromJSON: (json: Record<string, any>) => Bar.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Bar.fetch(client, id),
       new: (fields: BarFields) => {
-        return new Bar(fields)
+        return new Bar([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -126,7 +133,7 @@ export class Bar implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): Bar {
@@ -187,10 +194,16 @@ export class Dummy implements StructClass {
 
   readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
 
+  readonly $typeArgs: []
+
   readonly dummyField: ToField<'bool'>
 
-  private constructor(fields: DummyFields) {
-    this.$fullTypeName = Dummy.$typeName
+  private constructor(typeArgs: [], fields: DummyFields) {
+    this.$fullTypeName = composeSuiType(
+      Dummy.$typeName,
+      ...typeArgs
+    ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
+    this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
   }
@@ -202,7 +215,8 @@ export class Dummy implements StructClass {
         Dummy.$typeName,
         ...[]
       ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Dummy.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Dummy.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Dummy.fromBcs(data),
@@ -211,7 +225,7 @@ export class Dummy implements StructClass {
       fromJSON: (json: Record<string, any>) => Dummy.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Dummy.fetch(client, id),
       new: (fields: DummyFields) => {
-        return new Dummy(fields)
+        return new Dummy([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -259,7 +273,7 @@ export class Dummy implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): Dummy {
@@ -333,7 +347,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
 
   readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<${ToTypeStr<T>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [ToTypeStr<T>]
 
   readonly id: ToField<UID>
   readonly generic: ToField<T>
@@ -352,13 +366,12 @@ export class Foo<T extends TypeArgument> implements StructClass {
   readonly dummy: ToField<Dummy>
   readonly other: ToField<StructFromOtherModule>
 
-  private constructor(typeArg: string, fields: FooFields<T>) {
+  private constructor(typeArgs: [ToTypeStr<T>], fields: FooFields<T>) {
     this.$fullTypeName = composeSuiType(
       Foo.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<${ToTypeStr<T>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.generic = fields.generic
@@ -385,7 +398,8 @@ export class Foo<T extends TypeArgument> implements StructClass {
       ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<${ToTypeStr<
         ToTypeArgument<T>
       >}>`,
-      typeArgs: [T],
+      typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Foo.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Foo.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Foo.fromBcs(T, data),
@@ -394,7 +408,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Foo.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => Foo.fetch(client, T, id),
       new: (fields: FooFields<ToTypeArgument<T>>) => {
-        return new Foo(extractType(T), fields)
+        return new Foo([extractType(T)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -557,15 +571,15 @@ export class Foo<T extends TypeArgument> implements StructClass {
   toJSONField() {
     return {
       id: this.id,
-      generic: fieldToJSON<T>(this.$typeArg, this.generic),
+      generic: fieldToJSON<T>(this.$typeArgs[0], this.generic),
       reifiedPrimitiveVec: fieldToJSON<Vector<'u64'>>(`vector<u64>`, this.reifiedPrimitiveVec),
       reifiedObjectVec: fieldToJSON<Vector<Bar>>(
         `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
         this.reifiedObjectVec
       ),
-      genericVec: fieldToJSON<Vector<T>>(`vector<${this.$typeArg}>`, this.genericVec),
+      genericVec: fieldToJSON<Vector<T>>(`vector<${this.$typeArgs[0]}>`, this.genericVec),
       genericVecNested: fieldToJSON<Vector<WithTwoGenerics<T, 'u8'>>>(
-        `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${this.$typeArg}, u8>>`,
+        `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${this.$typeArgs[0]}, u8>>`,
         this.genericVecNested
       ),
       twoGenerics: this.twoGenerics.toJSONField(),
@@ -576,7 +590,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
       twoGenericsNestedVec: fieldToJSON<
         Vector<WithTwoGenerics<Bar, Vector<WithTwoGenerics<T, 'u8'>>>>
       >(
-        `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${this.$typeArg}, u8>>>>`,
+        `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${this.$typeArgs[0]}, u8>>>>`,
         this.twoGenericsNestedVec
       ),
       dummy: this.dummy.toJSONField(),
@@ -585,7 +599,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<T extends Reified<TypeArgument, any>>(
@@ -645,7 +659,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Foo.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 
@@ -709,18 +723,17 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
 
   readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<${ToTypeStr<T>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [ToTypeStr<T>]
 
   readonly id: ToField<UID>
   readonly genericField: ToField<T>
 
-  private constructor(typeArg: string, fields: WithGenericFieldFields<T>) {
+  private constructor(typeArgs: [ToTypeStr<T>], fields: WithGenericFieldFields<T>) {
     this.$fullTypeName = composeSuiType(
       WithGenericField.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<${ToTypeStr<T>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.genericField = fields.genericField
@@ -737,7 +750,8 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
       ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<${ToTypeStr<
         ToTypeArgument<T>
       >}>`,
-      typeArgs: [T],
+      typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => WithGenericField.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => WithGenericField.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => WithGenericField.fromBcs(T, data),
@@ -746,7 +760,7 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => WithGenericField.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => WithGenericField.fetch(client, T, id),
       new: (fields: WithGenericFieldFields<ToTypeArgument<T>>) => {
-        return new WithGenericField(extractType(T), fields)
+        return new WithGenericField([extractType(T)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -813,12 +827,12 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
   toJSONField() {
     return {
       id: this.id,
-      genericField: fieldToJSON<T>(this.$typeArg, this.genericField),
+      genericField: fieldToJSON<T>(this.$typeArgs[0], this.genericField),
     }
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<T extends Reified<TypeArgument, any>>(
@@ -840,7 +854,7 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(WithGenericField.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 
@@ -917,7 +931,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
 
   readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<${PhantomToTypeStr<T>}, ${ToTypeStr<U>}>`
 
-  readonly $typeArgs: [string, string]
+  readonly $typeArgs: [PhantomToTypeStr<T>, ToTypeStr<U>]
 
   readonly id: ToField<UID>
   readonly string: ToField<String>
@@ -933,12 +947,14 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
   readonly optionGeneric: ToField<Option<U>>
   readonly optionGenericNone: ToField<Option<U>>
 
-  private constructor(typeArgs: [string, string], fields: WithSpecialTypesFields<T, U>) {
+  private constructor(
+    typeArgs: [PhantomToTypeStr<T>, ToTypeStr<U>],
+    fields: WithSpecialTypesFields<T, U>
+  ) {
     this.$fullTypeName = composeSuiType(
       WithSpecialTypes.$typeName,
       ...typeArgs
     ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<${PhantomToTypeStr<T>}, ${ToTypeStr<U>}>`
-
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -968,7 +984,11 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
       ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<${PhantomToTypeStr<
         ToPhantomTypeArgument<T>
       >}, ${ToTypeStr<ToTypeArgument<U>>}>`,
-      typeArgs: [T, U],
+      typeArgs: [extractType(T), extractType(U)] as [
+        PhantomToTypeStr<ToPhantomTypeArgument<T>>,
+        ToTypeStr<ToTypeArgument<U>>,
+      ],
+      reifiedTypeArgs: [T, U],
       fromFields: (fields: Record<string, any>) => WithSpecialTypes.fromFields([T, U], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         WithSpecialTypes.fromFieldsWithTypes([T, U], item),
@@ -1267,7 +1287,16 @@ export class WithSpecialTypesAsGenerics<
 
   readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<${ToTypeStr<T0>}, ${ToTypeStr<T1>}, ${ToTypeStr<T2>}, ${ToTypeStr<T3>}, ${ToTypeStr<T4>}, ${ToTypeStr<T5>}, ${ToTypeStr<T6>}, ${ToTypeStr<T7>}>`
 
-  readonly $typeArgs: [string, string, string, string, string, string, string, string]
+  readonly $typeArgs: [
+    ToTypeStr<T0>,
+    ToTypeStr<T1>,
+    ToTypeStr<T2>,
+    ToTypeStr<T3>,
+    ToTypeStr<T4>,
+    ToTypeStr<T5>,
+    ToTypeStr<T6>,
+    ToTypeStr<T7>,
+  ]
 
   readonly id: ToField<UID>
   readonly string: ToField<T0>
@@ -1280,14 +1309,22 @@ export class WithSpecialTypesAsGenerics<
   readonly optionNone: ToField<T7>
 
   private constructor(
-    typeArgs: [string, string, string, string, string, string, string, string],
+    typeArgs: [
+      ToTypeStr<T0>,
+      ToTypeStr<T1>,
+      ToTypeStr<T2>,
+      ToTypeStr<T3>,
+      ToTypeStr<T4>,
+      ToTypeStr<T5>,
+      ToTypeStr<T6>,
+      ToTypeStr<T7>,
+    ],
     fields: WithSpecialTypesAsGenericsFields<T0, T1, T2, T3, T4, T5, T6, T7>
   ) {
     this.$fullTypeName = composeSuiType(
       WithSpecialTypesAsGenerics.$typeName,
       ...typeArgs
     ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<${ToTypeStr<T0>}, ${ToTypeStr<T1>}, ${ToTypeStr<T2>}, ${ToTypeStr<T3>}, ${ToTypeStr<T4>}, ${ToTypeStr<T5>}, ${ToTypeStr<T6>}, ${ToTypeStr<T7>}>`
-
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -1350,7 +1387,26 @@ export class WithSpecialTypesAsGenerics<
       >}, ${ToTypeStr<ToTypeArgument<T4>>}, ${ToTypeStr<ToTypeArgument<T5>>}, ${ToTypeStr<
         ToTypeArgument<T6>
       >}, ${ToTypeStr<ToTypeArgument<T7>>}>`,
-      typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
+      typeArgs: [
+        extractType(T0),
+        extractType(T1),
+        extractType(T2),
+        extractType(T3),
+        extractType(T4),
+        extractType(T5),
+        extractType(T6),
+        extractType(T7),
+      ] as [
+        ToTypeStr<ToTypeArgument<T0>>,
+        ToTypeStr<ToTypeArgument<T1>>,
+        ToTypeStr<ToTypeArgument<T2>>,
+        ToTypeStr<ToTypeArgument<T3>>,
+        ToTypeStr<ToTypeArgument<T4>>,
+        ToTypeStr<ToTypeArgument<T5>>,
+        ToTypeStr<ToTypeArgument<T6>>,
+        ToTypeStr<ToTypeArgument<T7>>,
+      ],
+      reifiedTypeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
       fromFields: (fields: Record<string, any>) =>
         WithSpecialTypesAsGenerics.fromFields([T0, T1, T2, T3, T4, T5, T6, T7], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
@@ -1814,7 +1870,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
 
   readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<${ToTypeStr<T>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [ToTypeStr<T>]
 
   readonly id: ToField<UID>
   readonly string: ToField<Vector<String>>
@@ -1824,13 +1880,12 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
   readonly option: ToField<Vector<Option<'u64'>>>
   readonly optionGeneric: ToField<Vector<Option<T>>>
 
-  private constructor(typeArg: string, fields: WithSpecialTypesInVectorsFields<T>) {
+  private constructor(typeArgs: [ToTypeStr<T>], fields: WithSpecialTypesInVectorsFields<T>) {
     this.$fullTypeName = composeSuiType(
       WithSpecialTypesInVectors.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<${ToTypeStr<T>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.string = fields.string
@@ -1852,7 +1907,8 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
       ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<${ToTypeStr<
         ToTypeArgument<T>
       >}>`,
-      typeArgs: [T],
+      typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => WithSpecialTypesInVectors.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         WithSpecialTypesInVectors.fromFieldsWithTypes(T, item),
@@ -1863,7 +1919,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
       fetch: async (client: SuiClient, id: string) =>
         WithSpecialTypesInVectors.fetch(client, T, id),
       new: (fields: WithSpecialTypesInVectorsFields<ToTypeArgument<T>>) => {
-        return new WithSpecialTypesInVectors(extractType(T), fields)
+        return new WithSpecialTypesInVectors([extractType(T)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -1963,14 +2019,14 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
       ),
       option: fieldToJSON<Vector<Option<'u64'>>>(`vector<0x1::option::Option<u64>>`, this.option),
       optionGeneric: fieldToJSON<Vector<Option<T>>>(
-        `vector<0x1::option::Option<${this.$typeArg}>>`,
+        `vector<0x1::option::Option<${this.$typeArgs[0]}>>`,
         this.optionGeneric
       ),
     }
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<T extends Reified<TypeArgument, any>>(
@@ -2000,7 +2056,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(WithSpecialTypesInVectors.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 
@@ -2073,17 +2129,16 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
 
   readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${ToTypeStr<T>}, ${ToTypeStr<U>}>`
 
-  readonly $typeArgs: [string, string]
+  readonly $typeArgs: [ToTypeStr<T>, ToTypeStr<U>]
 
   readonly genericField1: ToField<T>
   readonly genericField2: ToField<U>
 
-  private constructor(typeArgs: [string, string], fields: WithTwoGenericsFields<T, U>) {
+  private constructor(typeArgs: [ToTypeStr<T>, ToTypeStr<U>], fields: WithTwoGenericsFields<T, U>) {
     this.$fullTypeName = composeSuiType(
       WithTwoGenerics.$typeName,
       ...typeArgs
     ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${ToTypeStr<T>}, ${ToTypeStr<U>}>`
-
     this.$typeArgs = typeArgs
 
     this.genericField1 = fields.genericField1
@@ -2102,7 +2157,11 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
       ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${ToTypeStr<
         ToTypeArgument<T>
       >}, ${ToTypeStr<ToTypeArgument<U>>}>`,
-      typeArgs: [T, U],
+      typeArgs: [extractType(T), extractType(U)] as [
+        ToTypeStr<ToTypeArgument<T>>,
+        ToTypeStr<ToTypeArgument<U>>,
+      ],
+      reifiedTypeArgs: [T, U],
       fromFields: (fields: Record<string, any>) => WithTwoGenerics.fromFields([T, U], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         WithTwoGenerics.fromFieldsWithTypes([T, U], item),

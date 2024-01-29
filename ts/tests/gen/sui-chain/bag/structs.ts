@@ -36,11 +36,14 @@ export class Bag implements StructClass {
 
   readonly $fullTypeName: '0x2::bag::Bag'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<UID>
   readonly size: ToField<'u64'>
 
-  private constructor(fields: BagFields) {
-    this.$fullTypeName = Bag.$typeName
+  private constructor(typeArgs: [], fields: BagFields) {
+    this.$fullTypeName = composeSuiType(Bag.$typeName, ...typeArgs) as '0x2::bag::Bag'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.size = fields.size
@@ -50,7 +53,8 @@ export class Bag implements StructClass {
     return {
       typeName: Bag.$typeName,
       fullTypeName: composeSuiType(Bag.$typeName, ...[]) as '0x2::bag::Bag',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Bag.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Bag.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Bag.fromBcs(data),
@@ -59,7 +63,7 @@ export class Bag implements StructClass {
       fromJSON: (json: Record<string, any>) => Bag.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Bag.fetch(client, id),
       new: (fields: BagFields) => {
-        return new Bag(fields)
+        return new Bag([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -113,7 +117,7 @@ export class Bag implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): Bag {

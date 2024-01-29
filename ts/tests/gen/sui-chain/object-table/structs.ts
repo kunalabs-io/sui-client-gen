@@ -47,17 +47,19 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
 
   readonly $fullTypeName: `0x2::object_table::ObjectTable<${PhantomToTypeStr<T0>}, ${PhantomToTypeStr<T1>}>`
 
-  readonly $typeArgs: [string, string]
+  readonly $typeArgs: [PhantomToTypeStr<T0>, PhantomToTypeStr<T1>]
 
   readonly id: ToField<UID>
   readonly size: ToField<'u64'>
 
-  private constructor(typeArgs: [string, string], fields: ObjectTableFields<T0, T1>) {
+  private constructor(
+    typeArgs: [PhantomToTypeStr<T0>, PhantomToTypeStr<T1>],
+    fields: ObjectTableFields<T0, T1>
+  ) {
     this.$fullTypeName = composeSuiType(
       ObjectTable.$typeName,
       ...typeArgs
     ) as `0x2::object_table::ObjectTable<${PhantomToTypeStr<T0>}, ${PhantomToTypeStr<T1>}>`
-
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -76,7 +78,11 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
       ) as `0x2::object_table::ObjectTable<${PhantomToTypeStr<
         ToPhantomTypeArgument<T0>
       >}, ${PhantomToTypeStr<ToPhantomTypeArgument<T1>>}>`,
-      typeArgs: [T0, T1],
+      typeArgs: [extractType(T0), extractType(T1)] as [
+        PhantomToTypeStr<ToPhantomTypeArgument<T0>>,
+        PhantomToTypeStr<ToPhantomTypeArgument<T1>>,
+      ],
+      reifiedTypeArgs: [T0, T1],
       fromFields: (fields: Record<string, any>) => ObjectTable.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         ObjectTable.fromFieldsWithTypes([T0, T1], item),

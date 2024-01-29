@@ -45,17 +45,16 @@ export class TableVec<T0 extends PhantomTypeArgument> implements StructClass {
 
   readonly $fullTypeName: `0x2::table_vec::TableVec<${PhantomToTypeStr<T0>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [PhantomToTypeStr<T0>]
 
   readonly contents: ToField<Table<'u64', T0>>
 
-  private constructor(typeArg: string, fields: TableVecFields<T0>) {
+  private constructor(typeArgs: [PhantomToTypeStr<T0>], fields: TableVecFields<T0>) {
     this.$fullTypeName = composeSuiType(
       TableVec.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x2::table_vec::TableVec<${PhantomToTypeStr<T0>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.contents = fields.contents
   }
@@ -69,7 +68,8 @@ export class TableVec<T0 extends PhantomTypeArgument> implements StructClass {
         TableVec.$typeName,
         ...[extractType(T0)]
       ) as `0x2::table_vec::TableVec<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
-      typeArgs: [T0],
+      typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => TableVec.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TableVec.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => TableVec.fromBcs(T0, data),
@@ -78,7 +78,7 @@ export class TableVec<T0 extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => TableVec.fromJSON(T0, json),
       fetch: async (client: SuiClient, id: string) => TableVec.fetch(client, T0, id),
       new: (fields: TableVecFields<ToPhantomTypeArgument<T0>>) => {
-        return new TableVec(extractType(T0), fields)
+        return new TableVec([extractType(T0)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -143,7 +143,7 @@ export class TableVec<T0 extends PhantomTypeArgument> implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
@@ -164,7 +164,7 @@ export class TableVec<T0 extends PhantomTypeArgument> implements StructClass {
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(TableVec.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 

@@ -45,18 +45,17 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
 
   readonly $fullTypeName: `0x2::transfer::Receiving<${PhantomToTypeStr<T>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [PhantomToTypeStr<T>]
 
   readonly id: ToField<ID>
   readonly version: ToField<'u64'>
 
-  private constructor(typeArg: string, fields: ReceivingFields<T>) {
+  private constructor(typeArgs: [PhantomToTypeStr<T>], fields: ReceivingFields<T>) {
     this.$fullTypeName = composeSuiType(
       Receiving.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x2::transfer::Receiving<${PhantomToTypeStr<T>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.version = fields.version
@@ -71,7 +70,8 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
         Receiving.$typeName,
         ...[extractType(T)]
       ) as `0x2::transfer::Receiving<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [T],
+      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Receiving.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Receiving.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Receiving.fromBcs(T, data),
@@ -80,7 +80,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Receiving.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => Receiving.fetch(client, T, id),
       new: (fields: ReceivingFields<ToPhantomTypeArgument<T>>) => {
-        return new Receiving(extractType(T), fields)
+        return new Receiving([extractType(T)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -146,7 +146,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
@@ -168,7 +168,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Receiving.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 

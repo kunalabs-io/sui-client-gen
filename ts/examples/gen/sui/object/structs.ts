@@ -46,17 +46,16 @@ export class DynamicFields<K extends TypeArgument> implements StructClass {
 
   readonly $fullTypeName: `0x2::object::DynamicFields<${ToTypeStr<K>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [ToTypeStr<K>]
 
   readonly names: ToField<Vector<K>>
 
-  private constructor(typeArg: string, fields: DynamicFieldsFields<K>) {
+  private constructor(typeArgs: [ToTypeStr<K>], fields: DynamicFieldsFields<K>) {
     this.$fullTypeName = composeSuiType(
       DynamicFields.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x2::object::DynamicFields<${ToTypeStr<K>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.names = fields.names
   }
@@ -70,7 +69,8 @@ export class DynamicFields<K extends TypeArgument> implements StructClass {
         DynamicFields.$typeName,
         ...[extractType(K)]
       ) as `0x2::object::DynamicFields<${ToTypeStr<ToTypeArgument<K>>}>`,
-      typeArgs: [K],
+      typeArgs: [extractType(K)] as [ToTypeStr<ToTypeArgument<K>>],
+      reifiedTypeArgs: [K],
       fromFields: (fields: Record<string, any>) => DynamicFields.fromFields(K, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => DynamicFields.fromFieldsWithTypes(K, item),
       fromBcs: (data: Uint8Array) => DynamicFields.fromBcs(K, data),
@@ -79,7 +79,7 @@ export class DynamicFields<K extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => DynamicFields.fromJSON(K, json),
       fetch: async (client: SuiClient, id: string) => DynamicFields.fetch(client, K, id),
       new: (fields: DynamicFieldsFields<ToTypeArgument<K>>) => {
-        return new DynamicFields(extractType(K), fields)
+        return new DynamicFields([extractType(K)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -139,12 +139,12 @@ export class DynamicFields<K extends TypeArgument> implements StructClass {
 
   toJSONField() {
     return {
-      names: fieldToJSON<Vector<K>>(`vector<${this.$typeArg}>`, this.names),
+      names: fieldToJSON<Vector<K>>(`vector<${this.$typeArgs[0]}>`, this.names),
     }
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<K extends Reified<TypeArgument, any>>(
@@ -165,7 +165,7 @@ export class DynamicFields<K extends TypeArgument> implements StructClass {
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(DynamicFields.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 
@@ -222,10 +222,13 @@ export class ID implements StructClass {
 
   readonly $fullTypeName: '0x2::object::ID'
 
+  readonly $typeArgs: []
+
   readonly bytes: ToField<'address'>
 
-  private constructor(fields: IDFields) {
-    this.$fullTypeName = ID.$typeName
+  private constructor(typeArgs: [], fields: IDFields) {
+    this.$fullTypeName = composeSuiType(ID.$typeName, ...typeArgs) as '0x2::object::ID'
+    this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
   }
@@ -234,7 +237,8 @@ export class ID implements StructClass {
     return {
       typeName: ID.$typeName,
       fullTypeName: composeSuiType(ID.$typeName, ...[]) as '0x2::object::ID',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ID.fromBcs(data),
@@ -243,7 +247,7 @@ export class ID implements StructClass {
       fromJSON: (json: Record<string, any>) => ID.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => ID.fetch(client, id),
       new: (fields: IDFields) => {
-        return new ID(fields)
+        return new ID([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -292,7 +296,7 @@ export class ID implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): ID {
@@ -351,11 +355,17 @@ export class Ownership implements StructClass {
 
   readonly $fullTypeName: '0x2::object::Ownership'
 
+  readonly $typeArgs: []
+
   readonly owner: ToField<'address'>
   readonly status: ToField<'u64'>
 
-  private constructor(fields: OwnershipFields) {
-    this.$fullTypeName = Ownership.$typeName
+  private constructor(typeArgs: [], fields: OwnershipFields) {
+    this.$fullTypeName = composeSuiType(
+      Ownership.$typeName,
+      ...typeArgs
+    ) as '0x2::object::Ownership'
+    this.$typeArgs = typeArgs
 
     this.owner = fields.owner
     this.status = fields.status
@@ -365,7 +375,8 @@ export class Ownership implements StructClass {
     return {
       typeName: Ownership.$typeName,
       fullTypeName: composeSuiType(Ownership.$typeName, ...[]) as '0x2::object::Ownership',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Ownership.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Ownership.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Ownership.fromBcs(data),
@@ -374,7 +385,7 @@ export class Ownership implements StructClass {
       fromJSON: (json: Record<string, any>) => Ownership.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Ownership.fetch(client, id),
       new: (fields: OwnershipFields) => {
-        return new Ownership(fields)
+        return new Ownership([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -431,7 +442,7 @@ export class Ownership implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): Ownership {
@@ -492,10 +503,13 @@ export class UID implements StructClass {
 
   readonly $fullTypeName: '0x2::object::UID'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<ID>
 
-  private constructor(fields: UIDFields) {
-    this.$fullTypeName = UID.$typeName
+  private constructor(typeArgs: [], fields: UIDFields) {
+    this.$fullTypeName = composeSuiType(UID.$typeName, ...typeArgs) as '0x2::object::UID'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
   }
@@ -504,7 +518,8 @@ export class UID implements StructClass {
     return {
       typeName: UID.$typeName,
       fullTypeName: composeSuiType(UID.$typeName, ...[]) as '0x2::object::UID',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UID.fromBcs(data),
@@ -513,7 +528,7 @@ export class UID implements StructClass {
       fromJSON: (json: Record<string, any>) => UID.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => UID.fetch(client, id),
       new: (fields: UIDFields) => {
-        return new UID(fields)
+        return new UID([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -559,7 +574,7 @@ export class UID implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): UID {

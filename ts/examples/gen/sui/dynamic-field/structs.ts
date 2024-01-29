@@ -47,18 +47,20 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
 
   readonly $fullTypeName: `0x2::dynamic_field::Field<${ToTypeStr<Name>}, ${ToTypeStr<Value>}>`
 
-  readonly $typeArgs: [string, string]
+  readonly $typeArgs: [ToTypeStr<Name>, ToTypeStr<Value>]
 
   readonly id: ToField<UID>
   readonly name: ToField<Name>
   readonly value: ToField<Value>
 
-  private constructor(typeArgs: [string, string], fields: FieldFields<Name, Value>) {
+  private constructor(
+    typeArgs: [ToTypeStr<Name>, ToTypeStr<Value>],
+    fields: FieldFields<Name, Value>
+  ) {
     this.$fullTypeName = composeSuiType(
       Field.$typeName,
       ...typeArgs
     ) as `0x2::dynamic_field::Field<${ToTypeStr<Name>}, ${ToTypeStr<Value>}>`
-
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -78,7 +80,11 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
       ) as `0x2::dynamic_field::Field<${ToTypeStr<ToTypeArgument<Name>>}, ${ToTypeStr<
         ToTypeArgument<Value>
       >}>`,
-      typeArgs: [Name, Value],
+      typeArgs: [extractType(Name), extractType(Value)] as [
+        ToTypeStr<ToTypeArgument<Name>>,
+        ToTypeStr<ToTypeArgument<Value>>,
+      ],
+      reifiedTypeArgs: [Name, Value],
       fromFields: (fields: Record<string, any>) => Field.fromFields([Name, Value], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         Field.fromFieldsWithTypes([Name, Value], item),

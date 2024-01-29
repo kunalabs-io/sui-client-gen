@@ -36,11 +36,17 @@ export class ObjectBag implements StructClass {
 
   readonly $fullTypeName: '0x2::object_bag::ObjectBag'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<UID>
   readonly size: ToField<'u64'>
 
-  private constructor(fields: ObjectBagFields) {
-    this.$fullTypeName = ObjectBag.$typeName
+  private constructor(typeArgs: [], fields: ObjectBagFields) {
+    this.$fullTypeName = composeSuiType(
+      ObjectBag.$typeName,
+      ...typeArgs
+    ) as '0x2::object_bag::ObjectBag'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.size = fields.size
@@ -50,7 +56,8 @@ export class ObjectBag implements StructClass {
     return {
       typeName: ObjectBag.$typeName,
       fullTypeName: composeSuiType(ObjectBag.$typeName, ...[]) as '0x2::object_bag::ObjectBag',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ObjectBag.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ObjectBag.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ObjectBag.fromBcs(data),
@@ -59,7 +66,7 @@ export class ObjectBag implements StructClass {
       fromJSON: (json: Record<string, any>) => ObjectBag.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => ObjectBag.fetch(client, id),
       new: (fields: ObjectBagFields) => {
-        return new ObjectBag(fields)
+        return new ObjectBag([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -113,7 +120,7 @@ export class ObjectBag implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): ObjectBag {

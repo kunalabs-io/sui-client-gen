@@ -43,17 +43,16 @@ export class VecSet<K extends TypeArgument> implements StructClass {
 
   readonly $fullTypeName: `0x2::vec_set::VecSet<${ToTypeStr<K>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [ToTypeStr<K>]
 
   readonly contents: ToField<Vector<K>>
 
-  private constructor(typeArg: string, fields: VecSetFields<K>) {
+  private constructor(typeArgs: [ToTypeStr<K>], fields: VecSetFields<K>) {
     this.$fullTypeName = composeSuiType(
       VecSet.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x2::vec_set::VecSet<${ToTypeStr<K>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.contents = fields.contents
   }
@@ -65,7 +64,8 @@ export class VecSet<K extends TypeArgument> implements StructClass {
         VecSet.$typeName,
         ...[extractType(K)]
       ) as `0x2::vec_set::VecSet<${ToTypeStr<ToTypeArgument<K>>}>`,
-      typeArgs: [K],
+      typeArgs: [extractType(K)] as [ToTypeStr<ToTypeArgument<K>>],
+      reifiedTypeArgs: [K],
       fromFields: (fields: Record<string, any>) => VecSet.fromFields(K, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VecSet.fromFieldsWithTypes(K, item),
       fromBcs: (data: Uint8Array) => VecSet.fromBcs(K, data),
@@ -74,7 +74,7 @@ export class VecSet<K extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => VecSet.fromJSON(K, json),
       fetch: async (client: SuiClient, id: string) => VecSet.fetch(client, K, id),
       new: (fields: VecSetFields<ToTypeArgument<K>>) => {
-        return new VecSet(extractType(K), fields)
+        return new VecSet([extractType(K)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -134,12 +134,12 @@ export class VecSet<K extends TypeArgument> implements StructClass {
 
   toJSONField() {
     return {
-      contents: fieldToJSON<Vector<K>>(`vector<${this.$typeArg}>`, this.contents),
+      contents: fieldToJSON<Vector<K>>(`vector<${this.$typeArgs[0]}>`, this.contents),
     }
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<K extends Reified<TypeArgument, any>>(
@@ -160,7 +160,7 @@ export class VecSet<K extends TypeArgument> implements StructClass {
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(VecSet.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 

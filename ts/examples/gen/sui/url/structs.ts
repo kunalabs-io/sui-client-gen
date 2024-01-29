@@ -35,10 +35,13 @@ export class Url implements StructClass {
 
   readonly $fullTypeName: '0x2::url::Url'
 
+  readonly $typeArgs: []
+
   readonly url: ToField<String>
 
-  private constructor(fields: UrlFields) {
-    this.$fullTypeName = Url.$typeName
+  private constructor(typeArgs: [], fields: UrlFields) {
+    this.$fullTypeName = composeSuiType(Url.$typeName, ...typeArgs) as '0x2::url::Url'
+    this.$typeArgs = typeArgs
 
     this.url = fields.url
   }
@@ -47,7 +50,8 @@ export class Url implements StructClass {
     return {
       typeName: Url.$typeName,
       fullTypeName: composeSuiType(Url.$typeName, ...[]) as '0x2::url::Url',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Url.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Url.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Url.fromBcs(data),
@@ -56,7 +60,7 @@ export class Url implements StructClass {
       fromJSON: (json: Record<string, any>) => Url.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Url.fetch(client, id),
       new: (fields: UrlFields) => {
-        return new Url(fields)
+        return new Url([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -102,7 +106,7 @@ export class Url implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): Url {

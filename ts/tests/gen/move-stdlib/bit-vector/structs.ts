@@ -38,11 +38,17 @@ export class BitVector implements StructClass {
 
   readonly $fullTypeName: '0x1::bit_vector::BitVector'
 
+  readonly $typeArgs: []
+
   readonly length: ToField<'u64'>
   readonly bitField: ToField<Vector<'bool'>>
 
-  private constructor(fields: BitVectorFields) {
-    this.$fullTypeName = BitVector.$typeName
+  private constructor(typeArgs: [], fields: BitVectorFields) {
+    this.$fullTypeName = composeSuiType(
+      BitVector.$typeName,
+      ...typeArgs
+    ) as '0x1::bit_vector::BitVector'
+    this.$typeArgs = typeArgs
 
     this.length = fields.length
     this.bitField = fields.bitField
@@ -52,7 +58,8 @@ export class BitVector implements StructClass {
     return {
       typeName: BitVector.$typeName,
       fullTypeName: composeSuiType(BitVector.$typeName, ...[]) as '0x1::bit_vector::BitVector',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => BitVector.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => BitVector.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => BitVector.fromBcs(data),
@@ -61,7 +68,7 @@ export class BitVector implements StructClass {
       fromJSON: (json: Record<string, any>) => BitVector.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => BitVector.fetch(client, id),
       new: (fields: BitVectorFields) => {
-        return new BitVector(fields)
+        return new BitVector([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -115,7 +122,7 @@ export class BitVector implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): BitVector {

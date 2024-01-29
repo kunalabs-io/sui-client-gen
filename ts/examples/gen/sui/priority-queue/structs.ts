@@ -44,18 +44,17 @@ export class Entry<T extends TypeArgument> implements StructClass {
 
   readonly $fullTypeName: `0x2::priority_queue::Entry<${ToTypeStr<T>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [ToTypeStr<T>]
 
   readonly priority: ToField<'u64'>
   readonly value: ToField<T>
 
-  private constructor(typeArg: string, fields: EntryFields<T>) {
+  private constructor(typeArgs: [ToTypeStr<T>], fields: EntryFields<T>) {
     this.$fullTypeName = composeSuiType(
       Entry.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x2::priority_queue::Entry<${ToTypeStr<T>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.priority = fields.priority
     this.value = fields.value
@@ -68,7 +67,8 @@ export class Entry<T extends TypeArgument> implements StructClass {
         Entry.$typeName,
         ...[extractType(T)]
       ) as `0x2::priority_queue::Entry<${ToTypeStr<ToTypeArgument<T>>}>`,
-      typeArgs: [T],
+      typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Entry.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Entry.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Entry.fromBcs(T, data),
@@ -77,7 +77,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Entry.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => Entry.fetch(client, T, id),
       new: (fields: EntryFields<ToTypeArgument<T>>) => {
-        return new Entry(extractType(T), fields)
+        return new Entry([extractType(T)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -141,12 +141,12 @@ export class Entry<T extends TypeArgument> implements StructClass {
   toJSONField() {
     return {
       priority: this.priority.toString(),
-      value: fieldToJSON<T>(this.$typeArg, this.value),
+      value: fieldToJSON<T>(this.$typeArgs[0], this.value),
     }
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<T extends Reified<TypeArgument, any>>(
@@ -168,7 +168,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Entry.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 
@@ -228,17 +228,16 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
 
   readonly $fullTypeName: `0x2::priority_queue::PriorityQueue<${ToTypeStr<T>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [ToTypeStr<T>]
 
   readonly entries: ToField<Vector<Entry<T>>>
 
-  private constructor(typeArg: string, fields: PriorityQueueFields<T>) {
+  private constructor(typeArgs: [ToTypeStr<T>], fields: PriorityQueueFields<T>) {
     this.$fullTypeName = composeSuiType(
       PriorityQueue.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x2::priority_queue::PriorityQueue<${ToTypeStr<T>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.entries = fields.entries
   }
@@ -252,7 +251,8 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
         PriorityQueue.$typeName,
         ...[extractType(T)]
       ) as `0x2::priority_queue::PriorityQueue<${ToTypeStr<ToTypeArgument<T>>}>`,
-      typeArgs: [T],
+      typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => PriorityQueue.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PriorityQueue.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => PriorityQueue.fromBcs(T, data),
@@ -261,7 +261,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => PriorityQueue.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => PriorityQueue.fetch(client, T, id),
       new: (fields: PriorityQueueFields<ToTypeArgument<T>>) => {
-        return new PriorityQueue(extractType(T), fields)
+        return new PriorityQueue([extractType(T)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -325,14 +325,14 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
   toJSONField() {
     return {
       entries: fieldToJSON<Vector<Entry<T>>>(
-        `vector<0x2::priority_queue::Entry<${this.$typeArg}>>`,
+        `vector<0x2::priority_queue::Entry<${this.$typeArgs[0]}>>`,
         this.entries
       ),
     }
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<T extends Reified<TypeArgument, any>>(
@@ -353,7 +353,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(PriorityQueue.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 

@@ -37,10 +37,13 @@ export class String implements StructClass {
 
   readonly $fullTypeName: '0x1::ascii::String'
 
+  readonly $typeArgs: []
+
   readonly bytes: ToField<Vector<'u8'>>
 
-  private constructor(fields: StringFields) {
-    this.$fullTypeName = String.$typeName
+  private constructor(typeArgs: [], fields: StringFields) {
+    this.$fullTypeName = composeSuiType(String.$typeName, ...typeArgs) as '0x1::ascii::String'
+    this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
   }
@@ -49,7 +52,8 @@ export class String implements StructClass {
     return {
       typeName: String.$typeName,
       fullTypeName: composeSuiType(String.$typeName, ...[]) as '0x1::ascii::String',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => String.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => String.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => String.fromBcs(data),
@@ -58,7 +62,7 @@ export class String implements StructClass {
       fromJSON: (json: Record<string, any>) => String.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => String.fetch(client, id),
       new: (fields: StringFields) => {
-        return new String(fields)
+        return new String([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -106,7 +110,7 @@ export class String implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): String {
@@ -164,10 +168,13 @@ export class Char implements StructClass {
 
   readonly $fullTypeName: '0x1::ascii::Char'
 
+  readonly $typeArgs: []
+
   readonly byte: ToField<'u8'>
 
-  private constructor(fields: CharFields) {
-    this.$fullTypeName = Char.$typeName
+  private constructor(typeArgs: [], fields: CharFields) {
+    this.$fullTypeName = composeSuiType(Char.$typeName, ...typeArgs) as '0x1::ascii::Char'
+    this.$typeArgs = typeArgs
 
     this.byte = fields.byte
   }
@@ -176,7 +183,8 @@ export class Char implements StructClass {
     return {
       typeName: Char.$typeName,
       fullTypeName: composeSuiType(Char.$typeName, ...[]) as '0x1::ascii::Char',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Char.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Char.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Char.fromBcs(data),
@@ -185,7 +193,7 @@ export class Char implements StructClass {
       fromJSON: (json: Record<string, any>) => Char.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Char.fetch(client, id),
       new: (fields: CharFields) => {
-        return new Char(fields)
+        return new Char([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -231,7 +239,7 @@ export class Char implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): Char {

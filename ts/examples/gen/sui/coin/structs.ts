@@ -48,18 +48,17 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
 
   readonly $fullTypeName: `0x2::coin::Coin<${PhantomToTypeStr<T>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [PhantomToTypeStr<T>]
 
   readonly id: ToField<UID>
   readonly balance: ToField<Balance<T>>
 
-  private constructor(typeArg: string, fields: CoinFields<T>) {
+  private constructor(typeArgs: [PhantomToTypeStr<T>], fields: CoinFields<T>) {
     this.$fullTypeName = composeSuiType(
       Coin.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x2::coin::Coin<${PhantomToTypeStr<T>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.balance = fields.balance
@@ -74,7 +73,8 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
         Coin.$typeName,
         ...[extractType(T)]
       ) as `0x2::coin::Coin<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [T],
+      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Coin.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Coin.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Coin.fromBcs(T, data),
@@ -83,7 +83,7 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Coin.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => Coin.fetch(client, T, id),
       new: (fields: CoinFields<ToPhantomTypeArgument<T>>) => {
-        return new Coin(extractType(T), fields)
+        return new Coin([extractType(T)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -149,7 +149,7 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
@@ -171,7 +171,7 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Coin.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 
@@ -236,7 +236,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
 
   readonly $fullTypeName: `0x2::coin::CoinMetadata<${PhantomToTypeStr<T>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [PhantomToTypeStr<T>]
 
   readonly id: ToField<UID>
   readonly decimals: ToField<'u8'>
@@ -245,13 +245,12 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
   readonly description: ToField<String>
   readonly iconUrl: ToField<Option<Url>>
 
-  private constructor(typeArg: string, fields: CoinMetadataFields<T>) {
+  private constructor(typeArgs: [PhantomToTypeStr<T>], fields: CoinMetadataFields<T>) {
     this.$fullTypeName = composeSuiType(
       CoinMetadata.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x2::coin::CoinMetadata<${PhantomToTypeStr<T>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.decimals = fields.decimals
@@ -270,7 +269,8 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
         CoinMetadata.$typeName,
         ...[extractType(T)]
       ) as `0x2::coin::CoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [T],
+      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => CoinMetadata.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => CoinMetadata.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => CoinMetadata.fromBcs(T, data),
@@ -279,7 +279,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
       fromJSON: (json: Record<string, any>) => CoinMetadata.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => CoinMetadata.fetch(client, T, id),
       new: (fields: CoinMetadataFields<ToPhantomTypeArgument<T>>) => {
-        return new CoinMetadata(extractType(T), fields)
+        return new CoinMetadata([extractType(T)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -361,7 +361,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
@@ -387,7 +387,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(CoinMetadata.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 
@@ -447,17 +447,16 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
 
   readonly $fullTypeName: `0x2::coin::CurrencyCreated<${PhantomToTypeStr<T>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [PhantomToTypeStr<T>]
 
   readonly decimals: ToField<'u8'>
 
-  private constructor(typeArg: string, fields: CurrencyCreatedFields<T>) {
+  private constructor(typeArgs: [PhantomToTypeStr<T>], fields: CurrencyCreatedFields<T>) {
     this.$fullTypeName = composeSuiType(
       CurrencyCreated.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x2::coin::CurrencyCreated<${PhantomToTypeStr<T>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.decimals = fields.decimals
   }
@@ -471,7 +470,8 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
         CurrencyCreated.$typeName,
         ...[extractType(T)]
       ) as `0x2::coin::CurrencyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [T],
+      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => CurrencyCreated.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => CurrencyCreated.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => CurrencyCreated.fromBcs(T, data),
@@ -480,7 +480,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
       fromJSON: (json: Record<string, any>) => CurrencyCreated.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => CurrencyCreated.fetch(client, T, id),
       new: (fields: CurrencyCreatedFields<ToPhantomTypeArgument<T>>) => {
-        return new CurrencyCreated(extractType(T), fields)
+        return new CurrencyCreated([extractType(T)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -542,7 +542,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
@@ -563,7 +563,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(CurrencyCreated.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 
@@ -624,18 +624,17 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
 
   readonly $fullTypeName: `0x2::coin::TreasuryCap<${PhantomToTypeStr<T>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [PhantomToTypeStr<T>]
 
   readonly id: ToField<UID>
   readonly totalSupply: ToField<Supply<T>>
 
-  private constructor(typeArg: string, fields: TreasuryCapFields<T>) {
+  private constructor(typeArgs: [PhantomToTypeStr<T>], fields: TreasuryCapFields<T>) {
     this.$fullTypeName = composeSuiType(
       TreasuryCap.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x2::coin::TreasuryCap<${PhantomToTypeStr<T>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.totalSupply = fields.totalSupply
@@ -650,7 +649,8 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
         TreasuryCap.$typeName,
         ...[extractType(T)]
       ) as `0x2::coin::TreasuryCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [T],
+      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TreasuryCap.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TreasuryCap.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => TreasuryCap.fromBcs(T, data),
@@ -659,7 +659,7 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => TreasuryCap.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => TreasuryCap.fetch(client, T, id),
       new: (fields: TreasuryCapFields<ToPhantomTypeArgument<T>>) => {
-        return new TreasuryCap(extractType(T), fields)
+        return new TreasuryCap([extractType(T)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -725,7 +725,7 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
@@ -747,7 +747,7 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(TreasuryCap.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 

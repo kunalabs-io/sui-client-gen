@@ -36,11 +36,17 @@ export class VersionChangeCap implements StructClass {
 
   readonly $fullTypeName: '0x2::versioned::VersionChangeCap'
 
+  readonly $typeArgs: []
+
   readonly versionedId: ToField<ID>
   readonly oldVersion: ToField<'u64'>
 
-  private constructor(fields: VersionChangeCapFields) {
-    this.$fullTypeName = VersionChangeCap.$typeName
+  private constructor(typeArgs: [], fields: VersionChangeCapFields) {
+    this.$fullTypeName = composeSuiType(
+      VersionChangeCap.$typeName,
+      ...typeArgs
+    ) as '0x2::versioned::VersionChangeCap'
+    this.$typeArgs = typeArgs
 
     this.versionedId = fields.versionedId
     this.oldVersion = fields.oldVersion
@@ -53,7 +59,8 @@ export class VersionChangeCap implements StructClass {
         VersionChangeCap.$typeName,
         ...[]
       ) as '0x2::versioned::VersionChangeCap',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => VersionChangeCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VersionChangeCap.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => VersionChangeCap.fromBcs(data),
@@ -62,7 +69,7 @@ export class VersionChangeCap implements StructClass {
       fromJSON: (json: Record<string, any>) => VersionChangeCap.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => VersionChangeCap.fetch(client, id),
       new: (fields: VersionChangeCapFields) => {
-        return new VersionChangeCap(fields)
+        return new VersionChangeCap([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -116,7 +123,7 @@ export class VersionChangeCap implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): VersionChangeCap {
@@ -178,11 +185,17 @@ export class Versioned implements StructClass {
 
   readonly $fullTypeName: '0x2::versioned::Versioned'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<UID>
   readonly version: ToField<'u64'>
 
-  private constructor(fields: VersionedFields) {
-    this.$fullTypeName = Versioned.$typeName
+  private constructor(typeArgs: [], fields: VersionedFields) {
+    this.$fullTypeName = composeSuiType(
+      Versioned.$typeName,
+      ...typeArgs
+    ) as '0x2::versioned::Versioned'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.version = fields.version
@@ -192,7 +205,8 @@ export class Versioned implements StructClass {
     return {
       typeName: Versioned.$typeName,
       fullTypeName: composeSuiType(Versioned.$typeName, ...[]) as '0x2::versioned::Versioned',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Versioned.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Versioned.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Versioned.fromBcs(data),
@@ -201,7 +215,7 @@ export class Versioned implements StructClass {
       fromJSON: (json: Record<string, any>) => Versioned.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Versioned.fetch(client, id),
       new: (fields: VersionedFields) => {
-        return new Versioned(fields)
+        return new Versioned([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -255,7 +269,7 @@ export class Versioned implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): Versioned {

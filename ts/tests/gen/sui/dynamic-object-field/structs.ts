@@ -41,17 +41,16 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
 
   readonly $fullTypeName: `0x2::dynamic_object_field::Wrapper<${ToTypeStr<Name>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [ToTypeStr<Name>]
 
   readonly name: ToField<Name>
 
-  private constructor(typeArg: string, fields: WrapperFields<Name>) {
+  private constructor(typeArgs: [ToTypeStr<Name>], fields: WrapperFields<Name>) {
     this.$fullTypeName = composeSuiType(
       Wrapper.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x2::dynamic_object_field::Wrapper<${ToTypeStr<Name>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.name = fields.name
   }
@@ -65,7 +64,8 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
         Wrapper.$typeName,
         ...[extractType(Name)]
       ) as `0x2::dynamic_object_field::Wrapper<${ToTypeStr<ToTypeArgument<Name>>}>`,
-      typeArgs: [Name],
+      typeArgs: [extractType(Name)] as [ToTypeStr<ToTypeArgument<Name>>],
+      reifiedTypeArgs: [Name],
       fromFields: (fields: Record<string, any>) => Wrapper.fromFields(Name, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Wrapper.fromFieldsWithTypes(Name, item),
       fromBcs: (data: Uint8Array) => Wrapper.fromBcs(Name, data),
@@ -74,7 +74,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Wrapper.fromJSON(Name, json),
       fetch: async (client: SuiClient, id: string) => Wrapper.fetch(client, Name, id),
       new: (fields: WrapperFields<ToTypeArgument<Name>>) => {
-        return new Wrapper(extractType(Name), fields)
+        return new Wrapper([extractType(Name)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -132,12 +132,12 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
 
   toJSONField() {
     return {
-      name: fieldToJSON<Name>(this.$typeArg, this.name),
+      name: fieldToJSON<Name>(this.$typeArgs[0], this.name),
     }
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<Name extends Reified<TypeArgument, any>>(
@@ -156,7 +156,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Wrapper.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 

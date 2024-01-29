@@ -41,12 +41,18 @@ export class Publisher implements StructClass {
 
   readonly $fullTypeName: '0x2::package::Publisher'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<UID>
   readonly package: ToField<String>
   readonly moduleName: ToField<String>
 
-  private constructor(fields: PublisherFields) {
-    this.$fullTypeName = Publisher.$typeName
+  private constructor(typeArgs: [], fields: PublisherFields) {
+    this.$fullTypeName = composeSuiType(
+      Publisher.$typeName,
+      ...typeArgs
+    ) as '0x2::package::Publisher'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.package = fields.package
@@ -57,7 +63,8 @@ export class Publisher implements StructClass {
     return {
       typeName: Publisher.$typeName,
       fullTypeName: composeSuiType(Publisher.$typeName, ...[]) as '0x2::package::Publisher',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Publisher.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Publisher.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Publisher.fromBcs(data),
@@ -66,7 +73,7 @@ export class Publisher implements StructClass {
       fromJSON: (json: Record<string, any>) => Publisher.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Publisher.fetch(client, id),
       new: (fields: PublisherFields) => {
-        return new Publisher(fields)
+        return new Publisher([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -124,7 +131,7 @@ export class Publisher implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): Publisher {
@@ -189,13 +196,19 @@ export class UpgradeCap implements StructClass {
 
   readonly $fullTypeName: '0x2::package::UpgradeCap'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<UID>
   readonly package: ToField<ID>
   readonly version: ToField<'u64'>
   readonly policy: ToField<'u8'>
 
-  private constructor(fields: UpgradeCapFields) {
-    this.$fullTypeName = UpgradeCap.$typeName
+  private constructor(typeArgs: [], fields: UpgradeCapFields) {
+    this.$fullTypeName = composeSuiType(
+      UpgradeCap.$typeName,
+      ...typeArgs
+    ) as '0x2::package::UpgradeCap'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.package = fields.package
@@ -207,7 +220,8 @@ export class UpgradeCap implements StructClass {
     return {
       typeName: UpgradeCap.$typeName,
       fullTypeName: composeSuiType(UpgradeCap.$typeName, ...[]) as '0x2::package::UpgradeCap',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UpgradeCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeCap.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UpgradeCap.fromBcs(data),
@@ -216,7 +230,7 @@ export class UpgradeCap implements StructClass {
       fromJSON: (json: Record<string, any>) => UpgradeCap.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => UpgradeCap.fetch(client, id),
       new: (fields: UpgradeCapFields) => {
-        return new UpgradeCap(fields)
+        return new UpgradeCap([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -278,7 +292,7 @@ export class UpgradeCap implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): UpgradeCap {
@@ -342,11 +356,17 @@ export class UpgradeReceipt implements StructClass {
 
   readonly $fullTypeName: '0x2::package::UpgradeReceipt'
 
+  readonly $typeArgs: []
+
   readonly cap: ToField<ID>
   readonly package: ToField<ID>
 
-  private constructor(fields: UpgradeReceiptFields) {
-    this.$fullTypeName = UpgradeReceipt.$typeName
+  private constructor(typeArgs: [], fields: UpgradeReceiptFields) {
+    this.$fullTypeName = composeSuiType(
+      UpgradeReceipt.$typeName,
+      ...typeArgs
+    ) as '0x2::package::UpgradeReceipt'
+    this.$typeArgs = typeArgs
 
     this.cap = fields.cap
     this.package = fields.package
@@ -359,7 +379,8 @@ export class UpgradeReceipt implements StructClass {
         UpgradeReceipt.$typeName,
         ...[]
       ) as '0x2::package::UpgradeReceipt',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UpgradeReceipt.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeReceipt.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UpgradeReceipt.fromBcs(data),
@@ -368,7 +389,7 @@ export class UpgradeReceipt implements StructClass {
       fromJSON: (json: Record<string, any>) => UpgradeReceipt.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => UpgradeReceipt.fetch(client, id),
       new: (fields: UpgradeReceiptFields) => {
-        return new UpgradeReceipt(fields)
+        return new UpgradeReceipt([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -422,7 +443,7 @@ export class UpgradeReceipt implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): UpgradeReceipt {
@@ -486,13 +507,19 @@ export class UpgradeTicket implements StructClass {
 
   readonly $fullTypeName: '0x2::package::UpgradeTicket'
 
+  readonly $typeArgs: []
+
   readonly cap: ToField<ID>
   readonly package: ToField<ID>
   readonly policy: ToField<'u8'>
   readonly digest: ToField<Vector<'u8'>>
 
-  private constructor(fields: UpgradeTicketFields) {
-    this.$fullTypeName = UpgradeTicket.$typeName
+  private constructor(typeArgs: [], fields: UpgradeTicketFields) {
+    this.$fullTypeName = composeSuiType(
+      UpgradeTicket.$typeName,
+      ...typeArgs
+    ) as '0x2::package::UpgradeTicket'
+    this.$typeArgs = typeArgs
 
     this.cap = fields.cap
     this.package = fields.package
@@ -504,7 +531,8 @@ export class UpgradeTicket implements StructClass {
     return {
       typeName: UpgradeTicket.$typeName,
       fullTypeName: composeSuiType(UpgradeTicket.$typeName, ...[]) as '0x2::package::UpgradeTicket',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UpgradeTicket.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeTicket.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UpgradeTicket.fromBcs(data),
@@ -513,7 +541,7 @@ export class UpgradeTicket implements StructClass {
       fromJSON: (json: Record<string, any>) => UpgradeTicket.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => UpgradeTicket.fetch(client, id),
       new: (fields: UpgradeTicketFields) => {
-        return new UpgradeTicket(fields)
+        return new UpgradeTicket([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -575,7 +603,7 @@ export class UpgradeTicket implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): UpgradeTicket {

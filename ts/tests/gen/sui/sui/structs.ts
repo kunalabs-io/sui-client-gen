@@ -34,10 +34,13 @@ export class SUI implements StructClass {
 
   readonly $fullTypeName: '0x2::sui::SUI'
 
+  readonly $typeArgs: []
+
   readonly dummyField: ToField<'bool'>
 
-  private constructor(fields: SUIFields) {
-    this.$fullTypeName = SUI.$typeName
+  private constructor(typeArgs: [], fields: SUIFields) {
+    this.$fullTypeName = composeSuiType(SUI.$typeName, ...typeArgs) as '0x2::sui::SUI'
+    this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
   }
@@ -46,7 +49,8 @@ export class SUI implements StructClass {
     return {
       typeName: SUI.$typeName,
       fullTypeName: composeSuiType(SUI.$typeName, ...[]) as '0x2::sui::SUI',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => SUI.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => SUI.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => SUI.fromBcs(data),
@@ -55,7 +59,7 @@ export class SUI implements StructClass {
       fromJSON: (json: Record<string, any>) => SUI.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => SUI.fetch(client, id),
       new: (fields: SUIFields) => {
-        return new SUI(fields)
+        return new SUI([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -103,7 +107,7 @@ export class SUI implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): SUI {

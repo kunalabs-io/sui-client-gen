@@ -54,19 +54,21 @@ export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument
 
   readonly $fullTypeName: `0x2::linked_table::LinkedTable<${ToTypeStr<T0>}, ${PhantomToTypeStr<T1>}>`
 
-  readonly $typeArgs: [string, string]
+  readonly $typeArgs: [ToTypeStr<T0>, PhantomToTypeStr<T1>]
 
   readonly id: ToField<UID>
   readonly size: ToField<'u64'>
   readonly head: ToField<Option<T0>>
   readonly tail: ToField<Option<T0>>
 
-  private constructor(typeArgs: [string, string], fields: LinkedTableFields<T0, T1>) {
+  private constructor(
+    typeArgs: [ToTypeStr<T0>, PhantomToTypeStr<T1>],
+    fields: LinkedTableFields<T0, T1>
+  ) {
     this.$fullTypeName = composeSuiType(
       LinkedTable.$typeName,
       ...typeArgs
     ) as `0x2::linked_table::LinkedTable<${ToTypeStr<T0>}, ${PhantomToTypeStr<T1>}>`
-
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -87,7 +89,11 @@ export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument
       ) as `0x2::linked_table::LinkedTable<${ToTypeStr<ToTypeArgument<T0>>}, ${PhantomToTypeStr<
         ToPhantomTypeArgument<T1>
       >}>`,
-      typeArgs: [T0, T1],
+      typeArgs: [extractType(T0), extractType(T1)] as [
+        ToTypeStr<ToTypeArgument<T0>>,
+        PhantomToTypeStr<ToPhantomTypeArgument<T1>>,
+      ],
+      reifiedTypeArgs: [T0, T1],
       fromFields: (fields: Record<string, any>) => LinkedTable.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         LinkedTable.fromFieldsWithTypes([T0, T1], item),
@@ -280,18 +286,17 @@ export class Node<T0 extends TypeArgument, T1 extends TypeArgument> implements S
 
   readonly $fullTypeName: `0x2::linked_table::Node<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
 
-  readonly $typeArgs: [string, string]
+  readonly $typeArgs: [ToTypeStr<T0>, ToTypeStr<T1>]
 
   readonly prev: ToField<Option<T0>>
   readonly next: ToField<Option<T0>>
   readonly value: ToField<T1>
 
-  private constructor(typeArgs: [string, string], fields: NodeFields<T0, T1>) {
+  private constructor(typeArgs: [ToTypeStr<T0>, ToTypeStr<T1>], fields: NodeFields<T0, T1>) {
     this.$fullTypeName = composeSuiType(
       Node.$typeName,
       ...typeArgs
     ) as `0x2::linked_table::Node<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
-
     this.$typeArgs = typeArgs
 
     this.prev = fields.prev
@@ -311,7 +316,11 @@ export class Node<T0 extends TypeArgument, T1 extends TypeArgument> implements S
       ) as `0x2::linked_table::Node<${ToTypeStr<ToTypeArgument<T0>>}, ${ToTypeStr<
         ToTypeArgument<T1>
       >}>`,
-      typeArgs: [T0, T1],
+      typeArgs: [extractType(T0), extractType(T1)] as [
+        ToTypeStr<ToTypeArgument<T0>>,
+        ToTypeStr<ToTypeArgument<T1>>,
+      ],
+      reifiedTypeArgs: [T0, T1],
       fromFields: (fields: Record<string, any>) => Node.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Node.fromFieldsWithTypes([T0, T1], item),
       fromBcs: (data: Uint8Array) => Node.fromBcs([T0, T1], data),

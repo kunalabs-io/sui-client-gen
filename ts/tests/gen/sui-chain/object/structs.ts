@@ -34,10 +34,13 @@ export class ID implements StructClass {
 
   readonly $fullTypeName: '0x2::object::ID'
 
+  readonly $typeArgs: []
+
   readonly bytes: ToField<'address'>
 
-  private constructor(fields: IDFields) {
-    this.$fullTypeName = ID.$typeName
+  private constructor(typeArgs: [], fields: IDFields) {
+    this.$fullTypeName = composeSuiType(ID.$typeName, ...typeArgs) as '0x2::object::ID'
+    this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
   }
@@ -46,7 +49,8 @@ export class ID implements StructClass {
     return {
       typeName: ID.$typeName,
       fullTypeName: composeSuiType(ID.$typeName, ...[]) as '0x2::object::ID',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => ID.fromBcs(data),
@@ -55,7 +59,7 @@ export class ID implements StructClass {
       fromJSON: (json: Record<string, any>) => ID.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => ID.fetch(client, id),
       new: (fields: IDFields) => {
-        return new ID(fields)
+        return new ID([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -104,7 +108,7 @@ export class ID implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): ID {
@@ -162,10 +166,13 @@ export class UID implements StructClass {
 
   readonly $fullTypeName: '0x2::object::UID'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<ID>
 
-  private constructor(fields: UIDFields) {
-    this.$fullTypeName = UID.$typeName
+  private constructor(typeArgs: [], fields: UIDFields) {
+    this.$fullTypeName = composeSuiType(UID.$typeName, ...typeArgs) as '0x2::object::UID'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
   }
@@ -174,7 +181,8 @@ export class UID implements StructClass {
     return {
       typeName: UID.$typeName,
       fullTypeName: composeSuiType(UID.$typeName, ...[]) as '0x2::object::UID',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UID.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => UID.fromBcs(data),
@@ -183,7 +191,7 @@ export class UID implements StructClass {
       fromJSON: (json: Record<string, any>) => UID.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => UID.fetch(client, id),
       new: (fields: UIDFields) => {
-        return new UID(fields)
+        return new UID([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -229,7 +237,7 @@ export class UID implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): UID {

@@ -45,17 +45,16 @@ export class Option<T0 extends TypeArgument> implements StructClass {
 
   readonly $fullTypeName: `0x1::option::Option<${ToTypeStr<T0>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [ToTypeStr<T0>]
 
   readonly vec: ToField<Vector<T0>>
 
-  private constructor(typeArg: string, fields: OptionFields<T0>) {
+  private constructor(typeArgs: [ToTypeStr<T0>], fields: OptionFields<T0>) {
     this.$fullTypeName = composeSuiType(
       Option.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x1::option::Option<${ToTypeStr<T0>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.vec = fields.vec
   }
@@ -67,7 +66,8 @@ export class Option<T0 extends TypeArgument> implements StructClass {
         Option.$typeName,
         ...[extractType(T0)]
       ) as `0x1::option::Option<${ToTypeStr<ToTypeArgument<T0>>}>`,
-      typeArgs: [T0],
+      typeArgs: [extractType(T0)] as [ToTypeStr<ToTypeArgument<T0>>],
+      reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Option.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Option.fromFieldsWithTypes(T0, item),
       fromBcs: (data: Uint8Array) => Option.fromBcs(T0, data),
@@ -76,7 +76,7 @@ export class Option<T0 extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Option.fromJSON(T0, json),
       fetch: async (client: SuiClient, id: string) => Option.fetch(client, T0, id),
       new: (fields: OptionFields<ToTypeArgument<T0>>) => {
-        return new Option(extractType(T0), fields)
+        return new Option([extractType(T0)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -136,12 +136,12 @@ export class Option<T0 extends TypeArgument> implements StructClass {
 
   toJSONField() {
     return {
-      vec: fieldToJSON<Vector<T0>>(`vector<${this.$typeArg}>`, this.vec),
+      vec: fieldToJSON<Vector<T0>>(`vector<${this.$typeArgs[0]}>`, this.vec),
     }
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<T0 extends Reified<TypeArgument, any>>(
@@ -162,7 +162,7 @@ export class Option<T0 extends TypeArgument> implements StructClass {
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Option.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 

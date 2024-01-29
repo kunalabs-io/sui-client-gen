@@ -47,17 +47,16 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> implements 
 
   readonly $fullTypeName: `0x2::vec_map::Entry<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
 
-  readonly $typeArgs: [string, string]
+  readonly $typeArgs: [ToTypeStr<T0>, ToTypeStr<T1>]
 
   readonly key: ToField<T0>
   readonly value: ToField<T1>
 
-  private constructor(typeArgs: [string, string], fields: EntryFields<T0, T1>) {
+  private constructor(typeArgs: [ToTypeStr<T0>, ToTypeStr<T1>], fields: EntryFields<T0, T1>) {
     this.$fullTypeName = composeSuiType(
       Entry.$typeName,
       ...typeArgs
     ) as `0x2::vec_map::Entry<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
-
     this.$typeArgs = typeArgs
 
     this.key = fields.key
@@ -76,7 +75,11 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> implements 
       ) as `0x2::vec_map::Entry<${ToTypeStr<ToTypeArgument<T0>>}, ${ToTypeStr<
         ToTypeArgument<T1>
       >}>`,
-      typeArgs: [T0, T1],
+      typeArgs: [extractType(T0), extractType(T1)] as [
+        ToTypeStr<ToTypeArgument<T0>>,
+        ToTypeStr<ToTypeArgument<T1>>,
+      ],
+      reifiedTypeArgs: [T0, T1],
       fromFields: (fields: Record<string, any>) => Entry.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Entry.fromFieldsWithTypes([T0, T1], item),
       fromBcs: (data: Uint8Array) => Entry.fromBcs([T0, T1], data),
@@ -235,16 +238,15 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> implements
 
   readonly $fullTypeName: `0x2::vec_map::VecMap<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
 
-  readonly $typeArgs: [string, string]
+  readonly $typeArgs: [ToTypeStr<T0>, ToTypeStr<T1>]
 
   readonly contents: ToField<Vector<Entry<T0, T1>>>
 
-  private constructor(typeArgs: [string, string], fields: VecMapFields<T0, T1>) {
+  private constructor(typeArgs: [ToTypeStr<T0>, ToTypeStr<T1>], fields: VecMapFields<T0, T1>) {
     this.$fullTypeName = composeSuiType(
       VecMap.$typeName,
       ...typeArgs
     ) as `0x2::vec_map::VecMap<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
-
     this.$typeArgs = typeArgs
 
     this.contents = fields.contents
@@ -262,7 +264,11 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> implements
       ) as `0x2::vec_map::VecMap<${ToTypeStr<ToTypeArgument<T0>>}, ${ToTypeStr<
         ToTypeArgument<T1>
       >}>`,
-      typeArgs: [T0, T1],
+      typeArgs: [extractType(T0), extractType(T1)] as [
+        ToTypeStr<ToTypeArgument<T0>>,
+        ToTypeStr<ToTypeArgument<T1>>,
+      ],
+      reifiedTypeArgs: [T0, T1],
       fromFields: (fields: Record<string, any>) => VecMap.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VecMap.fromFieldsWithTypes([T0, T1], item),
       fromBcs: (data: Uint8Array) => VecMap.fromBcs([T0, T1], data),

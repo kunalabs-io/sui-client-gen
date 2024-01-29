@@ -42,10 +42,16 @@ export class EXAMPLE_COIN implements StructClass {
 
   readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
 
+  readonly $typeArgs: []
+
   readonly dummyField: ToField<'bool'>
 
-  private constructor(fields: EXAMPLE_COINFields) {
-    this.$fullTypeName = EXAMPLE_COIN.$typeName
+  private constructor(typeArgs: [], fields: EXAMPLE_COINFields) {
+    this.$fullTypeName = composeSuiType(
+      EXAMPLE_COIN.$typeName,
+      ...typeArgs
+    ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
+    this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
   }
@@ -57,7 +63,8 @@ export class EXAMPLE_COIN implements StructClass {
         EXAMPLE_COIN.$typeName,
         ...[]
       ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => EXAMPLE_COIN.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => EXAMPLE_COIN.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => EXAMPLE_COIN.fromBcs(data),
@@ -66,7 +73,7 @@ export class EXAMPLE_COIN implements StructClass {
       fromJSON: (json: Record<string, any>) => EXAMPLE_COIN.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => EXAMPLE_COIN.fetch(client, id),
       new: (fields: EXAMPLE_COINFields) => {
-        return new EXAMPLE_COIN(fields)
+        return new EXAMPLE_COIN([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -114,7 +121,7 @@ export class EXAMPLE_COIN implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): EXAMPLE_COIN {
@@ -177,11 +184,17 @@ export class Faucet implements StructClass {
 
   readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<UID>
   readonly cap: ToField<TreasuryCap<ToPhantom<EXAMPLE_COIN>>>
 
-  private constructor(fields: FaucetFields) {
-    this.$fullTypeName = Faucet.$typeName
+  private constructor(typeArgs: [], fields: FaucetFields) {
+    this.$fullTypeName = composeSuiType(
+      Faucet.$typeName,
+      ...typeArgs
+    ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.cap = fields.cap
@@ -194,7 +207,8 @@ export class Faucet implements StructClass {
         Faucet.$typeName,
         ...[]
       ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Faucet.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Faucet.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Faucet.fromBcs(data),
@@ -203,7 +217,7 @@ export class Faucet implements StructClass {
       fromJSON: (json: Record<string, any>) => Faucet.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Faucet.fetch(client, id),
       new: (fields: FaucetFields) => {
-        return new Faucet(fields)
+        return new Faucet([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -263,7 +277,7 @@ export class Faucet implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): Faucet {

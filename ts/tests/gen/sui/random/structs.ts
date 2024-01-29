@@ -40,11 +40,14 @@ export class Random implements StructClass {
 
   readonly $fullTypeName: '0x2::random::Random'
 
+  readonly $typeArgs: []
+
   readonly id: ToField<UID>
   readonly inner: ToField<Versioned>
 
-  private constructor(fields: RandomFields) {
-    this.$fullTypeName = Random.$typeName
+  private constructor(typeArgs: [], fields: RandomFields) {
+    this.$fullTypeName = composeSuiType(Random.$typeName, ...typeArgs) as '0x2::random::Random'
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.inner = fields.inner
@@ -54,7 +57,8 @@ export class Random implements StructClass {
     return {
       typeName: Random.$typeName,
       fullTypeName: composeSuiType(Random.$typeName, ...[]) as '0x2::random::Random',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Random.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Random.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => Random.fromBcs(data),
@@ -63,7 +67,7 @@ export class Random implements StructClass {
       fromJSON: (json: Record<string, any>) => Random.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => Random.fetch(client, id),
       new: (fields: RandomFields) => {
-        return new Random(fields)
+        return new Random([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -117,7 +121,7 @@ export class Random implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): Random {
@@ -181,13 +185,19 @@ export class RandomInner implements StructClass {
 
   readonly $fullTypeName: '0x2::random::RandomInner'
 
+  readonly $typeArgs: []
+
   readonly version: ToField<'u64'>
   readonly epoch: ToField<'u64'>
   readonly randomnessRound: ToField<'u64'>
   readonly randomBytes: ToField<Vector<'u8'>>
 
-  private constructor(fields: RandomInnerFields) {
-    this.$fullTypeName = RandomInner.$typeName
+  private constructor(typeArgs: [], fields: RandomInnerFields) {
+    this.$fullTypeName = composeSuiType(
+      RandomInner.$typeName,
+      ...typeArgs
+    ) as '0x2::random::RandomInner'
+    this.$typeArgs = typeArgs
 
     this.version = fields.version
     this.epoch = fields.epoch
@@ -199,7 +209,8 @@ export class RandomInner implements StructClass {
     return {
       typeName: RandomInner.$typeName,
       fullTypeName: composeSuiType(RandomInner.$typeName, ...[]) as '0x2::random::RandomInner',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => RandomInner.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => RandomInner.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => RandomInner.fromBcs(data),
@@ -208,7 +219,7 @@ export class RandomInner implements StructClass {
       fromJSON: (json: Record<string, any>) => RandomInner.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => RandomInner.fetch(client, id),
       new: (fields: RandomInnerFields) => {
-        return new RandomInner(fields)
+        return new RandomInner([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -270,7 +281,7 @@ export class RandomInner implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): RandomInner {

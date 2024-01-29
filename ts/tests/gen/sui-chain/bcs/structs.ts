@@ -37,10 +37,13 @@ export class BCS implements StructClass {
 
   readonly $fullTypeName: '0x2::bcs::BCS'
 
+  readonly $typeArgs: []
+
   readonly bytes: ToField<Vector<'u8'>>
 
-  private constructor(fields: BCSFields) {
-    this.$fullTypeName = BCS.$typeName
+  private constructor(typeArgs: [], fields: BCSFields) {
+    this.$fullTypeName = composeSuiType(BCS.$typeName, ...typeArgs) as '0x2::bcs::BCS'
+    this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
   }
@@ -49,7 +52,8 @@ export class BCS implements StructClass {
     return {
       typeName: BCS.$typeName,
       fullTypeName: composeSuiType(BCS.$typeName, ...[]) as '0x2::bcs::BCS',
-      typeArgs: [],
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => BCS.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => BCS.fromFieldsWithTypes(item),
       fromBcs: (data: Uint8Array) => BCS.fromBcs(data),
@@ -58,7 +62,7 @@ export class BCS implements StructClass {
       fromJSON: (json: Record<string, any>) => BCS.fromJSON(json),
       fetch: async (client: SuiClient, id: string) => BCS.fetch(client, id),
       new: (fields: BCSFields) => {
-        return new BCS(fields)
+        return new BCS([], fields)
       },
       kind: 'StructClassReified',
     }
@@ -106,7 +110,7 @@ export class BCS implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField(field: any): BCS {

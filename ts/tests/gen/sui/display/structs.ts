@@ -45,19 +45,18 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
 
   readonly $fullTypeName: `0x2::display::Display<${PhantomToTypeStr<T>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [PhantomToTypeStr<T>]
 
   readonly id: ToField<UID>
   readonly fields: ToField<VecMap<String, String>>
   readonly version: ToField<'u16'>
 
-  private constructor(typeArg: string, fields: DisplayFields<T>) {
+  private constructor(typeArgs: [PhantomToTypeStr<T>], fields: DisplayFields<T>) {
     this.$fullTypeName = composeSuiType(
       Display.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x2::display::Display<${PhantomToTypeStr<T>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.fields = fields.fields
@@ -73,7 +72,8 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
         Display.$typeName,
         ...[extractType(T)]
       ) as `0x2::display::Display<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [T],
+      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Display.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Display.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => Display.fromBcs(T, data),
@@ -82,7 +82,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Display.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => Display.fetch(client, T, id),
       new: (fields: DisplayFields<ToPhantomTypeArgument<T>>) => {
-        return new Display(extractType(T), fields)
+        return new Display([extractType(T)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -155,7 +155,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
@@ -178,7 +178,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Display.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 
@@ -238,17 +238,16 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
 
   readonly $fullTypeName: `0x2::display::DisplayCreated<${PhantomToTypeStr<T>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [PhantomToTypeStr<T>]
 
   readonly id: ToField<ID>
 
-  private constructor(typeArg: string, fields: DisplayCreatedFields<T>) {
+  private constructor(typeArgs: [PhantomToTypeStr<T>], fields: DisplayCreatedFields<T>) {
     this.$fullTypeName = composeSuiType(
       DisplayCreated.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x2::display::DisplayCreated<${PhantomToTypeStr<T>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
   }
@@ -262,7 +261,8 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
         DisplayCreated.$typeName,
         ...[extractType(T)]
       ) as `0x2::display::DisplayCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [T],
+      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => DisplayCreated.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => DisplayCreated.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => DisplayCreated.fromBcs(T, data),
@@ -271,7 +271,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
       fromJSON: (json: Record<string, any>) => DisplayCreated.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => DisplayCreated.fetch(client, T, id),
       new: (fields: DisplayCreatedFields<ToPhantomTypeArgument<T>>) => {
-        return new DisplayCreated(extractType(T), fields)
+        return new DisplayCreated([extractType(T)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -331,7 +331,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
@@ -350,7 +350,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(DisplayCreated.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 
@@ -412,19 +412,18 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
 
   readonly $fullTypeName: `0x2::display::VersionUpdated<${PhantomToTypeStr<T>}>`
 
-  readonly $typeArg: string
+  readonly $typeArgs: [PhantomToTypeStr<T>]
 
   readonly id: ToField<ID>
   readonly version: ToField<'u16'>
   readonly fields: ToField<VecMap<String, String>>
 
-  private constructor(typeArg: string, fields: VersionUpdatedFields<T>) {
+  private constructor(typeArgs: [PhantomToTypeStr<T>], fields: VersionUpdatedFields<T>) {
     this.$fullTypeName = composeSuiType(
       VersionUpdated.$typeName,
-      typeArg
+      ...typeArgs
     ) as `0x2::display::VersionUpdated<${PhantomToTypeStr<T>}>`
-
-    this.$typeArg = typeArg
+    this.$typeArgs = typeArgs
 
     this.id = fields.id
     this.version = fields.version
@@ -440,7 +439,8 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
         VersionUpdated.$typeName,
         ...[extractType(T)]
       ) as `0x2::display::VersionUpdated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [T],
+      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => VersionUpdated.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VersionUpdated.fromFieldsWithTypes(T, item),
       fromBcs: (data: Uint8Array) => VersionUpdated.fromBcs(T, data),
@@ -449,7 +449,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
       fromJSON: (json: Record<string, any>) => VersionUpdated.fromJSON(T, json),
       fetch: async (client: SuiClient, id: string) => VersionUpdated.fetch(client, T, id),
       new: (fields: VersionUpdatedFields<ToPhantomTypeArgument<T>>) => {
-        return new VersionUpdated(extractType(T), fields)
+        return new VersionUpdated([extractType(T)], fields)
       },
       kind: 'StructClassReified',
     }
@@ -522,7 +522,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
   }
 
   toJSON() {
-    return { $typeName: this.$typeName, $typeArg: this.$typeArg, ...this.toJSONField() }
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
@@ -545,7 +545,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(VersionUpdated.$typeName, extractType(typeArg)),
-      [json.$typeArg],
+      json.$typeArgs,
       [typeArg]
     )
 
