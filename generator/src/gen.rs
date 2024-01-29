@@ -1427,31 +1427,15 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             ))
         };
 
-        // string
-        // [string, string, ...]
-        let type_args_type = &match type_params.len() {
-            0 => quote!(),
-            1 => quote!(string),
-            _ => quote!([$(for _ in &type_params join (, ) => string)]),
-        };
-
         // readonly $typeArg: string
-        // readonly $typeArgs: [string, string, ...]
-        let type_args_field_if_any: js::Tokens = match type_params.len() {
-            0 => quote!(),
-            1 => quote!(readonly $$typeArg: string;$['\n']),
-            _ => {
-                quote!(readonly $$typeArgs: $type_args_type;$['\n'])
-            }
-        };
-
-        // typeArg: string,
-        // typeArgs: [string, string, ...],
-        let type_args_param_for_constructor_if_any: js::Tokens = match type_params.len() {
-            0 => quote!(),
-            1 => quote!(typeArg: string,),
-            _ => quote!(typeArgs: $type_args_type,),
-        };
+        // readonly $typeArgs: [ToTypeStr<T>, PhantomToTypeStr<P>, ...]
+        let type_args_field_type: &js::Tokens = &quote!([$(for (idx, param) in type_params_str.iter().enumerate() join (, ) =>
+            $(if strct.is_phantom_parameter(idx) {
+                $phantom_to_type_str<$param>
+            } else {
+                $to_type_str<$param>
+            })
+        )]);
 
         // typeArg: T0,
         // typeArgs: [T0, T1, T2, T3, ...],
@@ -1492,7 +1476,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             strct, type_params_str.clone(), &wraps_to_type_argument, &wraps_phantom_to_type_argument
         );
 
-        // `0x2::foo::Bar<${ToTypeStr<ToTypeArgument<T>>}, ${ToTypeStr<ToTypeArgument<P>>}>`
+        // `0x2::foo::Bar<${ToTypeStr<ToTypeArgument<T>>}, ${ToTypeStr<ToPhantomTypeArgument<P>>}>`
         let reified_full_type_name_as_toks = match type_params.len() {
             0 => quote!($[str]($[const](self.get_full_name_with_address(strct)))),
             _ => {
@@ -1521,6 +1505,15 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 quote!($toks)
             },
         };
+
+        // [PhantomToTypeStr<ToPhantomTypeArgument<T>>, ToTypeStr<ToTypeArgument<P>>, ...]
+        let reified_type_args_as_toks = &quote!([$(for(idx, param) in type_params_str.iter().enumerate() join (, ) => 
+            $(if strct.is_phantom_parameter(idx) {
+                $phantom_to_type_str<$to_phantom_type_argument<$param>>
+            } else {
+                $to_type_str<$to_type_argument<$param>>
+            })
+        )]);
 
         // `0x2::foo::Bar<${ToTypeStr<T>}, ${ToTypeStr<P>}>`
         let static_full_type_name_as_toks = &match type_params.len() {
@@ -1576,7 +1569,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 readonly $$typeName = $(&struct_name).$$typeName;$['\n']
                 readonly $$fullTypeName: $static_full_type_name_as_toks;$['\n']
 
-                $type_args_field_if_any;
+                readonly $$typeArgs: $type_args_field_type;$['\n']
 
                 $(for field in strct.get_fields() join (; ) =>
                     readonly $(self.gen_field_name(&field)):
@@ -1585,27 +1578,16 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                         ))
                 )$['\n']
 
-                private constructor($type_args_param_for_constructor_if_any $(match fields.len() {
+                private constructor(typeArgs: $type_args_field_type, $(match fields.len() {
                         0 => (),
                         _ => { fields: $(self.gen_fields_if_name_with_params(strct, &ExtendsOrWraps::None, &ExtendsOrWraps::None)), }
                     })
                 ) {
-                    this.$$fullTypeName = $(match type_params.len() {
-                        0 => $(&struct_name).$$typeName,
-                        1 => $compose_sui_type(
-                            $(&struct_name).$$typeName,
-                            typeArg
-                        ) as $static_full_type_name_as_toks,
-                        _ => $compose_sui_type(
+                    this.$$fullTypeName = $compose_sui_type(
                             $(&struct_name).$$typeName,
                             ...typeArgs
-                        ) as $static_full_type_name_as_toks,
-                    });$['\n']
-                    $(match type_params.len() {
-                        0 => (),
-                        1 => this.$$typeArg = typeArg;$['\n'],
-                        _ => this.$$typeArgs = typeArgs;$['\n'],
-                    })
+                    ) as $static_full_type_name_as_toks;
+                    this.$$typeArgs = typeArgs;$['\n']
 
                     $(match fields.len() {
                         0 => (),
@@ -1629,7 +1611,10 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             $(&struct_name).$$typeName,
                             ...[$(for param in &type_params_str join (, ) => $extract_type($param))]
                         ) as $reified_full_type_name_as_toks,
-                        typeArgs: [$(for param in &type_params_str join (, ) => $param)],
+                        typeArgs: [
+                            $(for param in &type_params_str join (, ) => $extract_type($param))
+                        ] as $reified_type_args_as_toks,
+                        reifiedTypeArgs: [$(for param in &type_params_str join (, ) => $param)],
                         fromFields: (fields: Record<string, any>) =>
                             $(&struct_name).fromFields(
                                 $(match type_params.len() {
@@ -1694,11 +1679,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             })
                         ) => {
                             return new $(&struct_name)(
-                                $(match type_params.len() {
-                                    0 => (),
-                                    1 => { $extract_type($(&type_params_str[0])), },
-                                    _ => { [$(for param in &type_params_str join (, ) => $extract_type($param))], }, 
-                                })
+                                [$(for param in &type_params_str join (, ) => $extract_type($param))],
                                 $(match fields.len() {
                                     0 => (),
                                     _ => fields,
@@ -1830,15 +1811,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 toJSONField() {
                     return {$['\n']
                         $(ref toks {
-                            let this_type_arg_or_args = |idx: usize| {
-                                match type_params.len() {
-                                    0 => quote!(""),
-                                    1 => quote!(this.$$typeArg),
-                                    _ => quote!(this.$$typeArgs[$idx])
-                                }
-                            };
+                            let this_type_args = |idx: usize| quote!(this.$$typeArgs[$idx]);
                             let type_param_names = (0..strct.get_type_parameters().len())
-                                .map(|idx| QuoteItem::Interpolated(this_type_arg_or_args(idx)))
+                                .map(|idx| QuoteItem::Interpolated(this_type_args(idx)))
                                 .collect::<Vec<_>>();
 
                             for field in fields.iter() {
@@ -1891,7 +1866,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                                         quote_in!(*toks => $name: $field_to_json<$field_type_param>($type_name, $this_name),)
                                     }
                                     Type::TypeParameter(i) => {
-                                        quote_in!(*toks => $name: $field_to_json<$field_type_param>($(this_type_arg_or_args(i as usize)), $this_name),)
+                                        quote_in!(*toks => $name: $field_to_json<$field_type_param>($(this_type_args(i as usize)), $this_name),)
                                     }
                                     _ => {
                                         let name = self.gen_field_name(field);
@@ -1907,11 +1882,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 toJSON() {
                     return {
                         $$typeName: this.$$typeName,
-                        $(match type_params.len() {
-                            0 => (),
-                            1 => { $$typeArg: this.$$typeArg, },
-                            _ => { $$typeArgs: this.$$typeArgs, },
-                        })
+                        $$typeArgs: this.$$typeArgs,
                         ...this.toJSONField()
                     }
                 }$['\n']
@@ -1950,10 +1921,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                                 1 => { $extract_type(typeArg) },
                                 _ => { ...typeArgs.map($extract_type) },
                             })),
-                            $(match type_params.len() {
-                                1 => { [json.$$typeArg] },
-                                _ => { json.$$typeArgs },
-                            }),
+                            json.$$typeArgs,
                             $(match type_params.len() {
                                 1 => { [typeArg] },
                                 _ => { typeArgs },
