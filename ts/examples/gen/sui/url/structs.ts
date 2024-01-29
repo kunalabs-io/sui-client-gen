@@ -58,6 +58,7 @@ export class Url implements StructClass {
       bcs: Url.bcs,
       fromJSONField: (field: any) => Url.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Url.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => Url.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => Url.fetch(client, id),
       new: (fields: UrlFields) => {
         return new Url([], fields)

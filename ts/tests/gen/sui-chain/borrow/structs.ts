@@ -77,6 +77,7 @@ export class Referent<T0 extends TypeArgument> implements StructClass {
       bcs: Referent.bcs(toBcs(T0)),
       fromJSONField: (field: any) => Referent.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => Referent.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => Referent.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => Referent.fetch(client, T0, id),
       new: (fields: ReferentFields<ToTypeArgument<T0>>) => {
         return new Referent([extractType(T0)], fields)
@@ -256,6 +257,7 @@ export class Borrow implements StructClass {
       bcs: Borrow.bcs,
       fromJSONField: (field: any) => Borrow.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Borrow.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => Borrow.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => Borrow.fetch(client, id),
       new: (fields: BorrowFields) => {
         return new Borrow([], fields)

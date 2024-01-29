@@ -70,6 +70,7 @@ export class DenyList implements StructClass {
       bcs: DenyList.bcs,
       fromJSONField: (field: any) => DenyList.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => DenyList.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => DenyList.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => DenyList.fetch(client, id),
       new: (fields: DenyListFields) => {
         return new DenyList([], fields)
@@ -219,6 +220,7 @@ export class PerTypeList implements StructClass {
       bcs: PerTypeList.bcs,
       fromJSONField: (field: any) => PerTypeList.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => PerTypeList.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => PerTypeList.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => PerTypeList.fetch(client, id),
       new: (fields: PerTypeListFields) => {
         return new PerTypeList([], fields)

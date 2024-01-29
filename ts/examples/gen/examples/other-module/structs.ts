@@ -67,6 +67,7 @@ export class AddedInAnUpgrade implements StructClass {
       bcs: AddedInAnUpgrade.bcs,
       fromJSONField: (field: any) => AddedInAnUpgrade.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => AddedInAnUpgrade.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => AddedInAnUpgrade.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => AddedInAnUpgrade.fetch(client, id),
       new: (fields: AddedInAnUpgradeFields) => {
         return new AddedInAnUpgrade([], fields)
@@ -216,6 +217,8 @@ export class StructFromOtherModule implements StructClass {
       bcs: StructFromOtherModule.bcs,
       fromJSONField: (field: any) => StructFromOtherModule.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => StructFromOtherModule.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) =>
+        StructFromOtherModule.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => StructFromOtherModule.fetch(client, id),
       new: (fields: StructFromOtherModuleFields) => {
         return new StructFromOtherModule([], fields)

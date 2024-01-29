@@ -78,6 +78,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
       bcs: Receiving.bcs,
       fromJSONField: (field: any) => Receiving.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Receiving.fromJSON(T, json),
+      fromSuiParsedData: (content: SuiParsedData) => Receiving.fromSuiParsedData(T, content),
       fetch: async (client: SuiClient, id: string) => Receiving.fetch(client, T, id),
       new: (fields: ReceivingFields<ToPhantomTypeArgument<T>>) => {
         return new Receiving([extractType(T)], fields)

@@ -86,6 +86,7 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> implements 
       bcs: Entry.bcs(toBcs(T0), toBcs(T1)),
       fromJSONField: (field: any) => Entry.fromJSONField([T0, T1], field),
       fromJSON: (json: Record<string, any>) => Entry.fromJSON([T0, T1], json),
+      fromSuiParsedData: (content: SuiParsedData) => Entry.fromSuiParsedData([T0, T1], content),
       fetch: async (client: SuiClient, id: string) => Entry.fetch(client, [T0, T1], id),
       new: (fields: EntryFields<ToTypeArgument<T0>, ToTypeArgument<T1>>) => {
         return new Entry([extractType(T0), extractType(T1)], fields)
@@ -275,6 +276,7 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> implements
       bcs: VecMap.bcs(toBcs(T0), toBcs(T1)),
       fromJSONField: (field: any) => VecMap.fromJSONField([T0, T1], field),
       fromJSON: (json: Record<string, any>) => VecMap.fromJSON([T0, T1], json),
+      fromSuiParsedData: (content: SuiParsedData) => VecMap.fromSuiParsedData([T0, T1], content),
       fetch: async (client: SuiClient, id: string) => VecMap.fetch(client, [T0, T1], id),
       new: (fields: VecMapFields<ToTypeArgument<T0>, ToTypeArgument<T1>>) => {
         return new VecMap([extractType(T0), extractType(T1)], fields)

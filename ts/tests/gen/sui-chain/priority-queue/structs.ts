@@ -77,6 +77,7 @@ export class PriorityQueue<T0 extends TypeArgument> implements StructClass {
       bcs: PriorityQueue.bcs(toBcs(T0)),
       fromJSONField: (field: any) => PriorityQueue.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => PriorityQueue.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => PriorityQueue.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => PriorityQueue.fetch(client, T0, id),
       new: (fields: PriorityQueueFields<ToTypeArgument<T0>>) => {
         return new PriorityQueue([extractType(T0)], fields)
@@ -260,6 +261,7 @@ export class Entry<T0 extends TypeArgument> implements StructClass {
       bcs: Entry.bcs(toBcs(T0)),
       fromJSONField: (field: any) => Entry.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => Entry.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => Entry.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => Entry.fetch(client, T0, id),
       new: (fields: EntryFields<ToTypeArgument<T0>>) => {
         return new Entry([extractType(T0)], fields)

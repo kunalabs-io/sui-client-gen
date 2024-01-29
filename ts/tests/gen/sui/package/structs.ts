@@ -71,6 +71,7 @@ export class Publisher implements StructClass {
       bcs: Publisher.bcs,
       fromJSONField: (field: any) => Publisher.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Publisher.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => Publisher.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => Publisher.fetch(client, id),
       new: (fields: PublisherFields) => {
         return new Publisher([], fields)
@@ -228,6 +229,7 @@ export class UpgradeCap implements StructClass {
       bcs: UpgradeCap.bcs,
       fromJSONField: (field: any) => UpgradeCap.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UpgradeCap.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => UpgradeCap.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => UpgradeCap.fetch(client, id),
       new: (fields: UpgradeCapFields) => {
         return new UpgradeCap([], fields)
@@ -387,6 +389,7 @@ export class UpgradeReceipt implements StructClass {
       bcs: UpgradeReceipt.bcs,
       fromJSONField: (field: any) => UpgradeReceipt.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UpgradeReceipt.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => UpgradeReceipt.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => UpgradeReceipt.fetch(client, id),
       new: (fields: UpgradeReceiptFields) => {
         return new UpgradeReceipt([], fields)
@@ -539,6 +542,7 @@ export class UpgradeTicket implements StructClass {
       bcs: UpgradeTicket.bcs,
       fromJSONField: (field: any) => UpgradeTicket.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UpgradeTicket.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => UpgradeTicket.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => UpgradeTicket.fetch(client, id),
       new: (fields: UpgradeTicketFields) => {
         return new UpgradeTicket([], fields)

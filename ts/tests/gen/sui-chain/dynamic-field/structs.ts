@@ -88,6 +88,7 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements 
       bcs: Field.bcs(toBcs(T0), toBcs(T1)),
       fromJSONField: (field: any) => Field.fromJSONField([T0, T1], field),
       fromJSON: (json: Record<string, any>) => Field.fromJSON([T0, T1], json),
+      fromSuiParsedData: (content: SuiParsedData) => Field.fromSuiParsedData([T0, T1], content),
       fetch: async (client: SuiClient, id: string) => Field.fetch(client, [T0, T1], id),
       new: (fields: FieldFields<ToTypeArgument<T0>, ToTypeArgument<T1>>) => {
         return new Field([extractType(T0), extractType(T1)], fields)

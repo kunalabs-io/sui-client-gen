@@ -75,6 +75,7 @@ export class TxContext implements StructClass {
       bcs: TxContext.bcs,
       fromJSONField: (field: any) => TxContext.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => TxContext.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => TxContext.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => TxContext.fetch(client, id),
       new: (fields: TxContextFields) => {
         return new TxContext([], fields)

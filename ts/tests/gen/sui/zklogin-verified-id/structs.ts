@@ -80,6 +80,7 @@ export class VerifiedID implements StructClass {
       bcs: VerifiedID.bcs,
       fromJSONField: (field: any) => VerifiedID.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => VerifiedID.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => VerifiedID.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => VerifiedID.fetch(client, id),
       new: (fields: VerifiedIDFields) => {
         return new VerifiedID([], fields)

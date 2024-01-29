@@ -71,6 +71,7 @@ export class Borrow implements StructClass {
       bcs: Borrow.bcs,
       fromJSONField: (field: any) => Borrow.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Borrow.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => Borrow.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => Borrow.fetch(client, id),
       new: (fields: BorrowFields) => {
         return new Borrow([], fields)
@@ -223,6 +224,7 @@ export class Kiosk implements StructClass {
       bcs: Kiosk.bcs,
       fromJSONField: (field: any) => Kiosk.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Kiosk.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => Kiosk.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => Kiosk.fetch(client, id),
       new: (fields: KioskFields) => {
         return new Kiosk([], fields)
@@ -390,6 +392,7 @@ export class KioskOwnerCap implements StructClass {
       bcs: KioskOwnerCap.bcs,
       fromJSONField: (field: any) => KioskOwnerCap.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => KioskOwnerCap.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => KioskOwnerCap.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => KioskOwnerCap.fetch(client, id),
       new: (fields: KioskOwnerCapFields) => {
         return new KioskOwnerCap([], fields)
@@ -550,6 +553,7 @@ export class PurchaseCap<T0 extends PhantomTypeArgument> implements StructClass 
       bcs: PurchaseCap.bcs,
       fromJSONField: (field: any) => PurchaseCap.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => PurchaseCap.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => PurchaseCap.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => PurchaseCap.fetch(client, T0, id),
       new: (fields: PurchaseCapFields<ToPhantomTypeArgument<T0>>) => {
         return new PurchaseCap([extractType(T0)], fields)
@@ -730,6 +734,7 @@ export class Item implements StructClass {
       bcs: Item.bcs,
       fromJSONField: (field: any) => Item.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Item.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => Item.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => Item.fetch(client, id),
       new: (fields: ItemFields) => {
         return new Item([], fields)
@@ -862,6 +867,7 @@ export class Listing implements StructClass {
       bcs: Listing.bcs,
       fromJSONField: (field: any) => Listing.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Listing.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => Listing.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => Listing.fetch(client, id),
       new: (fields: ListingFields) => {
         return new Listing([], fields)
@@ -1002,6 +1008,7 @@ export class Lock implements StructClass {
       bcs: Lock.bcs,
       fromJSONField: (field: any) => Lock.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Lock.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => Lock.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => Lock.fetch(client, id),
       new: (fields: LockFields) => {
         return new Lock([], fields)
@@ -1148,6 +1155,7 @@ export class ItemListed<T0 extends PhantomTypeArgument> implements StructClass {
       bcs: ItemListed.bcs,
       fromJSONField: (field: any) => ItemListed.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => ItemListed.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => ItemListed.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => ItemListed.fetch(client, T0, id),
       new: (fields: ItemListedFields<ToPhantomTypeArgument<T0>>) => {
         return new ItemListed([extractType(T0)], fields)
@@ -1340,6 +1348,7 @@ export class ItemPurchased<T0 extends PhantomTypeArgument> implements StructClas
       bcs: ItemPurchased.bcs,
       fromJSONField: (field: any) => ItemPurchased.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => ItemPurchased.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => ItemPurchased.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => ItemPurchased.fetch(client, T0, id),
       new: (fields: ItemPurchasedFields<ToPhantomTypeArgument<T0>>) => {
         return new ItemPurchased([extractType(T0)], fields)
@@ -1529,6 +1538,7 @@ export class ItemDelisted<T0 extends PhantomTypeArgument> implements StructClass
       bcs: ItemDelisted.bcs,
       fromJSONField: (field: any) => ItemDelisted.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => ItemDelisted.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => ItemDelisted.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => ItemDelisted.fetch(client, T0, id),
       new: (fields: ItemDelistedFields<ToPhantomTypeArgument<T0>>) => {
         return new ItemDelisted([extractType(T0)], fields)

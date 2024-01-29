@@ -71,6 +71,7 @@ export class VerifiedIssuer implements StructClass {
       bcs: VerifiedIssuer.bcs,
       fromJSONField: (field: any) => VerifiedIssuer.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => VerifiedIssuer.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => VerifiedIssuer.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => VerifiedIssuer.fetch(client, id),
       new: (fields: VerifiedIssuerFields) => {
         return new VerifiedIssuer([], fields)

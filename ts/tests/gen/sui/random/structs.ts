@@ -65,6 +65,7 @@ export class Random implements StructClass {
       bcs: Random.bcs,
       fromJSONField: (field: any) => Random.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Random.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => Random.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => Random.fetch(client, id),
       new: (fields: RandomFields) => {
         return new Random([], fields)
@@ -217,6 +218,7 @@ export class RandomInner implements StructClass {
       bcs: RandomInner.bcs,
       fromJSONField: (field: any) => RandomInner.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => RandomInner.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => RandomInner.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => RandomInner.fetch(client, id),
       new: (fields: RandomInnerFields) => {
         return new RandomInner([], fields)

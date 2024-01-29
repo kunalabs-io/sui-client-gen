@@ -60,6 +60,7 @@ export class BCS implements StructClass {
       bcs: BCS.bcs,
       fromJSONField: (field: any) => BCS.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => BCS.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => BCS.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => BCS.fetch(client, id),
       new: (fields: BCSFields) => {
         return new BCS([], fields)

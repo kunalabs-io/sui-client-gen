@@ -61,6 +61,7 @@ export class TypeName implements StructClass {
       bcs: TypeName.bcs,
       fromJSONField: (field: any) => TypeName.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => TypeName.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => TypeName.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => TypeName.fetch(client, id),
       new: (fields: TypeNameFields) => {
         return new TypeName([], fields)

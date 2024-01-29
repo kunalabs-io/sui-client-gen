@@ -57,6 +57,7 @@ export class SUI implements StructClass {
       bcs: SUI.bcs,
       fromJSONField: (field: any) => SUI.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => SUI.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => SUI.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => SUI.fetch(client, id),
       new: (fields: SUIFields) => {
         return new SUI([], fields)

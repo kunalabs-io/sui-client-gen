@@ -78,6 +78,7 @@ export class AdminCap implements StructClass {
       bcs: AdminCap.bcs,
       fromJSONField: (field: any) => AdminCap.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => AdminCap.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => AdminCap.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => AdminCap.fetch(client, id),
       new: (fields: AdminCapFields) => {
         return new AdminCap([], fields)
@@ -232,6 +233,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       bcs: LP.bcs,
       fromJSONField: (field: any) => LP.fromJSONField([A, B], field),
       fromJSON: (json: Record<string, any>) => LP.fromJSON([A, B], json),
+      fromSuiParsedData: (content: SuiParsedData) => LP.fromSuiParsedData([A, B], content),
       fetch: async (client: SuiClient, id: string) => LP.fetch(client, [A, B], id),
       new: (fields: LPFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>) => {
         return new LP([extractType(A), extractType(B)], fields)
@@ -456,6 +458,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       bcs: Pool.bcs,
       fromJSONField: (field: any) => Pool.fromJSONField([A, B], field),
       fromJSON: (json: Record<string, any>) => Pool.fromJSON([A, B], json),
+      fromSuiParsedData: (content: SuiParsedData) => Pool.fromSuiParsedData([A, B], content),
       fetch: async (client: SuiClient, id: string) => Pool.fetch(client, [A, B], id),
       new: (fields: PoolFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>) => {
         return new Pool([extractType(A), extractType(B)], fields)
@@ -698,6 +701,7 @@ export class PoolCreationEvent implements StructClass {
       bcs: PoolCreationEvent.bcs,
       fromJSONField: (field: any) => PoolCreationEvent.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => PoolCreationEvent.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => PoolCreationEvent.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => PoolCreationEvent.fetch(client, id),
       new: (fields: PoolCreationEventFields) => {
         return new PoolCreationEvent([], fields)
@@ -846,6 +850,7 @@ export class PoolRegistry implements StructClass {
       bcs: PoolRegistry.bcs,
       fromJSONField: (field: any) => PoolRegistry.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => PoolRegistry.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => PoolRegistry.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => PoolRegistry.fetch(client, id),
       new: (fields: PoolRegistryFields) => {
         return new PoolRegistry([], fields)
@@ -1008,6 +1013,7 @@ export class PoolRegistryItem implements StructClass {
       bcs: PoolRegistryItem.bcs,
       fromJSONField: (field: any) => PoolRegistryItem.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => PoolRegistryItem.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => PoolRegistryItem.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => PoolRegistryItem.fetch(client, id),
       new: (fields: PoolRegistryItemFields) => {
         return new PoolRegistryItem([], fields)

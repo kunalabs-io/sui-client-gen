@@ -73,6 +73,7 @@ export class Extension implements StructClass {
       bcs: Extension.bcs,
       fromJSONField: (field: any) => Extension.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Extension.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => Extension.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => Extension.fetch(client, id),
       new: (fields: ExtensionFields) => {
         return new Extension([], fields)
@@ -229,6 +230,7 @@ export class ExtensionKey<T0 extends PhantomTypeArgument> implements StructClass
       bcs: ExtensionKey.bcs,
       fromJSONField: (field: any) => ExtensionKey.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => ExtensionKey.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => ExtensionKey.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => ExtensionKey.fetch(client, T0, id),
       new: (fields: ExtensionKeyFields<ToPhantomTypeArgument<T0>>) => {
         return new ExtensionKey([extractType(T0)], fields)

@@ -74,6 +74,7 @@ export class ActiveJwk implements StructClass {
       bcs: ActiveJwk.bcs,
       fromJSONField: (field: any) => ActiveJwk.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ActiveJwk.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => ActiveJwk.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => ActiveJwk.fetch(client, id),
       new: (fields: ActiveJwkFields) => {
         return new ActiveJwk([], fields)
@@ -228,6 +229,7 @@ export class AuthenticatorState implements StructClass {
       bcs: AuthenticatorState.bcs,
       fromJSONField: (field: any) => AuthenticatorState.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => AuthenticatorState.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => AuthenticatorState.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => AuthenticatorState.fetch(client, id),
       new: (fields: AuthenticatorStateFields) => {
         return new AuthenticatorState([], fields)
@@ -381,6 +383,8 @@ export class AuthenticatorStateInner implements StructClass {
       bcs: AuthenticatorStateInner.bcs,
       fromJSONField: (field: any) => AuthenticatorStateInner.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => AuthenticatorStateInner.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) =>
+        AuthenticatorStateInner.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => AuthenticatorStateInner.fetch(client, id),
       new: (fields: AuthenticatorStateInnerFields) => {
         return new AuthenticatorStateInner([], fields)
@@ -543,6 +547,7 @@ export class JWK implements StructClass {
       bcs: JWK.bcs,
       fromJSONField: (field: any) => JWK.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => JWK.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => JWK.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => JWK.fetch(client, id),
       new: (fields: JWKFields) => {
         return new JWK([], fields)
@@ -699,6 +704,7 @@ export class JwkId implements StructClass {
       bcs: JwkId.bcs,
       fromJSONField: (field: any) => JwkId.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => JwkId.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => JwkId.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => JwkId.fetch(client, id),
       new: (fields: JwkIdFields) => {
         return new JwkId([], fields)

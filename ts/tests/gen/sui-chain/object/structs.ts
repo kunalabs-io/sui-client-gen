@@ -57,6 +57,7 @@ export class ID implements StructClass {
       bcs: ID.bcs,
       fromJSONField: (field: any) => ID.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ID.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => ID.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => ID.fetch(client, id),
       new: (fields: IDFields) => {
         return new ID([], fields)
@@ -189,6 +190,7 @@ export class UID implements StructClass {
       bcs: UID.bcs,
       fromJSONField: (field: any) => UID.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UID.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => UID.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => UID.fetch(client, id),
       new: (fields: UIDFields) => {
         return new UID([], fields)

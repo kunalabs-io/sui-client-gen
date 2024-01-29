@@ -64,6 +64,7 @@ export class ObjectBag implements StructClass {
       bcs: ObjectBag.bcs,
       fromJSONField: (field: any) => ObjectBag.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ObjectBag.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => ObjectBag.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => ObjectBag.fetch(client, id),
       new: (fields: ObjectBagFields) => {
         return new ObjectBag([], fields)

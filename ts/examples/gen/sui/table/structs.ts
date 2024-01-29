@@ -89,6 +89,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
       bcs: Table.bcs,
       fromJSONField: (field: any) => Table.fromJSONField([K, V], field),
       fromJSON: (json: Record<string, any>) => Table.fromJSON([K, V], json),
+      fromSuiParsedData: (content: SuiParsedData) => Table.fromSuiParsedData([K, V], content),
       fetch: async (client: SuiClient, id: string) => Table.fetch(client, [K, V], id),
       new: (fields: TableFields<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>) => {
         return new Table([extractType(K), extractType(V)], fields)

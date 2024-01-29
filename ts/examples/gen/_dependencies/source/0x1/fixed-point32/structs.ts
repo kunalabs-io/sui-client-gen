@@ -63,6 +63,7 @@ export class FixedPoint32 implements StructClass {
       bcs: FixedPoint32.bcs,
       fromJSONField: (field: any) => FixedPoint32.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => FixedPoint32.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => FixedPoint32.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => FixedPoint32.fetch(client, id),
       new: (fields: FixedPoint32Fields) => {
         return new FixedPoint32([], fields)

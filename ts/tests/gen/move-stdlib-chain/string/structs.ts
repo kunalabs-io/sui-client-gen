@@ -60,6 +60,7 @@ export class String implements StructClass {
       bcs: String.bcs,
       fromJSONField: (field: any) => String.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => String.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => String.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => String.fetch(client, id),
       new: (fields: StringFields) => {
         return new String([], fields)

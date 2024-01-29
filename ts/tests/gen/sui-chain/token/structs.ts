@@ -82,6 +82,7 @@ export class Token<T0 extends PhantomTypeArgument> implements StructClass {
       bcs: Token.bcs,
       fromJSONField: (field: any) => Token.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => Token.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => Token.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => Token.fetch(client, T0, id),
       new: (fields: TokenFields<ToPhantomTypeArgument<T0>>) => {
         return new Token([extractType(T0)], fields)
@@ -266,6 +267,7 @@ export class TokenPolicyCap<T0 extends PhantomTypeArgument> implements StructCla
       bcs: TokenPolicyCap.bcs,
       fromJSONField: (field: any) => TokenPolicyCap.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => TokenPolicyCap.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => TokenPolicyCap.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => TokenPolicyCap.fetch(client, T0, id),
       new: (fields: TokenPolicyCapFields<ToPhantomTypeArgument<T0>>) => {
         return new TokenPolicyCap([extractType(T0)], fields)
@@ -453,6 +455,7 @@ export class TokenPolicy<T0 extends PhantomTypeArgument> implements StructClass 
       bcs: TokenPolicy.bcs,
       fromJSONField: (field: any) => TokenPolicy.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => TokenPolicy.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => TokenPolicy.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => TokenPolicy.fetch(client, T0, id),
       new: (fields: TokenPolicyFields<ToPhantomTypeArgument<T0>>) => {
         return new TokenPolicy([extractType(T0)], fields)
@@ -663,6 +666,7 @@ export class ActionRequest<T0 extends PhantomTypeArgument> implements StructClas
       bcs: ActionRequest.bcs,
       fromJSONField: (field: any) => ActionRequest.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => ActionRequest.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => ActionRequest.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => ActionRequest.fetch(client, T0, id),
       new: (fields: ActionRequestFields<ToPhantomTypeArgument<T0>>) => {
         return new ActionRequest([extractType(T0)], fields)
@@ -884,6 +888,7 @@ export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
       bcs: RuleKey.bcs,
       fromJSONField: (field: any) => RuleKey.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => RuleKey.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => RuleKey.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => RuleKey.fetch(client, T0, id),
       new: (fields: RuleKeyFields<ToPhantomTypeArgument<T0>>) => {
         return new RuleKey([extractType(T0)], fields)
@@ -1064,6 +1069,8 @@ export class TokenPolicyCreated<T0 extends PhantomTypeArgument> implements Struc
       bcs: TokenPolicyCreated.bcs,
       fromJSONField: (field: any) => TokenPolicyCreated.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => TokenPolicyCreated.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) =>
+        TokenPolicyCreated.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => TokenPolicyCreated.fetch(client, T0, id),
       new: (fields: TokenPolicyCreatedFields<ToPhantomTypeArgument<T0>>) => {
         return new TokenPolicyCreated([extractType(T0)], fields)

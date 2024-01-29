@@ -61,6 +61,7 @@ export class Clock implements StructClass {
       bcs: Clock.bcs,
       fromJSONField: (field: any) => Clock.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Clock.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => Clock.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => Clock.fetch(client, id),
       new: (fields: ClockFields) => {
         return new Clock([], fields)

@@ -66,6 +66,7 @@ export class BitVector implements StructClass {
       bcs: BitVector.bcs,
       fromJSONField: (field: any) => BitVector.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => BitVector.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => BitVector.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => BitVector.fetch(client, id),
       new: (fields: BitVectorFields) => {
         return new BitVector([], fields)

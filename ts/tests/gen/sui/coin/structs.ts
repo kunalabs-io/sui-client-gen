@@ -81,6 +81,7 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
       bcs: Coin.bcs,
       fromJSONField: (field: any) => Coin.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Coin.fromJSON(T, json),
+      fromSuiParsedData: (content: SuiParsedData) => Coin.fromSuiParsedData(T, content),
       fetch: async (client: SuiClient, id: string) => Coin.fetch(client, T, id),
       new: (fields: CoinFields<ToPhantomTypeArgument<T>>) => {
         return new Coin([extractType(T)], fields)
@@ -277,6 +278,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
       bcs: CoinMetadata.bcs,
       fromJSONField: (field: any) => CoinMetadata.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => CoinMetadata.fromJSON(T, json),
+      fromSuiParsedData: (content: SuiParsedData) => CoinMetadata.fromSuiParsedData(T, content),
       fetch: async (client: SuiClient, id: string) => CoinMetadata.fetch(client, T, id),
       new: (fields: CoinMetadataFields<ToPhantomTypeArgument<T>>) => {
         return new CoinMetadata([extractType(T)], fields)
@@ -478,6 +480,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
       bcs: CurrencyCreated.bcs,
       fromJSONField: (field: any) => CurrencyCreated.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => CurrencyCreated.fromJSON(T, json),
+      fromSuiParsedData: (content: SuiParsedData) => CurrencyCreated.fromSuiParsedData(T, content),
       fetch: async (client: SuiClient, id: string) => CurrencyCreated.fetch(client, T, id),
       new: (fields: CurrencyCreatedFields<ToPhantomTypeArgument<T>>) => {
         return new CurrencyCreated([extractType(T)], fields)
@@ -657,6 +660,7 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
       bcs: TreasuryCap.bcs,
       fromJSONField: (field: any) => TreasuryCap.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => TreasuryCap.fromJSON(T, json),
+      fromSuiParsedData: (content: SuiParsedData) => TreasuryCap.fromSuiParsedData(T, content),
       fetch: async (client: SuiClient, id: string) => TreasuryCap.fetch(client, T, id),
       new: (fields: TreasuryCapFields<ToPhantomTypeArgument<T>>) => {
         return new TreasuryCap([extractType(T)], fields)

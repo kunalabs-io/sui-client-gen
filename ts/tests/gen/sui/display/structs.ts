@@ -80,6 +80,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
       bcs: Display.bcs,
       fromJSONField: (field: any) => Display.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Display.fromJSON(T, json),
+      fromSuiParsedData: (content: SuiParsedData) => Display.fromSuiParsedData(T, content),
       fetch: async (client: SuiClient, id: string) => Display.fetch(client, T, id),
       new: (fields: DisplayFields<ToPhantomTypeArgument<T>>) => {
         return new Display([extractType(T)], fields)
@@ -269,6 +270,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
       bcs: DisplayCreated.bcs,
       fromJSONField: (field: any) => DisplayCreated.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => DisplayCreated.fromJSON(T, json),
+      fromSuiParsedData: (content: SuiParsedData) => DisplayCreated.fromSuiParsedData(T, content),
       fetch: async (client: SuiClient, id: string) => DisplayCreated.fetch(client, T, id),
       new: (fields: DisplayCreatedFields<ToPhantomTypeArgument<T>>) => {
         return new DisplayCreated([extractType(T)], fields)
@@ -447,6 +449,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
       bcs: VersionUpdated.bcs,
       fromJSONField: (field: any) => VersionUpdated.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => VersionUpdated.fromJSON(T, json),
+      fromSuiParsedData: (content: SuiParsedData) => VersionUpdated.fromSuiParsedData(T, content),
       fetch: async (client: SuiClient, id: string) => VersionUpdated.fetch(client, T, id),
       new: (fields: VersionUpdatedFields<ToPhantomTypeArgument<T>>) => {
         return new VersionUpdated([extractType(T)], fields)

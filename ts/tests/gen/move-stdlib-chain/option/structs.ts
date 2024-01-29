@@ -74,6 +74,7 @@ export class Option<T0 extends TypeArgument> implements StructClass {
       bcs: Option.bcs(toBcs(T0)),
       fromJSONField: (field: any) => Option.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => Option.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => Option.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => Option.fetch(client, T0, id),
       new: (fields: OptionFields<ToTypeArgument<T0>>) => {
         return new Option([extractType(T0)], fields)

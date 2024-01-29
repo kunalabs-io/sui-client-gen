@@ -72,6 +72,7 @@ export class VecSet<K extends TypeArgument> implements StructClass {
       bcs: VecSet.bcs(toBcs(K)),
       fromJSONField: (field: any) => VecSet.fromJSONField(K, field),
       fromJSON: (json: Record<string, any>) => VecSet.fromJSON(K, json),
+      fromSuiParsedData: (content: SuiParsedData) => VecSet.fromSuiParsedData(K, content),
       fetch: async (client: SuiClient, id: string) => VecSet.fetch(client, K, id),
       new: (fields: VecSetFields<ToTypeArgument<K>>) => {
         return new VecSet([extractType(K)], fields)

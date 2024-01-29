@@ -64,6 +64,7 @@ export class Versioned implements StructClass {
       bcs: Versioned.bcs,
       fromJSONField: (field: any) => Versioned.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Versioned.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => Versioned.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => Versioned.fetch(client, id),
       new: (fields: VersionedFields) => {
         return new Versioned([], fields)
@@ -213,6 +214,7 @@ export class VersionChangeCap implements StructClass {
       bcs: VersionChangeCap.bcs,
       fromJSONField: (field: any) => VersionChangeCap.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => VersionChangeCap.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => VersionChangeCap.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => VersionChangeCap.fetch(client, id),
       new: (fields: VersionChangeCapFields) => {
         return new VersionChangeCap([], fields)

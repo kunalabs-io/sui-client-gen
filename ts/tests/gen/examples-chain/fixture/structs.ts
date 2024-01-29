@@ -87,6 +87,7 @@ export class Dummy implements StructClass {
       bcs: Dummy.bcs,
       fromJSONField: (field: any) => Dummy.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Dummy.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => Dummy.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => Dummy.fetch(client, id),
       new: (fields: DummyFields) => {
         return new Dummy([], fields)
@@ -238,6 +239,8 @@ export class WithGenericField<T0 extends TypeArgument> implements StructClass {
       bcs: WithGenericField.bcs(toBcs(T0)),
       fromJSONField: (field: any) => WithGenericField.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => WithGenericField.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) =>
+        WithGenericField.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => WithGenericField.fetch(client, T0, id),
       new: (fields: WithGenericFieldFields<ToTypeArgument<T0>>) => {
         return new WithGenericField([extractType(T0)], fields)
@@ -421,6 +424,7 @@ export class Bar implements StructClass {
       bcs: Bar.bcs,
       fromJSONField: (field: any) => Bar.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Bar.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => Bar.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => Bar.fetch(client, id),
       new: (fields: BarFields) => {
         return new Bar([], fields)
@@ -579,6 +583,8 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument>
       bcs: WithTwoGenerics.bcs(toBcs(T0), toBcs(T1)),
       fromJSONField: (field: any) => WithTwoGenerics.fromJSONField([T0, T1], field),
       fromJSON: (json: Record<string, any>) => WithTwoGenerics.fromJSON([T0, T1], json),
+      fromSuiParsedData: (content: SuiParsedData) =>
+        WithTwoGenerics.fromSuiParsedData([T0, T1], content),
       fetch: async (client: SuiClient, id: string) => WithTwoGenerics.fetch(client, [T0, T1], id),
       new: (fields: WithTwoGenericsFields<ToTypeArgument<T0>, ToTypeArgument<T1>>) => {
         return new WithTwoGenerics([extractType(T0), extractType(T1)], fields)
@@ -812,6 +818,7 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
       bcs: Foo.bcs(toBcs(T0)),
       fromJSONField: (field: any) => Foo.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => Foo.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => Foo.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => Foo.fetch(client, T0, id),
       new: (fields: FooFields<ToTypeArgument<T0>>) => {
         return new Foo([extractType(T0)], fields)
@@ -1207,6 +1214,8 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
       bcs: WithSpecialTypes.bcs(toBcs(T1)),
       fromJSONField: (field: any) => WithSpecialTypes.fromJSONField([T0, T1], field),
       fromJSON: (json: Record<string, any>) => WithSpecialTypes.fromJSON([T0, T1], json),
+      fromSuiParsedData: (content: SuiParsedData) =>
+        WithSpecialTypes.fromSuiParsedData([T0, T1], content),
       fetch: async (client: SuiClient, id: string) => WithSpecialTypes.fetch(client, [T0, T1], id),
       new: (fields: WithSpecialTypesFields<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>>) => {
         return new WithSpecialTypes([extractType(T0), extractType(T1)], fields)
@@ -1641,6 +1650,8 @@ export class WithSpecialTypesAsGenerics<
         WithSpecialTypesAsGenerics.fromJSONField([T0, T1, T2, T3, T4, T5, T6, T7], field),
       fromJSON: (json: Record<string, any>) =>
         WithSpecialTypesAsGenerics.fromJSON([T0, T1, T2, T3, T4, T5, T6, T7], json),
+      fromSuiParsedData: (content: SuiParsedData) =>
+        WithSpecialTypesAsGenerics.fromSuiParsedData([T0, T1, T2, T3, T4, T5, T6, T7], content),
       fetch: async (client: SuiClient, id: string) =>
         WithSpecialTypesAsGenerics.fetch(client, [T0, T1, T2, T3, T4, T5, T6, T7], id),
       new: (
@@ -2130,6 +2141,8 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
       bcs: WithSpecialTypesInVectors.bcs(toBcs(T0)),
       fromJSONField: (field: any) => WithSpecialTypesInVectors.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => WithSpecialTypesInVectors.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) =>
+        WithSpecialTypesInVectors.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) =>
         WithSpecialTypesInVectors.fetch(client, T0, id),
       new: (fields: WithSpecialTypesInVectorsFields<ToTypeArgument<T0>>) => {

@@ -71,6 +71,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
       bcs: Balance.bcs,
       fromJSONField: (field: any) => Balance.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Balance.fromJSON(T, json),
+      fromSuiParsedData: (content: SuiParsedData) => Balance.fromSuiParsedData(T, content),
       fetch: async (client: SuiClient, id: string) => Balance.fetch(client, T, id),
       new: (fields: BalanceFields<ToPhantomTypeArgument<T>>) => {
         return new Balance([extractType(T)], fields)
@@ -240,6 +241,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
       bcs: Supply.bcs,
       fromJSONField: (field: any) => Supply.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Supply.fromJSON(T, json),
+      fromSuiParsedData: (content: SuiParsedData) => Supply.fromSuiParsedData(T, content),
       fetch: async (client: SuiClient, id: string) => Supply.fetch(client, T, id),
       new: (fields: SupplyFields<ToPhantomTypeArgument<T>>) => {
         return new Supply([extractType(T)], fields)

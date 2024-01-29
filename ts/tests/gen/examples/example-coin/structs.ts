@@ -71,6 +71,7 @@ export class EXAMPLE_COIN implements StructClass {
       bcs: EXAMPLE_COIN.bcs,
       fromJSONField: (field: any) => EXAMPLE_COIN.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => EXAMPLE_COIN.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => EXAMPLE_COIN.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => EXAMPLE_COIN.fetch(client, id),
       new: (fields: EXAMPLE_COINFields) => {
         return new EXAMPLE_COIN([], fields)
@@ -215,6 +216,7 @@ export class Faucet implements StructClass {
       bcs: Faucet.bcs,
       fromJSONField: (field: any) => Faucet.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Faucet.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => Faucet.fromSuiParsedData(content),
       fetch: async (client: SuiClient, id: string) => Faucet.fetch(client, id),
       new: (fields: FaucetFields) => {
         return new Faucet([], fields)

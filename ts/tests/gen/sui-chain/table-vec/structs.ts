@@ -76,6 +76,7 @@ export class TableVec<T0 extends PhantomTypeArgument> implements StructClass {
       bcs: TableVec.bcs,
       fromJSONField: (field: any) => TableVec.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => TableVec.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => TableVec.fromSuiParsedData(T0, content),
       fetch: async (client: SuiClient, id: string) => TableVec.fetch(client, T0, id),
       new: (fields: TableVecFields<ToPhantomTypeArgument<T0>>) => {
         return new TableVec([extractType(T0)], fields)
