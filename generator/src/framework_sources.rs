@@ -154,6 +154,8 @@ export function pure(txb: TransactionBlock, arg: PureArg, type: string) {
   function getBcsForType(type: string): BcsType<any> {
     const { typeName, typeArgs } = parseTypeName(type)
     switch (typeName) {
+      case 'bool':
+        return bcs.Bool
       case 'u8':
         return bcs.U8
       case 'u16':
