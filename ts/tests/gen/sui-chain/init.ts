@@ -2,6 +2,7 @@ import * as authenticatorState from './authenticator-state/structs'
 import * as bag from './bag/structs'
 import * as balance from './balance/structs'
 import * as bcs from './bcs/structs'
+import * as bls12381 from './bls12381/structs'
 import * as borrow from './borrow/structs'
 import * as clock from './clock/structs'
 import * as coin from './coin/structs'
@@ -10,6 +11,7 @@ import * as display from './display/structs'
 import * as dynamicField from './dynamic-field/structs'
 import * as dynamicObjectField from './dynamic-object-field/structs'
 import * as groth16 from './groth16/structs'
+import * as groupOps from './group-ops/structs'
 import * as kioskExtension from './kiosk-extension/structs'
 import * as kiosk from './kiosk/structs'
 import * as linkedTable from './linked-table/structs'
@@ -52,6 +54,11 @@ export function registerClasses(loader: StructClassLoader) {
   loader.register(zkloginVerifiedId.VerifiedID)
   loader.register(zkloginVerifiedIssuer.VerifiedIssuer)
   loader.register(bcs.BCS)
+  loader.register(groupOps.Element)
+  loader.register(bls12381.Scalar)
+  loader.register(bls12381.G1)
+  loader.register(bls12381.G2)
+  loader.register(bls12381.GT)
   loader.register(borrow.Referent)
   loader.register(borrow.Borrow)
   loader.register(dynamicField.Field)
