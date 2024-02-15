@@ -91,6 +91,40 @@ export function size(txb: TransactionBlock, typeArgs: [string, string], self: Ob
   })
 }
 
+export interface GetIdxArgs {
+  self: ObjectArg
+  key: GenericArg
+}
+
+export function getIdx(txb: TransactionBlock, typeArgs: [string, string], args: GetIdxArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::get_idx`,
+    typeArguments: typeArgs,
+    arguments: [obj(txb, args.self), generic(txb, `${typeArgs[0]}`, args.key)],
+  })
+}
+
+export interface GetIdxOptArgs {
+  self: ObjectArg
+  key: GenericArg
+}
+
+export function getIdxOpt(txb: TransactionBlock, typeArgs: [string, string], args: GetIdxOptArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::get_idx_opt`,
+    typeArguments: typeArgs,
+    arguments: [obj(txb, args.self), generic(txb, `${typeArgs[0]}`, args.key)],
+  })
+}
+
+export function keys(txb: TransactionBlock, typeArgs: [string, string], self: ObjectArg) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::keys`,
+    typeArguments: typeArgs,
+    arguments: [obj(txb, self)],
+  })
+}
+
 export interface GetEntryByIdxArgs {
   self: ObjectArg
   idx: bigint | TransactionArgument
@@ -125,32 +159,6 @@ export function getEntryByIdxMut(
   })
 }
 
-export interface GetIdxArgs {
-  self: ObjectArg
-  key: GenericArg
-}
-
-export function getIdx(txb: TransactionBlock, typeArgs: [string, string], args: GetIdxArgs) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::get_idx`,
-    typeArguments: typeArgs,
-    arguments: [obj(txb, args.self), generic(txb, `${typeArgs[0]}`, args.key)],
-  })
-}
-
-export interface GetIdxOptArgs {
-  self: ObjectArg
-  key: GenericArg
-}
-
-export function getIdxOpt(txb: TransactionBlock, typeArgs: [string, string], args: GetIdxOptArgs) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::get_idx_opt`,
-    typeArguments: typeArgs,
-    arguments: [obj(txb, args.self), generic(txb, `${typeArgs[0]}`, args.key)],
-  })
-}
-
 export interface GetMutArgs {
   self: ObjectArg
   key: GenericArg
@@ -167,14 +175,6 @@ export function getMut(txb: TransactionBlock, typeArgs: [string, string], args: 
 export function intoKeysValues(txb: TransactionBlock, typeArgs: [string, string], self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::vec_map::into_keys_values`,
-    typeArguments: typeArgs,
-    arguments: [obj(txb, self)],
-  })
-}
-
-export function keys(txb: TransactionBlock, typeArgs: [string, string], self: ObjectArg) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::keys`,
     typeArguments: typeArgs,
     arguments: [obj(txb, self)],
   })

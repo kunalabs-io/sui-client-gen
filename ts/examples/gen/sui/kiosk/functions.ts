@@ -42,8 +42,24 @@ export function uid(txb: TransactionBlock, self: ObjectArg) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::kiosk::uid`, arguments: [obj(txb, self)] })
 }
 
-export function owner(txb: TransactionBlock, self: ObjectArg) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::kiosk::owner`, arguments: [obj(txb, self)] })
+export interface ListArgs {
+  self: ObjectArg
+  cap: ObjectArg
+  id: string | TransactionArgument
+  price: bigint | TransactionArgument
+}
+
+export function list(txb: TransactionBlock, typeArg: string, args: ListArgs) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::kiosk::list`,
+    typeArguments: [typeArg],
+    arguments: [
+      obj(txb, args.self),
+      obj(txb, args.cap),
+      pure(txb, args.id, `0x2::object::ID`),
+      pure(txb, args.price, `u64`),
+    ],
+  })
 }
 
 export interface TakeArgs {
@@ -213,26 +229,6 @@ export function kioskOwnerCapFor(txb: TransactionBlock, cap: ObjectArg) {
   })
 }
 
-export interface ListArgs {
-  self: ObjectArg
-  cap: ObjectArg
-  id: string | TransactionArgument
-  price: bigint | TransactionArgument
-}
-
-export function list(txb: TransactionBlock, typeArg: string, args: ListArgs) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::list`,
-    typeArguments: [typeArg],
-    arguments: [
-      obj(txb, args.self),
-      obj(txb, args.cap),
-      pure(txb, args.id, `0x2::object::ID`),
-      pure(txb, args.price, `u64`),
-    ],
-  })
-}
-
 export interface ListWithPurchaseCapArgs {
   self: ObjectArg
   cap: ObjectArg
@@ -288,6 +284,10 @@ export function lockInternal(txb: TransactionBlock, typeArg: string, args: LockI
     typeArguments: [typeArg],
     arguments: [obj(txb, args.self), generic(txb, `${typeArg}`, args.item)],
   })
+}
+
+export function owner(txb: TransactionBlock, self: ObjectArg) {
+  return txb.moveCall({ target: `${PUBLISHED_AT}::kiosk::owner`, arguments: [obj(txb, self)] })
 }
 
 export interface PlaceArgs {

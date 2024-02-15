@@ -45,3 +45,10 @@ export function intoString(txb: TransactionBlock, self: ObjectArg) {
     arguments: [obj(txb, self)],
   })
 }
+
+export function isPrimitive(txb: TransactionBlock, self: ObjectArg) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::type_name::is_primitive`,
+    arguments: [obj(txb, self)],
+  })
+}

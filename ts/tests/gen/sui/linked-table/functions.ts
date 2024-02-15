@@ -112,17 +112,17 @@ export function new_(txb: TransactionBlock, typeArgs: [string, string]) {
   })
 }
 
-export function back(txb: TransactionBlock, typeArgs: [string, string], table: ObjectArg) {
+export function drop(txb: TransactionBlock, typeArgs: [string, string], table: ObjectArg) {
   return txb.moveCall({
-    target: `${PUBLISHED_AT}::linked_table::back`,
+    target: `${PUBLISHED_AT}::linked_table::drop`,
     typeArguments: typeArgs,
     arguments: [obj(txb, table)],
   })
 }
 
-export function drop(txb: TransactionBlock, typeArgs: [string, string], table: ObjectArg) {
+export function back(txb: TransactionBlock, typeArgs: [string, string], table: ObjectArg) {
   return txb.moveCall({
-    target: `${PUBLISHED_AT}::linked_table::drop`,
+    target: `${PUBLISHED_AT}::linked_table::back`,
     typeArguments: typeArgs,
     arguments: [obj(txb, table)],
   })

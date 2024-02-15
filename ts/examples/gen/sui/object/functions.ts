@@ -114,6 +114,10 @@ export function recordNewUid(txb: TransactionBlock, id: string | TransactionArgu
   })
 }
 
+export function suiDenyListObjectId(txb: TransactionBlock) {
+  return txb.moveCall({ target: `${PUBLISHED_AT}::object::sui_deny_list_object_id`, arguments: [] })
+}
+
 export function suiSystemState(txb: TransactionBlock) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::object::sui_system_state`, arguments: [] })
 }

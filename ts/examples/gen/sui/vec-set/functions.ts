@@ -99,17 +99,17 @@ export function getIdxOpt(txb: TransactionBlock, typeArg: string, args: GetIdxOp
   })
 }
 
-export function keys(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
+export function intoKeys(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
-    target: `${PUBLISHED_AT}::vec_set::keys`,
+    target: `${PUBLISHED_AT}::vec_set::into_keys`,
     typeArguments: [typeArg],
     arguments: [obj(txb, self)],
   })
 }
 
-export function intoKeys(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
+export function keys(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
-    target: `${PUBLISHED_AT}::vec_set::into_keys`,
+    target: `${PUBLISHED_AT}::vec_set::keys`,
     typeArguments: [typeArg],
     arguments: [obj(txb, self)],
   })

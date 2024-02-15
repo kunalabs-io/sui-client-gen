@@ -13,6 +13,16 @@ export function toBytes(txb: TransactionBlock, a: string | TransactionArgument) 
   })
 }
 
+export function fromAsciiBytes(
+  txb: TransactionBlock,
+  bytes: Array<number | TransactionArgument> | TransactionArgument
+) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::address::from_ascii_bytes`,
+    arguments: [pure(txb, bytes, `vector<u8>`)],
+  })
+}
+
 export function fromBytes(
   txb: TransactionBlock,
   bytes: Array<number | TransactionArgument> | TransactionArgument
@@ -27,6 +37,13 @@ export function fromU256(txb: TransactionBlock, n: bigint | TransactionArgument)
   return txb.moveCall({
     target: `${PUBLISHED_AT}::address::from_u256`,
     arguments: [pure(txb, n, `u256`)],
+  })
+}
+
+export function hexCharValue(txb: TransactionBlock, c: number | TransactionArgument) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::address::hex_char_value`,
+    arguments: [pure(txb, c, `u8`)],
   })
 }
 

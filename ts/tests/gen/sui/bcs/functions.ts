@@ -74,6 +74,10 @@ export function peelU128(txb: TransactionBlock, bcs: ObjectArg) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_u128`, arguments: [obj(txb, bcs)] })
 }
 
+export function peelU256(txb: TransactionBlock, bcs: ObjectArg) {
+  return txb.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_u256`, arguments: [obj(txb, bcs)] })
+}
+
 export function peelU64(txb: TransactionBlock, bcs: ObjectArg) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_u64`, arguments: [obj(txb, bcs)] })
 }
