@@ -324,3 +324,161 @@ export class RandomInner implements StructClass {
     return RandomInner.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
+
+/* ============================== RandomGenerator =============================== */
+
+export function isRandomGenerator(type: string): boolean {
+  type = compressSuiType(type)
+  return type === '0x2::random::RandomGenerator'
+}
+
+export interface RandomGeneratorFields {
+  seed: ToField<Vector<'u8'>>
+  counter: ToField<'u16'>
+  buffer: ToField<Vector<'u8'>>
+}
+
+export type RandomGeneratorReified = Reified<RandomGenerator, RandomGeneratorFields>
+
+export class RandomGenerator implements StructClass {
+  static readonly $typeName = '0x2::random::RandomGenerator'
+  static readonly $numTypeParams = 0
+
+  readonly $typeName = RandomGenerator.$typeName
+
+  readonly $fullTypeName: '0x2::random::RandomGenerator'
+
+  readonly $typeArgs: []
+
+  readonly seed: ToField<Vector<'u8'>>
+  readonly counter: ToField<'u16'>
+  readonly buffer: ToField<Vector<'u8'>>
+
+  private constructor(typeArgs: [], fields: RandomGeneratorFields) {
+    this.$fullTypeName = composeSuiType(
+      RandomGenerator.$typeName,
+      ...typeArgs
+    ) as '0x2::random::RandomGenerator'
+    this.$typeArgs = typeArgs
+
+    this.seed = fields.seed
+    this.counter = fields.counter
+    this.buffer = fields.buffer
+  }
+
+  static reified(): RandomGeneratorReified {
+    return {
+      typeName: RandomGenerator.$typeName,
+      fullTypeName: composeSuiType(
+        RandomGenerator.$typeName,
+        ...[]
+      ) as '0x2::random::RandomGenerator',
+      typeArgs: [] as [],
+      reifiedTypeArgs: [],
+      fromFields: (fields: Record<string, any>) => RandomGenerator.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => RandomGenerator.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => RandomGenerator.fromBcs(data),
+      bcs: RandomGenerator.bcs,
+      fromJSONField: (field: any) => RandomGenerator.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => RandomGenerator.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => RandomGenerator.fromSuiParsedData(content),
+      fetch: async (client: SuiClient, id: string) => RandomGenerator.fetch(client, id),
+      new: (fields: RandomGeneratorFields) => {
+        return new RandomGenerator([], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return RandomGenerator.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<RandomGenerator>> {
+    return phantom(RandomGenerator.reified())
+  }
+  static get p() {
+    return RandomGenerator.phantom()
+  }
+
+  static get bcs() {
+    return bcs.struct('RandomGenerator', {
+      seed: bcs.vector(bcs.u8()),
+      counter: bcs.u16(),
+      buffer: bcs.vector(bcs.u8()),
+    })
+  }
+
+  static fromFields(fields: Record<string, any>): RandomGenerator {
+    return RandomGenerator.reified().new({
+      seed: decodeFromFields(reified.vector('u8'), fields.seed),
+      counter: decodeFromFields('u16', fields.counter),
+      buffer: decodeFromFields(reified.vector('u8'), fields.buffer),
+    })
+  }
+
+  static fromFieldsWithTypes(item: FieldsWithTypes): RandomGenerator {
+    if (!isRandomGenerator(item.type)) {
+      throw new Error('not a RandomGenerator type')
+    }
+
+    return RandomGenerator.reified().new({
+      seed: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.seed),
+      counter: decodeFromFieldsWithTypes('u16', item.fields.counter),
+      buffer: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.buffer),
+    })
+  }
+
+  static fromBcs(data: Uint8Array): RandomGenerator {
+    return RandomGenerator.fromFields(RandomGenerator.bcs.parse(data))
+  }
+
+  toJSONField() {
+    return {
+      seed: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.seed),
+      counter: this.counter,
+      buffer: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.buffer),
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): RandomGenerator {
+    return RandomGenerator.reified().new({
+      seed: decodeFromJSONField(reified.vector('u8'), field.seed),
+      counter: decodeFromJSONField('u16', field.counter),
+      buffer: decodeFromJSONField(reified.vector('u8'), field.buffer),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): RandomGenerator {
+    if (json.$typeName !== RandomGenerator.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return RandomGenerator.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): RandomGenerator {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isRandomGenerator(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a RandomGenerator object`)
+    }
+    return RandomGenerator.fromFieldsWithTypes(content)
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<RandomGenerator> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching RandomGenerator object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isRandomGenerator(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a RandomGenerator object`)
+    }
+    return RandomGenerator.fromBcs(fromB64(res.data.bcs.bcsBytes))
+  }
+}

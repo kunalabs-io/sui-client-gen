@@ -6,9 +6,9 @@ module examples::examples {
     use sui::tx_context::TxContext;
     use sui::transfer;
 
-    struct ExampleStruct has drop, store { }
+    public struct ExampleStruct has drop, store { }
 
-    struct SpecialTypesStruct has key {
+    public struct SpecialTypesStruct has key {
         id: UID,
         ascii_string: ascii::String,
         utf8_string: string::String,

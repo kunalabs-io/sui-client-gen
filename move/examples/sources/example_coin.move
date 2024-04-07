@@ -6,9 +6,9 @@ module examples::example_coin {
     use sui::transfer;
     use sui::object::{Self, UID};
 
-    struct EXAMPLE_COIN has drop {}
+    public struct EXAMPLE_COIN has drop {}
 
-    struct Faucet has key {
+    public struct Faucet has key {
         id: UID,
         cap: TreasuryCap<EXAMPLE_COIN>
     }

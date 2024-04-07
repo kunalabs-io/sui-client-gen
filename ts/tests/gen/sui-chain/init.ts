@@ -74,6 +74,7 @@ export function registerClasses(loader: StructClassLoader) {
   loader.register(versioned.VersionChangeCap)
   loader.register(random.Random)
   loader.register(random.RandomInner)
+  loader.register(random.RandomGenerator)
   loader.register(dynamicObjectField.Wrapper)
   loader.register(linkedTable.LinkedTable)
   loader.register(linkedTable.Node)

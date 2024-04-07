@@ -14,23 +14,23 @@ module examples::fixture {
 
     const ASDF: u64 = 123;
 
-    struct Dummy has store { }
+    public struct Dummy has store { }
 
-    struct WithGenericField<T: store> has key {
+    public struct WithGenericField<T: store> has key {
         id: UID,
         generic_field: T,
     }
 
-    struct Bar has store, copy, drop {
+    public struct Bar has store, copy, drop {
         value: u64
     }
 
-    struct WithTwoGenerics<T: store + drop, U: store + drop> has store, drop {
+    public struct WithTwoGenerics<T: store + drop, U: store + drop> has store, drop {
         generic_field_1: T,
         generic_field_2: U
     }
 
-    struct Foo<T: store + drop> has key {
+    public struct Foo<T: store + drop> has key {
         id: UID,
         generic: T,
         reified_primitive_vec: vector<u64>,
@@ -47,7 +47,7 @@ module examples::fixture {
         other: StructFromOtherModule,
     }
 
-    struct WithSpecialTypes<phantom T, U: store> has key, store {
+    public struct WithSpecialTypes<phantom T, U: store> has key, store {
         id: UID,
         string: string::String,
         ascii_string: ascii::String,
@@ -63,7 +63,7 @@ module examples::fixture {
         option_generic_none: Option<U>,
     }
 
-    struct WithSpecialTypesAsGenerics<
+    public struct WithSpecialTypesAsGenerics<
         T0: store, T1: store, T2: store, T3: store, T4: store, T5: store, T6: store, T7: store
     > has key, store {
         id: UID,
@@ -77,7 +77,7 @@ module examples::fixture {
         option_none: T7,
     }
 
-    struct WithSpecialTypesInVectors<T: store> has key, store {
+    public struct WithSpecialTypesInVectors<T: store> has key, store {
         id: UID,
         string: vector<string::String>,
         ascii_string: vector<ascii::String>,
