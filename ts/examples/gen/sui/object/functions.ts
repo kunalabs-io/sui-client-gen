@@ -2,6 +2,14 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
 
+export function id(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::object::id`,
+    typeArguments: [typeArg],
+    arguments: [generic(txb, `${typeArg}`, obj)],
+  })
+}
+
 export function new_(txb: TransactionBlock) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::object::new`, arguments: [] })
 }
@@ -32,14 +40,6 @@ export function clock(txb: TransactionBlock) {
 
 export function delete_(txb: TransactionBlock, id: ObjectArg) {
   return txb.moveCall({ target: `${PUBLISHED_AT}::object::delete`, arguments: [obj(txb, id)] })
-}
-
-export function id(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::object::id`,
-    typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, obj)],
-  })
 }
 
 export function deleteImpl(txb: TransactionBlock, id: string | TransactionArgument) {

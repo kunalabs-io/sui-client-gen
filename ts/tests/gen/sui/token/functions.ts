@@ -10,14 +10,6 @@ export function value(txb: TransactionBlock, typeArg: string, t: ObjectArg) {
   })
 }
 
-export function key(txb: TransactionBlock, typeArg: string) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::token::key`,
-    typeArguments: [typeArg],
-    arguments: [],
-  })
-}
-
 export function amount(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::amount`,
@@ -110,6 +102,14 @@ export function split(txb: TransactionBlock, typeArg: string, args: SplitArgs) {
 export function zero(txb: TransactionBlock, typeArg: string) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::token::zero`,
+    typeArguments: [typeArg],
+    arguments: [],
+  })
+}
+
+export function key(txb: TransactionBlock, typeArg: string) {
+  return txb.moveCall({
+    target: `${PUBLISHED_AT}::token::key`,
     typeArguments: [typeArg],
     arguments: [],
   })

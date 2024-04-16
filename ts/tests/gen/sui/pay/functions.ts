@@ -16,7 +16,7 @@ export function join(txb: TransactionBlock, typeArg: string, args: JoinArgs) {
 }
 
 export interface SplitArgs {
-  self: ObjectArg
+  coin: ObjectArg
   splitAmount: bigint | TransactionArgument
 }
 
@@ -24,7 +24,7 @@ export function split(txb: TransactionBlock, typeArg: string, args: SplitArgs) {
   return txb.moveCall({
     target: `${PUBLISHED_AT}::pay::split`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.self), pure(txb, args.splitAmount, `u64`)],
+    arguments: [obj(txb, args.coin), pure(txb, args.splitAmount, `u64`)],
   })
 }
 
