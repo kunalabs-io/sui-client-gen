@@ -8,7 +8,6 @@ use codespan_reporting::{
 use colored::*;
 use core::fmt;
 use futures::future;
-use move_binary_format::access::ModuleAccess;
 use move_binary_format::file_format::{
     CompiledModule, FunctionDefinitionIndex, StructDefinitionIndex,
 };
@@ -16,7 +15,7 @@ use move_bytecode_utils::Modules;
 use move_compiler::editions as ME;
 use move_core_types::account_address::AccountAddress;
 use move_model::ast::ModuleName;
-use move_model::model::{FunId, FunctionData, GlobalEnv, Loc, ModuleData, ModuleId, StructId};
+use move_model::model::{DatatypeId, FunId, FunctionData, GlobalEnv, Loc, ModuleData, ModuleId};
 use move_model::{self, addr_to_big_uint};
 use move_package::compilation::model_builder::ModelBuilder;
 use move_package::resolution::resolution_graph::ResolvedGraph;
@@ -442,9 +441,9 @@ fn add_modules_to_model<'a>(
         // add structs
         for (i, def) in m.struct_defs().iter().enumerate() {
             let def_idx = StructDefinitionIndex(i as u16);
-            let name = m.identifier_at(m.struct_handle_at(def.struct_handle).name);
+            let name = m.identifier_at(m.datatype_handle_at(def.struct_handle).name);
             let symbol = env.symbol_pool().make(name.as_str());
-            let struct_id = StructId::new(symbol);
+            let struct_id = DatatypeId::new(symbol);
             let data =
                 env.create_move_struct_data(m, def_idx, symbol, Loc::default(), Vec::default());
             module_data.struct_data.insert(struct_id, data);
@@ -500,7 +499,7 @@ async fn resolve_type_origin_table<Progress: Write>(
             .into_iter()
             .map(|origin| {
                 (
-                    format!("{}::{}", origin.module_name, origin.struct_name),
+                    format!("{}::{}", origin.module_name, origin.datatype_name),
                     origin.package.into(),
                 )
             })

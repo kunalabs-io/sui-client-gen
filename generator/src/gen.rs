@@ -410,7 +410,7 @@ fn gen_bcs_def_for_type(
                 }
                 QuoteItem::Literal(s) => toks.append(Item::Literal(ItemStr::from(s))),
             },
-            Type::Struct(mid, sid, ts) => {
+            Type::Datatype(mid, sid, ts) => {
                 let struct_env = env.get_module(*mid).into_struct(*sid);
 
                 quote_in! { *toks => $(get_full_name_with_address(&struct_env, type_origin_table)) };
@@ -491,7 +491,7 @@ impl<'env> FunctionsGen<'env> {
                         .field_name_from_type(ty, type_param_names)?
                         .to_case(Case::Pascal)
             }
-            Type::Struct(mid, sid, _) => {
+            Type::Datatype(mid, sid, _) => {
                 let module = self.env.get_module(*mid);
                 module
                     .get_struct(*sid)
@@ -538,7 +538,8 @@ impl<'env> FunctionsGen<'env> {
 
     fn is_tx_context(&self, ty: &Type) -> bool {
         match ty {
-            Type::Struct(mid, sid, ts) => match self.env.get_struct_type(*mid, *sid, ts).unwrap() {
+            Type::Datatype(mid, sid, ts) => match self.env.get_struct_type(*mid, *sid, ts).unwrap()
+            {
                 MType::Struct {
                     address,
                     module,
@@ -677,7 +678,7 @@ impl<'env> FunctionsGen<'env> {
             Type::Vector(ty) => {
                 quote!(Array<$(self.param_type_to_field_type(ty))> | $transaction_argument)
             }
-            Type::Struct(mid, sid, ts) => {
+            Type::Datatype(mid, sid, ts) => {
                 let module = self.env.get_module(*mid);
                 let strct = module.get_struct(*sid);
 
@@ -725,7 +726,7 @@ impl<'env> FunctionsGen<'env> {
             Type::Primitive(_) => true,
             Type::Reference(_, ty) => self.is_pure(ty),
             Type::Vector(ty) => self.is_pure(ty),
-            Type::Struct(mid, sid, ts) => {
+            Type::Datatype(mid, sid, ts) => {
                 let module = self.env.get_module(*mid);
                 let strct = module.get_struct(*sid);
 
@@ -743,7 +744,7 @@ impl<'env> FunctionsGen<'env> {
     // returns Option's type argument if the type is Option
     fn is_option<'a>(&self, ty: &'a Type) -> Option<&'a Type> {
         match ty {
-            Type::Struct(mid, sid, ts) => {
+            Type::Datatype(mid, sid, ts) => {
                 let module = self.env.get_module(*mid);
                 let strct = module.get_struct(*sid);
 
@@ -1007,7 +1008,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     strct, ty, type_param_names, wrap_non_phantom_type_parameter, wrap_phantom_type_parameter, false
                 ))>)
             }
-            Type::Struct(mid, sid, ts) => {
+            Type::Datatype(mid, sid, ts) => {
                 let field_module = self.env.get_module(*mid);
                 let field_strct = field_module.get_struct(*sid);
 
@@ -1019,7 +1020,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             Type::TypeParameter(t_idx) => {
                                 !strct.is_phantom_parameter(*t_idx as usize)
                             }
-                            Type::Struct(_, _, _) | Type::Vector(_) => true,
+                            Type::Datatype(_, _, _) | Type::Vector(_) => true,
                             _ => false,
                         };
 
@@ -1131,7 +1132,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             Type::Vector(ty) => {
                 quote!($bcs.vector($(self.gen_struct_bcs_def_field_value(ty, type_param_names))))
             }
-            Type::Struct(mid, sid, ts) => {
+            Type::Datatype(mid, sid, ts) => {
                 let field_module = self.env.get_module(*mid);
                 let field_strct = field_module.get_struct(*sid);
 
@@ -1175,7 +1176,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             Type::Vector(ty) => {
                 quote!($reified.vector($(self.gen_reified(strct, ty, type_param_names))))
             }
-            Type::Struct(mid, sid, ts) => {
+            Type::Datatype(mid, sid, ts) => {
                 let field_module = self.env.get_module(*mid);
                 let field_strct = field_module.get_struct(*sid);
 
@@ -1214,20 +1215,26 @@ impl<'env, 'a> StructsGen<'env, 'a> {
     fn gen_from_fields_field_decode(&mut self, field: &FieldEnv) -> js::Tokens {
         let decode_from_fields = &self.framework.import("reified", "decodeFromFields");
 
-        let strct = &field.struct_env;
+        let strct = &field.parent_env;
 
-        let field_arg_name = format!("fields.{}", field.get_name().display(self.symbol_pool()));
+        match strct {
+            move_model::model::EnclosingEnv::Struct(strct) => {
+                let field_arg_name =
+                    format!("fields.{}", field.get_name().display(self.symbol_pool()));
 
-        let type_param_names = match strct.get_type_parameters().len() {
-            0 => vec![],
-            1 => vec![quote!(typeArg)],
-            n => (0..n).map(|idx| quote!(typeArgs[$idx])).collect::<Vec<_>>(),
-        };
-        let reified = self.gen_reified(strct, &field.get_type(), &type_param_names);
+                let type_param_names = match strct.get_type_parameters().len() {
+                    0 => vec![],
+                    1 => vec![quote!(typeArg)],
+                    n => (0..n).map(|idx| quote!(typeArgs[$idx])).collect::<Vec<_>>(),
+                };
+                let reified = self.gen_reified(strct, &field.get_type(), &type_param_names);
 
-        quote!(
-            $decode_from_fields($(reified), $(field_arg_name))
-        )
+                quote!(
+                    $decode_from_fields($(reified), $(field_arg_name))
+                )
+            }
+            move_model::model::EnclosingEnv::Variant(_) => todo!(),
+        }
     }
 
     fn gen_from_fields_with_types_field_decode(&mut self, field: &FieldEnv) -> js::Tokens {
@@ -1235,42 +1242,52 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             .framework
             .import("reified", "decodeFromFieldsWithTypes");
 
-        let strct = &field.struct_env;
+        let strct = &field.parent_env;
 
         let field_arg_name = format!(
             "item.fields.{}",
             field.get_name().display(self.symbol_pool())
         );
 
-        let type_param_names = match strct.get_type_parameters().len() {
-            0 => vec![],
-            1 => vec![quote!(typeArg)],
-            n => (0..n).map(|idx| quote!(typeArgs[$idx])).collect::<Vec<_>>(),
-        };
-        let reified = self.gen_reified(strct, &field.get_type(), &type_param_names);
+        match strct {
+            move_model::model::EnclosingEnv::Struct(strct) => {
+                let type_param_names = match strct.get_type_parameters().len() {
+                    0 => vec![],
+                    1 => vec![quote!(typeArg)],
+                    n => (0..n).map(|idx| quote!(typeArgs[$idx])).collect::<Vec<_>>(),
+                };
+                let reified = self.gen_reified(strct, &field.get_type(), &type_param_names);
 
-        quote!(
-            $decode_from_fields_with_types_generic_or_special($(reified), $(field_arg_name))
-        )
+                quote!(
+                    $decode_from_fields_with_types_generic_or_special($(reified), $(field_arg_name))
+                )
+            }
+            move_model::model::EnclosingEnv::Variant(_) => todo!(),
+        }
     }
 
     fn gen_from_json_field_field_decode(&mut self, field: &FieldEnv) -> js::Tokens {
         let decode_from_json_field = &self.framework.import("reified", "decodeFromJSONField");
 
-        let strct = &field.struct_env;
+        let strct = &field.parent_env;
 
         let field_arg_name = quote!(field.$(self.gen_field_name(field)));
 
-        let type_param_names = match strct.get_type_parameters().len() {
-            0 => vec![],
-            1 => vec![quote!(typeArg)],
-            n => (0..n).map(|idx| quote!(typeArgs[$idx])).collect::<Vec<_>>(),
-        };
-        let reified = self.gen_reified(strct, &field.get_type(), &type_param_names);
+        match strct {
+            move_model::model::EnclosingEnv::Struct(strct) => {
+                let type_param_names = match strct.get_type_parameters().len() {
+                    0 => vec![],
+                    1 => vec![quote!(typeArg)],
+                    n => (0..n).map(|idx| quote!(typeArgs[$idx])).collect::<Vec<_>>(),
+                };
+                let reified = self.gen_reified(strct, &field.get_type(), &type_param_names);
 
-        quote!(
-            $decode_from_json_field($(reified), $(field_arg_name))
-        )
+                quote!(
+                    $decode_from_json_field($(reified), $(field_arg_name))
+                )
+            }
+            move_model::model::EnclosingEnv::Variant(_) => todo!(),
+        }
     }
 
     /// Generates the `is<StructName>` function for a struct.
@@ -1466,7 +1483,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             1 => quote!(
                 typeArg: $(type_params[0].display(self.symbol_pool()).to_string()),
             ),
-            _ => quote!(typeArgs: [$(for idx in 0..type_params.len() join (, ) => 
+            _ => quote!(typeArgs: [$(for idx in 0..type_params.len() join (, ) =>
                     $(&type_params[idx].display(self.symbol_pool()).to_string())
                 )],),
         };
@@ -1864,7 +1881,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                                 );
 
                                 match field.get_type() {
-                                    Type::Struct(mid, sid, _) => {
+                                    Type::Datatype(mid, sid, _) => {
                                         let field_module = self.env.get_module(mid);
                                         let field_strct = field_module.get_struct(sid);
 
