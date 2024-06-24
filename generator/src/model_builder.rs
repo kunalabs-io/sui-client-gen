@@ -534,7 +534,7 @@ impl<'a> fmt::Display for DependencyTOML<'a> {
                 kind,
                 subst,
                 digest,
-                dep_override: _,
+                dep_override,
             },
         ) = self;
 
@@ -572,6 +572,10 @@ impl<'a> fmt::Display for DependencyTOML<'a> {
 
         if let Some(subst) = subst {
             write!(f, ", addr_subst = {}", SubstTOML(subst))?;
+        }
+
+        if *dep_override {
+            write!(f, ", override = true")?;
         }
 
         f.write_str(" }")?;
