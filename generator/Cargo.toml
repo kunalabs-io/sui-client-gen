@@ -4,11 +4,11 @@ version = "0.3.2"
 edition = "2021"
 
 [dependencies]
-tokio = "^1.28.1"
+tokio = "^1.36.0"
 anyhow = "^1.0.71"
-futures = "^0.3.25"
+futures = "^0.3.28"
 tempfile = "^3.5.0"
-toml = "^0.5.8"
+toml = "^0.5.11"
 regex = "^1.8.1"
 genco = "^0.17.8"
 clap = "^4.4"
@@ -16,17 +16,17 @@ codespan-reporting = "^0.11.1"
 convert_case = "^0.6.0"
 colored = "^2.0.0"
 
-sui-move-build = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.27.0" }
-sui-move = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.27.0", features = [
+sui-move-build = { git = "https://github.com/MystenLabs/sui", tag = "devnet-v1.28.1" }
+sui-move = { git = "https://github.com/MystenLabs/sui", tag = "devnet-v1.28.1", features = [
     "build",
 ] }
-sui-sdk = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.27.0" }
-sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.27.0" }
-move-model = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.27.0" }
-move-core-types = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.27.0" }
-move-binary-format = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.27.0" }
-move-symbol-pool = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.27.0" }
-move-bytecode-utils = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.27.0" }
-move-compiler = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.27.0" }
-move-package = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.27.0" }
-move-command-line-common = { git = "https://github.com/MystenLabs/sui", tag = "testnet-v1.27.0" }
+sui-sdk = { git = "https://github.com/MystenLabs/sui", tag = "devnet-v1.28.1" }
+sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui", tag = "devnet-v1.28.1" }
+move-model = { git = "https://github.com/MystenLabs/sui", tag = "devnet-v1.28.1" }
+move-core-types = { git = "https://github.com/MystenLabs/sui", tag = "devnet-v1.28.1" }
+move-binary-format = { git = "https://github.com/MystenLabs/sui", tag = "devnet-v1.28.1" }
+move-symbol-pool = { git = "https://github.com/MystenLabs/sui", tag = "devnet-v1.28.1" }
+move-bytecode-utils = { git = "https://github.com/MystenLabs/sui", tag = "devnet-v1.28.1" }
+move-compiler = { git = "https://github.com/MystenLabs/sui", tag = "devnet-v1.28.1" }
+move-package = { git = "https://github.com/MystenLabs/sui", tag = "devnet-v1.28.1" }
+move-command-line-common = { git = "https://github.com/MystenLabs/sui", tag = "devnet-v1.28.1" }
