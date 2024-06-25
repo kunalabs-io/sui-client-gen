@@ -6,7 +6,7 @@ use genco::prelude::*;
 use genco::tokens::{Item, ItemStr};
 use move_binary_format::normalized::Type as MType;
 use move_core_types::account_address::AccountAddress;
-use move_model::model::{FieldEnv, FunctionEnv, GlobalEnv, ModuleEnv, StructEnv};
+use move_model::model::{DatatypeId, FieldEnv, FunctionEnv, GlobalEnv, ModuleEnv, StructEnv};
 use move_model::symbol::{Symbol, SymbolPool};
 use move_model::ty::{PrimitiveType, Type};
 
@@ -130,15 +130,17 @@ impl<'env, 'a> StructClassImportCtx<'env, 'a> {
         is_source: bool,
         top_level_pkg_names: &'a BTreeMap<AccountAddress, move_symbol_pool::Symbol>,
     ) -> Self {
-        let reserved_names = module
-            .get_structs()
-            .map(|strct| {
-                strct
-                    .get_name()
-                    .display(module.env.symbol_pool())
-                    .to_string()
-            })
-            .collect();
+        let struct_names = module.get_structs().map(|strct| {
+            strct
+                .get_name()
+                .display(module.env.symbol_pool())
+                .to_string()
+        });
+        let enum_names = module
+            .get_enums()
+            .map(|enm| enm.get_name().display(module.env.symbol_pool()).to_string());
+
+        let reserved_names = struct_names.chain(enum_names).collect();
         StructClassImportCtx::new(reserved_names, module, is_source, top_level_pkg_names)
     }
 
@@ -385,6 +387,12 @@ enum QuoteItem {
     Literal(String),
 }
 
+fn todo_panic_if_enum(module: &ModuleEnv, id: &DatatypeId) {
+    if module.find_enum(id.symbol()).is_some() {
+        todo!("enums are not supported yet")
+    }
+}
+
 fn gen_bcs_def_for_type(
     ty: &Type,
     env: &GlobalEnv,
@@ -411,7 +419,10 @@ fn gen_bcs_def_for_type(
                 QuoteItem::Literal(s) => toks.append(Item::Literal(ItemStr::from(s))),
             },
             Type::Datatype(mid, sid, ts) => {
-                let struct_env = env.get_module(*mid).into_struct(*sid);
+                let module_env = env.get_module(*mid);
+                todo_panic_if_enum(&module_env, sid);
+
+                let struct_env = module_env.into_struct(*sid);
 
                 quote_in! { *toks => $(get_full_name_with_address(&struct_env, type_origin_table)) };
 
@@ -493,6 +504,8 @@ impl<'env> FunctionsGen<'env> {
             }
             Type::Datatype(mid, sid, _) => {
                 let module = self.env.get_module(*mid);
+                todo_panic_if_enum(&module, sid);
+
                 module
                     .get_struct(*sid)
                     .get_identifier()
@@ -538,20 +551,26 @@ impl<'env> FunctionsGen<'env> {
 
     fn is_tx_context(&self, ty: &Type) -> bool {
         match ty {
-            Type::Datatype(mid, sid, ts) => match self.env.get_struct_type(*mid, *sid, ts).unwrap()
-            {
-                MType::Struct {
-                    address,
-                    module,
-                    name,
-                    type_arguments: _,
-                } => {
-                    address == AccountAddress::TWO
-                        && module.into_string() == "tx_context"
-                        && name.into_string() == "TxContext"
+            Type::Datatype(mid, sid, ts) => {
+                let module_env = self.env.get_module(*mid);
+                if module_env.find_enum(sid.symbol()).is_some() {
+                    return false;
                 }
-                _ => panic!(),
-            },
+
+                match self.env.get_struct_type(*mid, *sid, ts).unwrap() {
+                    MType::Struct {
+                        address,
+                        module,
+                        name,
+                        type_arguments: _,
+                    } => {
+                        address == AccountAddress::TWO
+                            && module.into_string() == "tx_context"
+                            && name.into_string() == "TxContext"
+                    }
+                    _ => panic!(),
+                }
+            }
             Type::Reference(_, ty) => self.is_tx_context(ty),
             _ => false,
         }
@@ -680,6 +699,8 @@ impl<'env> FunctionsGen<'env> {
             }
             Type::Datatype(mid, sid, ts) => {
                 let module = self.env.get_module(*mid);
+                todo_panic_if_enum(&module, sid);
+
                 let strct = module.get_struct(*sid);
 
                 match self.get_full_name_with_address(&strct).as_ref() {
@@ -728,6 +749,8 @@ impl<'env> FunctionsGen<'env> {
             Type::Vector(ty) => self.is_pure(ty),
             Type::Datatype(mid, sid, ts) => {
                 let module = self.env.get_module(*mid);
+                todo_panic_if_enum(&module, sid);
+
                 let strct = module.get_struct(*sid);
 
                 match self.get_full_name_with_address(&strct).as_ref() {
@@ -746,6 +769,8 @@ impl<'env> FunctionsGen<'env> {
         match ty {
             Type::Datatype(mid, sid, ts) => {
                 let module = self.env.get_module(*mid);
+                todo_panic_if_enum(&module, sid);
+
                 let strct = module.get_struct(*sid);
 
                 match self.get_full_name_with_address(&strct).as_ref() {
@@ -1010,8 +1035,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             }
             Type::Datatype(mid, sid, ts) => {
                 let field_module = self.env.get_module(*mid);
-                let field_strct = field_module.get_struct(*sid);
+                todo_panic_if_enum(&field_module, sid);
 
+                let field_strct = field_module.get_struct(*sid);
                 let class = self.import_ctx.get_class(&field_strct);
 
                 let type_param_inner_toks = (0..ts.len()).map(|idx| {
@@ -1134,6 +1160,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             }
             Type::Datatype(mid, sid, ts) => {
                 let field_module = self.env.get_module(*mid);
+                todo_panic_if_enum(&field_module, sid);
                 let field_strct = field_module.get_struct(*sid);
 
                 let class = self.import_ctx.get_class(&field_strct);
@@ -1178,6 +1205,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             }
             Type::Datatype(mid, sid, ts) => {
                 let field_module = self.env.get_module(*mid);
+                todo_panic_if_enum(&field_module, sid);
                 let field_strct = field_module.get_struct(*sid);
 
                 let class = self.import_ctx.get_class(&field_strct);
@@ -1233,7 +1261,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     $decode_from_fields($(reified), $(field_arg_name))
                 )
             }
-            move_model::model::EnclosingEnv::Variant(_) => todo!(),
+            move_model::model::EnclosingEnv::Variant(_) => todo!("enums not supported yet"),
         }
     }
 
@@ -1262,7 +1290,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     $decode_from_fields_with_types_generic_or_special($(reified), $(field_arg_name))
                 )
             }
-            move_model::model::EnclosingEnv::Variant(_) => todo!(),
+            move_model::model::EnclosingEnv::Variant(_) => todo!("enums not supported yet"),
         }
     }
 
@@ -1883,6 +1911,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                                 match field.get_type() {
                                     Type::Datatype(mid, sid, _) => {
                                         let field_module = self.env.get_module(mid);
+                                        todo_panic_if_enum(&field_module, &sid);
                                         let field_strct = field_module.get_struct(sid);
 
                                         // handle special types
