@@ -1,91 +1,94 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, generic, obj, option, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { GenericArg, generic, obj, option, pure } from '../../_framework/util'
+import { String as String1 } from '../../move-stdlib/ascii/structs'
+import { String } from '../../move-stdlib/string/structs'
+import { Url } from '../url/structs'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function value(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function value(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::value`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
-export function balance(txb: TransactionBlock, typeArg: string, coin: ObjectArg) {
-  return txb.moveCall({
+export function balance(tx: Transaction, typeArg: string, coin: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::balance`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, coin)],
+    arguments: [obj(tx, coin)],
   })
 }
 
-export function destroyZero(txb: TransactionBlock, typeArg: string, c: ObjectArg) {
-  return txb.moveCall({
+export function destroyZero(tx: Transaction, typeArg: string, c: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::destroy_zero`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, c)],
+    arguments: [obj(tx, c)],
   })
 }
 
 export interface JoinArgs {
-  self: ObjectArg
-  c: ObjectArg
+  self: TransactionObjectInput
+  c: TransactionObjectInput
 }
 
-export function join(txb: TransactionBlock, typeArg: string, args: JoinArgs) {
-  return txb.moveCall({
+export function join(tx: Transaction, typeArg: string, args: JoinArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::join`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.self), obj(txb, args.c)],
+    arguments: [obj(tx, args.self), obj(tx, args.c)],
   })
 }
 
 export interface SplitArgs {
-  self: ObjectArg
+  self: TransactionObjectInput
   splitAmount: bigint | TransactionArgument
 }
 
-export function split(txb: TransactionBlock, typeArg: string, args: SplitArgs) {
-  return txb.moveCall({
+export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::split`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.self), pure(txb, args.splitAmount, `u64`)],
+    arguments: [obj(tx, args.self), pure(tx, args.splitAmount, `u64`)],
   })
 }
 
-export function supply(txb: TransactionBlock, typeArg: string, treasury: ObjectArg) {
-  return txb.moveCall({
+export function supply(tx: Transaction, typeArg: string, treasury: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::supply`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, treasury)],
+    arguments: [obj(tx, treasury)],
   })
 }
 
-export function zero(txb: TransactionBlock, typeArg: string) {
-  return txb.moveCall({
+export function zero(tx: Transaction, typeArg: string) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::zero`,
     typeArguments: [typeArg],
     arguments: [],
   })
 }
 
-export function balanceMut(txb: TransactionBlock, typeArg: string, coin: ObjectArg) {
-  return txb.moveCall({
+export function balanceMut(tx: Transaction, typeArg: string, coin: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::balance_mut`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, coin)],
+    arguments: [obj(tx, coin)],
   })
 }
 
 export interface BurnArgs {
-  cap: ObjectArg
-  c: ObjectArg
+  cap: TransactionObjectInput
+  c: TransactionObjectInput
 }
 
-export function burn(txb: TransactionBlock, typeArg: string, args: BurnArgs) {
-  return txb.moveCall({
+export function burn(tx: Transaction, typeArg: string, args: BurnArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::burn`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.cap), obj(txb, args.c)],
+    arguments: [obj(tx, args.cap), obj(tx, args.c)],
   })
 }
 
@@ -95,20 +98,20 @@ export interface CreateCurrencyArgs {
   symbol: Array<number | TransactionArgument> | TransactionArgument
   name: Array<number | TransactionArgument> | TransactionArgument
   description: Array<number | TransactionArgument> | TransactionArgument
-  iconUrl: ObjectArg | TransactionArgument | null
+  iconUrl: TransactionObjectInput | TransactionArgument | null
 }
 
-export function createCurrency(txb: TransactionBlock, typeArg: string, args: CreateCurrencyArgs) {
-  return txb.moveCall({
+export function createCurrency(tx: Transaction, typeArg: string, args: CreateCurrencyArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::create_currency`,
     typeArguments: [typeArg],
     arguments: [
-      generic(txb, `${typeArg}`, args.witness),
-      pure(txb, args.decimals, `u8`),
-      pure(txb, args.symbol, `vector<u8>`),
-      pure(txb, args.name, `vector<u8>`),
-      pure(txb, args.description, `vector<u8>`),
-      option(txb, `0x2::url::Url`, args.iconUrl),
+      generic(tx, `${typeArg}`, args.witness),
+      pure(tx, args.decimals, `u8`),
+      pure(tx, args.symbol, `vector<u8>`),
+      pure(tx, args.name, `vector<u8>`),
+      pure(tx, args.description, `vector<u8>`),
+      option(tx, `${Url.$typeName}`, args.iconUrl),
     ],
   })
 }
@@ -119,316 +122,308 @@ export interface CreateRegulatedCurrencyArgs {
   symbol: Array<number | TransactionArgument> | TransactionArgument
   name: Array<number | TransactionArgument> | TransactionArgument
   description: Array<number | TransactionArgument> | TransactionArgument
-  iconUrl: ObjectArg | TransactionArgument | null
+  iconUrl: TransactionObjectInput | TransactionArgument | null
 }
 
 export function createRegulatedCurrency(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   args: CreateRegulatedCurrencyArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::create_regulated_currency`,
     typeArguments: [typeArg],
     arguments: [
-      generic(txb, `${typeArg}`, args.witness),
-      pure(txb, args.decimals, `u8`),
-      pure(txb, args.symbol, `vector<u8>`),
-      pure(txb, args.name, `vector<u8>`),
-      pure(txb, args.description, `vector<u8>`),
-      option(txb, `0x2::url::Url`, args.iconUrl),
+      generic(tx, `${typeArg}`, args.witness),
+      pure(tx, args.decimals, `u8`),
+      pure(tx, args.symbol, `vector<u8>`),
+      pure(tx, args.name, `vector<u8>`),
+      pure(tx, args.description, `vector<u8>`),
+      option(tx, `${Url.$typeName}`, args.iconUrl),
     ],
   })
 }
 
 export interface DenyListAddArgs {
-  denyList: ObjectArg
-  denyCap: ObjectArg
+  denyList: TransactionObjectInput
+  denyCap: TransactionObjectInput
   addr: string | TransactionArgument
 }
 
-export function denyListAdd(txb: TransactionBlock, typeArg: string, args: DenyListAddArgs) {
-  return txb.moveCall({
+export function denyListAdd(tx: Transaction, typeArg: string, args: DenyListAddArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::deny_list_add`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.denyList), obj(txb, args.denyCap), pure(txb, args.addr, `address`)],
+    arguments: [obj(tx, args.denyList), obj(tx, args.denyCap), pure(tx, args.addr, `address`)],
   })
 }
 
 export interface DenyListContainsArgs {
-  freezer: ObjectArg
+  freezer: TransactionObjectInput
   addr: string | TransactionArgument
 }
 
-export function denyListContains(
-  txb: TransactionBlock,
-  typeArg: string,
-  args: DenyListContainsArgs
-) {
-  return txb.moveCall({
+export function denyListContains(tx: Transaction, typeArg: string, args: DenyListContainsArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::deny_list_contains`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.freezer), pure(txb, args.addr, `address`)],
+    arguments: [obj(tx, args.freezer), pure(tx, args.addr, `address`)],
   })
 }
 
 export interface DenyListRemoveArgs {
-  denyList: ObjectArg
-  denyCap: ObjectArg
+  denyList: TransactionObjectInput
+  denyCap: TransactionObjectInput
   addr: string | TransactionArgument
 }
 
-export function denyListRemove(txb: TransactionBlock, typeArg: string, args: DenyListRemoveArgs) {
-  return txb.moveCall({
+export function denyListRemove(tx: Transaction, typeArg: string, args: DenyListRemoveArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::deny_list_remove`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.denyList), obj(txb, args.denyCap), pure(txb, args.addr, `address`)],
+    arguments: [obj(tx, args.denyList), obj(tx, args.denyCap), pure(tx, args.addr, `address`)],
   })
 }
 
 export interface DivideIntoNArgs {
-  self: ObjectArg
+  self: TransactionObjectInput
   n: bigint | TransactionArgument
 }
 
-export function divideIntoN(txb: TransactionBlock, typeArg: string, args: DivideIntoNArgs) {
-  return txb.moveCall({
+export function divideIntoN(tx: Transaction, typeArg: string, args: DivideIntoNArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::divide_into_n`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.self), pure(txb, args.n, `u64`)],
+    arguments: [obj(tx, args.self), pure(tx, args.n, `u64`)],
   })
 }
 
-export function fromBalance(txb: TransactionBlock, typeArg: string, balance: ObjectArg) {
-  return txb.moveCall({
+export function fromBalance(tx: Transaction, typeArg: string, balance: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::from_balance`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, balance)],
+    arguments: [obj(tx, balance)],
   })
 }
 
-export function getDecimals(txb: TransactionBlock, typeArg: string, metadata: ObjectArg) {
-  return txb.moveCall({
+export function getDecimals(tx: Transaction, typeArg: string, metadata: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::get_decimals`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, metadata)],
+    arguments: [obj(tx, metadata)],
   })
 }
 
-export function getDescription(txb: TransactionBlock, typeArg: string, metadata: ObjectArg) {
-  return txb.moveCall({
+export function getDescription(tx: Transaction, typeArg: string, metadata: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::get_description`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, metadata)],
+    arguments: [obj(tx, metadata)],
   })
 }
 
-export function getIconUrl(txb: TransactionBlock, typeArg: string, metadata: ObjectArg) {
-  return txb.moveCall({
+export function getIconUrl(tx: Transaction, typeArg: string, metadata: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::get_icon_url`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, metadata)],
+    arguments: [obj(tx, metadata)],
   })
 }
 
-export function getName(txb: TransactionBlock, typeArg: string, metadata: ObjectArg) {
-  return txb.moveCall({
+export function getName(tx: Transaction, typeArg: string, metadata: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::get_name`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, metadata)],
+    arguments: [obj(tx, metadata)],
   })
 }
 
-export function getSymbol(txb: TransactionBlock, typeArg: string, metadata: ObjectArg) {
-  return txb.moveCall({
+export function getSymbol(tx: Transaction, typeArg: string, metadata: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::get_symbol`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, metadata)],
+    arguments: [obj(tx, metadata)],
   })
 }
 
-export function intoBalance(txb: TransactionBlock, typeArg: string, coin: ObjectArg) {
-  return txb.moveCall({
+export function intoBalance(tx: Transaction, typeArg: string, coin: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::into_balance`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, coin)],
+    arguments: [obj(tx, coin)],
   })
 }
 
 export interface MintArgs {
-  cap: ObjectArg
+  cap: TransactionObjectInput
   value: bigint | TransactionArgument
 }
 
-export function mint(txb: TransactionBlock, typeArg: string, args: MintArgs) {
-  return txb.moveCall({
+export function mint(tx: Transaction, typeArg: string, args: MintArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::mint`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.cap), pure(txb, args.value, `u64`)],
+    arguments: [obj(tx, args.cap), pure(tx, args.value, `u64`)],
   })
 }
 
 export interface MintAndTransferArgs {
-  c: ObjectArg
+  c: TransactionObjectInput
   amount: bigint | TransactionArgument
   recipient: string | TransactionArgument
 }
 
-export function mintAndTransfer(txb: TransactionBlock, typeArg: string, args: MintAndTransferArgs) {
-  return txb.moveCall({
+export function mintAndTransfer(tx: Transaction, typeArg: string, args: MintAndTransferArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::mint_and_transfer`,
     typeArguments: [typeArg],
-    arguments: [
-      obj(txb, args.c),
-      pure(txb, args.amount, `u64`),
-      pure(txb, args.recipient, `address`),
-    ],
+    arguments: [obj(tx, args.c), pure(tx, args.amount, `u64`), pure(tx, args.recipient, `address`)],
   })
 }
 
 export interface MintBalanceArgs {
-  cap: ObjectArg
+  cap: TransactionObjectInput
   value: bigint | TransactionArgument
 }
 
-export function mintBalance(txb: TransactionBlock, typeArg: string, args: MintBalanceArgs) {
-  return txb.moveCall({
+export function mintBalance(tx: Transaction, typeArg: string, args: MintBalanceArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::mint_balance`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.cap), pure(txb, args.value, `u64`)],
+    arguments: [obj(tx, args.cap), pure(tx, args.value, `u64`)],
   })
 }
 
 export interface PutArgs {
-  balance: ObjectArg
-  coin: ObjectArg
+  balance: TransactionObjectInput
+  coin: TransactionObjectInput
 }
 
-export function put(txb: TransactionBlock, typeArg: string, args: PutArgs) {
-  return txb.moveCall({
+export function put(tx: Transaction, typeArg: string, args: PutArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::put`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.balance), obj(txb, args.coin)],
+    arguments: [obj(tx, args.balance), obj(tx, args.coin)],
   })
 }
 
-export function supplyImmut(txb: TransactionBlock, typeArg: string, treasury: ObjectArg) {
-  return txb.moveCall({
+export function supplyImmut(tx: Transaction, typeArg: string, treasury: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::supply_immut`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, treasury)],
+    arguments: [obj(tx, treasury)],
   })
 }
 
-export function supplyMut(txb: TransactionBlock, typeArg: string, treasury: ObjectArg) {
-  return txb.moveCall({
+export function supplyMut(tx: Transaction, typeArg: string, treasury: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::supply_mut`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, treasury)],
+    arguments: [obj(tx, treasury)],
   })
 }
 
 export interface TakeArgs {
-  balance: ObjectArg
+  balance: TransactionObjectInput
   value: bigint | TransactionArgument
 }
 
-export function take(txb: TransactionBlock, typeArg: string, args: TakeArgs) {
-  return txb.moveCall({
+export function take(tx: Transaction, typeArg: string, args: TakeArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::take`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.balance), pure(txb, args.value, `u64`)],
+    arguments: [obj(tx, args.balance), pure(tx, args.value, `u64`)],
   })
 }
 
-export function totalSupply(txb: TransactionBlock, typeArg: string, cap: ObjectArg) {
-  return txb.moveCall({
+export function totalSupply(tx: Transaction, typeArg: string, cap: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::total_supply`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, cap)],
+    arguments: [obj(tx, cap)],
   })
 }
 
-export function treasuryIntoSupply(txb: TransactionBlock, typeArg: string, treasury: ObjectArg) {
-  return txb.moveCall({
+export function treasuryIntoSupply(
+  tx: Transaction,
+  typeArg: string,
+  treasury: TransactionObjectInput
+) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::treasury_into_supply`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, treasury)],
+    arguments: [obj(tx, treasury)],
   })
 }
 
 export interface UpdateDescriptionArgs {
-  treasury: ObjectArg
-  metadata: ObjectArg
+  treasury: TransactionObjectInput
+  metadata: TransactionObjectInput
   description: string | TransactionArgument
 }
 
-export function updateDescription(
-  txb: TransactionBlock,
-  typeArg: string,
-  args: UpdateDescriptionArgs
-) {
-  return txb.moveCall({
+export function updateDescription(tx: Transaction, typeArg: string, args: UpdateDescriptionArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::update_description`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.treasury),
-      obj(txb, args.metadata),
-      pure(txb, args.description, `0x1::string::String`),
+      obj(tx, args.treasury),
+      obj(tx, args.metadata),
+      pure(tx, args.description, `${String.$typeName}`),
     ],
   })
 }
 
 export interface UpdateIconUrlArgs {
-  treasury: ObjectArg
-  metadata: ObjectArg
+  treasury: TransactionObjectInput
+  metadata: TransactionObjectInput
   url: string | TransactionArgument
 }
 
-export function updateIconUrl(txb: TransactionBlock, typeArg: string, args: UpdateIconUrlArgs) {
-  return txb.moveCall({
+export function updateIconUrl(tx: Transaction, typeArg: string, args: UpdateIconUrlArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::update_icon_url`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.treasury),
-      obj(txb, args.metadata),
-      pure(txb, args.url, `0x1::ascii::String`),
+      obj(tx, args.treasury),
+      obj(tx, args.metadata),
+      pure(tx, args.url, `${String1.$typeName}`),
     ],
   })
 }
 
 export interface UpdateNameArgs {
-  treasury: ObjectArg
-  metadata: ObjectArg
+  treasury: TransactionObjectInput
+  metadata: TransactionObjectInput
   name: string | TransactionArgument
 }
 
-export function updateName(txb: TransactionBlock, typeArg: string, args: UpdateNameArgs) {
-  return txb.moveCall({
+export function updateName(tx: Transaction, typeArg: string, args: UpdateNameArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::update_name`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.treasury),
-      obj(txb, args.metadata),
-      pure(txb, args.name, `0x1::string::String`),
+      obj(tx, args.treasury),
+      obj(tx, args.metadata),
+      pure(tx, args.name, `${String.$typeName}`),
     ],
   })
 }
 
 export interface UpdateSymbolArgs {
-  treasury: ObjectArg
-  metadata: ObjectArg
+  treasury: TransactionObjectInput
+  metadata: TransactionObjectInput
   symbol: string | TransactionArgument
 }
 
-export function updateSymbol(txb: TransactionBlock, typeArg: string, args: UpdateSymbolArgs) {
-  return txb.moveCall({
+export function updateSymbol(tx: Transaction, typeArg: string, args: UpdateSymbolArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::update_symbol`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.treasury),
-      obj(txb, args.metadata),
-      pure(txb, args.symbol, `0x1::ascii::String`),
+      obj(tx, args.treasury),
+      obj(tx, args.metadata),
+      pure(tx, args.symbol, `${String1.$typeName}`),
     ],
   })
 }

@@ -1,38 +1,39 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, pure, vector } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { pure, vector } from '../../_framework/util'
+import { String } from '../../move-stdlib-chain/ascii/structs'
+import { Option } from '../../move-stdlib-chain/option/structs'
+import { String as String1 } from '../../move-stdlib-chain/string/structs'
+import { ID } from '../../sui-chain/object/structs'
+import { ExampleStruct } from './structs'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function createExampleStruct(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::examples::create_example_struct`, arguments: [] })
+export function createExampleStruct(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::examples::create_example_struct`, arguments: [] })
 }
 
 export interface SpecialTypesArgs {
   string1: string | TransactionArgument
   string2: string | TransactionArgument
   vecU64: Array<bigint | TransactionArgument> | TransactionArgument
-  vecExampleStruct: Array<ObjectArg> | TransactionArgument
+  vecExampleStruct: Array<TransactionObjectInput> | TransactionArgument
   id: string | TransactionArgument
   address: string | TransactionArgument
   option1: bigint | TransactionArgument | TransactionArgument | null
   option2: bigint | TransactionArgument | TransactionArgument | null
 }
 
-export function specialTypes(txb: TransactionBlock, args: SpecialTypesArgs) {
-  return txb.moveCall({
+export function specialTypes(tx: Transaction, args: SpecialTypesArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::examples::special_types`,
     arguments: [
-      pure(txb, args.string1, `0x1::ascii::String`),
-      pure(txb, args.string2, `0x1::string::String`),
-      pure(txb, args.vecU64, `vector<u64>`),
-      vector(
-        txb,
-        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct`,
-        args.vecExampleStruct
-      ),
-      pure(txb, args.id, `0x2::object::ID`),
-      pure(txb, args.address, `address`),
-      pure(txb, args.option1, `0x1::option::Option<u64>`),
-      pure(txb, args.option2, `0x1::option::Option<u64>`),
+      pure(tx, args.string1, `${String.$typeName}`),
+      pure(tx, args.string2, `${String1.$typeName}`),
+      pure(tx, args.vecU64, `vector<u64>`),
+      vector(tx, `${ExampleStruct.$typeName}`, args.vecExampleStruct),
+      pure(tx, args.id, `${ID.$typeName}`),
+      pure(tx, args.address, `address`),
+      pure(tx, args.option1, `${Option.$typeName}<u64>`),
+      pure(tx, args.option2, `${Option.$typeName}<u64>`),
     ],
   })
 }

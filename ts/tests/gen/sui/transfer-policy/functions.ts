@@ -1,162 +1,144 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { GenericArg, generic, obj, pure } from '../../_framework/util'
+import { Option } from '../../move-stdlib/option/structs'
+import { ID } from '../object/structs'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function default_(txb: TransactionBlock, typeArg: string, pub: ObjectArg) {
-  return txb.moveCall({
+export function default_(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::default`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, pub)],
+    arguments: [obj(tx, pub)],
   })
 }
 
-export function new_(txb: TransactionBlock, typeArg: string, pub: ObjectArg) {
-  return txb.moveCall({
+export function new_(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::new`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, pub)],
+    arguments: [obj(tx, pub)],
   })
 }
 
-export function uid(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function uid(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::uid`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
 export interface AddReceiptArgs {
   rule: GenericArg
-  request: ObjectArg
+  request: TransactionObjectInput
 }
 
-export function addReceipt(
-  txb: TransactionBlock,
-  typeArgs: [string, string],
-  args: AddReceiptArgs
-) {
-  return txb.moveCall({
+export function addReceipt(tx: Transaction, typeArgs: [string, string], args: AddReceiptArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::add_receipt`,
     typeArguments: typeArgs,
-    arguments: [generic(txb, `${typeArgs[1]}`, args.rule), obj(txb, args.request)],
+    arguments: [generic(tx, `${typeArgs[1]}`, args.rule), obj(tx, args.request)],
   })
 }
 
 export interface AddRuleArgs {
   rule: GenericArg
-  policy: ObjectArg
-  cap: ObjectArg
+  policy: TransactionObjectInput
+  cap: TransactionObjectInput
   cfg: GenericArg
 }
 
-export function addRule(
-  txb: TransactionBlock,
-  typeArgs: [string, string, string],
-  args: AddRuleArgs
-) {
-  return txb.moveCall({
+export function addRule(tx: Transaction, typeArgs: [string, string, string], args: AddRuleArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::add_rule`,
     typeArguments: typeArgs,
     arguments: [
-      generic(txb, `${typeArgs[1]}`, args.rule),
-      obj(txb, args.policy),
-      obj(txb, args.cap),
-      generic(txb, `${typeArgs[2]}`, args.cfg),
+      generic(tx, `${typeArgs[1]}`, args.rule),
+      obj(tx, args.policy),
+      obj(tx, args.cap),
+      generic(tx, `${typeArgs[2]}`, args.cfg),
     ],
   })
 }
 
 export interface AddToBalanceArgs {
   rule: GenericArg
-  policy: ObjectArg
-  coin: ObjectArg
+  policy: TransactionObjectInput
+  coin: TransactionObjectInput
 }
 
-export function addToBalance(
-  txb: TransactionBlock,
-  typeArgs: [string, string],
-  args: AddToBalanceArgs
-) {
-  return txb.moveCall({
+export function addToBalance(tx: Transaction, typeArgs: [string, string], args: AddToBalanceArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::add_to_balance`,
     typeArguments: typeArgs,
-    arguments: [
-      generic(txb, `${typeArgs[1]}`, args.rule),
-      obj(txb, args.policy),
-      obj(txb, args.coin),
-    ],
+    arguments: [generic(tx, `${typeArgs[1]}`, args.rule), obj(tx, args.policy), obj(tx, args.coin)],
   })
 }
 
 export interface ConfirmRequestArgs {
-  self: ObjectArg
-  request: ObjectArg
+  self: TransactionObjectInput
+  request: TransactionObjectInput
 }
 
-export function confirmRequest(txb: TransactionBlock, typeArg: string, args: ConfirmRequestArgs) {
-  return txb.moveCall({
+export function confirmRequest(tx: Transaction, typeArg: string, args: ConfirmRequestArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::confirm_request`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.self), obj(txb, args.request)],
+    arguments: [obj(tx, args.self), obj(tx, args.request)],
   })
 }
 
 export interface DestroyAndWithdrawArgs {
-  self: ObjectArg
-  cap: ObjectArg
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
 }
 
-export function destroyAndWithdraw(
-  txb: TransactionBlock,
-  typeArg: string,
-  args: DestroyAndWithdrawArgs
-) {
-  return txb.moveCall({
+export function destroyAndWithdraw(tx: Transaction, typeArg: string, args: DestroyAndWithdrawArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::destroy_and_withdraw`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.self), obj(txb, args.cap)],
+    arguments: [obj(tx, args.self), obj(tx, args.cap)],
   })
 }
 
-export function from(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function from(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::from`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
 export interface GetRuleArgs {
   rule: GenericArg
-  policy: ObjectArg
+  policy: TransactionObjectInput
 }
 
-export function getRule(
-  txb: TransactionBlock,
-  typeArgs: [string, string, string],
-  args: GetRuleArgs
-) {
-  return txb.moveCall({
+export function getRule(tx: Transaction, typeArgs: [string, string, string], args: GetRuleArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::get_rule`,
     typeArguments: typeArgs,
-    arguments: [generic(txb, `${typeArgs[1]}`, args.rule), obj(txb, args.policy)],
+    arguments: [generic(tx, `${typeArgs[1]}`, args.rule), obj(tx, args.policy)],
   })
 }
 
-export function hasRule(txb: TransactionBlock, typeArgs: [string, string], policy: ObjectArg) {
-  return txb.moveCall({
+export function hasRule(
+  tx: Transaction,
+  typeArgs: [string, string],
+  policy: TransactionObjectInput
+) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::has_rule`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, policy)],
+    arguments: [obj(tx, policy)],
   })
 }
 
-export function item(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function item(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::item`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
@@ -166,78 +148,78 @@ export interface NewRequestArgs {
   from: string | TransactionArgument
 }
 
-export function newRequest(txb: TransactionBlock, typeArg: string, args: NewRequestArgs) {
-  return txb.moveCall({
+export function newRequest(tx: Transaction, typeArg: string, args: NewRequestArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::new_request`,
     typeArguments: [typeArg],
     arguments: [
-      pure(txb, args.item, `0x2::object::ID`),
-      pure(txb, args.paid, `u64`),
-      pure(txb, args.from, `0x2::object::ID`),
+      pure(tx, args.item, `${ID.$typeName}`),
+      pure(tx, args.paid, `u64`),
+      pure(tx, args.from, `${ID.$typeName}`),
     ],
   })
 }
 
-export function paid(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function paid(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::paid`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
 export interface RemoveRuleArgs {
-  policy: ObjectArg
-  cap: ObjectArg
+  policy: TransactionObjectInput
+  cap: TransactionObjectInput
 }
 
 export function removeRule(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string, string],
   args: RemoveRuleArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::remove_rule`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.policy), obj(txb, args.cap)],
+    arguments: [obj(tx, args.policy), obj(tx, args.cap)],
   })
 }
 
-export function rules(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function rules(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::rules`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
 export interface UidMutAsOwnerArgs {
-  self: ObjectArg
-  cap: ObjectArg
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
 }
 
-export function uidMutAsOwner(txb: TransactionBlock, typeArg: string, args: UidMutAsOwnerArgs) {
-  return txb.moveCall({
+export function uidMutAsOwner(tx: Transaction, typeArg: string, args: UidMutAsOwnerArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::uid_mut_as_owner`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.self), obj(txb, args.cap)],
+    arguments: [obj(tx, args.self), obj(tx, args.cap)],
   })
 }
 
 export interface WithdrawArgs {
-  self: ObjectArg
-  cap: ObjectArg
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
   amount: bigint | TransactionArgument | TransactionArgument | null
 }
 
-export function withdraw(txb: TransactionBlock, typeArg: string, args: WithdrawArgs) {
-  return txb.moveCall({
+export function withdraw(tx: Transaction, typeArg: string, args: WithdrawArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::withdraw`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.self),
-      obj(txb, args.cap),
-      pure(txb, args.amount, `0x1::option::Option<u64>`),
+      obj(tx, args.self),
+      obj(tx, args.cap),
+      pure(tx, args.amount, `${Option.$typeName}<u64>`),
     ],
   })
 }

@@ -1,285 +1,281 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { obj, pure } from '../../_framework/util'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export interface AdminWithdrawFeesAndTransferToSenderArgs {
-  pool: ObjectArg
-  adminCap: ObjectArg
+  pool: TransactionObjectInput
+  adminCap: TransactionObjectInput
   amount: bigint | TransactionArgument
 }
 
 export function adminWithdrawFeesAndTransferToSender(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: AdminWithdrawFeesAndTransferToSenderArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::util::admin_withdraw_fees_and_transfer_to_sender`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.pool), obj(txb, args.adminCap), pure(txb, args.amount, `u64`)],
+    arguments: [obj(tx, args.pool), obj(tx, args.adminCap), pure(tx, args.amount, `u64`)],
   })
 }
 
 export interface AdminWithdrawFeesCoinArgs {
-  pool: ObjectArg
-  adminCap: ObjectArg
+  pool: TransactionObjectInput
+  adminCap: TransactionObjectInput
   amount: bigint | TransactionArgument
 }
 
 export function adminWithdrawFeesCoin(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: AdminWithdrawFeesCoinArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::util::admin_withdraw_fees_coin`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.pool), obj(txb, args.adminCap), pure(txb, args.amount, `u64`)],
+    arguments: [obj(tx, args.pool), obj(tx, args.adminCap), pure(tx, args.amount, `u64`)],
   })
 }
 
 export interface CreatePoolAndTransferLpToSenderArgs {
-  registry: ObjectArg
-  initA: ObjectArg
-  initB: ObjectArg
+  registry: TransactionObjectInput
+  initA: TransactionObjectInput
+  initB: TransactionObjectInput
   lpFeeBps: bigint | TransactionArgument
   adminFeePct: bigint | TransactionArgument
 }
 
 export function createPoolAndTransferLpToSender(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: CreatePoolAndTransferLpToSenderArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::util::create_pool_and_transfer_lp_to_sender`,
     typeArguments: typeArgs,
     arguments: [
-      obj(txb, args.registry),
-      obj(txb, args.initA),
-      obj(txb, args.initB),
-      pure(txb, args.lpFeeBps, `u64`),
-      pure(txb, args.adminFeePct, `u64`),
+      obj(tx, args.registry),
+      obj(tx, args.initA),
+      obj(tx, args.initB),
+      pure(tx, args.lpFeeBps, `u64`),
+      pure(tx, args.adminFeePct, `u64`),
     ],
   })
 }
 
 export interface CreatePoolWithCoinsArgs {
-  registry: ObjectArg
-  initA: ObjectArg
-  initB: ObjectArg
+  registry: TransactionObjectInput
+  initA: TransactionObjectInput
+  initB: TransactionObjectInput
   lpFeeBps: bigint | TransactionArgument
   adminFeePct: bigint | TransactionArgument
 }
 
 export function createPoolWithCoins(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: CreatePoolWithCoinsArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::util::create_pool_with_coins`,
     typeArguments: typeArgs,
     arguments: [
-      obj(txb, args.registry),
-      obj(txb, args.initA),
-      obj(txb, args.initB),
-      pure(txb, args.lpFeeBps, `u64`),
-      pure(txb, args.adminFeePct, `u64`),
+      obj(tx, args.registry),
+      obj(tx, args.initA),
+      obj(tx, args.initB),
+      pure(tx, args.lpFeeBps, `u64`),
+      pure(tx, args.adminFeePct, `u64`),
     ],
   })
 }
 
 export interface DepositAndTransferToSenderArgs {
-  pool: ObjectArg
-  inputA: ObjectArg
-  inputB: ObjectArg
+  pool: TransactionObjectInput
+  inputA: TransactionObjectInput
+  inputB: TransactionObjectInput
   minLpOut: bigint | TransactionArgument
 }
 
 export function depositAndTransferToSender(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: DepositAndTransferToSenderArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::util::deposit_and_transfer_to_sender`,
     typeArguments: typeArgs,
     arguments: [
-      obj(txb, args.pool),
-      obj(txb, args.inputA),
-      obj(txb, args.inputB),
-      pure(txb, args.minLpOut, `u64`),
+      obj(tx, args.pool),
+      obj(tx, args.inputA),
+      obj(tx, args.inputB),
+      pure(tx, args.minLpOut, `u64`),
     ],
   })
 }
 
 export interface DepositCoinsArgs {
-  pool: ObjectArg
-  inputA: ObjectArg
-  inputB: ObjectArg
+  pool: TransactionObjectInput
+  inputA: TransactionObjectInput
+  inputB: TransactionObjectInput
   minLpOut: bigint | TransactionArgument
 }
 
-export function depositCoins(
-  txb: TransactionBlock,
-  typeArgs: [string, string],
-  args: DepositCoinsArgs
-) {
-  return txb.moveCall({
+export function depositCoins(tx: Transaction, typeArgs: [string, string], args: DepositCoinsArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::util::deposit_coins`,
     typeArguments: typeArgs,
     arguments: [
-      obj(txb, args.pool),
-      obj(txb, args.inputA),
-      obj(txb, args.inputB),
-      pure(txb, args.minLpOut, `u64`),
+      obj(tx, args.pool),
+      obj(tx, args.inputA),
+      obj(tx, args.inputB),
+      pure(tx, args.minLpOut, `u64`),
     ],
   })
 }
 
 export interface DestroyOrTransferBalanceArgs {
-  balance: ObjectArg
+  balance: TransactionObjectInput
   recipient: string | TransactionArgument
 }
 
 export function destroyOrTransferBalance(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   args: DestroyOrTransferBalanceArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::util::destroy_or_transfer_balance`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.balance), pure(txb, args.recipient, `address`)],
+    arguments: [obj(tx, args.balance), pure(tx, args.recipient, `address`)],
   })
 }
 
 export interface DestroyOrTransferCoinArgs {
-  coin: ObjectArg
+  coin: TransactionObjectInput
   recipient: string | TransactionArgument
 }
 
 export function destroyOrTransferCoin(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   args: DestroyOrTransferCoinArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::util::destroy_or_transfer_coin`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.coin), pure(txb, args.recipient, `address`)],
+    arguments: [obj(tx, args.coin), pure(tx, args.recipient, `address`)],
   })
 }
 
 export interface SwapAAndTransferToSenderArgs {
-  pool: ObjectArg
-  input: ObjectArg
+  pool: TransactionObjectInput
+  input: TransactionObjectInput
   minOut: bigint | TransactionArgument
 }
 
 export function swapAAndTransferToSender(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: SwapAAndTransferToSenderArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::util::swap_a_and_transfer_to_sender`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.pool), obj(txb, args.input), pure(txb, args.minOut, `u64`)],
+    arguments: [obj(tx, args.pool), obj(tx, args.input), pure(tx, args.minOut, `u64`)],
   })
 }
 
 export interface SwapACoinArgs {
-  pool: ObjectArg
-  input: ObjectArg
+  pool: TransactionObjectInput
+  input: TransactionObjectInput
   minOut: bigint | TransactionArgument
 }
 
-export function swapACoin(txb: TransactionBlock, typeArgs: [string, string], args: SwapACoinArgs) {
-  return txb.moveCall({
+export function swapACoin(tx: Transaction, typeArgs: [string, string], args: SwapACoinArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::util::swap_a_coin`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.pool), obj(txb, args.input), pure(txb, args.minOut, `u64`)],
+    arguments: [obj(tx, args.pool), obj(tx, args.input), pure(tx, args.minOut, `u64`)],
   })
 }
 
 export interface SwapBAndTransferToSenderArgs {
-  pool: ObjectArg
-  input: ObjectArg
+  pool: TransactionObjectInput
+  input: TransactionObjectInput
   minOut: bigint | TransactionArgument
 }
 
 export function swapBAndTransferToSender(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: SwapBAndTransferToSenderArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::util::swap_b_and_transfer_to_sender`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.pool), obj(txb, args.input), pure(txb, args.minOut, `u64`)],
+    arguments: [obj(tx, args.pool), obj(tx, args.input), pure(tx, args.minOut, `u64`)],
   })
 }
 
 export interface SwapBCoinArgs {
-  pool: ObjectArg
-  input: ObjectArg
+  pool: TransactionObjectInput
+  input: TransactionObjectInput
   minOut: bigint | TransactionArgument
 }
 
-export function swapBCoin(txb: TransactionBlock, typeArgs: [string, string], args: SwapBCoinArgs) {
-  return txb.moveCall({
+export function swapBCoin(tx: Transaction, typeArgs: [string, string], args: SwapBCoinArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::util::swap_b_coin`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.pool), obj(txb, args.input), pure(txb, args.minOut, `u64`)],
+    arguments: [obj(tx, args.pool), obj(tx, args.input), pure(tx, args.minOut, `u64`)],
   })
 }
 
 export interface WithdrawAndTransferToSenderArgs {
-  pool: ObjectArg
-  lpIn: ObjectArg
+  pool: TransactionObjectInput
+  lpIn: TransactionObjectInput
   minAOut: bigint | TransactionArgument
   minBOut: bigint | TransactionArgument
 }
 
 export function withdrawAndTransferToSender(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: WithdrawAndTransferToSenderArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::util::withdraw_and_transfer_to_sender`,
     typeArguments: typeArgs,
     arguments: [
-      obj(txb, args.pool),
-      obj(txb, args.lpIn),
-      pure(txb, args.minAOut, `u64`),
-      pure(txb, args.minBOut, `u64`),
+      obj(tx, args.pool),
+      obj(tx, args.lpIn),
+      pure(tx, args.minAOut, `u64`),
+      pure(tx, args.minBOut, `u64`),
     ],
   })
 }
 
 export interface WithdrawCoinsArgs {
-  pool: ObjectArg
-  lpIn: ObjectArg
+  pool: TransactionObjectInput
+  lpIn: TransactionObjectInput
   minAOut: bigint | TransactionArgument
   minBOut: bigint | TransactionArgument
 }
 
 export function withdrawCoins(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: WithdrawCoinsArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::util::withdraw_coins`,
     typeArguments: typeArgs,
     arguments: [
-      obj(txb, args.pool),
-      obj(txb, args.lpIn),
-      pure(txb, args.minAOut, `u64`),
-      pure(txb, args.minBOut, `u64`),
+      obj(tx, args.pool),
+      obj(tx, args.lpIn),
+      pure(tx, args.minAOut, `u64`),
+      pure(tx, args.minBOut, `u64`),
     ],
   })
 }

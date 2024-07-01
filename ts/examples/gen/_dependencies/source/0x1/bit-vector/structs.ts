@@ -13,14 +13,15 @@ import {
   phantom,
 } from '../../../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
+import { PKG_V6 } from '../index'
 import { bcs, fromB64 } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== BitVector =============================== */
 
 export function isBitVector(type: string): boolean {
   type = compressSuiType(type)
-  return type === '0x1::bit_vector::BitVector'
+  return type === `${PKG_V6}::bit_vector::BitVector`
 }
 
 export interface BitVectorFields {
@@ -31,12 +32,12 @@ export interface BitVectorFields {
 export type BitVectorReified = Reified<BitVector, BitVectorFields>
 
 export class BitVector implements StructClass {
-  static readonly $typeName = '0x1::bit_vector::BitVector'
+  static readonly $typeName = `${PKG_V6}::bit_vector::BitVector`
   static readonly $numTypeParams = 0
 
   readonly $typeName = BitVector.$typeName
 
-  readonly $fullTypeName: '0x1::bit_vector::BitVector'
+  readonly $fullTypeName: `${typeof PKG_V6}::bit_vector::BitVector`
 
   readonly $typeArgs: []
 
@@ -47,7 +48,7 @@ export class BitVector implements StructClass {
     this.$fullTypeName = composeSuiType(
       BitVector.$typeName,
       ...typeArgs
-    ) as '0x1::bit_vector::BitVector'
+    ) as `${typeof PKG_V6}::bit_vector::BitVector`
     this.$typeArgs = typeArgs
 
     this.length = fields.length
@@ -57,7 +58,10 @@ export class BitVector implements StructClass {
   static reified(): BitVectorReified {
     return {
       typeName: BitVector.$typeName,
-      fullTypeName: composeSuiType(BitVector.$typeName, ...[]) as '0x1::bit_vector::BitVector',
+      fullTypeName: composeSuiType(
+        BitVector.$typeName,
+        ...[]
+      ) as `${typeof PKG_V6}::bit_vector::BitVector`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => BitVector.fromFields(fields),

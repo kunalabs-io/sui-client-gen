@@ -1,34 +1,35 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, generic, obj, pure, vector } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { GenericArg, generic, obj, pure, vector } from '../../_framework/util'
+import { Entry } from './structs'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export interface InsertArgs {
-  pq: ObjectArg
+  pq: TransactionObjectInput
   priority: bigint | TransactionArgument
   value: GenericArg
 }
 
-export function insert(txb: TransactionBlock, typeArg: string, args: InsertArgs) {
-  return txb.moveCall({
+export function insert(tx: Transaction, typeArg: string, args: InsertArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::priority_queue::insert`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.pq),
-      pure(txb, args.priority, `u64`),
-      generic(txb, `${typeArg}`, args.value),
+      obj(tx, args.pq),
+      pure(tx, args.priority, `u64`),
+      generic(tx, `${typeArg}`, args.value),
     ],
   })
 }
 
 export function new_(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
-  entries: Array<ObjectArg> | TransactionArgument
+  entries: Array<TransactionObjectInput> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::priority_queue::new`,
     typeArguments: [typeArg],
-    arguments: [vector(txb, `0x2::priority_queue::Entry<${typeArg}>`, entries)],
+    arguments: [vector(tx, `${Entry.$typeName}<${typeArg}>`, entries)],
   })
 }
 
@@ -37,32 +38,32 @@ export interface CreateEntriesArgs {
   v: Array<GenericArg> | TransactionArgument
 }
 
-export function createEntries(txb: TransactionBlock, typeArg: string, args: CreateEntriesArgs) {
-  return txb.moveCall({
+export function createEntries(tx: Transaction, typeArg: string, args: CreateEntriesArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::priority_queue::create_entries`,
     typeArguments: [typeArg],
-    arguments: [pure(txb, args.p, `vector<u64>`), vector(txb, `${typeArg}`, args.v)],
+    arguments: [pure(tx, args.p, `vector<u64>`), vector(tx, `${typeArg}`, args.v)],
   })
 }
 
 export interface MaxHeapifyRecursiveArgs {
-  v: Array<ObjectArg> | TransactionArgument
+  v: Array<TransactionObjectInput> | TransactionArgument
   len: bigint | TransactionArgument
   i: bigint | TransactionArgument
 }
 
 export function maxHeapifyRecursive(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   args: MaxHeapifyRecursiveArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::priority_queue::max_heapify_recursive`,
     typeArguments: [typeArg],
     arguments: [
-      vector(txb, `0x2::priority_queue::Entry<${typeArg}>`, args.v),
-      pure(txb, args.len, `u64`),
-      pure(txb, args.i, `u64`),
+      vector(tx, `${Entry.$typeName}<${typeArg}>`, args.v),
+      pure(tx, args.len, `u64`),
+      pure(tx, args.i, `u64`),
     ],
   })
 }
@@ -72,46 +73,43 @@ export interface NewEntryArgs {
   value: GenericArg
 }
 
-export function newEntry(txb: TransactionBlock, typeArg: string, args: NewEntryArgs) {
-  return txb.moveCall({
+export function newEntry(tx: Transaction, typeArg: string, args: NewEntryArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::priority_queue::new_entry`,
     typeArguments: [typeArg],
-    arguments: [pure(txb, args.priority, `u64`), generic(txb, `${typeArg}`, args.value)],
+    arguments: [pure(tx, args.priority, `u64`), generic(tx, `${typeArg}`, args.value)],
   })
 }
 
-export function popMax(txb: TransactionBlock, typeArg: string, pq: ObjectArg) {
-  return txb.moveCall({
+export function popMax(tx: Transaction, typeArg: string, pq: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::priority_queue::pop_max`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, pq)],
+    arguments: [obj(tx, pq)],
   })
 }
 
-export function priorities(txb: TransactionBlock, typeArg: string, pq: ObjectArg) {
-  return txb.moveCall({
+export function priorities(tx: Transaction, typeArg: string, pq: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::priority_queue::priorities`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, pq)],
+    arguments: [obj(tx, pq)],
   })
 }
 
 export interface RestoreHeapRecursiveArgs {
-  v: Array<ObjectArg> | TransactionArgument
+  v: Array<TransactionObjectInput> | TransactionArgument
   i: bigint | TransactionArgument
 }
 
 export function restoreHeapRecursive(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   args: RestoreHeapRecursiveArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::priority_queue::restore_heap_recursive`,
     typeArguments: [typeArg],
-    arguments: [
-      vector(txb, `0x2::priority_queue::Entry<${typeArg}>`, args.v),
-      pure(txb, args.i, `u64`),
-    ],
+    arguments: [vector(tx, `${Entry.$typeName}<${typeArg}>`, args.v), pure(tx, args.i, `u64`)],
   })
 }

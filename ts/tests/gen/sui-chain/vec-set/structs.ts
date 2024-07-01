@@ -19,14 +19,15 @@ import {
   toBcs,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { PKG_V19 } from '../index'
 import { BcsType, bcs, fromB64 } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== VecSet =============================== */
 
 export function isVecSet(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith('0x2::vec_set::VecSet<')
+  return type.startsWith(`${PKG_V19}::vec_set::VecSet` + '<')
 }
 
 export interface VecSetFields<T0 extends TypeArgument> {
@@ -36,12 +37,12 @@ export interface VecSetFields<T0 extends TypeArgument> {
 export type VecSetReified<T0 extends TypeArgument> = Reified<VecSet<T0>, VecSetFields<T0>>
 
 export class VecSet<T0 extends TypeArgument> implements StructClass {
-  static readonly $typeName = '0x2::vec_set::VecSet'
+  static readonly $typeName = `${PKG_V19}::vec_set::VecSet`
   static readonly $numTypeParams = 1
 
   readonly $typeName = VecSet.$typeName
 
-  readonly $fullTypeName: `0x2::vec_set::VecSet<${ToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V19}::vec_set::VecSet<${ToTypeStr<T0>}>`
 
   readonly $typeArgs: [ToTypeStr<T0>]
 
@@ -51,7 +52,7 @@ export class VecSet<T0 extends TypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       VecSet.$typeName,
       ...typeArgs
-    ) as `0x2::vec_set::VecSet<${ToTypeStr<T0>}>`
+    ) as `${typeof PKG_V19}::vec_set::VecSet<${ToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.contents = fields.contents
@@ -63,7 +64,7 @@ export class VecSet<T0 extends TypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         VecSet.$typeName,
         ...[extractType(T0)]
-      ) as `0x2::vec_set::VecSet<${ToTypeStr<ToTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V19}::vec_set::VecSet<${ToTypeStr<ToTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [ToTypeStr<ToTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => VecSet.fromFields(T0, fields),

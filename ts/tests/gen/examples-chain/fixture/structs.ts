@@ -30,17 +30,16 @@ import { Balance } from '../../sui-chain/balance/structs'
 import { ID, UID } from '../../sui-chain/object/structs'
 import { SUI } from '../../sui-chain/sui/structs'
 import { Url } from '../../sui-chain/url/structs'
+import { PKG_V1 } from '../index'
 import { StructFromOtherModule } from '../other-module/structs'
 import { BcsType, bcs, fromB64 } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== Dummy =============================== */
 
 export function isDummy(type: string): boolean {
   type = compressSuiType(type)
-  return (
-    type === '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
-  )
+  return type === `${PKG_V1}::fixture::Dummy`
 }
 
 export interface DummyFields {
@@ -50,13 +49,12 @@ export interface DummyFields {
 export type DummyReified = Reified<Dummy, DummyFields>
 
 export class Dummy implements StructClass {
-  static readonly $typeName =
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
+  static readonly $typeName = `${PKG_V1}::fixture::Dummy`
   static readonly $numTypeParams = 0
 
   readonly $typeName = Dummy.$typeName
 
-  readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
+  readonly $fullTypeName: `${typeof PKG_V1}::fixture::Dummy`
 
   readonly $typeArgs: []
 
@@ -66,7 +64,7 @@ export class Dummy implements StructClass {
     this.$fullTypeName = composeSuiType(
       Dummy.$typeName,
       ...typeArgs
-    ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy'
+    ) as `${typeof PKG_V1}::fixture::Dummy`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -75,10 +73,7 @@ export class Dummy implements StructClass {
   static reified(): DummyReified {
     return {
       typeName: Dummy.$typeName,
-      fullTypeName: composeSuiType(
-        Dummy.$typeName,
-        ...[]
-      ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Dummy',
+      fullTypeName: composeSuiType(Dummy.$typeName, ...[]) as `${typeof PKG_V1}::fixture::Dummy`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Dummy.fromFields(fields),
@@ -179,9 +174,7 @@ export class Dummy implements StructClass {
 
 export function isWithGenericField(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<'
-  )
+  return type.startsWith(`${PKG_V1}::fixture::WithGenericField` + '<')
 }
 
 export interface WithGenericFieldFields<T0 extends TypeArgument> {
@@ -195,13 +188,12 @@ export type WithGenericFieldReified<T0 extends TypeArgument> = Reified<
 >
 
 export class WithGenericField<T0 extends TypeArgument> implements StructClass {
-  static readonly $typeName =
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField'
+  static readonly $typeName = `${PKG_V1}::fixture::WithGenericField`
   static readonly $numTypeParams = 1
 
   readonly $typeName = WithGenericField.$typeName
 
-  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<${ToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithGenericField<${ToTypeStr<T0>}>`
 
   readonly $typeArgs: [ToTypeStr<T0>]
 
@@ -212,7 +204,7 @@ export class WithGenericField<T0 extends TypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       WithGenericField.$typeName,
       ...typeArgs
-    ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<${ToTypeStr<T0>}>`
+    ) as `${typeof PKG_V1}::fixture::WithGenericField<${ToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -227,9 +219,7 @@ export class WithGenericField<T0 extends TypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         WithGenericField.$typeName,
         ...[extractType(T0)]
-      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithGenericField<${ToTypeStr<
-        ToTypeArgument<T0>
-      >}>`,
+      ) as `${typeof PKG_V1}::fixture::WithGenericField<${ToTypeStr<ToTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [ToTypeStr<ToTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => WithGenericField.fromFields(T0, fields),
@@ -377,7 +367,7 @@ export class WithGenericField<T0 extends TypeArgument> implements StructClass {
 
 export function isBar(type: string): boolean {
   type = compressSuiType(type)
-  return type === '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
+  return type === `${PKG_V1}::fixture::Bar`
 }
 
 export interface BarFields {
@@ -387,13 +377,12 @@ export interface BarFields {
 export type BarReified = Reified<Bar, BarFields>
 
 export class Bar implements StructClass {
-  static readonly $typeName =
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
+  static readonly $typeName = `${PKG_V1}::fixture::Bar`
   static readonly $numTypeParams = 0
 
   readonly $typeName = Bar.$typeName
 
-  readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
+  readonly $fullTypeName: `${typeof PKG_V1}::fixture::Bar`
 
   readonly $typeArgs: []
 
@@ -403,7 +392,7 @@ export class Bar implements StructClass {
     this.$fullTypeName = composeSuiType(
       Bar.$typeName,
       ...typeArgs
-    ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar'
+    ) as `${typeof PKG_V1}::fixture::Bar`
     this.$typeArgs = typeArgs
 
     this.value = fields.value
@@ -412,10 +401,7 @@ export class Bar implements StructClass {
   static reified(): BarReified {
     return {
       typeName: Bar.$typeName,
-      fullTypeName: composeSuiType(
-        Bar.$typeName,
-        ...[]
-      ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar',
+      fullTypeName: composeSuiType(Bar.$typeName, ...[]) as `${typeof PKG_V1}::fixture::Bar`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Bar.fromFields(fields),
@@ -514,9 +500,7 @@ export class Bar implements StructClass {
 
 export function isWithTwoGenerics(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<'
-  )
+  return type.startsWith(`${PKG_V1}::fixture::WithTwoGenerics` + '<')
 }
 
 export interface WithTwoGenericsFields<T0 extends TypeArgument, T1 extends TypeArgument> {
@@ -532,13 +516,12 @@ export type WithTwoGenericsReified<T0 extends TypeArgument, T1 extends TypeArgum
 export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument>
   implements StructClass
 {
-  static readonly $typeName =
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics'
+  static readonly $typeName = `${PKG_V1}::fixture::WithTwoGenerics`
   static readonly $numTypeParams = 2
 
   readonly $typeName = WithTwoGenerics.$typeName
 
-  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
+  readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithTwoGenerics<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
 
   readonly $typeArgs: [ToTypeStr<T0>, ToTypeStr<T1>]
 
@@ -552,7 +535,7 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument>
     this.$fullTypeName = composeSuiType(
       WithTwoGenerics.$typeName,
       ...typeArgs
-    ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
+    ) as `${typeof PKG_V1}::fixture::WithTwoGenerics<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
     this.$typeArgs = typeArgs
 
     this.genericField1 = fields.genericField1
@@ -568,7 +551,7 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument>
       fullTypeName: composeSuiType(
         WithTwoGenerics.$typeName,
         ...[extractType(T0), extractType(T1)]
-      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${ToTypeStr<
+      ) as `${typeof PKG_V1}::fixture::WithTwoGenerics<${ToTypeStr<
         ToTypeArgument<T0>
       >}, ${ToTypeStr<ToTypeArgument<T1>>}>`,
       typeArgs: [extractType(T0), extractType(T1)] as [
@@ -726,9 +709,7 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument>
 
 export function isFoo(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<'
-  )
+  return type.startsWith(`${PKG_V1}::fixture::Foo` + '<')
 }
 
 export interface FooFields<T0 extends TypeArgument> {
@@ -751,13 +732,12 @@ export interface FooFields<T0 extends TypeArgument> {
 export type FooReified<T0 extends TypeArgument> = Reified<Foo<T0>, FooFields<T0>>
 
 export class Foo<T0 extends TypeArgument> implements StructClass {
-  static readonly $typeName =
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo'
+  static readonly $typeName = `${PKG_V1}::fixture::Foo`
   static readonly $numTypeParams = 1
 
   readonly $typeName = Foo.$typeName
 
-  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<${ToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V1}::fixture::Foo<${ToTypeStr<T0>}>`
 
   readonly $typeArgs: [ToTypeStr<T0>]
 
@@ -782,7 +762,7 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Foo.$typeName,
       ...typeArgs
-    ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<${ToTypeStr<T0>}>`
+    ) as `${typeof PKG_V1}::fixture::Foo<${ToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -807,9 +787,7 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Foo.$typeName,
         ...[extractType(T0)]
-      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Foo<${ToTypeStr<
-        ToTypeArgument<T0>
-      >}>`,
+      ) as `${typeof PKG_V1}::fixture::Foo<${ToTypeStr<ToTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [ToTypeStr<ToTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Foo.fromFields(T0, fields),
@@ -986,13 +964,10 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
       id: this.id,
       generic: fieldToJSON<T0>(this.$typeArgs[0], this.generic),
       reifiedPrimitiveVec: fieldToJSON<Vector<'u64'>>(`vector<u64>`, this.reifiedPrimitiveVec),
-      reifiedObjectVec: fieldToJSON<Vector<Bar>>(
-        `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
-        this.reifiedObjectVec
-      ),
+      reifiedObjectVec: fieldToJSON<Vector<Bar>>(`vector<${Bar.$typeName}>`, this.reifiedObjectVec),
       genericVec: fieldToJSON<Vector<T0>>(`vector<${this.$typeArgs[0]}>`, this.genericVec),
       genericVecNested: fieldToJSON<Vector<WithTwoGenerics<T0, 'u8'>>>(
-        `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${this.$typeArgs[0]}, u8>>`,
+        `vector<${WithTwoGenerics.$typeName}<${this.$typeArgs[0]}, u8>>`,
         this.genericVecNested
       ),
       twoGenerics: this.twoGenerics.toJSONField(),
@@ -1003,7 +978,7 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
       twoGenericsNestedVec: fieldToJSON<
         Vector<WithTwoGenerics<Bar, Vector<WithTwoGenerics<T0, 'u8'>>>>
       >(
-        `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${this.$typeArgs[0]}, u8>>>>`,
+        `vector<${WithTwoGenerics.$typeName}<${Bar.$typeName}, vector<${WithTwoGenerics.$typeName}<${this.$typeArgs[0]}, u8>>>>`,
         this.twoGenericsNestedVec
       ),
       dummy: this.dummy.toJSONField(),
@@ -1112,9 +1087,7 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
 
 export function isWithSpecialTypes(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<'
-  )
+  return type.startsWith(`${PKG_V1}::fixture::WithSpecialTypes` + '<')
 }
 
 export interface WithSpecialTypesFields<T0 extends PhantomTypeArgument, T1 extends TypeArgument> {
@@ -1141,13 +1114,12 @@ export type WithSpecialTypesReified<
 export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArgument>
   implements StructClass
 {
-  static readonly $typeName =
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes'
+  static readonly $typeName = `${PKG_V1}::fixture::WithSpecialTypes`
   static readonly $numTypeParams = 2
 
   readonly $typeName = WithSpecialTypes.$typeName
 
-  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<${PhantomToTypeStr<T0>}, ${ToTypeStr<T1>}>`
+  readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithSpecialTypes<${PhantomToTypeStr<T0>}, ${ToTypeStr<T1>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T0>, ToTypeStr<T1>]
 
@@ -1172,7 +1144,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     this.$fullTypeName = composeSuiType(
       WithSpecialTypes.$typeName,
       ...typeArgs
-    ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<${PhantomToTypeStr<T0>}, ${ToTypeStr<T1>}>`
+    ) as `${typeof PKG_V1}::fixture::WithSpecialTypes<${PhantomToTypeStr<T0>}, ${ToTypeStr<T1>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -1199,7 +1171,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
       fullTypeName: composeSuiType(
         WithSpecialTypes.$typeName,
         ...[extractType(T0), extractType(T1)]
-      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypes<${PhantomToTypeStr<
+      ) as `${typeof PKG_V1}::fixture::WithSpecialTypes<${PhantomToTypeStr<
         ToPhantomTypeArgument<T0>
       >}, ${ToTypeStr<ToTypeArgument<T1>>}>`,
       typeArgs: [extractType(T0), extractType(T1)] as [
@@ -1347,19 +1319,16 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
       idField: this.idField,
       uid: this.uid,
       balance: this.balance.toJSONField(),
-      option: fieldToJSON<Option<'u64'>>(`0x1::option::Option<u64>`, this.option),
-      optionObj: fieldToJSON<Option<Bar>>(
-        `0x1::option::Option<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
-        this.optionObj
-      ),
-      optionNone: fieldToJSON<Option<'u64'>>(`0x1::option::Option<u64>`, this.optionNone),
+      option: fieldToJSON<Option<'u64'>>(`${Option.$typeName}<u64>`, this.option),
+      optionObj: fieldToJSON<Option<Bar>>(`${Option.$typeName}<${Bar.$typeName}>`, this.optionObj),
+      optionNone: fieldToJSON<Option<'u64'>>(`${Option.$typeName}<u64>`, this.optionNone),
       balanceGeneric: this.balanceGeneric.toJSONField(),
       optionGeneric: fieldToJSON<Option<T1>>(
-        `0x1::option::Option<${this.$typeArgs[1]}>`,
+        `${Option.$typeName}<${this.$typeArgs[1]}>`,
         this.optionGeneric
       ),
       optionGenericNone: fieldToJSON<Option<T1>>(
-        `0x1::option::Option<${this.$typeArgs[1]}>`,
+        `${Option.$typeName}<${this.$typeArgs[1]}>`,
         this.optionGenericNone
       ),
     }
@@ -1451,9 +1420,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
 
 export function isWithSpecialTypesAsGenerics(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<'
-  )
+  return type.startsWith(`${PKG_V1}::fixture::WithSpecialTypesAsGenerics` + '<')
 }
 
 export interface WithSpecialTypesAsGenericsFields<
@@ -1502,13 +1469,12 @@ export class WithSpecialTypesAsGenerics<
   T7 extends TypeArgument,
 > implements StructClass
 {
-  static readonly $typeName =
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics'
+  static readonly $typeName = `${PKG_V1}::fixture::WithSpecialTypesAsGenerics`
   static readonly $numTypeParams = 8
 
   readonly $typeName = WithSpecialTypesAsGenerics.$typeName
 
-  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<${ToTypeStr<T0>}, ${ToTypeStr<T1>}, ${ToTypeStr<T2>}, ${ToTypeStr<T3>}, ${ToTypeStr<T4>}, ${ToTypeStr<T5>}, ${ToTypeStr<T6>}, ${ToTypeStr<T7>}>`
+  readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithSpecialTypesAsGenerics<${ToTypeStr<T0>}, ${ToTypeStr<T1>}, ${ToTypeStr<T2>}, ${ToTypeStr<T3>}, ${ToTypeStr<T4>}, ${ToTypeStr<T5>}, ${ToTypeStr<T6>}, ${ToTypeStr<T7>}>`
 
   readonly $typeArgs: [
     ToTypeStr<T0>,
@@ -1547,7 +1513,7 @@ export class WithSpecialTypesAsGenerics<
     this.$fullTypeName = composeSuiType(
       WithSpecialTypesAsGenerics.$typeName,
       ...typeArgs
-    ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<${ToTypeStr<T0>}, ${ToTypeStr<T1>}, ${ToTypeStr<T2>}, ${ToTypeStr<T3>}, ${ToTypeStr<T4>}, ${ToTypeStr<T5>}, ${ToTypeStr<T6>}, ${ToTypeStr<T7>}>`
+    ) as `${typeof PKG_V1}::fixture::WithSpecialTypesAsGenerics<${ToTypeStr<T0>}, ${ToTypeStr<T1>}, ${ToTypeStr<T2>}, ${ToTypeStr<T3>}, ${ToTypeStr<T4>}, ${ToTypeStr<T5>}, ${ToTypeStr<T6>}, ${ToTypeStr<T7>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -1603,7 +1569,7 @@ export class WithSpecialTypesAsGenerics<
           extractType(T6),
           extractType(T7),
         ]
-      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesAsGenerics<${ToTypeStr<
+      ) as `${typeof PKG_V1}::fixture::WithSpecialTypesAsGenerics<${ToTypeStr<
         ToTypeArgument<T0>
       >}, ${ToTypeStr<ToTypeArgument<T1>>}, ${ToTypeStr<ToTypeArgument<T2>>}, ${ToTypeStr<
         ToTypeArgument<T3>
@@ -2066,9 +2032,7 @@ export class WithSpecialTypesAsGenerics<
 
 export function isWithSpecialTypesInVectors(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<'
-  )
+  return type.startsWith(`${PKG_V1}::fixture::WithSpecialTypesInVectors` + '<')
 }
 
 export interface WithSpecialTypesInVectorsFields<T0 extends TypeArgument> {
@@ -2087,13 +2051,12 @@ export type WithSpecialTypesInVectorsReified<T0 extends TypeArgument> = Reified<
 >
 
 export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements StructClass {
-  static readonly $typeName =
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors'
+  static readonly $typeName = `${PKG_V1}::fixture::WithSpecialTypesInVectors`
   static readonly $numTypeParams = 1
 
   readonly $typeName = WithSpecialTypesInVectors.$typeName
 
-  readonly $fullTypeName: `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<${ToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithSpecialTypesInVectors<${ToTypeStr<T0>}>`
 
   readonly $typeArgs: [ToTypeStr<T0>]
 
@@ -2109,7 +2072,7 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
     this.$fullTypeName = composeSuiType(
       WithSpecialTypesInVectors.$typeName,
       ...typeArgs
-    ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<${ToTypeStr<T0>}>`
+    ) as `${typeof PKG_V1}::fixture::WithSpecialTypesInVectors<${ToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -2129,9 +2092,7 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
       fullTypeName: composeSuiType(
         WithSpecialTypesInVectors.$typeName,
         ...[extractType(T0)]
-      ) as `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithSpecialTypesInVectors<${ToTypeStr<
-        ToTypeArgument<T0>
-      >}>`,
+      ) as `${typeof PKG_V1}::fixture::WithSpecialTypesInVectors<${ToTypeStr<ToTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [ToTypeStr<ToTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => WithSpecialTypesInVectors.fromFields(T0, fields),
@@ -2237,16 +2198,13 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
   toJSONField() {
     return {
       id: this.id,
-      string: fieldToJSON<Vector<String>>(`vector<0x1::string::String>`, this.string),
-      asciiString: fieldToJSON<Vector<String1>>(`vector<0x1::ascii::String>`, this.asciiString),
-      idField: fieldToJSON<Vector<ID>>(`vector<0x2::object::ID>`, this.idField),
-      bar: fieldToJSON<Vector<Bar>>(
-        `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar>`,
-        this.bar
-      ),
-      option: fieldToJSON<Vector<Option<'u64'>>>(`vector<0x1::option::Option<u64>>`, this.option),
+      string: fieldToJSON<Vector<String>>(`vector<${String.$typeName}>`, this.string),
+      asciiString: fieldToJSON<Vector<String1>>(`vector<${String1.$typeName}>`, this.asciiString),
+      idField: fieldToJSON<Vector<ID>>(`vector<${ID.$typeName}>`, this.idField),
+      bar: fieldToJSON<Vector<Bar>>(`vector<${Bar.$typeName}>`, this.bar),
+      option: fieldToJSON<Vector<Option<'u64'>>>(`vector<${Option.$typeName}<u64>>`, this.option),
       optionGeneric: fieldToJSON<Vector<Option<T0>>>(
-        `vector<0x1::option::Option<${this.$typeArgs[0]}>>`,
+        `vector<${Option.$typeName}<${this.$typeArgs[0]}>>`,
         this.optionGeneric
       ),
     }

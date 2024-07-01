@@ -1,106 +1,111 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, obj, pure, vector } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { obj, pure, vector } from '../../_framework/util'
+import { String } from '../../move-stdlib/string/structs'
+import { ActiveJwk } from './structs'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export interface ActiveJwkEqualArgs {
-  a: ObjectArg
-  b: ObjectArg
+  a: TransactionObjectInput
+  b: TransactionObjectInput
 }
 
-export function activeJwkEqual(txb: TransactionBlock, args: ActiveJwkEqualArgs) {
-  return txb.moveCall({
+export function activeJwkEqual(tx: Transaction, args: ActiveJwkEqualArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::authenticator_state::active_jwk_equal`,
-    arguments: [obj(txb, args.a), obj(txb, args.b)],
+    arguments: [obj(tx, args.a), obj(tx, args.b)],
   })
 }
 
 export function checkSorted(
-  txb: TransactionBlock,
-  newActiveJwks: Array<ObjectArg> | TransactionArgument
+  tx: Transaction,
+  newActiveJwks: Array<TransactionObjectInput> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::authenticator_state::check_sorted`,
-    arguments: [vector(txb, `0x2::authenticator_state::ActiveJwk`, newActiveJwks)],
+    arguments: [vector(tx, `${ActiveJwk.$typeName}`, newActiveJwks)],
   })
 }
 
-export function create(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::authenticator_state::create`, arguments: [] })
+export function create(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::authenticator_state::create`, arguments: [] })
 }
 
-export function deduplicate(txb: TransactionBlock, jwks: Array<ObjectArg> | TransactionArgument) {
-  return txb.moveCall({
+export function deduplicate(
+  tx: Transaction,
+  jwks: Array<TransactionObjectInput> | TransactionArgument
+) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::authenticator_state::deduplicate`,
-    arguments: [vector(txb, `0x2::authenticator_state::ActiveJwk`, jwks)],
+    arguments: [vector(tx, `${ActiveJwk.$typeName}`, jwks)],
   })
 }
 
 export interface ExpireJwksArgs {
-  self: ObjectArg
+  self: TransactionObjectInput
   minEpoch: bigint | TransactionArgument
 }
 
-export function expireJwks(txb: TransactionBlock, args: ExpireJwksArgs) {
-  return txb.moveCall({
+export function expireJwks(tx: Transaction, args: ExpireJwksArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::authenticator_state::expire_jwks`,
-    arguments: [obj(txb, args.self), pure(txb, args.minEpoch, `u64`)],
+    arguments: [obj(tx, args.self), pure(tx, args.minEpoch, `u64`)],
   })
 }
 
-export function getActiveJwks(txb: TransactionBlock, self: ObjectArg) {
-  return txb.moveCall({
+export function getActiveJwks(tx: Transaction, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::authenticator_state::get_active_jwks`,
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
 export interface JwkEqualArgs {
-  a: ObjectArg
-  b: ObjectArg
+  a: TransactionObjectInput
+  b: TransactionObjectInput
 }
 
-export function jwkEqual(txb: TransactionBlock, args: JwkEqualArgs) {
-  return txb.moveCall({
+export function jwkEqual(tx: Transaction, args: JwkEqualArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::authenticator_state::jwk_equal`,
-    arguments: [obj(txb, args.a), obj(txb, args.b)],
+    arguments: [obj(tx, args.a), obj(tx, args.b)],
   })
 }
 
 export interface JwkIdEqualArgs {
-  a: ObjectArg
-  b: ObjectArg
+  a: TransactionObjectInput
+  b: TransactionObjectInput
 }
 
-export function jwkIdEqual(txb: TransactionBlock, args: JwkIdEqualArgs) {
-  return txb.moveCall({
+export function jwkIdEqual(tx: Transaction, args: JwkIdEqualArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::authenticator_state::jwk_id_equal`,
-    arguments: [obj(txb, args.a), obj(txb, args.b)],
+    arguments: [obj(tx, args.a), obj(tx, args.b)],
   })
 }
 
 export interface JwkLtArgs {
-  a: ObjectArg
-  b: ObjectArg
+  a: TransactionObjectInput
+  b: TransactionObjectInput
 }
 
-export function jwkLt(txb: TransactionBlock, args: JwkLtArgs) {
-  return txb.moveCall({
+export function jwkLt(tx: Transaction, args: JwkLtArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::authenticator_state::jwk_lt`,
-    arguments: [obj(txb, args.a), obj(txb, args.b)],
+    arguments: [obj(tx, args.a), obj(tx, args.b)],
   })
 }
 
-export function loadInner(txb: TransactionBlock, self: ObjectArg) {
-  return txb.moveCall({
+export function loadInner(tx: Transaction, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::authenticator_state::load_inner`,
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
-export function loadInnerMut(txb: TransactionBlock, self: ObjectArg) {
-  return txb.moveCall({
+export function loadInnerMut(tx: Transaction, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::authenticator_state::load_inner_mut`,
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
@@ -109,27 +114,21 @@ export interface StringBytesLtArgs {
   b: string | TransactionArgument
 }
 
-export function stringBytesLt(txb: TransactionBlock, args: StringBytesLtArgs) {
-  return txb.moveCall({
+export function stringBytesLt(tx: Transaction, args: StringBytesLtArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::authenticator_state::string_bytes_lt`,
-    arguments: [pure(txb, args.a, `0x1::string::String`), pure(txb, args.b, `0x1::string::String`)],
+    arguments: [pure(tx, args.a, `${String.$typeName}`), pure(tx, args.b, `${String.$typeName}`)],
   })
 }
 
 export interface UpdateAuthenticatorStateArgs {
-  self: ObjectArg
-  newActiveJwks: Array<ObjectArg> | TransactionArgument
+  self: TransactionObjectInput
+  newActiveJwks: Array<TransactionObjectInput> | TransactionArgument
 }
 
-export function updateAuthenticatorState(
-  txb: TransactionBlock,
-  args: UpdateAuthenticatorStateArgs
-) {
-  return txb.moveCall({
+export function updateAuthenticatorState(tx: Transaction, args: UpdateAuthenticatorStateArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::authenticator_state::update_authenticator_state`,
-    arguments: [
-      obj(txb, args.self),
-      vector(txb, `0x2::authenticator_state::ActiveJwk`, args.newActiveJwks),
-    ],
+    arguments: [obj(tx, args.self), vector(tx, `${ActiveJwk.$typeName}`, args.newActiveJwks)],
   })
 }

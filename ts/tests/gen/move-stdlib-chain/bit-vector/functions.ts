@@ -1,80 +1,80 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { obj, pure } from '../../_framework/util'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function new_(txb: TransactionBlock, u64: bigint | TransactionArgument) {
-  return txb.moveCall({
+export function new_(tx: Transaction, u64: bigint | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::bit_vector::new`,
-    arguments: [pure(txb, u64, `u64`)],
+    arguments: [pure(tx, u64, `u64`)],
   })
 }
 
-export function length(txb: TransactionBlock, bitVector: ObjectArg) {
-  return txb.moveCall({
+export function length(tx: Transaction, bitVector: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::bit_vector::length`,
-    arguments: [obj(txb, bitVector)],
+    arguments: [obj(tx, bitVector)],
   })
 }
 
 export interface SetArgs {
-  bitVector: ObjectArg
+  bitVector: TransactionObjectInput
   u64: bigint | TransactionArgument
 }
 
-export function set(txb: TransactionBlock, args: SetArgs) {
-  return txb.moveCall({
+export function set(tx: Transaction, args: SetArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::bit_vector::set`,
-    arguments: [obj(txb, args.bitVector), pure(txb, args.u64, `u64`)],
+    arguments: [obj(tx, args.bitVector), pure(tx, args.u64, `u64`)],
   })
 }
 
 export interface UnsetArgs {
-  bitVector: ObjectArg
+  bitVector: TransactionObjectInput
   u64: bigint | TransactionArgument
 }
 
-export function unset(txb: TransactionBlock, args: UnsetArgs) {
-  return txb.moveCall({
+export function unset(tx: Transaction, args: UnsetArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::bit_vector::unset`,
-    arguments: [obj(txb, args.bitVector), pure(txb, args.u64, `u64`)],
+    arguments: [obj(tx, args.bitVector), pure(tx, args.u64, `u64`)],
   })
 }
 
 export interface ShiftLeftArgs {
-  bitVector: ObjectArg
+  bitVector: TransactionObjectInput
   u64: bigint | TransactionArgument
 }
 
-export function shiftLeft(txb: TransactionBlock, args: ShiftLeftArgs) {
-  return txb.moveCall({
+export function shiftLeft(tx: Transaction, args: ShiftLeftArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::bit_vector::shift_left`,
-    arguments: [obj(txb, args.bitVector), pure(txb, args.u64, `u64`)],
+    arguments: [obj(tx, args.bitVector), pure(tx, args.u64, `u64`)],
   })
 }
 
 export interface IsIndexSetArgs {
-  bitVector: ObjectArg
+  bitVector: TransactionObjectInput
   u64: bigint | TransactionArgument
 }
 
-export function isIndexSet(txb: TransactionBlock, args: IsIndexSetArgs) {
-  return txb.moveCall({
+export function isIndexSet(tx: Transaction, args: IsIndexSetArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::bit_vector::is_index_set`,
-    arguments: [obj(txb, args.bitVector), pure(txb, args.u64, `u64`)],
+    arguments: [obj(tx, args.bitVector), pure(tx, args.u64, `u64`)],
   })
 }
 
 export interface LongestSetSequenceStartingAtArgs {
-  bitVector: ObjectArg
+  bitVector: TransactionObjectInput
   u64: bigint | TransactionArgument
 }
 
 export function longestSetSequenceStartingAt(
-  txb: TransactionBlock,
+  tx: Transaction,
   args: LongestSetSequenceStartingAtArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::bit_vector::longest_set_sequence_starting_at`,
-    arguments: [obj(txb, args.bitVector), pure(txb, args.u64, `u64`)],
+    arguments: [obj(tx, args.bitVector), pure(tx, args.u64, `u64`)],
   })
 }

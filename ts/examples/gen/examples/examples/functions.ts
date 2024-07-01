@@ -1,38 +1,39 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, pure, vector } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { String } from '../../_dependencies/source/0x1/ascii/structs'
+import { Option } from '../../_dependencies/source/0x1/option/structs'
+import { String as String1 } from '../../_dependencies/source/0x1/string/structs'
+import { pure, vector } from '../../_framework/util'
+import { ID } from '../../sui/object/structs'
+import { ExampleStruct } from './structs'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function createExampleStruct(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::examples::create_example_struct`, arguments: [] })
+export function createExampleStruct(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::examples::create_example_struct`, arguments: [] })
 }
 
 export interface SpecialTypesArgs {
   asciiString: string | TransactionArgument
   utf8String: string | TransactionArgument
   vectorOfU64: Array<bigint | TransactionArgument> | TransactionArgument
-  vectorOfObjects: Array<ObjectArg> | TransactionArgument
+  vectorOfObjects: Array<TransactionObjectInput> | TransactionArgument
   idField: string | TransactionArgument
   address: string | TransactionArgument
   optionSome: bigint | TransactionArgument | TransactionArgument | null
   optionNone: bigint | TransactionArgument | TransactionArgument | null
 }
 
-export function specialTypes(txb: TransactionBlock, args: SpecialTypesArgs) {
-  return txb.moveCall({
+export function specialTypes(tx: Transaction, args: SpecialTypesArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::examples::special_types`,
     arguments: [
-      pure(txb, args.asciiString, `0x1::ascii::String`),
-      pure(txb, args.utf8String, `0x1::string::String`),
-      pure(txb, args.vectorOfU64, `vector<u64>`),
-      vector(
-        txb,
-        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct`,
-        args.vectorOfObjects
-      ),
-      pure(txb, args.idField, `0x2::object::ID`),
-      pure(txb, args.address, `address`),
-      pure(txb, args.optionSome, `0x1::option::Option<u64>`),
-      pure(txb, args.optionNone, `0x1::option::Option<u64>`),
+      pure(tx, args.asciiString, `${String.$typeName}`),
+      pure(tx, args.utf8String, `${String1.$typeName}`),
+      pure(tx, args.vectorOfU64, `vector<u64>`),
+      vector(tx, `${ExampleStruct.$typeName}`, args.vectorOfObjects),
+      pure(tx, args.idField, `${ID.$typeName}`),
+      pure(tx, args.address, `address`),
+      pure(tx, args.optionSome, `${Option.$typeName}<u64>`),
+      pure(tx, args.optionNone, `${Option.$typeName}<u64>`),
     ],
   })
 }

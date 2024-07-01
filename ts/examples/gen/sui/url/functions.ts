@@ -1,36 +1,37 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { String } from '../../_dependencies/source/0x1/ascii/structs'
+import { obj, pure } from '../../_framework/util'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function innerUrl(txb: TransactionBlock, self: ObjectArg) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::url::inner_url`, arguments: [obj(txb, self)] })
+export function innerUrl(tx: Transaction, self: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::url::inner_url`, arguments: [obj(tx, self)] })
 }
 
-export function newUnsafe(txb: TransactionBlock, url: string | TransactionArgument) {
-  return txb.moveCall({
+export function newUnsafe(tx: Transaction, url: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::url::new_unsafe`,
-    arguments: [pure(txb, url, `0x1::ascii::String`)],
+    arguments: [pure(tx, url, `${String.$typeName}`)],
   })
 }
 
 export function newUnsafeFromBytes(
-  txb: TransactionBlock,
+  tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::url::new_unsafe_from_bytes`,
-    arguments: [pure(txb, bytes, `vector<u8>`)],
+    arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }
 
 export interface UpdateArgs {
-  self: ObjectArg
+  self: TransactionObjectInput
   url: string | TransactionArgument
 }
 
-export function update(txb: TransactionBlock, args: UpdateArgs) {
-  return txb.moveCall({
+export function update(tx: Transaction, args: UpdateArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::url::update`,
-    arguments: [obj(txb, args.self), pure(txb, args.url, `0x1::ascii::String`)],
+    arguments: [obj(tx, args.self), pure(tx, args.url, `${String.$typeName}`)],
   })
 }

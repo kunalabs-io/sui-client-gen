@@ -1,223 +1,248 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { GenericArg, generic, obj, pure, vector } from '../../_framework/util'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function empty(txb: TransactionBlock, typeArgs: [string, string]) {
-  return txb.moveCall({
+export function empty(tx: Transaction, typeArgs: [string, string]) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::empty`,
     typeArguments: typeArgs,
     arguments: [],
   })
 }
 
-export function destroyEmpty(txb: TransactionBlock, typeArgs: [string, string], vecMap: ObjectArg) {
-  return txb.moveCall({
+export function destroyEmpty(
+  tx: Transaction,
+  typeArgs: [string, string],
+  vecMap: TransactionObjectInput
+) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::destroy_empty`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, vecMap)],
+    arguments: [obj(tx, vecMap)],
   })
 }
 
-export function isEmpty(txb: TransactionBlock, typeArgs: [string, string], vecMap: ObjectArg) {
-  return txb.moveCall({
+export function isEmpty(
+  tx: Transaction,
+  typeArgs: [string, string],
+  vecMap: TransactionObjectInput
+) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::is_empty`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, vecMap)],
+    arguments: [obj(tx, vecMap)],
   })
 }
 
 export interface ContainsArgs {
-  vecMap: ObjectArg
+  vecMap: TransactionObjectInput
   t0: GenericArg
 }
 
-export function contains(txb: TransactionBlock, typeArgs: [string, string], args: ContainsArgs) {
-  return txb.moveCall({
+export function contains(tx: Transaction, typeArgs: [string, string], args: ContainsArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::contains`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.vecMap), generic(txb, `${typeArgs[0]}`, args.t0)],
+    arguments: [obj(tx, args.vecMap), generic(tx, `${typeArgs[0]}`, args.t0)],
   })
 }
 
 export interface RemoveArgs {
-  vecMap: ObjectArg
+  vecMap: TransactionObjectInput
   t0: GenericArg
 }
 
-export function remove(txb: TransactionBlock, typeArgs: [string, string], args: RemoveArgs) {
-  return txb.moveCall({
+export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::remove`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.vecMap), generic(txb, `${typeArgs[0]}`, args.t0)],
+    arguments: [obj(tx, args.vecMap), generic(tx, `${typeArgs[0]}`, args.t0)],
   })
 }
 
 export interface InsertArgs {
-  vecMap: ObjectArg
+  vecMap: TransactionObjectInput
   t0: GenericArg
   t1: GenericArg
 }
 
-export function insert(txb: TransactionBlock, typeArgs: [string, string], args: InsertArgs) {
-  return txb.moveCall({
+export function insert(tx: Transaction, typeArgs: [string, string], args: InsertArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::insert`,
     typeArguments: typeArgs,
     arguments: [
-      obj(txb, args.vecMap),
-      generic(txb, `${typeArgs[0]}`, args.t0),
-      generic(txb, `${typeArgs[1]}`, args.t1),
+      obj(tx, args.vecMap),
+      generic(tx, `${typeArgs[0]}`, args.t0),
+      generic(tx, `${typeArgs[1]}`, args.t1),
     ],
   })
 }
 
-export function size(txb: TransactionBlock, typeArgs: [string, string], vecMap: ObjectArg) {
-  return txb.moveCall({
+export function size(tx: Transaction, typeArgs: [string, string], vecMap: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::size`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, vecMap)],
+    arguments: [obj(tx, vecMap)],
   })
 }
 
-export function pop(txb: TransactionBlock, typeArgs: [string, string], vecMap: ObjectArg) {
-  return txb.moveCall({
+export function pop(tx: Transaction, typeArgs: [string, string], vecMap: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::pop`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, vecMap)],
+    arguments: [obj(tx, vecMap)],
   })
 }
 
 export interface GetMutArgs {
-  vecMap: ObjectArg
+  vecMap: TransactionObjectInput
   t0: GenericArg
 }
 
-export function getMut(txb: TransactionBlock, typeArgs: [string, string], args: GetMutArgs) {
-  return txb.moveCall({
+export function getMut(tx: Transaction, typeArgs: [string, string], args: GetMutArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::get_mut`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.vecMap), generic(txb, `${typeArgs[0]}`, args.t0)],
+    arguments: [obj(tx, args.vecMap), generic(tx, `${typeArgs[0]}`, args.t0)],
   })
 }
 
 export interface GetArgs {
-  vecMap: ObjectArg
+  vecMap: TransactionObjectInput
   t0: GenericArg
 }
 
-export function get(txb: TransactionBlock, typeArgs: [string, string], args: GetArgs) {
-  return txb.moveCall({
+export function get(tx: Transaction, typeArgs: [string, string], args: GetArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::get`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.vecMap), generic(txb, `${typeArgs[0]}`, args.t0)],
+    arguments: [obj(tx, args.vecMap), generic(tx, `${typeArgs[0]}`, args.t0)],
   })
 }
 
 export interface TryGetArgs {
-  vecMap: ObjectArg
+  vecMap: TransactionObjectInput
   t0: GenericArg
 }
 
-export function tryGet(txb: TransactionBlock, typeArgs: [string, string], args: TryGetArgs) {
-  return txb.moveCall({
+export function tryGet(tx: Transaction, typeArgs: [string, string], args: TryGetArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::try_get`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.vecMap), generic(txb, `${typeArgs[0]}`, args.t0)],
+    arguments: [obj(tx, args.vecMap), generic(tx, `${typeArgs[0]}`, args.t0)],
   })
 }
 
 export function intoKeysValues(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
-  vecMap: ObjectArg
+  vecMap: TransactionObjectInput
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::into_keys_values`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, vecMap)],
+    arguments: [obj(tx, vecMap)],
   })
 }
 
-export function keys(txb: TransactionBlock, typeArgs: [string, string], vecMap: ObjectArg) {
-  return txb.moveCall({
+export interface FromKeysValuesArgs {
+  vecT0: Array<GenericArg> | TransactionArgument
+  vecT1: Array<GenericArg> | TransactionArgument
+}
+
+export function fromKeysValues(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: FromKeysValuesArgs
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::from_keys_values`,
+    typeArguments: typeArgs,
+    arguments: [vector(tx, `${typeArgs[0]}`, args.vecT0), vector(tx, `${typeArgs[1]}`, args.vecT1)],
+  })
+}
+
+export function keys(tx: Transaction, typeArgs: [string, string], vecMap: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::keys`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, vecMap)],
+    arguments: [obj(tx, vecMap)],
   })
 }
 
 export interface GetIdxOptArgs {
-  vecMap: ObjectArg
+  vecMap: TransactionObjectInput
   t0: GenericArg
 }
 
-export function getIdxOpt(txb: TransactionBlock, typeArgs: [string, string], args: GetIdxOptArgs) {
-  return txb.moveCall({
+export function getIdxOpt(tx: Transaction, typeArgs: [string, string], args: GetIdxOptArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::get_idx_opt`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.vecMap), generic(txb, `${typeArgs[0]}`, args.t0)],
+    arguments: [obj(tx, args.vecMap), generic(tx, `${typeArgs[0]}`, args.t0)],
   })
 }
 
 export interface GetIdxArgs {
-  vecMap: ObjectArg
+  vecMap: TransactionObjectInput
   t0: GenericArg
 }
 
-export function getIdx(txb: TransactionBlock, typeArgs: [string, string], args: GetIdxArgs) {
-  return txb.moveCall({
+export function getIdx(tx: Transaction, typeArgs: [string, string], args: GetIdxArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::get_idx`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.vecMap), generic(txb, `${typeArgs[0]}`, args.t0)],
+    arguments: [obj(tx, args.vecMap), generic(tx, `${typeArgs[0]}`, args.t0)],
   })
 }
 
 export interface GetEntryByIdxArgs {
-  vecMap: ObjectArg
+  vecMap: TransactionObjectInput
   u64: bigint | TransactionArgument
 }
 
 export function getEntryByIdx(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: GetEntryByIdxArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::get_entry_by_idx`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.vecMap), pure(txb, args.u64, `u64`)],
+    arguments: [obj(tx, args.vecMap), pure(tx, args.u64, `u64`)],
   })
 }
 
 export interface GetEntryByIdxMutArgs {
-  vecMap: ObjectArg
+  vecMap: TransactionObjectInput
   u64: bigint | TransactionArgument
 }
 
 export function getEntryByIdxMut(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: GetEntryByIdxMutArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::get_entry_by_idx_mut`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.vecMap), pure(txb, args.u64, `u64`)],
+    arguments: [obj(tx, args.vecMap), pure(tx, args.u64, `u64`)],
   })
 }
 
 export interface RemoveEntryByIdxArgs {
-  vecMap: ObjectArg
+  vecMap: TransactionObjectInput
   u64: bigint | TransactionArgument
 }
 
 export function removeEntryByIdx(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: RemoveEntryByIdxArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::remove_entry_by_idx`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.vecMap), pure(txb, args.u64, `u64`)],
+    arguments: [obj(tx, args.vecMap), pure(tx, args.u64, `u64`)],
   })
 }

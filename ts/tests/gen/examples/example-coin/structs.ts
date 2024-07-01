@@ -14,17 +14,15 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { TreasuryCap } from '../../sui/coin/structs'
 import { UID } from '../../sui/object/structs'
+import { PKG_V1 } from '../index'
 import { bcs, fromB64 } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== EXAMPLE_COIN =============================== */
 
 export function isEXAMPLE_COIN(type: string): boolean {
   type = compressSuiType(type)
-  return (
-    type ===
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
-  )
+  return type === `${PKG_V1}::example_coin::EXAMPLE_COIN`
 }
 
 export interface EXAMPLE_COINFields {
@@ -34,13 +32,12 @@ export interface EXAMPLE_COINFields {
 export type EXAMPLE_COINReified = Reified<EXAMPLE_COIN, EXAMPLE_COINFields>
 
 export class EXAMPLE_COIN implements StructClass {
-  static readonly $typeName =
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
+  static readonly $typeName = `${PKG_V1}::example_coin::EXAMPLE_COIN`
   static readonly $numTypeParams = 0
 
   readonly $typeName = EXAMPLE_COIN.$typeName
 
-  readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
+  readonly $fullTypeName: `${typeof PKG_V1}::example_coin::EXAMPLE_COIN`
 
   readonly $typeArgs: []
 
@@ -50,7 +47,7 @@ export class EXAMPLE_COIN implements StructClass {
     this.$fullTypeName = composeSuiType(
       EXAMPLE_COIN.$typeName,
       ...typeArgs
-    ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN'
+    ) as `${typeof PKG_V1}::example_coin::EXAMPLE_COIN`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -62,7 +59,7 @@ export class EXAMPLE_COIN implements StructClass {
       fullTypeName: composeSuiType(
         EXAMPLE_COIN.$typeName,
         ...[]
-      ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::EXAMPLE_COIN',
+      ) as `${typeof PKG_V1}::example_coin::EXAMPLE_COIN`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => EXAMPLE_COIN.fromFields(fields),
@@ -163,10 +160,7 @@ export class EXAMPLE_COIN implements StructClass {
 
 export function isFaucet(type: string): boolean {
   type = compressSuiType(type)
-  return (
-    type ===
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'
-  )
+  return type === `${PKG_V1}::example_coin::Faucet`
 }
 
 export interface FaucetFields {
@@ -177,13 +171,12 @@ export interface FaucetFields {
 export type FaucetReified = Reified<Faucet, FaucetFields>
 
 export class Faucet implements StructClass {
-  static readonly $typeName =
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'
+  static readonly $typeName = `${PKG_V1}::example_coin::Faucet`
   static readonly $numTypeParams = 0
 
   readonly $typeName = Faucet.$typeName
 
-  readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'
+  readonly $fullTypeName: `${typeof PKG_V1}::example_coin::Faucet`
 
   readonly $typeArgs: []
 
@@ -194,7 +187,7 @@ export class Faucet implements StructClass {
     this.$fullTypeName = composeSuiType(
       Faucet.$typeName,
       ...typeArgs
-    ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet'
+    ) as `${typeof PKG_V1}::example_coin::Faucet`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -207,7 +200,7 @@ export class Faucet implements StructClass {
       fullTypeName: composeSuiType(
         Faucet.$typeName,
         ...[]
-      ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::example_coin::Faucet',
+      ) as `${typeof PKG_V1}::example_coin::Faucet`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Faucet.fromFields(fields),

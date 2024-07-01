@@ -1,58 +1,55 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, generic, obj, option, pure, vector } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { String as String1 } from '../../_dependencies/source/0x1/ascii/structs'
+import { Option } from '../../_dependencies/source/0x1/option/structs'
+import { String } from '../../_dependencies/source/0x1/string/structs'
+import { GenericArg, generic, obj, option, pure, vector } from '../../_framework/util'
+import { ID } from '../../sui/object/structs'
+import { Bar, WithTwoGenerics } from './structs'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function createBar(txb: TransactionBlock, value: bigint | TransactionArgument) {
-  return txb.moveCall({
+export function createBar(tx: Transaction, value: bigint | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::fixture::create_bar`,
-    arguments: [pure(txb, value, `u64`)],
+    arguments: [pure(tx, value, `u64`)],
   })
 }
 
 export interface CreateFooArgs {
   generic: GenericArg
   reifiedPrimitiveVec: Array<bigint | TransactionArgument> | TransactionArgument
-  reifiedObjectVec: Array<ObjectArg> | TransactionArgument
+  reifiedObjectVec: Array<TransactionObjectInput> | TransactionArgument
   genericVec: Array<GenericArg> | TransactionArgument
-  genericVecNested: Array<ObjectArg> | TransactionArgument
-  twoGenerics: ObjectArg
-  twoGenericsReifiedPrimitive: ObjectArg
-  twoGenericsReifiedObject: ObjectArg
-  twoGenericsNested: ObjectArg
-  twoGenericsReifiedNested: ObjectArg
-  twoGenericsNestedVec: Array<ObjectArg> | TransactionArgument
-  objRef: ObjectArg
+  genericVecNested: Array<TransactionObjectInput> | TransactionArgument
+  twoGenerics: TransactionObjectInput
+  twoGenericsReifiedPrimitive: TransactionObjectInput
+  twoGenericsReifiedObject: TransactionObjectInput
+  twoGenericsNested: TransactionObjectInput
+  twoGenericsReifiedNested: TransactionObjectInput
+  twoGenericsNestedVec: Array<TransactionObjectInput> | TransactionArgument
+  objRef: TransactionObjectInput
 }
 
-export function createFoo(txb: TransactionBlock, typeArgs: [string, string], args: CreateFooArgs) {
-  return txb.moveCall({
+export function createFoo(tx: Transaction, typeArgs: [string, string], args: CreateFooArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::fixture::create_foo`,
     typeArguments: typeArgs,
     arguments: [
-      generic(txb, `${typeArgs[0]}`, args.generic),
-      pure(txb, args.reifiedPrimitiveVec, `vector<u64>`),
+      generic(tx, `${typeArgs[0]}`, args.generic),
+      pure(tx, args.reifiedPrimitiveVec, `vector<u64>`),
+      vector(tx, `${Bar.$typeName}`, args.reifiedObjectVec),
+      vector(tx, `${typeArgs[0]}`, args.genericVec),
+      vector(tx, `${WithTwoGenerics.$typeName}<${typeArgs[0]}, u8>`, args.genericVecNested),
+      obj(tx, args.twoGenerics),
+      obj(tx, args.twoGenericsReifiedPrimitive),
+      obj(tx, args.twoGenericsReifiedObject),
+      obj(tx, args.twoGenericsNested),
+      obj(tx, args.twoGenericsReifiedNested),
       vector(
-        txb,
-        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
-        args.reifiedObjectVec
-      ),
-      vector(txb, `${typeArgs[0]}`, args.genericVec),
-      vector(
-        txb,
-        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${typeArgs[0]}, u8>`,
-        args.genericVecNested
-      ),
-      obj(txb, args.twoGenerics),
-      obj(txb, args.twoGenericsReifiedPrimitive),
-      obj(txb, args.twoGenericsReifiedObject),
-      obj(txb, args.twoGenericsNested),
-      obj(txb, args.twoGenericsReifiedNested),
-      vector(
-        txb,
-        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar, vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::WithTwoGenerics<${typeArgs[0]}, u8>>>`,
+        tx,
+        `${WithTwoGenerics.$typeName}<${Bar.$typeName}, vector<${WithTwoGenerics.$typeName}<${typeArgs[0]}, u8>>>`,
         args.twoGenericsNestedVec
       ),
-      obj(txb, args.objRef),
+      obj(tx, args.objRef),
     ],
   })
 }
@@ -60,43 +57,39 @@ export function createFoo(txb: TransactionBlock, typeArgs: [string, string], arg
 export interface CreateSpecialArgs {
   string: string | TransactionArgument
   asciiString: string | TransactionArgument
-  url: ObjectArg
+  url: TransactionObjectInput
   idField: string | TransactionArgument
-  uid: ObjectArg
-  balance: ObjectArg
+  uid: TransactionObjectInput
+  balance: TransactionObjectInput
   option: bigint | TransactionArgument | TransactionArgument | null
-  optionObj: ObjectArg | TransactionArgument | null
+  optionObj: TransactionObjectInput | TransactionArgument | null
   optionNone: bigint | TransactionArgument | TransactionArgument | null
-  balanceGeneric: ObjectArg
+  balanceGeneric: TransactionObjectInput
   optionGeneric: GenericArg | TransactionArgument | null
   optionGenericNone: GenericArg | TransactionArgument | null
 }
 
 export function createSpecial(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: CreateSpecialArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::fixture::create_special`,
     typeArguments: typeArgs,
     arguments: [
-      pure(txb, args.string, `0x1::string::String`),
-      pure(txb, args.asciiString, `0x1::ascii::String`),
-      obj(txb, args.url),
-      pure(txb, args.idField, `0x2::object::ID`),
-      obj(txb, args.uid),
-      obj(txb, args.balance),
-      pure(txb, args.option, `0x1::option::Option<u64>`),
-      option(
-        txb,
-        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
-        args.optionObj
-      ),
-      pure(txb, args.optionNone, `0x1::option::Option<u64>`),
-      obj(txb, args.balanceGeneric),
-      option(txb, `${typeArgs[1]}`, args.optionGeneric),
-      option(txb, `${typeArgs[1]}`, args.optionGenericNone),
+      pure(tx, args.string, `${String.$typeName}`),
+      pure(tx, args.asciiString, `${String1.$typeName}`),
+      obj(tx, args.url),
+      pure(tx, args.idField, `${ID.$typeName}`),
+      obj(tx, args.uid),
+      obj(tx, args.balance),
+      pure(tx, args.option, `${Option.$typeName}<u64>`),
+      option(tx, `${Bar.$typeName}`, args.optionObj),
+      pure(tx, args.optionNone, `${Option.$typeName}<u64>`),
+      obj(tx, args.balanceGeneric),
+      option(tx, `${typeArgs[1]}`, args.optionGeneric),
+      option(tx, `${typeArgs[1]}`, args.optionGenericNone),
     ],
   })
 }
@@ -113,22 +106,22 @@ export interface CreateSpecialAsGenericsArgs {
 }
 
 export function createSpecialAsGenerics(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string, string, string, string, string, string, string],
   args: CreateSpecialAsGenericsArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::fixture::create_special_as_generics`,
     typeArguments: typeArgs,
     arguments: [
-      generic(txb, `${typeArgs[0]}`, args.string),
-      generic(txb, `${typeArgs[1]}`, args.asciiString),
-      generic(txb, `${typeArgs[2]}`, args.url),
-      generic(txb, `${typeArgs[3]}`, args.idField),
-      generic(txb, `${typeArgs[4]}`, args.uid),
-      generic(txb, `${typeArgs[5]}`, args.balance),
-      generic(txb, `${typeArgs[6]}`, args.option),
-      generic(txb, `${typeArgs[7]}`, args.optionNone),
+      generic(tx, `${typeArgs[0]}`, args.string),
+      generic(tx, `${typeArgs[1]}`, args.asciiString),
+      generic(tx, `${typeArgs[2]}`, args.url),
+      generic(tx, `${typeArgs[3]}`, args.idField),
+      generic(tx, `${typeArgs[4]}`, args.uid),
+      generic(tx, `${typeArgs[5]}`, args.balance),
+      generic(tx, `${typeArgs[6]}`, args.option),
+      generic(tx, `${typeArgs[7]}`, args.optionNone),
     ],
   })
 }
@@ -137,43 +130,35 @@ export interface CreateSpecialInVectorsArgs {
   string: Array<string | TransactionArgument> | TransactionArgument
   asciiString: Array<string | TransactionArgument> | TransactionArgument
   idField: Array<string | TransactionArgument> | TransactionArgument
-  bar: Array<ObjectArg> | TransactionArgument
+  bar: Array<TransactionObjectInput> | TransactionArgument
   option: Array<bigint | TransactionArgument | TransactionArgument | null> | TransactionArgument
   optionGeneric: Array<GenericArg | TransactionArgument | null> | TransactionArgument
 }
 
 export function createSpecialInVectors(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   args: CreateSpecialInVectorsArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::fixture::create_special_in_vectors`,
     typeArguments: [typeArg],
     arguments: [
-      pure(txb, args.string, `vector<0x1::string::String>`),
-      pure(txb, args.asciiString, `vector<0x1::ascii::String>`),
-      pure(txb, args.idField, `vector<0x2::object::ID>`),
-      vector(
-        txb,
-        `0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::fixture::Bar`,
-        args.bar
-      ),
-      pure(txb, args.option, `vector<0x1::option::Option<u64>>`),
-      vector(txb, `0x1::option::Option<${typeArg}>`, args.optionGeneric),
+      pure(tx, args.string, `vector<${String.$typeName}>`),
+      pure(tx, args.asciiString, `vector<${String1.$typeName}>`),
+      pure(tx, args.idField, `vector<${ID.$typeName}>`),
+      vector(tx, `${Bar.$typeName}`, args.bar),
+      pure(tx, args.option, `vector<${Option.$typeName}<u64>>`),
+      vector(tx, `${Option.$typeName}<${typeArg}>`, args.optionGeneric),
     ],
   })
 }
 
-export function createWithGenericField(
-  txb: TransactionBlock,
-  typeArg: string,
-  genericField: GenericArg
-) {
-  return txb.moveCall({
+export function createWithGenericField(tx: Transaction, typeArg: string, genericField: GenericArg) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::fixture::create_with_generic_field`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, genericField)],
+    arguments: [generic(tx, `${typeArg}`, genericField)],
   })
 }
 
@@ -183,16 +168,16 @@ export interface CreateWithTwoGenericsArgs {
 }
 
 export function createWithTwoGenerics(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: CreateWithTwoGenericsArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::fixture::create_with_two_generics`,
     typeArguments: typeArgs,
     arguments: [
-      generic(txb, `${typeArgs[0]}`, args.genericField1),
-      generic(txb, `${typeArgs[1]}`, args.genericField2),
+      generic(tx, `${typeArgs[0]}`, args.genericField1),
+      generic(tx, `${typeArgs[1]}`, args.genericField2),
     ],
   })
 }

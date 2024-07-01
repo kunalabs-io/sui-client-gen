@@ -1,98 +1,93 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { obj, pure } from '../../_framework/util'
+import { String } from './structs'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function length(txb: TransactionBlock, string: string | TransactionArgument) {
-  return txb.moveCall({
+export function length(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::ascii::length`,
-    arguments: [pure(txb, string, `0x1::ascii::String`)],
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
-export function allCharactersPrintable(
-  txb: TransactionBlock,
-  string: string | TransactionArgument
-) {
-  return txb.moveCall({
+export function allCharactersPrintable(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::ascii::all_characters_printable`,
-    arguments: [pure(txb, string, `0x1::ascii::String`)],
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
 export function string(
-  txb: TransactionBlock,
+  tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::ascii::string`,
-    arguments: [pure(txb, bytes, `vector<u8>`)],
+    arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }
 
-export function asBytes(txb: TransactionBlock, string: string | TransactionArgument) {
-  return txb.moveCall({
+export function asBytes(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::ascii::as_bytes`,
-    arguments: [pure(txb, string, `0x1::ascii::String`)],
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
-export function byte_(txb: TransactionBlock, char: ObjectArg) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::ascii::byte`, arguments: [obj(txb, char)] })
+export function byte_(tx: Transaction, char: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::ascii::byte`, arguments: [obj(tx, char)] })
 }
 
-export function char_(txb: TransactionBlock, byte: number | TransactionArgument) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::ascii::char`,
-    arguments: [pure(txb, byte, `u8`)],
-  })
+export function char_(tx: Transaction, byte: number | TransactionArgument) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::ascii::char`, arguments: [pure(tx, byte, `u8`)] })
 }
 
-export function intoBytes(txb: TransactionBlock, string: string | TransactionArgument) {
-  return txb.moveCall({
+export function intoBytes(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::ascii::into_bytes`,
-    arguments: [pure(txb, string, `0x1::ascii::String`)],
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
-export function isPrintableChar(txb: TransactionBlock, byte: number | TransactionArgument) {
-  return txb.moveCall({
+export function isPrintableChar(tx: Transaction, byte: number | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::ascii::is_printable_char`,
-    arguments: [pure(txb, byte, `u8`)],
+    arguments: [pure(tx, byte, `u8`)],
   })
 }
 
-export function isValidChar(txb: TransactionBlock, b: number | TransactionArgument) {
-  return txb.moveCall({
+export function isValidChar(tx: Transaction, b: number | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::ascii::is_valid_char`,
-    arguments: [pure(txb, b, `u8`)],
+    arguments: [pure(tx, b, `u8`)],
   })
 }
 
-export function popChar(txb: TransactionBlock, string: string | TransactionArgument) {
-  return txb.moveCall({
+export function popChar(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::ascii::pop_char`,
-    arguments: [pure(txb, string, `0x1::ascii::String`)],
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
 export interface PushCharArgs {
   string: string | TransactionArgument
-  char: ObjectArg
+  char: TransactionObjectInput
 }
 
-export function pushChar(txb: TransactionBlock, args: PushCharArgs) {
-  return txb.moveCall({
+export function pushChar(tx: Transaction, args: PushCharArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::ascii::push_char`,
-    arguments: [pure(txb, args.string, `0x1::ascii::String`), obj(txb, args.char)],
+    arguments: [pure(tx, args.string, `${String.$typeName}`), obj(tx, args.char)],
   })
 }
 
 export function tryString(
-  txb: TransactionBlock,
+  tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::ascii::try_string`,
-    arguments: [pure(txb, bytes, `vector<u8>`)],
+    arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }

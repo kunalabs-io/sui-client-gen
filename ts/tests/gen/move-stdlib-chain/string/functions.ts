@@ -1,18 +1,20 @@
 import { PUBLISHED_AT } from '..'
 import { pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { String as String1 } from '../ascii/structs'
+import { String } from './structs'
+import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
-export function bytes(txb: TransactionBlock, string: string | TransactionArgument) {
-  return txb.moveCall({
+export function bytes(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::string::bytes`,
-    arguments: [pure(txb, string, `0x1::string::String`)],
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
-export function length(txb: TransactionBlock, string: string | TransactionArgument) {
-  return txb.moveCall({
+export function length(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::string::length`,
-    arguments: [pure(txb, string, `0x1::string::String`)],
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
@@ -21,20 +23,20 @@ export interface AppendArgs {
   string2: string | TransactionArgument
 }
 
-export function append(txb: TransactionBlock, args: AppendArgs) {
-  return txb.moveCall({
+export function append(tx: Transaction, args: AppendArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::string::append`,
     arguments: [
-      pure(txb, args.string1, `0x1::string::String`),
-      pure(txb, args.string2, `0x1::string::String`),
+      pure(tx, args.string1, `${String.$typeName}`),
+      pure(tx, args.string2, `${String.$typeName}`),
     ],
   })
 }
 
-export function isEmpty(txb: TransactionBlock, string: string | TransactionArgument) {
-  return txb.moveCall({
+export function isEmpty(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::string::is_empty`,
-    arguments: [pure(txb, string, `0x1::string::String`)],
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
@@ -43,12 +45,12 @@ export interface IndexOfArgs {
   string2: string | TransactionArgument
 }
 
-export function indexOf(txb: TransactionBlock, args: IndexOfArgs) {
-  return txb.moveCall({
+export function indexOf(tx: Transaction, args: IndexOfArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::string::index_of`,
     arguments: [
-      pure(txb, args.string1, `0x1::string::String`),
-      pure(txb, args.string2, `0x1::string::String`),
+      pure(tx, args.string1, `${String.$typeName}`),
+      pure(tx, args.string2, `${String.$typeName}`),
     ],
   })
 }
@@ -59,48 +61,48 @@ export interface InsertArgs {
   string2: string | TransactionArgument
 }
 
-export function insert(txb: TransactionBlock, args: InsertArgs) {
-  return txb.moveCall({
+export function insert(tx: Transaction, args: InsertArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::string::insert`,
     arguments: [
-      pure(txb, args.string1, `0x1::string::String`),
-      pure(txb, args.u64, `u64`),
-      pure(txb, args.string2, `0x1::string::String`),
+      pure(tx, args.string1, `${String.$typeName}`),
+      pure(tx, args.u64, `u64`),
+      pure(tx, args.string2, `${String.$typeName}`),
     ],
   })
 }
 
 export function utf8(
-  txb: TransactionBlock,
+  tx: Transaction,
   vecU8: Array<number | TransactionArgument> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::string::utf8`,
-    arguments: [pure(txb, vecU8, `vector<u8>`)],
+    arguments: [pure(tx, vecU8, `vector<u8>`)],
   })
 }
 
-export function fromAscii(txb: TransactionBlock, string: string | TransactionArgument) {
-  return txb.moveCall({
+export function fromAscii(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::string::from_ascii`,
-    arguments: [pure(txb, string, `0x1::ascii::String`)],
+    arguments: [pure(tx, string, `${String1.$typeName}`)],
   })
 }
 
-export function toAscii(txb: TransactionBlock, string: string | TransactionArgument) {
-  return txb.moveCall({
+export function toAscii(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::string::to_ascii`,
-    arguments: [pure(txb, string, `0x1::string::String`)],
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
 export function tryUtf8(
-  txb: TransactionBlock,
+  tx: Transaction,
   vecU8: Array<number | TransactionArgument> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::string::try_utf8`,
-    arguments: [pure(txb, vecU8, `vector<u8>`)],
+    arguments: [pure(tx, vecU8, `vector<u8>`)],
   })
 }
 
@@ -109,10 +111,10 @@ export interface AppendUtf8Args {
   vecU8: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function appendUtf8(txb: TransactionBlock, args: AppendUtf8Args) {
-  return txb.moveCall({
+export function appendUtf8(tx: Transaction, args: AppendUtf8Args) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::string::append_utf8`,
-    arguments: [pure(txb, args.string, `0x1::string::String`), pure(txb, args.vecU8, `vector<u8>`)],
+    arguments: [pure(tx, args.string, `${String.$typeName}`), pure(tx, args.vecU8, `vector<u8>`)],
   })
 }
 
@@ -122,24 +124,24 @@ export interface SubStringArgs {
   u642: bigint | TransactionArgument
 }
 
-export function subString(txb: TransactionBlock, args: SubStringArgs) {
-  return txb.moveCall({
+export function subString(tx: Transaction, args: SubStringArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::string::sub_string`,
     arguments: [
-      pure(txb, args.string, `0x1::string::String`),
-      pure(txb, args.u641, `u64`),
-      pure(txb, args.u642, `u64`),
+      pure(tx, args.string, `${String.$typeName}`),
+      pure(tx, args.u641, `u64`),
+      pure(tx, args.u642, `u64`),
     ],
   })
 }
 
 export function internalCheckUtf8(
-  txb: TransactionBlock,
+  tx: Transaction,
   vecU8: Array<number | TransactionArgument> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::string::internal_check_utf8`,
-    arguments: [pure(txb, vecU8, `vector<u8>`)],
+    arguments: [pure(tx, vecU8, `vector<u8>`)],
   })
 }
 
@@ -148,10 +150,10 @@ export interface InternalIsCharBoundaryArgs {
   u64: bigint | TransactionArgument
 }
 
-export function internalIsCharBoundary(txb: TransactionBlock, args: InternalIsCharBoundaryArgs) {
-  return txb.moveCall({
+export function internalIsCharBoundary(tx: Transaction, args: InternalIsCharBoundaryArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::string::internal_is_char_boundary`,
-    arguments: [pure(txb, args.vecU8, `vector<u8>`), pure(txb, args.u64, `u64`)],
+    arguments: [pure(tx, args.vecU8, `vector<u8>`), pure(tx, args.u64, `u64`)],
   })
 }
 
@@ -161,13 +163,13 @@ export interface InternalSubStringArgs {
   u642: bigint | TransactionArgument
 }
 
-export function internalSubString(txb: TransactionBlock, args: InternalSubStringArgs) {
-  return txb.moveCall({
+export function internalSubString(tx: Transaction, args: InternalSubStringArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::string::internal_sub_string`,
     arguments: [
-      pure(txb, args.vecU8, `vector<u8>`),
-      pure(txb, args.u641, `u64`),
-      pure(txb, args.u642, `u64`),
+      pure(tx, args.vecU8, `vector<u8>`),
+      pure(tx, args.u641, `u64`),
+      pure(tx, args.u642, `u64`),
     ],
   })
 }
@@ -177,9 +179,9 @@ export interface InternalIndexOfArgs {
   vecU82: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function internalIndexOf(txb: TransactionBlock, args: InternalIndexOfArgs) {
-  return txb.moveCall({
+export function internalIndexOf(tx: Transaction, args: InternalIndexOfArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::string::internal_index_of`,
-    arguments: [pure(txb, args.vecU81, `vector<u8>`), pure(txb, args.vecU82, `vector<u8>`)],
+    arguments: [pure(tx, args.vecU81, `vector<u8>`), pure(tx, args.vecU82, `vector<u8>`)],
   })
 }

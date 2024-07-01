@@ -1,45 +1,41 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, generic, obj } from '../../_framework/util'
-import { TransactionBlock } from '@mysten/sui.js/transactions'
+import { GenericArg, generic, obj } from '../../_framework/util'
+import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function new_(txb: TransactionBlock, typeArg: string, t0: GenericArg) {
-  return txb.moveCall({
+export function new_(tx: Transaction, typeArg: string, t0: GenericArg) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::borrow::new`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, t0)],
+    arguments: [generic(tx, `${typeArg}`, t0)],
   })
 }
 
-export function borrow(txb: TransactionBlock, typeArg: string, referent: ObjectArg) {
-  return txb.moveCall({
+export function borrow(tx: Transaction, typeArg: string, referent: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::borrow::borrow`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, referent)],
+    arguments: [obj(tx, referent)],
   })
 }
 
 export interface PutBackArgs {
-  referent: ObjectArg
+  referent: TransactionObjectInput
   t0: GenericArg
-  borrow: ObjectArg
+  borrow: TransactionObjectInput
 }
 
-export function putBack(txb: TransactionBlock, typeArg: string, args: PutBackArgs) {
-  return txb.moveCall({
+export function putBack(tx: Transaction, typeArg: string, args: PutBackArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::borrow::put_back`,
     typeArguments: [typeArg],
-    arguments: [
-      obj(txb, args.referent),
-      generic(txb, `${typeArg}`, args.t0),
-      obj(txb, args.borrow),
-    ],
+    arguments: [obj(tx, args.referent), generic(tx, `${typeArg}`, args.t0), obj(tx, args.borrow)],
   })
 }
 
-export function destroy(txb: TransactionBlock, typeArg: string, referent: ObjectArg) {
-  return txb.moveCall({
+export function destroy(tx: Transaction, typeArg: string, referent: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::borrow::destroy`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, referent)],
+    arguments: [obj(tx, referent)],
   })
 }

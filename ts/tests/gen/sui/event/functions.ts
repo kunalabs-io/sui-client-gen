@@ -1,11 +1,11 @@
 import { PUBLISHED_AT } from '..'
 import { GenericArg, generic } from '../../_framework/util'
-import { TransactionBlock } from '@mysten/sui.js/transactions'
+import { Transaction } from '@mysten/sui/transactions'
 
-export function emit(txb: TransactionBlock, typeArg: string, event: GenericArg) {
-  return txb.moveCall({
+export function emit(tx: Transaction, typeArg: string, event: GenericArg) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::event::emit`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, event)],
+    arguments: [generic(tx, `${typeArg}`, event)],
   })
 }

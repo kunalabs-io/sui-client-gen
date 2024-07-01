@@ -17,15 +17,16 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { PKG_V19 } from '../index'
 import { Table } from '../table/structs'
 import { bcs, fromB64 } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== TableVec =============================== */
 
 export function isTableVec(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith('0x2::table_vec::TableVec<')
+  return type.startsWith(`${PKG_V19}::table_vec::TableVec` + '<')
 }
 
 export interface TableVecFields<Element extends PhantomTypeArgument> {
@@ -38,12 +39,12 @@ export type TableVecReified<Element extends PhantomTypeArgument> = Reified<
 >
 
 export class TableVec<Element extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = '0x2::table_vec::TableVec'
+  static readonly $typeName = `${PKG_V19}::table_vec::TableVec`
   static readonly $numTypeParams = 1
 
   readonly $typeName = TableVec.$typeName
 
-  readonly $fullTypeName: `0x2::table_vec::TableVec<${PhantomToTypeStr<Element>}>`
+  readonly $fullTypeName: `${typeof PKG_V19}::table_vec::TableVec<${PhantomToTypeStr<Element>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<Element>]
 
@@ -53,7 +54,7 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
     this.$fullTypeName = composeSuiType(
       TableVec.$typeName,
       ...typeArgs
-    ) as `0x2::table_vec::TableVec<${PhantomToTypeStr<Element>}>`
+    ) as `${typeof PKG_V19}::table_vec::TableVec<${PhantomToTypeStr<Element>}>`
     this.$typeArgs = typeArgs
 
     this.contents = fields.contents
@@ -67,7 +68,9 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
       fullTypeName: composeSuiType(
         TableVec.$typeName,
         ...[extractType(Element)]
-      ) as `0x2::table_vec::TableVec<${PhantomToTypeStr<ToPhantomTypeArgument<Element>>}>`,
+      ) as `${typeof PKG_V19}::table_vec::TableVec<${PhantomToTypeStr<
+        ToPhantomTypeArgument<Element>
+      >}>`,
       typeArgs: [extractType(Element)] as [PhantomToTypeStr<ToPhantomTypeArgument<Element>>],
       reifiedTypeArgs: [Element],
       fromFields: (fields: Record<string, any>) => TableVec.fromFields(Element, fields),

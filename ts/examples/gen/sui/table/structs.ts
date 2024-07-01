@@ -16,15 +16,16 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { PKG_V19 } from '../index'
 import { UID } from '../object/structs'
 import { bcs, fromB64 } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== Table =============================== */
 
 export function isTable(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith('0x2::table::Table<')
+  return type.startsWith(`${PKG_V19}::table::Table` + '<')
 }
 
 export interface TableFields<K extends PhantomTypeArgument, V extends PhantomTypeArgument> {
@@ -40,12 +41,12 @@ export type TableReified<K extends PhantomTypeArgument, V extends PhantomTypeArg
 export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
   implements StructClass
 {
-  static readonly $typeName = '0x2::table::Table'
+  static readonly $typeName = `${PKG_V19}::table::Table`
   static readonly $numTypeParams = 2
 
   readonly $typeName = Table.$typeName
 
-  readonly $fullTypeName: `0x2::table::Table<${PhantomToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
+  readonly $fullTypeName: `${typeof PKG_V19}::table::Table<${PhantomToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<K>, PhantomToTypeStr<V>]
 
@@ -59,7 +60,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
     this.$fullTypeName = composeSuiType(
       Table.$typeName,
       ...typeArgs
-    ) as `0x2::table::Table<${PhantomToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
+    ) as `${typeof PKG_V19}::table::Table<${PhantomToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -75,9 +76,9 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
       fullTypeName: composeSuiType(
         Table.$typeName,
         ...[extractType(K), extractType(V)]
-      ) as `0x2::table::Table<${PhantomToTypeStr<ToPhantomTypeArgument<K>>}, ${PhantomToTypeStr<
-        ToPhantomTypeArgument<V>
-      >}>`,
+      ) as `${typeof PKG_V19}::table::Table<${PhantomToTypeStr<
+        ToPhantomTypeArgument<K>
+      >}, ${PhantomToTypeStr<ToPhantomTypeArgument<V>>}>`,
       typeArgs: [extractType(K), extractType(V)] as [
         PhantomToTypeStr<ToPhantomTypeArgument<K>>,
         PhantomToTypeStr<ToPhantomTypeArgument<V>>,

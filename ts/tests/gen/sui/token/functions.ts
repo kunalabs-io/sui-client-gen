@@ -1,114 +1,117 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, generic, obj, option, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { GenericArg, generic, obj, option, pure } from '../../_framework/util'
+import { Option } from '../../move-stdlib/option/structs'
+import { String } from '../../move-stdlib/string/structs'
+import { Balance } from '../balance/structs'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function value(txb: TransactionBlock, typeArg: string, t: ObjectArg) {
-  return txb.moveCall({
+export function value(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::value`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, t)],
+    arguments: [obj(tx, t)],
   })
 }
 
-export function amount(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function amount(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::amount`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
 export interface AllowArgs {
-  self: ObjectArg
-  cap: ObjectArg
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
   action: string | TransactionArgument
 }
 
-export function allow(txb: TransactionBlock, typeArg: string, args: AllowArgs) {
-  return txb.moveCall({
+export function allow(tx: Transaction, typeArg: string, args: AllowArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::allow`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.self),
-      obj(txb, args.cap),
-      pure(txb, args.action, `0x1::string::String`),
+      obj(tx, args.self),
+      obj(tx, args.cap),
+      pure(tx, args.action, `${String.$typeName}`),
     ],
   })
 }
 
-export function sender(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function sender(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::sender`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
 export interface TransferArgs {
-  t: ObjectArg
+  t: TransactionObjectInput
   recipient: string | TransactionArgument
 }
 
-export function transfer(txb: TransactionBlock, typeArg: string, args: TransferArgs) {
-  return txb.moveCall({
+export function transfer(tx: Transaction, typeArg: string, args: TransferArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::transfer`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.t), pure(txb, args.recipient, `address`)],
+    arguments: [obj(tx, args.t), pure(tx, args.recipient, `address`)],
   })
 }
 
-export function recipient(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function recipient(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::recipient`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
-export function destroyZero(txb: TransactionBlock, typeArg: string, token: ObjectArg) {
-  return txb.moveCall({
+export function destroyZero(tx: Transaction, typeArg: string, token: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::destroy_zero`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, token)],
+    arguments: [obj(tx, token)],
   })
 }
 
 export interface JoinArgs {
-  token: ObjectArg
-  another: ObjectArg
+  token: TransactionObjectInput
+  another: TransactionObjectInput
 }
 
-export function join(txb: TransactionBlock, typeArg: string, args: JoinArgs) {
-  return txb.moveCall({
+export function join(tx: Transaction, typeArg: string, args: JoinArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::join`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.token), obj(txb, args.another)],
+    arguments: [obj(tx, args.token), obj(tx, args.another)],
   })
 }
 
 export interface SplitArgs {
-  token: ObjectArg
+  token: TransactionObjectInput
   amount: bigint | TransactionArgument
 }
 
-export function split(txb: TransactionBlock, typeArg: string, args: SplitArgs) {
-  return txb.moveCall({
+export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::split`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.token), pure(txb, args.amount, `u64`)],
+    arguments: [obj(tx, args.token), pure(tx, args.amount, `u64`)],
   })
 }
 
-export function zero(txb: TransactionBlock, typeArg: string) {
-  return txb.moveCall({
+export function zero(tx: Transaction, typeArg: string) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::zero`,
     typeArguments: [typeArg],
     arguments: [],
   })
 }
 
-export function key(txb: TransactionBlock, typeArg: string) {
-  return txb.moveCall({
+export function key(tx: Transaction, typeArg: string) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::key`,
     typeArguments: [typeArg],
     arguments: [],
@@ -116,41 +119,41 @@ export function key(txb: TransactionBlock, typeArg: string) {
 }
 
 export interface BurnArgs {
-  cap: ObjectArg
-  token: ObjectArg
+  cap: TransactionObjectInput
+  token: TransactionObjectInput
 }
 
-export function burn(txb: TransactionBlock, typeArg: string, args: BurnArgs) {
-  return txb.moveCall({
+export function burn(tx: Transaction, typeArg: string, args: BurnArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::burn`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.cap), obj(txb, args.token)],
+    arguments: [obj(tx, args.cap), obj(tx, args.token)],
   })
 }
 
 export interface MintArgs {
-  cap: ObjectArg
+  cap: TransactionObjectInput
   amount: bigint | TransactionArgument
 }
 
-export function mint(txb: TransactionBlock, typeArg: string, args: MintArgs) {
-  return txb.moveCall({
+export function mint(tx: Transaction, typeArg: string, args: MintArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::mint`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.cap), pure(txb, args.amount, `u64`)],
+    arguments: [obj(tx, args.cap), pure(tx, args.amount, `u64`)],
   })
 }
 
 export interface ConfirmRequestArgs {
-  policy: ObjectArg
-  request: ObjectArg
+  policy: TransactionObjectInput
+  request: TransactionObjectInput
 }
 
-export function confirmRequest(txb: TransactionBlock, typeArg: string, args: ConfirmRequestArgs) {
-  return txb.moveCall({
+export function confirmRequest(tx: Transaction, typeArg: string, args: ConfirmRequestArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::confirm_request`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.policy), obj(txb, args.request)],
+    arguments: [obj(tx, args.policy), obj(tx, args.request)],
   })
 }
 
@@ -158,379 +161,375 @@ export interface NewRequestArgs {
   name: string | TransactionArgument
   amount: bigint | TransactionArgument
   recipient: string | TransactionArgument | TransactionArgument | null
-  spentBalance: ObjectArg | TransactionArgument | null
+  spentBalance: TransactionObjectInput | TransactionArgument | null
 }
 
-export function newRequest(txb: TransactionBlock, typeArg: string, args: NewRequestArgs) {
-  return txb.moveCall({
+export function newRequest(tx: Transaction, typeArg: string, args: NewRequestArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::new_request`,
     typeArguments: [typeArg],
     arguments: [
-      pure(txb, args.name, `0x1::string::String`),
-      pure(txb, args.amount, `u64`),
-      pure(txb, args.recipient, `0x1::option::Option<address>`),
-      option(txb, `0x2::balance::Balance<${typeArg}>`, args.spentBalance),
+      pure(tx, args.name, `${String.$typeName}`),
+      pure(tx, args.amount, `u64`),
+      pure(tx, args.recipient, `${Option.$typeName}<address>`),
+      option(tx, `${Balance.$typeName}<${typeArg}>`, args.spentBalance),
     ],
   })
 }
 
 export interface RulesArgs {
-  self: ObjectArg
+  self: TransactionObjectInput
   action: string | TransactionArgument
 }
 
-export function rules(txb: TransactionBlock, typeArg: string, args: RulesArgs) {
-  return txb.moveCall({
+export function rules(tx: Transaction, typeArg: string, args: RulesArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::rules`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.self), pure(txb, args.action, `0x1::string::String`)],
+    arguments: [obj(tx, args.self), pure(tx, args.action, `${String.$typeName}`)],
   })
 }
 
-export function keep(txb: TransactionBlock, typeArg: string, token: ObjectArg) {
-  return txb.moveCall({
+export function keep(tx: Transaction, typeArg: string, token: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::keep`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, token)],
+    arguments: [obj(tx, token)],
   })
 }
 
-export function action(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function action(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::action`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
 export interface AddApprovalArgs {
   t: GenericArg
-  request: ObjectArg
+  request: TransactionObjectInput
 }
 
-export function addApproval(
-  txb: TransactionBlock,
-  typeArgs: [string, string],
-  args: AddApprovalArgs
-) {
-  return txb.moveCall({
+export function addApproval(tx: Transaction, typeArgs: [string, string], args: AddApprovalArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::add_approval`,
     typeArguments: typeArgs,
-    arguments: [generic(txb, `${typeArgs[1]}`, args.t), obj(txb, args.request)],
+    arguments: [generic(tx, `${typeArgs[1]}`, args.t), obj(tx, args.request)],
   })
 }
 
 export interface AddRuleConfigArgs {
   rule: GenericArg
-  self: ObjectArg
-  cap: ObjectArg
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
   config: GenericArg
 }
 
 export function addRuleConfig(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string, string],
   args: AddRuleConfigArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::add_rule_config`,
     typeArguments: typeArgs,
     arguments: [
-      generic(txb, `${typeArgs[1]}`, args.rule),
-      obj(txb, args.self),
-      obj(txb, args.cap),
-      generic(txb, `${typeArgs[2]}`, args.config),
+      generic(tx, `${typeArgs[1]}`, args.rule),
+      obj(tx, args.self),
+      obj(tx, args.cap),
+      generic(tx, `${typeArgs[2]}`, args.config),
     ],
   })
 }
 
 export interface AddRuleForActionArgs {
-  self: ObjectArg
-  cap: ObjectArg
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
   action: string | TransactionArgument
 }
 
 export function addRuleForAction(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: AddRuleForActionArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::add_rule_for_action`,
     typeArguments: typeArgs,
     arguments: [
-      obj(txb, args.self),
-      obj(txb, args.cap),
-      pure(txb, args.action, `0x1::string::String`),
+      obj(tx, args.self),
+      obj(tx, args.cap),
+      pure(tx, args.action, `${String.$typeName}`),
     ],
   })
 }
 
-export function approvals(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function approvals(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::approvals`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
 export interface ConfirmRequestMutArgs {
-  policy: ObjectArg
-  request: ObjectArg
+  policy: TransactionObjectInput
+  request: TransactionObjectInput
 }
 
-export function confirmRequestMut(
-  txb: TransactionBlock,
-  typeArg: string,
-  args: ConfirmRequestMutArgs
-) {
-  return txb.moveCall({
+export function confirmRequestMut(tx: Transaction, typeArg: string, args: ConfirmRequestMutArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::confirm_request_mut`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.policy), obj(txb, args.request)],
+    arguments: [obj(tx, args.policy), obj(tx, args.request)],
   })
 }
 
 export interface ConfirmWithPolicyCapArgs {
-  policyCap: ObjectArg
-  request: ObjectArg
+  policyCap: TransactionObjectInput
+  request: TransactionObjectInput
 }
 
 export function confirmWithPolicyCap(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   args: ConfirmWithPolicyCapArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::confirm_with_policy_cap`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.policyCap), obj(txb, args.request)],
+    arguments: [obj(tx, args.policyCap), obj(tx, args.request)],
   })
 }
 
 export interface ConfirmWithTreasuryCapArgs {
-  treasuryCap: ObjectArg
-  request: ObjectArg
+  treasuryCap: TransactionObjectInput
+  request: TransactionObjectInput
 }
 
 export function confirmWithTreasuryCap(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   args: ConfirmWithTreasuryCapArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::confirm_with_treasury_cap`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.treasuryCap), obj(txb, args.request)],
+    arguments: [obj(tx, args.treasuryCap), obj(tx, args.request)],
   })
 }
 
 export interface DisallowArgs {
-  self: ObjectArg
-  cap: ObjectArg
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
   action: string | TransactionArgument
 }
 
-export function disallow(txb: TransactionBlock, typeArg: string, args: DisallowArgs) {
-  return txb.moveCall({
+export function disallow(tx: Transaction, typeArg: string, args: DisallowArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::disallow`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.self),
-      obj(txb, args.cap),
-      pure(txb, args.action, `0x1::string::String`),
+      obj(tx, args.self),
+      obj(tx, args.cap),
+      pure(tx, args.action, `${String.$typeName}`),
     ],
   })
 }
 
 export interface FlushArgs {
-  self: ObjectArg
-  cap: ObjectArg
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
 }
 
-export function flush(txb: TransactionBlock, typeArg: string, args: FlushArgs) {
-  return txb.moveCall({
+export function flush(tx: Transaction, typeArg: string, args: FlushArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::flush`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.self), obj(txb, args.cap)],
+    arguments: [obj(tx, args.self), obj(tx, args.cap)],
   })
 }
 
-export function fromCoin(txb: TransactionBlock, typeArg: string, coin: ObjectArg) {
-  return txb.moveCall({
+export function fromCoin(tx: Transaction, typeArg: string, coin: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::from_coin`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, coin)],
+    arguments: [obj(tx, coin)],
   })
 }
 
-export function fromCoinAction(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::token::from_coin_action`, arguments: [] })
+export function fromCoinAction(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::token::from_coin_action`, arguments: [] })
 }
 
-export function hasRuleConfig(txb: TransactionBlock, typeArgs: [string, string], self: ObjectArg) {
-  return txb.moveCall({
+export function hasRuleConfig(
+  tx: Transaction,
+  typeArgs: [string, string],
+  self: TransactionObjectInput
+) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::has_rule_config`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
 export function hasRuleConfigWithType(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string, string],
-  self: ObjectArg
+  self: TransactionObjectInput
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::has_rule_config_with_type`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
 export interface IsAllowedArgs {
-  self: ObjectArg
+  self: TransactionObjectInput
   action: string | TransactionArgument
 }
 
-export function isAllowed(txb: TransactionBlock, typeArg: string, args: IsAllowedArgs) {
-  return txb.moveCall({
+export function isAllowed(tx: Transaction, typeArg: string, args: IsAllowedArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::is_allowed`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.self), pure(txb, args.action, `0x1::string::String`)],
+    arguments: [obj(tx, args.self), pure(tx, args.action, `${String.$typeName}`)],
   })
 }
 
-export function newPolicy(txb: TransactionBlock, typeArg: string, treasuryCap: ObjectArg) {
-  return txb.moveCall({
+export function newPolicy(tx: Transaction, typeArg: string, treasuryCap: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::new_policy`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, treasuryCap)],
+    arguments: [obj(tx, treasuryCap)],
   })
 }
 
-export function spentBalance(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function spentBalance(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::spent_balance`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
 export interface RemoveRuleConfigArgs {
-  self: ObjectArg
-  cap: ObjectArg
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
 }
 
 export function removeRuleConfig(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string, string],
   args: RemoveRuleConfigArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::remove_rule_config`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.self), obj(txb, args.cap)],
+    arguments: [obj(tx, args.self), obj(tx, args.cap)],
   })
 }
 
 export interface RemoveRuleForActionArgs {
-  self: ObjectArg
-  cap: ObjectArg
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
   action: string | TransactionArgument
 }
 
 export function removeRuleForAction(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: RemoveRuleForActionArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::remove_rule_for_action`,
     typeArguments: typeArgs,
     arguments: [
-      obj(txb, args.self),
-      obj(txb, args.cap),
-      pure(txb, args.action, `0x1::string::String`),
+      obj(tx, args.self),
+      obj(tx, args.cap),
+      pure(tx, args.action, `${String.$typeName}`),
     ],
   })
 }
 
 export interface RuleConfigArgs {
   rule: GenericArg
-  self: ObjectArg
+  self: TransactionObjectInput
 }
 
 export function ruleConfig(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string, string],
   args: RuleConfigArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::rule_config`,
     typeArguments: typeArgs,
-    arguments: [generic(txb, `${typeArgs[1]}`, args.rule), obj(txb, args.self)],
+    arguments: [generic(tx, `${typeArgs[1]}`, args.rule), obj(tx, args.self)],
   })
 }
 
 export interface RuleConfigMutArgs {
   rule: GenericArg
-  self: ObjectArg
-  cap: ObjectArg
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
 }
 
 export function ruleConfigMut(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string, string],
   args: RuleConfigMutArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::rule_config_mut`,
     typeArguments: typeArgs,
-    arguments: [generic(txb, `${typeArgs[1]}`, args.rule), obj(txb, args.self), obj(txb, args.cap)],
+    arguments: [generic(tx, `${typeArgs[1]}`, args.rule), obj(tx, args.self), obj(tx, args.cap)],
   })
 }
 
-export function sharePolicy(txb: TransactionBlock, typeArg: string, policy: ObjectArg) {
-  return txb.moveCall({
+export function sharePolicy(tx: Transaction, typeArg: string, policy: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::share_policy`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, policy)],
+    arguments: [obj(tx, policy)],
   })
 }
 
-export function spend(txb: TransactionBlock, typeArg: string, t: ObjectArg) {
-  return txb.moveCall({
+export function spend(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::spend`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, t)],
+    arguments: [obj(tx, t)],
   })
 }
 
-export function spendAction(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::token::spend_action`, arguments: [] })
+export function spendAction(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::token::spend_action`, arguments: [] })
 }
 
-export function spent(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function spent(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::spent`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
-export function toCoin(txb: TransactionBlock, typeArg: string, t: ObjectArg) {
-  return txb.moveCall({
+export function toCoin(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::token::to_coin`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, t)],
+    arguments: [obj(tx, t)],
   })
 }
 
-export function toCoinAction(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::token::to_coin_action`, arguments: [] })
+export function toCoinAction(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::token::to_coin_action`, arguments: [] })
 }
 
-export function transferAction(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::token::transfer_action`, arguments: [] })
+export function transferAction(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::token::transfer_action`, arguments: [] })
 }

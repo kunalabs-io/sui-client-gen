@@ -1,524 +1,527 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { GenericArg, generic, obj, pure } from '../../_framework/util'
+import { Option } from '../../move-stdlib-chain/option/structs'
+import { ID } from '../object/structs'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function new_(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::kiosk::new`, arguments: [] })
+export function new_(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::new`, arguments: [] })
 }
 
 export interface BorrowArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
   id: string | TransactionArgument
 }
 
-export function borrow(txb: TransactionBlock, typeArg: string, args: BorrowArgs) {
-  return txb.moveCall({
+export function borrow(tx: Transaction, typeArg: string, args: BorrowArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::borrow`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.kiosk),
-      obj(txb, args.kioskOwnerCap),
-      pure(txb, args.id, `0x2::object::ID`),
+      obj(tx, args.kiosk),
+      obj(tx, args.kioskOwnerCap),
+      pure(tx, args.id, `${ID.$typeName}`),
     ],
   })
 }
 
 export interface BorrowMutArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
   id: string | TransactionArgument
 }
 
-export function borrowMut(txb: TransactionBlock, typeArg: string, args: BorrowMutArgs) {
-  return txb.moveCall({
+export function borrowMut(tx: Transaction, typeArg: string, args: BorrowMutArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::borrow_mut`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.kiosk),
-      obj(txb, args.kioskOwnerCap),
-      pure(txb, args.id, `0x2::object::ID`),
+      obj(tx, args.kiosk),
+      obj(tx, args.kioskOwnerCap),
+      pure(tx, args.id, `${ID.$typeName}`),
     ],
   })
 }
 
-export function owner(txb: TransactionBlock, kiosk: ObjectArg) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::kiosk::owner`, arguments: [obj(txb, kiosk)] })
+export function owner(tx: Transaction, kiosk: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::owner`, arguments: [obj(tx, kiosk)] })
 }
 
 export interface TakeArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
   id: string | TransactionArgument
 }
 
-export function take(txb: TransactionBlock, typeArg: string, args: TakeArgs) {
-  return txb.moveCall({
+export function take(tx: Transaction, typeArg: string, args: TakeArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::take`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.kiosk),
-      obj(txb, args.kioskOwnerCap),
-      pure(txb, args.id, `0x2::object::ID`),
+      obj(tx, args.kiosk),
+      obj(tx, args.kioskOwnerCap),
+      pure(tx, args.id, `${ID.$typeName}`),
     ],
   })
 }
 
-export function uid(txb: TransactionBlock, kiosk: ObjectArg) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::kiosk::uid`, arguments: [obj(txb, kiosk)] })
+export function uid(tx: Transaction, kiosk: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::uid`, arguments: [obj(tx, kiosk)] })
 }
 
-export function default_(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::kiosk::default`, arguments: [] })
+export function default_(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::default`, arguments: [] })
 }
 
 export interface WithdrawArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
   option: bigint | TransactionArgument | TransactionArgument | null
 }
 
-export function withdraw(txb: TransactionBlock, args: WithdrawArgs) {
-  return txb.moveCall({
+export function withdraw(tx: Transaction, args: WithdrawArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::withdraw`,
     arguments: [
-      obj(txb, args.kiosk),
-      obj(txb, args.kioskOwnerCap),
-      pure(txb, args.option, `0x1::option::Option<u64>`),
+      obj(tx, args.kiosk),
+      obj(tx, args.kioskOwnerCap),
+      pure(tx, args.option, `${Option.$typeName}<u64>`),
     ],
   })
 }
 
 export interface UidMutAsOwnerArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
 }
 
-export function uidMutAsOwner(txb: TransactionBlock, args: UidMutAsOwnerArgs) {
-  return txb.moveCall({
+export function uidMutAsOwner(tx: Transaction, args: UidMutAsOwnerArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::uid_mut_as_owner`,
-    arguments: [obj(txb, args.kiosk), obj(txb, args.kioskOwnerCap)],
+    arguments: [obj(tx, args.kiosk), obj(tx, args.kioskOwnerCap)],
   })
 }
 
 export interface CloseAndWithdrawArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
 }
 
-export function closeAndWithdraw(txb: TransactionBlock, args: CloseAndWithdrawArgs) {
-  return txb.moveCall({
+export function closeAndWithdraw(tx: Transaction, args: CloseAndWithdrawArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::close_and_withdraw`,
-    arguments: [obj(txb, args.kiosk), obj(txb, args.kioskOwnerCap)],
+    arguments: [obj(tx, args.kiosk), obj(tx, args.kioskOwnerCap)],
   })
 }
 
 export interface SetOwnerArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
 }
 
-export function setOwner(txb: TransactionBlock, args: SetOwnerArgs) {
-  return txb.moveCall({
+export function setOwner(tx: Transaction, args: SetOwnerArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::set_owner`,
-    arguments: [obj(txb, args.kiosk), obj(txb, args.kioskOwnerCap)],
+    arguments: [obj(tx, args.kiosk), obj(tx, args.kioskOwnerCap)],
   })
 }
 
 export interface SetOwnerCustomArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
   address: string | TransactionArgument
 }
 
-export function setOwnerCustom(txb: TransactionBlock, args: SetOwnerCustomArgs) {
-  return txb.moveCall({
+export function setOwnerCustom(tx: Transaction, args: SetOwnerCustomArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::set_owner_custom`,
     arguments: [
-      obj(txb, args.kiosk),
-      obj(txb, args.kioskOwnerCap),
-      pure(txb, args.address, `address`),
+      obj(tx, args.kiosk),
+      obj(tx, args.kioskOwnerCap),
+      pure(tx, args.address, `address`),
     ],
   })
 }
 
 export interface PlaceArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
   t0: GenericArg
 }
 
-export function place(txb: TransactionBlock, typeArg: string, args: PlaceArgs) {
-  return txb.moveCall({
+export function place(tx: Transaction, typeArg: string, args: PlaceArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::place`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.kiosk),
-      obj(txb, args.kioskOwnerCap),
-      generic(txb, `${typeArg}`, args.t0),
+      obj(tx, args.kiosk),
+      obj(tx, args.kioskOwnerCap),
+      generic(tx, `${typeArg}`, args.t0),
     ],
   })
 }
 
 export interface LockArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
-  transferPolicy: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
+  transferPolicy: TransactionObjectInput
   t0: GenericArg
 }
 
-export function lock(txb: TransactionBlock, typeArg: string, args: LockArgs) {
-  return txb.moveCall({
+export function lock(tx: Transaction, typeArg: string, args: LockArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::lock`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.kiosk),
-      obj(txb, args.kioskOwnerCap),
-      obj(txb, args.transferPolicy),
-      generic(txb, `${typeArg}`, args.t0),
+      obj(tx, args.kiosk),
+      obj(tx, args.kioskOwnerCap),
+      obj(tx, args.transferPolicy),
+      generic(tx, `${typeArg}`, args.t0),
     ],
   })
 }
 
 export interface ListArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
   id: string | TransactionArgument
   u64: bigint | TransactionArgument
 }
 
-export function list(txb: TransactionBlock, typeArg: string, args: ListArgs) {
-  return txb.moveCall({
+export function list(tx: Transaction, typeArg: string, args: ListArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::list`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.kiosk),
-      obj(txb, args.kioskOwnerCap),
-      pure(txb, args.id, `0x2::object::ID`),
-      pure(txb, args.u64, `u64`),
+      obj(tx, args.kiosk),
+      obj(tx, args.kioskOwnerCap),
+      pure(tx, args.id, `${ID.$typeName}`),
+      pure(tx, args.u64, `u64`),
     ],
   })
 }
 
 export interface PlaceAndListArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
   t0: GenericArg
   u64: bigint | TransactionArgument
 }
 
-export function placeAndList(txb: TransactionBlock, typeArg: string, args: PlaceAndListArgs) {
-  return txb.moveCall({
+export function placeAndList(tx: Transaction, typeArg: string, args: PlaceAndListArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::place_and_list`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.kiosk),
-      obj(txb, args.kioskOwnerCap),
-      generic(txb, `${typeArg}`, args.t0),
-      pure(txb, args.u64, `u64`),
+      obj(tx, args.kiosk),
+      obj(tx, args.kioskOwnerCap),
+      generic(tx, `${typeArg}`, args.t0),
+      pure(tx, args.u64, `u64`),
     ],
   })
 }
 
 export interface DelistArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
   id: string | TransactionArgument
 }
 
-export function delist(txb: TransactionBlock, typeArg: string, args: DelistArgs) {
-  return txb.moveCall({
+export function delist(tx: Transaction, typeArg: string, args: DelistArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::delist`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.kiosk),
-      obj(txb, args.kioskOwnerCap),
-      pure(txb, args.id, `0x2::object::ID`),
+      obj(tx, args.kiosk),
+      obj(tx, args.kioskOwnerCap),
+      pure(tx, args.id, `${ID.$typeName}`),
     ],
   })
 }
 
 export interface PurchaseArgs {
-  kiosk: ObjectArg
+  kiosk: TransactionObjectInput
   id: string | TransactionArgument
-  coin: ObjectArg
+  coin: TransactionObjectInput
 }
 
-export function purchase(txb: TransactionBlock, typeArg: string, args: PurchaseArgs) {
-  return txb.moveCall({
+export function purchase(tx: Transaction, typeArg: string, args: PurchaseArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::purchase`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.kiosk), pure(txb, args.id, `0x2::object::ID`), obj(txb, args.coin)],
+    arguments: [obj(tx, args.kiosk), pure(tx, args.id, `${ID.$typeName}`), obj(tx, args.coin)],
   })
 }
 
 export interface ListWithPurchaseCapArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
   id: string | TransactionArgument
   u64: bigint | TransactionArgument
 }
 
 export function listWithPurchaseCap(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   args: ListWithPurchaseCapArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::list_with_purchase_cap`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.kiosk),
-      obj(txb, args.kioskOwnerCap),
-      pure(txb, args.id, `0x2::object::ID`),
-      pure(txb, args.u64, `u64`),
+      obj(tx, args.kiosk),
+      obj(tx, args.kioskOwnerCap),
+      pure(tx, args.id, `${ID.$typeName}`),
+      pure(tx, args.u64, `u64`),
     ],
   })
 }
 
 export interface PurchaseWithCapArgs {
-  kiosk: ObjectArg
-  purchaseCap: ObjectArg
-  coin: ObjectArg
+  kiosk: TransactionObjectInput
+  purchaseCap: TransactionObjectInput
+  coin: TransactionObjectInput
 }
 
-export function purchaseWithCap(txb: TransactionBlock, typeArg: string, args: PurchaseWithCapArgs) {
-  return txb.moveCall({
+export function purchaseWithCap(tx: Transaction, typeArg: string, args: PurchaseWithCapArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::purchase_with_cap`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.kiosk), obj(txb, args.purchaseCap), obj(txb, args.coin)],
+    arguments: [obj(tx, args.kiosk), obj(tx, args.purchaseCap), obj(tx, args.coin)],
   })
 }
 
 export interface ReturnPurchaseCapArgs {
-  kiosk: ObjectArg
-  purchaseCap: ObjectArg
+  kiosk: TransactionObjectInput
+  purchaseCap: TransactionObjectInput
 }
 
-export function returnPurchaseCap(
-  txb: TransactionBlock,
-  typeArg: string,
-  args: ReturnPurchaseCapArgs
-) {
-  return txb.moveCall({
+export function returnPurchaseCap(tx: Transaction, typeArg: string, args: ReturnPurchaseCapArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::return_purchase_cap`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.kiosk), obj(txb, args.purchaseCap)],
+    arguments: [obj(tx, args.kiosk), obj(tx, args.purchaseCap)],
   })
 }
 
 export interface LockInternalArgs {
-  kiosk: ObjectArg
+  kiosk: TransactionObjectInput
   t0: GenericArg
 }
 
-export function lockInternal(txb: TransactionBlock, typeArg: string, args: LockInternalArgs) {
-  return txb.moveCall({
+export function lockInternal(tx: Transaction, typeArg: string, args: LockInternalArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::lock_internal`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.kiosk), generic(txb, `${typeArg}`, args.t0)],
+    arguments: [obj(tx, args.kiosk), generic(tx, `${typeArg}`, args.t0)],
   })
 }
 
 export interface PlaceInternalArgs {
-  kiosk: ObjectArg
+  kiosk: TransactionObjectInput
   t0: GenericArg
 }
 
-export function placeInternal(txb: TransactionBlock, typeArg: string, args: PlaceInternalArgs) {
-  return txb.moveCall({
+export function placeInternal(tx: Transaction, typeArg: string, args: PlaceInternalArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::place_internal`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.kiosk), generic(txb, `${typeArg}`, args.t0)],
+    arguments: [obj(tx, args.kiosk), generic(tx, `${typeArg}`, args.t0)],
   })
 }
 
-export function uidMutInternal(txb: TransactionBlock, kiosk: ObjectArg) {
-  return txb.moveCall({
+export function uidMutInternal(tx: Transaction, kiosk: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::uid_mut_internal`,
-    arguments: [obj(txb, kiosk)],
+    arguments: [obj(tx, kiosk)],
   })
 }
 
 export interface HasItemArgs {
-  kiosk: ObjectArg
+  kiosk: TransactionObjectInput
   id: string | TransactionArgument
 }
 
-export function hasItem(txb: TransactionBlock, args: HasItemArgs) {
-  return txb.moveCall({
+export function hasItem(tx: Transaction, args: HasItemArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::has_item`,
-    arguments: [obj(txb, args.kiosk), pure(txb, args.id, `0x2::object::ID`)],
+    arguments: [obj(tx, args.kiosk), pure(tx, args.id, `${ID.$typeName}`)],
   })
 }
 
 export interface HasItemWithTypeArgs {
-  kiosk: ObjectArg
+  kiosk: TransactionObjectInput
   id: string | TransactionArgument
 }
 
-export function hasItemWithType(txb: TransactionBlock, typeArg: string, args: HasItemWithTypeArgs) {
-  return txb.moveCall({
+export function hasItemWithType(tx: Transaction, typeArg: string, args: HasItemWithTypeArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::has_item_with_type`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.kiosk), pure(txb, args.id, `0x2::object::ID`)],
+    arguments: [obj(tx, args.kiosk), pure(tx, args.id, `${ID.$typeName}`)],
   })
 }
 
 export interface IsLockedArgs {
-  kiosk: ObjectArg
+  kiosk: TransactionObjectInput
   id: string | TransactionArgument
 }
 
-export function isLocked(txb: TransactionBlock, args: IsLockedArgs) {
-  return txb.moveCall({
+export function isLocked(tx: Transaction, args: IsLockedArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::is_locked`,
-    arguments: [obj(txb, args.kiosk), pure(txb, args.id, `0x2::object::ID`)],
+    arguments: [obj(tx, args.kiosk), pure(tx, args.id, `${ID.$typeName}`)],
   })
 }
 
 export interface IsListedArgs {
-  kiosk: ObjectArg
+  kiosk: TransactionObjectInput
   id: string | TransactionArgument
 }
 
-export function isListed(txb: TransactionBlock, args: IsListedArgs) {
-  return txb.moveCall({
+export function isListed(tx: Transaction, args: IsListedArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::is_listed`,
-    arguments: [obj(txb, args.kiosk), pure(txb, args.id, `0x2::object::ID`)],
+    arguments: [obj(tx, args.kiosk), pure(tx, args.id, `${ID.$typeName}`)],
   })
 }
 
 export interface IsListedExclusivelyArgs {
-  kiosk: ObjectArg
+  kiosk: TransactionObjectInput
   id: string | TransactionArgument
 }
 
-export function isListedExclusively(txb: TransactionBlock, args: IsListedExclusivelyArgs) {
-  return txb.moveCall({
+export function isListedExclusively(tx: Transaction, args: IsListedExclusivelyArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::is_listed_exclusively`,
-    arguments: [obj(txb, args.kiosk), pure(txb, args.id, `0x2::object::ID`)],
+    arguments: [obj(tx, args.kiosk), pure(tx, args.id, `${ID.$typeName}`)],
   })
 }
 
 export interface HasAccessArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
 }
 
-export function hasAccess(txb: TransactionBlock, args: HasAccessArgs) {
-  return txb.moveCall({
+export function hasAccess(tx: Transaction, args: HasAccessArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::has_access`,
-    arguments: [obj(txb, args.kiosk), obj(txb, args.kioskOwnerCap)],
+    arguments: [obj(tx, args.kiosk), obj(tx, args.kioskOwnerCap)],
   })
 }
 
 export interface SetAllowExtensionsArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
   bool: boolean | TransactionArgument
 }
 
-export function setAllowExtensions(txb: TransactionBlock, args: SetAllowExtensionsArgs) {
-  return txb.moveCall({
+export function setAllowExtensions(tx: Transaction, args: SetAllowExtensionsArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::set_allow_extensions`,
-    arguments: [obj(txb, args.kiosk), obj(txb, args.kioskOwnerCap), pure(txb, args.bool, `bool`)],
+    arguments: [obj(tx, args.kiosk), obj(tx, args.kioskOwnerCap), pure(tx, args.bool, `bool`)],
   })
 }
 
-export function uidMut(txb: TransactionBlock, kiosk: ObjectArg) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::kiosk::uid_mut`, arguments: [obj(txb, kiosk)] })
+export function uidMut(tx: Transaction, kiosk: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::uid_mut`, arguments: [obj(tx, kiosk)] })
 }
 
-export function itemCount(txb: TransactionBlock, kiosk: ObjectArg) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::item_count`,
-    arguments: [obj(txb, kiosk)],
-  })
+export function itemCount(tx: Transaction, kiosk: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::item_count`, arguments: [obj(tx, kiosk)] })
 }
 
-export function profitsAmount(txb: TransactionBlock, kiosk: ObjectArg) {
-  return txb.moveCall({
+export function profitsAmount(tx: Transaction, kiosk: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::profits_amount`,
-    arguments: [obj(txb, kiosk)],
+    arguments: [obj(tx, kiosk)],
   })
 }
 
 export interface ProfitsMutArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
 }
 
-export function profitsMut(txb: TransactionBlock, args: ProfitsMutArgs) {
-  return txb.moveCall({
+export function profitsMut(tx: Transaction, args: ProfitsMutArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::profits_mut`,
-    arguments: [obj(txb, args.kiosk), obj(txb, args.kioskOwnerCap)],
+    arguments: [obj(tx, args.kiosk), obj(tx, args.kioskOwnerCap)],
   })
 }
 
 export interface BorrowValArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
   id: string | TransactionArgument
 }
 
-export function borrowVal(txb: TransactionBlock, typeArg: string, args: BorrowValArgs) {
-  return txb.moveCall({
+export function borrowVal(tx: Transaction, typeArg: string, args: BorrowValArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::borrow_val`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.kiosk),
-      obj(txb, args.kioskOwnerCap),
-      pure(txb, args.id, `0x2::object::ID`),
+      obj(tx, args.kiosk),
+      obj(tx, args.kioskOwnerCap),
+      pure(tx, args.id, `${ID.$typeName}`),
     ],
   })
 }
 
 export interface ReturnValArgs {
-  kiosk: ObjectArg
+  kiosk: TransactionObjectInput
   t0: GenericArg
-  borrow: ObjectArg
+  borrow: TransactionObjectInput
 }
 
-export function returnVal(txb: TransactionBlock, typeArg: string, args: ReturnValArgs) {
-  return txb.moveCall({
+export function returnVal(tx: Transaction, typeArg: string, args: ReturnValArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::return_val`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.kiosk), generic(txb, `${typeArg}`, args.t0), obj(txb, args.borrow)],
+    arguments: [obj(tx, args.kiosk), generic(tx, `${typeArg}`, args.t0), obj(tx, args.borrow)],
   })
 }
 
-export function kioskOwnerCapFor(txb: TransactionBlock, kioskOwnerCap: ObjectArg) {
-  return txb.moveCall({
+export function kioskOwnerCapFor(tx: Transaction, kioskOwnerCap: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::kiosk_owner_cap_for`,
-    arguments: [obj(txb, kioskOwnerCap)],
+    arguments: [obj(tx, kioskOwnerCap)],
   })
 }
 
-export function purchaseCapKiosk(txb: TransactionBlock, typeArg: string, purchaseCap: ObjectArg) {
-  return txb.moveCall({
+export function purchaseCapKiosk(
+  tx: Transaction,
+  typeArg: string,
+  purchaseCap: TransactionObjectInput
+) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::purchase_cap_kiosk`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, purchaseCap)],
+    arguments: [obj(tx, purchaseCap)],
   })
 }
 
-export function purchaseCapItem(txb: TransactionBlock, typeArg: string, purchaseCap: ObjectArg) {
-  return txb.moveCall({
+export function purchaseCapItem(
+  tx: Transaction,
+  typeArg: string,
+  purchaseCap: TransactionObjectInput
+) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::purchase_cap_item`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, purchaseCap)],
+    arguments: [obj(tx, purchaseCap)],
   })
 }
 
 export function purchaseCapMinPrice(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
-  purchaseCap: ObjectArg
+  purchaseCap: TransactionObjectInput
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::purchase_cap_min_price`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, purchaseCap)],
+    arguments: [obj(tx, purchaseCap)],
   })
 }

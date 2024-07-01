@@ -17,15 +17,16 @@ import {
   toBcs,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { PKG_V19 } from '../index'
 import { UID } from '../object/structs'
 import { BcsType, bcs, fromB64 } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== Field =============================== */
 
 export function isField(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith('0x2::dynamic_field::Field<')
+  return type.startsWith(`${PKG_V19}::dynamic_field::Field` + '<')
 }
 
 export interface FieldFields<T0 extends TypeArgument, T1 extends TypeArgument> {
@@ -40,12 +41,12 @@ export type FieldReified<T0 extends TypeArgument, T1 extends TypeArgument> = Rei
 >
 
 export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements StructClass {
-  static readonly $typeName = '0x2::dynamic_field::Field'
+  static readonly $typeName = `${PKG_V19}::dynamic_field::Field`
   static readonly $numTypeParams = 2
 
   readonly $typeName = Field.$typeName
 
-  readonly $fullTypeName: `0x2::dynamic_field::Field<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
+  readonly $fullTypeName: `${typeof PKG_V19}::dynamic_field::Field<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
 
   readonly $typeArgs: [ToTypeStr<T0>, ToTypeStr<T1>]
 
@@ -57,7 +58,7 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements 
     this.$fullTypeName = composeSuiType(
       Field.$typeName,
       ...typeArgs
-    ) as `0x2::dynamic_field::Field<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
+    ) as `${typeof PKG_V19}::dynamic_field::Field<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -74,7 +75,7 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements 
       fullTypeName: composeSuiType(
         Field.$typeName,
         ...[extractType(T0), extractType(T1)]
-      ) as `0x2::dynamic_field::Field<${ToTypeStr<ToTypeArgument<T0>>}, ${ToTypeStr<
+      ) as `${typeof PKG_V19}::dynamic_field::Field<${ToTypeStr<ToTypeArgument<T0>>}, ${ToTypeStr<
         ToTypeArgument<T1>
       >}>`,
       typeArgs: [extractType(T0), extractType(T1)] as [

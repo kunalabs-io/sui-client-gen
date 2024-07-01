@@ -11,14 +11,15 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { PKG_V19 } from '../index'
 import { bcs, fromB64 } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== Url =============================== */
 
 export function isUrl(type: string): boolean {
   type = compressSuiType(type)
-  return type === '0x2::url::Url'
+  return type === `${PKG_V19}::url::Url`
 }
 
 export interface UrlFields {
@@ -28,19 +29,19 @@ export interface UrlFields {
 export type UrlReified = Reified<Url, UrlFields>
 
 export class Url implements StructClass {
-  static readonly $typeName = '0x2::url::Url'
+  static readonly $typeName = `${PKG_V19}::url::Url`
   static readonly $numTypeParams = 0
 
   readonly $typeName = Url.$typeName
 
-  readonly $fullTypeName: '0x2::url::Url'
+  readonly $fullTypeName: `${typeof PKG_V19}::url::Url`
 
   readonly $typeArgs: []
 
   readonly url: ToField<String>
 
   private constructor(typeArgs: [], fields: UrlFields) {
-    this.$fullTypeName = composeSuiType(Url.$typeName, ...typeArgs) as '0x2::url::Url'
+    this.$fullTypeName = composeSuiType(Url.$typeName, ...typeArgs) as `${typeof PKG_V19}::url::Url`
     this.$typeArgs = typeArgs
 
     this.url = fields.url
@@ -49,7 +50,7 @@ export class Url implements StructClass {
   static reified(): UrlReified {
     return {
       typeName: Url.$typeName,
-      fullTypeName: composeSuiType(Url.$typeName, ...[]) as '0x2::url::Url',
+      fullTypeName: composeSuiType(Url.$typeName, ...[]) as `${typeof PKG_V19}::url::Url`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Url.fromFields(fields),

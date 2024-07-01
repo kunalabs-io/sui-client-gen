@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
-import { TransactionBlock } from '@mysten/sui.js/transactions'
+import { Transaction } from '@mysten/sui/transactions'
 
-export function new_(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::other_module::new`, arguments: [] })
+export function new_(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::other_module::new`, arguments: [] })
 }

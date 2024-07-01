@@ -1,30 +1,30 @@
 import { PUBLISHED_AT } from '..'
 import { pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
 export function decode(
-  txb: TransactionBlock,
+  tx: Transaction,
   hex: Array<number | TransactionArgument> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::hex::decode`,
-    arguments: [pure(txb, hex, `vector<u8>`)],
+    arguments: [pure(tx, hex, `vector<u8>`)],
   })
 }
 
-export function decodeByte(txb: TransactionBlock, hex: number | TransactionArgument) {
-  return txb.moveCall({
+export function decodeByte(tx: Transaction, hex: number | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::hex::decode_byte`,
-    arguments: [pure(txb, hex, `u8`)],
+    arguments: [pure(tx, hex, `u8`)],
   })
 }
 
 export function encode(
-  txb: TransactionBlock,
+  tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::hex::encode`,
-    arguments: [pure(txb, bytes, `vector<u8>`)],
+    arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }

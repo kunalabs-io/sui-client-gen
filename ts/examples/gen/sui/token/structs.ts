@@ -21,17 +21,18 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Balance } from '../balance/structs'
+import { PKG_V19 } from '../index'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
 import { VecSet } from '../vec-set/structs'
 import { bcs, fromB64, fromHEX, toHEX } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== RuleKey =============================== */
 
 export function isRuleKey(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith('0x2::token::RuleKey<')
+  return type.startsWith(`${PKG_V19}::token::RuleKey` + '<')
 }
 
 export interface RuleKeyFields<T extends PhantomTypeArgument> {
@@ -41,12 +42,12 @@ export interface RuleKeyFields<T extends PhantomTypeArgument> {
 export type RuleKeyReified<T extends PhantomTypeArgument> = Reified<RuleKey<T>, RuleKeyFields<T>>
 
 export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = '0x2::token::RuleKey'
+  static readonly $typeName = `${PKG_V19}::token::RuleKey`
   static readonly $numTypeParams = 1
 
   readonly $typeName = RuleKey.$typeName
 
-  readonly $fullTypeName: `0x2::token::RuleKey<${PhantomToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V19}::token::RuleKey<${PhantomToTypeStr<T>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T>]
 
@@ -56,7 +57,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       RuleKey.$typeName,
       ...typeArgs
-    ) as `0x2::token::RuleKey<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V19}::token::RuleKey<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.isProtected = fields.isProtected
@@ -70,7 +71,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         RuleKey.$typeName,
         ...[extractType(T)]
-      ) as `0x2::token::RuleKey<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V19}::token::RuleKey<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => RuleKey.fromFields(T, fields),
@@ -205,7 +206,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
 
 export function isActionRequest(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith('0x2::token::ActionRequest<')
+  return type.startsWith(`${PKG_V19}::token::ActionRequest` + '<')
 }
 
 export interface ActionRequestFields<T extends PhantomTypeArgument> {
@@ -223,12 +224,12 @@ export type ActionRequestReified<T extends PhantomTypeArgument> = Reified<
 >
 
 export class ActionRequest<T extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = '0x2::token::ActionRequest'
+  static readonly $typeName = `${PKG_V19}::token::ActionRequest`
   static readonly $numTypeParams = 1
 
   readonly $typeName = ActionRequest.$typeName
 
-  readonly $fullTypeName: `0x2::token::ActionRequest<${PhantomToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V19}::token::ActionRequest<${PhantomToTypeStr<T>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T>]
 
@@ -243,7 +244,7 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
     this.$fullTypeName = composeSuiType(
       ActionRequest.$typeName,
       ...typeArgs
-    ) as `0x2::token::ActionRequest<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V19}::token::ActionRequest<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.name = fields.name
@@ -262,7 +263,7 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
       fullTypeName: composeSuiType(
         ActionRequest.$typeName,
         ...[extractType(T)]
-      ) as `0x2::token::ActionRequest<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V19}::token::ActionRequest<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => ActionRequest.fromFields(T, fields),
@@ -366,9 +367,9 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
       name: this.name,
       amount: this.amount.toString(),
       sender: this.sender,
-      recipient: fieldToJSON<Option<'address'>>(`0x1::option::Option<address>`, this.recipient),
+      recipient: fieldToJSON<Option<'address'>>(`${Option.$typeName}<address>`, this.recipient),
       spentBalance: fieldToJSON<Option<Balance<T>>>(
-        `0x1::option::Option<0x2::balance::Balance<${this.$typeArgs[0]}>>`,
+        `${Option.$typeName}<${Balance.$typeName}<${this.$typeArgs[0]}>>`,
         this.spentBalance
       ),
       approvals: this.approvals.toJSONField(),
@@ -445,7 +446,7 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
 
 export function isToken(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith('0x2::token::Token<')
+  return type.startsWith(`${PKG_V19}::token::Token` + '<')
 }
 
 export interface TokenFields<T extends PhantomTypeArgument> {
@@ -456,12 +457,12 @@ export interface TokenFields<T extends PhantomTypeArgument> {
 export type TokenReified<T extends PhantomTypeArgument> = Reified<Token<T>, TokenFields<T>>
 
 export class Token<T extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = '0x2::token::Token'
+  static readonly $typeName = `${PKG_V19}::token::Token`
   static readonly $numTypeParams = 1
 
   readonly $typeName = Token.$typeName
 
-  readonly $fullTypeName: `0x2::token::Token<${PhantomToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V19}::token::Token<${PhantomToTypeStr<T>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T>]
 
@@ -472,7 +473,7 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Token.$typeName,
       ...typeArgs
-    ) as `0x2::token::Token<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V19}::token::Token<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -487,7 +488,7 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Token.$typeName,
         ...[extractType(T)]
-      ) as `0x2::token::Token<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V19}::token::Token<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Token.fromFields(T, fields),
@@ -627,7 +628,7 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
 
 export function isTokenPolicy(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith('0x2::token::TokenPolicy<')
+  return type.startsWith(`${PKG_V19}::token::TokenPolicy` + '<')
 }
 
 export interface TokenPolicyFields<T extends PhantomTypeArgument> {
@@ -642,12 +643,12 @@ export type TokenPolicyReified<T extends PhantomTypeArgument> = Reified<
 >
 
 export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = '0x2::token::TokenPolicy'
+  static readonly $typeName = `${PKG_V19}::token::TokenPolicy`
   static readonly $numTypeParams = 1
 
   readonly $typeName = TokenPolicy.$typeName
 
-  readonly $fullTypeName: `0x2::token::TokenPolicy<${PhantomToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V19}::token::TokenPolicy<${PhantomToTypeStr<T>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T>]
 
@@ -659,7 +660,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       TokenPolicy.$typeName,
       ...typeArgs
-    ) as `0x2::token::TokenPolicy<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V19}::token::TokenPolicy<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -675,7 +676,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         TokenPolicy.$typeName,
         ...[extractType(T)]
-      ) as `0x2::token::TokenPolicy<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V19}::token::TokenPolicy<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TokenPolicy.fromFields(T, fields),
@@ -829,7 +830,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
 
 export function isTokenPolicyCap(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith('0x2::token::TokenPolicyCap<')
+  return type.startsWith(`${PKG_V19}::token::TokenPolicyCap` + '<')
 }
 
 export interface TokenPolicyCapFields<T extends PhantomTypeArgument> {
@@ -843,12 +844,12 @@ export type TokenPolicyCapReified<T extends PhantomTypeArgument> = Reified<
 >
 
 export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = '0x2::token::TokenPolicyCap'
+  static readonly $typeName = `${PKG_V19}::token::TokenPolicyCap`
   static readonly $numTypeParams = 1
 
   readonly $typeName = TokenPolicyCap.$typeName
 
-  readonly $fullTypeName: `0x2::token::TokenPolicyCap<${PhantomToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V19}::token::TokenPolicyCap<${PhantomToTypeStr<T>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T>]
 
@@ -859,7 +860,7 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
     this.$fullTypeName = composeSuiType(
       TokenPolicyCap.$typeName,
       ...typeArgs
-    ) as `0x2::token::TokenPolicyCap<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V19}::token::TokenPolicyCap<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -874,7 +875,9 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
       fullTypeName: composeSuiType(
         TokenPolicyCap.$typeName,
         ...[extractType(T)]
-      ) as `0x2::token::TokenPolicyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V19}::token::TokenPolicyCap<${PhantomToTypeStr<
+        ToPhantomTypeArgument<T>
+      >}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TokenPolicyCap.fromFields(T, fields),
@@ -1014,7 +1017,7 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
 
 export function isTokenPolicyCreated(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith('0x2::token::TokenPolicyCreated<')
+  return type.startsWith(`${PKG_V19}::token::TokenPolicyCreated` + '<')
 }
 
 export interface TokenPolicyCreatedFields<T extends PhantomTypeArgument> {
@@ -1028,12 +1031,12 @@ export type TokenPolicyCreatedReified<T extends PhantomTypeArgument> = Reified<
 >
 
 export class TokenPolicyCreated<T extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = '0x2::token::TokenPolicyCreated'
+  static readonly $typeName = `${PKG_V19}::token::TokenPolicyCreated`
   static readonly $numTypeParams = 1
 
   readonly $typeName = TokenPolicyCreated.$typeName
 
-  readonly $fullTypeName: `0x2::token::TokenPolicyCreated<${PhantomToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V19}::token::TokenPolicyCreated<${PhantomToTypeStr<T>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T>]
 
@@ -1044,7 +1047,7 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
     this.$fullTypeName = composeSuiType(
       TokenPolicyCreated.$typeName,
       ...typeArgs
-    ) as `0x2::token::TokenPolicyCreated<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V19}::token::TokenPolicyCreated<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -1059,7 +1062,9 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
       fullTypeName: composeSuiType(
         TokenPolicyCreated.$typeName,
         ...[extractType(T)]
-      ) as `0x2::token::TokenPolicyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V19}::token::TokenPolicyCreated<${PhantomToTypeStr<
+        ToPhantomTypeArgument<T>
+      >}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TokenPolicyCreated.fromFields(T, fields),

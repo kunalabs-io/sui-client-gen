@@ -1,54 +1,54 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, obj } from '../../_framework/util'
-import { TransactionBlock } from '@mysten/sui.js/transactions'
+import { obj } from '../../_framework/util'
+import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function get(txb: TransactionBlock, typeArg: string) {
-  return txb.moveCall({
+export function get(tx: Transaction, typeArg: string) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::type_name::get`,
     typeArguments: [typeArg],
     arguments: [],
   })
 }
 
-export function getWithOriginalIds(txb: TransactionBlock, typeArg: string) {
-  return txb.moveCall({
+export function getWithOriginalIds(tx: Transaction, typeArg: string) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::type_name::get_with_original_ids`,
     typeArguments: [typeArg],
     arguments: [],
   })
 }
 
-export function isPrimitive(txb: TransactionBlock, typeName: ObjectArg) {
-  return txb.moveCall({
+export function isPrimitive(tx: Transaction, typeName: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::type_name::is_primitive`,
-    arguments: [obj(txb, typeName)],
+    arguments: [obj(tx, typeName)],
   })
 }
 
-export function borrowString(txb: TransactionBlock, typeName: ObjectArg) {
-  return txb.moveCall({
+export function borrowString(tx: Transaction, typeName: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::type_name::borrow_string`,
-    arguments: [obj(txb, typeName)],
+    arguments: [obj(tx, typeName)],
   })
 }
 
-export function getAddress(txb: TransactionBlock, typeName: ObjectArg) {
-  return txb.moveCall({
+export function getAddress(tx: Transaction, typeName: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::type_name::get_address`,
-    arguments: [obj(txb, typeName)],
+    arguments: [obj(tx, typeName)],
   })
 }
 
-export function getModule(txb: TransactionBlock, typeName: ObjectArg) {
-  return txb.moveCall({
+export function getModule(tx: Transaction, typeName: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::type_name::get_module`,
-    arguments: [obj(txb, typeName)],
+    arguments: [obj(tx, typeName)],
   })
 }
 
-export function intoString(txb: TransactionBlock, typeName: ObjectArg) {
-  return txb.moveCall({
+export function intoString(tx: Transaction, typeName: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::type_name::into_string`,
-    arguments: [obj(txb, typeName)],
+    arguments: [obj(tx, typeName)],
   })
 }

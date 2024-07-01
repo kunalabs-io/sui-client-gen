@@ -1,16 +1,16 @@
 import { PUBLISHED_AT } from '..'
 import { pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
 export interface MaxArgs {
   x: bigint | TransactionArgument
   y: bigint | TransactionArgument
 }
 
-export function max(txb: TransactionBlock, args: MaxArgs) {
-  return txb.moveCall({
+export function max(tx: Transaction, args: MaxArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::math::max`,
-    arguments: [pure(txb, args.x, `u64`), pure(txb, args.y, `u64`)],
+    arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
   })
 }
 
@@ -19,10 +19,10 @@ export interface DiffArgs {
   y: bigint | TransactionArgument
 }
 
-export function diff(txb: TransactionBlock, args: DiffArgs) {
-  return txb.moveCall({
+export function diff(tx: Transaction, args: DiffArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::math::diff`,
-    arguments: [pure(txb, args.x, `u64`), pure(txb, args.y, `u64`)],
+    arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
   })
 }
 
@@ -31,10 +31,10 @@ export interface DivideAndRoundUpArgs {
   y: bigint | TransactionArgument
 }
 
-export function divideAndRoundUp(txb: TransactionBlock, args: DivideAndRoundUpArgs) {
-  return txb.moveCall({
+export function divideAndRoundUp(tx: Transaction, args: DivideAndRoundUpArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::math::divide_and_round_up`,
-    arguments: [pure(txb, args.x, `u64`), pure(txb, args.y, `u64`)],
+    arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
   })
 }
 
@@ -43,10 +43,10 @@ export interface MinArgs {
   y: bigint | TransactionArgument
 }
 
-export function min(txb: TransactionBlock, args: MinArgs) {
-  return txb.moveCall({
+export function min(tx: Transaction, args: MinArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::math::min`,
-    arguments: [pure(txb, args.x, `u64`), pure(txb, args.y, `u64`)],
+    arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
   })
 }
 
@@ -55,20 +55,20 @@ export interface PowArgs {
   exponent: number | TransactionArgument
 }
 
-export function pow(txb: TransactionBlock, args: PowArgs) {
-  return txb.moveCall({
+export function pow(tx: Transaction, args: PowArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::math::pow`,
-    arguments: [pure(txb, args.base, `u64`), pure(txb, args.exponent, `u8`)],
+    arguments: [pure(tx, args.base, `u64`), pure(tx, args.exponent, `u8`)],
   })
 }
 
-export function sqrt(txb: TransactionBlock, x: bigint | TransactionArgument) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::math::sqrt`, arguments: [pure(txb, x, `u64`)] })
+export function sqrt(tx: Transaction, x: bigint | TransactionArgument) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::math::sqrt`, arguments: [pure(tx, x, `u64`)] })
 }
 
-export function sqrtU128(txb: TransactionBlock, x: bigint | TransactionArgument) {
-  return txb.moveCall({
+export function sqrtU128(tx: Transaction, x: bigint | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::math::sqrt_u128`,
-    arguments: [pure(txb, x, `u128`)],
+    arguments: [pure(tx, x, `u128`)],
   })
 }

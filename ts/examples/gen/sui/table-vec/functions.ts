@@ -1,125 +1,125 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { GenericArg, generic, obj, pure } from '../../_framework/util'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export interface BorrowArgs {
-  t: ObjectArg
+  t: TransactionObjectInput
   i: bigint | TransactionArgument
 }
 
-export function borrow(txb: TransactionBlock, typeArg: string, args: BorrowArgs) {
-  return txb.moveCall({
+export function borrow(tx: Transaction, typeArg: string, args: BorrowArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::table_vec::borrow`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.t), pure(txb, args.i, `u64`)],
+    arguments: [obj(tx, args.t), pure(tx, args.i, `u64`)],
   })
 }
 
 export interface BorrowMutArgs {
-  t: ObjectArg
+  t: TransactionObjectInput
   i: bigint | TransactionArgument
 }
 
-export function borrowMut(txb: TransactionBlock, typeArg: string, args: BorrowMutArgs) {
-  return txb.moveCall({
+export function borrowMut(tx: Transaction, typeArg: string, args: BorrowMutArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::table_vec::borrow_mut`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.t), pure(txb, args.i, `u64`)],
+    arguments: [obj(tx, args.t), pure(tx, args.i, `u64`)],
   })
 }
 
-export function destroyEmpty(txb: TransactionBlock, typeArg: string, t: ObjectArg) {
-  return txb.moveCall({
+export function destroyEmpty(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::table_vec::destroy_empty`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, t)],
+    arguments: [obj(tx, t)],
   })
 }
 
-export function empty(txb: TransactionBlock, typeArg: string) {
-  return txb.moveCall({
+export function empty(tx: Transaction, typeArg: string) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::table_vec::empty`,
     typeArguments: [typeArg],
     arguments: [],
   })
 }
 
-export function isEmpty(txb: TransactionBlock, typeArg: string, t: ObjectArg) {
-  return txb.moveCall({
+export function isEmpty(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::table_vec::is_empty`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, t)],
+    arguments: [obj(tx, t)],
   })
 }
 
-export function length(txb: TransactionBlock, typeArg: string, t: ObjectArg) {
-  return txb.moveCall({
+export function length(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::table_vec::length`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, t)],
+    arguments: [obj(tx, t)],
   })
 }
 
-export function popBack(txb: TransactionBlock, typeArg: string, t: ObjectArg) {
-  return txb.moveCall({
+export function popBack(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::table_vec::pop_back`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, t)],
+    arguments: [obj(tx, t)],
   })
 }
 
 export interface PushBackArgs {
-  t: ObjectArg
+  t: TransactionObjectInput
   e: GenericArg
 }
 
-export function pushBack(txb: TransactionBlock, typeArg: string, args: PushBackArgs) {
-  return txb.moveCall({
+export function pushBack(tx: Transaction, typeArg: string, args: PushBackArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::table_vec::push_back`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.t), generic(txb, `${typeArg}`, args.e)],
+    arguments: [obj(tx, args.t), generic(tx, `${typeArg}`, args.e)],
   })
 }
 
-export function singleton(txb: TransactionBlock, typeArg: string, e: GenericArg) {
-  return txb.moveCall({
+export function singleton(tx: Transaction, typeArg: string, e: GenericArg) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::table_vec::singleton`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, e)],
+    arguments: [generic(tx, `${typeArg}`, e)],
   })
 }
 
 export interface SwapArgs {
-  t: ObjectArg
+  t: TransactionObjectInput
   i: bigint | TransactionArgument
   j: bigint | TransactionArgument
 }
 
-export function swap(txb: TransactionBlock, typeArg: string, args: SwapArgs) {
-  return txb.moveCall({
+export function swap(tx: Transaction, typeArg: string, args: SwapArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::table_vec::swap`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.t), pure(txb, args.i, `u64`), pure(txb, args.j, `u64`)],
+    arguments: [obj(tx, args.t), pure(tx, args.i, `u64`), pure(tx, args.j, `u64`)],
   })
 }
 
 export interface SwapRemoveArgs {
-  t: ObjectArg
+  t: TransactionObjectInput
   i: bigint | TransactionArgument
 }
 
-export function swapRemove(txb: TransactionBlock, typeArg: string, args: SwapRemoveArgs) {
-  return txb.moveCall({
+export function swapRemove(tx: Transaction, typeArg: string, args: SwapRemoveArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::table_vec::swap_remove`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.t), pure(txb, args.i, `u64`)],
+    arguments: [obj(tx, args.t), pure(tx, args.i, `u64`)],
   })
 }
 
-export function drop(txb: TransactionBlock, typeArg: string, t: ObjectArg) {
-  return txb.moveCall({
+export function drop(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::table_vec::drop`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, t)],
+    arguments: [obj(tx, t)],
   })
 }

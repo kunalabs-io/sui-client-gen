@@ -1,28 +1,28 @@
 import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, option } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
 export function borrow(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   t: GenericArg | TransactionArgument | null
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::borrow`,
     typeArguments: [typeArg],
-    arguments: [option(txb, `${typeArg}`, t)],
+    arguments: [option(tx, `${typeArg}`, t)],
   })
 }
 
 export function borrowMut(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   t: GenericArg | TransactionArgument | null
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::borrow_mut`,
     typeArguments: [typeArg],
-    arguments: [option(txb, `${typeArg}`, t)],
+    arguments: [option(tx, `${typeArg}`, t)],
   })
 }
 
@@ -31,11 +31,11 @@ export interface ContainsArgs {
   eRef: GenericArg
 }
 
-export function contains(txb: TransactionBlock, typeArg: string, args: ContainsArgs) {
-  return txb.moveCall({
+export function contains(tx: Transaction, typeArg: string, args: ContainsArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::contains`,
     typeArguments: [typeArg],
-    arguments: [option(txb, `${typeArg}`, args.t), generic(txb, `${typeArg}`, args.eRef)],
+    arguments: [option(tx, `${typeArg}`, args.t), generic(tx, `${typeArg}`, args.eRef)],
   })
 }
 
@@ -44,11 +44,11 @@ export interface SwapArgs {
   e: GenericArg
 }
 
-export function swap(txb: TransactionBlock, typeArg: string, args: SwapArgs) {
-  return txb.moveCall({
+export function swap(tx: Transaction, typeArg: string, args: SwapArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::swap`,
     typeArguments: [typeArg],
-    arguments: [option(txb, `${typeArg}`, args.t), generic(txb, `${typeArg}`, args.e)],
+    arguments: [option(tx, `${typeArg}`, args.t), generic(tx, `${typeArg}`, args.e)],
   })
 }
 
@@ -57,39 +57,35 @@ export interface BorrowWithDefaultArgs {
   defaultRef: GenericArg
 }
 
-export function borrowWithDefault(
-  txb: TransactionBlock,
-  typeArg: string,
-  args: BorrowWithDefaultArgs
-) {
-  return txb.moveCall({
+export function borrowWithDefault(tx: Transaction, typeArg: string, args: BorrowWithDefaultArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::borrow_with_default`,
     typeArguments: [typeArg],
-    arguments: [option(txb, `${typeArg}`, args.t), generic(txb, `${typeArg}`, args.defaultRef)],
+    arguments: [option(tx, `${typeArg}`, args.t), generic(tx, `${typeArg}`, args.defaultRef)],
   })
 }
 
 export function destroyNone(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   t: GenericArg | TransactionArgument | null
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::destroy_none`,
     typeArguments: [typeArg],
-    arguments: [option(txb, `${typeArg}`, t)],
+    arguments: [option(tx, `${typeArg}`, t)],
   })
 }
 
 export function destroySome(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   t: GenericArg | TransactionArgument | null
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::destroy_some`,
     typeArguments: [typeArg],
-    arguments: [option(txb, `${typeArg}`, t)],
+    arguments: [option(tx, `${typeArg}`, t)],
   })
 }
 
@@ -98,27 +94,23 @@ export interface DestroyWithDefaultArgs {
   default: GenericArg
 }
 
-export function destroyWithDefault(
-  txb: TransactionBlock,
-  typeArg: string,
-  args: DestroyWithDefaultArgs
-) {
-  return txb.moveCall({
+export function destroyWithDefault(tx: Transaction, typeArg: string, args: DestroyWithDefaultArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::destroy_with_default`,
     typeArguments: [typeArg],
-    arguments: [option(txb, `${typeArg}`, args.t), generic(txb, `${typeArg}`, args.default)],
+    arguments: [option(tx, `${typeArg}`, args.t), generic(tx, `${typeArg}`, args.default)],
   })
 }
 
 export function extract(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   t: GenericArg | TransactionArgument | null
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::extract`,
     typeArguments: [typeArg],
-    arguments: [option(txb, `${typeArg}`, t)],
+    arguments: [option(tx, `${typeArg}`, t)],
   })
 }
 
@@ -127,11 +119,11 @@ export interface FillArgs {
   e: GenericArg
 }
 
-export function fill(txb: TransactionBlock, typeArg: string, args: FillArgs) {
-  return txb.moveCall({
+export function fill(tx: Transaction, typeArg: string, args: FillArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::fill`,
     typeArguments: [typeArg],
-    arguments: [option(txb, `${typeArg}`, args.t), generic(txb, `${typeArg}`, args.e)],
+    arguments: [option(tx, `${typeArg}`, args.t), generic(tx, `${typeArg}`, args.e)],
   })
 }
 
@@ -140,51 +132,51 @@ export interface GetWithDefaultArgs {
   default: GenericArg
 }
 
-export function getWithDefault(txb: TransactionBlock, typeArg: string, args: GetWithDefaultArgs) {
-  return txb.moveCall({
+export function getWithDefault(tx: Transaction, typeArg: string, args: GetWithDefaultArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::get_with_default`,
     typeArguments: [typeArg],
-    arguments: [option(txb, `${typeArg}`, args.t), generic(txb, `${typeArg}`, args.default)],
+    arguments: [option(tx, `${typeArg}`, args.t), generic(tx, `${typeArg}`, args.default)],
   })
 }
 
 export function isNone(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   t: GenericArg | TransactionArgument | null
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::is_none`,
     typeArguments: [typeArg],
-    arguments: [option(txb, `${typeArg}`, t)],
+    arguments: [option(tx, `${typeArg}`, t)],
   })
 }
 
 export function isSome(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   t: GenericArg | TransactionArgument | null
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::is_some`,
     typeArguments: [typeArg],
-    arguments: [option(txb, `${typeArg}`, t)],
+    arguments: [option(tx, `${typeArg}`, t)],
   })
 }
 
-export function none(txb: TransactionBlock, typeArg: string) {
-  return txb.moveCall({
+export function none(tx: Transaction, typeArg: string) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::none`,
     typeArguments: [typeArg],
     arguments: [],
   })
 }
 
-export function some(txb: TransactionBlock, typeArg: string, e: GenericArg) {
-  return txb.moveCall({
+export function some(tx: Transaction, typeArg: string, e: GenericArg) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::some`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, e)],
+    arguments: [generic(tx, `${typeArg}`, e)],
   })
 }
 
@@ -193,22 +185,22 @@ export interface SwapOrFillArgs {
   e: GenericArg
 }
 
-export function swapOrFill(txb: TransactionBlock, typeArg: string, args: SwapOrFillArgs) {
-  return txb.moveCall({
+export function swapOrFill(tx: Transaction, typeArg: string, args: SwapOrFillArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::swap_or_fill`,
     typeArguments: [typeArg],
-    arguments: [option(txb, `${typeArg}`, args.t), generic(txb, `${typeArg}`, args.e)],
+    arguments: [option(tx, `${typeArg}`, args.t), generic(tx, `${typeArg}`, args.e)],
   })
 }
 
 export function toVec(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   t: GenericArg | TransactionArgument | null
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::option::to_vec`,
     typeArguments: [typeArg],
-    arguments: [option(txb, `${typeArg}`, t)],
+    arguments: [option(tx, `${typeArg}`, t)],
   })
 }

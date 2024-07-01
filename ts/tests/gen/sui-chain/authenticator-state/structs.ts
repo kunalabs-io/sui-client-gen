@@ -14,15 +14,16 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/string/structs'
+import { PKG_V19 } from '../index'
 import { UID } from '../object/structs'
 import { bcs, fromB64 } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== AuthenticatorState =============================== */
 
 export function isAuthenticatorState(type: string): boolean {
   type = compressSuiType(type)
-  return type === '0x2::authenticator_state::AuthenticatorState'
+  return type === `${PKG_V19}::authenticator_state::AuthenticatorState`
 }
 
 export interface AuthenticatorStateFields {
@@ -33,12 +34,12 @@ export interface AuthenticatorStateFields {
 export type AuthenticatorStateReified = Reified<AuthenticatorState, AuthenticatorStateFields>
 
 export class AuthenticatorState implements StructClass {
-  static readonly $typeName = '0x2::authenticator_state::AuthenticatorState'
+  static readonly $typeName = `${PKG_V19}::authenticator_state::AuthenticatorState`
   static readonly $numTypeParams = 0
 
   readonly $typeName = AuthenticatorState.$typeName
 
-  readonly $fullTypeName: '0x2::authenticator_state::AuthenticatorState'
+  readonly $fullTypeName: `${typeof PKG_V19}::authenticator_state::AuthenticatorState`
 
   readonly $typeArgs: []
 
@@ -49,7 +50,7 @@ export class AuthenticatorState implements StructClass {
     this.$fullTypeName = composeSuiType(
       AuthenticatorState.$typeName,
       ...typeArgs
-    ) as '0x2::authenticator_state::AuthenticatorState'
+    ) as `${typeof PKG_V19}::authenticator_state::AuthenticatorState`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -62,7 +63,7 @@ export class AuthenticatorState implements StructClass {
       fullTypeName: composeSuiType(
         AuthenticatorState.$typeName,
         ...[]
-      ) as '0x2::authenticator_state::AuthenticatorState',
+      ) as `${typeof PKG_V19}::authenticator_state::AuthenticatorState`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AuthenticatorState.fromFields(fields),
@@ -172,7 +173,7 @@ export class AuthenticatorState implements StructClass {
 
 export function isAuthenticatorStateInner(type: string): boolean {
   type = compressSuiType(type)
-  return type === '0x2::authenticator_state::AuthenticatorStateInner'
+  return type === `${PKG_V19}::authenticator_state::AuthenticatorStateInner`
 }
 
 export interface AuthenticatorStateInnerFields {
@@ -186,12 +187,12 @@ export type AuthenticatorStateInnerReified = Reified<
 >
 
 export class AuthenticatorStateInner implements StructClass {
-  static readonly $typeName = '0x2::authenticator_state::AuthenticatorStateInner'
+  static readonly $typeName = `${PKG_V19}::authenticator_state::AuthenticatorStateInner`
   static readonly $numTypeParams = 0
 
   readonly $typeName = AuthenticatorStateInner.$typeName
 
-  readonly $fullTypeName: '0x2::authenticator_state::AuthenticatorStateInner'
+  readonly $fullTypeName: `${typeof PKG_V19}::authenticator_state::AuthenticatorStateInner`
 
   readonly $typeArgs: []
 
@@ -202,7 +203,7 @@ export class AuthenticatorStateInner implements StructClass {
     this.$fullTypeName = composeSuiType(
       AuthenticatorStateInner.$typeName,
       ...typeArgs
-    ) as '0x2::authenticator_state::AuthenticatorStateInner'
+    ) as `${typeof PKG_V19}::authenticator_state::AuthenticatorStateInner`
     this.$typeArgs = typeArgs
 
     this.version = fields.version
@@ -215,7 +216,7 @@ export class AuthenticatorStateInner implements StructClass {
       fullTypeName: composeSuiType(
         AuthenticatorStateInner.$typeName,
         ...[]
-      ) as '0x2::authenticator_state::AuthenticatorStateInner',
+      ) as `${typeof PKG_V19}::authenticator_state::AuthenticatorStateInner`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AuthenticatorStateInner.fromFields(fields),
@@ -281,10 +282,7 @@ export class AuthenticatorStateInner implements StructClass {
   toJSONField() {
     return {
       version: this.version.toString(),
-      activeJwks: fieldToJSON<Vector<ActiveJwk>>(
-        `vector<0x2::authenticator_state::ActiveJwk>`,
-        this.activeJwks
-      ),
+      activeJwks: fieldToJSON<Vector<ActiveJwk>>(`vector<${ActiveJwk.$typeName}>`, this.activeJwks),
     }
   }
 
@@ -337,7 +335,7 @@ export class AuthenticatorStateInner implements StructClass {
 
 export function isJWK(type: string): boolean {
   type = compressSuiType(type)
-  return type === '0x2::authenticator_state::JWK'
+  return type === `${PKG_V19}::authenticator_state::JWK`
 }
 
 export interface JWKFields {
@@ -350,12 +348,12 @@ export interface JWKFields {
 export type JWKReified = Reified<JWK, JWKFields>
 
 export class JWK implements StructClass {
-  static readonly $typeName = '0x2::authenticator_state::JWK'
+  static readonly $typeName = `${PKG_V19}::authenticator_state::JWK`
   static readonly $numTypeParams = 0
 
   readonly $typeName = JWK.$typeName
 
-  readonly $fullTypeName: '0x2::authenticator_state::JWK'
+  readonly $fullTypeName: `${typeof PKG_V19}::authenticator_state::JWK`
 
   readonly $typeArgs: []
 
@@ -368,7 +366,7 @@ export class JWK implements StructClass {
     this.$fullTypeName = composeSuiType(
       JWK.$typeName,
       ...typeArgs
-    ) as '0x2::authenticator_state::JWK'
+    ) as `${typeof PKG_V19}::authenticator_state::JWK`
     this.$typeArgs = typeArgs
 
     this.kty = fields.kty
@@ -380,7 +378,10 @@ export class JWK implements StructClass {
   static reified(): JWKReified {
     return {
       typeName: JWK.$typeName,
-      fullTypeName: composeSuiType(JWK.$typeName, ...[]) as '0x2::authenticator_state::JWK',
+      fullTypeName: composeSuiType(
+        JWK.$typeName,
+        ...[]
+      ) as `${typeof PKG_V19}::authenticator_state::JWK`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => JWK.fromFields(fields),
@@ -500,7 +501,7 @@ export class JWK implements StructClass {
 
 export function isJwkId(type: string): boolean {
   type = compressSuiType(type)
-  return type === '0x2::authenticator_state::JwkId'
+  return type === `${PKG_V19}::authenticator_state::JwkId`
 }
 
 export interface JwkIdFields {
@@ -511,12 +512,12 @@ export interface JwkIdFields {
 export type JwkIdReified = Reified<JwkId, JwkIdFields>
 
 export class JwkId implements StructClass {
-  static readonly $typeName = '0x2::authenticator_state::JwkId'
+  static readonly $typeName = `${PKG_V19}::authenticator_state::JwkId`
   static readonly $numTypeParams = 0
 
   readonly $typeName = JwkId.$typeName
 
-  readonly $fullTypeName: '0x2::authenticator_state::JwkId'
+  readonly $fullTypeName: `${typeof PKG_V19}::authenticator_state::JwkId`
 
   readonly $typeArgs: []
 
@@ -527,7 +528,7 @@ export class JwkId implements StructClass {
     this.$fullTypeName = composeSuiType(
       JwkId.$typeName,
       ...typeArgs
-    ) as '0x2::authenticator_state::JwkId'
+    ) as `${typeof PKG_V19}::authenticator_state::JwkId`
     this.$typeArgs = typeArgs
 
     this.iss = fields.iss
@@ -537,7 +538,10 @@ export class JwkId implements StructClass {
   static reified(): JwkIdReified {
     return {
       typeName: JwkId.$typeName,
-      fullTypeName: composeSuiType(JwkId.$typeName, ...[]) as '0x2::authenticator_state::JwkId',
+      fullTypeName: composeSuiType(
+        JwkId.$typeName,
+        ...[]
+      ) as `${typeof PKG_V19}::authenticator_state::JwkId`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => JwkId.fromFields(fields),
@@ -647,7 +651,7 @@ export class JwkId implements StructClass {
 
 export function isActiveJwk(type: string): boolean {
   type = compressSuiType(type)
-  return type === '0x2::authenticator_state::ActiveJwk'
+  return type === `${PKG_V19}::authenticator_state::ActiveJwk`
 }
 
 export interface ActiveJwkFields {
@@ -659,12 +663,12 @@ export interface ActiveJwkFields {
 export type ActiveJwkReified = Reified<ActiveJwk, ActiveJwkFields>
 
 export class ActiveJwk implements StructClass {
-  static readonly $typeName = '0x2::authenticator_state::ActiveJwk'
+  static readonly $typeName = `${PKG_V19}::authenticator_state::ActiveJwk`
   static readonly $numTypeParams = 0
 
   readonly $typeName = ActiveJwk.$typeName
 
-  readonly $fullTypeName: '0x2::authenticator_state::ActiveJwk'
+  readonly $fullTypeName: `${typeof PKG_V19}::authenticator_state::ActiveJwk`
 
   readonly $typeArgs: []
 
@@ -676,7 +680,7 @@ export class ActiveJwk implements StructClass {
     this.$fullTypeName = composeSuiType(
       ActiveJwk.$typeName,
       ...typeArgs
-    ) as '0x2::authenticator_state::ActiveJwk'
+    ) as `${typeof PKG_V19}::authenticator_state::ActiveJwk`
     this.$typeArgs = typeArgs
 
     this.jwkId = fields.jwkId
@@ -690,7 +694,7 @@ export class ActiveJwk implements StructClass {
       fullTypeName: composeSuiType(
         ActiveJwk.$typeName,
         ...[]
-      ) as '0x2::authenticator_state::ActiveJwk',
+      ) as `${typeof PKG_V19}::authenticator_state::ActiveJwk`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ActiveJwk.fromFields(fields),

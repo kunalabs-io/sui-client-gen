@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
 export interface Secp256r1EcrecoverArgs {
   vecU81: Array<number | TransactionArgument> | TransactionArgument
@@ -8,13 +8,13 @@ export interface Secp256r1EcrecoverArgs {
   u8: number | TransactionArgument
 }
 
-export function secp256r1Ecrecover(txb: TransactionBlock, args: Secp256r1EcrecoverArgs) {
-  return txb.moveCall({
+export function secp256r1Ecrecover(tx: Transaction, args: Secp256r1EcrecoverArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::ecdsa_r1::secp256r1_ecrecover`,
     arguments: [
-      pure(txb, args.vecU81, `vector<u8>`),
-      pure(txb, args.vecU82, `vector<u8>`),
-      pure(txb, args.u8, `u8`),
+      pure(tx, args.vecU81, `vector<u8>`),
+      pure(tx, args.vecU82, `vector<u8>`),
+      pure(tx, args.u8, `u8`),
     ],
   })
 }
@@ -26,14 +26,14 @@ export interface Secp256r1VerifyArgs {
   u8: number | TransactionArgument
 }
 
-export function secp256r1Verify(txb: TransactionBlock, args: Secp256r1VerifyArgs) {
-  return txb.moveCall({
+export function secp256r1Verify(tx: Transaction, args: Secp256r1VerifyArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::ecdsa_r1::secp256r1_verify`,
     arguments: [
-      pure(txb, args.vecU81, `vector<u8>`),
-      pure(txb, args.vecU82, `vector<u8>`),
-      pure(txb, args.vecU83, `vector<u8>`),
-      pure(txb, args.u8, `u8`),
+      pure(tx, args.vecU81, `vector<u8>`),
+      pure(tx, args.vecU82, `vector<u8>`),
+      pure(tx, args.vecU83, `vector<u8>`),
+      pure(tx, args.u8, `u8`),
     ],
   })
 }

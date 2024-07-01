@@ -1,186 +1,186 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { GenericArg, generic, obj, pure } from '../../_framework/util'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function version(txb: TransactionBlock, upgradeCap: ObjectArg) {
-  return txb.moveCall({
+export function version(tx: Transaction, upgradeCap: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::version`,
-    arguments: [obj(txb, upgradeCap)],
+    arguments: [obj(tx, upgradeCap)],
   })
 }
 
-export function claim(txb: TransactionBlock, typeArg: string, t0: GenericArg) {
-  return txb.moveCall({
+export function claim(tx: Transaction, typeArg: string, t0: GenericArg) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::claim`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, t0)],
+    arguments: [generic(tx, `${typeArg}`, t0)],
   })
 }
 
-export function claimAndKeep(txb: TransactionBlock, typeArg: string, t0: GenericArg) {
-  return txb.moveCall({
+export function claimAndKeep(tx: Transaction, typeArg: string, t0: GenericArg) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::claim_and_keep`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, t0)],
+    arguments: [generic(tx, `${typeArg}`, t0)],
   })
 }
 
-export function burnPublisher(txb: TransactionBlock, publisher: ObjectArg) {
-  return txb.moveCall({
+export function burnPublisher(tx: Transaction, publisher: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::burn_publisher`,
-    arguments: [obj(txb, publisher)],
+    arguments: [obj(tx, publisher)],
   })
 }
 
-export function fromPackage(txb: TransactionBlock, typeArg: string, publisher: ObjectArg) {
-  return txb.moveCall({
+export function fromPackage(tx: Transaction, typeArg: string, publisher: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::from_package`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, publisher)],
+    arguments: [obj(tx, publisher)],
   })
 }
 
-export function fromModule(txb: TransactionBlock, typeArg: string, publisher: ObjectArg) {
-  return txb.moveCall({
+export function fromModule(tx: Transaction, typeArg: string, publisher: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::from_module`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, publisher)],
+    arguments: [obj(tx, publisher)],
   })
 }
 
-export function publishedModule(txb: TransactionBlock, publisher: ObjectArg) {
-  return txb.moveCall({
+export function publishedModule(tx: Transaction, publisher: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::published_module`,
-    arguments: [obj(txb, publisher)],
+    arguments: [obj(tx, publisher)],
   })
 }
 
-export function publishedPackage(txb: TransactionBlock, publisher: ObjectArg) {
-  return txb.moveCall({
+export function publishedPackage(tx: Transaction, publisher: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::published_package`,
-    arguments: [obj(txb, publisher)],
+    arguments: [obj(tx, publisher)],
   })
 }
 
-export function upgradePackage(txb: TransactionBlock, upgradeCap: ObjectArg) {
-  return txb.moveCall({
+export function upgradePackage(tx: Transaction, upgradeCap: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::upgrade_package`,
-    arguments: [obj(txb, upgradeCap)],
+    arguments: [obj(tx, upgradeCap)],
   })
 }
 
-export function upgradePolicy(txb: TransactionBlock, upgradeCap: ObjectArg) {
-  return txb.moveCall({
+export function upgradePolicy(tx: Transaction, upgradeCap: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::upgrade_policy`,
-    arguments: [obj(txb, upgradeCap)],
+    arguments: [obj(tx, upgradeCap)],
   })
 }
 
-export function ticketPackage(txb: TransactionBlock, upgradeTicket: ObjectArg) {
-  return txb.moveCall({
+export function ticketPackage(tx: Transaction, upgradeTicket: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::ticket_package`,
-    arguments: [obj(txb, upgradeTicket)],
+    arguments: [obj(tx, upgradeTicket)],
   })
 }
 
-export function ticketPolicy(txb: TransactionBlock, upgradeTicket: ObjectArg) {
-  return txb.moveCall({
+export function ticketPolicy(tx: Transaction, upgradeTicket: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::ticket_policy`,
-    arguments: [obj(txb, upgradeTicket)],
+    arguments: [obj(tx, upgradeTicket)],
   })
 }
 
-export function receiptCap(txb: TransactionBlock, upgradeReceipt: ObjectArg) {
-  return txb.moveCall({
+export function receiptCap(tx: Transaction, upgradeReceipt: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::receipt_cap`,
-    arguments: [obj(txb, upgradeReceipt)],
+    arguments: [obj(tx, upgradeReceipt)],
   })
 }
 
-export function receiptPackage(txb: TransactionBlock, upgradeReceipt: ObjectArg) {
-  return txb.moveCall({
+export function receiptPackage(tx: Transaction, upgradeReceipt: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::receipt_package`,
-    arguments: [obj(txb, upgradeReceipt)],
+    arguments: [obj(tx, upgradeReceipt)],
   })
 }
 
-export function ticketDigest(txb: TransactionBlock, upgradeTicket: ObjectArg) {
-  return txb.moveCall({
+export function ticketDigest(tx: Transaction, upgradeTicket: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::ticket_digest`,
-    arguments: [obj(txb, upgradeTicket)],
+    arguments: [obj(tx, upgradeTicket)],
   })
 }
 
-export function compatiblePolicy(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::package::compatible_policy`, arguments: [] })
+export function compatiblePolicy(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::package::compatible_policy`, arguments: [] })
 }
 
-export function additivePolicy(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::package::additive_policy`, arguments: [] })
+export function additivePolicy(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::package::additive_policy`, arguments: [] })
 }
 
-export function depOnlyPolicy(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::package::dep_only_policy`, arguments: [] })
+export function depOnlyPolicy(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::package::dep_only_policy`, arguments: [] })
 }
 
-export function onlyAdditiveUpgrades(txb: TransactionBlock, upgradeCap: ObjectArg) {
-  return txb.moveCall({
+export function onlyAdditiveUpgrades(tx: Transaction, upgradeCap: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::only_additive_upgrades`,
-    arguments: [obj(txb, upgradeCap)],
+    arguments: [obj(tx, upgradeCap)],
   })
 }
 
-export function onlyDepUpgrades(txb: TransactionBlock, upgradeCap: ObjectArg) {
-  return txb.moveCall({
+export function onlyDepUpgrades(tx: Transaction, upgradeCap: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::only_dep_upgrades`,
-    arguments: [obj(txb, upgradeCap)],
+    arguments: [obj(tx, upgradeCap)],
   })
 }
 
-export function makeImmutable(txb: TransactionBlock, upgradeCap: ObjectArg) {
-  return txb.moveCall({
+export function makeImmutable(tx: Transaction, upgradeCap: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::make_immutable`,
-    arguments: [obj(txb, upgradeCap)],
+    arguments: [obj(tx, upgradeCap)],
   })
 }
 
 export interface AuthorizeUpgradeArgs {
-  upgradeCap: ObjectArg
+  upgradeCap: TransactionObjectInput
   u8: number | TransactionArgument
   vecU8: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function authorizeUpgrade(txb: TransactionBlock, args: AuthorizeUpgradeArgs) {
-  return txb.moveCall({
+export function authorizeUpgrade(tx: Transaction, args: AuthorizeUpgradeArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::authorize_upgrade`,
     arguments: [
-      obj(txb, args.upgradeCap),
-      pure(txb, args.u8, `u8`),
-      pure(txb, args.vecU8, `vector<u8>`),
+      obj(tx, args.upgradeCap),
+      pure(tx, args.u8, `u8`),
+      pure(tx, args.vecU8, `vector<u8>`),
     ],
   })
 }
 
 export interface CommitUpgradeArgs {
-  upgradeCap: ObjectArg
-  upgradeReceipt: ObjectArg
+  upgradeCap: TransactionObjectInput
+  upgradeReceipt: TransactionObjectInput
 }
 
-export function commitUpgrade(txb: TransactionBlock, args: CommitUpgradeArgs) {
-  return txb.moveCall({
+export function commitUpgrade(tx: Transaction, args: CommitUpgradeArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::commit_upgrade`,
-    arguments: [obj(txb, args.upgradeCap), obj(txb, args.upgradeReceipt)],
+    arguments: [obj(tx, args.upgradeCap), obj(tx, args.upgradeReceipt)],
   })
 }
 
 export interface RestrictArgs {
-  upgradeCap: ObjectArg
+  upgradeCap: TransactionObjectInput
   u8: number | TransactionArgument
 }
 
-export function restrict(txb: TransactionBlock, args: RestrictArgs) {
-  return txb.moveCall({
+export function restrict(tx: Transaction, args: RestrictArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::package::restrict`,
-    arguments: [obj(txb, args.upgradeCap), pure(txb, args.u8, `u8`)],
+    arguments: [obj(tx, args.upgradeCap), pure(tx, args.u8, `u8`)],
   })
 }

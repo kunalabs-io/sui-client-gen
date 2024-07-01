@@ -1,142 +1,143 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { obj, pure } from '../../_framework/util'
+import { String } from '../../move-stdlib-chain/string/structs'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function new_(txb: TransactionBlock, typeArg: string, publisher: ObjectArg) {
-  return txb.moveCall({
+export function new_(tx: Transaction, typeArg: string, publisher: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::display::new`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, publisher)],
+    arguments: [obj(tx, publisher)],
   })
 }
 
 export interface RemoveArgs {
-  display: ObjectArg
+  display: TransactionObjectInput
   string: string | TransactionArgument
 }
 
-export function remove(txb: TransactionBlock, typeArg: string, args: RemoveArgs) {
-  return txb.moveCall({
+export function remove(tx: Transaction, typeArg: string, args: RemoveArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::display::remove`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.display), pure(txb, args.string, `0x1::string::String`)],
+    arguments: [obj(tx, args.display), pure(tx, args.string, `${String.$typeName}`)],
   })
 }
 
-export function version(txb: TransactionBlock, typeArg: string, display: ObjectArg) {
-  return txb.moveCall({
+export function version(tx: Transaction, typeArg: string, display: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::display::version`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, display)],
+    arguments: [obj(tx, display)],
   })
 }
 
 export interface AddArgs {
-  display: ObjectArg
+  display: TransactionObjectInput
   string1: string | TransactionArgument
   string2: string | TransactionArgument
 }
 
-export function add(txb: TransactionBlock, typeArg: string, args: AddArgs) {
-  return txb.moveCall({
+export function add(tx: Transaction, typeArg: string, args: AddArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::display::add`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.display),
-      pure(txb, args.string1, `0x1::string::String`),
-      pure(txb, args.string2, `0x1::string::String`),
+      obj(tx, args.display),
+      pure(tx, args.string1, `${String.$typeName}`),
+      pure(tx, args.string2, `${String.$typeName}`),
     ],
   })
 }
 
 export interface NewWithFieldsArgs {
-  publisher: ObjectArg
+  publisher: TransactionObjectInput
   vecString1: Array<string | TransactionArgument> | TransactionArgument
   vecString2: Array<string | TransactionArgument> | TransactionArgument
 }
 
-export function newWithFields(txb: TransactionBlock, typeArg: string, args: NewWithFieldsArgs) {
-  return txb.moveCall({
+export function newWithFields(tx: Transaction, typeArg: string, args: NewWithFieldsArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::display::new_with_fields`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.publisher),
-      pure(txb, args.vecString1, `vector<0x1::string::String>`),
-      pure(txb, args.vecString2, `vector<0x1::string::String>`),
+      obj(tx, args.publisher),
+      pure(tx, args.vecString1, `vector<${String.$typeName}>`),
+      pure(tx, args.vecString2, `vector<${String.$typeName}>`),
     ],
   })
 }
 
-export function createAndKeep(txb: TransactionBlock, typeArg: string, publisher: ObjectArg) {
-  return txb.moveCall({
+export function createAndKeep(tx: Transaction, typeArg: string, publisher: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::display::create_and_keep`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, publisher)],
+    arguments: [obj(tx, publisher)],
   })
 }
 
-export function updateVersion(txb: TransactionBlock, typeArg: string, display: ObjectArg) {
-  return txb.moveCall({
+export function updateVersion(tx: Transaction, typeArg: string, display: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::display::update_version`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, display)],
+    arguments: [obj(tx, display)],
   })
 }
 
 export interface AddMultipleArgs {
-  display: ObjectArg
+  display: TransactionObjectInput
   vecString1: Array<string | TransactionArgument> | TransactionArgument
   vecString2: Array<string | TransactionArgument> | TransactionArgument
 }
 
-export function addMultiple(txb: TransactionBlock, typeArg: string, args: AddMultipleArgs) {
-  return txb.moveCall({
+export function addMultiple(tx: Transaction, typeArg: string, args: AddMultipleArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::display::add_multiple`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.display),
-      pure(txb, args.vecString1, `vector<0x1::string::String>`),
-      pure(txb, args.vecString2, `vector<0x1::string::String>`),
+      obj(tx, args.display),
+      pure(tx, args.vecString1, `vector<${String.$typeName}>`),
+      pure(tx, args.vecString2, `vector<${String.$typeName}>`),
     ],
   })
 }
 
 export interface EditArgs {
-  display: ObjectArg
+  display: TransactionObjectInput
   string1: string | TransactionArgument
   string2: string | TransactionArgument
 }
 
-export function edit(txb: TransactionBlock, typeArg: string, args: EditArgs) {
-  return txb.moveCall({
+export function edit(tx: Transaction, typeArg: string, args: EditArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::display::edit`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.display),
-      pure(txb, args.string1, `0x1::string::String`),
-      pure(txb, args.string2, `0x1::string::String`),
+      obj(tx, args.display),
+      pure(tx, args.string1, `${String.$typeName}`),
+      pure(tx, args.string2, `${String.$typeName}`),
     ],
   })
 }
 
-export function isAuthorized(txb: TransactionBlock, typeArg: string, publisher: ObjectArg) {
-  return txb.moveCall({
+export function isAuthorized(tx: Transaction, typeArg: string, publisher: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::display::is_authorized`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, publisher)],
+    arguments: [obj(tx, publisher)],
   })
 }
 
-export function fields(txb: TransactionBlock, typeArg: string, display: ObjectArg) {
-  return txb.moveCall({
+export function fields(tx: Transaction, typeArg: string, display: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::display::fields`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, display)],
+    arguments: [obj(tx, display)],
   })
 }
 
-export function createInternal(txb: TransactionBlock, typeArg: string) {
-  return txb.moveCall({
+export function createInternal(tx: Transaction, typeArg: string) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::display::create_internal`,
     typeArguments: [typeArg],
     arguments: [],
@@ -144,19 +145,19 @@ export function createInternal(txb: TransactionBlock, typeArg: string) {
 }
 
 export interface AddInternalArgs {
-  display: ObjectArg
+  display: TransactionObjectInput
   string1: string | TransactionArgument
   string2: string | TransactionArgument
 }
 
-export function addInternal(txb: TransactionBlock, typeArg: string, args: AddInternalArgs) {
-  return txb.moveCall({
+export function addInternal(tx: Transaction, typeArg: string, args: AddInternalArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::display::add_internal`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.display),
-      pure(txb, args.string1, `0x1::string::String`),
-      pure(txb, args.string2, `0x1::string::String`),
+      obj(tx, args.display),
+      pure(tx, args.string1, `${String.$typeName}`),
+      pure(tx, args.string2, `${String.$typeName}`),
     ],
   })
 }

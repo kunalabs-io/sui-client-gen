@@ -1,28 +1,28 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { obj, pure } from '../../_framework/util'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export interface MultiplyU64Args {
   u64: bigint | TransactionArgument
-  fixedPoint32: ObjectArg
+  fixedPoint32: TransactionObjectInput
 }
 
-export function multiplyU64(txb: TransactionBlock, args: MultiplyU64Args) {
-  return txb.moveCall({
+export function multiplyU64(tx: Transaction, args: MultiplyU64Args) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::fixed_point32::multiply_u64`,
-    arguments: [pure(txb, args.u64, `u64`), obj(txb, args.fixedPoint32)],
+    arguments: [pure(tx, args.u64, `u64`), obj(tx, args.fixedPoint32)],
   })
 }
 
 export interface DivideU64Args {
   u64: bigint | TransactionArgument
-  fixedPoint32: ObjectArg
+  fixedPoint32: TransactionObjectInput
 }
 
-export function divideU64(txb: TransactionBlock, args: DivideU64Args) {
-  return txb.moveCall({
+export function divideU64(tx: Transaction, args: DivideU64Args) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::fixed_point32::divide_u64`,
-    arguments: [pure(txb, args.u64, `u64`), obj(txb, args.fixedPoint32)],
+    arguments: [pure(tx, args.u64, `u64`), obj(tx, args.fixedPoint32)],
   })
 }
 
@@ -31,30 +31,30 @@ export interface CreateFromRationalArgs {
   u642: bigint | TransactionArgument
 }
 
-export function createFromRational(txb: TransactionBlock, args: CreateFromRationalArgs) {
-  return txb.moveCall({
+export function createFromRational(tx: Transaction, args: CreateFromRationalArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::fixed_point32::create_from_rational`,
-    arguments: [pure(txb, args.u641, `u64`), pure(txb, args.u642, `u64`)],
+    arguments: [pure(tx, args.u641, `u64`), pure(tx, args.u642, `u64`)],
   })
 }
 
-export function createFromRawValue(txb: TransactionBlock, u64: bigint | TransactionArgument) {
-  return txb.moveCall({
+export function createFromRawValue(tx: Transaction, u64: bigint | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::fixed_point32::create_from_raw_value`,
-    arguments: [pure(txb, u64, `u64`)],
+    arguments: [pure(tx, u64, `u64`)],
   })
 }
 
-export function getRawValue(txb: TransactionBlock, fixedPoint32: ObjectArg) {
-  return txb.moveCall({
+export function getRawValue(tx: Transaction, fixedPoint32: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::fixed_point32::get_raw_value`,
-    arguments: [obj(txb, fixedPoint32)],
+    arguments: [obj(tx, fixedPoint32)],
   })
 }
 
-export function isZero(txb: TransactionBlock, fixedPoint32: ObjectArg) {
-  return txb.moveCall({
+export function isZero(tx: Transaction, fixedPoint32: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::fixed_point32::is_zero`,
-    arguments: [obj(txb, fixedPoint32)],
+    arguments: [obj(tx, fixedPoint32)],
   })
 }

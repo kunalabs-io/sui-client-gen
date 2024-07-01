@@ -1,12 +1,13 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, obj, pure, vector } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { obj, pure, vector } from '../../_framework/util'
+import { Element } from './structs'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function bytes(txb: TransactionBlock, typeArg: string, element: ObjectArg) {
-  return txb.moveCall({
+export function bytes(tx: Transaction, typeArg: string, element: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::bytes`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, element)],
+    arguments: [obj(tx, element)],
   })
 }
 
@@ -16,84 +17,84 @@ export interface FromBytesArgs {
   bool: boolean | TransactionArgument
 }
 
-export function fromBytes(txb: TransactionBlock, typeArg: string, args: FromBytesArgs) {
-  return txb.moveCall({
+export function fromBytes(tx: Transaction, typeArg: string, args: FromBytesArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::from_bytes`,
     typeArguments: [typeArg],
     arguments: [
-      pure(txb, args.u8, `u8`),
-      pure(txb, args.vecU8, `vector<u8>`),
-      pure(txb, args.bool, `bool`),
+      pure(tx, args.u8, `u8`),
+      pure(tx, args.vecU8, `vector<u8>`),
+      pure(tx, args.bool, `bool`),
     ],
   })
 }
 
 export interface EqualArgs {
-  element1: ObjectArg
-  element2: ObjectArg
+  element1: TransactionObjectInput
+  element2: TransactionObjectInput
 }
 
-export function equal(txb: TransactionBlock, typeArg: string, args: EqualArgs) {
-  return txb.moveCall({
+export function equal(tx: Transaction, typeArg: string, args: EqualArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::equal`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.element1), obj(txb, args.element2)],
+    arguments: [obj(tx, args.element1), obj(tx, args.element2)],
   })
 }
 
 export interface AddArgs {
   u8: number | TransactionArgument
-  element1: ObjectArg
-  element2: ObjectArg
+  element1: TransactionObjectInput
+  element2: TransactionObjectInput
 }
 
-export function add(txb: TransactionBlock, typeArg: string, args: AddArgs) {
-  return txb.moveCall({
+export function add(tx: Transaction, typeArg: string, args: AddArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::add`,
     typeArguments: [typeArg],
-    arguments: [pure(txb, args.u8, `u8`), obj(txb, args.element1), obj(txb, args.element2)],
+    arguments: [pure(tx, args.u8, `u8`), obj(tx, args.element1), obj(tx, args.element2)],
   })
 }
 
 export interface SubArgs {
   u8: number | TransactionArgument
-  element1: ObjectArg
-  element2: ObjectArg
+  element1: TransactionObjectInput
+  element2: TransactionObjectInput
 }
 
-export function sub(txb: TransactionBlock, typeArg: string, args: SubArgs) {
-  return txb.moveCall({
+export function sub(tx: Transaction, typeArg: string, args: SubArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::sub`,
     typeArguments: [typeArg],
-    arguments: [pure(txb, args.u8, `u8`), obj(txb, args.element1), obj(txb, args.element2)],
+    arguments: [pure(tx, args.u8, `u8`), obj(tx, args.element1), obj(tx, args.element2)],
   })
 }
 
 export interface MulArgs {
   u8: number | TransactionArgument
-  element1: ObjectArg
-  element2: ObjectArg
+  element1: TransactionObjectInput
+  element2: TransactionObjectInput
 }
 
-export function mul(txb: TransactionBlock, typeArgs: [string, string], args: MulArgs) {
-  return txb.moveCall({
+export function mul(tx: Transaction, typeArgs: [string, string], args: MulArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::mul`,
     typeArguments: typeArgs,
-    arguments: [pure(txb, args.u8, `u8`), obj(txb, args.element1), obj(txb, args.element2)],
+    arguments: [pure(tx, args.u8, `u8`), obj(tx, args.element1), obj(tx, args.element2)],
   })
 }
 
 export interface DivArgs {
   u8: number | TransactionArgument
-  element1: ObjectArg
-  element2: ObjectArg
+  element1: TransactionObjectInput
+  element2: TransactionObjectInput
 }
 
-export function div(txb: TransactionBlock, typeArgs: [string, string], args: DivArgs) {
-  return txb.moveCall({
+export function div(tx: Transaction, typeArgs: [string, string], args: DivArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::div`,
     typeArguments: typeArgs,
-    arguments: [pure(txb, args.u8, `u8`), obj(txb, args.element1), obj(txb, args.element2)],
+    arguments: [pure(tx, args.u8, `u8`), obj(tx, args.element1), obj(tx, args.element2)],
   })
 }
 
@@ -102,51 +103,47 @@ export interface HashToArgs {
   vecU8: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function hashTo(txb: TransactionBlock, typeArg: string, args: HashToArgs) {
-  return txb.moveCall({
+export function hashTo(tx: Transaction, typeArg: string, args: HashToArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::hash_to`,
     typeArguments: [typeArg],
-    arguments: [pure(txb, args.u8, `u8`), pure(txb, args.vecU8, `vector<u8>`)],
+    arguments: [pure(tx, args.u8, `u8`), pure(tx, args.vecU8, `vector<u8>`)],
   })
 }
 
 export interface MultiScalarMultiplicationArgs {
   u8: number | TransactionArgument
-  vecElement1: Array<ObjectArg> | TransactionArgument
-  vecElement2: Array<ObjectArg> | TransactionArgument
+  vecElement1: Array<TransactionObjectInput> | TransactionArgument
+  vecElement2: Array<TransactionObjectInput> | TransactionArgument
 }
 
 export function multiScalarMultiplication(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: MultiScalarMultiplicationArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::multi_scalar_multiplication`,
     typeArguments: typeArgs,
     arguments: [
-      pure(txb, args.u8, `u8`),
-      vector(txb, `0x2::group_ops::Element<${typeArgs[0]}>`, args.vecElement1),
-      vector(txb, `0x2::group_ops::Element<${typeArgs[1]}>`, args.vecElement2),
+      pure(tx, args.u8, `u8`),
+      vector(tx, `${Element.$typeName}<${typeArgs[0]}>`, args.vecElement1),
+      vector(tx, `${Element.$typeName}<${typeArgs[1]}>`, args.vecElement2),
     ],
   })
 }
 
 export interface PairingArgs {
   u8: number | TransactionArgument
-  element1: ObjectArg
-  element2: ObjectArg
+  element1: TransactionObjectInput
+  element2: TransactionObjectInput
 }
 
-export function pairing(
-  txb: TransactionBlock,
-  typeArgs: [string, string, string],
-  args: PairingArgs
-) {
-  return txb.moveCall({
+export function pairing(tx: Transaction, typeArgs: [string, string, string], args: PairingArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::pairing`,
     typeArguments: typeArgs,
-    arguments: [pure(txb, args.u8, `u8`), obj(txb, args.element1), obj(txb, args.element2)],
+    arguments: [pure(tx, args.u8, `u8`), obj(tx, args.element1), obj(tx, args.element2)],
   })
 }
 
@@ -155,10 +152,10 @@ export interface InternalValidateArgs {
   vecU8: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function internalValidate(txb: TransactionBlock, args: InternalValidateArgs) {
-  return txb.moveCall({
+export function internalValidate(tx: Transaction, args: InternalValidateArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::internal_validate`,
-    arguments: [pure(txb, args.u8, `u8`), pure(txb, args.vecU8, `vector<u8>`)],
+    arguments: [pure(tx, args.u8, `u8`), pure(tx, args.vecU8, `vector<u8>`)],
   })
 }
 
@@ -168,13 +165,13 @@ export interface InternalAddArgs {
   vecU82: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function internalAdd(txb: TransactionBlock, args: InternalAddArgs) {
-  return txb.moveCall({
+export function internalAdd(tx: Transaction, args: InternalAddArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::internal_add`,
     arguments: [
-      pure(txb, args.u8, `u8`),
-      pure(txb, args.vecU81, `vector<u8>`),
-      pure(txb, args.vecU82, `vector<u8>`),
+      pure(tx, args.u8, `u8`),
+      pure(tx, args.vecU81, `vector<u8>`),
+      pure(tx, args.vecU82, `vector<u8>`),
     ],
   })
 }
@@ -185,13 +182,13 @@ export interface InternalSubArgs {
   vecU82: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function internalSub(txb: TransactionBlock, args: InternalSubArgs) {
-  return txb.moveCall({
+export function internalSub(tx: Transaction, args: InternalSubArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::internal_sub`,
     arguments: [
-      pure(txb, args.u8, `u8`),
-      pure(txb, args.vecU81, `vector<u8>`),
-      pure(txb, args.vecU82, `vector<u8>`),
+      pure(tx, args.u8, `u8`),
+      pure(tx, args.vecU81, `vector<u8>`),
+      pure(tx, args.vecU82, `vector<u8>`),
     ],
   })
 }
@@ -202,13 +199,13 @@ export interface InternalMulArgs {
   vecU82: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function internalMul(txb: TransactionBlock, args: InternalMulArgs) {
-  return txb.moveCall({
+export function internalMul(tx: Transaction, args: InternalMulArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::internal_mul`,
     arguments: [
-      pure(txb, args.u8, `u8`),
-      pure(txb, args.vecU81, `vector<u8>`),
-      pure(txb, args.vecU82, `vector<u8>`),
+      pure(tx, args.u8, `u8`),
+      pure(tx, args.vecU81, `vector<u8>`),
+      pure(tx, args.vecU82, `vector<u8>`),
     ],
   })
 }
@@ -219,13 +216,13 @@ export interface InternalDivArgs {
   vecU82: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function internalDiv(txb: TransactionBlock, args: InternalDivArgs) {
-  return txb.moveCall({
+export function internalDiv(tx: Transaction, args: InternalDivArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::internal_div`,
     arguments: [
-      pure(txb, args.u8, `u8`),
-      pure(txb, args.vecU81, `vector<u8>`),
-      pure(txb, args.vecU82, `vector<u8>`),
+      pure(tx, args.u8, `u8`),
+      pure(tx, args.vecU81, `vector<u8>`),
+      pure(tx, args.vecU82, `vector<u8>`),
     ],
   })
 }
@@ -235,10 +232,10 @@ export interface InternalHashToArgs {
   vecU8: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function internalHashTo(txb: TransactionBlock, args: InternalHashToArgs) {
-  return txb.moveCall({
+export function internalHashTo(tx: Transaction, args: InternalHashToArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::internal_hash_to`,
-    arguments: [pure(txb, args.u8, `u8`), pure(txb, args.vecU8, `vector<u8>`)],
+    arguments: [pure(tx, args.u8, `u8`), pure(tx, args.vecU8, `vector<u8>`)],
   })
 }
 
@@ -248,13 +245,13 @@ export interface InternalMultiScalarMulArgs {
   vecU82: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function internalMultiScalarMul(txb: TransactionBlock, args: InternalMultiScalarMulArgs) {
-  return txb.moveCall({
+export function internalMultiScalarMul(tx: Transaction, args: InternalMultiScalarMulArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::internal_multi_scalar_mul`,
     arguments: [
-      pure(txb, args.u8, `u8`),
-      pure(txb, args.vecU81, `vector<u8>`),
-      pure(txb, args.vecU82, `vector<u8>`),
+      pure(tx, args.u8, `u8`),
+      pure(tx, args.vecU81, `vector<u8>`),
+      pure(tx, args.vecU82, `vector<u8>`),
     ],
   })
 }
@@ -265,13 +262,13 @@ export interface InternalPairingArgs {
   vecU82: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function internalPairing(txb: TransactionBlock, args: InternalPairingArgs) {
-  return txb.moveCall({
+export function internalPairing(tx: Transaction, args: InternalPairingArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::internal_pairing`,
     arguments: [
-      pure(txb, args.u8, `u8`),
-      pure(txb, args.vecU81, `vector<u8>`),
-      pure(txb, args.vecU82, `vector<u8>`),
+      pure(tx, args.u8, `u8`),
+      pure(tx, args.vecU81, `vector<u8>`),
+      pure(tx, args.vecU82, `vector<u8>`),
     ],
   })
 }
@@ -282,13 +279,13 @@ export interface SetAsPrefixArgs {
   vecU8: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function setAsPrefix(txb: TransactionBlock, args: SetAsPrefixArgs) {
-  return txb.moveCall({
+export function setAsPrefix(tx: Transaction, args: SetAsPrefixArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::group_ops::set_as_prefix`,
     arguments: [
-      pure(txb, args.u64, `u64`),
-      pure(txb, args.bool, `bool`),
-      pure(txb, args.vecU8, `vector<u8>`),
+      pure(tx, args.u64, `u64`),
+      pure(tx, args.bool, `bool`),
+      pure(tx, args.vecU8, `vector<u8>`),
     ],
   })
 }

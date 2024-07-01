@@ -1,21 +1,21 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, obj } from '../../_framework/util'
-import { TransactionBlock } from '@mysten/sui.js/transactions'
+import { obj } from '../../_framework/util'
+import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function faucetMint(txb: TransactionBlock, faucet: ObjectArg) {
-  return txb.moveCall({
+export function faucetMint(tx: Transaction, faucet: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::example_coin::faucet_mint`,
-    arguments: [obj(txb, faucet)],
+    arguments: [obj(tx, faucet)],
   })
 }
 
-export function faucetMintBalance(txb: TransactionBlock, faucet: ObjectArg) {
-  return txb.moveCall({
+export function faucetMintBalance(tx: Transaction, faucet: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::example_coin::faucet_mint_balance`,
-    arguments: [obj(txb, faucet)],
+    arguments: [obj(tx, faucet)],
   })
 }
 
-export function init(txb: TransactionBlock, otw: ObjectArg) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::example_coin::init`, arguments: [obj(txb, otw)] })
+export function init(tx: Transaction, otw: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::example_coin::init`, arguments: [obj(tx, otw)] })
 }

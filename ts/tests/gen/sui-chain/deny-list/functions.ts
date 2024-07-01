@@ -1,119 +1,119 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { obj, pure } from '../../_framework/util'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export interface ContainsArgs {
-  denyList: ObjectArg
+  denyList: TransactionObjectInput
   u64: bigint | TransactionArgument
   vecU8: Array<number | TransactionArgument> | TransactionArgument
   address: string | TransactionArgument
 }
 
-export function contains(txb: TransactionBlock, args: ContainsArgs) {
-  return txb.moveCall({
+export function contains(tx: Transaction, args: ContainsArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::deny_list::contains`,
     arguments: [
-      obj(txb, args.denyList),
-      pure(txb, args.u64, `u64`),
-      pure(txb, args.vecU8, `vector<u8>`),
-      pure(txb, args.address, `address`),
+      obj(tx, args.denyList),
+      pure(tx, args.u64, `u64`),
+      pure(tx, args.vecU8, `vector<u8>`),
+      pure(tx, args.address, `address`),
     ],
   })
 }
 
 export interface RemoveArgs {
-  denyList: ObjectArg
+  denyList: TransactionObjectInput
   u64: bigint | TransactionArgument
   vecU8: Array<number | TransactionArgument> | TransactionArgument
   address: string | TransactionArgument
 }
 
-export function remove(txb: TransactionBlock, args: RemoveArgs) {
-  return txb.moveCall({
+export function remove(tx: Transaction, args: RemoveArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::deny_list::remove`,
     arguments: [
-      obj(txb, args.denyList),
-      pure(txb, args.u64, `u64`),
-      pure(txb, args.vecU8, `vector<u8>`),
-      pure(txb, args.address, `address`),
+      obj(tx, args.denyList),
+      pure(tx, args.u64, `u64`),
+      pure(tx, args.vecU8, `vector<u8>`),
+      pure(tx, args.address, `address`),
     ],
   })
 }
 
-export function create(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::deny_list::create`, arguments: [] })
+export function create(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::deny_list::create`, arguments: [] })
 }
 
 export interface AddArgs {
-  denyList: ObjectArg
+  denyList: TransactionObjectInput
   u64: bigint | TransactionArgument
   vecU8: Array<number | TransactionArgument> | TransactionArgument
   address: string | TransactionArgument
 }
 
-export function add(txb: TransactionBlock, args: AddArgs) {
-  return txb.moveCall({
+export function add(tx: Transaction, args: AddArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::deny_list::add`,
     arguments: [
-      obj(txb, args.denyList),
-      pure(txb, args.u64, `u64`),
-      pure(txb, args.vecU8, `vector<u8>`),
-      pure(txb, args.address, `address`),
+      obj(tx, args.denyList),
+      pure(tx, args.u64, `u64`),
+      pure(tx, args.vecU8, `vector<u8>`),
+      pure(tx, args.address, `address`),
     ],
   })
 }
 
 export interface PerTypeListAddArgs {
-  perTypeList: ObjectArg
+  perTypeList: TransactionObjectInput
   vecU8: Array<number | TransactionArgument> | TransactionArgument
   address: string | TransactionArgument
 }
 
-export function perTypeListAdd(txb: TransactionBlock, args: PerTypeListAddArgs) {
-  return txb.moveCall({
+export function perTypeListAdd(tx: Transaction, args: PerTypeListAddArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::deny_list::per_type_list_add`,
     arguments: [
-      obj(txb, args.perTypeList),
-      pure(txb, args.vecU8, `vector<u8>`),
-      pure(txb, args.address, `address`),
+      obj(tx, args.perTypeList),
+      pure(tx, args.vecU8, `vector<u8>`),
+      pure(tx, args.address, `address`),
     ],
   })
 }
 
 export interface PerTypeListRemoveArgs {
-  perTypeList: ObjectArg
+  perTypeList: TransactionObjectInput
   vecU8: Array<number | TransactionArgument> | TransactionArgument
   address: string | TransactionArgument
 }
 
-export function perTypeListRemove(txb: TransactionBlock, args: PerTypeListRemoveArgs) {
-  return txb.moveCall({
+export function perTypeListRemove(tx: Transaction, args: PerTypeListRemoveArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::deny_list::per_type_list_remove`,
     arguments: [
-      obj(txb, args.perTypeList),
-      pure(txb, args.vecU8, `vector<u8>`),
-      pure(txb, args.address, `address`),
+      obj(tx, args.perTypeList),
+      pure(tx, args.vecU8, `vector<u8>`),
+      pure(tx, args.address, `address`),
     ],
   })
 }
 
 export interface PerTypeListContainsArgs {
-  perTypeList: ObjectArg
+  perTypeList: TransactionObjectInput
   vecU8: Array<number | TransactionArgument> | TransactionArgument
   address: string | TransactionArgument
 }
 
-export function perTypeListContains(txb: TransactionBlock, args: PerTypeListContainsArgs) {
-  return txb.moveCall({
+export function perTypeListContains(tx: Transaction, args: PerTypeListContainsArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::deny_list::per_type_list_contains`,
     arguments: [
-      obj(txb, args.perTypeList),
-      pure(txb, args.vecU8, `vector<u8>`),
-      pure(txb, args.address, `address`),
+      obj(tx, args.perTypeList),
+      pure(tx, args.vecU8, `vector<u8>`),
+      pure(tx, args.address, `address`),
     ],
   })
 }
 
-export function perTypeList(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::deny_list::per_type_list`, arguments: [] })
+export function perTypeList(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::deny_list::per_type_list`, arguments: [] })
 }

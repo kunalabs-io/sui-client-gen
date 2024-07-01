@@ -10,14 +10,15 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { PKG_V6 } from '../index'
 import { bcs, fromB64 } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== FixedPoint32 =============================== */
 
 export function isFixedPoint32(type: string): boolean {
   type = compressSuiType(type)
-  return type === '0x1::fixed_point32::FixedPoint32'
+  return type === `${PKG_V6}::fixed_point32::FixedPoint32`
 }
 
 export interface FixedPoint32Fields {
@@ -27,12 +28,12 @@ export interface FixedPoint32Fields {
 export type FixedPoint32Reified = Reified<FixedPoint32, FixedPoint32Fields>
 
 export class FixedPoint32 implements StructClass {
-  static readonly $typeName = '0x1::fixed_point32::FixedPoint32'
+  static readonly $typeName = `${PKG_V6}::fixed_point32::FixedPoint32`
   static readonly $numTypeParams = 0
 
   readonly $typeName = FixedPoint32.$typeName
 
-  readonly $fullTypeName: '0x1::fixed_point32::FixedPoint32'
+  readonly $fullTypeName: `${typeof PKG_V6}::fixed_point32::FixedPoint32`
 
   readonly $typeArgs: []
 
@@ -42,7 +43,7 @@ export class FixedPoint32 implements StructClass {
     this.$fullTypeName = composeSuiType(
       FixedPoint32.$typeName,
       ...typeArgs
-    ) as '0x1::fixed_point32::FixedPoint32'
+    ) as `${typeof PKG_V6}::fixed_point32::FixedPoint32`
     this.$typeArgs = typeArgs
 
     this.value = fields.value
@@ -54,7 +55,7 @@ export class FixedPoint32 implements StructClass {
       fullTypeName: composeSuiType(
         FixedPoint32.$typeName,
         ...[]
-      ) as '0x1::fixed_point32::FixedPoint32',
+      ) as `${typeof PKG_V6}::fixed_point32::FixedPoint32`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => FixedPoint32.fromFields(fields),

@@ -22,16 +22,15 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framewo
 import { Balance, Supply } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
+import { PKG_V1 } from '../index'
 import { bcs, fromB64 } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== AdminCap =============================== */
 
 export function isAdminCap(type: string): boolean {
   type = compressSuiType(type)
-  return (
-    type === '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
-  )
+  return type === `${PKG_V1}::pool::AdminCap`
 }
 
 export interface AdminCapFields {
@@ -41,13 +40,12 @@ export interface AdminCapFields {
 export type AdminCapReified = Reified<AdminCap, AdminCapFields>
 
 export class AdminCap implements StructClass {
-  static readonly $typeName =
-    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
+  static readonly $typeName = `${PKG_V1}::pool::AdminCap`
   static readonly $numTypeParams = 0
 
   readonly $typeName = AdminCap.$typeName
 
-  readonly $fullTypeName: '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
+  readonly $fullTypeName: `${typeof PKG_V1}::pool::AdminCap`
 
   readonly $typeArgs: []
 
@@ -57,7 +55,7 @@ export class AdminCap implements StructClass {
     this.$fullTypeName = composeSuiType(
       AdminCap.$typeName,
       ...typeArgs
-    ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap'
+    ) as `${typeof PKG_V1}::pool::AdminCap`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -66,10 +64,7 @@ export class AdminCap implements StructClass {
   static reified(): AdminCapReified {
     return {
       typeName: AdminCap.$typeName,
-      fullTypeName: composeSuiType(
-        AdminCap.$typeName,
-        ...[]
-      ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::AdminCap',
+      fullTypeName: composeSuiType(AdminCap.$typeName, ...[]) as `${typeof PKG_V1}::pool::AdminCap`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AdminCap.fromFields(fields),
@@ -168,9 +163,7 @@ export class AdminCap implements StructClass {
 
 export function isLP(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(
-    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<'
-  )
+  return type.startsWith(`${PKG_V1}::pool::LP` + '<')
 }
 
 export interface LPFields<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
@@ -185,13 +178,12 @@ export type LPReified<A extends PhantomTypeArgument, B extends PhantomTypeArgume
 export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   implements StructClass
 {
-  static readonly $typeName =
-    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP'
+  static readonly $typeName = `${PKG_V1}::pool::LP`
   static readonly $numTypeParams = 2
 
   readonly $typeName = LP.$typeName
 
-  readonly $fullTypeName: `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
+  readonly $fullTypeName: `${typeof PKG_V1}::pool::LP<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<A>, PhantomToTypeStr<B>]
 
@@ -204,7 +196,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     this.$fullTypeName = composeSuiType(
       LP.$typeName,
       ...typeArgs
-    ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
+    ) as `${typeof PKG_V1}::pool::LP<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -219,7 +211,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       fullTypeName: composeSuiType(
         LP.$typeName,
         ...[extractType(A), extractType(B)]
-      ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::LP<${PhantomToTypeStr<
+      ) as `${typeof PKG_V1}::pool::LP<${PhantomToTypeStr<
         ToPhantomTypeArgument<A>
       >}, ${PhantomToTypeStr<ToPhantomTypeArgument<B>>}>`,
       typeArgs: [extractType(A), extractType(B)] as [
@@ -375,9 +367,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 
 export function isPool(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(
-    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<'
-  )
+  return type.startsWith(`${PKG_V1}::pool::Pool` + '<')
 }
 
 export interface PoolFields<A extends PhantomTypeArgument, B extends PhantomTypeArgument> {
@@ -398,13 +388,12 @@ export type PoolReified<A extends PhantomTypeArgument, B extends PhantomTypeArgu
 export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   implements StructClass
 {
-  static readonly $typeName =
-    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool'
+  static readonly $typeName = `${PKG_V1}::pool::Pool`
   static readonly $numTypeParams = 2
 
   readonly $typeName = Pool.$typeName
 
-  readonly $fullTypeName: `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
+  readonly $fullTypeName: `${typeof PKG_V1}::pool::Pool<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<A>, PhantomToTypeStr<B>]
 
@@ -423,7 +412,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     this.$fullTypeName = composeSuiType(
       Pool.$typeName,
       ...typeArgs
-    ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
+    ) as `${typeof PKG_V1}::pool::Pool<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -444,7 +433,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       fullTypeName: composeSuiType(
         Pool.$typeName,
         ...[extractType(A), extractType(B)]
-      ) as `0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::Pool<${PhantomToTypeStr<
+      ) as `${typeof PKG_V1}::pool::Pool<${PhantomToTypeStr<
         ToPhantomTypeArgument<A>
       >}, ${PhantomToTypeStr<ToPhantomTypeArgument<B>>}>`,
       typeArgs: [extractType(A), extractType(B)] as [
@@ -651,10 +640,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 
 export function isPoolCreationEvent(type: string): boolean {
   type = compressSuiType(type)
-  return (
-    type ===
-    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
-  )
+  return type === `${PKG_V1}::pool::PoolCreationEvent`
 }
 
 export interface PoolCreationEventFields {
@@ -664,13 +650,12 @@ export interface PoolCreationEventFields {
 export type PoolCreationEventReified = Reified<PoolCreationEvent, PoolCreationEventFields>
 
 export class PoolCreationEvent implements StructClass {
-  static readonly $typeName =
-    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
+  static readonly $typeName = `${PKG_V1}::pool::PoolCreationEvent`
   static readonly $numTypeParams = 0
 
   readonly $typeName = PoolCreationEvent.$typeName
 
-  readonly $fullTypeName: '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
+  readonly $fullTypeName: `${typeof PKG_V1}::pool::PoolCreationEvent`
 
   readonly $typeArgs: []
 
@@ -680,7 +665,7 @@ export class PoolCreationEvent implements StructClass {
     this.$fullTypeName = composeSuiType(
       PoolCreationEvent.$typeName,
       ...typeArgs
-    ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent'
+    ) as `${typeof PKG_V1}::pool::PoolCreationEvent`
     this.$typeArgs = typeArgs
 
     this.poolId = fields.poolId
@@ -692,7 +677,7 @@ export class PoolCreationEvent implements StructClass {
       fullTypeName: composeSuiType(
         PoolCreationEvent.$typeName,
         ...[]
-      ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolCreationEvent',
+      ) as `${typeof PKG_V1}::pool::PoolCreationEvent`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PoolCreationEvent.fromFields(fields),
@@ -797,10 +782,7 @@ export class PoolCreationEvent implements StructClass {
 
 export function isPoolRegistry(type: string): boolean {
   type = compressSuiType(type)
-  return (
-    type ===
-    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
-  )
+  return type === `${PKG_V1}::pool::PoolRegistry`
 }
 
 export interface PoolRegistryFields {
@@ -811,13 +793,12 @@ export interface PoolRegistryFields {
 export type PoolRegistryReified = Reified<PoolRegistry, PoolRegistryFields>
 
 export class PoolRegistry implements StructClass {
-  static readonly $typeName =
-    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
+  static readonly $typeName = `${PKG_V1}::pool::PoolRegistry`
   static readonly $numTypeParams = 0
 
   readonly $typeName = PoolRegistry.$typeName
 
-  readonly $fullTypeName: '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
+  readonly $fullTypeName: `${typeof PKG_V1}::pool::PoolRegistry`
 
   readonly $typeArgs: []
 
@@ -828,7 +809,7 @@ export class PoolRegistry implements StructClass {
     this.$fullTypeName = composeSuiType(
       PoolRegistry.$typeName,
       ...typeArgs
-    ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry'
+    ) as `${typeof PKG_V1}::pool::PoolRegistry`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -841,7 +822,7 @@ export class PoolRegistry implements StructClass {
       fullTypeName: composeSuiType(
         PoolRegistry.$typeName,
         ...[]
-      ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistry',
+      ) as `${typeof PKG_V1}::pool::PoolRegistry`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PoolRegistry.fromFields(fields),
@@ -960,10 +941,7 @@ export class PoolRegistry implements StructClass {
 
 export function isPoolRegistryItem(type: string): boolean {
   type = compressSuiType(type)
-  return (
-    type ===
-    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
-  )
+  return type === `${PKG_V1}::pool::PoolRegistryItem`
 }
 
 export interface PoolRegistryItemFields {
@@ -974,13 +952,12 @@ export interface PoolRegistryItemFields {
 export type PoolRegistryItemReified = Reified<PoolRegistryItem, PoolRegistryItemFields>
 
 export class PoolRegistryItem implements StructClass {
-  static readonly $typeName =
-    '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
+  static readonly $typeName = `${PKG_V1}::pool::PoolRegistryItem`
   static readonly $numTypeParams = 0
 
   readonly $typeName = PoolRegistryItem.$typeName
 
-  readonly $fullTypeName: '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
+  readonly $fullTypeName: `${typeof PKG_V1}::pool::PoolRegistryItem`
 
   readonly $typeArgs: []
 
@@ -991,7 +968,7 @@ export class PoolRegistryItem implements StructClass {
     this.$fullTypeName = composeSuiType(
       PoolRegistryItem.$typeName,
       ...typeArgs
-    ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem'
+    ) as `${typeof PKG_V1}::pool::PoolRegistryItem`
     this.$typeArgs = typeArgs
 
     this.a = fields.a
@@ -1004,7 +981,7 @@ export class PoolRegistryItem implements StructClass {
       fullTypeName: composeSuiType(
         PoolRegistryItem.$typeName,
         ...[]
-      ) as '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7::pool::PoolRegistryItem',
+      ) as `${typeof PKG_V1}::pool::PoolRegistryItem`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PoolRegistryItem.fromFields(fields),

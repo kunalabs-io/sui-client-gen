@@ -1,46 +1,47 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { obj, pure } from '../../_framework/util'
+import { String } from '../../move-stdlib-chain/string/structs'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function delete_(txb: TransactionBlock, verifiedId: ObjectArg) {
-  return txb.moveCall({
+export function delete_(tx: Transaction, verifiedId: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::zklogin_verified_id::delete`,
-    arguments: [obj(txb, verifiedId)],
+    arguments: [obj(tx, verifiedId)],
   })
 }
 
-export function owner(txb: TransactionBlock, verifiedId: ObjectArg) {
-  return txb.moveCall({
+export function owner(tx: Transaction, verifiedId: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::zklogin_verified_id::owner`,
-    arguments: [obj(txb, verifiedId)],
+    arguments: [obj(tx, verifiedId)],
   })
 }
 
-export function keyClaimName(txb: TransactionBlock, verifiedId: ObjectArg) {
-  return txb.moveCall({
+export function keyClaimName(tx: Transaction, verifiedId: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::zklogin_verified_id::key_claim_name`,
-    arguments: [obj(txb, verifiedId)],
+    arguments: [obj(tx, verifiedId)],
   })
 }
 
-export function keyClaimValue(txb: TransactionBlock, verifiedId: ObjectArg) {
-  return txb.moveCall({
+export function keyClaimValue(tx: Transaction, verifiedId: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::zklogin_verified_id::key_claim_value`,
-    arguments: [obj(txb, verifiedId)],
+    arguments: [obj(tx, verifiedId)],
   })
 }
 
-export function issuer(txb: TransactionBlock, verifiedId: ObjectArg) {
-  return txb.moveCall({
+export function issuer(tx: Transaction, verifiedId: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::zklogin_verified_id::issuer`,
-    arguments: [obj(txb, verifiedId)],
+    arguments: [obj(tx, verifiedId)],
   })
 }
 
-export function audience(txb: TransactionBlock, verifiedId: ObjectArg) {
-  return txb.moveCall({
+export function audience(tx: Transaction, verifiedId: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::zklogin_verified_id::audience`,
-    arguments: [obj(txb, verifiedId)],
+    arguments: [obj(tx, verifiedId)],
   })
 }
 
@@ -52,15 +53,15 @@ export interface VerifyZkloginIdArgs {
   u256: bigint | TransactionArgument
 }
 
-export function verifyZkloginId(txb: TransactionBlock, args: VerifyZkloginIdArgs) {
-  return txb.moveCall({
+export function verifyZkloginId(tx: Transaction, args: VerifyZkloginIdArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::zklogin_verified_id::verify_zklogin_id`,
     arguments: [
-      pure(txb, args.string1, `0x1::string::String`),
-      pure(txb, args.string2, `0x1::string::String`),
-      pure(txb, args.string3, `0x1::string::String`),
-      pure(txb, args.string4, `0x1::string::String`),
-      pure(txb, args.u256, `u256`),
+      pure(tx, args.string1, `${String.$typeName}`),
+      pure(tx, args.string2, `${String.$typeName}`),
+      pure(tx, args.string3, `${String.$typeName}`),
+      pure(tx, args.string4, `${String.$typeName}`),
+      pure(tx, args.u256, `u256`),
     ],
   })
 }
@@ -74,16 +75,16 @@ export interface CheckZkloginIdArgs {
   u256: bigint | TransactionArgument
 }
 
-export function checkZkloginId(txb: TransactionBlock, args: CheckZkloginIdArgs) {
-  return txb.moveCall({
+export function checkZkloginId(tx: Transaction, args: CheckZkloginIdArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::zklogin_verified_id::check_zklogin_id`,
     arguments: [
-      pure(txb, args.address, `address`),
-      pure(txb, args.string1, `0x1::string::String`),
-      pure(txb, args.string2, `0x1::string::String`),
-      pure(txb, args.string3, `0x1::string::String`),
-      pure(txb, args.string4, `0x1::string::String`),
-      pure(txb, args.u256, `u256`),
+      pure(tx, args.address, `address`),
+      pure(tx, args.string1, `${String.$typeName}`),
+      pure(tx, args.string2, `${String.$typeName}`),
+      pure(tx, args.string3, `${String.$typeName}`),
+      pure(tx, args.string4, `${String.$typeName}`),
+      pure(tx, args.u256, `u256`),
     ],
   })
 }
@@ -97,16 +98,16 @@ export interface CheckZkloginIdInternalArgs {
   u256: bigint | TransactionArgument
 }
 
-export function checkZkloginIdInternal(txb: TransactionBlock, args: CheckZkloginIdInternalArgs) {
-  return txb.moveCall({
+export function checkZkloginIdInternal(tx: Transaction, args: CheckZkloginIdInternalArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::zklogin_verified_id::check_zklogin_id_internal`,
     arguments: [
-      pure(txb, args.address, `address`),
-      pure(txb, args.vecU81, `vector<u8>`),
-      pure(txb, args.vecU82, `vector<u8>`),
-      pure(txb, args.vecU83, `vector<u8>`),
-      pure(txb, args.vecU84, `vector<u8>`),
-      pure(txb, args.u256, `u256`),
+      pure(tx, args.address, `address`),
+      pure(tx, args.vecU81, `vector<u8>`),
+      pure(tx, args.vecU82, `vector<u8>`),
+      pure(tx, args.vecU83, `vector<u8>`),
+      pure(tx, args.vecU84, `vector<u8>`),
+      pure(tx, args.u256, `u256`),
     ],
   })
 }

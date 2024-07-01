@@ -1,11 +1,11 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { GenericArg, generic, obj, pure } from '../../_framework/util'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function version(txb: TransactionBlock, versioned: ObjectArg) {
-  return txb.moveCall({
+export function version(tx: Transaction, versioned: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::versioned::version`,
-    arguments: [obj(txb, versioned)],
+    arguments: [obj(tx, versioned)],
   })
 }
 
@@ -14,66 +14,66 @@ export interface CreateArgs {
   t0: GenericArg
 }
 
-export function create(txb: TransactionBlock, typeArg: string, args: CreateArgs) {
-  return txb.moveCall({
+export function create(tx: Transaction, typeArg: string, args: CreateArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::versioned::create`,
     typeArguments: [typeArg],
-    arguments: [pure(txb, args.u64, `u64`), generic(txb, `${typeArg}`, args.t0)],
+    arguments: [pure(tx, args.u64, `u64`), generic(tx, `${typeArg}`, args.t0)],
   })
 }
 
-export function destroy(txb: TransactionBlock, typeArg: string, versioned: ObjectArg) {
-  return txb.moveCall({
+export function destroy(tx: Transaction, typeArg: string, versioned: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::versioned::destroy`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, versioned)],
+    arguments: [obj(tx, versioned)],
   })
 }
 
-export function loadValue(txb: TransactionBlock, typeArg: string, versioned: ObjectArg) {
-  return txb.moveCall({
+export function loadValue(tx: Transaction, typeArg: string, versioned: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::versioned::load_value`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, versioned)],
+    arguments: [obj(tx, versioned)],
   })
 }
 
-export function loadValueMut(txb: TransactionBlock, typeArg: string, versioned: ObjectArg) {
-  return txb.moveCall({
+export function loadValueMut(tx: Transaction, typeArg: string, versioned: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::versioned::load_value_mut`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, versioned)],
+    arguments: [obj(tx, versioned)],
   })
 }
 
 export function removeValueForUpgrade(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
-  versioned: ObjectArg
+  versioned: TransactionObjectInput
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::versioned::remove_value_for_upgrade`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, versioned)],
+    arguments: [obj(tx, versioned)],
   })
 }
 
 export interface UpgradeArgs {
-  versioned: ObjectArg
+  versioned: TransactionObjectInput
   u64: bigint | TransactionArgument
   t0: GenericArg
-  versionChangeCap: ObjectArg
+  versionChangeCap: TransactionObjectInput
 }
 
-export function upgrade(txb: TransactionBlock, typeArg: string, args: UpgradeArgs) {
-  return txb.moveCall({
+export function upgrade(tx: Transaction, typeArg: string, args: UpgradeArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::versioned::upgrade`,
     typeArguments: [typeArg],
     arguments: [
-      obj(txb, args.versioned),
-      pure(txb, args.u64, `u64`),
-      generic(txb, `${typeArg}`, args.t0),
-      obj(txb, args.versionChangeCap),
+      obj(tx, args.versioned),
+      pure(tx, args.u64, `u64`),
+      generic(tx, `${typeArg}`, args.t0),
+      obj(tx, args.versionChangeCap),
     ],
   })
 }

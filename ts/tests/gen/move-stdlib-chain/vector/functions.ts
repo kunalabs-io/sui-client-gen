@@ -1,9 +1,9 @@
 import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, pure, vector } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
-export function empty(txb: TransactionBlock, typeArg: string) {
-  return txb.moveCall({
+export function empty(tx: Transaction, typeArg: string) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::empty`,
     typeArguments: [typeArg],
     arguments: [],
@@ -11,14 +11,14 @@ export function empty(txb: TransactionBlock, typeArg: string) {
 }
 
 export function length(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   vecT0: Array<GenericArg> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::length`,
     typeArguments: [typeArg],
-    arguments: [vector(txb, `${typeArg}`, vecT0)],
+    arguments: [vector(tx, `${typeArg}`, vecT0)],
   })
 }
 
@@ -27,11 +27,11 @@ export interface BorrowArgs {
   u64: bigint | TransactionArgument
 }
 
-export function borrow(txb: TransactionBlock, typeArg: string, args: BorrowArgs) {
-  return txb.moveCall({
+export function borrow(tx: Transaction, typeArg: string, args: BorrowArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::borrow`,
     typeArguments: [typeArg],
-    arguments: [vector(txb, `${typeArg}`, args.vecT0), pure(txb, args.u64, `u64`)],
+    arguments: [vector(tx, `${typeArg}`, args.vecT0), pure(tx, args.u64, `u64`)],
   })
 }
 
@@ -40,11 +40,11 @@ export interface PushBackArgs {
   t0: GenericArg
 }
 
-export function pushBack(txb: TransactionBlock, typeArg: string, args: PushBackArgs) {
-  return txb.moveCall({
+export function pushBack(tx: Transaction, typeArg: string, args: PushBackArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::push_back`,
     typeArguments: [typeArg],
-    arguments: [vector(txb, `${typeArg}`, args.vecT0), generic(txb, `${typeArg}`, args.t0)],
+    arguments: [vector(tx, `${typeArg}`, args.vecT0), generic(tx, `${typeArg}`, args.t0)],
   })
 }
 
@@ -53,35 +53,35 @@ export interface BorrowMutArgs {
   u64: bigint | TransactionArgument
 }
 
-export function borrowMut(txb: TransactionBlock, typeArg: string, args: BorrowMutArgs) {
-  return txb.moveCall({
+export function borrowMut(tx: Transaction, typeArg: string, args: BorrowMutArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::borrow_mut`,
     typeArguments: [typeArg],
-    arguments: [vector(txb, `${typeArg}`, args.vecT0), pure(txb, args.u64, `u64`)],
+    arguments: [vector(tx, `${typeArg}`, args.vecT0), pure(tx, args.u64, `u64`)],
   })
 }
 
 export function popBack(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   vecT0: Array<GenericArg> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::pop_back`,
     typeArguments: [typeArg],
-    arguments: [vector(txb, `${typeArg}`, vecT0)],
+    arguments: [vector(tx, `${typeArg}`, vecT0)],
   })
 }
 
 export function destroyEmpty(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   vecT0: Array<GenericArg> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::destroy_empty`,
     typeArguments: [typeArg],
-    arguments: [vector(txb, `${typeArg}`, vecT0)],
+    arguments: [vector(tx, `${typeArg}`, vecT0)],
   })
 }
 
@@ -91,35 +91,35 @@ export interface SwapArgs {
   u642: bigint | TransactionArgument
 }
 
-export function swap(txb: TransactionBlock, typeArg: string, args: SwapArgs) {
-  return txb.moveCall({
+export function swap(tx: Transaction, typeArg: string, args: SwapArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::swap`,
     typeArguments: [typeArg],
     arguments: [
-      vector(txb, `${typeArg}`, args.vecT0),
-      pure(txb, args.u641, `u64`),
-      pure(txb, args.u642, `u64`),
+      vector(tx, `${typeArg}`, args.vecT0),
+      pure(tx, args.u641, `u64`),
+      pure(tx, args.u642, `u64`),
     ],
   })
 }
 
-export function singleton(txb: TransactionBlock, typeArg: string, t0: GenericArg) {
-  return txb.moveCall({
+export function singleton(tx: Transaction, typeArg: string, t0: GenericArg) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::singleton`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, t0)],
+    arguments: [generic(tx, `${typeArg}`, t0)],
   })
 }
 
 export function reverse(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   vecT0: Array<GenericArg> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::reverse`,
     typeArguments: [typeArg],
-    arguments: [vector(txb, `${typeArg}`, vecT0)],
+    arguments: [vector(tx, `${typeArg}`, vecT0)],
   })
 }
 
@@ -128,23 +128,23 @@ export interface AppendArgs {
   vecT02: Array<GenericArg> | TransactionArgument
 }
 
-export function append(txb: TransactionBlock, typeArg: string, args: AppendArgs) {
-  return txb.moveCall({
+export function append(tx: Transaction, typeArg: string, args: AppendArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::append`,
     typeArguments: [typeArg],
-    arguments: [vector(txb, `${typeArg}`, args.vecT01), vector(txb, `${typeArg}`, args.vecT02)],
+    arguments: [vector(tx, `${typeArg}`, args.vecT01), vector(tx, `${typeArg}`, args.vecT02)],
   })
 }
 
 export function isEmpty(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   vecT0: Array<GenericArg> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::is_empty`,
     typeArguments: [typeArg],
-    arguments: [vector(txb, `${typeArg}`, vecT0)],
+    arguments: [vector(tx, `${typeArg}`, vecT0)],
   })
 }
 
@@ -153,11 +153,11 @@ export interface ContainsArgs {
   t0: GenericArg
 }
 
-export function contains(txb: TransactionBlock, typeArg: string, args: ContainsArgs) {
-  return txb.moveCall({
+export function contains(tx: Transaction, typeArg: string, args: ContainsArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::contains`,
     typeArguments: [typeArg],
-    arguments: [vector(txb, `${typeArg}`, args.vecT0), generic(txb, `${typeArg}`, args.t0)],
+    arguments: [vector(tx, `${typeArg}`, args.vecT0), generic(tx, `${typeArg}`, args.t0)],
   })
 }
 
@@ -166,11 +166,11 @@ export interface IndexOfArgs {
   t0: GenericArg
 }
 
-export function indexOf(txb: TransactionBlock, typeArg: string, args: IndexOfArgs) {
-  return txb.moveCall({
+export function indexOf(tx: Transaction, typeArg: string, args: IndexOfArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::index_of`,
     typeArguments: [typeArg],
-    arguments: [vector(txb, `${typeArg}`, args.vecT0), generic(txb, `${typeArg}`, args.t0)],
+    arguments: [vector(tx, `${typeArg}`, args.vecT0), generic(tx, `${typeArg}`, args.t0)],
   })
 }
 
@@ -179,11 +179,11 @@ export interface RemoveArgs {
   u64: bigint | TransactionArgument
 }
 
-export function remove(txb: TransactionBlock, typeArg: string, args: RemoveArgs) {
-  return txb.moveCall({
+export function remove(tx: Transaction, typeArg: string, args: RemoveArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::remove`,
     typeArguments: [typeArg],
-    arguments: [vector(txb, `${typeArg}`, args.vecT0), pure(txb, args.u64, `u64`)],
+    arguments: [vector(tx, `${typeArg}`, args.vecT0), pure(tx, args.u64, `u64`)],
   })
 }
 
@@ -193,14 +193,14 @@ export interface InsertArgs {
   u64: bigint | TransactionArgument
 }
 
-export function insert(txb: TransactionBlock, typeArg: string, args: InsertArgs) {
-  return txb.moveCall({
+export function insert(tx: Transaction, typeArg: string, args: InsertArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::insert`,
     typeArguments: [typeArg],
     arguments: [
-      vector(txb, `${typeArg}`, args.vecT0),
-      generic(txb, `${typeArg}`, args.t0),
-      pure(txb, args.u64, `u64`),
+      vector(tx, `${typeArg}`, args.vecT0),
+      generic(tx, `${typeArg}`, args.t0),
+      pure(tx, args.u64, `u64`),
     ],
   })
 }
@@ -210,10 +210,10 @@ export interface SwapRemoveArgs {
   u64: bigint | TransactionArgument
 }
 
-export function swapRemove(txb: TransactionBlock, typeArg: string, args: SwapRemoveArgs) {
-  return txb.moveCall({
+export function swapRemove(tx: Transaction, typeArg: string, args: SwapRemoveArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::vector::swap_remove`,
     typeArguments: [typeArg],
-    arguments: [vector(txb, `${typeArg}`, args.vecT0), pure(txb, args.u64, `u64`)],
+    arguments: [vector(tx, `${typeArg}`, args.vecT0), pure(tx, args.u64, `u64`)],
   })
 }

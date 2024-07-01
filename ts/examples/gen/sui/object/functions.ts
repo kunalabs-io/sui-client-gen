@@ -1,151 +1,147 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { GenericArg, generic, obj, pure } from '../../_framework/util'
+import { ID } from './structs'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function id(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
-  return txb.moveCall({
+export function id(tx: Transaction, typeArg: string, obj: GenericArg) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::object::id`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, obj)],
+    arguments: [generic(tx, `${typeArg}`, obj)],
   })
 }
 
-export function new_(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::object::new`, arguments: [] })
+export function new_(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::object::new`, arguments: [] })
 }
 
-export function authenticatorState(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::object::authenticator_state`, arguments: [] })
+export function authenticatorState(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::object::authenticator_state`, arguments: [] })
 }
 
-export function borrowId(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
-  return txb.moveCall({
+export function borrowId(tx: Transaction, typeArg: string, obj: GenericArg) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::object::borrow_id`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, obj)],
+    arguments: [generic(tx, `${typeArg}`, obj)],
   })
 }
 
-export function borrowUid(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
-  return txb.moveCall({
+export function borrowUid(tx: Transaction, typeArg: string, obj: GenericArg) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::object::borrow_uid`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, obj)],
+    arguments: [generic(tx, `${typeArg}`, obj)],
   })
 }
 
-export function clock(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::object::clock`, arguments: [] })
+export function bridge(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::object::bridge`, arguments: [] })
 }
 
-export function delete_(txb: TransactionBlock, id: ObjectArg) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::object::delete`, arguments: [obj(txb, id)] })
+export function clock(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::object::clock`, arguments: [] })
 }
 
-export function deleteImpl(txb: TransactionBlock, id: string | TransactionArgument) {
-  return txb.moveCall({
+export function delete_(tx: Transaction, id: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::object::delete`, arguments: [obj(tx, id)] })
+}
+
+export function deleteImpl(tx: Transaction, id: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::object::delete_impl`,
-    arguments: [pure(txb, id, `address`)],
+    arguments: [pure(tx, id, `address`)],
   })
 }
 
-export function idAddress(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
-  return txb.moveCall({
+export function idAddress(tx: Transaction, typeArg: string, obj: GenericArg) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::object::id_address`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, obj)],
+    arguments: [generic(tx, `${typeArg}`, obj)],
   })
 }
 
-export function idBytes(txb: TransactionBlock, typeArg: string, obj: GenericArg) {
-  return txb.moveCall({
+export function idBytes(tx: Transaction, typeArg: string, obj: GenericArg) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::object::id_bytes`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, obj)],
+    arguments: [generic(tx, `${typeArg}`, obj)],
   })
 }
 
-export function idFromAddress(txb: TransactionBlock, bytes: string | TransactionArgument) {
-  return txb.moveCall({
+export function idFromAddress(tx: Transaction, bytes: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::object::id_from_address`,
-    arguments: [pure(txb, bytes, `address`)],
+    arguments: [pure(tx, bytes, `address`)],
   })
 }
 
 export function idFromBytes(
-  txb: TransactionBlock,
+  tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::object::id_from_bytes`,
-    arguments: [pure(txb, bytes, `vector<u8>`)],
+    arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }
 
-export function idToAddress(txb: TransactionBlock, id: string | TransactionArgument) {
-  return txb.moveCall({
+export function idToAddress(tx: Transaction, id: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::object::id_to_address`,
-    arguments: [pure(txb, id, `0x2::object::ID`)],
+    arguments: [pure(tx, id, `${ID.$typeName}`)],
   })
 }
 
-export function idToBytes(txb: TransactionBlock, id: string | TransactionArgument) {
-  return txb.moveCall({
+export function idToBytes(tx: Transaction, id: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::object::id_to_bytes`,
-    arguments: [pure(txb, id, `0x2::object::ID`)],
+    arguments: [pure(tx, id, `${ID.$typeName}`)],
   })
 }
 
-export function newUidFromHash(txb: TransactionBlock, bytes: string | TransactionArgument) {
-  return txb.moveCall({
+export function newUidFromHash(tx: Transaction, bytes: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::object::new_uid_from_hash`,
-    arguments: [pure(txb, bytes, `address`)],
+    arguments: [pure(tx, bytes, `address`)],
   })
 }
 
-export function randomnessState(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::object::randomness_state`, arguments: [] })
+export function randomnessState(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::object::randomness_state`, arguments: [] })
 }
 
-export function recordNewUid(txb: TransactionBlock, id: string | TransactionArgument) {
-  return txb.moveCall({
+export function recordNewUid(tx: Transaction, id: string | TransactionArgument) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::object::record_new_uid`,
-    arguments: [pure(txb, id, `address`)],
+    arguments: [pure(tx, id, `address`)],
   })
 }
 
-export function suiDenyListObjectId(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::object::sui_deny_list_object_id`, arguments: [] })
+export function suiDenyListObjectId(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::object::sui_deny_list_object_id`, arguments: [] })
 }
 
-export function suiSystemState(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::object::sui_system_state`, arguments: [] })
+export function suiSystemState(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::object::sui_system_state`, arguments: [] })
 }
 
-export function uidAsInner(txb: TransactionBlock, uid: ObjectArg) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::object::uid_as_inner`,
-    arguments: [obj(txb, uid)],
-  })
+export function uidAsInner(tx: Transaction, uid: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::object::uid_as_inner`, arguments: [obj(tx, uid)] })
 }
 
-export function uidToAddress(txb: TransactionBlock, uid: ObjectArg) {
-  return txb.moveCall({
+export function uidToAddress(tx: Transaction, uid: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::object::uid_to_address`,
-    arguments: [obj(txb, uid)],
+    arguments: [obj(tx, uid)],
   })
 }
 
-export function uidToBytes(txb: TransactionBlock, uid: ObjectArg) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::object::uid_to_bytes`,
-    arguments: [obj(txb, uid)],
-  })
+export function uidToBytes(tx: Transaction, uid: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::object::uid_to_bytes`, arguments: [obj(tx, uid)] })
 }
 
-export function uidToInner(txb: TransactionBlock, uid: ObjectArg) {
-  return txb.moveCall({
-    target: `${PUBLISHED_AT}::object::uid_to_inner`,
-    arguments: [obj(txb, uid)],
-  })
+export function uidToInner(tx: Transaction, uid: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::object::uid_to_inner`, arguments: [obj(tx, uid)] })
 }

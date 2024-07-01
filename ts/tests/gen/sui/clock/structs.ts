@@ -10,15 +10,16 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { PKG_V19 } from '../index'
 import { UID } from '../object/structs'
 import { bcs, fromB64 } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== Clock =============================== */
 
 export function isClock(type: string): boolean {
   type = compressSuiType(type)
-  return type === '0x2::clock::Clock'
+  return type === `${PKG_V19}::clock::Clock`
 }
 
 export interface ClockFields {
@@ -29,12 +30,12 @@ export interface ClockFields {
 export type ClockReified = Reified<Clock, ClockFields>
 
 export class Clock implements StructClass {
-  static readonly $typeName = '0x2::clock::Clock'
+  static readonly $typeName = `${PKG_V19}::clock::Clock`
   static readonly $numTypeParams = 0
 
   readonly $typeName = Clock.$typeName
 
-  readonly $fullTypeName: '0x2::clock::Clock'
+  readonly $fullTypeName: `${typeof PKG_V19}::clock::Clock`
 
   readonly $typeArgs: []
 
@@ -42,7 +43,10 @@ export class Clock implements StructClass {
   readonly timestampMs: ToField<'u64'>
 
   private constructor(typeArgs: [], fields: ClockFields) {
-    this.$fullTypeName = composeSuiType(Clock.$typeName, ...typeArgs) as '0x2::clock::Clock'
+    this.$fullTypeName = composeSuiType(
+      Clock.$typeName,
+      ...typeArgs
+    ) as `${typeof PKG_V19}::clock::Clock`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -52,7 +56,7 @@ export class Clock implements StructClass {
   static reified(): ClockReified {
     return {
       typeName: Clock.$typeName,
-      fullTypeName: composeSuiType(Clock.$typeName, ...[]) as '0x2::clock::Clock',
+      fullTypeName: composeSuiType(Clock.$typeName, ...[]) as `${typeof PKG_V19}::clock::Clock`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Clock.fromFields(fields),

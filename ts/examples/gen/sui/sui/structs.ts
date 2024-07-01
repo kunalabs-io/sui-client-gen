@@ -10,14 +10,15 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { PKG_V19 } from '../index'
 import { bcs, fromB64 } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== SUI =============================== */
 
 export function isSUI(type: string): boolean {
   type = compressSuiType(type)
-  return type === '0x2::sui::SUI'
+  return type === `${PKG_V19}::sui::SUI`
 }
 
 export interface SUIFields {
@@ -27,19 +28,19 @@ export interface SUIFields {
 export type SUIReified = Reified<SUI, SUIFields>
 
 export class SUI implements StructClass {
-  static readonly $typeName = '0x2::sui::SUI'
+  static readonly $typeName = `${PKG_V19}::sui::SUI`
   static readonly $numTypeParams = 0
 
   readonly $typeName = SUI.$typeName
 
-  readonly $fullTypeName: '0x2::sui::SUI'
+  readonly $fullTypeName: `${typeof PKG_V19}::sui::SUI`
 
   readonly $typeArgs: []
 
   readonly dummyField: ToField<'bool'>
 
   private constructor(typeArgs: [], fields: SUIFields) {
-    this.$fullTypeName = composeSuiType(SUI.$typeName, ...typeArgs) as '0x2::sui::SUI'
+    this.$fullTypeName = composeSuiType(SUI.$typeName, ...typeArgs) as `${typeof PKG_V19}::sui::SUI`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -48,7 +49,7 @@ export class SUI implements StructClass {
   static reified(): SUIReified {
     return {
       typeName: SUI.$typeName,
-      fullTypeName: composeSuiType(SUI.$typeName, ...[]) as '0x2::sui::SUI',
+      fullTypeName: composeSuiType(SUI.$typeName, ...[]) as `${typeof PKG_V19}::sui::SUI`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => SUI.fromFields(fields),

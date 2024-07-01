@@ -10,17 +10,15 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { PKG_V1, PKG_V2 } from '../index'
 import { bcs, fromB64 } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== AddedInAnUpgrade =============================== */
 
 export function isAddedInAnUpgrade(type: string): boolean {
   type = compressSuiType(type)
-  return (
-    type ===
-    '0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe::other_module::AddedInAnUpgrade'
-  )
+  return type === `${PKG_V2}::other_module::AddedInAnUpgrade`
 }
 
 export interface AddedInAnUpgradeFields {
@@ -30,13 +28,12 @@ export interface AddedInAnUpgradeFields {
 export type AddedInAnUpgradeReified = Reified<AddedInAnUpgrade, AddedInAnUpgradeFields>
 
 export class AddedInAnUpgrade implements StructClass {
-  static readonly $typeName =
-    '0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe::other_module::AddedInAnUpgrade'
+  static readonly $typeName = `${PKG_V2}::other_module::AddedInAnUpgrade`
   static readonly $numTypeParams = 0
 
   readonly $typeName = AddedInAnUpgrade.$typeName
 
-  readonly $fullTypeName: '0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe::other_module::AddedInAnUpgrade'
+  readonly $fullTypeName: `${typeof PKG_V2}::other_module::AddedInAnUpgrade`
 
   readonly $typeArgs: []
 
@@ -46,7 +43,7 @@ export class AddedInAnUpgrade implements StructClass {
     this.$fullTypeName = composeSuiType(
       AddedInAnUpgrade.$typeName,
       ...typeArgs
-    ) as '0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe::other_module::AddedInAnUpgrade'
+    ) as `${typeof PKG_V2}::other_module::AddedInAnUpgrade`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -58,7 +55,7 @@ export class AddedInAnUpgrade implements StructClass {
       fullTypeName: composeSuiType(
         AddedInAnUpgrade.$typeName,
         ...[]
-      ) as '0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe::other_module::AddedInAnUpgrade',
+      ) as `${typeof PKG_V2}::other_module::AddedInAnUpgrade`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AddedInAnUpgrade.fromFields(fields),
@@ -163,10 +160,7 @@ export class AddedInAnUpgrade implements StructClass {
 
 export function isStructFromOtherModule(type: string): boolean {
   type = compressSuiType(type)
-  return (
-    type ===
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
-  )
+  return type === `${PKG_V1}::other_module::StructFromOtherModule`
 }
 
 export interface StructFromOtherModuleFields {
@@ -179,13 +173,12 @@ export type StructFromOtherModuleReified = Reified<
 >
 
 export class StructFromOtherModule implements StructClass {
-  static readonly $typeName =
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
+  static readonly $typeName = `${PKG_V1}::other_module::StructFromOtherModule`
   static readonly $numTypeParams = 0
 
   readonly $typeName = StructFromOtherModule.$typeName
 
-  readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
+  readonly $fullTypeName: `${typeof PKG_V1}::other_module::StructFromOtherModule`
 
   readonly $typeArgs: []
 
@@ -195,7 +188,7 @@ export class StructFromOtherModule implements StructClass {
     this.$fullTypeName = composeSuiType(
       StructFromOtherModule.$typeName,
       ...typeArgs
-    ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule'
+    ) as `${typeof PKG_V1}::other_module::StructFromOtherModule`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -207,7 +200,7 @@ export class StructFromOtherModule implements StructClass {
       fullTypeName: composeSuiType(
         StructFromOtherModule.$typeName,
         ...[]
-      ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::other_module::StructFromOtherModule',
+      ) as `${typeof PKG_V1}::other_module::StructFromOtherModule`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => StructFromOtherModule.fromFields(fields),

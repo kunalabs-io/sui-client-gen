@@ -1,41 +1,41 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, generic, obj } from '../../_framework/util'
-import { TransactionBlock } from '@mysten/sui.js/transactions'
+import { GenericArg, generic, obj } from '../../_framework/util'
+import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function borrow(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function borrow(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::borrow::borrow`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
-export function new_(txb: TransactionBlock, typeArg: string, value: GenericArg) {
-  return txb.moveCall({
+export function new_(tx: Transaction, typeArg: string, value: GenericArg) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::borrow::new`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, value)],
+    arguments: [generic(tx, `${typeArg}`, value)],
   })
 }
 
-export function destroy(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function destroy(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::borrow::destroy`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
 export interface PutBackArgs {
-  self: ObjectArg
+  self: TransactionObjectInput
   value: GenericArg
-  borrow: ObjectArg
+  borrow: TransactionObjectInput
 }
 
-export function putBack(txb: TransactionBlock, typeArg: string, args: PutBackArgs) {
-  return txb.moveCall({
+export function putBack(tx: Transaction, typeArg: string, args: PutBackArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::borrow::put_back`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.self), generic(txb, `${typeArg}`, args.value), obj(txb, args.borrow)],
+    arguments: [obj(tx, args.self), generic(tx, `${typeArg}`, args.value), obj(tx, args.borrow)],
   })
 }

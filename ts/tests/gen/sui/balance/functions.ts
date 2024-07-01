@@ -1,129 +1,133 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { GenericArg, generic, obj, pure } from '../../_framework/util'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function value(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function value(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::balance::value`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
 export function createStakingRewards(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArg: string,
   value: bigint | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::balance::create_staking_rewards`,
     typeArguments: [typeArg],
-    arguments: [pure(txb, value, `u64`)],
+    arguments: [pure(tx, value, `u64`)],
   })
 }
 
-export function createSupply(txb: TransactionBlock, typeArg: string, t: GenericArg) {
-  return txb.moveCall({
+export function createSupply(tx: Transaction, typeArg: string, t: GenericArg) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::balance::create_supply`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, t)],
+    arguments: [generic(tx, `${typeArg}`, t)],
   })
 }
 
 export interface DecreaseSupplyArgs {
-  self: ObjectArg
-  balance: ObjectArg
+  self: TransactionObjectInput
+  balance: TransactionObjectInput
 }
 
-export function decreaseSupply(txb: TransactionBlock, typeArg: string, args: DecreaseSupplyArgs) {
-  return txb.moveCall({
+export function decreaseSupply(tx: Transaction, typeArg: string, args: DecreaseSupplyArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::balance::decrease_supply`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.self), obj(txb, args.balance)],
+    arguments: [obj(tx, args.self), obj(tx, args.balance)],
   })
 }
 
-export function destroyStorageRebates(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function destroyStorageRebates(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::balance::destroy_storage_rebates`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
-export function destroySupply(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function destroySupply(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::balance::destroy_supply`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
-export function destroyZero(txb: TransactionBlock, typeArg: string, balance: ObjectArg) {
-  return txb.moveCall({
+export function destroyZero(tx: Transaction, typeArg: string, balance: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::balance::destroy_zero`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, balance)],
+    arguments: [obj(tx, balance)],
   })
 }
 
 export interface IncreaseSupplyArgs {
-  self: ObjectArg
+  self: TransactionObjectInput
   value: bigint | TransactionArgument
 }
 
-export function increaseSupply(txb: TransactionBlock, typeArg: string, args: IncreaseSupplyArgs) {
-  return txb.moveCall({
+export function increaseSupply(tx: Transaction, typeArg: string, args: IncreaseSupplyArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::balance::increase_supply`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.self), pure(txb, args.value, `u64`)],
+    arguments: [obj(tx, args.self), pure(tx, args.value, `u64`)],
   })
 }
 
 export interface JoinArgs {
-  self: ObjectArg
-  balance: ObjectArg
+  self: TransactionObjectInput
+  balance: TransactionObjectInput
 }
 
-export function join(txb: TransactionBlock, typeArg: string, args: JoinArgs) {
-  return txb.moveCall({
+export function join(tx: Transaction, typeArg: string, args: JoinArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::balance::join`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.self), obj(txb, args.balance)],
+    arguments: [obj(tx, args.self), obj(tx, args.balance)],
   })
 }
 
 export interface SplitArgs {
-  self: ObjectArg
+  self: TransactionObjectInput
   value: bigint | TransactionArgument
 }
 
-export function split(txb: TransactionBlock, typeArg: string, args: SplitArgs) {
-  return txb.moveCall({
+export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::balance::split`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.self), pure(txb, args.value, `u64`)],
+    arguments: [obj(tx, args.self), pure(tx, args.value, `u64`)],
   })
 }
 
-export function supplyValue(txb: TransactionBlock, typeArg: string, supply: ObjectArg) {
-  return txb.moveCall({
+export function supplyValue(tx: Transaction, typeArg: string, supply: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::balance::supply_value`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, supply)],
+    arguments: [obj(tx, supply)],
   })
 }
 
-export function withdrawAll(txb: TransactionBlock, typeArg: string, self: ObjectArg) {
-  return txb.moveCall({
+export function withdrawAll(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::balance::withdraw_all`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
-export function zero(txb: TransactionBlock, typeArg: string) {
-  return txb.moveCall({
+export function zero(tx: Transaction, typeArg: string) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::balance::zero`,
     typeArguments: [typeArg],
     arguments: [],

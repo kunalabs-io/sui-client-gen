@@ -1,14 +1,14 @@
 import { PUBLISHED_AT } from '..'
 import { pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
 export function decompressPubkey(
-  txb: TransactionBlock,
+  tx: Transaction,
   pubkey: Array<number | TransactionArgument> | TransactionArgument
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::ecdsa_k1::decompress_pubkey`,
-    arguments: [pure(txb, pubkey, `vector<u8>`)],
+    arguments: [pure(tx, pubkey, `vector<u8>`)],
   })
 }
 
@@ -18,13 +18,13 @@ export interface Secp256k1EcrecoverArgs {
   hash: number | TransactionArgument
 }
 
-export function secp256k1Ecrecover(txb: TransactionBlock, args: Secp256k1EcrecoverArgs) {
-  return txb.moveCall({
+export function secp256k1Ecrecover(tx: Transaction, args: Secp256k1EcrecoverArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::ecdsa_k1::secp256k1_ecrecover`,
     arguments: [
-      pure(txb, args.signature, `vector<u8>`),
-      pure(txb, args.msg, `vector<u8>`),
-      pure(txb, args.hash, `u8`),
+      pure(tx, args.signature, `vector<u8>`),
+      pure(tx, args.msg, `vector<u8>`),
+      pure(tx, args.hash, `u8`),
     ],
   })
 }
@@ -36,14 +36,14 @@ export interface Secp256k1VerifyArgs {
   hash: number | TransactionArgument
 }
 
-export function secp256k1Verify(txb: TransactionBlock, args: Secp256k1VerifyArgs) {
-  return txb.moveCall({
+export function secp256k1Verify(tx: Transaction, args: Secp256k1VerifyArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::ecdsa_k1::secp256k1_verify`,
     arguments: [
-      pure(txb, args.signature, `vector<u8>`),
-      pure(txb, args.publicKey, `vector<u8>`),
-      pure(txb, args.msg, `vector<u8>`),
-      pure(txb, args.hash, `u8`),
+      pure(tx, args.signature, `vector<u8>`),
+      pure(tx, args.publicKey, `vector<u8>`),
+      pure(tx, args.msg, `vector<u8>`),
+      pure(tx, args.hash, `u8`),
     ],
   })
 }

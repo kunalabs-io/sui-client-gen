@@ -10,14 +10,15 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { PKG_V19 } from '../index'
 import { bcs, fromB64, fromHEX, toHEX } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== ID =============================== */
 
 export function isID(type: string): boolean {
   type = compressSuiType(type)
-  return type === '0x2::object::ID'
+  return type === `${PKG_V19}::object::ID`
 }
 
 export interface IDFields {
@@ -27,19 +28,22 @@ export interface IDFields {
 export type IDReified = Reified<ID, IDFields>
 
 export class ID implements StructClass {
-  static readonly $typeName = '0x2::object::ID'
+  static readonly $typeName = `${PKG_V19}::object::ID`
   static readonly $numTypeParams = 0
 
   readonly $typeName = ID.$typeName
 
-  readonly $fullTypeName: '0x2::object::ID'
+  readonly $fullTypeName: `${typeof PKG_V19}::object::ID`
 
   readonly $typeArgs: []
 
   readonly bytes: ToField<'address'>
 
   private constructor(typeArgs: [], fields: IDFields) {
-    this.$fullTypeName = composeSuiType(ID.$typeName, ...typeArgs) as '0x2::object::ID'
+    this.$fullTypeName = composeSuiType(
+      ID.$typeName,
+      ...typeArgs
+    ) as `${typeof PKG_V19}::object::ID`
     this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
@@ -48,7 +52,7 @@ export class ID implements StructClass {
   static reified(): IDReified {
     return {
       typeName: ID.$typeName,
-      fullTypeName: composeSuiType(ID.$typeName, ...[]) as '0x2::object::ID',
+      fullTypeName: composeSuiType(ID.$typeName, ...[]) as `${typeof PKG_V19}::object::ID`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ID.fromFields(fields),
@@ -150,7 +154,7 @@ export class ID implements StructClass {
 
 export function isUID(type: string): boolean {
   type = compressSuiType(type)
-  return type === '0x2::object::UID'
+  return type === `${PKG_V19}::object::UID`
 }
 
 export interface UIDFields {
@@ -160,19 +164,22 @@ export interface UIDFields {
 export type UIDReified = Reified<UID, UIDFields>
 
 export class UID implements StructClass {
-  static readonly $typeName = '0x2::object::UID'
+  static readonly $typeName = `${PKG_V19}::object::UID`
   static readonly $numTypeParams = 0
 
   readonly $typeName = UID.$typeName
 
-  readonly $fullTypeName: '0x2::object::UID'
+  readonly $fullTypeName: `${typeof PKG_V19}::object::UID`
 
   readonly $typeArgs: []
 
   readonly id: ToField<ID>
 
   private constructor(typeArgs: [], fields: UIDFields) {
-    this.$fullTypeName = composeSuiType(UID.$typeName, ...typeArgs) as '0x2::object::UID'
+    this.$fullTypeName = composeSuiType(
+      UID.$typeName,
+      ...typeArgs
+    ) as `${typeof PKG_V19}::object::UID`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -181,7 +188,7 @@ export class UID implements StructClass {
   static reified(): UIDReified {
     return {
       typeName: UID.$typeName,
-      fullTypeName: composeSuiType(UID.$typeName, ...[]) as '0x2::object::UID',
+      fullTypeName: composeSuiType(UID.$typeName, ...[]) as `${typeof PKG_V19}::object::UID`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UID.fromFields(fields),

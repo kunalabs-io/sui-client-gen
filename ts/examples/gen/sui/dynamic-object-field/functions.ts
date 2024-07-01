@@ -1,103 +1,103 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, generic, obj } from '../../_framework/util'
-import { TransactionBlock } from '@mysten/sui.js/transactions'
+import { GenericArg, generic, obj } from '../../_framework/util'
+import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export interface BorrowArgs {
-  object: ObjectArg
+  object: TransactionObjectInput
   name: GenericArg
 }
 
-export function borrow(txb: TransactionBlock, typeArgs: [string, string], args: BorrowArgs) {
-  return txb.moveCall({
+export function borrow(tx: Transaction, typeArgs: [string, string], args: BorrowArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::dynamic_object_field::borrow`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.object), generic(txb, `${typeArgs[0]}`, args.name)],
+    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
   })
 }
 
 export interface BorrowMutArgs {
-  object: ObjectArg
+  object: TransactionObjectInput
   name: GenericArg
 }
 
-export function borrowMut(txb: TransactionBlock, typeArgs: [string, string], args: BorrowMutArgs) {
-  return txb.moveCall({
+export function borrowMut(tx: Transaction, typeArgs: [string, string], args: BorrowMutArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::dynamic_object_field::borrow_mut`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.object), generic(txb, `${typeArgs[0]}`, args.name)],
+    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
   })
 }
 
 export interface RemoveArgs {
-  object: ObjectArg
+  object: TransactionObjectInput
   name: GenericArg
 }
 
-export function remove(txb: TransactionBlock, typeArgs: [string, string], args: RemoveArgs) {
-  return txb.moveCall({
+export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::dynamic_object_field::remove`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.object), generic(txb, `${typeArgs[0]}`, args.name)],
+    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
   })
 }
 
 export interface IdArgs {
-  object: ObjectArg
+  object: TransactionObjectInput
   name: GenericArg
 }
 
-export function id(txb: TransactionBlock, typeArg: string, args: IdArgs) {
-  return txb.moveCall({
+export function id(tx: Transaction, typeArg: string, args: IdArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::dynamic_object_field::id`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.object), generic(txb, `${typeArg}`, args.name)],
+    arguments: [obj(tx, args.object), generic(tx, `${typeArg}`, args.name)],
   })
 }
 
 export interface AddArgs {
-  object: ObjectArg
+  object: TransactionObjectInput
   name: GenericArg
   value: GenericArg
 }
 
-export function add(txb: TransactionBlock, typeArgs: [string, string], args: AddArgs) {
-  return txb.moveCall({
+export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::dynamic_object_field::add`,
     typeArguments: typeArgs,
     arguments: [
-      obj(txb, args.object),
-      generic(txb, `${typeArgs[0]}`, args.name),
-      generic(txb, `${typeArgs[1]}`, args.value),
+      obj(tx, args.object),
+      generic(tx, `${typeArgs[0]}`, args.name),
+      generic(tx, `${typeArgs[1]}`, args.value),
     ],
   })
 }
 
 export interface Exists_Args {
-  object: ObjectArg
+  object: TransactionObjectInput
   name: GenericArg
 }
 
-export function exists_(txb: TransactionBlock, typeArg: string, args: Exists_Args) {
-  return txb.moveCall({
+export function exists_(tx: Transaction, typeArg: string, args: Exists_Args) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::dynamic_object_field::exists_`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.object), generic(txb, `${typeArg}`, args.name)],
+    arguments: [obj(tx, args.object), generic(tx, `${typeArg}`, args.name)],
   })
 }
 
 export interface ExistsWithTypeArgs {
-  object: ObjectArg
+  object: TransactionObjectInput
   name: GenericArg
 }
 
 export function existsWithType(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: ExistsWithTypeArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::dynamic_object_field::exists_with_type`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.object), generic(txb, `${typeArgs[0]}`, args.name)],
+    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
   })
 }

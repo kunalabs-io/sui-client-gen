@@ -17,17 +17,15 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { ID, UID } from '../../sui/object/structs'
+import { PKG_V1 } from '../index'
 import { bcs, fromB64, fromHEX, toHEX } from '@mysten/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 /* ============================== ExampleStruct =============================== */
 
 export function isExampleStruct(type: string): boolean {
   type = compressSuiType(type)
-  return (
-    type ===
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
-  )
+  return type === `${PKG_V1}::examples::ExampleStruct`
 }
 
 export interface ExampleStructFields {
@@ -37,13 +35,12 @@ export interface ExampleStructFields {
 export type ExampleStructReified = Reified<ExampleStruct, ExampleStructFields>
 
 export class ExampleStruct implements StructClass {
-  static readonly $typeName =
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
+  static readonly $typeName = `${PKG_V1}::examples::ExampleStruct`
   static readonly $numTypeParams = 0
 
   readonly $typeName = ExampleStruct.$typeName
 
-  readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
+  readonly $fullTypeName: `${typeof PKG_V1}::examples::ExampleStruct`
 
   readonly $typeArgs: []
 
@@ -53,7 +50,7 @@ export class ExampleStruct implements StructClass {
     this.$fullTypeName = composeSuiType(
       ExampleStruct.$typeName,
       ...typeArgs
-    ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct'
+    ) as `${typeof PKG_V1}::examples::ExampleStruct`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -65,7 +62,7 @@ export class ExampleStruct implements StructClass {
       fullTypeName: composeSuiType(
         ExampleStruct.$typeName,
         ...[]
-      ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct',
+      ) as `${typeof PKG_V1}::examples::ExampleStruct`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ExampleStruct.fromFields(fields),
@@ -168,10 +165,7 @@ export class ExampleStruct implements StructClass {
 
 export function isSpecialTypesStruct(type: string): boolean {
   type = compressSuiType(type)
-  return (
-    type ===
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
-  )
+  return type === `${PKG_V1}::examples::SpecialTypesStruct`
 }
 
 export interface SpecialTypesStructFields {
@@ -189,13 +183,12 @@ export interface SpecialTypesStructFields {
 export type SpecialTypesStructReified = Reified<SpecialTypesStruct, SpecialTypesStructFields>
 
 export class SpecialTypesStruct implements StructClass {
-  static readonly $typeName =
-    '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
+  static readonly $typeName = `${PKG_V1}::examples::SpecialTypesStruct`
   static readonly $numTypeParams = 0
 
   readonly $typeName = SpecialTypesStruct.$typeName
 
-  readonly $fullTypeName: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
+  readonly $fullTypeName: `${typeof PKG_V1}::examples::SpecialTypesStruct`
 
   readonly $typeArgs: []
 
@@ -213,7 +206,7 @@ export class SpecialTypesStruct implements StructClass {
     this.$fullTypeName = composeSuiType(
       SpecialTypesStruct.$typeName,
       ...typeArgs
-    ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct'
+    ) as `${typeof PKG_V1}::examples::SpecialTypesStruct`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -233,7 +226,7 @@ export class SpecialTypesStruct implements StructClass {
       fullTypeName: composeSuiType(
         SpecialTypesStruct.$typeName,
         ...[]
-      ) as '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::SpecialTypesStruct',
+      ) as `${typeof PKG_V1}::examples::SpecialTypesStruct`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => SpecialTypesStruct.fromFields(fields),
@@ -328,13 +321,13 @@ export class SpecialTypesStruct implements StructClass {
       utf8String: this.utf8String,
       vectorOfU64: fieldToJSON<Vector<'u64'>>(`vector<u64>`, this.vectorOfU64),
       vectorOfObjects: fieldToJSON<Vector<ExampleStruct>>(
-        `vector<0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209::examples::ExampleStruct>`,
+        `vector<${ExampleStruct.$typeName}>`,
         this.vectorOfObjects
       ),
       idField: this.idField,
       address: this.address,
-      optionSome: fieldToJSON<Option<'u64'>>(`0x1::option::Option<u64>`, this.optionSome),
-      optionNone: fieldToJSON<Option<'u64'>>(`0x1::option::Option<u64>`, this.optionNone),
+      optionSome: fieldToJSON<Option<'u64'>>(`${Option.$typeName}<u64>`, this.optionSome),
+      optionNone: fieldToJSON<Option<'u64'>>(`${Option.$typeName}<u64>`, this.optionNone),
     }
   }
 

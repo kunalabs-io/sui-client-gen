@@ -1,6 +1,6 @@
 import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
 import { FieldsWithTypes, compressSuiType, parseTypeName } from './util'
-import { SuiClient, SuiParsedData } from '@mysten/sui.js/client'
+import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 export interface StructClass {
   $typeName: string

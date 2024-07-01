@@ -1,68 +1,68 @@
 import { PUBLISHED_AT } from '..'
-import { ObjectArg, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { obj, pure } from '../../_framework/util'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export interface CreateArgs {
-  registry: ObjectArg
-  initA: ObjectArg
-  initB: ObjectArg
+  registry: TransactionObjectInput
+  initA: TransactionObjectInput
+  initB: TransactionObjectInput
   lpFeeBps: bigint | TransactionArgument
   adminFeePct: bigint | TransactionArgument
 }
 
-export function create(txb: TransactionBlock, typeArgs: [string, string], args: CreateArgs) {
-  return txb.moveCall({
+export function create(tx: Transaction, typeArgs: [string, string], args: CreateArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::create`,
     typeArguments: typeArgs,
     arguments: [
-      obj(txb, args.registry),
-      obj(txb, args.initA),
-      obj(txb, args.initB),
-      pure(txb, args.lpFeeBps, `u64`),
-      pure(txb, args.adminFeePct, `u64`),
+      obj(tx, args.registry),
+      obj(tx, args.initA),
+      obj(tx, args.initB),
+      pure(tx, args.lpFeeBps, `u64`),
+      pure(tx, args.adminFeePct, `u64`),
     ],
   })
 }
 
 export interface WithdrawArgs {
-  pool: ObjectArg
-  lpIn: ObjectArg
+  pool: TransactionObjectInput
+  lpIn: TransactionObjectInput
   minAOut: bigint | TransactionArgument
   minBOut: bigint | TransactionArgument
 }
 
-export function withdraw(txb: TransactionBlock, typeArgs: [string, string], args: WithdrawArgs) {
-  return txb.moveCall({
+export function withdraw(tx: Transaction, typeArgs: [string, string], args: WithdrawArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::withdraw`,
     typeArguments: typeArgs,
     arguments: [
-      obj(txb, args.pool),
-      obj(txb, args.lpIn),
-      pure(txb, args.minAOut, `u64`),
-      pure(txb, args.minBOut, `u64`),
+      obj(tx, args.pool),
+      obj(tx, args.lpIn),
+      pure(tx, args.minAOut, `u64`),
+      pure(tx, args.minBOut, `u64`),
     ],
   })
 }
 
-export function init(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::pool::init`, arguments: [] })
+export function init(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::pool::init`, arguments: [] })
 }
 
 export interface AdminWithdrawFeesArgs {
-  pool: ObjectArg
-  adminCap: ObjectArg
+  pool: TransactionObjectInput
+  adminCap: TransactionObjectInput
   amount: bigint | TransactionArgument
 }
 
 export function adminWithdrawFees(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
   args: AdminWithdrawFeesArgs
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::admin_withdraw_fees`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.pool), obj(txb, args.adminCap), pure(txb, args.amount, `u64`)],
+    arguments: [obj(tx, args.pool), obj(tx, args.adminCap), pure(tx, args.amount, `u64`)],
   })
 }
 
@@ -75,16 +75,16 @@ export interface CalcSwapResultArgs {
   adminFeePct: bigint | TransactionArgument
 }
 
-export function calcSwapResult(txb: TransactionBlock, args: CalcSwapResultArgs) {
-  return txb.moveCall({
+export function calcSwapResult(tx: Transaction, args: CalcSwapResultArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::calc_swap_result`,
     arguments: [
-      pure(txb, args.iValue, `u64`),
-      pure(txb, args.iPoolValue, `u64`),
-      pure(txb, args.oPoolValue, `u64`),
-      pure(txb, args.poolLpValue, `u64`),
-      pure(txb, args.lpFeeBps, `u64`),
-      pure(txb, args.adminFeePct, `u64`),
+      pure(tx, args.iValue, `u64`),
+      pure(tx, args.iPoolValue, `u64`),
+      pure(tx, args.oPoolValue, `u64`),
+      pure(tx, args.poolLpValue, `u64`),
+      pure(tx, args.lpFeeBps, `u64`),
+      pure(tx, args.adminFeePct, `u64`),
     ],
   })
 }
@@ -94,10 +94,10 @@ export interface CeilDivU128Args {
   b: bigint | TransactionArgument
 }
 
-export function ceilDivU128(txb: TransactionBlock, args: CeilDivU128Args) {
-  return txb.moveCall({
+export function ceilDivU128(tx: Transaction, args: CeilDivU128Args) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::ceil_div_u128`,
-    arguments: [pure(txb, args.a, `u128`), pure(txb, args.b, `u128`)],
+    arguments: [pure(tx, args.a, `u128`), pure(tx, args.b, `u128`)],
   })
 }
 
@@ -107,41 +107,41 @@ export interface CeilMuldivArgs {
   c: bigint | TransactionArgument
 }
 
-export function ceilMuldiv(txb: TransactionBlock, args: CeilMuldivArgs) {
-  return txb.moveCall({
+export function ceilMuldiv(tx: Transaction, args: CeilMuldivArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::ceil_muldiv`,
-    arguments: [pure(txb, args.a, `u64`), pure(txb, args.b, `u64`), pure(txb, args.c, `u64`)],
+    arguments: [pure(tx, args.a, `u64`), pure(tx, args.b, `u64`), pure(tx, args.c, `u64`)],
   })
 }
 
 export interface CmpTypeNamesArgs {
-  a: ObjectArg
-  b: ObjectArg
+  a: TransactionObjectInput
+  b: TransactionObjectInput
 }
 
-export function cmpTypeNames(txb: TransactionBlock, args: CmpTypeNamesArgs) {
-  return txb.moveCall({
+export function cmpTypeNames(tx: Transaction, args: CmpTypeNamesArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::cmp_type_names`,
-    arguments: [obj(txb, args.a), obj(txb, args.b)],
+    arguments: [obj(tx, args.a), obj(tx, args.b)],
   })
 }
 
 export interface DepositArgs {
-  pool: ObjectArg
-  inputA: ObjectArg
-  inputB: ObjectArg
+  pool: TransactionObjectInput
+  inputA: TransactionObjectInput
+  inputB: TransactionObjectInput
   minLpOut: bigint | TransactionArgument
 }
 
-export function deposit(txb: TransactionBlock, typeArgs: [string, string], args: DepositArgs) {
-  return txb.moveCall({
+export function deposit(tx: Transaction, typeArgs: [string, string], args: DepositArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::deposit`,
     typeArguments: typeArgs,
     arguments: [
-      obj(txb, args.pool),
-      obj(txb, args.inputA),
-      obj(txb, args.inputB),
-      pure(txb, args.minLpOut, `u64`),
+      obj(tx, args.pool),
+      obj(tx, args.inputA),
+      obj(tx, args.inputB),
+      pure(tx, args.minLpOut, `u64`),
     ],
   })
 }
@@ -152,10 +152,10 @@ export interface MuldivArgs {
   c: bigint | TransactionArgument
 }
 
-export function muldiv(txb: TransactionBlock, args: MuldivArgs) {
-  return txb.moveCall({
+export function muldiv(tx: Transaction, args: MuldivArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::muldiv`,
-    arguments: [pure(txb, args.a, `u64`), pure(txb, args.b, `u64`), pure(txb, args.c, `u64`)],
+    arguments: [pure(tx, args.a, `u64`), pure(tx, args.b, `u64`), pure(tx, args.c, `u64`)],
   })
 }
 
@@ -165,10 +165,10 @@ export interface MuldivU128Args {
   c: bigint | TransactionArgument
 }
 
-export function muldivU128(txb: TransactionBlock, args: MuldivU128Args) {
-  return txb.moveCall({
+export function muldivU128(tx: Transaction, args: MuldivU128Args) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::muldiv_u128`,
-    arguments: [pure(txb, args.a, `u128`), pure(txb, args.b, `u128`), pure(txb, args.c, `u128`)],
+    arguments: [pure(tx, args.a, `u128`), pure(tx, args.b, `u128`), pure(tx, args.c, `u128`)],
   })
 }
 
@@ -177,77 +177,89 @@ export interface MulsqrtArgs {
   b: bigint | TransactionArgument
 }
 
-export function mulsqrt(txb: TransactionBlock, args: MulsqrtArgs) {
-  return txb.moveCall({
+export function mulsqrt(tx: Transaction, args: MulsqrtArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::mulsqrt`,
-    arguments: [pure(txb, args.a, `u64`), pure(txb, args.b, `u64`)],
+    arguments: [pure(tx, args.a, `u64`), pure(tx, args.b, `u64`)],
   })
 }
 
-export function newRegistry(txb: TransactionBlock) {
-  return txb.moveCall({ target: `${PUBLISHED_AT}::pool::new_registry`, arguments: [] })
+export function newRegistry(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::pool::new_registry`, arguments: [] })
 }
 
 export function poolAdminFeeValue(
-  txb: TransactionBlock,
+  tx: Transaction,
   typeArgs: [string, string],
-  pool: ObjectArg
+  pool: TransactionObjectInput
 ) {
-  return txb.moveCall({
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::pool_admin_fee_value`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, pool)],
+    arguments: [obj(tx, pool)],
   })
 }
 
-export function poolFees(txb: TransactionBlock, typeArgs: [string, string], pool: ObjectArg) {
-  return txb.moveCall({
+export function poolFees(
+  tx: Transaction,
+  typeArgs: [string, string],
+  pool: TransactionObjectInput
+) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::pool_fees`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, pool)],
+    arguments: [obj(tx, pool)],
   })
 }
 
-export function poolValues(txb: TransactionBlock, typeArgs: [string, string], pool: ObjectArg) {
-  return txb.moveCall({
+export function poolValues(
+  tx: Transaction,
+  typeArgs: [string, string],
+  pool: TransactionObjectInput
+) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::pool_values`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, pool)],
+    arguments: [obj(tx, pool)],
   })
 }
 
-export function registryAdd(txb: TransactionBlock, typeArgs: [string, string], self: ObjectArg) {
-  return txb.moveCall({
+export function registryAdd(
+  tx: Transaction,
+  typeArgs: [string, string],
+  self: TransactionObjectInput
+) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::registry_add`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, self)],
+    arguments: [obj(tx, self)],
   })
 }
 
 export interface SwapAArgs {
-  pool: ObjectArg
-  input: ObjectArg
+  pool: TransactionObjectInput
+  input: TransactionObjectInput
   minOut: bigint | TransactionArgument
 }
 
-export function swapA(txb: TransactionBlock, typeArgs: [string, string], args: SwapAArgs) {
-  return txb.moveCall({
+export function swapA(tx: Transaction, typeArgs: [string, string], args: SwapAArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::swap_a`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.pool), obj(txb, args.input), pure(txb, args.minOut, `u64`)],
+    arguments: [obj(tx, args.pool), obj(tx, args.input), pure(tx, args.minOut, `u64`)],
   })
 }
 
 export interface SwapBArgs {
-  pool: ObjectArg
-  input: ObjectArg
+  pool: TransactionObjectInput
+  input: TransactionObjectInput
   minOut: bigint | TransactionArgument
 }
 
-export function swapB(txb: TransactionBlock, typeArgs: [string, string], args: SwapBArgs) {
-  return txb.moveCall({
+export function swapB(tx: Transaction, typeArgs: [string, string], args: SwapBArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::swap_b`,
     typeArguments: typeArgs,
-    arguments: [obj(txb, args.pool), obj(txb, args.input), pure(txb, args.minOut, `u64`)],
+    arguments: [obj(tx, args.pool), obj(tx, args.input), pure(tx, args.minOut, `u64`)],
   })
 }

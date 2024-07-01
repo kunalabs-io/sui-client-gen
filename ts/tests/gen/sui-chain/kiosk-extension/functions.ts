@@ -1,176 +1,176 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, ObjectArg, generic, obj, pure } from '../../_framework/util'
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions'
+import { GenericArg, generic, obj, pure } from '../../_framework/util'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export interface RemoveArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
 }
 
-export function remove(txb: TransactionBlock, typeArg: string, args: RemoveArgs) {
-  return txb.moveCall({
+export function remove(tx: Transaction, typeArg: string, args: RemoveArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::remove`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.kiosk), obj(txb, args.kioskOwnerCap)],
+    arguments: [obj(tx, args.kiosk), obj(tx, args.kioskOwnerCap)],
   })
 }
 
 export interface AddArgs {
   t0: GenericArg
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
   u128: bigint | TransactionArgument
 }
 
-export function add(txb: TransactionBlock, typeArg: string, args: AddArgs) {
-  return txb.moveCall({
+export function add(tx: Transaction, typeArg: string, args: AddArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::add`,
     typeArguments: [typeArg],
     arguments: [
-      generic(txb, `${typeArg}`, args.t0),
-      obj(txb, args.kiosk),
-      obj(txb, args.kioskOwnerCap),
-      pure(txb, args.u128, `u128`),
+      generic(tx, `${typeArg}`, args.t0),
+      obj(tx, args.kiosk),
+      obj(tx, args.kioskOwnerCap),
+      pure(tx, args.u128, `u128`),
     ],
   })
 }
 
 export interface PlaceArgs {
   t0: GenericArg
-  kiosk: ObjectArg
+  kiosk: TransactionObjectInput
   t1: GenericArg
-  transferPolicy: ObjectArg
+  transferPolicy: TransactionObjectInput
 }
 
-export function place(txb: TransactionBlock, typeArgs: [string, string], args: PlaceArgs) {
-  return txb.moveCall({
+export function place(tx: Transaction, typeArgs: [string, string], args: PlaceArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::place`,
     typeArguments: typeArgs,
     arguments: [
-      generic(txb, `${typeArgs[0]}`, args.t0),
-      obj(txb, args.kiosk),
-      generic(txb, `${typeArgs[1]}`, args.t1),
-      obj(txb, args.transferPolicy),
+      generic(tx, `${typeArgs[0]}`, args.t0),
+      obj(tx, args.kiosk),
+      generic(tx, `${typeArgs[1]}`, args.t1),
+      obj(tx, args.transferPolicy),
     ],
   })
 }
 
 export interface LockArgs {
   t0: GenericArg
-  kiosk: ObjectArg
+  kiosk: TransactionObjectInput
   t1: GenericArg
-  transferPolicy: ObjectArg
+  transferPolicy: TransactionObjectInput
 }
 
-export function lock(txb: TransactionBlock, typeArgs: [string, string], args: LockArgs) {
-  return txb.moveCall({
+export function lock(tx: Transaction, typeArgs: [string, string], args: LockArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::lock`,
     typeArguments: typeArgs,
     arguments: [
-      generic(txb, `${typeArgs[0]}`, args.t0),
-      obj(txb, args.kiosk),
-      generic(txb, `${typeArgs[1]}`, args.t1),
-      obj(txb, args.transferPolicy),
+      generic(tx, `${typeArgs[0]}`, args.t0),
+      obj(tx, args.kiosk),
+      generic(tx, `${typeArgs[1]}`, args.t1),
+      obj(tx, args.transferPolicy),
     ],
   })
 }
 
 export interface DisableArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
 }
 
-export function disable(txb: TransactionBlock, typeArg: string, args: DisableArgs) {
-  return txb.moveCall({
+export function disable(tx: Transaction, typeArg: string, args: DisableArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::disable`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.kiosk), obj(txb, args.kioskOwnerCap)],
+    arguments: [obj(tx, args.kiosk), obj(tx, args.kioskOwnerCap)],
   })
 }
 
 export interface EnableArgs {
-  kiosk: ObjectArg
-  kioskOwnerCap: ObjectArg
+  kiosk: TransactionObjectInput
+  kioskOwnerCap: TransactionObjectInput
 }
 
-export function enable(txb: TransactionBlock, typeArg: string, args: EnableArgs) {
-  return txb.moveCall({
+export function enable(tx: Transaction, typeArg: string, args: EnableArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::enable`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, args.kiosk), obj(txb, args.kioskOwnerCap)],
+    arguments: [obj(tx, args.kiosk), obj(tx, args.kioskOwnerCap)],
   })
 }
 
 export interface StorageArgs {
   t0: GenericArg
-  kiosk: ObjectArg
+  kiosk: TransactionObjectInput
 }
 
-export function storage(txb: TransactionBlock, typeArg: string, args: StorageArgs) {
-  return txb.moveCall({
+export function storage(tx: Transaction, typeArg: string, args: StorageArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::storage`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, args.t0), obj(txb, args.kiosk)],
+    arguments: [generic(tx, `${typeArg}`, args.t0), obj(tx, args.kiosk)],
   })
 }
 
 export interface StorageMutArgs {
   t0: GenericArg
-  kiosk: ObjectArg
+  kiosk: TransactionObjectInput
 }
 
-export function storageMut(txb: TransactionBlock, typeArg: string, args: StorageMutArgs) {
-  return txb.moveCall({
+export function storageMut(tx: Transaction, typeArg: string, args: StorageMutArgs) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::storage_mut`,
     typeArguments: [typeArg],
-    arguments: [generic(txb, `${typeArg}`, args.t0), obj(txb, args.kiosk)],
+    arguments: [generic(tx, `${typeArg}`, args.t0), obj(tx, args.kiosk)],
   })
 }
 
-export function isInstalled(txb: TransactionBlock, typeArg: string, kiosk: ObjectArg) {
-  return txb.moveCall({
+export function isInstalled(tx: Transaction, typeArg: string, kiosk: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::is_installed`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, kiosk)],
+    arguments: [obj(tx, kiosk)],
   })
 }
 
-export function isEnabled(txb: TransactionBlock, typeArg: string, kiosk: ObjectArg) {
-  return txb.moveCall({
+export function isEnabled(tx: Transaction, typeArg: string, kiosk: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::is_enabled`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, kiosk)],
+    arguments: [obj(tx, kiosk)],
   })
 }
 
-export function canPlace(txb: TransactionBlock, typeArg: string, kiosk: ObjectArg) {
-  return txb.moveCall({
+export function canPlace(tx: Transaction, typeArg: string, kiosk: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::can_place`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, kiosk)],
+    arguments: [obj(tx, kiosk)],
   })
 }
 
-export function canLock(txb: TransactionBlock, typeArg: string, kiosk: ObjectArg) {
-  return txb.moveCall({
+export function canLock(tx: Transaction, typeArg: string, kiosk: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::can_lock`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, kiosk)],
+    arguments: [obj(tx, kiosk)],
   })
 }
 
-export function extension(txb: TransactionBlock, typeArg: string, kiosk: ObjectArg) {
-  return txb.moveCall({
+export function extension(tx: Transaction, typeArg: string, kiosk: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::extension`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, kiosk)],
+    arguments: [obj(tx, kiosk)],
   })
 }
 
-export function extensionMut(txb: TransactionBlock, typeArg: string, kiosk: ObjectArg) {
-  return txb.moveCall({
+export function extensionMut(tx: Transaction, typeArg: string, kiosk: TransactionObjectInput) {
+  return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk_extension::extension_mut`,
     typeArguments: [typeArg],
-    arguments: [obj(txb, kiosk)],
+    arguments: [obj(tx, kiosk)],
   })
 }
