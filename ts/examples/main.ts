@@ -1,7 +1,7 @@
-import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519'
-import { fromB64, normalizeSuiAddress } from '@mysten/sui.js/utils'
-import { SuiClient } from '@mysten/sui.js/client'
-import { TransactionBlock } from '@mysten/sui.js/transactions'
+import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519'
+import { fromB64, normalizeSuiAddress } from '@mysten/sui/utils'
+import { SuiClient } from '@mysten/sui/client'
+import { Transaction } from '@mysten/sui/transactions'
 import { createPoolWithCoins } from './gen/amm/util/functions'
 import { PACKAGE_ID as EXAMPLES_PACKAGE_ID } from './gen/examples'
 import { faucetMint } from './gen/examples/example-coin/functions'
@@ -12,7 +12,7 @@ import { WithGenericField } from './gen/examples/fixture/structs'
 import { Field } from './gen/sui/dynamic-field/structs'
 import { EXAMPLE_COIN } from './gen/examples/example-coin/structs'
 import { createExampleStruct, specialTypes } from './gen/examples/examples/functions'
-import { BCS } from '@mysten/bcs'
+import { bcs } from '@mysten/bcs'
 import { ExampleStruct } from './gen/examples/examples/structs'
 import { SUI } from './gen/sui/sui/structs'
 import { vector } from './gen/_framework/reified'
@@ -39,22 +39,22 @@ const client = new SuiClient({
 async function createPool() {
   const address = keypair.getPublicKey().toSuiAddress()
 
-  const txb = new TransactionBlock()
+  const tx = new Transaction()
 
-  const [suiCoin] = txb.splitCoins(txb.gas, [txb.pure(1_000_000)])
-  const exampleCoin = faucetMint(txb, EXAMPLE_COIN_FAUCET_ID)
-  const lp = createPoolWithCoins(txb, ['0x2::sui::SUI', EXAMPLE_COIN.$typeName], {
+  const [suiCoin] = tx.splitCoins(tx.gas, [tx.pure.u64(1_000_000)])
+  const exampleCoin = faucetMint(tx, EXAMPLE_COIN_FAUCET_ID)
+  const lp = createPoolWithCoins(tx, ['0x2::sui::SUI', EXAMPLE_COIN.$typeName], {
     registry: AMM_POOL_REGISTRY_ID,
     initA: suiCoin,
     initB: exampleCoin,
     lpFeeBps: 30n,
     adminFeePct: 10n,
   })
-  txb.transferObjects([lp], txb.pure(address))
+  tx.transferObjects([lp], tx.pure.address(address))
 
-  const res = await client.signAndExecuteTransactionBlock({
+  const res = await client.signAndExecuteTransaction({
     signer: keypair,
-    transactionBlock: txb,
+    transaction: tx,
   })
   console.log(`tx digest: ${res.digest}`)
 }
@@ -99,22 +99,22 @@ async function fetchPoolRegistryItems() {
  * An example for calling transactions with generic fields.
  */
 async function createStructWithVector() {
-  const txb = new TransactionBlock()
+  const tx = new Transaction()
 
-  const coin = faucetMint(txb, txb.object(EXAMPLE_COIN_FAUCET_ID))
+  const coin = faucetMint(tx, tx.object(EXAMPLE_COIN_FAUCET_ID))
 
-  const field = txb.makeMoveVec({
-    objects: [coin],
+  const field = tx.makeMoveVec({
+    elements: [coin],
   })
   createWithGenericField(
-    txb,
+    tx,
     `vector<0x2::coin::Coin<${EXAMPLES_PACKAGE_ID}::example_coin::EXAMPLE_COIN>>`,
     field
   )
 
-  const res = await client.signAndExecuteTransactionBlock({
+  const res = await client.signAndExecuteTransaction({
     signer: keypair,
-    transactionBlock: txb,
+    transaction: tx,
   })
   console.log(res)
 }
@@ -129,12 +129,12 @@ async function fetchWithGenericField() {
 }
 
 async function createSpecialTypes() {
-  const txb = new TransactionBlock()
+  const tx = new Transaction()
 
-  const e1 = createExampleStruct(txb)
-  const e2 = createExampleStruct(txb)
+  const e1 = createExampleStruct(tx)
+  const e2 = createExampleStruct(tx)
 
-  specialTypes(txb, {
+  specialTypes(tx, {
     asciiString: 'example ascii string',
     utf8String: 'example utf8 string',
     vectorOfU64: [1n, 2n],
@@ -146,23 +146,23 @@ async function createSpecialTypes() {
   })
 
   // manually
-  specialTypes(txb, {
-    asciiString: txb.pure('example ascii string', BCS.STRING),
-    utf8String: txb.pure('example utf8 string', BCS.STRING),
-    vectorOfU64: txb.pure([1n, 2n], 'vector<u64>'),
-    vectorOfObjects: txb.makeMoveVec({
-      objects: [createExampleStruct(txb), createExampleStruct(txb)],
+  specialTypes(tx, {
+    asciiString: tx.pure.string('example ascii string'),
+    utf8String: tx.pure.string('example utf8 string'),
+    vectorOfU64: tx.pure(bcs.vector(bcs.u64()).serialize([1n, 2n])),
+    vectorOfObjects: tx.makeMoveVec({
+      elements: [createExampleStruct(tx), createExampleStruct(tx)],
       type: ExampleStruct.$typeName,
     }),
-    idField: txb.pure(normalizeSuiAddress('0x12345'), BCS.ADDRESS),
-    address: txb.pure(normalizeSuiAddress('0x12345'), BCS.ADDRESS),
-    optionSome: txb.pure([5n], 'vector<u64>'),
-    optionNone: txb.pure([], 'vector<u64>'),
+    idField: tx.pure.address(normalizeSuiAddress('0x12345')),
+    address: tx.pure.address(normalizeSuiAddress('0x12345')),
+    optionSome: tx.pure(bcs.vector(bcs.u64()).serialize([5n])),
+    optionNone: tx.pure(bcs.vector(bcs.u64()).serialize([])),
   })
 
-  const res = await client.signAndExecuteTransactionBlock({
+  const res = await client.signAndExecuteTransaction({
     signer: keypair,
-    transactionBlock: txb,
+    transaction: tx,
   })
   console.log(res.digest)
 }

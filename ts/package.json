@@ -15,20 +15,20 @@
   "keywords": [],
   "author": "",
   "devDependencies": {
-    "@types/node": "^20.8.10",
-    "@typescript-eslint/eslint-plugin": "^6.10.0",
-    "@typescript-eslint/parser": "^6.10.0",
-    "eslint": "^8.53.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.0.1",
-    "prettier": "^3.0.3",
-    "typescript": "^5.2.2",
-    "vitest": "^0.34.6"
+    "@types/node": "^20.14.9",
+    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/parser": "^7.14.1",
+    "eslint": "^9.6.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.3.2",
+    "typescript": "^5.5.2",
+    "vitest": "^1.6.0"
   },
   "dependencies": {
-    "@mysten/bcs": "^0.8.1",
-    "@mysten/sui.js": "^0.45.1",
-    "commander": "^11.1.0",
-    "tsup": "^7.2.0"
+    "@mysten/bcs": "^1.0.2",
+    "@mysten/sui": "^1.2.0",
+    "commander": "^12.1.0",
+    "tsup": "^8.1.0"
   }
 }
