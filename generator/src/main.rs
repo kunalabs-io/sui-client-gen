@@ -17,7 +17,7 @@ use sui_client_gen::gen::{
 };
 use sui_client_gen::gen::{FrameworkImportCtx, FunctionsGen, StructClassImportCtx, StructsGen};
 use sui_client_gen::manifest::{parse_gen_manifest_from_file, GenManifest, Package};
-use sui_client_gen::model_builder::{build_models, ModelResult, TypeOriginTable};
+use sui_client_gen::model_builder::{build_models, ModelResult, TypeOriginTable, VersionTable};
 use sui_client_gen::package_cache::PackageCache;
 use sui_move_build::SuiPackageHooks;
 use sui_sdk::SuiClientBuilder;
@@ -127,10 +127,12 @@ async fn main() -> Result<()> {
             &source_top_level_addr_map,
             &m.published_at,
             &m.type_origin_table,
+            &m.version_table,
             true,
             &out_root,
         )?;
     }
+
     if let Some(m) = on_chain_model {
         writeln!(
             progress_output,
@@ -142,6 +144,7 @@ async fn main() -> Result<()> {
             &on_chain_top_level_addr_map,
             &m.published_at,
             &m.type_origin_table,
+            &m.version_table,
             false,
             &out_root,
         )?;
@@ -263,6 +266,7 @@ fn gen_packages_for_model(
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
     published_at_map: &BTreeMap<AccountAddress, AccountAddress>,
     type_origin_table: &TypeOriginTable,
+    version_table: &VersionTable,
     is_source: bool,
     out_root: &Path,
 ) -> Result<()> {
@@ -300,9 +304,13 @@ fn gen_packages_for_model(
 
         // generate index.ts
         let published_at = published_at_map.get(pkg_id).unwrap_or(pkg_id);
+        let versions = version_table.get(pkg_id).unwrap();
         let tokens: js::Tokens = quote!(
             export const PACKAGE_ID = $[str]($[const](pkg_id.to_hex_literal()));
             export const PUBLISHED_AT = $[str]($[const](published_at.to_hex_literal()));
+            $(for (published_at, version) in versions {
+                export const PKG_V$(version.value()) = $[str]($[const](published_at.to_hex_literal()));
+            })
         );
         write_tokens_to_file(&tokens, &package_path.join("index.ts"))?;
 
@@ -321,10 +329,10 @@ fn gen_packages_for_model(
             // generate <module>/functions.ts
             if is_top_level {
                 let mut tokens = js::Tokens::new();
-                let func_gen = FunctionsGen::new(
+                let mut func_gen = FunctionsGen::new(
                     module.env,
                     FrameworkImportCtx::new(levels_from_root + 2, is_source),
-                    type_origin_table,
+                    StructClassImportCtx::for_func_gen(module, is_source, top_level_pkg_names),
                 );
                 for func in module.get_functions() {
                     func_gen.gen_fun_args_if(&func, &mut tokens)?;
@@ -337,9 +345,10 @@ fn gen_packages_for_model(
             let mut tokens = js::Tokens::new();
             let mut structs_gen = StructsGen::new(
                 module.env,
-                StructClassImportCtx::from_module(module, is_source, top_level_pkg_names),
+                StructClassImportCtx::for_struct_gen(module, is_source, top_level_pkg_names),
                 FrameworkImportCtx::new(levels_from_root + 2, is_source),
                 type_origin_table,
+                version_table,
             );
 
             for strct in module.get_structs() {
