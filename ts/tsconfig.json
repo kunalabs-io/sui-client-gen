@@ -21,6 +21,6 @@
   "include": [
     "examples/",
     "tests/",
-    ".eslintrc.cjs"
+    "eslint.config.mjs"
   ]
 }
