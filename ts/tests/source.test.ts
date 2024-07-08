@@ -30,7 +30,7 @@ import { newUnsafeFromBytes } from './gen/sui/url/functions'
 import { new_ as newUid, idFromAddress } from './gen/sui/object/functions'
 import { zero } from './gen/sui/balance/functions'
 import { Balance } from './gen/sui/balance/structs'
-import { extractType, vector } from './gen/_framework/reified'
+import { extractType, phantom, vector } from './gen/_framework/reified'
 import { SUI } from './gen/sui/sui/structs'
 import { Option } from './gen/move-stdlib/option/structs'
 import { String as Utf8String } from './gen/move-stdlib/string/structs'
@@ -1027,4 +1027,44 @@ it('decodes address field correctly', async () => {
 
   const de = Foo.fromFieldsWithTypes('address', foo.data.content)
   expect(Foo.fromJSON('address', de.toJSON())).toEqual(exp)
+})
+
+it('fails when fetching mismatch reified type', async () => {
+  const tx = new Transaction()
+
+  const encoder = new TextEncoder()
+  const typeArgs = ['0x2::sui::SUI', 'u64'] as [string, string]
+
+  createSpecial(tx, typeArgs, {
+    string: utf8(tx, Array.from(encoder.encode('string'))),
+    asciiString: string(tx, Array.from(encoder.encode('ascii'))),
+    url: newUnsafeFromBytes(tx, Array.from(encoder.encode('https://example.com'))),
+    idField: idFromAddress(tx, 'faf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5'),
+    uid: newUid(tx),
+    balance: zero(tx, '0x2::sui::SUI'),
+    option: some(tx, 'u64', 100n),
+    optionObj: some(tx, Bar.$typeName, createBar(tx, 100n)),
+    optionNone: none(tx, 'u64'),
+    balanceGeneric: zero(tx, '0x2::sui::SUI'),
+    optionGeneric: some(tx, 'u64', 200n),
+    optionGenericNone: none(tx, 'u64'),
+  })
+
+  const res = await client.signAndExecuteTransaction({
+    signer: keypair,
+    transaction: tx,
+    options: {
+      showEffects: true,
+    },
+  })
+  const id = res.effects!.created![0].reference.objectId
+
+  await expect(() => {
+    return WithSpecialTypes.r(phantom('u8'), 'u8').fetch(client, id)
+  }).rejects.toThrowError(
+    `type argument mismatch at position 0: expected 'u8' but got '0x2::sui::SUI'`
+  )
+  await expect(() => {
+    return WithSpecialTypes.r(SUI.p, 'u8').fetch(client, id)
+  }).rejects.toThrowError(`type argument mismatch at position 1: expected 'u8' but got 'u64'`)
 })
