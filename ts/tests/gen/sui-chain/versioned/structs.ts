@@ -161,6 +161,7 @@ export class Versioned implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isVersioned(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Versioned object`)
     }
+
     return Versioned.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -311,6 +312,7 @@ export class VersionChangeCap implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isVersionChangeCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a VersionChangeCap object`)
     }
+
     return VersionChangeCap.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

@@ -148,6 +148,7 @@ export class Scalar implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isScalar(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Scalar object`)
     }
+
     return Scalar.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -283,6 +284,7 @@ export class G1 implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isG1(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a G1 object`)
     }
+
     return G1.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -418,6 +420,7 @@ export class G2 implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isG2(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a G2 object`)
     }
+
     return G2.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -553,6 +556,7 @@ export class GT implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isGT(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a GT object`)
     }
+
     return GT.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

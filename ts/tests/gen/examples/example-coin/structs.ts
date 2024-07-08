@@ -152,6 +152,7 @@ export class EXAMPLE_COIN implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isEXAMPLE_COIN(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a EXAMPLE_COIN object`)
     }
+
     return EXAMPLE_COIN.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -311,6 +312,7 @@ export class Faucet implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isFaucet(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Faucet object`)
     }
+
     return Faucet.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

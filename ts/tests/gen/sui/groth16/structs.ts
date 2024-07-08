@@ -146,6 +146,7 @@ export class Curve implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isCurve(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Curve object`)
     }
+
     return Curve.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -328,6 +329,7 @@ export class PreparedVerifyingKey implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isPreparedVerifyingKey(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a PreparedVerifyingKey object`)
     }
+
     return PreparedVerifyingKey.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -470,6 +472,7 @@ export class ProofPoints implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isProofPoints(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ProofPoints object`)
     }
+
     return ProofPoints.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -612,6 +615,7 @@ export class PublicProofInputs implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isPublicProofInputs(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a PublicProofInputs object`)
     }
+
     return PublicProofInputs.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

@@ -16,7 +16,12 @@ import {
   fieldToJSON,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { String as String1 } from '../../move-stdlib/ascii/structs'
 import { Option } from '../../move-stdlib/option/structs'
 import { String } from '../../move-stdlib/string/structs'
@@ -205,6 +210,21 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isCoin(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Coin object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return Coin.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -422,6 +442,21 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
     if (res.data?.bcs?.dataType !== 'moveObject' || !isCoinMetadata(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a CoinMetadata object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return CoinMetadata.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -472,9 +507,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
       fullTypeName: composeSuiType(
         CurrencyCreated.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V19}::coin::CurrencyCreated<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T>
-      >}>`,
+      ) as `${typeof PKG_V19}::coin::CurrencyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => CurrencyCreated.fromFields(T, fields),
@@ -601,6 +634,21 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
     if (res.data?.bcs?.dataType !== 'moveObject' || !isCurrencyCreated(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a CurrencyCreated object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return CurrencyCreated.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -771,6 +819,21 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isDenyCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a DenyCap object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return DenyCap.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -827,9 +890,7 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
       fullTypeName: composeSuiType(
         RegulatedCoinMetadata.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V19}::coin::RegulatedCoinMetadata<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T>
-      >}>`,
+      ) as `${typeof PKG_V19}::coin::RegulatedCoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => RegulatedCoinMetadata.fromFields(T, fields),
@@ -970,6 +1031,21 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
     if (res.data?.bcs?.dataType !== 'moveObject' || !isRegulatedCoinMetadata(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a RegulatedCoinMetadata object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return RegulatedCoinMetadata.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -1155,6 +1231,21 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isTreasuryCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TreasuryCap object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return TreasuryCap.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

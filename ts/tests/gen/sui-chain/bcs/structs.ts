@@ -145,6 +145,7 @@ export class BCS implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isBCS(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a BCS object`)
     }
+
     return BCS.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

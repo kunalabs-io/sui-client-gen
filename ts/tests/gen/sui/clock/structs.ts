@@ -158,6 +158,7 @@ export class Clock implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isClock(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Clock object`)
     }
+
     return Clock.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

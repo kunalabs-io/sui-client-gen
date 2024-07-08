@@ -148,6 +148,7 @@ export class FixedPoint32 implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isFixedPoint32(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a FixedPoint32 object`)
     }
+
     return FixedPoint32.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

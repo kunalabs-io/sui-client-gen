@@ -149,6 +149,7 @@ export class TypeName implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isTypeName(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TypeName object`)
     }
+
     return TypeName.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

@@ -15,7 +15,12 @@ import {
   extractType,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { PKG_V19 } from '../index'
 import { UID } from '../object/structs'
 import { bcs, fromB64 } from '@mysten/bcs'
@@ -76,9 +81,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
       fullTypeName: composeSuiType(
         ObjectTable.$typeName,
         ...[extractType(K), extractType(V)]
-      ) as `${typeof PKG_V19}::object_table::ObjectTable<${PhantomToTypeStr<
-        ToPhantomTypeArgument<K>
-      >}, ${PhantomToTypeStr<ToPhantomTypeArgument<V>>}>`,
+      ) as `${typeof PKG_V19}::object_table::ObjectTable<${PhantomToTypeStr<ToPhantomTypeArgument<K>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<V>>}>`,
       typeArgs: [extractType(K), extractType(V)] as [
         PhantomToTypeStr<ToPhantomTypeArgument<K>>,
         PhantomToTypeStr<ToPhantomTypeArgument<V>>,
@@ -235,6 +238,23 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     if (res.data?.bcs?.dataType !== 'moveObject' || !isObjectTable(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ObjectTable object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return ObjectTable.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }

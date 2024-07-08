@@ -17,7 +17,12 @@ import {
   phantom,
   ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { Balance } from '../balance/structs'
 import { PKG_V19 } from '../index'
 import { ID, UID } from '../object/structs'
@@ -168,6 +173,7 @@ export class Borrow implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isBorrow(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Borrow object`)
     }
+
     return Borrow.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -345,6 +351,7 @@ export class Kiosk implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isKiosk(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Kiosk object`)
     }
+
     return Kiosk.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -495,6 +502,7 @@ export class KioskOwnerCap implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isKioskOwnerCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a KioskOwnerCap object`)
     }
+
     return KioskOwnerCap.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -696,6 +704,21 @@ export class PurchaseCap<T0 extends PhantomTypeArgument> implements StructClass 
     if (res.data?.bcs?.dataType !== 'moveObject' || !isPurchaseCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a PurchaseCap object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return PurchaseCap.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -829,6 +852,7 @@ export class Item implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isItem(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Item object`)
     }
+
     return Item.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -976,6 +1000,7 @@ export class Listing implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isListing(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Listing object`)
     }
+
     return Listing.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -1109,6 +1134,7 @@ export class Lock implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isLock(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Lock object`)
     }
+
     return Lock.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -1302,6 +1328,21 @@ export class ItemListed<T0 extends PhantomTypeArgument> implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isItemListed(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ItemListed object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return ItemListed.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -1358,9 +1399,7 @@ export class ItemPurchased<T0 extends PhantomTypeArgument> implements StructClas
       fullTypeName: composeSuiType(
         ItemPurchased.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::kiosk::ItemPurchased<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T0>
-      >}>`,
+      ) as `${typeof PKG_V19}::kiosk::ItemPurchased<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => ItemPurchased.fromFields(T0, fields),
@@ -1497,6 +1536,21 @@ export class ItemPurchased<T0 extends PhantomTypeArgument> implements StructClas
     if (res.data?.bcs?.dataType !== 'moveObject' || !isItemPurchased(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ItemPurchased object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return ItemPurchased.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -1682,6 +1736,21 @@ export class ItemDelisted<T0 extends PhantomTypeArgument> implements StructClass
     if (res.data?.bcs?.dataType !== 'moveObject' || !isItemDelisted(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ItemDelisted object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return ItemDelisted.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

@@ -15,7 +15,12 @@ import {
   extractType,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { PKG_V19 } from '../index'
 import { ID } from '../object/structs'
 import { bcs, fromB64 } from '@mysten/bcs'
@@ -202,6 +207,21 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isReceiving(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Receiving object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return Receiving.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

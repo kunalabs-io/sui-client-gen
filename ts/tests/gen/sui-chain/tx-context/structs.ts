@@ -190,6 +190,7 @@ export class TxContext implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isTxContext(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TxContext object`)
     }
+
     return TxContext.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

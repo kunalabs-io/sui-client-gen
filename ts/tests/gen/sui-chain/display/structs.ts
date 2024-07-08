@@ -15,7 +15,12 @@ import {
   extractType,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/string/structs'
 import { PKG_V19 } from '../index'
 import { ID, UID } from '../object/structs'
@@ -212,6 +217,21 @@ export class Display<T0 extends PhantomTypeArgument> implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isDisplay(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Display object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return Display.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -262,9 +282,7 @@ export class DisplayCreated<T0 extends PhantomTypeArgument> implements StructCla
       fullTypeName: composeSuiType(
         DisplayCreated.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::display::DisplayCreated<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T0>
-      >}>`,
+      ) as `${typeof PKG_V19}::display::DisplayCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => DisplayCreated.fromFields(T0, fields),
@@ -387,6 +405,21 @@ export class DisplayCreated<T0 extends PhantomTypeArgument> implements StructCla
     if (res.data?.bcs?.dataType !== 'moveObject' || !isDisplayCreated(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a DisplayCreated object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return DisplayCreated.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -443,9 +476,7 @@ export class VersionUpdated<T0 extends PhantomTypeArgument> implements StructCla
       fullTypeName: composeSuiType(
         VersionUpdated.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::display::VersionUpdated<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T0>
-      >}>`,
+      ) as `${typeof PKG_V19}::display::VersionUpdated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => VersionUpdated.fromFields(T0, fields),
@@ -585,6 +616,21 @@ export class VersionUpdated<T0 extends PhantomTypeArgument> implements StructCla
     if (res.data?.bcs?.dataType !== 'moveObject' || !isVersionUpdated(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a VersionUpdated object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return VersionUpdated.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

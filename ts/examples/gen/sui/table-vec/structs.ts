@@ -16,7 +16,12 @@ import {
   extractType,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { PKG_V19 } from '../index'
 import { Table } from '../table/structs'
 import { bcs, fromB64 } from '@mysten/bcs'
@@ -68,9 +73,7 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
       fullTypeName: composeSuiType(
         TableVec.$typeName,
         ...[extractType(Element)]
-      ) as `${typeof PKG_V19}::table_vec::TableVec<${PhantomToTypeStr<
-        ToPhantomTypeArgument<Element>
-      >}>`,
+      ) as `${typeof PKG_V19}::table_vec::TableVec<${PhantomToTypeStr<ToPhantomTypeArgument<Element>>}>`,
       typeArgs: [extractType(Element)] as [PhantomToTypeStr<ToPhantomTypeArgument<Element>>],
       reifiedTypeArgs: [Element],
       fromFields: (fields: Record<string, any>) => TableVec.fromFields(Element, fields),
@@ -200,6 +203,21 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
     if (res.data?.bcs?.dataType !== 'moveObject' || !isTableVec(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TableVec object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return TableVec.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

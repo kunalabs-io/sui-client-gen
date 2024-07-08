@@ -18,7 +18,12 @@ import {
   phantom,
   ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { Balance, Supply } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
@@ -155,6 +160,7 @@ export class AdminCap implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isAdminCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a AdminCap object`)
     }
+
     return AdminCap.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -211,9 +217,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       fullTypeName: composeSuiType(
         LP.$typeName,
         ...[extractType(A), extractType(B)]
-      ) as `${typeof PKG_V1}::pool::LP<${PhantomToTypeStr<
-        ToPhantomTypeArgument<A>
-      >}, ${PhantomToTypeStr<ToPhantomTypeArgument<B>>}>`,
+      ) as `${typeof PKG_V1}::pool::LP<${PhantomToTypeStr<ToPhantomTypeArgument<A>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<B>>}>`,
       typeArgs: [extractType(A), extractType(B)] as [
         PhantomToTypeStr<ToPhantomTypeArgument<A>>,
         PhantomToTypeStr<ToPhantomTypeArgument<B>>,
@@ -359,6 +363,23 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     if (res.data?.bcs?.dataType !== 'moveObject' || !isLP(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a LP object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return LP.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -433,9 +454,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       fullTypeName: composeSuiType(
         Pool.$typeName,
         ...[extractType(A), extractType(B)]
-      ) as `${typeof PKG_V1}::pool::Pool<${PhantomToTypeStr<
-        ToPhantomTypeArgument<A>
-      >}, ${PhantomToTypeStr<ToPhantomTypeArgument<B>>}>`,
+      ) as `${typeof PKG_V1}::pool::Pool<${PhantomToTypeStr<ToPhantomTypeArgument<A>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<B>>}>`,
       typeArgs: [extractType(A), extractType(B)] as [
         PhantomToTypeStr<ToPhantomTypeArgument<A>>,
         PhantomToTypeStr<ToPhantomTypeArgument<B>>,
@@ -632,6 +651,23 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     if (res.data?.bcs?.dataType !== 'moveObject' || !isPool(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Pool object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return Pool.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -774,6 +810,7 @@ export class PoolCreationEvent implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isPoolCreationEvent(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a PoolCreationEvent object`)
     }
+
     return PoolCreationEvent.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -933,6 +970,7 @@ export class PoolRegistry implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isPoolRegistry(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a PoolRegistry object`)
     }
+
     return PoolRegistry.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -1083,6 +1121,7 @@ export class PoolRegistryItem implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isPoolRegistryItem(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a PoolRegistryItem object`)
     }
+
     return PoolRegistryItem.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

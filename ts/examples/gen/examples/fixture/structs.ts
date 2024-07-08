@@ -25,7 +25,12 @@ import {
   toBcs,
   ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { Balance } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { SUI } from '../../sui/sui/structs'
@@ -164,6 +169,7 @@ export class Bar implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isBar(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Bar object`)
     }
+
     return Bar.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -299,6 +305,7 @@ export class Dummy implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isDummy(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Dummy object`)
     }
+
     return Dummy.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -677,6 +684,21 @@ export class Foo<T extends TypeArgument> implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isFoo(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Foo object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return Foo.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -868,6 +890,21 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isWithGenericField(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a WithGenericField object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return WithGenericField.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -960,9 +997,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
       fullTypeName: composeSuiType(
         WithSpecialTypes.$typeName,
         ...[extractType(T), extractType(U)]
-      ) as `${typeof PKG_V1}::fixture::WithSpecialTypes<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T>
-      >}, ${ToTypeStr<ToTypeArgument<U>>}>`,
+      ) as `${typeof PKG_V1}::fixture::WithSpecialTypes<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}, ${ToTypeStr<ToTypeArgument<U>>}>`,
       typeArgs: [extractType(T), extractType(U)] as [
         PhantomToTypeStr<ToPhantomTypeArgument<T>>,
         ToTypeStr<ToTypeArgument<U>>,
@@ -1198,6 +1233,23 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     if (res.data?.bcs?.dataType !== 'moveObject' || !isWithSpecialTypes(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a WithSpecialTypes object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return WithSpecialTypes.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -1355,13 +1407,7 @@ export class WithSpecialTypesAsGenerics<
           extractType(T6),
           extractType(T7),
         ]
-      ) as `${typeof PKG_V1}::fixture::WithSpecialTypesAsGenerics<${ToTypeStr<
-        ToTypeArgument<T0>
-      >}, ${ToTypeStr<ToTypeArgument<T1>>}, ${ToTypeStr<ToTypeArgument<T2>>}, ${ToTypeStr<
-        ToTypeArgument<T3>
-      >}, ${ToTypeStr<ToTypeArgument<T4>>}, ${ToTypeStr<ToTypeArgument<T5>>}, ${ToTypeStr<
-        ToTypeArgument<T6>
-      >}, ${ToTypeStr<ToTypeArgument<T7>>}>`,
+      ) as `${typeof PKG_V1}::fixture::WithSpecialTypesAsGenerics<${ToTypeStr<ToTypeArgument<T0>>}, ${ToTypeStr<ToTypeArgument<T1>>}, ${ToTypeStr<ToTypeArgument<T2>>}, ${ToTypeStr<ToTypeArgument<T3>>}, ${ToTypeStr<ToTypeArgument<T4>>}, ${ToTypeStr<ToTypeArgument<T5>>}, ${ToTypeStr<ToTypeArgument<T6>>}, ${ToTypeStr<ToTypeArgument<T7>>}>`,
       typeArgs: [
         extractType(T0),
         extractType(T1),
@@ -1810,6 +1856,23 @@ export class WithSpecialTypesAsGenerics<
     ) {
       throw new Error(`object at id ${id} is not a WithSpecialTypesAsGenerics object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 8) {
+      throw new Error(
+        `type argument mismatch: expected 8 type arguments but got ${gotTypeArgs.length}`
+      )
+    }
+    for (let i = 0; i < 8; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return WithSpecialTypesAsGenerics.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -2066,6 +2129,21 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     ) {
       throw new Error(`object at id ${id} is not a WithSpecialTypesInVectors object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return WithSpecialTypesInVectors.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -2122,9 +2200,7 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
       fullTypeName: composeSuiType(
         WithTwoGenerics.$typeName,
         ...[extractType(T), extractType(U)]
-      ) as `${typeof PKG_V1}::fixture::WithTwoGenerics<${ToTypeStr<ToTypeArgument<T>>}, ${ToTypeStr<
-        ToTypeArgument<U>
-      >}>`,
+      ) as `${typeof PKG_V1}::fixture::WithTwoGenerics<${ToTypeStr<ToTypeArgument<T>>}, ${ToTypeStr<ToTypeArgument<U>>}>`,
       typeArgs: [extractType(T), extractType(U)] as [
         ToTypeStr<ToTypeArgument<T>>,
         ToTypeStr<ToTypeArgument<U>>,
@@ -2272,6 +2348,23 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
     if (res.data?.bcs?.dataType !== 'moveObject' || !isWithTwoGenerics(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a WithTwoGenerics object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return WithTwoGenerics.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }

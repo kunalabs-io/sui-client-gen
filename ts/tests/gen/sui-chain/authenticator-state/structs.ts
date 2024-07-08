@@ -165,6 +165,7 @@ export class AuthenticatorState implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isAuthenticatorState(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a AuthenticatorState object`)
     }
+
     return AuthenticatorState.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -327,6 +328,7 @@ export class AuthenticatorStateInner implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isAuthenticatorStateInner(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a AuthenticatorStateInner object`)
     }
+
     return AuthenticatorStateInner.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -493,6 +495,7 @@ export class JWK implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isJWK(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a JWK object`)
     }
+
     return JWK.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -643,6 +646,7 @@ export class JwkId implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isJwkId(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a JwkId object`)
     }
+
     return JwkId.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -801,6 +805,7 @@ export class ActiveJwk implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isActiveJwk(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ActiveJwk object`)
     }
+
     return ActiveJwk.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

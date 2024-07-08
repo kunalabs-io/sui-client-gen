@@ -162,6 +162,7 @@ export class Random implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isRandom(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Random object`)
     }
+
     return Random.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -320,6 +321,7 @@ export class RandomGenerator implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isRandomGenerator(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a RandomGenerator object`)
     }
+
     return RandomGenerator.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -486,6 +488,7 @@ export class RandomInner implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isRandomInner(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a RandomInner object`)
     }
+
     return RandomInner.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

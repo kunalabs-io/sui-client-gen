@@ -167,6 +167,7 @@ export class DenyList implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isDenyList(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a DenyList object`)
     }
+
     return DenyList.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -352,6 +353,7 @@ export class PerTypeList implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isPerTypeList(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a PerTypeList object`)
     }
+
     return PerTypeList.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

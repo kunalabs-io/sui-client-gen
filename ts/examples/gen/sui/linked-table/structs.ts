@@ -20,7 +20,12 @@ import {
   phantom,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { PKG_V19 } from '../index'
 import { UID } from '../object/structs'
 import { BcsType, bcs, fromB64 } from '@mysten/bcs'
@@ -87,9 +92,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
       fullTypeName: composeSuiType(
         LinkedTable.$typeName,
         ...[extractType(K), extractType(V)]
-      ) as `${typeof PKG_V19}::linked_table::LinkedTable<${ToTypeStr<
-        ToTypeArgument<K>
-      >}, ${PhantomToTypeStr<ToPhantomTypeArgument<V>>}>`,
+      ) as `${typeof PKG_V19}::linked_table::LinkedTable<${ToTypeStr<ToTypeArgument<K>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<V>>}>`,
       typeArgs: [extractType(K), extractType(V)] as [
         ToTypeStr<ToTypeArgument<K>>,
         PhantomToTypeStr<ToPhantomTypeArgument<V>>,
@@ -254,6 +257,23 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
     if (res.data?.bcs?.dataType !== 'moveObject' || !isLinkedTable(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a LinkedTable object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return LinkedTable.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -311,9 +331,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
       fullTypeName: composeSuiType(
         Node.$typeName,
         ...[extractType(K), extractType(V)]
-      ) as `${typeof PKG_V19}::linked_table::Node<${ToTypeStr<ToTypeArgument<K>>}, ${ToTypeStr<
-        ToTypeArgument<V>
-      >}>`,
+      ) as `${typeof PKG_V19}::linked_table::Node<${ToTypeStr<ToTypeArgument<K>>}, ${ToTypeStr<ToTypeArgument<V>>}>`,
       typeArgs: [extractType(K), extractType(V)] as [
         ToTypeStr<ToTypeArgument<K>>,
         ToTypeStr<ToTypeArgument<V>>,
@@ -455,6 +473,23 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
     if (res.data?.bcs?.dataType !== 'moveObject' || !isNode(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Node object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return Node.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }

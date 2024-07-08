@@ -141,6 +141,7 @@ export class Url implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isUrl(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Url object`)
     }
+
     return Url.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

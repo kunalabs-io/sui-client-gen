@@ -146,6 +146,7 @@ export class Char implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isChar(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Char object`)
     }
+
     return Char.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -281,6 +282,7 @@ export class String implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isString(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a String object`)
     }
+
     return String.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

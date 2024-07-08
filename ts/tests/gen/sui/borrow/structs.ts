@@ -16,7 +16,12 @@ import {
   phantom,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { Option } from '../../move-stdlib/option/structs'
 import { PKG_V19 } from '../index'
 import { ID } from '../object/structs'
@@ -169,6 +174,7 @@ export class Borrow implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isBorrow(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Borrow object`)
     }
+
     return Borrow.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -355,6 +361,21 @@ export class Referent<T extends TypeArgument> implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isReferent(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Referent object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return Referent.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

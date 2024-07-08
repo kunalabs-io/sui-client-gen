@@ -15,7 +15,12 @@ import {
   extractType,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { PKG_V19 } from '../index'
 import { UID } from '../object/structs'
 import { bcs, fromB64 } from '@mysten/bcs'
@@ -76,9 +81,7 @@ export class Table<T0 extends PhantomTypeArgument, T1 extends PhantomTypeArgumen
       fullTypeName: composeSuiType(
         Table.$typeName,
         ...[extractType(T0), extractType(T1)]
-      ) as `${typeof PKG_V19}::table::Table<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T0>
-      >}, ${PhantomToTypeStr<ToPhantomTypeArgument<T1>>}>`,
+      ) as `${typeof PKG_V19}::table::Table<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<T1>>}>`,
       typeArgs: [extractType(T0), extractType(T1)] as [
         PhantomToTypeStr<ToPhantomTypeArgument<T0>>,
         PhantomToTypeStr<ToPhantomTypeArgument<T1>>,
@@ -235,6 +238,23 @@ export class Table<T0 extends PhantomTypeArgument, T1 extends PhantomTypeArgumen
     if (res.data?.bcs?.dataType !== 'moveObject' || !isTable(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Table object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return Table.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }

@@ -173,6 +173,7 @@ export class Publisher implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isPublisher(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Publisher object`)
     }
+
     return Publisher.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -339,6 +340,7 @@ export class UpgradeCap implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isUpgradeCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a UpgradeCap object`)
     }
+
     return UpgradeCap.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -489,6 +491,7 @@ export class UpgradeReceipt implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isUpgradeReceipt(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a UpgradeReceipt object`)
     }
+
     return UpgradeReceipt.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -655,6 +658,7 @@ export class UpgradeTicket implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isUpgradeTicket(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a UpgradeTicket object`)
     }
+
     return UpgradeTicket.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

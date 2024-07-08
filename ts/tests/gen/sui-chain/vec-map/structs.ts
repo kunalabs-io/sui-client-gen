@@ -18,7 +18,12 @@ import {
   phantom,
   toBcs,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { PKG_V19 } from '../index'
 import { BcsType, bcs, fromB64 } from '@mysten/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
@@ -73,9 +78,7 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> implements 
       fullTypeName: composeSuiType(
         Entry.$typeName,
         ...[extractType(T0), extractType(T1)]
-      ) as `${typeof PKG_V19}::vec_map::Entry<${ToTypeStr<ToTypeArgument<T0>>}, ${ToTypeStr<
-        ToTypeArgument<T1>
-      >}>`,
+      ) as `${typeof PKG_V19}::vec_map::Entry<${ToTypeStr<ToTypeArgument<T0>>}, ${ToTypeStr<ToTypeArgument<T1>>}>`,
       typeArgs: [extractType(T0), extractType(T1)] as [
         ToTypeStr<ToTypeArgument<T0>>,
         ToTypeStr<ToTypeArgument<T1>>,
@@ -212,6 +215,23 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> implements 
     if (res.data?.bcs?.dataType !== 'moveObject' || !isEntry(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Entry object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return Entry.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -263,9 +283,7 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> implements
       fullTypeName: composeSuiType(
         VecMap.$typeName,
         ...[extractType(T0), extractType(T1)]
-      ) as `${typeof PKG_V19}::vec_map::VecMap<${ToTypeStr<ToTypeArgument<T0>>}, ${ToTypeStr<
-        ToTypeArgument<T1>
-      >}>`,
+      ) as `${typeof PKG_V19}::vec_map::VecMap<${ToTypeStr<ToTypeArgument<T0>>}, ${ToTypeStr<ToTypeArgument<T1>>}>`,
       typeArgs: [extractType(T0), extractType(T1)] as [
         ToTypeStr<ToTypeArgument<T0>>,
         ToTypeStr<ToTypeArgument<T1>>,
@@ -412,6 +430,23 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> implements
     if (res.data?.bcs?.dataType !== 'moveObject' || !isVecMap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a VecMap object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return VecMap.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
   }
 }

@@ -146,6 +146,7 @@ export class ID implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isID(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ID object`)
     }
+
     return ID.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -279,6 +280,7 @@ export class UID implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isUID(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a UID object`)
     }
+
     return UID.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

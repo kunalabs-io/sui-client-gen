@@ -17,7 +17,12 @@ import {
   phantom,
   ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { TypeName } from '../../move-stdlib/type-name/structs'
 import { Balance } from '../balance/structs'
 import { PKG_V19 } from '../index'
@@ -70,9 +75,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         RuleKey.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V19}::transfer_policy::RuleKey<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T>
-      >}>`,
+      ) as `${typeof PKG_V19}::transfer_policy::RuleKey<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => RuleKey.fromFields(T, fields),
@@ -199,6 +202,21 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isRuleKey(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a RuleKey object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return RuleKey.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -255,9 +273,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
       fullTypeName: composeSuiType(
         TransferPolicy.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V19}::transfer_policy::TransferPolicy<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T>
-      >}>`,
+      ) as `${typeof PKG_V19}::transfer_policy::TransferPolicy<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TransferPolicy.fromFields(T, fields),
@@ -397,6 +413,21 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
     if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferPolicy(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TransferPolicy object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return TransferPolicy.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -450,9 +481,7 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructC
       fullTypeName: composeSuiType(
         TransferPolicyCap.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V19}::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T>
-      >}>`,
+      ) as `${typeof PKG_V19}::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TransferPolicyCap.fromFields(T, fields),
@@ -586,6 +615,21 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructC
     if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferPolicyCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TransferPolicyCap object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return TransferPolicyCap.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -636,9 +680,7 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> implements Str
       fullTypeName: composeSuiType(
         TransferPolicyCreated.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V19}::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T>
-      >}>`,
+      ) as `${typeof PKG_V19}::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TransferPolicyCreated.fromFields(T, fields),
@@ -769,6 +811,21 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> implements Str
     if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferPolicyCreated(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TransferPolicyCreated object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return TransferPolicyCreated.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -819,9 +876,7 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements S
       fullTypeName: composeSuiType(
         TransferPolicyDestroyed.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V19}::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T>
-      >}>`,
+      ) as `${typeof PKG_V19}::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TransferPolicyDestroyed.fromFields(T, fields),
@@ -954,6 +1009,21 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements S
     if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferPolicyDestroyed(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TransferPolicyDestroyed object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return TransferPolicyDestroyed.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -1013,9 +1083,7 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
       fullTypeName: composeSuiType(
         TransferRequest.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V19}::transfer_policy::TransferRequest<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T>
-      >}>`,
+      ) as `${typeof PKG_V19}::transfer_policy::TransferRequest<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TransferRequest.fromFields(T, fields),
@@ -1157,6 +1225,21 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
     if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferRequest(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TransferRequest object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return TransferRequest.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

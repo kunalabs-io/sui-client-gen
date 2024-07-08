@@ -157,6 +157,7 @@ export class ExampleStruct implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isExampleStruct(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ExampleStruct object`)
     }
+
     return ExampleStruct.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -378,6 +379,7 @@ export class SpecialTypesStruct implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isSpecialTypesStruct(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a SpecialTypesStruct object`)
     }
+
     return SpecialTypesStruct.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

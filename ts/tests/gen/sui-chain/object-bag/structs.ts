@@ -161,6 +161,7 @@ export class ObjectBag implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isObjectBag(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ObjectBag object`)
     }
+
     return ObjectBag.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

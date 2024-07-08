@@ -152,6 +152,7 @@ export class AddedInAnUpgrade implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isAddedInAnUpgrade(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a AddedInAnUpgrade object`)
     }
+
     return AddedInAnUpgrade.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -301,6 +302,7 @@ export class StructFromOtherModule implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isStructFromOtherModule(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a StructFromOtherModule object`)
     }
+
     return StructFromOtherModule.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }

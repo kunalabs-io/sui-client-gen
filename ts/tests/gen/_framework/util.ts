@@ -8,7 +8,6 @@ import {
 } from '@mysten/sui/transactions'
 
 export interface FieldsWithTypes {
-  /* eslint-disable @typescript-eslint/no-explicit-any */
   fields: Record<string, any>
   type: string
 }

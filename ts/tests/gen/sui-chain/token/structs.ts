@@ -16,7 +16,12 @@ import {
   fieldToJSON,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { String } from '../../move-stdlib-chain/string/structs'
 import { TypeName } from '../../move-stdlib-chain/type-name/structs'
@@ -206,6 +211,21 @@ export class Token<T0 extends PhantomTypeArgument> implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isToken(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a Token object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return Token.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -259,9 +279,7 @@ export class TokenPolicyCap<T0 extends PhantomTypeArgument> implements StructCla
       fullTypeName: composeSuiType(
         TokenPolicyCap.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::token::TokenPolicyCap<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T0>
-      >}>`,
+      ) as `${typeof PKG_V19}::token::TokenPolicyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => TokenPolicyCap.fromFields(T0, fields),
@@ -393,6 +411,21 @@ export class TokenPolicyCap<T0 extends PhantomTypeArgument> implements StructCla
     if (res.data?.bcs?.dataType !== 'moveObject' || !isTokenPolicyCap(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TokenPolicyCap object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return TokenPolicyCap.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -595,6 +628,21 @@ export class TokenPolicy<T0 extends PhantomTypeArgument> implements StructClass 
     if (res.data?.bcs?.dataType !== 'moveObject' || !isTokenPolicy(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TokenPolicy object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return TokenPolicy.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -660,9 +708,7 @@ export class ActionRequest<T0 extends PhantomTypeArgument> implements StructClas
       fullTypeName: composeSuiType(
         ActionRequest.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::token::ActionRequest<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T0>
-      >}>`,
+      ) as `${typeof PKG_V19}::token::ActionRequest<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => ActionRequest.fromFields(T0, fields),
@@ -837,6 +883,21 @@ export class ActionRequest<T0 extends PhantomTypeArgument> implements StructClas
     if (res.data?.bcs?.dataType !== 'moveObject' || !isActionRequest(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a ActionRequest object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return ActionRequest.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -1011,6 +1072,21 @@ export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isRuleKey(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a RuleKey object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return RuleKey.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
@@ -1064,9 +1140,7 @@ export class TokenPolicyCreated<T0 extends PhantomTypeArgument> implements Struc
       fullTypeName: composeSuiType(
         TokenPolicyCreated.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::token::TokenPolicyCreated<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T0>
-      >}>`,
+      ) as `${typeof PKG_V19}::token::TokenPolicyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => TokenPolicyCreated.fromFields(T0, fields),
@@ -1200,6 +1274,21 @@ export class TokenPolicyCreated<T0 extends PhantomTypeArgument> implements Struc
     if (res.data?.bcs?.dataType !== 'moveObject' || !isTokenPolicyCreated(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a TokenPolicyCreated object`)
     }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
     return TokenPolicyCreated.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

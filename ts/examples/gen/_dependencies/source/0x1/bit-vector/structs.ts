@@ -163,6 +163,7 @@ export class BitVector implements StructClass {
     if (res.data?.bcs?.dataType !== 'moveObject' || !isBitVector(res.data.bcs.type)) {
       throw new Error(`object at id ${id} is not a BitVector object`)
     }
+
     return BitVector.fromBcs(fromB64(res.data.bcs.bcsBytes))
   }
 }
