@@ -183,7 +183,7 @@ impl<'env, 'a> StructClassImportCtx<'env, 'a> {
             if self.is_structs_gen {
                 None
             } else {
-                Some(format!("./structs"))
+                Some("./structs".to_string())
             }
         } else if strct.module_env.self_address() == self.module.self_address() {
             // if the struct is defined in a different module in the same package, we use
@@ -319,7 +319,7 @@ fn gen_full_name_with_address(
 ) -> js::Tokens {
     let origin_pkg_addr = get_origin_pkg_addr(strct, type_origin_table);
     let self_addr = strct.module_env.self_address();
-    let versions = version_table.get(&self_addr).unwrap_or_else(|| {
+    let versions = version_table.get(self_addr).unwrap_or_else(|| {
         panic!(
             "expected version table to exist for packge {}",
             self_addr.to_hex_literal()
@@ -1541,6 +1541,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let phantom_to_type_str = &self.framework.import("reified", "PhantomToTypeStr");
         let to_bcs = &self.framework.import("reified", "toBcs");
         let extract_type = &self.framework.import("reified", "extractType");
+        let parse_type_name = &self.framework.import("util", "parseTypeName");
         let phantom = &self.framework.import("reified", "phantom");
         let assert_reified_type_args_match = &self
             .framework
@@ -1553,6 +1554,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let bcs = &js::import("@mysten/bcs", "bcs");
         let bcs_type = &js::import("@mysten/bcs", "BcsType");
         let from_b64 = &js::import("@mysten/bcs", "fromB64");
+        let compress_sui_type = &self.framework.import("util", "compressSuiType");
 
         strct.get_abilities().has_key();
 
@@ -2151,7 +2153,42 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                         throw new Error($(self.interpolate(
                             format!("object at id ${{id}} is not a {} object", &struct_name))
                         ));
-                    }$['\r']
+                    }$['\n']
+                    $(match type_params.len() {
+                        0 => (),
+                        1 => {
+                            const gotTypeArgs = $parse_type_name(res.data.bcs.type).typeArgs;
+                            if (gotTypeArgs.length !== 1) {
+                                throw new Error($(self.interpolate(
+                                    "type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'".to_string()
+                                )));
+                            };
+                            const gotTypeArg = $compress_sui_type(gotTypeArgs[0]);
+                            const expectedTypeArg = $compress_sui_type($extract_type(typeArg));
+                            if (gotTypeArg !== $compress_sui_type($extract_type(typeArg))) {
+                                throw new Error($(self.interpolate(
+                                    "type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'".to_string()
+                                )));
+                            };
+                        },
+                        n => {
+                            const gotTypeArgs = $parse_type_name(res.data.bcs.type).typeArgs;
+                            if (gotTypeArgs.length !== $n) {
+                                throw new Error($(self.interpolate(
+                                    format!("type argument mismatch: expected {} type arguments but got ${{gotTypeArgs.length}}", n)
+                                )));
+                            };
+                            for (let i = 0; i < $n; i++) {
+                                const gotTypeArg = $compress_sui_type(gotTypeArgs[i]);
+                                const expectedTypeArg = $compress_sui_type($extract_type(typeArgs[i]));
+                                if (gotTypeArg !== expectedTypeArg) {
+                                    throw new Error($(self.interpolate(
+                                        "type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'".to_string()
+                                    )));
+                                }
+                            };
+                        }
+                    })$['\n']
 
                     return $(&struct_name).fromBcs(
                         $(match type_params.len() {
