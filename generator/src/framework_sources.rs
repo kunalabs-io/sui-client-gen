@@ -87,14 +87,13 @@ export const structClassLoaderOnchain = new StructClassLoader()
 "#;
 
 pub static UTIL: &str = r#"
-import { BcsType, splitGenericParameters } from '@mysten/bcs';
-import { bcs } from '@mysten/sui/bcs';
+import { bcs, BcsType } from '@mysten/sui/bcs'
 import {
-	Transaction,
-	TransactionArgument,
-	TransactionObjectArgument,
-	TransactionObjectInput,
-} from '@mysten/sui/transactions';
+  Transaction,
+  TransactionArgument,
+  TransactionObjectArgument,
+  TransactionObjectInput,
+} from '@mysten/sui/transactions'
 
 export interface FieldsWithTypes {
 	/* eslint-disable @typescript-eslint/no-explicit-any */
@@ -118,6 +117,36 @@ export type GenericArg =
 	| Array<TransactionObjectInput>
 	| Array<PureArg>
 	| Array<GenericArg>;
+
+export function splitGenericParameters(
+  str: string,
+  genericSeparators: [string, string] = ['<', '>']
+) {
+  const [left, right] = genericSeparators
+  const tok = []
+  let word = ''
+  let nestedAngleBrackets = 0
+
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i]
+    if (char === left) {
+      nestedAngleBrackets++
+    }
+    if (char === right) {
+      nestedAngleBrackets--
+    }
+    if (nestedAngleBrackets === 0 && char === ',') {
+      tok.push(word.trim())
+      word = ''
+      continue
+    }
+    word += char
+  }
+
+  tok.push(word.trim())
+
+  return tok
+}
 
 export function parseTypeName(name: string): { typeName: string; typeArgs: string[] } {
 	if (typeof name !== 'string') {
@@ -441,7 +470,8 @@ export function composeSuiType(typeName: string, ...typeArgs: string[]): string 
 "#;
 
 pub static REIFIED: &str = r#"
-import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
+import { bcs, BcsType } from '@mysten/sui/bcs'
+import { fromHEX, toHEX } from '@mysten/sui/utils'
 import { FieldsWithTypes, compressSuiType, parseTypeName } from './util'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 

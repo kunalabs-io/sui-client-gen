@@ -1228,9 +1228,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         ty: &Type,
         type_param_names: Vec<Symbol>,
     ) -> js::Tokens {
-        let bcs = &js::import("@mysten/bcs", "bcs");
-        let from_hex = &js::import("@mysten/bcs", "fromHEX");
-        let to_hex = &js::import("@mysten/bcs", "toHEX");
+        let bcs = &js::import("@mysten/sui/bcs", "bcs");
+        let from_hex = &js::import("@mysten/sui/utils", "fromHEX");
+        let to_hex = &js::import("@mysten/sui/utils", "toHEX");
         match ty {
             Type::Primitive(ty) => match ty {
                 PrimitiveType::U8 => quote!($bcs.u8()),
@@ -1551,9 +1551,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             .import("reified", "assertFieldsWithTypesArgsMatch");
         let sui_parsed_data = &js::import("@mysten/sui/client", "SuiParsedData");
         let sui_client = &js::import("@mysten/sui/client", "SuiClient");
-        let bcs = &js::import("@mysten/bcs", "bcs");
-        let bcs_type = &js::import("@mysten/bcs", "BcsType");
-        let from_b64 = &js::import("@mysten/bcs", "fromB64");
+        let bcs = &js::import("@mysten/sui/bcs", "bcs");
+        let bcs_type = &js::import("@mysten/sui/bcs", "BcsType");
+        let from_b64 = &js::import("@mysten/sui/utils", "fromB64");
         let compress_sui_type = &self.framework.import("util", "compressSuiType");
 
         strct.get_abilities().has_key();
