@@ -15,23 +15,23 @@
   "keywords": [],
   "author": "",
   "devDependencies": {
-    "@eslint/js": "^9.6.0",
+    "@eslint/js": "^9.8.0",
     "@types/eslint__js": "^8.42.3",
-    "@types/node": "^20.14.9",
-    "@typescript-eslint/eslint-plugin": "^7.14.1",
-    "@typescript-eslint/parser": "^7.14.1",
-    "eslint": "^9.6.0",
+    "@types/node": "^22.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.8.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.1.3",
-    "prettier": "^3.3.2",
-    "typescript": "^5.5.2",
-    "typescript-eslint": "^7.15.0",
-    "vitest": "^1.6.0"
+    "eslint-plugin-prettier": "^5.2.1",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^2.0.5"
   },
   "dependencies": {
-    "@mysten/bcs": "^1.0.2",
-    "@mysten/sui": "^1.2.0",
+    "@mysten/bcs": "^1.0.3",
+    "@mysten/sui": "^1.4.0",
     "commander": "^12.1.0",
-    "tsup": "^8.1.0"
+    "tsup": "^8.2.4"
   }
 }

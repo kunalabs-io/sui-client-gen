@@ -44,13 +44,13 @@ import { Pool } from "./gen/amm/pool/structs";
 ### Create an AMM pool
 
 ```ts
-const txb = new TransactionBlock();
+const tx = new Transaction();
 
 const [suiCoin] = txb.splitCoin(tx.gas, [tx.pure(1_000_000)]);
 const exampleCoin = faucetMint(txb, FAUCET_ID);
 
 const lp = createPoolWithCoins(
-  txb,
+  tx,
   ["0x2:sui::SUI", `${EXAMPLE_PACKAGE_ID}::example_coin::EXAMPLE_COIN`],
   {
     registry: REGISTRY_ID, // or txb.object(REGISTRY_ID)
@@ -60,9 +60,12 @@ const lp = createPoolWithCoins(
     adminFeePct: 10n, // or txb.pure(10n)
   }
 );
-tx.transferObjects([lp], txb.pure(addresss));
+tx.transferObjects([lp], tx.pure(addresss));
 
-await signer.signAndExecuteTransactionBlock({ transactionBLock: txb });
+await client.signAndExecuteTransaction({
+  transaction: tx,
+  signer,
+});
 ```
 
 ### Fetch Pool object
