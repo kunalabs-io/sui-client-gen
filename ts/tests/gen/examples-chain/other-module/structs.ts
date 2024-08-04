@@ -11,8 +11,9 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { PKG_V1, PKG_V2 } from '../index'
-import { bcs, fromB64 } from '@mysten/bcs'
+import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== StructFromOtherModule =============================== */
 

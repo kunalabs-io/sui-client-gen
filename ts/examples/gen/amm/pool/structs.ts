@@ -28,8 +28,9 @@ import { Balance, Supply } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
 import { PKG_V1 } from '../index'
-import { bcs, fromB64 } from '@mysten/bcs'
+import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== AdminCap =============================== */
 

@@ -21,16 +21,17 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { PKG_V19 } from '../index'
+import { PKG_V21 } from '../index'
 import { ID } from '../object/structs'
-import { bcs, fromB64 } from '@mysten/bcs'
+import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Receiving =============================== */
 
 export function isReceiving(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::transfer::Receiving` + '<')
+  return type.startsWith(`${PKG_V21}::transfer::Receiving` + '<')
 }
 
 export interface ReceivingFields<T0 extends PhantomTypeArgument> {
@@ -44,12 +45,12 @@ export type ReceivingReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class Receiving<T0 extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::transfer::Receiving`
+  static readonly $typeName = `${PKG_V21}::transfer::Receiving`
   static readonly $numTypeParams = 1
 
   readonly $typeName = Receiving.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::transfer::Receiving<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::transfer::Receiving<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T0>]
 
@@ -60,7 +61,7 @@ export class Receiving<T0 extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Receiving.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::transfer::Receiving<${PhantomToTypeStr<T0>}>`
+    ) as `${typeof PKG_V21}::transfer::Receiving<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -75,7 +76,7 @@ export class Receiving<T0 extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Receiving.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::transfer::Receiving<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V21}::transfer::Receiving<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Receiving.fromFields(T0, fields),

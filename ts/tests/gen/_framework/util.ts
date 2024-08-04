@@ -1,5 +1,4 @@
-import { BcsType, splitGenericParameters } from '@mysten/bcs'
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsType } from '@mysten/sui/bcs'
 import {
   Transaction,
   TransactionArgument,
@@ -28,6 +27,36 @@ export type GenericArg =
   | Array<TransactionObjectInput>
   | Array<PureArg>
   | Array<GenericArg>
+
+export function splitGenericParameters(
+  str: string,
+  genericSeparators: [string, string] = ['<', '>']
+) {
+  const [left, right] = genericSeparators
+  const tok = []
+  let word = ''
+  let nestedAngleBrackets = 0
+
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i]
+    if (char === left) {
+      nestedAngleBrackets++
+    }
+    if (char === right) {
+      nestedAngleBrackets--
+    }
+    if (nestedAngleBrackets === 0 && char === ',') {
+      tok.push(word.trim())
+      word = ''
+      continue
+    }
+    word += char
+  }
+
+  tok.push(word.trim())
+
+  return tok
+}
 
 export function parseTypeName(name: string): { typeName: string; typeArgs: string[] } {
   if (typeof name !== 'string') {

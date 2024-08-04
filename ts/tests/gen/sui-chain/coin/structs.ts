@@ -26,17 +26,18 @@ import { String as String1 } from '../../move-stdlib-chain/ascii/structs'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { String } from '../../move-stdlib-chain/string/structs'
 import { Balance, Supply } from '../balance/structs'
-import { PKG_V19 } from '../index'
+import { PKG_V21 } from '../index'
 import { ID, UID } from '../object/structs'
 import { Url } from '../url/structs'
-import { bcs, fromB64 } from '@mysten/bcs'
+import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Coin =============================== */
 
 export function isCoin(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::coin::Coin` + '<')
+  return type.startsWith(`${PKG_V21}::coin::Coin` + '<')
 }
 
 export interface CoinFields<T0 extends PhantomTypeArgument> {
@@ -47,12 +48,12 @@ export interface CoinFields<T0 extends PhantomTypeArgument> {
 export type CoinReified<T0 extends PhantomTypeArgument> = Reified<Coin<T0>, CoinFields<T0>>
 
 export class Coin<T0 extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::coin::Coin`
+  static readonly $typeName = `${PKG_V21}::coin::Coin`
   static readonly $numTypeParams = 1
 
   readonly $typeName = Coin.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::coin::Coin<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::coin::Coin<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T0>]
 
@@ -63,7 +64,7 @@ export class Coin<T0 extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Coin.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::coin::Coin<${PhantomToTypeStr<T0>}>`
+    ) as `${typeof PKG_V21}::coin::Coin<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -78,7 +79,7 @@ export class Coin<T0 extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Coin.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::coin::Coin<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V21}::coin::Coin<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Coin.fromFields(T0, fields),
@@ -233,7 +234,7 @@ export class Coin<T0 extends PhantomTypeArgument> implements StructClass {
 
 export function isCoinMetadata(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::coin::CoinMetadata` + '<')
+  return type.startsWith(`${PKG_V21}::coin::CoinMetadata` + '<')
 }
 
 export interface CoinMetadataFields<T0 extends PhantomTypeArgument> {
@@ -251,12 +252,12 @@ export type CoinMetadataReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class CoinMetadata<T0 extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::coin::CoinMetadata`
+  static readonly $typeName = `${PKG_V21}::coin::CoinMetadata`
   static readonly $numTypeParams = 1
 
   readonly $typeName = CoinMetadata.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::coin::CoinMetadata<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::coin::CoinMetadata<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T0>]
 
@@ -271,7 +272,7 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> implements StructClass
     this.$fullTypeName = composeSuiType(
       CoinMetadata.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::coin::CoinMetadata<${PhantomToTypeStr<T0>}>`
+    ) as `${typeof PKG_V21}::coin::CoinMetadata<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -290,7 +291,7 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> implements StructClass
       fullTypeName: composeSuiType(
         CoinMetadata.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::coin::CoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V21}::coin::CoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => CoinMetadata.fromFields(T0, fields),
@@ -465,7 +466,7 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> implements StructClass
 
 export function isRegulatedCoinMetadata(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::coin::RegulatedCoinMetadata` + '<')
+  return type.startsWith(`${PKG_V21}::coin::RegulatedCoinMetadata` + '<')
 }
 
 export interface RegulatedCoinMetadataFields<T0 extends PhantomTypeArgument> {
@@ -480,12 +481,12 @@ export type RegulatedCoinMetadataReified<T0 extends PhantomTypeArgument> = Reifi
 >
 
 export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::coin::RegulatedCoinMetadata`
+  static readonly $typeName = `${PKG_V21}::coin::RegulatedCoinMetadata`
   static readonly $numTypeParams = 1
 
   readonly $typeName = RegulatedCoinMetadata.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::coin::RegulatedCoinMetadata<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::coin::RegulatedCoinMetadata<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T0>]
 
@@ -497,7 +498,7 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> implements St
     this.$fullTypeName = composeSuiType(
       RegulatedCoinMetadata.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::coin::RegulatedCoinMetadata<${PhantomToTypeStr<T0>}>`
+    ) as `${typeof PKG_V21}::coin::RegulatedCoinMetadata<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -513,7 +514,7 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> implements St
       fullTypeName: composeSuiType(
         RegulatedCoinMetadata.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::coin::RegulatedCoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V21}::coin::RegulatedCoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => RegulatedCoinMetadata.fromFields(T0, fields),
@@ -677,7 +678,7 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> implements St
 
 export function isTreasuryCap(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::coin::TreasuryCap` + '<')
+  return type.startsWith(`${PKG_V21}::coin::TreasuryCap` + '<')
 }
 
 export interface TreasuryCapFields<T0 extends PhantomTypeArgument> {
@@ -691,12 +692,12 @@ export type TreasuryCapReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class TreasuryCap<T0 extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::coin::TreasuryCap`
+  static readonly $typeName = `${PKG_V21}::coin::TreasuryCap`
   static readonly $numTypeParams = 1
 
   readonly $typeName = TreasuryCap.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::coin::TreasuryCap<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::coin::TreasuryCap<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T0>]
 
@@ -707,7 +708,7 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> implements StructClass 
     this.$fullTypeName = composeSuiType(
       TreasuryCap.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::coin::TreasuryCap<${PhantomToTypeStr<T0>}>`
+    ) as `${typeof PKG_V21}::coin::TreasuryCap<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -722,7 +723,7 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> implements StructClass 
       fullTypeName: composeSuiType(
         TreasuryCap.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::coin::TreasuryCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V21}::coin::TreasuryCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => TreasuryCap.fromFields(T0, fields),
@@ -873,117 +874,129 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> implements StructClass 
   }
 }
 
-/* ============================== DenyCap =============================== */
+/* ============================== DenyCapV2 =============================== */
 
-export function isDenyCap(type: string): boolean {
+export function isDenyCapV2(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::coin::DenyCap` + '<')
+  return type.startsWith(`${PKG_V21}::coin::DenyCapV2` + '<')
 }
 
-export interface DenyCapFields<T0 extends PhantomTypeArgument> {
+export interface DenyCapV2Fields<T0 extends PhantomTypeArgument> {
   id: ToField<UID>
+  allowGlobalPause: ToField<'bool'>
 }
 
-export type DenyCapReified<T0 extends PhantomTypeArgument> = Reified<DenyCap<T0>, DenyCapFields<T0>>
+export type DenyCapV2Reified<T0 extends PhantomTypeArgument> = Reified<
+  DenyCapV2<T0>,
+  DenyCapV2Fields<T0>
+>
 
-export class DenyCap<T0 extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::coin::DenyCap`
+export class DenyCapV2<T0 extends PhantomTypeArgument> implements StructClass {
+  static readonly $typeName = `${PKG_V21}::coin::DenyCapV2`
   static readonly $numTypeParams = 1
 
-  readonly $typeName = DenyCap.$typeName
+  readonly $typeName = DenyCapV2.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::coin::DenyCap<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::coin::DenyCapV2<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T0>]
 
   readonly id: ToField<UID>
+  readonly allowGlobalPause: ToField<'bool'>
 
-  private constructor(typeArgs: [PhantomToTypeStr<T0>], fields: DenyCapFields<T0>) {
+  private constructor(typeArgs: [PhantomToTypeStr<T0>], fields: DenyCapV2Fields<T0>) {
     this.$fullTypeName = composeSuiType(
-      DenyCap.$typeName,
+      DenyCapV2.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::coin::DenyCap<${PhantomToTypeStr<T0>}>`
+    ) as `${typeof PKG_V21}::coin::DenyCapV2<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
+    this.allowGlobalPause = fields.allowGlobalPause
   }
 
   static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
-  ): DenyCapReified<ToPhantomTypeArgument<T0>> {
+  ): DenyCapV2Reified<ToPhantomTypeArgument<T0>> {
     return {
-      typeName: DenyCap.$typeName,
+      typeName: DenyCapV2.$typeName,
       fullTypeName: composeSuiType(
-        DenyCap.$typeName,
+        DenyCapV2.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::coin::DenyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V21}::coin::DenyCapV2<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
-      fromFields: (fields: Record<string, any>) => DenyCap.fromFields(T0, fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => DenyCap.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => DenyCap.fromBcs(T0, data),
-      bcs: DenyCap.bcs,
-      fromJSONField: (field: any) => DenyCap.fromJSONField(T0, field),
-      fromJSON: (json: Record<string, any>) => DenyCap.fromJSON(T0, json),
-      fromSuiParsedData: (content: SuiParsedData) => DenyCap.fromSuiParsedData(T0, content),
-      fetch: async (client: SuiClient, id: string) => DenyCap.fetch(client, T0, id),
-      new: (fields: DenyCapFields<ToPhantomTypeArgument<T0>>) => {
-        return new DenyCap([extractType(T0)], fields)
+      fromFields: (fields: Record<string, any>) => DenyCapV2.fromFields(T0, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => DenyCapV2.fromFieldsWithTypes(T0, item),
+      fromBcs: (data: Uint8Array) => DenyCapV2.fromBcs(T0, data),
+      bcs: DenyCapV2.bcs,
+      fromJSONField: (field: any) => DenyCapV2.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => DenyCapV2.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => DenyCapV2.fromSuiParsedData(T0, content),
+      fetch: async (client: SuiClient, id: string) => DenyCapV2.fetch(client, T0, id),
+      new: (fields: DenyCapV2Fields<ToPhantomTypeArgument<T0>>) => {
+        return new DenyCapV2([extractType(T0)], fields)
       },
       kind: 'StructClassReified',
     }
   }
 
   static get r() {
-    return DenyCap.reified
+    return DenyCapV2.reified
   }
 
   static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
-  ): PhantomReified<ToTypeStr<DenyCap<ToPhantomTypeArgument<T0>>>> {
-    return phantom(DenyCap.reified(T0))
+  ): PhantomReified<ToTypeStr<DenyCapV2<ToPhantomTypeArgument<T0>>>> {
+    return phantom(DenyCapV2.reified(T0))
   }
   static get p() {
-    return DenyCap.phantom
+    return DenyCapV2.phantom
   }
 
   static get bcs() {
-    return bcs.struct('DenyCap', {
+    return bcs.struct('DenyCapV2', {
       id: UID.bcs,
+      allow_global_pause: bcs.bool(),
     })
   }
 
   static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     fields: Record<string, any>
-  ): DenyCap<ToPhantomTypeArgument<T0>> {
-    return DenyCap.reified(typeArg).new({ id: decodeFromFields(UID.reified(), fields.id) })
+  ): DenyCapV2<ToPhantomTypeArgument<T0>> {
+    return DenyCapV2.reified(typeArg).new({
+      id: decodeFromFields(UID.reified(), fields.id),
+      allowGlobalPause: decodeFromFields('bool', fields.allow_global_pause),
+    })
   }
 
   static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     item: FieldsWithTypes
-  ): DenyCap<ToPhantomTypeArgument<T0>> {
-    if (!isDenyCap(item.type)) {
-      throw new Error('not a DenyCap type')
+  ): DenyCapV2<ToPhantomTypeArgument<T0>> {
+    if (!isDenyCapV2(item.type)) {
+      throw new Error('not a DenyCapV2 type')
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return DenyCap.reified(typeArg).new({
+    return DenyCapV2.reified(typeArg).new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      allowGlobalPause: decodeFromFieldsWithTypes('bool', item.fields.allow_global_pause),
     })
   }
 
   static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     data: Uint8Array
-  ): DenyCap<ToPhantomTypeArgument<T0>> {
-    return DenyCap.fromFields(typeArg, DenyCap.bcs.parse(data))
+  ): DenyCapV2<ToPhantomTypeArgument<T0>> {
+    return DenyCapV2.fromFields(typeArg, DenyCapV2.bcs.parse(data))
   }
 
   toJSONField() {
     return {
       id: this.id,
+      allowGlobalPause: this.allowGlobalPause,
     }
   }
 
@@ -994,50 +1007,53 @@ export class DenyCap<T0 extends PhantomTypeArgument> implements StructClass {
   static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     field: any
-  ): DenyCap<ToPhantomTypeArgument<T0>> {
-    return DenyCap.reified(typeArg).new({ id: decodeFromJSONField(UID.reified(), field.id) })
+  ): DenyCapV2<ToPhantomTypeArgument<T0>> {
+    return DenyCapV2.reified(typeArg).new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      allowGlobalPause: decodeFromJSONField('bool', field.allowGlobalPause),
+    })
   }
 
   static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     json: Record<string, any>
-  ): DenyCap<ToPhantomTypeArgument<T0>> {
-    if (json.$typeName !== DenyCap.$typeName) {
+  ): DenyCapV2<ToPhantomTypeArgument<T0>> {
+    if (json.$typeName !== DenyCapV2.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(DenyCap.$typeName, extractType(typeArg)),
+      composeSuiType(DenyCapV2.$typeName, extractType(typeArg)),
       json.$typeArgs,
       [typeArg]
     )
 
-    return DenyCap.fromJSONField(typeArg, json)
+    return DenyCapV2.fromJSONField(typeArg, json)
   }
 
   static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T0,
     content: SuiParsedData
-  ): DenyCap<ToPhantomTypeArgument<T0>> {
+  ): DenyCapV2<ToPhantomTypeArgument<T0>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
-    if (!isDenyCap(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a DenyCap object`)
+    if (!isDenyCapV2(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a DenyCapV2 object`)
     }
-    return DenyCap.fromFieldsWithTypes(typeArg, content)
+    return DenyCapV2.fromFieldsWithTypes(typeArg, content)
   }
 
   static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
     id: string
-  ): Promise<DenyCap<ToPhantomTypeArgument<T0>>> {
+  ): Promise<DenyCapV2<ToPhantomTypeArgument<T0>>> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
-      throw new Error(`error fetching DenyCap object at id ${id}: ${res.error.code}`)
+      throw new Error(`error fetching DenyCapV2 object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isDenyCap(res.data.bcs.type)) {
-      throw new Error(`object at id ${id} is not a DenyCap object`)
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isDenyCapV2(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a DenyCapV2 object`)
     }
 
     const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
@@ -1054,7 +1070,7 @@ export class DenyCap<T0 extends PhantomTypeArgument> implements StructClass {
       )
     }
 
-    return DenyCap.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return DenyCapV2.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }
 
@@ -1062,7 +1078,7 @@ export class DenyCap<T0 extends PhantomTypeArgument> implements StructClass {
 
 export function isCurrencyCreated(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::coin::CurrencyCreated` + '<')
+  return type.startsWith(`${PKG_V21}::coin::CurrencyCreated` + '<')
 }
 
 export interface CurrencyCreatedFields<T0 extends PhantomTypeArgument> {
@@ -1075,12 +1091,12 @@ export type CurrencyCreatedReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class CurrencyCreated<T0 extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::coin::CurrencyCreated`
+  static readonly $typeName = `${PKG_V21}::coin::CurrencyCreated`
   static readonly $numTypeParams = 1
 
   readonly $typeName = CurrencyCreated.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::coin::CurrencyCreated<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::coin::CurrencyCreated<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T0>]
 
@@ -1090,7 +1106,7 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> implements StructCl
     this.$fullTypeName = composeSuiType(
       CurrencyCreated.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::coin::CurrencyCreated<${PhantomToTypeStr<T0>}>`
+    ) as `${typeof PKG_V21}::coin::CurrencyCreated<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.decimals = fields.decimals
@@ -1104,7 +1120,7 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> implements StructCl
       fullTypeName: composeSuiType(
         CurrencyCreated.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::coin::CurrencyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V21}::coin::CurrencyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => CurrencyCreated.fromFields(T0, fields),
@@ -1247,5 +1263,190 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> implements StructCl
     }
 
     return CurrencyCreated.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+  }
+}
+
+/* ============================== DenyCap =============================== */
+
+export function isDenyCap(type: string): boolean {
+  type = compressSuiType(type)
+  return type.startsWith(`${PKG_V21}::coin::DenyCap` + '<')
+}
+
+export interface DenyCapFields<T0 extends PhantomTypeArgument> {
+  id: ToField<UID>
+}
+
+export type DenyCapReified<T0 extends PhantomTypeArgument> = Reified<DenyCap<T0>, DenyCapFields<T0>>
+
+export class DenyCap<T0 extends PhantomTypeArgument> implements StructClass {
+  static readonly $typeName = `${PKG_V21}::coin::DenyCap`
+  static readonly $numTypeParams = 1
+
+  readonly $typeName = DenyCap.$typeName
+
+  readonly $fullTypeName: `${typeof PKG_V21}::coin::DenyCap<${PhantomToTypeStr<T0>}>`
+
+  readonly $typeArgs: [PhantomToTypeStr<T0>]
+
+  readonly id: ToField<UID>
+
+  private constructor(typeArgs: [PhantomToTypeStr<T0>], fields: DenyCapFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      DenyCap.$typeName,
+      ...typeArgs
+    ) as `${typeof PKG_V21}::coin::DenyCap<${PhantomToTypeStr<T0>}>`
+    this.$typeArgs = typeArgs
+
+    this.id = fields.id
+  }
+
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): DenyCapReified<ToPhantomTypeArgument<T0>> {
+    return {
+      typeName: DenyCap.$typeName,
+      fullTypeName: composeSuiType(
+        DenyCap.$typeName,
+        ...[extractType(T0)]
+      ) as `${typeof PKG_V21}::coin::DenyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      reifiedTypeArgs: [T0],
+      fromFields: (fields: Record<string, any>) => DenyCap.fromFields(T0, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => DenyCap.fromFieldsWithTypes(T0, item),
+      fromBcs: (data: Uint8Array) => DenyCap.fromBcs(T0, data),
+      bcs: DenyCap.bcs,
+      fromJSONField: (field: any) => DenyCap.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => DenyCap.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => DenyCap.fromSuiParsedData(T0, content),
+      fetch: async (client: SuiClient, id: string) => DenyCap.fetch(client, T0, id),
+      new: (fields: DenyCapFields<ToPhantomTypeArgument<T0>>) => {
+        return new DenyCap([extractType(T0)], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return DenyCap.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<DenyCap<ToPhantomTypeArgument<T0>>>> {
+    return phantom(DenyCap.reified(T0))
+  }
+  static get p() {
+    return DenyCap.phantom
+  }
+
+  static get bcs() {
+    return bcs.struct('DenyCap', {
+      id: UID.bcs,
+    })
+  }
+
+  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): DenyCap<ToPhantomTypeArgument<T0>> {
+    return DenyCap.reified(typeArg).new({ id: decodeFromFields(UID.reified(), fields.id) })
+  }
+
+  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): DenyCap<ToPhantomTypeArgument<T0>> {
+    if (!isDenyCap(item.type)) {
+      throw new Error('not a DenyCap type')
+    }
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
+
+    return DenyCap.reified(typeArg).new({
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+    })
+  }
+
+  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    data: Uint8Array
+  ): DenyCap<ToPhantomTypeArgument<T0>> {
+    return DenyCap.fromFields(typeArg, DenyCap.bcs.parse(data))
+  }
+
+  toJSONField() {
+    return {
+      id: this.id,
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    field: any
+  ): DenyCap<ToPhantomTypeArgument<T0>> {
+    return DenyCap.reified(typeArg).new({ id: decodeFromJSONField(UID.reified(), field.id) })
+  }
+
+  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): DenyCap<ToPhantomTypeArgument<T0>> {
+    if (json.$typeName !== DenyCap.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(DenyCap.$typeName, extractType(typeArg)),
+      json.$typeArgs,
+      [typeArg]
+    )
+
+    return DenyCap.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    content: SuiParsedData
+  ): DenyCap<ToPhantomTypeArgument<T0>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isDenyCap(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a DenyCap object`)
+    }
+    return DenyCap.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
+    client: SuiClient,
+    typeArg: T0,
+    id: string
+  ): Promise<DenyCap<ToPhantomTypeArgument<T0>>> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching DenyCap object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isDenyCap(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a DenyCap object`)
+    }
+
+    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+      )
+    }
+    const gotTypeArg = compressSuiType(gotTypeArgs[0])
+    const expectedTypeArg = compressSuiType(extractType(typeArg))
+    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+      throw new Error(
+        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+      )
+    }
+
+    return DenyCap.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
   }
 }

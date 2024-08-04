@@ -9,13 +9,6 @@ export function new_(tx: Transaction, u64: bigint | TransactionArgument) {
   })
 }
 
-export function length(tx: Transaction, bitVector: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::bit_vector::length`,
-    arguments: [obj(tx, bitVector)],
-  })
-}
-
 export interface SetArgs {
   bitVector: TransactionObjectInput
   u64: bigint | TransactionArgument
@@ -61,6 +54,13 @@ export function isIndexSet(tx: Transaction, args: IsIndexSetArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::bit_vector::is_index_set`,
     arguments: [obj(tx, args.bitVector), pure(tx, args.u64, `u64`)],
+  })
+}
+
+export function length(tx: Transaction, bitVector: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bit_vector::length`,
+    arguments: [obj(tx, bitVector)],
   })
 }
 

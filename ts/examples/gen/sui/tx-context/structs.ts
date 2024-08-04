@@ -13,15 +13,16 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { PKG_V19 } from '../index'
-import { bcs, fromB64, fromHEX, toHEX } from '@mysten/bcs'
+import { PKG_V21 } from '../index'
+import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
 
 /* ============================== TxContext =============================== */
 
 export function isTxContext(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V19}::tx_context::TxContext`
+  return type === `${PKG_V21}::tx_context::TxContext`
 }
 
 export interface TxContextFields {
@@ -35,12 +36,12 @@ export interface TxContextFields {
 export type TxContextReified = Reified<TxContext, TxContextFields>
 
 export class TxContext implements StructClass {
-  static readonly $typeName = `${PKG_V19}::tx_context::TxContext`
+  static readonly $typeName = `${PKG_V21}::tx_context::TxContext`
   static readonly $numTypeParams = 0
 
   readonly $typeName = TxContext.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::tx_context::TxContext`
+  readonly $fullTypeName: `${typeof PKG_V21}::tx_context::TxContext`
 
   readonly $typeArgs: []
 
@@ -54,7 +55,7 @@ export class TxContext implements StructClass {
     this.$fullTypeName = composeSuiType(
       TxContext.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::tx_context::TxContext`
+    ) as `${typeof PKG_V21}::tx_context::TxContext`
     this.$typeArgs = typeArgs
 
     this.sender = fields.sender
@@ -70,7 +71,7 @@ export class TxContext implements StructClass {
       fullTypeName: composeSuiType(
         TxContext.$typeName,
         ...[]
-      ) as `${typeof PKG_V19}::tx_context::TxContext`,
+      ) as `${typeof PKG_V21}::tx_context::TxContext`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => TxContext.fromFields(fields),

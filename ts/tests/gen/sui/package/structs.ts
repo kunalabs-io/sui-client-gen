@@ -14,16 +14,17 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib/ascii/structs'
-import { PKG_V19 } from '../index'
+import { PKG_V21 } from '../index'
 import { ID, UID } from '../object/structs'
-import { bcs, fromB64 } from '@mysten/bcs'
+import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Publisher =============================== */
 
 export function isPublisher(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V19}::package::Publisher`
+  return type === `${PKG_V21}::package::Publisher`
 }
 
 export interface PublisherFields {
@@ -35,12 +36,12 @@ export interface PublisherFields {
 export type PublisherReified = Reified<Publisher, PublisherFields>
 
 export class Publisher implements StructClass {
-  static readonly $typeName = `${PKG_V19}::package::Publisher`
+  static readonly $typeName = `${PKG_V21}::package::Publisher`
   static readonly $numTypeParams = 0
 
   readonly $typeName = Publisher.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::package::Publisher`
+  readonly $fullTypeName: `${typeof PKG_V21}::package::Publisher`
 
   readonly $typeArgs: []
 
@@ -52,7 +53,7 @@ export class Publisher implements StructClass {
     this.$fullTypeName = composeSuiType(
       Publisher.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::package::Publisher`
+    ) as `${typeof PKG_V21}::package::Publisher`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -66,7 +67,7 @@ export class Publisher implements StructClass {
       fullTypeName: composeSuiType(
         Publisher.$typeName,
         ...[]
-      ) as `${typeof PKG_V19}::package::Publisher`,
+      ) as `${typeof PKG_V21}::package::Publisher`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Publisher.fromFields(fields),
@@ -182,7 +183,7 @@ export class Publisher implements StructClass {
 
 export function isUpgradeCap(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V19}::package::UpgradeCap`
+  return type === `${PKG_V21}::package::UpgradeCap`
 }
 
 export interface UpgradeCapFields {
@@ -195,12 +196,12 @@ export interface UpgradeCapFields {
 export type UpgradeCapReified = Reified<UpgradeCap, UpgradeCapFields>
 
 export class UpgradeCap implements StructClass {
-  static readonly $typeName = `${PKG_V19}::package::UpgradeCap`
+  static readonly $typeName = `${PKG_V21}::package::UpgradeCap`
   static readonly $numTypeParams = 0
 
   readonly $typeName = UpgradeCap.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::package::UpgradeCap`
+  readonly $fullTypeName: `${typeof PKG_V21}::package::UpgradeCap`
 
   readonly $typeArgs: []
 
@@ -213,7 +214,7 @@ export class UpgradeCap implements StructClass {
     this.$fullTypeName = composeSuiType(
       UpgradeCap.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::package::UpgradeCap`
+    ) as `${typeof PKG_V21}::package::UpgradeCap`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -228,7 +229,7 @@ export class UpgradeCap implements StructClass {
       fullTypeName: composeSuiType(
         UpgradeCap.$typeName,
         ...[]
-      ) as `${typeof PKG_V19}::package::UpgradeCap`,
+      ) as `${typeof PKG_V21}::package::UpgradeCap`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UpgradeCap.fromFields(fields),
@@ -349,7 +350,7 @@ export class UpgradeCap implements StructClass {
 
 export function isUpgradeReceipt(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V19}::package::UpgradeReceipt`
+  return type === `${PKG_V21}::package::UpgradeReceipt`
 }
 
 export interface UpgradeReceiptFields {
@@ -360,12 +361,12 @@ export interface UpgradeReceiptFields {
 export type UpgradeReceiptReified = Reified<UpgradeReceipt, UpgradeReceiptFields>
 
 export class UpgradeReceipt implements StructClass {
-  static readonly $typeName = `${PKG_V19}::package::UpgradeReceipt`
+  static readonly $typeName = `${PKG_V21}::package::UpgradeReceipt`
   static readonly $numTypeParams = 0
 
   readonly $typeName = UpgradeReceipt.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::package::UpgradeReceipt`
+  readonly $fullTypeName: `${typeof PKG_V21}::package::UpgradeReceipt`
 
   readonly $typeArgs: []
 
@@ -376,7 +377,7 @@ export class UpgradeReceipt implements StructClass {
     this.$fullTypeName = composeSuiType(
       UpgradeReceipt.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::package::UpgradeReceipt`
+    ) as `${typeof PKG_V21}::package::UpgradeReceipt`
     this.$typeArgs = typeArgs
 
     this.cap = fields.cap
@@ -389,7 +390,7 @@ export class UpgradeReceipt implements StructClass {
       fullTypeName: composeSuiType(
         UpgradeReceipt.$typeName,
         ...[]
-      ) as `${typeof PKG_V19}::package::UpgradeReceipt`,
+      ) as `${typeof PKG_V21}::package::UpgradeReceipt`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UpgradeReceipt.fromFields(fields),
@@ -500,7 +501,7 @@ export class UpgradeReceipt implements StructClass {
 
 export function isUpgradeTicket(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V19}::package::UpgradeTicket`
+  return type === `${PKG_V21}::package::UpgradeTicket`
 }
 
 export interface UpgradeTicketFields {
@@ -513,12 +514,12 @@ export interface UpgradeTicketFields {
 export type UpgradeTicketReified = Reified<UpgradeTicket, UpgradeTicketFields>
 
 export class UpgradeTicket implements StructClass {
-  static readonly $typeName = `${PKG_V19}::package::UpgradeTicket`
+  static readonly $typeName = `${PKG_V21}::package::UpgradeTicket`
   static readonly $numTypeParams = 0
 
   readonly $typeName = UpgradeTicket.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::package::UpgradeTicket`
+  readonly $fullTypeName: `${typeof PKG_V21}::package::UpgradeTicket`
 
   readonly $typeArgs: []
 
@@ -531,7 +532,7 @@ export class UpgradeTicket implements StructClass {
     this.$fullTypeName = composeSuiType(
       UpgradeTicket.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::package::UpgradeTicket`
+    ) as `${typeof PKG_V21}::package::UpgradeTicket`
     this.$typeArgs = typeArgs
 
     this.cap = fields.cap
@@ -546,7 +547,7 @@ export class UpgradeTicket implements StructClass {
       fullTypeName: composeSuiType(
         UpgradeTicket.$typeName,
         ...[]
-      ) as `${typeof PKG_V19}::package::UpgradeTicket`,
+      ) as `${typeof PKG_V21}::package::UpgradeTicket`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UpgradeTicket.fromFields(fields),

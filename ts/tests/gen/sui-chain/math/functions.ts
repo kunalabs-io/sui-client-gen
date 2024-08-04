@@ -38,6 +38,18 @@ export function diff(tx: Transaction, args: DiffArgs) {
   })
 }
 
+export interface DivideAndRoundUpArgs {
+  u641: bigint | TransactionArgument
+  u642: bigint | TransactionArgument
+}
+
+export function divideAndRoundUp(tx: Transaction, args: DivideAndRoundUpArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::math::divide_and_round_up`,
+    arguments: [pure(tx, args.u641, `u64`), pure(tx, args.u642, `u64`)],
+  })
+}
+
 export interface PowArgs {
   u64: bigint | TransactionArgument
   u8: number | TransactionArgument
@@ -58,17 +70,5 @@ export function sqrtU128(tx: Transaction, u128: bigint | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::math::sqrt_u128`,
     arguments: [pure(tx, u128, `u128`)],
-  })
-}
-
-export interface DivideAndRoundUpArgs {
-  u641: bigint | TransactionArgument
-  u642: bigint | TransactionArgument
-}
-
-export function divideAndRoundUp(tx: Transaction, args: DivideAndRoundUpArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::math::divide_and_round_up`,
-    arguments: [pure(tx, args.u641, `u64`), pure(tx, args.u642, `u64`)],
   })
 }

@@ -186,22 +186,23 @@ export function createCurrency(tx: Transaction, typeArg: string, args: CreateCur
   })
 }
 
-export interface CreateRegulatedCurrencyArgs {
+export interface CreateRegulatedCurrencyV2Args {
   t0: GenericArg
   u8: number | TransactionArgument
   vecU81: Array<number | TransactionArgument> | TransactionArgument
   vecU82: Array<number | TransactionArgument> | TransactionArgument
   vecU83: Array<number | TransactionArgument> | TransactionArgument
   option: TransactionObjectInput | TransactionArgument | null
+  bool: boolean | TransactionArgument
 }
 
-export function createRegulatedCurrency(
+export function createRegulatedCurrencyV2(
   tx: Transaction,
   typeArg: string,
-  args: CreateRegulatedCurrencyArgs
+  args: CreateRegulatedCurrencyV2Args
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin::create_regulated_currency`,
+    target: `${PUBLISHED_AT}::coin::create_regulated_currency_v2`,
     typeArguments: [typeArg],
     arguments: [
       generic(tx, `${typeArg}`, args.t0),
@@ -210,7 +211,26 @@ export function createRegulatedCurrency(
       pure(tx, args.vecU82, `vector<u8>`),
       pure(tx, args.vecU83, `vector<u8>`),
       option(tx, `${Url.$typeName}`, args.option),
+      pure(tx, args.bool, `bool`),
     ],
+  })
+}
+
+export interface MigrateRegulatedCurrencyToV2Args {
+  denyList: TransactionObjectInput
+  denyCap: TransactionObjectInput
+  bool: boolean | TransactionArgument
+}
+
+export function migrateRegulatedCurrencyToV2(
+  tx: Transaction,
+  typeArg: string,
+  args: MigrateRegulatedCurrencyToV2Args
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin::migrate_regulated_currency_to_v2`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.denyList), obj(tx, args.denyCap), pure(tx, args.bool, `bool`)],
   })
 }
 
@@ -253,44 +273,123 @@ export function burn(tx: Transaction, typeArg: string, args: BurnArgs) {
   })
 }
 
-export interface DenyListAddArgs {
+export interface DenyListV2AddArgs {
   denyList: TransactionObjectInput
-  denyCap: TransactionObjectInput
+  denyCapV2: TransactionObjectInput
   address: string | TransactionArgument
 }
 
-export function denyListAdd(tx: Transaction, typeArg: string, args: DenyListAddArgs) {
+export function denyListV2Add(tx: Transaction, typeArg: string, args: DenyListV2AddArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin::deny_list_add`,
+    target: `${PUBLISHED_AT}::coin::deny_list_v2_add`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.denyList), obj(tx, args.denyCap), pure(tx, args.address, `address`)],
+    arguments: [obj(tx, args.denyList), obj(tx, args.denyCapV2), pure(tx, args.address, `address`)],
   })
 }
 
-export interface DenyListRemoveArgs {
+export interface DenyListV2RemoveArgs {
   denyList: TransactionObjectInput
-  denyCap: TransactionObjectInput
+  denyCapV2: TransactionObjectInput
   address: string | TransactionArgument
 }
 
-export function denyListRemove(tx: Transaction, typeArg: string, args: DenyListRemoveArgs) {
+export function denyListV2Remove(tx: Transaction, typeArg: string, args: DenyListV2RemoveArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin::deny_list_remove`,
+    target: `${PUBLISHED_AT}::coin::deny_list_v2_remove`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.denyList), obj(tx, args.denyCap), pure(tx, args.address, `address`)],
+    arguments: [obj(tx, args.denyList), obj(tx, args.denyCapV2), pure(tx, args.address, `address`)],
   })
 }
 
-export interface DenyListContainsArgs {
+export interface DenyListV2ContainsCurrentEpochArgs {
   denyList: TransactionObjectInput
   address: string | TransactionArgument
 }
 
-export function denyListContains(tx: Transaction, typeArg: string, args: DenyListContainsArgs) {
+export function denyListV2ContainsCurrentEpoch(
+  tx: Transaction,
+  typeArg: string,
+  args: DenyListV2ContainsCurrentEpochArgs
+) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin::deny_list_contains`,
+    target: `${PUBLISHED_AT}::coin::deny_list_v2_contains_current_epoch`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.denyList), pure(tx, args.address, `address`)],
+  })
+}
+
+export interface DenyListV2ContainsNextEpochArgs {
+  denyList: TransactionObjectInput
+  address: string | TransactionArgument
+}
+
+export function denyListV2ContainsNextEpoch(
+  tx: Transaction,
+  typeArg: string,
+  args: DenyListV2ContainsNextEpochArgs
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin::deny_list_v2_contains_next_epoch`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.denyList), pure(tx, args.address, `address`)],
+  })
+}
+
+export interface DenyListV2EnableGlobalPauseArgs {
+  denyList: TransactionObjectInput
+  denyCapV2: TransactionObjectInput
+}
+
+export function denyListV2EnableGlobalPause(
+  tx: Transaction,
+  typeArg: string,
+  args: DenyListV2EnableGlobalPauseArgs
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin::deny_list_v2_enable_global_pause`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.denyList), obj(tx, args.denyCapV2)],
+  })
+}
+
+export interface DenyListV2DisableGlobalPauseArgs {
+  denyList: TransactionObjectInput
+  denyCapV2: TransactionObjectInput
+}
+
+export function denyListV2DisableGlobalPause(
+  tx: Transaction,
+  typeArg: string,
+  args: DenyListV2DisableGlobalPauseArgs
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin::deny_list_v2_disable_global_pause`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.denyList), obj(tx, args.denyCapV2)],
+  })
+}
+
+export function denyListV2IsGlobalPauseEnabledCurrentEpoch(
+  tx: Transaction,
+  typeArg: string,
+  denyList: TransactionObjectInput
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin::deny_list_v2_is_global_pause_enabled_current_epoch`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, denyList)],
+  })
+}
+
+export function denyListV2IsGlobalPauseEnabledNextEpoch(
+  tx: Transaction,
+  typeArg: string,
+  denyList: TransactionObjectInput
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin::deny_list_v2_is_global_pause_enabled_next_epoch`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, denyList)],
   })
 }
 
@@ -437,5 +536,74 @@ export function supply(tx: Transaction, typeArg: string, treasuryCap: Transactio
     target: `${PUBLISHED_AT}::coin::supply`,
     typeArguments: [typeArg],
     arguments: [obj(tx, treasuryCap)],
+  })
+}
+
+export interface CreateRegulatedCurrencyArgs {
+  t0: GenericArg
+  u8: number | TransactionArgument
+  vecU81: Array<number | TransactionArgument> | TransactionArgument
+  vecU82: Array<number | TransactionArgument> | TransactionArgument
+  vecU83: Array<number | TransactionArgument> | TransactionArgument
+  option: TransactionObjectInput | TransactionArgument | null
+}
+
+export function createRegulatedCurrency(
+  tx: Transaction,
+  typeArg: string,
+  args: CreateRegulatedCurrencyArgs
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin::create_regulated_currency`,
+    typeArguments: [typeArg],
+    arguments: [
+      generic(tx, `${typeArg}`, args.t0),
+      pure(tx, args.u8, `u8`),
+      pure(tx, args.vecU81, `vector<u8>`),
+      pure(tx, args.vecU82, `vector<u8>`),
+      pure(tx, args.vecU83, `vector<u8>`),
+      option(tx, `${Url.$typeName}`, args.option),
+    ],
+  })
+}
+
+export interface DenyListAddArgs {
+  denyList: TransactionObjectInput
+  denyCap: TransactionObjectInput
+  address: string | TransactionArgument
+}
+
+export function denyListAdd(tx: Transaction, typeArg: string, args: DenyListAddArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin::deny_list_add`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.denyList), obj(tx, args.denyCap), pure(tx, args.address, `address`)],
+  })
+}
+
+export interface DenyListRemoveArgs {
+  denyList: TransactionObjectInput
+  denyCap: TransactionObjectInput
+  address: string | TransactionArgument
+}
+
+export function denyListRemove(tx: Transaction, typeArg: string, args: DenyListRemoveArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin::deny_list_remove`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.denyList), obj(tx, args.denyCap), pure(tx, args.address, `address`)],
+  })
+}
+
+export interface DenyListContainsArgs {
+  denyList: TransactionObjectInput
+  address: string | TransactionArgument
+}
+
+export function denyListContains(tx: Transaction, typeArg: string, args: DenyListContainsArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin::deny_list_contains`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.denyList), pure(tx, args.address, `address`)],
   })
 }

@@ -72,6 +72,37 @@ export function insert(tx: Transaction, args: InsertArgs) {
   })
 }
 
+export interface SubstringArgs {
+  string: string | TransactionArgument
+  u641: bigint | TransactionArgument
+  u642: bigint | TransactionArgument
+}
+
+export function substring(tx: Transaction, args: SubstringArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::string::substring`,
+    arguments: [
+      pure(tx, args.string, `${String.$typeName}`),
+      pure(tx, args.u641, `u64`),
+      pure(tx, args.u642, `u64`),
+    ],
+  })
+}
+
+export function asBytes(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::string::as_bytes`,
+    arguments: [pure(tx, string, `${String.$typeName}`)],
+  })
+}
+
+export function intoBytes(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::string::into_bytes`,
+    arguments: [pure(tx, string, `${String.$typeName}`)],
+  })
+}
+
 export function utf8(
   tx: Transaction,
   vecU8: Array<number | TransactionArgument> | TransactionArgument
@@ -115,23 +146,6 @@ export function appendUtf8(tx: Transaction, args: AppendUtf8Args) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::append_utf8`,
     arguments: [pure(tx, args.string, `${String.$typeName}`), pure(tx, args.vecU8, `vector<u8>`)],
-  })
-}
-
-export interface SubStringArgs {
-  string: string | TransactionArgument
-  u641: bigint | TransactionArgument
-  u642: bigint | TransactionArgument
-}
-
-export function subString(tx: Transaction, args: SubStringArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::string::sub_string`,
-    arguments: [
-      pure(tx, args.string, `${String.$typeName}`),
-      pure(tx, args.u641, `u64`),
-      pure(tx, args.u642, `u64`),
-    ],
   })
 }
 
@@ -183,5 +197,22 @@ export function internalIndexOf(tx: Transaction, args: InternalIndexOfArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::internal_index_of`,
     arguments: [pure(tx, args.vecU81, `vector<u8>`), pure(tx, args.vecU82, `vector<u8>`)],
+  })
+}
+
+export interface SubStringArgs {
+  string: string | TransactionArgument
+  u641: bigint | TransactionArgument
+  u642: bigint | TransactionArgument
+}
+
+export function subString(tx: Transaction, args: SubStringArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::string::sub_string`,
+    arguments: [
+      pure(tx, args.string, `${String.$typeName}`),
+      pure(tx, args.u641, `u64`),
+      pure(tx, args.u642, `u64`),
+    ],
   })
 }

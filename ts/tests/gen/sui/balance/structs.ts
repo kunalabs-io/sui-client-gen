@@ -21,15 +21,16 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { PKG_V19 } from '../index'
-import { bcs, fromB64 } from '@mysten/bcs'
+import { PKG_V21 } from '../index'
+import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Balance =============================== */
 
 export function isBalance(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::balance::Balance` + '<')
+  return type.startsWith(`${PKG_V21}::balance::Balance` + '<')
 }
 
 export interface BalanceFields<T extends PhantomTypeArgument> {
@@ -39,12 +40,12 @@ export interface BalanceFields<T extends PhantomTypeArgument> {
 export type BalanceReified<T extends PhantomTypeArgument> = Reified<Balance<T>, BalanceFields<T>>
 
 export class Balance<T extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::balance::Balance`
+  static readonly $typeName = `${PKG_V21}::balance::Balance`
   static readonly $numTypeParams = 1
 
   readonly $typeName = Balance.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::balance::Balance<${PhantomToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::balance::Balance<${PhantomToTypeStr<T>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T>]
 
@@ -54,7 +55,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Balance.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::balance::Balance<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V21}::balance::Balance<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.value = fields.value
@@ -68,7 +69,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Balance.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V19}::balance::Balance<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V21}::balance::Balance<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Balance.fromFields(T, fields),
@@ -214,7 +215,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
 
 export function isSupply(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::balance::Supply` + '<')
+  return type.startsWith(`${PKG_V21}::balance::Supply` + '<')
 }
 
 export interface SupplyFields<T extends PhantomTypeArgument> {
@@ -224,12 +225,12 @@ export interface SupplyFields<T extends PhantomTypeArgument> {
 export type SupplyReified<T extends PhantomTypeArgument> = Reified<Supply<T>, SupplyFields<T>>
 
 export class Supply<T extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::balance::Supply`
+  static readonly $typeName = `${PKG_V21}::balance::Supply`
   static readonly $numTypeParams = 1
 
   readonly $typeName = Supply.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::balance::Supply<${PhantomToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::balance::Supply<${PhantomToTypeStr<T>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T>]
 
@@ -239,7 +240,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Supply.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::balance::Supply<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V21}::balance::Supply<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.value = fields.value
@@ -253,7 +254,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Supply.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V19}::balance::Supply<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V21}::balance::Supply<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Supply.fromFields(T, fields),

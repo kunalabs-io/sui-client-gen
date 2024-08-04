@@ -10,16 +10,17 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { PKG_V19 } from '../index'
+import { PKG_V21 } from '../index'
 import { UID } from '../object/structs'
-import { bcs, fromB64 } from '@mysten/bcs'
+import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== ObjectBag =============================== */
 
 export function isObjectBag(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V19}::object_bag::ObjectBag`
+  return type === `${PKG_V21}::object_bag::ObjectBag`
 }
 
 export interface ObjectBagFields {
@@ -30,12 +31,12 @@ export interface ObjectBagFields {
 export type ObjectBagReified = Reified<ObjectBag, ObjectBagFields>
 
 export class ObjectBag implements StructClass {
-  static readonly $typeName = `${PKG_V19}::object_bag::ObjectBag`
+  static readonly $typeName = `${PKG_V21}::object_bag::ObjectBag`
   static readonly $numTypeParams = 0
 
   readonly $typeName = ObjectBag.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::object_bag::ObjectBag`
+  readonly $fullTypeName: `${typeof PKG_V21}::object_bag::ObjectBag`
 
   readonly $typeArgs: []
 
@@ -46,7 +47,7 @@ export class ObjectBag implements StructClass {
     this.$fullTypeName = composeSuiType(
       ObjectBag.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::object_bag::ObjectBag`
+    ) as `${typeof PKG_V21}::object_bag::ObjectBag`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -59,7 +60,7 @@ export class ObjectBag implements StructClass {
       fullTypeName: composeSuiType(
         ObjectBag.$typeName,
         ...[]
-      ) as `${typeof PKG_V19}::object_bag::ObjectBag`,
+      ) as `${typeof PKG_V21}::object_bag::ObjectBag`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ObjectBag.fromFields(fields),

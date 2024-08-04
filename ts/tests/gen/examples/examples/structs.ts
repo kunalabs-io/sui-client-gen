@@ -18,8 +18,9 @@ import { Option } from '../../move-stdlib/option/structs'
 import { String as String1 } from '../../move-stdlib/string/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { PKG_V1 } from '../index'
-import { bcs, fromB64, fromHEX, toHEX } from '@mysten/bcs'
+import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
 
 /* ============================== ExampleStruct =============================== */
 

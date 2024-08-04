@@ -24,17 +24,18 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Balance } from '../balance/structs'
-import { PKG_V19 } from '../index'
+import { PKG_V21 } from '../index'
 import { ID, UID } from '../object/structs'
 import { SUI } from '../sui/structs'
-import { bcs, fromB64, fromHEX, toHEX } from '@mysten/bcs'
+import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
 
 /* ============================== Borrow =============================== */
 
 export function isBorrow(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V19}::kiosk::Borrow`
+  return type === `${PKG_V21}::kiosk::Borrow`
 }
 
 export interface BorrowFields {
@@ -45,12 +46,12 @@ export interface BorrowFields {
 export type BorrowReified = Reified<Borrow, BorrowFields>
 
 export class Borrow implements StructClass {
-  static readonly $typeName = `${PKG_V19}::kiosk::Borrow`
+  static readonly $typeName = `${PKG_V21}::kiosk::Borrow`
   static readonly $numTypeParams = 0
 
   readonly $typeName = Borrow.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::kiosk::Borrow`
+  readonly $fullTypeName: `${typeof PKG_V21}::kiosk::Borrow`
 
   readonly $typeArgs: []
 
@@ -61,7 +62,7 @@ export class Borrow implements StructClass {
     this.$fullTypeName = composeSuiType(
       Borrow.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::kiosk::Borrow`
+    ) as `${typeof PKG_V21}::kiosk::Borrow`
     this.$typeArgs = typeArgs
 
     this.kioskId = fields.kioskId
@@ -71,7 +72,7 @@ export class Borrow implements StructClass {
   static reified(): BorrowReified {
     return {
       typeName: Borrow.$typeName,
-      fullTypeName: composeSuiType(Borrow.$typeName, ...[]) as `${typeof PKG_V19}::kiosk::Borrow`,
+      fullTypeName: composeSuiType(Borrow.$typeName, ...[]) as `${typeof PKG_V21}::kiosk::Borrow`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Borrow.fromFields(fields),
@@ -182,7 +183,7 @@ export class Borrow implements StructClass {
 
 export function isKiosk(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V19}::kiosk::Kiosk`
+  return type === `${PKG_V21}::kiosk::Kiosk`
 }
 
 export interface KioskFields {
@@ -196,12 +197,12 @@ export interface KioskFields {
 export type KioskReified = Reified<Kiosk, KioskFields>
 
 export class Kiosk implements StructClass {
-  static readonly $typeName = `${PKG_V19}::kiosk::Kiosk`
+  static readonly $typeName = `${PKG_V21}::kiosk::Kiosk`
   static readonly $numTypeParams = 0
 
   readonly $typeName = Kiosk.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::kiosk::Kiosk`
+  readonly $fullTypeName: `${typeof PKG_V21}::kiosk::Kiosk`
 
   readonly $typeArgs: []
 
@@ -215,7 +216,7 @@ export class Kiosk implements StructClass {
     this.$fullTypeName = composeSuiType(
       Kiosk.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::kiosk::Kiosk`
+    ) as `${typeof PKG_V21}::kiosk::Kiosk`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -228,7 +229,7 @@ export class Kiosk implements StructClass {
   static reified(): KioskReified {
     return {
       typeName: Kiosk.$typeName,
-      fullTypeName: composeSuiType(Kiosk.$typeName, ...[]) as `${typeof PKG_V19}::kiosk::Kiosk`,
+      fullTypeName: composeSuiType(Kiosk.$typeName, ...[]) as `${typeof PKG_V21}::kiosk::Kiosk`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Kiosk.fromFields(fields),
@@ -360,7 +361,7 @@ export class Kiosk implements StructClass {
 
 export function isKioskOwnerCap(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V19}::kiosk::KioskOwnerCap`
+  return type === `${PKG_V21}::kiosk::KioskOwnerCap`
 }
 
 export interface KioskOwnerCapFields {
@@ -371,12 +372,12 @@ export interface KioskOwnerCapFields {
 export type KioskOwnerCapReified = Reified<KioskOwnerCap, KioskOwnerCapFields>
 
 export class KioskOwnerCap implements StructClass {
-  static readonly $typeName = `${PKG_V19}::kiosk::KioskOwnerCap`
+  static readonly $typeName = `${PKG_V21}::kiosk::KioskOwnerCap`
   static readonly $numTypeParams = 0
 
   readonly $typeName = KioskOwnerCap.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::kiosk::KioskOwnerCap`
+  readonly $fullTypeName: `${typeof PKG_V21}::kiosk::KioskOwnerCap`
 
   readonly $typeArgs: []
 
@@ -387,7 +388,7 @@ export class KioskOwnerCap implements StructClass {
     this.$fullTypeName = composeSuiType(
       KioskOwnerCap.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::kiosk::KioskOwnerCap`
+    ) as `${typeof PKG_V21}::kiosk::KioskOwnerCap`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -400,7 +401,7 @@ export class KioskOwnerCap implements StructClass {
       fullTypeName: composeSuiType(
         KioskOwnerCap.$typeName,
         ...[]
-      ) as `${typeof PKG_V19}::kiosk::KioskOwnerCap`,
+      ) as `${typeof PKG_V21}::kiosk::KioskOwnerCap`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => KioskOwnerCap.fromFields(fields),
@@ -511,7 +512,7 @@ export class KioskOwnerCap implements StructClass {
 
 export function isPurchaseCap(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::kiosk::PurchaseCap` + '<')
+  return type.startsWith(`${PKG_V21}::kiosk::PurchaseCap` + '<')
 }
 
 export interface PurchaseCapFields<T0 extends PhantomTypeArgument> {
@@ -527,12 +528,12 @@ export type PurchaseCapReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class PurchaseCap<T0 extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::kiosk::PurchaseCap`
+  static readonly $typeName = `${PKG_V21}::kiosk::PurchaseCap`
   static readonly $numTypeParams = 1
 
   readonly $typeName = PurchaseCap.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::kiosk::PurchaseCap<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::kiosk::PurchaseCap<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T0>]
 
@@ -545,7 +546,7 @@ export class PurchaseCap<T0 extends PhantomTypeArgument> implements StructClass 
     this.$fullTypeName = composeSuiType(
       PurchaseCap.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::kiosk::PurchaseCap<${PhantomToTypeStr<T0>}>`
+    ) as `${typeof PKG_V21}::kiosk::PurchaseCap<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -562,7 +563,7 @@ export class PurchaseCap<T0 extends PhantomTypeArgument> implements StructClass 
       fullTypeName: composeSuiType(
         PurchaseCap.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::kiosk::PurchaseCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V21}::kiosk::PurchaseCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => PurchaseCap.fromFields(T0, fields),
@@ -727,7 +728,7 @@ export class PurchaseCap<T0 extends PhantomTypeArgument> implements StructClass 
 
 export function isItem(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V19}::kiosk::Item`
+  return type === `${PKG_V21}::kiosk::Item`
 }
 
 export interface ItemFields {
@@ -737,12 +738,12 @@ export interface ItemFields {
 export type ItemReified = Reified<Item, ItemFields>
 
 export class Item implements StructClass {
-  static readonly $typeName = `${PKG_V19}::kiosk::Item`
+  static readonly $typeName = `${PKG_V21}::kiosk::Item`
   static readonly $numTypeParams = 0
 
   readonly $typeName = Item.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::kiosk::Item`
+  readonly $fullTypeName: `${typeof PKG_V21}::kiosk::Item`
 
   readonly $typeArgs: []
 
@@ -752,7 +753,7 @@ export class Item implements StructClass {
     this.$fullTypeName = composeSuiType(
       Item.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::kiosk::Item`
+    ) as `${typeof PKG_V21}::kiosk::Item`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -761,7 +762,7 @@ export class Item implements StructClass {
   static reified(): ItemReified {
     return {
       typeName: Item.$typeName,
-      fullTypeName: composeSuiType(Item.$typeName, ...[]) as `${typeof PKG_V19}::kiosk::Item`,
+      fullTypeName: composeSuiType(Item.$typeName, ...[]) as `${typeof PKG_V21}::kiosk::Item`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Item.fromFields(fields),
@@ -861,7 +862,7 @@ export class Item implements StructClass {
 
 export function isListing(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V19}::kiosk::Listing`
+  return type === `${PKG_V21}::kiosk::Listing`
 }
 
 export interface ListingFields {
@@ -872,12 +873,12 @@ export interface ListingFields {
 export type ListingReified = Reified<Listing, ListingFields>
 
 export class Listing implements StructClass {
-  static readonly $typeName = `${PKG_V19}::kiosk::Listing`
+  static readonly $typeName = `${PKG_V21}::kiosk::Listing`
   static readonly $numTypeParams = 0
 
   readonly $typeName = Listing.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::kiosk::Listing`
+  readonly $fullTypeName: `${typeof PKG_V21}::kiosk::Listing`
 
   readonly $typeArgs: []
 
@@ -888,7 +889,7 @@ export class Listing implements StructClass {
     this.$fullTypeName = composeSuiType(
       Listing.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::kiosk::Listing`
+    ) as `${typeof PKG_V21}::kiosk::Listing`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -898,7 +899,7 @@ export class Listing implements StructClass {
   static reified(): ListingReified {
     return {
       typeName: Listing.$typeName,
-      fullTypeName: composeSuiType(Listing.$typeName, ...[]) as `${typeof PKG_V19}::kiosk::Listing`,
+      fullTypeName: composeSuiType(Listing.$typeName, ...[]) as `${typeof PKG_V21}::kiosk::Listing`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Listing.fromFields(fields),
@@ -1009,7 +1010,7 @@ export class Listing implements StructClass {
 
 export function isLock(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V19}::kiosk::Lock`
+  return type === `${PKG_V21}::kiosk::Lock`
 }
 
 export interface LockFields {
@@ -1019,12 +1020,12 @@ export interface LockFields {
 export type LockReified = Reified<Lock, LockFields>
 
 export class Lock implements StructClass {
-  static readonly $typeName = `${PKG_V19}::kiosk::Lock`
+  static readonly $typeName = `${PKG_V21}::kiosk::Lock`
   static readonly $numTypeParams = 0
 
   readonly $typeName = Lock.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::kiosk::Lock`
+  readonly $fullTypeName: `${typeof PKG_V21}::kiosk::Lock`
 
   readonly $typeArgs: []
 
@@ -1034,7 +1035,7 @@ export class Lock implements StructClass {
     this.$fullTypeName = composeSuiType(
       Lock.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::kiosk::Lock`
+    ) as `${typeof PKG_V21}::kiosk::Lock`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -1043,7 +1044,7 @@ export class Lock implements StructClass {
   static reified(): LockReified {
     return {
       typeName: Lock.$typeName,
-      fullTypeName: composeSuiType(Lock.$typeName, ...[]) as `${typeof PKG_V19}::kiosk::Lock`,
+      fullTypeName: composeSuiType(Lock.$typeName, ...[]) as `${typeof PKG_V21}::kiosk::Lock`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Lock.fromFields(fields),
@@ -1143,7 +1144,7 @@ export class Lock implements StructClass {
 
 export function isItemListed(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::kiosk::ItemListed` + '<')
+  return type.startsWith(`${PKG_V21}::kiosk::ItemListed` + '<')
 }
 
 export interface ItemListedFields<T0 extends PhantomTypeArgument> {
@@ -1158,12 +1159,12 @@ export type ItemListedReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class ItemListed<T0 extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::kiosk::ItemListed`
+  static readonly $typeName = `${PKG_V21}::kiosk::ItemListed`
   static readonly $numTypeParams = 1
 
   readonly $typeName = ItemListed.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::kiosk::ItemListed<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::kiosk::ItemListed<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T0>]
 
@@ -1175,7 +1176,7 @@ export class ItemListed<T0 extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       ItemListed.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::kiosk::ItemListed<${PhantomToTypeStr<T0>}>`
+    ) as `${typeof PKG_V21}::kiosk::ItemListed<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.kiosk = fields.kiosk
@@ -1191,7 +1192,7 @@ export class ItemListed<T0 extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         ItemListed.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::kiosk::ItemListed<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V21}::kiosk::ItemListed<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => ItemListed.fromFields(T0, fields),
@@ -1351,7 +1352,7 @@ export class ItemListed<T0 extends PhantomTypeArgument> implements StructClass {
 
 export function isItemPurchased(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::kiosk::ItemPurchased` + '<')
+  return type.startsWith(`${PKG_V21}::kiosk::ItemPurchased` + '<')
 }
 
 export interface ItemPurchasedFields<T0 extends PhantomTypeArgument> {
@@ -1366,12 +1367,12 @@ export type ItemPurchasedReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class ItemPurchased<T0 extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::kiosk::ItemPurchased`
+  static readonly $typeName = `${PKG_V21}::kiosk::ItemPurchased`
   static readonly $numTypeParams = 1
 
   readonly $typeName = ItemPurchased.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::kiosk::ItemPurchased<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::kiosk::ItemPurchased<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T0>]
 
@@ -1383,7 +1384,7 @@ export class ItemPurchased<T0 extends PhantomTypeArgument> implements StructClas
     this.$fullTypeName = composeSuiType(
       ItemPurchased.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::kiosk::ItemPurchased<${PhantomToTypeStr<T0>}>`
+    ) as `${typeof PKG_V21}::kiosk::ItemPurchased<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.kiosk = fields.kiosk
@@ -1399,7 +1400,7 @@ export class ItemPurchased<T0 extends PhantomTypeArgument> implements StructClas
       fullTypeName: composeSuiType(
         ItemPurchased.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::kiosk::ItemPurchased<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V21}::kiosk::ItemPurchased<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => ItemPurchased.fromFields(T0, fields),
@@ -1559,7 +1560,7 @@ export class ItemPurchased<T0 extends PhantomTypeArgument> implements StructClas
 
 export function isItemDelisted(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::kiosk::ItemDelisted` + '<')
+  return type.startsWith(`${PKG_V21}::kiosk::ItemDelisted` + '<')
 }
 
 export interface ItemDelistedFields<T0 extends PhantomTypeArgument> {
@@ -1573,12 +1574,12 @@ export type ItemDelistedReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class ItemDelisted<T0 extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::kiosk::ItemDelisted`
+  static readonly $typeName = `${PKG_V21}::kiosk::ItemDelisted`
   static readonly $numTypeParams = 1
 
   readonly $typeName = ItemDelisted.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::kiosk::ItemDelisted<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::kiosk::ItemDelisted<${PhantomToTypeStr<T0>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T0>]
 
@@ -1589,7 +1590,7 @@ export class ItemDelisted<T0 extends PhantomTypeArgument> implements StructClass
     this.$fullTypeName = composeSuiType(
       ItemDelisted.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::kiosk::ItemDelisted<${PhantomToTypeStr<T0>}>`
+    ) as `${typeof PKG_V21}::kiosk::ItemDelisted<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.kiosk = fields.kiosk
@@ -1604,7 +1605,7 @@ export class ItemDelisted<T0 extends PhantomTypeArgument> implements StructClass
       fullTypeName: composeSuiType(
         ItemDelisted.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::kiosk::ItemDelisted<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V21}::kiosk::ItemDelisted<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => ItemDelisted.fromFields(T0, fields),

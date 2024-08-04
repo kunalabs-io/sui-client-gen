@@ -2,19 +2,19 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function empty(tx: Transaction, typeArg: string) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::empty`,
-    typeArguments: [typeArg],
-    arguments: [],
-  })
-}
-
 export function length(tx: Transaction, typeArg: string, tableVec: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::table_vec::length`,
     typeArguments: [typeArg],
     arguments: [obj(tx, tableVec)],
+  })
+}
+
+export function empty(tx: Transaction, typeArg: string) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::table_vec::empty`,
+    typeArguments: [typeArg],
+    arguments: [],
   })
 }
 

@@ -72,6 +72,24 @@ export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs) 
   })
 }
 
+export interface InternalAddArgs {
+  uid: TransactionObjectInput
+  t0: GenericArg
+  t1: GenericArg
+}
+
+export function internalAdd(tx: Transaction, typeArgs: [string, string], args: InternalAddArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::dynamic_object_field::internal_add`,
+    typeArguments: typeArgs,
+    arguments: [
+      obj(tx, args.uid),
+      generic(tx, `${typeArgs[0]}`, args.t0),
+      generic(tx, `${typeArgs[1]}`, args.t1),
+    ],
+  })
+}
+
 export interface Exists_Args {
   uid: TransactionObjectInput
   t0: GenericArg
@@ -97,6 +115,74 @@ export function existsWithType(
 ) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::dynamic_object_field::exists_with_type`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.uid), generic(tx, `${typeArgs[0]}`, args.t0)],
+  })
+}
+
+export interface InternalBorrowArgs {
+  uid: TransactionObjectInput
+  t0: GenericArg
+}
+
+export function internalBorrow(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: InternalBorrowArgs
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::dynamic_object_field::internal_borrow`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.uid), generic(tx, `${typeArgs[0]}`, args.t0)],
+  })
+}
+
+export interface InternalBorrowMutArgs {
+  uid: TransactionObjectInput
+  t0: GenericArg
+}
+
+export function internalBorrowMut(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: InternalBorrowMutArgs
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::dynamic_object_field::internal_borrow_mut`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.uid), generic(tx, `${typeArgs[0]}`, args.t0)],
+  })
+}
+
+export interface InternalRemoveArgs {
+  uid: TransactionObjectInput
+  t0: GenericArg
+}
+
+export function internalRemove(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: InternalRemoveArgs
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::dynamic_object_field::internal_remove`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.uid), generic(tx, `${typeArgs[0]}`, args.t0)],
+  })
+}
+
+export interface InternalExistsWithTypeArgs {
+  uid: TransactionObjectInput
+  t0: GenericArg
+}
+
+export function internalExistsWithType(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: InternalExistsWithTypeArgs
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::dynamic_object_field::internal_exists_with_type`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.uid), generic(tx, `${typeArgs[0]}`, args.t0)],
   })

@@ -37,8 +37,9 @@ import { SUI } from '../../sui-chain/sui/structs'
 import { Url } from '../../sui-chain/url/structs'
 import { PKG_V1 } from '../index'
 import { StructFromOtherModule } from '../other-module/structs'
-import { BcsType, bcs, fromB64 } from '@mysten/bcs'
+import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Dummy =============================== */
 

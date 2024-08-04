@@ -24,15 +24,16 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { PKG_V19 } from '../index'
-import { BcsType, bcs, fromB64 } from '@mysten/bcs'
+import { PKG_V21 } from '../index'
+import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== VecSet =============================== */
 
 export function isVecSet(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::vec_set::VecSet` + '<')
+  return type.startsWith(`${PKG_V21}::vec_set::VecSet` + '<')
 }
 
 export interface VecSetFields<K extends TypeArgument> {
@@ -42,12 +43,12 @@ export interface VecSetFields<K extends TypeArgument> {
 export type VecSetReified<K extends TypeArgument> = Reified<VecSet<K>, VecSetFields<K>>
 
 export class VecSet<K extends TypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::vec_set::VecSet`
+  static readonly $typeName = `${PKG_V21}::vec_set::VecSet`
   static readonly $numTypeParams = 1
 
   readonly $typeName = VecSet.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::vec_set::VecSet<${ToTypeStr<K>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::vec_set::VecSet<${ToTypeStr<K>}>`
 
   readonly $typeArgs: [ToTypeStr<K>]
 
@@ -57,7 +58,7 @@ export class VecSet<K extends TypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       VecSet.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::vec_set::VecSet<${ToTypeStr<K>}>`
+    ) as `${typeof PKG_V21}::vec_set::VecSet<${ToTypeStr<K>}>`
     this.$typeArgs = typeArgs
 
     this.contents = fields.contents
@@ -69,7 +70,7 @@ export class VecSet<K extends TypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         VecSet.$typeName,
         ...[extractType(K)]
-      ) as `${typeof PKG_V19}::vec_set::VecSet<${ToTypeStr<ToTypeArgument<K>>}>`,
+      ) as `${typeof PKG_V21}::vec_set::VecSet<${ToTypeStr<ToTypeArgument<K>>}>`,
       typeArgs: [extractType(K)] as [ToTypeStr<ToTypeArgument<K>>],
       reifiedTypeArgs: [K],
       fromFields: (fields: Record<string, any>) => VecSet.fromFields(K, fields),

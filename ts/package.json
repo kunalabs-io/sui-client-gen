@@ -29,7 +29,6 @@
     "vitest": "^2.0.5"
   },
   "dependencies": {
-    "@mysten/bcs": "^1.0.3",
     "@mysten/sui": "^1.4.0",
     "commander": "^12.1.0",
     "tsup": "^8.2.4"

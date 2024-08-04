@@ -22,15 +22,16 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Bag } from '../bag/structs'
-import { PKG_V19 } from '../index'
-import { bcs, fromB64 } from '@mysten/bcs'
+import { PKG_V21 } from '../index'
+import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Extension =============================== */
 
 export function isExtension(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V19}::kiosk_extension::Extension`
+  return type === `${PKG_V21}::kiosk_extension::Extension`
 }
 
 export interface ExtensionFields {
@@ -42,12 +43,12 @@ export interface ExtensionFields {
 export type ExtensionReified = Reified<Extension, ExtensionFields>
 
 export class Extension implements StructClass {
-  static readonly $typeName = `${PKG_V19}::kiosk_extension::Extension`
+  static readonly $typeName = `${PKG_V21}::kiosk_extension::Extension`
   static readonly $numTypeParams = 0
 
   readonly $typeName = Extension.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::kiosk_extension::Extension`
+  readonly $fullTypeName: `${typeof PKG_V21}::kiosk_extension::Extension`
 
   readonly $typeArgs: []
 
@@ -59,7 +60,7 @@ export class Extension implements StructClass {
     this.$fullTypeName = composeSuiType(
       Extension.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::kiosk_extension::Extension`
+    ) as `${typeof PKG_V21}::kiosk_extension::Extension`
     this.$typeArgs = typeArgs
 
     this.storage = fields.storage
@@ -73,7 +74,7 @@ export class Extension implements StructClass {
       fullTypeName: composeSuiType(
         Extension.$typeName,
         ...[]
-      ) as `${typeof PKG_V19}::kiosk_extension::Extension`,
+      ) as `${typeof PKG_V21}::kiosk_extension::Extension`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Extension.fromFields(fields),
@@ -189,7 +190,7 @@ export class Extension implements StructClass {
 
 export function isExtensionKey(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::kiosk_extension::ExtensionKey` + '<')
+  return type.startsWith(`${PKG_V21}::kiosk_extension::ExtensionKey` + '<')
 }
 
 export interface ExtensionKeyFields<Ext extends PhantomTypeArgument> {
@@ -202,12 +203,12 @@ export type ExtensionKeyReified<Ext extends PhantomTypeArgument> = Reified<
 >
 
 export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::kiosk_extension::ExtensionKey`
+  static readonly $typeName = `${PKG_V21}::kiosk_extension::ExtensionKey`
   static readonly $numTypeParams = 1
 
   readonly $typeName = ExtensionKey.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::kiosk_extension::ExtensionKey<${PhantomToTypeStr<Ext>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::kiosk_extension::ExtensionKey<${PhantomToTypeStr<Ext>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<Ext>]
 
@@ -217,7 +218,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
     this.$fullTypeName = composeSuiType(
       ExtensionKey.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::kiosk_extension::ExtensionKey<${PhantomToTypeStr<Ext>}>`
+    ) as `${typeof PKG_V21}::kiosk_extension::ExtensionKey<${PhantomToTypeStr<Ext>}>`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -231,7 +232,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
       fullTypeName: composeSuiType(
         ExtensionKey.$typeName,
         ...[extractType(Ext)]
-      ) as `${typeof PKG_V19}::kiosk_extension::ExtensionKey<${PhantomToTypeStr<ToPhantomTypeArgument<Ext>>}>`,
+      ) as `${typeof PKG_V21}::kiosk_extension::ExtensionKey<${PhantomToTypeStr<ToPhantomTypeArgument<Ext>>}>`,
       typeArgs: [extractType(Ext)] as [PhantomToTypeStr<ToPhantomTypeArgument<Ext>>],
       reifiedTypeArgs: [Ext],
       fromFields: (fields: Record<string, any>) => ExtensionKey.fromFields(Ext, fields),

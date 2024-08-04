@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@mysten/bcs':
-        specifier: ^1.0.3
-        version: 1.0.3
       '@mysten/sui':
         specifier: ^1.4.0
         version: 1.4.0(typescript@5.5.4)

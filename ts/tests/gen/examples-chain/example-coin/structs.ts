@@ -15,8 +15,9 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framewo
 import { TreasuryCap } from '../../sui-chain/coin/structs'
 import { UID } from '../../sui-chain/object/structs'
 import { PKG_V1 } from '../index'
-import { bcs, fromB64 } from '@mysten/bcs'
+import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== EXAMPLE_COIN =============================== */
 

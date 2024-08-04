@@ -2,14 +2,6 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, pure, vector } from '../../_framework/util'
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
-export function empty(tx: Transaction, typeArg: string) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vector::empty`,
-    typeArguments: [typeArg],
-    arguments: [],
-  })
-}
-
 export function length(
   tx: Transaction,
   typeArg: string,
@@ -19,6 +11,14 @@ export function length(
     target: `${PUBLISHED_AT}::vector::length`,
     typeArguments: [typeArg],
     arguments: [vector(tx, `${typeArg}`, vecT0)],
+  })
+}
+
+export function empty(tx: Transaction, typeArg: string) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vector::empty`,
+    typeArguments: [typeArg],
+    arguments: [],
   })
 }
 

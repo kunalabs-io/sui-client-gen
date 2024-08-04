@@ -13,15 +13,16 @@ import {
   phantom,
 } from '../../../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
-import { PKG_V6 } from '../index'
-import { bcs, fromB64 } from '@mysten/bcs'
+import { PKG_V8 } from '../index'
+import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== String =============================== */
 
 export function isString(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V6}::string::String`
+  return type === `${PKG_V8}::string::String`
 }
 
 export interface StringFields {
@@ -31,12 +32,12 @@ export interface StringFields {
 export type StringReified = Reified<String, StringFields>
 
 export class String implements StructClass {
-  static readonly $typeName = `${PKG_V6}::string::String`
+  static readonly $typeName = `${PKG_V8}::string::String`
   static readonly $numTypeParams = 0
 
   readonly $typeName = String.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V6}::string::String`
+  readonly $fullTypeName: `${typeof PKG_V8}::string::String`
 
   readonly $typeArgs: []
 
@@ -46,7 +47,7 @@ export class String implements StructClass {
     this.$fullTypeName = composeSuiType(
       String.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V6}::string::String`
+    ) as `${typeof PKG_V8}::string::String`
     this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
@@ -55,7 +56,7 @@ export class String implements StructClass {
   static reified(): StringReified {
     return {
       typeName: String.$typeName,
-      fullTypeName: composeSuiType(String.$typeName, ...[]) as `${typeof PKG_V6}::string::String`,
+      fullTypeName: composeSuiType(String.$typeName, ...[]) as `${typeof PKG_V8}::string::String`,
       typeArgs: [] as [],
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => String.fromFields(fields),

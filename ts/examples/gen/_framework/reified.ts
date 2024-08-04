@@ -1,4 +1,5 @@
-import { BcsType, bcs, fromHEX, toHEX } from '@mysten/bcs'
+import { bcs, BcsType } from '@mysten/sui/bcs'
+import { fromHEX, toHEX } from '@mysten/sui/utils'
 import { FieldsWithTypes, compressSuiType, parseTypeName } from './util'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 

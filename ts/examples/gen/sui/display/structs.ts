@@ -22,17 +22,18 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { PKG_V19 } from '../index'
+import { PKG_V21 } from '../index'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
-import { bcs, fromB64 } from '@mysten/bcs'
+import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Display =============================== */
 
 export function isDisplay(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::display::Display` + '<')
+  return type.startsWith(`${PKG_V21}::display::Display` + '<')
 }
 
 export interface DisplayFields<T extends PhantomTypeArgument> {
@@ -44,12 +45,12 @@ export interface DisplayFields<T extends PhantomTypeArgument> {
 export type DisplayReified<T extends PhantomTypeArgument> = Reified<Display<T>, DisplayFields<T>>
 
 export class Display<T extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::display::Display`
+  static readonly $typeName = `${PKG_V21}::display::Display`
   static readonly $numTypeParams = 1
 
   readonly $typeName = Display.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::display::Display<${PhantomToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::display::Display<${PhantomToTypeStr<T>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T>]
 
@@ -61,7 +62,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Display.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::display::Display<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V21}::display::Display<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -77,7 +78,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Display.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V19}::display::Display<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V21}::display::Display<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Display.fromFields(T, fields),
@@ -240,7 +241,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
 
 export function isDisplayCreated(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::display::DisplayCreated` + '<')
+  return type.startsWith(`${PKG_V21}::display::DisplayCreated` + '<')
 }
 
 export interface DisplayCreatedFields<T extends PhantomTypeArgument> {
@@ -253,12 +254,12 @@ export type DisplayCreatedReified<T extends PhantomTypeArgument> = Reified<
 >
 
 export class DisplayCreated<T extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::display::DisplayCreated`
+  static readonly $typeName = `${PKG_V21}::display::DisplayCreated`
   static readonly $numTypeParams = 1
 
   readonly $typeName = DisplayCreated.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::display::DisplayCreated<${PhantomToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::display::DisplayCreated<${PhantomToTypeStr<T>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T>]
 
@@ -268,7 +269,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
     this.$fullTypeName = composeSuiType(
       DisplayCreated.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::display::DisplayCreated<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V21}::display::DisplayCreated<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -282,7 +283,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
       fullTypeName: composeSuiType(
         DisplayCreated.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V19}::display::DisplayCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V21}::display::DisplayCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => DisplayCreated.fromFields(T, fields),
@@ -428,7 +429,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
 
 export function isVersionUpdated(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::display::VersionUpdated` + '<')
+  return type.startsWith(`${PKG_V21}::display::VersionUpdated` + '<')
 }
 
 export interface VersionUpdatedFields<T extends PhantomTypeArgument> {
@@ -443,12 +444,12 @@ export type VersionUpdatedReified<T extends PhantomTypeArgument> = Reified<
 >
 
 export class VersionUpdated<T extends PhantomTypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::display::VersionUpdated`
+  static readonly $typeName = `${PKG_V21}::display::VersionUpdated`
   static readonly $numTypeParams = 1
 
   readonly $typeName = VersionUpdated.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::display::VersionUpdated<${PhantomToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::display::VersionUpdated<${PhantomToTypeStr<T>}>`
 
   readonly $typeArgs: [PhantomToTypeStr<T>]
 
@@ -460,7 +461,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
     this.$fullTypeName = composeSuiType(
       VersionUpdated.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::display::VersionUpdated<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V21}::display::VersionUpdated<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -476,7 +477,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
       fullTypeName: composeSuiType(
         VersionUpdated.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V19}::display::VersionUpdated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V21}::display::VersionUpdated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => VersionUpdated.fromFields(T, fields),

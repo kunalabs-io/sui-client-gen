@@ -22,15 +22,16 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { PKG_V19 } from '../index'
-import { BcsType, bcs, fromB64 } from '@mysten/bcs'
+import { PKG_V21 } from '../index'
+import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Wrapper =============================== */
 
 export function isWrapper(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V19}::dynamic_object_field::Wrapper` + '<')
+  return type.startsWith(`${PKG_V21}::dynamic_object_field::Wrapper` + '<')
 }
 
 export interface WrapperFields<T0 extends TypeArgument> {
@@ -40,12 +41,12 @@ export interface WrapperFields<T0 extends TypeArgument> {
 export type WrapperReified<T0 extends TypeArgument> = Reified<Wrapper<T0>, WrapperFields<T0>>
 
 export class Wrapper<T0 extends TypeArgument> implements StructClass {
-  static readonly $typeName = `${PKG_V19}::dynamic_object_field::Wrapper`
+  static readonly $typeName = `${PKG_V21}::dynamic_object_field::Wrapper`
   static readonly $numTypeParams = 1
 
   readonly $typeName = Wrapper.$typeName
 
-  readonly $fullTypeName: `${typeof PKG_V19}::dynamic_object_field::Wrapper<${ToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V21}::dynamic_object_field::Wrapper<${ToTypeStr<T0>}>`
 
   readonly $typeArgs: [ToTypeStr<T0>]
 
@@ -55,7 +56,7 @@ export class Wrapper<T0 extends TypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Wrapper.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V19}::dynamic_object_field::Wrapper<${ToTypeStr<T0>}>`
+    ) as `${typeof PKG_V21}::dynamic_object_field::Wrapper<${ToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.name = fields.name
@@ -69,7 +70,7 @@ export class Wrapper<T0 extends TypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Wrapper.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V19}::dynamic_object_field::Wrapper<${ToTypeStr<ToTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V21}::dynamic_object_field::Wrapper<${ToTypeStr<ToTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [ToTypeStr<ToTypeArgument<T0>>],
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Wrapper.fromFields(T0, fields),

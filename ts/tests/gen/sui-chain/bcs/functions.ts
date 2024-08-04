@@ -39,6 +39,14 @@ export function peelU8(tx: Transaction, bcs: TransactionObjectInput) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_u8`, arguments: [obj(tx, bcs)] })
 }
 
+export function peelU16(tx: Transaction, bcs: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_u16`, arguments: [obj(tx, bcs)] })
+}
+
+export function peelU32(tx: Transaction, bcs: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_u32`, arguments: [obj(tx, bcs)] })
+}
+
 export function peelU64(tx: Transaction, bcs: TransactionObjectInput) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_u64`, arguments: [obj(tx, bcs)] })
 }
@@ -74,12 +82,24 @@ export function peelVecVecU8(tx: Transaction, bcs: TransactionObjectInput) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_vec_vec_u8`, arguments: [obj(tx, bcs)] })
 }
 
+export function peelVecU16(tx: Transaction, bcs: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_vec_u16`, arguments: [obj(tx, bcs)] })
+}
+
+export function peelVecU32(tx: Transaction, bcs: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_vec_u32`, arguments: [obj(tx, bcs)] })
+}
+
 export function peelVecU64(tx: Transaction, bcs: TransactionObjectInput) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_vec_u64`, arguments: [obj(tx, bcs)] })
 }
 
 export function peelVecU128(tx: Transaction, bcs: TransactionObjectInput) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_vec_u128`, arguments: [obj(tx, bcs)] })
+}
+
+export function peelVecU256(tx: Transaction, bcs: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_vec_u256`, arguments: [obj(tx, bcs)] })
 }
 
 export function peelOptionAddress(tx: Transaction, bcs: TransactionObjectInput) {
@@ -100,6 +120,14 @@ export function peelOptionU8(tx: Transaction, bcs: TransactionObjectInput) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_option_u8`, arguments: [obj(tx, bcs)] })
 }
 
+export function peelOptionU16(tx: Transaction, bcs: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_option_u16`, arguments: [obj(tx, bcs)] })
+}
+
+export function peelOptionU32(tx: Transaction, bcs: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_option_u32`, arguments: [obj(tx, bcs)] })
+}
+
 export function peelOptionU64(tx: Transaction, bcs: TransactionObjectInput) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_option_u64`, arguments: [obj(tx, bcs)] })
 }
@@ -107,6 +135,13 @@ export function peelOptionU64(tx: Transaction, bcs: TransactionObjectInput) {
 export function peelOptionU128(tx: Transaction, bcs: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::bcs::peel_option_u128`,
+    arguments: [obj(tx, bcs)],
+  })
+}
+
+export function peelOptionU256(tx: Transaction, bcs: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bcs::peel_option_u256`,
     arguments: [obj(tx, bcs)],
   })
 }
