@@ -46,21 +46,21 @@ import { Pool } from "./gen/amm/pool/structs";
 ```ts
 const tx = new Transaction();
 
-const [suiCoin] = txb.splitCoin(tx.gas, [tx.pure(1_000_000)]);
-const exampleCoin = faucetMint(txb, FAUCET_ID);
+const [suiCoin] = tx.splitCoin(tx.gas, [1_000_000n]);
+const exampleCoin = faucetMint(tx, FAUCET_ID);
 
 const lp = createPoolWithCoins(
   tx,
   ["0x2:sui::SUI", `${EXAMPLE_PACKAGE_ID}::example_coin::EXAMPLE_COIN`],
   {
-    registry: REGISTRY_ID, // or txb.object(REGISTRY_ID)
+    registry: REGISTRY_ID, // or tx.object(REGISTRY_ID)
     initA: suiCoin,
     initB: exampleCoin,
-    lpFeeBps: 30n, // or txb.pure(30n)
-    adminFeePct: 10n, // or txb.pure(10n)
+    lpFeeBps: 30n, // or tx.pure.u64(30n)
+    adminFeePct: 10n, // or tx.pure.u64(10n)
   }
 );
-tx.transferObjects([lp], tx.pure(addresss));
+tx.transferObjects([lp], tx.pure.address(addresss));
 
 await client.signAndExecuteTransaction({
   transaction: tx,
@@ -192,21 +192,21 @@ The following types:
 - `std::option::Option`
 
 Have special handling so that they can be used directly as inputs to function bindings instead
-of having to manually construct them with `txb.pure(...)`:
+of having to manually construct them with `tx.pure`:
 
 ```ts
-const e1 = createExampleStruct(txb);
-const e2 = createExampleStruct(txb);
+const e1 = createExampleStruct(tx);
+const e2 = createExampleStruct(tx);
 
-specialTypes(txb, {
-  asciiString: "example ascii string", // or txb.string('example ascii string')
-  utf8String: "example utf8 string", // or txb.string('example utf8 string')
-  vectorOfU64: [1n, 2n], // or txb.pure([1n, 2n], 'vector<u64>')
-  vectorOfObjects: [e1, e2], // or txb.makeMoveVec({ objects: [e1, e2], type: ExampleStruct.$typeName })
-  idField: "0x12345", // or txb.address(normalizeSuiAddress('0x12345'), BCS.ADDRESS)
-  address: "0x12345", // or txb.pure(normalizeSuiAddress('0x12345'), BCS.ADDRESS)
-  optionSome: 5n, // or txb.pure([5n], 'vector<u64>')
-  optionNone: null, // or txb.pure([], 'vector<u64>')
+specialTypes(tx, {
+  asciiString: "example ascii string", // or tx.pure.string('example ascii string')
+  utf8String: "example utf8 string", // or tx.pure.string('example utf8 string')
+  vectorOfU64: [1n, 2n], // or tx.pure.vector('u64', [1n, 2n])
+  vectorOfObjects: [e1, e2], // or tx.makeMoveVec({ elements: [e1, e2], type: ExampleStruct.$typeName })
+  idField: "0x12345", // or tx.pure.address('0x12345')
+  address: "0x12345", // or tx.pure.address('0x12345')
+  optionSome: 5n, // or tx.pure.option('u64', 5n)
+  optionNone: null, // or tx.pure.option('u64', null)
 });
 ```
 
