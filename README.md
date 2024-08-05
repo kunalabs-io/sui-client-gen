@@ -179,6 +179,22 @@ class PoolWrapper {
 }
 ```
 
+#### Loader
+
+In some situations it may be more convenient to load reified types using a type string instead of passing in reified types as arguments. This can be done by calling `loader.reified(type: string)`:
+
+```ts
+import { loader } from "./gen/_framework/loader";
+
+const reified = loader.reified(
+  "0x555::pool::Pool<0x2::sui::SUI, 0x666::example_coin::EXAMPLE_COIN>"
+);
+```
+
+This can be useful in situations where the type is not known at compile time. The loaded reified type can then be used in the same way as before.
+
+Note that if the type is using non-phantom type parameters (generics), the corresponding structs must be available in the generated dependency graph (listed in `gen.toml` or a transitive depencency) otherwise it will fail due to missing definitions. Same goes for the type itself.
+
 ### Function binding special type handling
 
 The following types:
