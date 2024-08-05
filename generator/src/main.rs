@@ -7,13 +7,13 @@ use colored::*;
 use genco::fmt;
 use genco::prelude::*;
 use move_core_types::account_address::AccountAddress;
-use move_model::model::{GlobalEnv, ModuleEnv};
+use move_model::model::ModuleEnv;
 use move_package::source_package::parsed_manifest::PackageName;
 use move_symbol_pool::Symbol;
 use std::io::Write;
 use sui_client_gen::framework_sources;
 use sui_client_gen::gen::{
-    gen_init_ts, gen_package_init_ts, module_import_name, package_import_name,
+    gen_init_loader_ts, gen_package_init_ts, module_import_name, package_import_name,
 };
 use sui_client_gen::gen::{FrameworkImportCtx, FunctionsGen, StructClassImportCtx, StructsGen};
 use sui_client_gen::manifest::{parse_gen_manifest_from_file, GenManifest, Package};
@@ -92,6 +92,45 @@ async fn main() -> Result<()> {
         clean_output(&PathBuf::from(&args.out))?;
     }
 
+    // separate modules by package
+    let mut source_pkgs: BTreeMap<AccountAddress, Vec<ModuleEnv>> = BTreeMap::new();
+    match &source_model {
+        Some(m) => {
+            for module in m.env.get_modules() {
+                let pkg_id = *module.self_address();
+                match source_pkgs.get_mut(&pkg_id) {
+                    Some(modules) => modules.push(module),
+                    None => {
+                        let modules = vec![module];
+                        source_pkgs.insert(pkg_id, modules);
+                    }
+                }
+            }
+        }
+        None => (),
+    };
+
+    let mut on_chain_pkgs: BTreeMap<AccountAddress, Vec<ModuleEnv>> = BTreeMap::new();
+    match &on_chain_model {
+        Some(m) => {
+            for module in m.env.get_modules() {
+                let pkg_id = *module.self_address();
+                match on_chain_pkgs.get_mut(&pkg_id) {
+                    Some(modules) => modules.push(module),
+                    None => {
+                        let modules = vec![module];
+                        on_chain_pkgs.insert(pkg_id, modules);
+                    }
+                }
+            }
+        }
+        None => (),
+    };
+
+    // gen top-level packages and dependencies
+    let (source_top_level_addr_map, on_chain_top_level_addr_map) =
+        resolve_top_level_pkg_addr_map(&source_model, &on_chain_model, &manifest);
+
     // gen _framework
     writeln!(progress_output, "{}", "GENERATING FRAMEWORK".green().bold())?;
 
@@ -111,19 +150,34 @@ async fn main() -> Result<()> {
         framework_sources::REIFIED,
         out_root.join("_framework").join("reified.ts").as_ref(),
     )?;
+    write_tokens_to_file(
+        &gen_init_loader_ts(
+            match source_pkgs.is_empty() {
+                false => Some((
+                    source_pkgs.keys().copied().collect::<Vec<_>>(),
+                    &source_top_level_addr_map,
+                )),
+                true => None,
+            },
+            match on_chain_pkgs.is_empty() {
+                false => Some((
+                    on_chain_pkgs.keys().copied().collect::<Vec<_>>(),
+                    &on_chain_top_level_addr_map,
+                )),
+                true => None,
+            },
+        ),
+        out_root.join("_framework").join("init-loader.ts").as_ref(),
+    )?;
 
-    // gen top-level packages and dependencies
-    let (source_top_level_addr_map, on_chain_top_level_addr_map) =
-        resolve_top_level_pkg_addr_map(&source_model, &on_chain_model, &manifest);
-
-    if let Some(m) = source_model {
+    if let Some(m) = &source_model {
         writeln!(
             progress_output,
             "{}",
             "GENERATING SOURCE PACKAGES".green().bold()
         )?;
         gen_packages_for_model(
-            &m.env,
+            source_pkgs,
             &source_top_level_addr_map,
             &m.published_at,
             &m.type_origin_table,
@@ -133,14 +187,14 @@ async fn main() -> Result<()> {
         )?;
     }
 
-    if let Some(m) = on_chain_model {
+    if let Some(m) = &on_chain_model {
         writeln!(
             progress_output,
             "{}",
             "GENERATING ON-CHAIN PACKAGES".green().bold()
         )?;
         gen_packages_for_model(
-            &m.env,
+            on_chain_pkgs,
             &on_chain_top_level_addr_map,
             &m.published_at,
             &m.type_origin_table,
@@ -262,7 +316,7 @@ fn resolve_top_level_pkg_addr_map(
 }
 
 fn gen_packages_for_model(
-    env: &GlobalEnv,
+    pkgs: BTreeMap<AccountAddress, Vec<ModuleEnv>>,
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
     published_at_map: &BTreeMap<AccountAddress, AccountAddress>,
     type_origin_table: &TypeOriginTable,
@@ -270,18 +324,6 @@ fn gen_packages_for_model(
     is_source: bool,
     out_root: &Path,
 ) -> Result<()> {
-    let mut pkgs: BTreeMap<AccountAddress, Vec<ModuleEnv>> = BTreeMap::new();
-    for module in env.get_modules() {
-        let pkg_id = *module.self_address();
-        match pkgs.get_mut(&pkg_id) {
-            Some(modules) => modules.push(module),
-            None => {
-                let modules = vec![module];
-                pkgs.insert(pkg_id, modules);
-            }
-        }
-    }
-
     if pkgs.is_empty() {
         return Ok(());
     }
@@ -315,10 +357,7 @@ fn gen_packages_for_model(
         write_tokens_to_file(&tokens, &package_path.join("index.ts"))?;
 
         // generate init.ts
-        let tokens = gen_package_init_ts(
-            modules,
-            &FrameworkImportCtx::new(levels_from_root + 1, is_source),
-        );
+        let tokens = gen_package_init_ts(modules, &FrameworkImportCtx::new(levels_from_root + 1));
         write_tokens_to_file(&tokens, &package_path.join("init.ts"))?;
 
         // generate modules
@@ -331,7 +370,7 @@ fn gen_packages_for_model(
                 let mut tokens = js::Tokens::new();
                 let mut func_gen = FunctionsGen::new(
                     module.env,
-                    FrameworkImportCtx::new(levels_from_root + 2, is_source),
+                    FrameworkImportCtx::new(levels_from_root + 2),
                     StructClassImportCtx::for_func_gen(module, is_source, top_level_pkg_names),
                 );
                 for func in module.get_functions() {
@@ -346,7 +385,7 @@ fn gen_packages_for_model(
             let mut structs_gen = StructsGen::new(
                 module.env,
                 StructClassImportCtx::for_struct_gen(module, is_source, top_level_pkg_names),
-                FrameworkImportCtx::new(levels_from_root + 2, is_source),
+                FrameworkImportCtx::new(levels_from_root + 2),
                 type_origin_table,
                 version_table,
             );
@@ -365,21 +404,6 @@ fn gen_packages_for_model(
             }
             write_tokens_to_file(&tokens, &module_path.join("structs.ts"))?;
         }
-    }
-
-    // gen _framework/init.ts
-    let tokens = gen_init_ts(
-        pkgs.keys().copied().collect::<Vec<_>>(),
-        top_level_pkg_names,
-        is_source,
-    );
-    if is_source {
-        write_tokens_to_file(&tokens, &out_root.join("_framework").join("init-source.ts"))?;
-    } else {
-        write_tokens_to_file(
-            &tokens,
-            &out_root.join("_framework").join("init-onchain.ts"),
-        )?;
     }
 
     Ok(())

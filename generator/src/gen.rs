@@ -44,11 +44,10 @@ pub fn package_import_name(pkg_name: move_symbol_pool::Symbol) -> String {
 
 pub struct FrameworkImportCtx {
     framework_rel_path: String,
-    is_source: bool,
 }
 
 impl FrameworkImportCtx {
-    pub fn new(levels_from_root: u8, is_source: bool) -> Self {
+    pub fn new(levels_from_root: u8) -> Self {
         let framework_rel_path = if levels_from_root == 0 {
             "./_framework".to_string()
         } else {
@@ -59,38 +58,11 @@ impl FrameworkImportCtx {
                 + "/_framework"
         };
 
-        FrameworkImportCtx {
-            framework_rel_path,
-            is_source,
-        }
+        FrameworkImportCtx { framework_rel_path }
     }
 
     pub fn import(&self, module: &str, name: &str) -> js::Import {
         js::import(format!("{}/{}", self.framework_rel_path, module), name)
-    }
-
-    pub fn import_bcs(&self) -> js::Import {
-        if self.is_source {
-            self.import("bcs", "bcsSource").with_alias("bcs")
-        } else {
-            self.import("bcs", "bcsOnchain").with_alias("bcs")
-        }
-    }
-
-    pub fn import_init_loader_if_needed(&self) -> js::Import {
-        if self.is_source {
-            self.import("init-source", "initLoaderIfNeeded")
-        } else {
-            self.import("init-onchain", "initLoaderIfNeeded")
-        }
-    }
-
-    pub fn import_struct_class_loader(&self) -> js::Import {
-        if self.is_source {
-            self.import("loader", "structClassLoaderSource")
-        } else {
-            self.import("loader", "structClassLoaderOnchain")
-        }
     }
 }
 
@@ -393,54 +365,103 @@ pub fn gen_package_init_ts(modules: &[ModuleEnv], framework: &FrameworkImportCtx
     }
 }
 
-pub fn gen_init_ts(
+fn gen_init_loader_register_classes_fn_body_toks(
     pkg_ids: Vec<AccountAddress>,
     top_level_pkg_names: &BTreeMap<AccountAddress, move_symbol_pool::Symbol>,
     is_source: bool,
-) -> js::Tokens {
-    let struct_class_loader = if is_source {
-        js::import("./loader", "structClassLoaderSource").with_alias("structClassLoader")
-    } else {
-        js::import("./loader", "structClassLoaderOnchain").with_alias("structClassLoader")
-    };
-
-    quote! {
-        let initialized = false;
-
-        export function initLoaderIfNeeded() {
-            if (initialized) {
-                return
-            };
-            initialized = true;
-
-            $(ref toks {
-                for pkg_id in pkg_ids {
-                    let pkg_init_path = match top_level_pkg_names.get(&pkg_id) {
-                        Some(pkg_name) => {
-                            format!("../{}/init", package_import_name(*pkg_name))
-                        },
-                        None=> {
-                            if is_source {
-                                format!("../_dependencies/source/{}/init", pkg_id.to_hex_literal())
-                            } else {
-                                format!("../_dependencies/onchain/{}/init", pkg_id.to_hex_literal())
-                            }
-                        }
-                    };
-
-                    let pkg_import = &js::import(
-                        pkg_init_path,
-                        format!("{}_{}", "package", pkg_id.short_str_lossless())
-                    )
-                    .into_wildcard();
-
-                    quote_in! { *toks =>
-                        $(pkg_import).registerClasses($(&struct_class_loader));$['\r']
-                    }
+    toks: &mut js::Tokens,
+) {
+    for pkg_id in pkg_ids {
+        let pkg_init_path = match top_level_pkg_names.get(&pkg_id) {
+            Some(pkg_name) => {
+                format!("../{}/init", package_import_name(*pkg_name))
+            }
+            None => {
+                if is_source {
+                    format!("../_dependencies/source/{}/init", pkg_id.to_hex_literal())
+                } else {
+                    format!("../_dependencies/onchain/{}/init", pkg_id.to_hex_literal())
                 }
-            })
+            }
+        };
+
+        let prefix = if is_source {
+            "package_source"
+        } else {
+            "package_onchain"
+        };
+
+        let pkg_import = &js::import(
+            pkg_init_path,
+            format!("{}_{}", prefix, pkg_id.short_str_lossless()),
+        )
+        .into_wildcard();
+
+        quote_in! { *toks =>
+            $(pkg_import).registerClasses(loader);$['\r']
         }
     }
+}
+
+pub fn gen_init_loader_ts(
+    source_pkgs_info: Option<(
+        Vec<AccountAddress>,
+        &BTreeMap<AccountAddress, move_symbol_pool::Symbol>,
+    )>,
+    onchain_pkgs_info: Option<(
+        Vec<AccountAddress>,
+        &BTreeMap<AccountAddress, move_symbol_pool::Symbol>,
+    )>,
+) -> js::Tokens {
+    let struct_class_loader = &js::import("./loader", "StructClassLoader");
+
+    let mut toks = js::Tokens::new();
+
+    match &source_pkgs_info {
+        Some((pkg_ids, top_level_pkg_names)) => quote_in!(toks =>
+            function registerClassesSource(loader: $struct_class_loader) {
+                $(ref toks {
+                    gen_init_loader_register_classes_fn_body_toks(pkg_ids.clone(), top_level_pkg_names, true, toks)
+                })
+            }$['\n']
+        ),
+        None => (),
+    };
+
+    match &onchain_pkgs_info {
+        Some((pkg_ids, top_level_pkg_names)) => quote_in!(toks =>
+            function registerClassesOnchain(loader: $struct_class_loader) {
+                $(ref toks {
+                    gen_init_loader_register_classes_fn_body_toks(pkg_ids.clone(), top_level_pkg_names, false, toks)
+                })
+            }$['\n']
+        ),
+        None => (),
+    };
+
+    match (&source_pkgs_info, &onchain_pkgs_info) {
+        (None, None) => quote_in!(toks => {
+            export function registerClasses(_: $struct_class_loader) { }$['\n']
+        }),
+        (Some(_), None) => quote_in!(toks =>
+            export function registerClasses(loader: $struct_class_loader) {
+                registerClassesSource(loader);
+            }$['\n']
+        ),
+        (None, Some(_)) => quote_in!(toks =>
+            export function registerClasses(loader: $struct_class_loader) {
+                registerClassesOnchain(loader);
+            }$['\n']
+        ),
+        (Some(_), Some(_)) => quote_in!(toks =>
+            export function registerClasses(loader: $struct_class_loader) {
+                registerClassesOnchain(loader);
+                registerClassesSource(loader);
+            }$['\n']
+        ),
+    };
+
+    toks
 }
 
 /// Generates `typeArgs` param for a function that takes type arguments.
