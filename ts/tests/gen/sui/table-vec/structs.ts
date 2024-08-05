@@ -47,12 +47,12 @@ export type TableVecReified<Element extends PhantomTypeArgument> = Reified<
 export class TableVec<Element extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::table_vec::TableVec`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = TableVec.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::table_vec::TableVec<${PhantomToTypeStr<Element>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<Element>]
+  readonly $isPhantom = TableVec.$isPhantom
 
   readonly contents: ToField<Table<'u64', Element>>
 
@@ -76,6 +76,7 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
         ...[extractType(Element)]
       ) as `${typeof PKG_V21}::table_vec::TableVec<${PhantomToTypeStr<ToPhantomTypeArgument<Element>>}>`,
       typeArgs: [extractType(Element)] as [PhantomToTypeStr<ToPhantomTypeArgument<Element>>],
+      isPhantom: TableVec.$isPhantom,
       reifiedTypeArgs: [Element],
       fromFields: (fields: Record<string, any>) => TableVec.fromFields(Element, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TableVec.fromFieldsWithTypes(Element, item),

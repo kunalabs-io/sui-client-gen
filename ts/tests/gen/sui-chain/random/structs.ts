@@ -37,12 +37,12 @@ export type RandomReified = Reified<Random, RandomFields>
 export class Random implements StructClass {
   static readonly $typeName = `${PKG_V21}::random::Random`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Random.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::random::Random`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Random.$isPhantom
 
   readonly id: ToField<UID>
   readonly inner: ToField<Versioned>
@@ -63,6 +63,7 @@ export class Random implements StructClass {
       typeName: Random.$typeName,
       fullTypeName: composeSuiType(Random.$typeName, ...[]) as `${typeof PKG_V21}::random::Random`,
       typeArgs: [] as [],
+      isPhantom: Random.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Random.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Random.fromFieldsWithTypes(item),
@@ -187,12 +188,12 @@ export type RandomInnerReified = Reified<RandomInner, RandomInnerFields>
 export class RandomInner implements StructClass {
   static readonly $typeName = `${PKG_V21}::random::RandomInner`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = RandomInner.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::random::RandomInner`
-
   readonly $typeArgs: []
+  readonly $isPhantom = RandomInner.$isPhantom
 
   readonly version: ToField<'u64'>
   readonly epoch: ToField<'u64'>
@@ -220,6 +221,7 @@ export class RandomInner implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::random::RandomInner`,
       typeArgs: [] as [],
+      isPhantom: RandomInner.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => RandomInner.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => RandomInner.fromFieldsWithTypes(item),
@@ -353,12 +355,12 @@ export type RandomGeneratorReified = Reified<RandomGenerator, RandomGeneratorFie
 export class RandomGenerator implements StructClass {
   static readonly $typeName = `${PKG_V21}::random::RandomGenerator`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = RandomGenerator.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::random::RandomGenerator`
-
   readonly $typeArgs: []
+  readonly $isPhantom = RandomGenerator.$isPhantom
 
   readonly seed: ToField<Vector<'u8'>>
   readonly counter: ToField<'u16'>
@@ -384,6 +386,7 @@ export class RandomGenerator implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::random::RandomGenerator`,
       typeArgs: [] as [],
+      isPhantom: RandomGenerator.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => RandomGenerator.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => RandomGenerator.fromFieldsWithTypes(item),

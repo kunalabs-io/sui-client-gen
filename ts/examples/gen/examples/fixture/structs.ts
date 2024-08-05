@@ -57,12 +57,12 @@ export type BarReified = Reified<Bar, BarFields>
 export class Bar implements StructClass {
   static readonly $typeName = `${PKG_V1}::fixture::Bar`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Bar.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::fixture::Bar`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Bar.$isPhantom
 
   readonly value: ToField<'u64'>
 
@@ -81,6 +81,7 @@ export class Bar implements StructClass {
       typeName: Bar.$typeName,
       fullTypeName: composeSuiType(Bar.$typeName, ...[]) as `${typeof PKG_V1}::fixture::Bar`,
       typeArgs: [] as [],
+      isPhantom: Bar.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Bar.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Bar.fromFieldsWithTypes(item),
@@ -191,12 +192,12 @@ export type DummyReified = Reified<Dummy, DummyFields>
 export class Dummy implements StructClass {
   static readonly $typeName = `${PKG_V1}::fixture::Dummy`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Dummy.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::fixture::Dummy`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Dummy.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -215,6 +216,7 @@ export class Dummy implements StructClass {
       typeName: Dummy.$typeName,
       fullTypeName: composeSuiType(Dummy.$typeName, ...[]) as `${typeof PKG_V1}::fixture::Dummy`,
       typeArgs: [] as [],
+      isPhantom: Dummy.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Dummy.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Dummy.fromFieldsWithTypes(item),
@@ -340,12 +342,12 @@ export type FooReified<T extends TypeArgument> = Reified<Foo<T>, FooFields<T>>
 export class Foo<T extends TypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V1}::fixture::Foo`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [false] as const
 
   readonly $typeName = Foo.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::fixture::Foo<${ToTypeStr<T>}>`
-
   readonly $typeArgs: [ToTypeStr<T>]
+  readonly $isPhantom = Foo.$isPhantom
 
   readonly id: ToField<UID>
   readonly generic: ToField<T>
@@ -395,6 +397,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
         ...[extractType(T)]
       ) as `${typeof PKG_V1}::fixture::Foo<${ToTypeStr<ToTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      isPhantom: Foo.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Foo.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Foo.fromFieldsWithTypes(T, item),
@@ -724,12 +727,12 @@ export type WithGenericFieldReified<T extends TypeArgument> = Reified<
 export class WithGenericField<T extends TypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V1}::fixture::WithGenericField`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [false] as const
 
   readonly $typeName = WithGenericField.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithGenericField<${ToTypeStr<T>}>`
-
   readonly $typeArgs: [ToTypeStr<T>]
+  readonly $isPhantom = WithGenericField.$isPhantom
 
   readonly id: ToField<UID>
   readonly genericField: ToField<T>
@@ -755,6 +758,7 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
         ...[extractType(T)]
       ) as `${typeof PKG_V1}::fixture::WithGenericField<${ToTypeStr<ToTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      isPhantom: WithGenericField.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => WithGenericField.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => WithGenericField.fromFieldsWithTypes(T, item),
@@ -943,12 +947,12 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
 {
   static readonly $typeName = `${PKG_V1}::fixture::WithSpecialTypes`
   static readonly $numTypeParams = 2
+  static readonly $isPhantom = [true, false] as const
 
   readonly $typeName = WithSpecialTypes.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithSpecialTypes<${PhantomToTypeStr<T>}, ${ToTypeStr<U>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T>, ToTypeStr<U>]
+  readonly $isPhantom = WithSpecialTypes.$isPhantom
 
   readonly id: ToField<UID>
   readonly string: ToField<String>
@@ -1003,6 +1007,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
         PhantomToTypeStr<ToPhantomTypeArgument<T>>,
         ToTypeStr<ToTypeArgument<U>>,
       ],
+      isPhantom: WithSpecialTypes.$isPhantom,
       reifiedTypeArgs: [T, U],
       fromFields: (fields: Record<string, any>) => WithSpecialTypes.fromFields([T, U], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
@@ -1310,11 +1315,10 @@ export class WithSpecialTypesAsGenerics<
 {
   static readonly $typeName = `${PKG_V1}::fixture::WithSpecialTypesAsGenerics`
   static readonly $numTypeParams = 8
+  static readonly $isPhantom = [false, false, false, false, false, false, false, false] as const
 
   readonly $typeName = WithSpecialTypesAsGenerics.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithSpecialTypesAsGenerics<${ToTypeStr<T0>}, ${ToTypeStr<T1>}, ${ToTypeStr<T2>}, ${ToTypeStr<T3>}, ${ToTypeStr<T4>}, ${ToTypeStr<T5>}, ${ToTypeStr<T6>}, ${ToTypeStr<T7>}>`
-
   readonly $typeArgs: [
     ToTypeStr<T0>,
     ToTypeStr<T1>,
@@ -1325,6 +1329,7 @@ export class WithSpecialTypesAsGenerics<
     ToTypeStr<T6>,
     ToTypeStr<T7>,
   ]
+  readonly $isPhantom = WithSpecialTypesAsGenerics.$isPhantom
 
   readonly id: ToField<UID>
   readonly string: ToField<T0>
@@ -1428,6 +1433,7 @@ export class WithSpecialTypesAsGenerics<
         ToTypeStr<ToTypeArgument<T6>>,
         ToTypeStr<ToTypeArgument<T7>>,
       ],
+      isPhantom: WithSpecialTypesAsGenerics.$isPhantom,
       reifiedTypeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
       fromFields: (fields: Record<string, any>) =>
         WithSpecialTypesAsGenerics.fromFields([T0, T1, T2, T3, T4, T5, T6, T7], fields),
@@ -1903,12 +1909,12 @@ export type WithSpecialTypesInVectorsReified<T extends TypeArgument> = Reified<
 export class WithSpecialTypesInVectors<T extends TypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V1}::fixture::WithSpecialTypesInVectors`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [false] as const
 
   readonly $typeName = WithSpecialTypesInVectors.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithSpecialTypesInVectors<${ToTypeStr<T>}>`
-
   readonly $typeArgs: [ToTypeStr<T>]
+  readonly $isPhantom = WithSpecialTypesInVectors.$isPhantom
 
   readonly id: ToField<UID>
   readonly string: ToField<Vector<String>>
@@ -1944,6 +1950,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
         ...[extractType(T)]
       ) as `${typeof PKG_V1}::fixture::WithSpecialTypesInVectors<${ToTypeStr<ToTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      isPhantom: WithSpecialTypesInVectors.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => WithSpecialTypesInVectors.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
@@ -2171,12 +2178,12 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
 {
   static readonly $typeName = `${PKG_V1}::fixture::WithTwoGenerics`
   static readonly $numTypeParams = 2
+  static readonly $isPhantom = [false, false] as const
 
   readonly $typeName = WithTwoGenerics.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithTwoGenerics<${ToTypeStr<T>}, ${ToTypeStr<U>}>`
-
   readonly $typeArgs: [ToTypeStr<T>, ToTypeStr<U>]
+  readonly $isPhantom = WithTwoGenerics.$isPhantom
 
   readonly genericField1: ToField<T>
   readonly genericField2: ToField<U>
@@ -2206,6 +2213,7 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
         ToTypeStr<ToTypeArgument<T>>,
         ToTypeStr<ToTypeArgument<U>>,
       ],
+      isPhantom: WithTwoGenerics.$isPhantom,
       reifiedTypeArgs: [T, U],
       fromFields: (fields: Record<string, any>) => WithTwoGenerics.fromFields([T, U], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>

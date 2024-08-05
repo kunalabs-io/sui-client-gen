@@ -40,12 +40,12 @@ export type DenyListReified = Reified<DenyList, DenyListFields>
 export class DenyList implements StructClass {
   static readonly $typeName = `${PKG_V21}::deny_list::DenyList`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = DenyList.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::deny_list::DenyList`
-
   readonly $typeArgs: []
+  readonly $isPhantom = DenyList.$isPhantom
 
   readonly id: ToField<UID>
   readonly lists: ToField<Bag>
@@ -69,6 +69,7 @@ export class DenyList implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::deny_list::DenyList`,
       typeArgs: [] as [],
+      isPhantom: DenyList.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => DenyList.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => DenyList.fromFieldsWithTypes(item),
@@ -190,12 +191,12 @@ export type ConfigWriteCapReified = Reified<ConfigWriteCap, ConfigWriteCapFields
 export class ConfigWriteCap implements StructClass {
   static readonly $typeName = `${PKG_V21}::deny_list::ConfigWriteCap`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = ConfigWriteCap.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::deny_list::ConfigWriteCap`
-
   readonly $typeArgs: []
+  readonly $isPhantom = ConfigWriteCap.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -217,6 +218,7 @@ export class ConfigWriteCap implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::deny_list::ConfigWriteCap`,
       typeArgs: [] as [],
+      isPhantom: ConfigWriteCap.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ConfigWriteCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ConfigWriteCap.fromFieldsWithTypes(item),
@@ -334,12 +336,12 @@ export type ConfigKeyReified = Reified<ConfigKey, ConfigKeyFields>
 export class ConfigKey implements StructClass {
   static readonly $typeName = `${PKG_V21}::deny_list::ConfigKey`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = ConfigKey.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::deny_list::ConfigKey`
-
   readonly $typeArgs: []
+  readonly $isPhantom = ConfigKey.$isPhantom
 
   readonly perTypeIndex: ToField<'u64'>
   readonly perTypeKey: ToField<Vector<'u8'>>
@@ -363,6 +365,7 @@ export class ConfigKey implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::deny_list::ConfigKey`,
       typeArgs: [] as [],
+      isPhantom: ConfigKey.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ConfigKey.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ConfigKey.fromFieldsWithTypes(item),
@@ -484,12 +487,12 @@ export type AddressKeyReified = Reified<AddressKey, AddressKeyFields>
 export class AddressKey implements StructClass {
   static readonly $typeName = `${PKG_V21}::deny_list::AddressKey`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = AddressKey.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::deny_list::AddressKey`
-
   readonly $typeArgs: []
+  readonly $isPhantom = AddressKey.$isPhantom
 
   readonly pos0: ToField<'address'>
 
@@ -511,6 +514,7 @@ export class AddressKey implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::deny_list::AddressKey`,
       typeArgs: [] as [],
+      isPhantom: AddressKey.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AddressKey.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => AddressKey.fromFieldsWithTypes(item),
@@ -626,12 +630,12 @@ export type GlobalPauseKeyReified = Reified<GlobalPauseKey, GlobalPauseKeyFields
 export class GlobalPauseKey implements StructClass {
   static readonly $typeName = `${PKG_V21}::deny_list::GlobalPauseKey`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = GlobalPauseKey.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::deny_list::GlobalPauseKey`
-
   readonly $typeArgs: []
+  readonly $isPhantom = GlobalPauseKey.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -653,6 +657,7 @@ export class GlobalPauseKey implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::deny_list::GlobalPauseKey`,
       typeArgs: [] as [],
+      isPhantom: GlobalPauseKey.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => GlobalPauseKey.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => GlobalPauseKey.fromFieldsWithTypes(item),
@@ -770,12 +775,12 @@ export type PerTypeConfigCreatedReified = Reified<PerTypeConfigCreated, PerTypeC
 export class PerTypeConfigCreated implements StructClass {
   static readonly $typeName = `${PKG_V21}::deny_list::PerTypeConfigCreated`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = PerTypeConfigCreated.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::deny_list::PerTypeConfigCreated`
-
   readonly $typeArgs: []
+  readonly $isPhantom = PerTypeConfigCreated.$isPhantom
 
   readonly key: ToField<ConfigKey>
   readonly configId: ToField<ID>
@@ -799,6 +804,7 @@ export class PerTypeConfigCreated implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::deny_list::PerTypeConfigCreated`,
       typeArgs: [] as [],
+      isPhantom: PerTypeConfigCreated.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PerTypeConfigCreated.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
@@ -926,12 +932,12 @@ export type PerTypeListReified = Reified<PerTypeList, PerTypeListFields>
 export class PerTypeList implements StructClass {
   static readonly $typeName = `${PKG_V21}::deny_list::PerTypeList`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = PerTypeList.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::deny_list::PerTypeList`
-
   readonly $typeArgs: []
+  readonly $isPhantom = PerTypeList.$isPhantom
 
   readonly id: ToField<UID>
   readonly deniedCount: ToField<Table<'address', 'u64'>>
@@ -957,6 +963,7 @@ export class PerTypeList implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::deny_list::PerTypeList`,
       typeArgs: [] as [],
+      isPhantom: PerTypeList.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PerTypeList.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PerTypeList.fromFieldsWithTypes(item),

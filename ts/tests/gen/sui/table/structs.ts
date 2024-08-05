@@ -49,12 +49,12 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
 {
   static readonly $typeName = `${PKG_V21}::table::Table`
   static readonly $numTypeParams = 2
+  static readonly $isPhantom = [true, true] as const
 
   readonly $typeName = Table.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::table::Table<${PhantomToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<K>, PhantomToTypeStr<V>]
+  readonly $isPhantom = Table.$isPhantom
 
   readonly id: ToField<UID>
   readonly size: ToField<'u64'>
@@ -87,6 +87,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
         PhantomToTypeStr<ToPhantomTypeArgument<K>>,
         PhantomToTypeStr<ToPhantomTypeArgument<V>>,
       ],
+      isPhantom: Table.$isPhantom,
       reifiedTypeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => Table.fromFields([K, V], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Table.fromFieldsWithTypes([K, V], item),

@@ -45,12 +45,12 @@ export type VecSetReified<K extends TypeArgument> = Reified<VecSet<K>, VecSetFie
 export class VecSet<K extends TypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::vec_set::VecSet`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [false] as const
 
   readonly $typeName = VecSet.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::vec_set::VecSet<${ToTypeStr<K>}>`
-
   readonly $typeArgs: [ToTypeStr<K>]
+  readonly $isPhantom = VecSet.$isPhantom
 
   readonly contents: ToField<Vector<K>>
 
@@ -72,6 +72,7 @@ export class VecSet<K extends TypeArgument> implements StructClass {
         ...[extractType(K)]
       ) as `${typeof PKG_V21}::vec_set::VecSet<${ToTypeStr<ToTypeArgument<K>>}>`,
       typeArgs: [extractType(K)] as [ToTypeStr<ToTypeArgument<K>>],
+      isPhantom: VecSet.$isPhantom,
       reifiedTypeArgs: [K],
       fromFields: (fields: Record<string, any>) => VecSet.fromFields(K, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VecSet.fromFieldsWithTypes(K, item),

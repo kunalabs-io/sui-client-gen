@@ -38,12 +38,12 @@ export type PublisherReified = Reified<Publisher, PublisherFields>
 export class Publisher implements StructClass {
   static readonly $typeName = `${PKG_V21}::package::Publisher`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Publisher.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::package::Publisher`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Publisher.$isPhantom
 
   readonly id: ToField<UID>
   readonly package: ToField<String>
@@ -69,6 +69,7 @@ export class Publisher implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::package::Publisher`,
       typeArgs: [] as [],
+      isPhantom: Publisher.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Publisher.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Publisher.fromFieldsWithTypes(item),
@@ -198,12 +199,12 @@ export type UpgradeCapReified = Reified<UpgradeCap, UpgradeCapFields>
 export class UpgradeCap implements StructClass {
   static readonly $typeName = `${PKG_V21}::package::UpgradeCap`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = UpgradeCap.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::package::UpgradeCap`
-
   readonly $typeArgs: []
+  readonly $isPhantom = UpgradeCap.$isPhantom
 
   readonly id: ToField<UID>
   readonly package: ToField<ID>
@@ -231,6 +232,7 @@ export class UpgradeCap implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::package::UpgradeCap`,
       typeArgs: [] as [],
+      isPhantom: UpgradeCap.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UpgradeCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeCap.fromFieldsWithTypes(item),
@@ -363,12 +365,12 @@ export type UpgradeReceiptReified = Reified<UpgradeReceipt, UpgradeReceiptFields
 export class UpgradeReceipt implements StructClass {
   static readonly $typeName = `${PKG_V21}::package::UpgradeReceipt`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = UpgradeReceipt.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::package::UpgradeReceipt`
-
   readonly $typeArgs: []
+  readonly $isPhantom = UpgradeReceipt.$isPhantom
 
   readonly cap: ToField<ID>
   readonly package: ToField<ID>
@@ -392,6 +394,7 @@ export class UpgradeReceipt implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::package::UpgradeReceipt`,
       typeArgs: [] as [],
+      isPhantom: UpgradeReceipt.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UpgradeReceipt.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeReceipt.fromFieldsWithTypes(item),
@@ -516,12 +519,12 @@ export type UpgradeTicketReified = Reified<UpgradeTicket, UpgradeTicketFields>
 export class UpgradeTicket implements StructClass {
   static readonly $typeName = `${PKG_V21}::package::UpgradeTicket`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = UpgradeTicket.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::package::UpgradeTicket`
-
   readonly $typeArgs: []
+  readonly $isPhantom = UpgradeTicket.$isPhantom
 
   readonly cap: ToField<ID>
   readonly package: ToField<ID>
@@ -549,6 +552,7 @@ export class UpgradeTicket implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::package::UpgradeTicket`,
       typeArgs: [] as [],
+      isPhantom: UpgradeTicket.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UpgradeTicket.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeTicket.fromFieldsWithTypes(item),

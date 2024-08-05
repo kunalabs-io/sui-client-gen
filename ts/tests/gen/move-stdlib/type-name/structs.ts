@@ -32,12 +32,12 @@ export type TypeNameReified = Reified<TypeName, TypeNameFields>
 export class TypeName implements StructClass {
   static readonly $typeName = `${PKG_V8}::type_name::TypeName`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = TypeName.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V8}::type_name::TypeName`
-
   readonly $typeArgs: []
+  readonly $isPhantom = TypeName.$isPhantom
 
   readonly name: ToField<String>
 
@@ -59,6 +59,7 @@ export class TypeName implements StructClass {
         ...[]
       ) as `${typeof PKG_V8}::type_name::TypeName`,
       typeArgs: [] as [],
+      isPhantom: TypeName.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => TypeName.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TypeName.fromFieldsWithTypes(item),

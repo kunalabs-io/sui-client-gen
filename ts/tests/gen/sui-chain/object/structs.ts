@@ -31,12 +31,12 @@ export type IDReified = Reified<ID, IDFields>
 export class ID implements StructClass {
   static readonly $typeName = `${PKG_V21}::object::ID`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = ID.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::object::ID`
-
   readonly $typeArgs: []
+  readonly $isPhantom = ID.$isPhantom
 
   readonly bytes: ToField<'address'>
 
@@ -55,6 +55,7 @@ export class ID implements StructClass {
       typeName: ID.$typeName,
       fullTypeName: composeSuiType(ID.$typeName, ...[]) as `${typeof PKG_V21}::object::ID`,
       typeArgs: [] as [],
+      isPhantom: ID.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ID.fromFieldsWithTypes(item),
@@ -168,12 +169,12 @@ export type UIDReified = Reified<UID, UIDFields>
 export class UID implements StructClass {
   static readonly $typeName = `${PKG_V21}::object::UID`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = UID.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::object::UID`
-
   readonly $typeArgs: []
+  readonly $isPhantom = UID.$isPhantom
 
   readonly id: ToField<ID>
 
@@ -192,6 +193,7 @@ export class UID implements StructClass {
       typeName: UID.$typeName,
       fullTypeName: composeSuiType(UID.$typeName, ...[]) as `${typeof PKG_V21}::object::UID`,
       typeArgs: [] as [],
+      isPhantom: UID.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UID.fromFieldsWithTypes(item),

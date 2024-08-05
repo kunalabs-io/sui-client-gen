@@ -48,14 +48,14 @@ export type OptionReified<Element extends TypeArgument> = Reified<
 export class Option<Element extends TypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V8}::option::Option`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [false] as const
 
   __inner: Element = null as unknown as Element // for type checking in reified.ts
 
   readonly $typeName = Option.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V8}::option::Option<${ToTypeStr<Element>}>`
-
   readonly $typeArgs: [ToTypeStr<Element>]
+  readonly $isPhantom = Option.$isPhantom
 
   readonly vec: ToField<Vector<Element>>
 
@@ -79,6 +79,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
         ...[extractType(Element)]
       ) as `${typeof PKG_V8}::option::Option<${ToTypeStr<ToTypeArgument<Element>>}>`,
       typeArgs: [extractType(Element)] as [ToTypeStr<ToTypeArgument<Element>>],
+      isPhantom: Option.$isPhantom,
       reifiedTypeArgs: [Element],
       fromFields: (fields: Record<string, any>) => Option.fromFields(Element, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Option.fromFieldsWithTypes(Element, item),

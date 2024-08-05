@@ -31,12 +31,12 @@ export type SUIReified = Reified<SUI, SUIFields>
 export class SUI implements StructClass {
   static readonly $typeName = `${PKG_V21}::sui::SUI`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = SUI.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::sui::SUI`
-
   readonly $typeArgs: []
+  readonly $isPhantom = SUI.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -52,6 +52,7 @@ export class SUI implements StructClass {
       typeName: SUI.$typeName,
       fullTypeName: composeSuiType(SUI.$typeName, ...[]) as `${typeof PKG_V21}::sui::SUI`,
       typeArgs: [] as [],
+      isPhantom: SUI.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => SUI.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => SUI.fromFieldsWithTypes(item),

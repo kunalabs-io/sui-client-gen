@@ -33,12 +33,12 @@ export type BagReified = Reified<Bag, BagFields>
 export class Bag implements StructClass {
   static readonly $typeName = `${PKG_V21}::bag::Bag`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Bag.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::bag::Bag`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Bag.$isPhantom
 
   readonly id: ToField<UID>
   readonly size: ToField<'u64'>
@@ -56,6 +56,7 @@ export class Bag implements StructClass {
       typeName: Bag.$typeName,
       fullTypeName: composeSuiType(Bag.$typeName, ...[]) as `${typeof PKG_V21}::bag::Bag`,
       typeArgs: [] as [],
+      isPhantom: Bag.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Bag.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Bag.fromFieldsWithTypes(item),

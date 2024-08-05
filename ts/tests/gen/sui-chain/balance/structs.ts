@@ -42,12 +42,12 @@ export type SupplyReified<T0 extends PhantomTypeArgument> = Reified<Supply<T0>, 
 export class Supply<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::balance::Supply`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = Supply.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::balance::Supply<${PhantomToTypeStr<T0>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = Supply.$isPhantom
 
   readonly value: ToField<'u64'>
 
@@ -71,6 +71,7 @@ export class Supply<T0 extends PhantomTypeArgument> implements StructClass {
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::balance::Supply<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: Supply.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Supply.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Supply.fromFieldsWithTypes(T0, item),
@@ -227,12 +228,12 @@ export type BalanceReified<T0 extends PhantomTypeArgument> = Reified<Balance<T0>
 export class Balance<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::balance::Balance`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = Balance.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::balance::Balance<${PhantomToTypeStr<T0>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = Balance.$isPhantom
 
   readonly value: ToField<'u64'>
 
@@ -256,6 +257,7 @@ export class Balance<T0 extends PhantomTypeArgument> implements StructClass {
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::balance::Balance<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: Balance.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Balance.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Balance.fromFieldsWithTypes(T0, item),

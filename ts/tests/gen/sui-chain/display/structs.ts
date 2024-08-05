@@ -47,12 +47,12 @@ export type DisplayReified<T0 extends PhantomTypeArgument> = Reified<Display<T0>
 export class Display<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::display::Display`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = Display.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::display::Display<${PhantomToTypeStr<T0>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = Display.$isPhantom
 
   readonly id: ToField<UID>
   readonly fields: ToField<VecMap<String, String>>
@@ -80,6 +80,7 @@ export class Display<T0 extends PhantomTypeArgument> implements StructClass {
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::display::Display<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: Display.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Display.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Display.fromFieldsWithTypes(T0, item),
@@ -256,12 +257,12 @@ export type DisplayCreatedReified<T0 extends PhantomTypeArgument> = Reified<
 export class DisplayCreated<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::display::DisplayCreated`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = DisplayCreated.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::display::DisplayCreated<${PhantomToTypeStr<T0>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = DisplayCreated.$isPhantom
 
   readonly id: ToField<ID>
 
@@ -285,6 +286,7 @@ export class DisplayCreated<T0 extends PhantomTypeArgument> implements StructCla
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::display::DisplayCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: DisplayCreated.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => DisplayCreated.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => DisplayCreated.fromFieldsWithTypes(T0, item),
@@ -446,12 +448,12 @@ export type VersionUpdatedReified<T0 extends PhantomTypeArgument> = Reified<
 export class VersionUpdated<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::display::VersionUpdated`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = VersionUpdated.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::display::VersionUpdated<${PhantomToTypeStr<T0>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = VersionUpdated.$isPhantom
 
   readonly id: ToField<ID>
   readonly version: ToField<'u16'>
@@ -479,6 +481,7 @@ export class VersionUpdated<T0 extends PhantomTypeArgument> implements StructCla
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::display::VersionUpdated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: VersionUpdated.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => VersionUpdated.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VersionUpdated.fromFieldsWithTypes(T0, item),

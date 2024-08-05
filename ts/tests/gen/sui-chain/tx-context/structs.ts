@@ -38,12 +38,12 @@ export type TxContextReified = Reified<TxContext, TxContextFields>
 export class TxContext implements StructClass {
   static readonly $typeName = `${PKG_V21}::tx_context::TxContext`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = TxContext.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::tx_context::TxContext`
-
   readonly $typeArgs: []
+  readonly $isPhantom = TxContext.$isPhantom
 
   readonly sender: ToField<'address'>
   readonly txHash: ToField<Vector<'u8'>>
@@ -73,6 +73,7 @@ export class TxContext implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::tx_context::TxContext`,
       typeArgs: [] as [],
+      isPhantom: TxContext.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => TxContext.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TxContext.fromFieldsWithTypes(item),

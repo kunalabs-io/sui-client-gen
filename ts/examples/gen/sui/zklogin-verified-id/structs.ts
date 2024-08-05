@@ -38,12 +38,12 @@ export type VerifiedIDReified = Reified<VerifiedID, VerifiedIDFields>
 export class VerifiedID implements StructClass {
   static readonly $typeName = `${PKG_V21}::zklogin_verified_id::VerifiedID`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = VerifiedID.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::zklogin_verified_id::VerifiedID`
-
   readonly $typeArgs: []
+  readonly $isPhantom = VerifiedID.$isPhantom
 
   readonly id: ToField<UID>
   readonly owner: ToField<'address'>
@@ -75,6 +75,7 @@ export class VerifiedID implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::zklogin_verified_id::VerifiedID`,
       typeArgs: [] as [],
+      isPhantom: VerifiedID.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => VerifiedID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VerifiedID.fromFieldsWithTypes(item),

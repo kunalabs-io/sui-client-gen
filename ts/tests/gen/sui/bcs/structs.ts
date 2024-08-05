@@ -34,12 +34,12 @@ export type BCSReified = Reified<BCS, BCSFields>
 export class BCS implements StructClass {
   static readonly $typeName = `${PKG_V21}::bcs::BCS`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = BCS.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::bcs::BCS`
-
   readonly $typeArgs: []
+  readonly $isPhantom = BCS.$isPhantom
 
   readonly bytes: ToField<Vector<'u8'>>
 
@@ -55,6 +55,7 @@ export class BCS implements StructClass {
       typeName: BCS.$typeName,
       fullTypeName: composeSuiType(BCS.$typeName, ...[]) as `${typeof PKG_V21}::bcs::BCS`,
       typeArgs: [] as [],
+      isPhantom: BCS.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => BCS.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => BCS.fromFieldsWithTypes(item),

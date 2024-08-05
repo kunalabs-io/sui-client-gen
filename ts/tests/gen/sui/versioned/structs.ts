@@ -33,12 +33,12 @@ export type VersionChangeCapReified = Reified<VersionChangeCap, VersionChangeCap
 export class VersionChangeCap implements StructClass {
   static readonly $typeName = `${PKG_V21}::versioned::VersionChangeCap`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = VersionChangeCap.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::versioned::VersionChangeCap`
-
   readonly $typeArgs: []
+  readonly $isPhantom = VersionChangeCap.$isPhantom
 
   readonly versionedId: ToField<ID>
   readonly oldVersion: ToField<'u64'>
@@ -62,6 +62,7 @@ export class VersionChangeCap implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::versioned::VersionChangeCap`,
       typeArgs: [] as [],
+      isPhantom: VersionChangeCap.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => VersionChangeCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VersionChangeCap.fromFieldsWithTypes(item),
@@ -184,12 +185,12 @@ export type VersionedReified = Reified<Versioned, VersionedFields>
 export class Versioned implements StructClass {
   static readonly $typeName = `${PKG_V21}::versioned::Versioned`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Versioned.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::versioned::Versioned`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Versioned.$isPhantom
 
   readonly id: ToField<UID>
   readonly version: ToField<'u64'>
@@ -213,6 +214,7 @@ export class Versioned implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::versioned::Versioned`,
       typeArgs: [] as [],
+      isPhantom: Versioned.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Versioned.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Versioned.fromFieldsWithTypes(item),

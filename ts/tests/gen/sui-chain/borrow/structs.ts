@@ -46,12 +46,12 @@ export type ReferentReified<T0 extends TypeArgument> = Reified<Referent<T0>, Ref
 export class Referent<T0 extends TypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::borrow::Referent`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [false] as const
 
   readonly $typeName = Referent.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::borrow::Referent<${ToTypeStr<T0>}>`
-
   readonly $typeArgs: [ToTypeStr<T0>]
+  readonly $isPhantom = Referent.$isPhantom
 
   readonly id: ToField<'address'>
   readonly value: ToField<Option<T0>>
@@ -77,6 +77,7 @@ export class Referent<T0 extends TypeArgument> implements StructClass {
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::borrow::Referent<${ToTypeStr<ToTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [ToTypeStr<ToTypeArgument<T0>>],
+      isPhantom: Referent.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Referent.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Referent.fromFieldsWithTypes(T0, item),
@@ -249,12 +250,12 @@ export type BorrowReified = Reified<Borrow, BorrowFields>
 export class Borrow implements StructClass {
   static readonly $typeName = `${PKG_V21}::borrow::Borrow`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Borrow.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::borrow::Borrow`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Borrow.$isPhantom
 
   readonly ref: ToField<'address'>
   readonly obj: ToField<ID>
@@ -275,6 +276,7 @@ export class Borrow implements StructClass {
       typeName: Borrow.$typeName,
       fullTypeName: composeSuiType(Borrow.$typeName, ...[]) as `${typeof PKG_V21}::borrow::Borrow`,
       typeArgs: [] as [],
+      isPhantom: Borrow.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Borrow.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Borrow.fromFieldsWithTypes(item),

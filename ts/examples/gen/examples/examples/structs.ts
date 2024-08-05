@@ -38,12 +38,12 @@ export type ExampleStructReified = Reified<ExampleStruct, ExampleStructFields>
 export class ExampleStruct implements StructClass {
   static readonly $typeName = `${PKG_V1}::examples::ExampleStruct`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = ExampleStruct.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::examples::ExampleStruct`
-
   readonly $typeArgs: []
+  readonly $isPhantom = ExampleStruct.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -65,6 +65,7 @@ export class ExampleStruct implements StructClass {
         ...[]
       ) as `${typeof PKG_V1}::examples::ExampleStruct`,
       typeArgs: [] as [],
+      isPhantom: ExampleStruct.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ExampleStruct.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ExampleStruct.fromFieldsWithTypes(item),
@@ -187,12 +188,12 @@ export type SpecialTypesStructReified = Reified<SpecialTypesStruct, SpecialTypes
 export class SpecialTypesStruct implements StructClass {
   static readonly $typeName = `${PKG_V1}::examples::SpecialTypesStruct`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = SpecialTypesStruct.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::examples::SpecialTypesStruct`
-
   readonly $typeArgs: []
+  readonly $isPhantom = SpecialTypesStruct.$isPhantom
 
   readonly id: ToField<UID>
   readonly asciiString: ToField<String>
@@ -230,6 +231,7 @@ export class SpecialTypesStruct implements StructClass {
         ...[]
       ) as `${typeof PKG_V1}::examples::SpecialTypesStruct`,
       typeArgs: [] as [],
+      isPhantom: SpecialTypesStruct.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => SpecialTypesStruct.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => SpecialTypesStruct.fromFieldsWithTypes(item),

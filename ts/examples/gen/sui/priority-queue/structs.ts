@@ -46,12 +46,12 @@ export type EntryReified<T extends TypeArgument> = Reified<Entry<T>, EntryFields
 export class Entry<T extends TypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::priority_queue::Entry`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [false] as const
 
   readonly $typeName = Entry.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::priority_queue::Entry<${ToTypeStr<T>}>`
-
   readonly $typeArgs: [ToTypeStr<T>]
+  readonly $isPhantom = Entry.$isPhantom
 
   readonly priority: ToField<'u64'>
   readonly value: ToField<T>
@@ -75,6 +75,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
         ...[extractType(T)]
       ) as `${typeof PKG_V21}::priority_queue::Entry<${ToTypeStr<ToTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      isPhantom: Entry.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Entry.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Entry.fromFieldsWithTypes(T, item),
@@ -246,12 +247,12 @@ export type PriorityQueueReified<T extends TypeArgument> = Reified<
 export class PriorityQueue<T extends TypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::priority_queue::PriorityQueue`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [false] as const
 
   readonly $typeName = PriorityQueue.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::priority_queue::PriorityQueue<${ToTypeStr<T>}>`
-
   readonly $typeArgs: [ToTypeStr<T>]
+  readonly $isPhantom = PriorityQueue.$isPhantom
 
   readonly entries: ToField<Vector<Entry<T>>>
 
@@ -275,6 +276,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
         ...[extractType(T)]
       ) as `${typeof PKG_V21}::priority_queue::PriorityQueue<${ToTypeStr<ToTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      isPhantom: PriorityQueue.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => PriorityQueue.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PriorityQueue.fromFieldsWithTypes(T, item),

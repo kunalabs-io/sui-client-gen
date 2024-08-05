@@ -38,12 +38,12 @@ export type ActiveJwkReified = Reified<ActiveJwk, ActiveJwkFields>
 export class ActiveJwk implements StructClass {
   static readonly $typeName = `${PKG_V21}::authenticator_state::ActiveJwk`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = ActiveJwk.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::authenticator_state::ActiveJwk`
-
   readonly $typeArgs: []
+  readonly $isPhantom = ActiveJwk.$isPhantom
 
   readonly jwkId: ToField<JwkId>
   readonly jwk: ToField<JWK>
@@ -69,6 +69,7 @@ export class ActiveJwk implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::authenticator_state::ActiveJwk`,
       typeArgs: [] as [],
+      isPhantom: ActiveJwk.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ActiveJwk.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ActiveJwk.fromFieldsWithTypes(item),
@@ -196,12 +197,12 @@ export type AuthenticatorStateReified = Reified<AuthenticatorState, Authenticato
 export class AuthenticatorState implements StructClass {
   static readonly $typeName = `${PKG_V21}::authenticator_state::AuthenticatorState`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = AuthenticatorState.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::authenticator_state::AuthenticatorState`
-
   readonly $typeArgs: []
+  readonly $isPhantom = AuthenticatorState.$isPhantom
 
   readonly id: ToField<UID>
   readonly version: ToField<'u64'>
@@ -225,6 +226,7 @@ export class AuthenticatorState implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::authenticator_state::AuthenticatorState`,
       typeArgs: [] as [],
+      isPhantom: AuthenticatorState.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AuthenticatorState.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => AuthenticatorState.fromFieldsWithTypes(item),
@@ -350,12 +352,12 @@ export type AuthenticatorStateInnerReified = Reified<
 export class AuthenticatorStateInner implements StructClass {
   static readonly $typeName = `${PKG_V21}::authenticator_state::AuthenticatorStateInner`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = AuthenticatorStateInner.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::authenticator_state::AuthenticatorStateInner`
-
   readonly $typeArgs: []
+  readonly $isPhantom = AuthenticatorStateInner.$isPhantom
 
   readonly version: ToField<'u64'>
   readonly activeJwks: ToField<Vector<ActiveJwk>>
@@ -379,6 +381,7 @@ export class AuthenticatorStateInner implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::authenticator_state::AuthenticatorStateInner`,
       typeArgs: [] as [],
+      isPhantom: AuthenticatorStateInner.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AuthenticatorStateInner.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
@@ -512,12 +515,12 @@ export type JWKReified = Reified<JWK, JWKFields>
 export class JWK implements StructClass {
   static readonly $typeName = `${PKG_V21}::authenticator_state::JWK`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = JWK.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::authenticator_state::JWK`
-
   readonly $typeArgs: []
+  readonly $isPhantom = JWK.$isPhantom
 
   readonly kty: ToField<String>
   readonly e: ToField<String>
@@ -545,6 +548,7 @@ export class JWK implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::authenticator_state::JWK`,
       typeArgs: [] as [],
+      isPhantom: JWK.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => JWK.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => JWK.fromFieldsWithTypes(item),
@@ -677,12 +681,12 @@ export type JwkIdReified = Reified<JwkId, JwkIdFields>
 export class JwkId implements StructClass {
   static readonly $typeName = `${PKG_V21}::authenticator_state::JwkId`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = JwkId.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::authenticator_state::JwkId`
-
   readonly $typeArgs: []
+  readonly $isPhantom = JwkId.$isPhantom
 
   readonly iss: ToField<String>
   readonly kid: ToField<String>
@@ -706,6 +710,7 @@ export class JwkId implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::authenticator_state::JwkId`,
       typeArgs: [] as [],
+      isPhantom: JwkId.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => JwkId.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => JwkId.fromFieldsWithTypes(item),

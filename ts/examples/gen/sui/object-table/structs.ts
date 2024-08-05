@@ -49,12 +49,12 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
 {
   static readonly $typeName = `${PKG_V21}::object_table::ObjectTable`
   static readonly $numTypeParams = 2
+  static readonly $isPhantom = [true, true] as const
 
   readonly $typeName = ObjectTable.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::object_table::ObjectTable<${PhantomToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<K>, PhantomToTypeStr<V>]
+  readonly $isPhantom = ObjectTable.$isPhantom
 
   readonly id: ToField<UID>
   readonly size: ToField<'u64'>
@@ -87,6 +87,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
         PhantomToTypeStr<ToPhantomTypeArgument<K>>,
         PhantomToTypeStr<ToPhantomTypeArgument<V>>,
       ],
+      isPhantom: ObjectTable.$isPhantom,
       reifiedTypeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => ObjectTable.fromFields([K, V], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ObjectTable.fromFieldsWithTypes([K, V], item),

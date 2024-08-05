@@ -45,12 +45,12 @@ export type ElementReified<T extends PhantomTypeArgument> = Reified<Element<T>, 
 export class Element<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::group_ops::Element`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = Element.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::group_ops::Element<${PhantomToTypeStr<T>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T>]
+  readonly $isPhantom = Element.$isPhantom
 
   readonly bytes: ToField<Vector<'u8'>>
 
@@ -74,6 +74,7 @@ export class Element<T extends PhantomTypeArgument> implements StructClass {
         ...[extractType(T)]
       ) as `${typeof PKG_V21}::group_ops::Element<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      isPhantom: Element.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Element.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Element.fromFieldsWithTypes(T, item),

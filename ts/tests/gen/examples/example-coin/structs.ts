@@ -35,12 +35,12 @@ export type EXAMPLE_COINReified = Reified<EXAMPLE_COIN, EXAMPLE_COINFields>
 export class EXAMPLE_COIN implements StructClass {
   static readonly $typeName = `${PKG_V1}::example_coin::EXAMPLE_COIN`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = EXAMPLE_COIN.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::example_coin::EXAMPLE_COIN`
-
   readonly $typeArgs: []
+  readonly $isPhantom = EXAMPLE_COIN.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -62,6 +62,7 @@ export class EXAMPLE_COIN implements StructClass {
         ...[]
       ) as `${typeof PKG_V1}::example_coin::EXAMPLE_COIN`,
       typeArgs: [] as [],
+      isPhantom: EXAMPLE_COIN.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => EXAMPLE_COIN.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => EXAMPLE_COIN.fromFieldsWithTypes(item),
@@ -175,12 +176,12 @@ export type FaucetReified = Reified<Faucet, FaucetFields>
 export class Faucet implements StructClass {
   static readonly $typeName = `${PKG_V1}::example_coin::Faucet`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Faucet.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::example_coin::Faucet`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Faucet.$isPhantom
 
   readonly id: ToField<UID>
   readonly cap: ToField<TreasuryCap<ToPhantom<EXAMPLE_COIN>>>
@@ -204,6 +205,7 @@ export class Faucet implements StructClass {
         ...[]
       ) as `${typeof PKG_V1}::example_coin::Faucet`,
       typeArgs: [] as [],
+      isPhantom: Faucet.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Faucet.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Faucet.fromFieldsWithTypes(item),

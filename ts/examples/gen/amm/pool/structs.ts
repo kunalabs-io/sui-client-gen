@@ -48,12 +48,12 @@ export type AdminCapReified = Reified<AdminCap, AdminCapFields>
 export class AdminCap implements StructClass {
   static readonly $typeName = `${PKG_V1}::pool::AdminCap`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = AdminCap.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::pool::AdminCap`
-
   readonly $typeArgs: []
+  readonly $isPhantom = AdminCap.$isPhantom
 
   readonly id: ToField<UID>
 
@@ -72,6 +72,7 @@ export class AdminCap implements StructClass {
       typeName: AdminCap.$typeName,
       fullTypeName: composeSuiType(AdminCap.$typeName, ...[]) as `${typeof PKG_V1}::pool::AdminCap`,
       typeArgs: [] as [],
+      isPhantom: AdminCap.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AdminCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => AdminCap.fromFieldsWithTypes(item),
@@ -187,12 +188,12 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 {
   static readonly $typeName = `${PKG_V1}::pool::LP`
   static readonly $numTypeParams = 2
+  static readonly $isPhantom = [true, true] as const
 
   readonly $typeName = LP.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::pool::LP<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<A>, PhantomToTypeStr<B>]
+  readonly $isPhantom = LP.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -223,6 +224,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
         PhantomToTypeStr<ToPhantomTypeArgument<A>>,
         PhantomToTypeStr<ToPhantomTypeArgument<B>>,
       ],
+      isPhantom: LP.$isPhantom,
       reifiedTypeArgs: [A, B],
       fromFields: (fields: Record<string, any>) => LP.fromFields([A, B], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => LP.fromFieldsWithTypes([A, B], item),
@@ -412,12 +414,12 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 {
   static readonly $typeName = `${PKG_V1}::pool::Pool`
   static readonly $numTypeParams = 2
+  static readonly $isPhantom = [true, true] as const
 
   readonly $typeName = Pool.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::pool::Pool<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<A>, PhantomToTypeStr<B>]
+  readonly $isPhantom = Pool.$isPhantom
 
   readonly id: ToField<UID>
   readonly balanceA: ToField<Balance<A>>
@@ -460,6 +462,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
         PhantomToTypeStr<ToPhantomTypeArgument<A>>,
         PhantomToTypeStr<ToPhantomTypeArgument<B>>,
       ],
+      isPhantom: Pool.$isPhantom,
       reifiedTypeArgs: [A, B],
       fromFields: (fields: Record<string, any>) => Pool.fromFields([A, B], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Pool.fromFieldsWithTypes([A, B], item),
@@ -689,12 +692,12 @@ export type PoolCreationEventReified = Reified<PoolCreationEvent, PoolCreationEv
 export class PoolCreationEvent implements StructClass {
   static readonly $typeName = `${PKG_V1}::pool::PoolCreationEvent`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = PoolCreationEvent.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::pool::PoolCreationEvent`
-
   readonly $typeArgs: []
+  readonly $isPhantom = PoolCreationEvent.$isPhantom
 
   readonly poolId: ToField<ID>
 
@@ -716,6 +719,7 @@ export class PoolCreationEvent implements StructClass {
         ...[]
       ) as `${typeof PKG_V1}::pool::PoolCreationEvent`,
       typeArgs: [] as [],
+      isPhantom: PoolCreationEvent.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PoolCreationEvent.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PoolCreationEvent.fromFieldsWithTypes(item),
@@ -833,12 +837,12 @@ export type PoolRegistryReified = Reified<PoolRegistry, PoolRegistryFields>
 export class PoolRegistry implements StructClass {
   static readonly $typeName = `${PKG_V1}::pool::PoolRegistry`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = PoolRegistry.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::pool::PoolRegistry`
-
   readonly $typeArgs: []
+  readonly $isPhantom = PoolRegistry.$isPhantom
 
   readonly id: ToField<UID>
   readonly table: ToField<Table<ToPhantom<PoolRegistryItem>, 'bool'>>
@@ -862,6 +866,7 @@ export class PoolRegistry implements StructClass {
         ...[]
       ) as `${typeof PKG_V1}::pool::PoolRegistry`,
       typeArgs: [] as [],
+      isPhantom: PoolRegistry.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PoolRegistry.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PoolRegistry.fromFieldsWithTypes(item),
@@ -993,12 +998,12 @@ export type PoolRegistryItemReified = Reified<PoolRegistryItem, PoolRegistryItem
 export class PoolRegistryItem implements StructClass {
   static readonly $typeName = `${PKG_V1}::pool::PoolRegistryItem`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = PoolRegistryItem.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::pool::PoolRegistryItem`
-
   readonly $typeArgs: []
+  readonly $isPhantom = PoolRegistryItem.$isPhantom
 
   readonly a: ToField<TypeName>
   readonly b: ToField<TypeName>
@@ -1022,6 +1027,7 @@ export class PoolRegistryItem implements StructClass {
         ...[]
       ) as `${typeof PKG_V1}::pool::PoolRegistryItem`,
       typeArgs: [] as [],
+      isPhantom: PoolRegistryItem.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PoolRegistryItem.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PoolRegistryItem.fromFieldsWithTypes(item),

@@ -32,12 +32,12 @@ export type UrlReified = Reified<Url, UrlFields>
 export class Url implements StructClass {
   static readonly $typeName = `${PKG_V21}::url::Url`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Url.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::url::Url`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Url.$isPhantom
 
   readonly url: ToField<String>
 
@@ -53,6 +53,7 @@ export class Url implements StructClass {
       typeName: Url.$typeName,
       fullTypeName: composeSuiType(Url.$typeName, ...[]) as `${typeof PKG_V21}::url::Url`,
       typeArgs: [] as [],
+      isPhantom: Url.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Url.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Url.fromFieldsWithTypes(item),

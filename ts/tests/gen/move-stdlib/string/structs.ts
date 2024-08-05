@@ -34,12 +34,12 @@ export type StringReified = Reified<String, StringFields>
 export class String implements StructClass {
   static readonly $typeName = `${PKG_V8}::string::String`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = String.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V8}::string::String`
-
   readonly $typeArgs: []
+  readonly $isPhantom = String.$isPhantom
 
   readonly bytes: ToField<Vector<'u8'>>
 
@@ -58,6 +58,7 @@ export class String implements StructClass {
       typeName: String.$typeName,
       fullTypeName: composeSuiType(String.$typeName, ...[]) as `${typeof PKG_V8}::string::String`,
       typeArgs: [] as [],
+      isPhantom: String.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => String.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => String.fromFieldsWithTypes(item),

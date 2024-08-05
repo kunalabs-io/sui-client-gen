@@ -33,12 +33,12 @@ export type ClockReified = Reified<Clock, ClockFields>
 export class Clock implements StructClass {
   static readonly $typeName = `${PKG_V21}::clock::Clock`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Clock.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::clock::Clock`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Clock.$isPhantom
 
   readonly id: ToField<UID>
   readonly timestampMs: ToField<'u64'>
@@ -59,6 +59,7 @@ export class Clock implements StructClass {
       typeName: Clock.$typeName,
       fullTypeName: composeSuiType(Clock.$typeName, ...[]) as `${typeof PKG_V21}::clock::Clock`,
       typeArgs: [] as [],
+      isPhantom: Clock.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Clock.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Clock.fromFieldsWithTypes(item),

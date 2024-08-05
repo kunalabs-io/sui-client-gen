@@ -49,12 +49,12 @@ export type FieldReified<T0 extends TypeArgument, T1 extends TypeArgument> = Rei
 export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::dynamic_field::Field`
   static readonly $numTypeParams = 2
+  static readonly $isPhantom = [false, false] as const
 
   readonly $typeName = Field.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::dynamic_field::Field<${ToTypeStr<T0>}, ${ToTypeStr<T1>}>`
-
   readonly $typeArgs: [ToTypeStr<T0>, ToTypeStr<T1>]
+  readonly $isPhantom = Field.$isPhantom
 
   readonly id: ToField<UID>
   readonly name: ToField<T0>
@@ -86,6 +86,7 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements 
         ToTypeStr<ToTypeArgument<T0>>,
         ToTypeStr<ToTypeArgument<T1>>,
       ],
+      isPhantom: Field.$isPhantom,
       reifiedTypeArgs: [T0, T1],
       fromFields: (fields: Record<string, any>) => Field.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Field.fromFieldsWithTypes([T0, T1], item),

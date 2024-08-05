@@ -33,12 +33,12 @@ export type ObjectBagReified = Reified<ObjectBag, ObjectBagFields>
 export class ObjectBag implements StructClass {
   static readonly $typeName = `${PKG_V21}::object_bag::ObjectBag`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = ObjectBag.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::object_bag::ObjectBag`
-
   readonly $typeArgs: []
+  readonly $isPhantom = ObjectBag.$isPhantom
 
   readonly id: ToField<UID>
   readonly size: ToField<'u64'>
@@ -62,6 +62,7 @@ export class ObjectBag implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::object_bag::ObjectBag`,
       typeArgs: [] as [],
+      isPhantom: ObjectBag.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ObjectBag.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ObjectBag.fromFieldsWithTypes(item),

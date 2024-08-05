@@ -48,12 +48,12 @@ export type ConfigReified<T0 extends PhantomTypeArgument> = Reified<Config<T0>, 
 export class Config<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::config::Config`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = Config.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::config::Config<${PhantomToTypeStr<T0>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = Config.$isPhantom
 
   readonly id: ToField<UID>
 
@@ -77,6 +77,7 @@ export class Config<T0 extends PhantomTypeArgument> implements StructClass {
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::config::Config<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: Config.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Config.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Config.fromFieldsWithTypes(T0, item),
@@ -233,12 +234,12 @@ export type SettingReified<T0 extends TypeArgument> = Reified<Setting<T0>, Setti
 export class Setting<T0 extends TypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::config::Setting`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [false] as const
 
   readonly $typeName = Setting.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::config::Setting<${ToTypeStr<T0>}>`
-
   readonly $typeArgs: [ToTypeStr<T0>]
+  readonly $isPhantom = Setting.$isPhantom
 
   readonly data: ToField<Option<SettingData<T0>>>
 
@@ -262,6 +263,7 @@ export class Setting<T0 extends TypeArgument> implements StructClass {
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::config::Setting<${ToTypeStr<ToTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [ToTypeStr<ToTypeArgument<T0>>],
+      isPhantom: Setting.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Setting.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Setting.fromFieldsWithTypes(T0, item),
@@ -436,12 +438,12 @@ export type SettingDataReified<T0 extends TypeArgument> = Reified<
 export class SettingData<T0 extends TypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::config::SettingData`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [false] as const
 
   readonly $typeName = SettingData.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::config::SettingData<${ToTypeStr<T0>}>`
-
   readonly $typeArgs: [ToTypeStr<T0>]
+  readonly $isPhantom = SettingData.$isPhantom
 
   readonly newerValueEpoch: ToField<'u64'>
   readonly newerValue: ToField<Option<T0>>
@@ -469,6 +471,7 @@ export class SettingData<T0 extends TypeArgument> implements StructClass {
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::config::SettingData<${ToTypeStr<ToTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [ToTypeStr<ToTypeArgument<T0>>],
+      isPhantom: SettingData.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => SettingData.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => SettingData.fromFieldsWithTypes(T0, item),

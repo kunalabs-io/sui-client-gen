@@ -35,12 +35,12 @@ export type BitVectorReified = Reified<BitVector, BitVectorFields>
 export class BitVector implements StructClass {
   static readonly $typeName = `${PKG_V8}::bit_vector::BitVector`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = BitVector.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V8}::bit_vector::BitVector`
-
   readonly $typeArgs: []
+  readonly $isPhantom = BitVector.$isPhantom
 
   readonly length: ToField<'u64'>
   readonly bitField: ToField<Vector<'bool'>>
@@ -64,6 +64,7 @@ export class BitVector implements StructClass {
         ...[]
       ) as `${typeof PKG_V8}::bit_vector::BitVector`,
       typeArgs: [] as [],
+      isPhantom: BitVector.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => BitVector.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => BitVector.fromFieldsWithTypes(item),

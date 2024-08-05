@@ -49,12 +49,12 @@ export type EntryReified<K extends TypeArgument, V extends TypeArgument> = Reifi
 export class Entry<K extends TypeArgument, V extends TypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::vec_map::Entry`
   static readonly $numTypeParams = 2
+  static readonly $isPhantom = [false, false] as const
 
   readonly $typeName = Entry.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::vec_map::Entry<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
-
   readonly $typeArgs: [ToTypeStr<K>, ToTypeStr<V>]
+  readonly $isPhantom = Entry.$isPhantom
 
   readonly key: ToField<K>
   readonly value: ToField<V>
@@ -84,6 +84,7 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
         ToTypeStr<ToTypeArgument<K>>,
         ToTypeStr<ToTypeArgument<V>>,
       ],
+      isPhantom: Entry.$isPhantom,
       reifiedTypeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => Entry.fromFields([K, V], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Entry.fromFieldsWithTypes([K, V], item),
@@ -256,12 +257,12 @@ export type VecMapReified<K extends TypeArgument, V extends TypeArgument> = Reif
 export class VecMap<K extends TypeArgument, V extends TypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::vec_map::VecMap`
   static readonly $numTypeParams = 2
+  static readonly $isPhantom = [false, false] as const
 
   readonly $typeName = VecMap.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::vec_map::VecMap<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
-
   readonly $typeArgs: [ToTypeStr<K>, ToTypeStr<V>]
+  readonly $isPhantom = VecMap.$isPhantom
 
   readonly contents: ToField<Vector<Entry<K, V>>>
 
@@ -289,6 +290,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
         ToTypeStr<ToTypeArgument<K>>,
         ToTypeStr<ToTypeArgument<V>>,
       ],
+      isPhantom: VecMap.$isPhantom,
       reifiedTypeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => VecMap.fromFields([K, V], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VecMap.fromFieldsWithTypes([K, V], item),

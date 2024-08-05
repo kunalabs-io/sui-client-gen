@@ -34,12 +34,12 @@ export type CurveReified = Reified<Curve, CurveFields>
 export class Curve implements StructClass {
   static readonly $typeName = `${PKG_V21}::groth16::Curve`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Curve.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::groth16::Curve`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Curve.$isPhantom
 
   readonly id: ToField<'u8'>
 
@@ -58,6 +58,7 @@ export class Curve implements StructClass {
       typeName: Curve.$typeName,
       fullTypeName: composeSuiType(Curve.$typeName, ...[]) as `${typeof PKG_V21}::groth16::Curve`,
       typeArgs: [] as [],
+      isPhantom: Curve.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Curve.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Curve.fromFieldsWithTypes(item),
@@ -171,12 +172,12 @@ export type PreparedVerifyingKeyReified = Reified<PreparedVerifyingKey, Prepared
 export class PreparedVerifyingKey implements StructClass {
   static readonly $typeName = `${PKG_V21}::groth16::PreparedVerifyingKey`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = PreparedVerifyingKey.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::groth16::PreparedVerifyingKey`
-
   readonly $typeArgs: []
+  readonly $isPhantom = PreparedVerifyingKey.$isPhantom
 
   readonly vkGammaAbcG1Bytes: ToField<Vector<'u8'>>
   readonly alphaG1BetaG2Bytes: ToField<Vector<'u8'>>
@@ -204,6 +205,7 @@ export class PreparedVerifyingKey implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::groth16::PreparedVerifyingKey`,
       typeArgs: [] as [],
+      isPhantom: PreparedVerifyingKey.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PreparedVerifyingKey.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
@@ -351,12 +353,12 @@ export type ProofPointsReified = Reified<ProofPoints, ProofPointsFields>
 export class ProofPoints implements StructClass {
   static readonly $typeName = `${PKG_V21}::groth16::ProofPoints`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = ProofPoints.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::groth16::ProofPoints`
-
   readonly $typeArgs: []
+  readonly $isPhantom = ProofPoints.$isPhantom
 
   readonly bytes: ToField<Vector<'u8'>>
 
@@ -378,6 +380,7 @@ export class ProofPoints implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::groth16::ProofPoints`,
       typeArgs: [] as [],
+      isPhantom: ProofPoints.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ProofPoints.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ProofPoints.fromFieldsWithTypes(item),
@@ -494,12 +497,12 @@ export type PublicProofInputsReified = Reified<PublicProofInputs, PublicProofInp
 export class PublicProofInputs implements StructClass {
   static readonly $typeName = `${PKG_V21}::groth16::PublicProofInputs`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = PublicProofInputs.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::groth16::PublicProofInputs`
-
   readonly $typeArgs: []
+  readonly $isPhantom = PublicProofInputs.$isPhantom
 
   readonly bytes: ToField<Vector<'u8'>>
 
@@ -521,6 +524,7 @@ export class PublicProofInputs implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::groth16::PublicProofInputs`,
       typeArgs: [] as [],
+      isPhantom: PublicProofInputs.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PublicProofInputs.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PublicProofInputs.fromFieldsWithTypes(item),

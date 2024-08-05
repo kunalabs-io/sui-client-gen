@@ -31,12 +31,12 @@ export type FixedPoint32Reified = Reified<FixedPoint32, FixedPoint32Fields>
 export class FixedPoint32 implements StructClass {
   static readonly $typeName = `${PKG_V8}::fixed_point32::FixedPoint32`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = FixedPoint32.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V8}::fixed_point32::FixedPoint32`
-
   readonly $typeArgs: []
+  readonly $isPhantom = FixedPoint32.$isPhantom
 
   readonly value: ToField<'u64'>
 
@@ -58,6 +58,7 @@ export class FixedPoint32 implements StructClass {
         ...[]
       ) as `${typeof PKG_V8}::fixed_point32::FixedPoint32`,
       typeArgs: [] as [],
+      isPhantom: FixedPoint32.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => FixedPoint32.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => FixedPoint32.fromFieldsWithTypes(item),

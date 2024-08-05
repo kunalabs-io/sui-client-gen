@@ -34,12 +34,12 @@ export type CharReified = Reified<Char, CharFields>
 export class Char implements StructClass {
   static readonly $typeName = `${PKG_V8}::ascii::Char`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Char.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V8}::ascii::Char`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Char.$isPhantom
 
   readonly byte: ToField<'u8'>
 
@@ -58,6 +58,7 @@ export class Char implements StructClass {
       typeName: Char.$typeName,
       fullTypeName: composeSuiType(Char.$typeName, ...[]) as `${typeof PKG_V8}::ascii::Char`,
       typeArgs: [] as [],
+      isPhantom: Char.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Char.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Char.fromFieldsWithTypes(item),
@@ -168,12 +169,12 @@ export type StringReified = Reified<String, StringFields>
 export class String implements StructClass {
   static readonly $typeName = `${PKG_V8}::ascii::String`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = String.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V8}::ascii::String`
-
   readonly $typeArgs: []
+  readonly $isPhantom = String.$isPhantom
 
   readonly bytes: ToField<Vector<'u8'>>
 
@@ -192,6 +193,7 @@ export class String implements StructClass {
       typeName: String.$typeName,
       fullTypeName: composeSuiType(String.$typeName, ...[]) as `${typeof PKG_V8}::ascii::String`,
       typeArgs: [] as [],
+      isPhantom: String.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => String.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => String.fromFieldsWithTypes(item),

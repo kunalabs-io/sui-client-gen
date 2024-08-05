@@ -31,12 +31,12 @@ export type AddedInAnUpgradeReified = Reified<AddedInAnUpgrade, AddedInAnUpgrade
 export class AddedInAnUpgrade implements StructClass {
   static readonly $typeName = `${PKG_V2}::other_module::AddedInAnUpgrade`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = AddedInAnUpgrade.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V2}::other_module::AddedInAnUpgrade`
-
   readonly $typeArgs: []
+  readonly $isPhantom = AddedInAnUpgrade.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -58,6 +58,7 @@ export class AddedInAnUpgrade implements StructClass {
         ...[]
       ) as `${typeof PKG_V2}::other_module::AddedInAnUpgrade`,
       typeArgs: [] as [],
+      isPhantom: AddedInAnUpgrade.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AddedInAnUpgrade.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => AddedInAnUpgrade.fromFieldsWithTypes(item),
@@ -177,12 +178,12 @@ export type StructFromOtherModuleReified = Reified<
 export class StructFromOtherModule implements StructClass {
   static readonly $typeName = `${PKG_V1}::other_module::StructFromOtherModule`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = StructFromOtherModule.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V1}::other_module::StructFromOtherModule`
-
   readonly $typeArgs: []
+  readonly $isPhantom = StructFromOtherModule.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -204,6 +205,7 @@ export class StructFromOtherModule implements StructClass {
         ...[]
       ) as `${typeof PKG_V1}::other_module::StructFromOtherModule`,
       typeArgs: [] as [],
+      isPhantom: StructFromOtherModule.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => StructFromOtherModule.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>

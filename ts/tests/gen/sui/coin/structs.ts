@@ -50,12 +50,12 @@ export type CoinReified<T extends PhantomTypeArgument> = Reified<Coin<T>, CoinFi
 export class Coin<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::coin::Coin`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = Coin.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::coin::Coin<${PhantomToTypeStr<T>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T>]
+  readonly $isPhantom = Coin.$isPhantom
 
   readonly id: ToField<UID>
   readonly balance: ToField<Balance<T>>
@@ -81,6 +81,7 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
         ...[extractType(T)]
       ) as `${typeof PKG_V21}::coin::Coin<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      isPhantom: Coin.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Coin.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Coin.fromFieldsWithTypes(T, item),
@@ -254,12 +255,12 @@ export type CoinMetadataReified<T extends PhantomTypeArgument> = Reified<
 export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::coin::CoinMetadata`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = CoinMetadata.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::coin::CoinMetadata<${PhantomToTypeStr<T>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T>]
+  readonly $isPhantom = CoinMetadata.$isPhantom
 
   readonly id: ToField<UID>
   readonly decimals: ToField<'u8'>
@@ -293,6 +294,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
         ...[extractType(T)]
       ) as `${typeof PKG_V21}::coin::CoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      isPhantom: CoinMetadata.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => CoinMetadata.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => CoinMetadata.fromFieldsWithTypes(T, item),
@@ -481,12 +483,12 @@ export type CurrencyCreatedReified<T extends PhantomTypeArgument> = Reified<
 export class CurrencyCreated<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::coin::CurrencyCreated`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = CurrencyCreated.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::coin::CurrencyCreated<${PhantomToTypeStr<T>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T>]
+  readonly $isPhantom = CurrencyCreated.$isPhantom
 
   readonly decimals: ToField<'u8'>
 
@@ -510,6 +512,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
         ...[extractType(T)]
       ) as `${typeof PKG_V21}::coin::CurrencyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      isPhantom: CurrencyCreated.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => CurrencyCreated.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => CurrencyCreated.fromFieldsWithTypes(T, item),
@@ -670,12 +673,12 @@ export type DenyCapReified<T extends PhantomTypeArgument> = Reified<DenyCap<T>, 
 export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::coin::DenyCap`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = DenyCap.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::coin::DenyCap<${PhantomToTypeStr<T>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T>]
+  readonly $isPhantom = DenyCap.$isPhantom
 
   readonly id: ToField<UID>
 
@@ -699,6 +702,7 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
         ...[extractType(T)]
       ) as `${typeof PKG_V21}::coin::DenyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      isPhantom: DenyCap.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => DenyCap.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => DenyCap.fromFieldsWithTypes(T, item),
@@ -860,12 +864,12 @@ export type RegulatedCoinMetadataReified<T extends PhantomTypeArgument> = Reifie
 export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::coin::RegulatedCoinMetadata`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = RegulatedCoinMetadata.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::coin::RegulatedCoinMetadata<${PhantomToTypeStr<T>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T>]
+  readonly $isPhantom = RegulatedCoinMetadata.$isPhantom
 
   readonly id: ToField<UID>
   readonly coinMetadataObject: ToField<ID>
@@ -893,6 +897,7 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
         ...[extractType(T)]
       ) as `${typeof PKG_V21}::coin::RegulatedCoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      isPhantom: RegulatedCoinMetadata.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => RegulatedCoinMetadata.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
@@ -1071,12 +1076,12 @@ export type TreasuryCapReified<T extends PhantomTypeArgument> = Reified<
 export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::coin::TreasuryCap`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = TreasuryCap.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::coin::TreasuryCap<${PhantomToTypeStr<T>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T>]
+  readonly $isPhantom = TreasuryCap.$isPhantom
 
   readonly id: ToField<UID>
   readonly totalSupply: ToField<Supply<T>>
@@ -1102,6 +1107,7 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
         ...[extractType(T)]
       ) as `${typeof PKG_V21}::coin::TreasuryCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      isPhantom: TreasuryCap.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TreasuryCap.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TreasuryCap.fromFieldsWithTypes(T, item),

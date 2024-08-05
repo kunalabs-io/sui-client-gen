@@ -31,12 +31,12 @@ export type G1Reified = Reified<G1, G1Fields>
 export class G1 implements StructClass {
   static readonly $typeName = `${PKG_V21}::bls12381::G1`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = G1.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::bls12381::G1`
-
   readonly $typeArgs: []
+  readonly $isPhantom = G1.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -55,6 +55,7 @@ export class G1 implements StructClass {
       typeName: G1.$typeName,
       fullTypeName: composeSuiType(G1.$typeName, ...[]) as `${typeof PKG_V21}::bls12381::G1`,
       typeArgs: [] as [],
+      isPhantom: G1.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => G1.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => G1.fromFieldsWithTypes(item),
@@ -167,12 +168,12 @@ export type G2Reified = Reified<G2, G2Fields>
 export class G2 implements StructClass {
   static readonly $typeName = `${PKG_V21}::bls12381::G2`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = G2.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::bls12381::G2`
-
   readonly $typeArgs: []
+  readonly $isPhantom = G2.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -191,6 +192,7 @@ export class G2 implements StructClass {
       typeName: G2.$typeName,
       fullTypeName: composeSuiType(G2.$typeName, ...[]) as `${typeof PKG_V21}::bls12381::G2`,
       typeArgs: [] as [],
+      isPhantom: G2.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => G2.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => G2.fromFieldsWithTypes(item),
@@ -303,12 +305,12 @@ export type GTReified = Reified<GT, GTFields>
 export class GT implements StructClass {
   static readonly $typeName = `${PKG_V21}::bls12381::GT`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = GT.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::bls12381::GT`
-
   readonly $typeArgs: []
+  readonly $isPhantom = GT.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -327,6 +329,7 @@ export class GT implements StructClass {
       typeName: GT.$typeName,
       fullTypeName: composeSuiType(GT.$typeName, ...[]) as `${typeof PKG_V21}::bls12381::GT`,
       typeArgs: [] as [],
+      isPhantom: GT.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => GT.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => GT.fromFieldsWithTypes(item),
@@ -439,12 +442,12 @@ export type ScalarReified = Reified<Scalar, ScalarFields>
 export class Scalar implements StructClass {
   static readonly $typeName = `${PKG_V21}::bls12381::Scalar`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Scalar.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::bls12381::Scalar`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Scalar.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -466,6 +469,7 @@ export class Scalar implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::bls12381::Scalar`,
       typeArgs: [] as [],
+      isPhantom: Scalar.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Scalar.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Scalar.fromFieldsWithTypes(item),

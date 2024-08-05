@@ -48,12 +48,12 @@ export type BorrowReified = Reified<Borrow, BorrowFields>
 export class Borrow implements StructClass {
   static readonly $typeName = `${PKG_V21}::kiosk::Borrow`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Borrow.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::kiosk::Borrow`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Borrow.$isPhantom
 
   readonly kioskId: ToField<ID>
   readonly itemId: ToField<ID>
@@ -74,6 +74,7 @@ export class Borrow implements StructClass {
       typeName: Borrow.$typeName,
       fullTypeName: composeSuiType(Borrow.$typeName, ...[]) as `${typeof PKG_V21}::kiosk::Borrow`,
       typeArgs: [] as [],
+      isPhantom: Borrow.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Borrow.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Borrow.fromFieldsWithTypes(item),
@@ -199,12 +200,12 @@ export type KioskReified = Reified<Kiosk, KioskFields>
 export class Kiosk implements StructClass {
   static readonly $typeName = `${PKG_V21}::kiosk::Kiosk`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Kiosk.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::kiosk::Kiosk`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Kiosk.$isPhantom
 
   readonly id: ToField<UID>
   readonly profits: ToField<Balance<ToPhantom<SUI>>>
@@ -231,6 +232,7 @@ export class Kiosk implements StructClass {
       typeName: Kiosk.$typeName,
       fullTypeName: composeSuiType(Kiosk.$typeName, ...[]) as `${typeof PKG_V21}::kiosk::Kiosk`,
       typeArgs: [] as [],
+      isPhantom: Kiosk.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Kiosk.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Kiosk.fromFieldsWithTypes(item),
@@ -374,12 +376,12 @@ export type KioskOwnerCapReified = Reified<KioskOwnerCap, KioskOwnerCapFields>
 export class KioskOwnerCap implements StructClass {
   static readonly $typeName = `${PKG_V21}::kiosk::KioskOwnerCap`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = KioskOwnerCap.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::kiosk::KioskOwnerCap`
-
   readonly $typeArgs: []
+  readonly $isPhantom = KioskOwnerCap.$isPhantom
 
   readonly id: ToField<UID>
   readonly for: ToField<ID>
@@ -403,6 +405,7 @@ export class KioskOwnerCap implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::kiosk::KioskOwnerCap`,
       typeArgs: [] as [],
+      isPhantom: KioskOwnerCap.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => KioskOwnerCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => KioskOwnerCap.fromFieldsWithTypes(item),
@@ -530,12 +533,12 @@ export type PurchaseCapReified<T0 extends PhantomTypeArgument> = Reified<
 export class PurchaseCap<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::kiosk::PurchaseCap`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = PurchaseCap.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::kiosk::PurchaseCap<${PhantomToTypeStr<T0>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = PurchaseCap.$isPhantom
 
   readonly id: ToField<UID>
   readonly kioskId: ToField<ID>
@@ -565,6 +568,7 @@ export class PurchaseCap<T0 extends PhantomTypeArgument> implements StructClass 
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::kiosk::PurchaseCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: PurchaseCap.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => PurchaseCap.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PurchaseCap.fromFieldsWithTypes(T0, item),
@@ -740,12 +744,12 @@ export type ItemReified = Reified<Item, ItemFields>
 export class Item implements StructClass {
   static readonly $typeName = `${PKG_V21}::kiosk::Item`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Item.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::kiosk::Item`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Item.$isPhantom
 
   readonly id: ToField<ID>
 
@@ -764,6 +768,7 @@ export class Item implements StructClass {
       typeName: Item.$typeName,
       fullTypeName: composeSuiType(Item.$typeName, ...[]) as `${typeof PKG_V21}::kiosk::Item`,
       typeArgs: [] as [],
+      isPhantom: Item.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Item.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Item.fromFieldsWithTypes(item),
@@ -875,12 +880,12 @@ export type ListingReified = Reified<Listing, ListingFields>
 export class Listing implements StructClass {
   static readonly $typeName = `${PKG_V21}::kiosk::Listing`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Listing.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::kiosk::Listing`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Listing.$isPhantom
 
   readonly id: ToField<ID>
   readonly isExclusive: ToField<'bool'>
@@ -901,6 +906,7 @@ export class Listing implements StructClass {
       typeName: Listing.$typeName,
       fullTypeName: composeSuiType(Listing.$typeName, ...[]) as `${typeof PKG_V21}::kiosk::Listing`,
       typeArgs: [] as [],
+      isPhantom: Listing.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Listing.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Listing.fromFieldsWithTypes(item),
@@ -1022,12 +1028,12 @@ export type LockReified = Reified<Lock, LockFields>
 export class Lock implements StructClass {
   static readonly $typeName = `${PKG_V21}::kiosk::Lock`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Lock.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::kiosk::Lock`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Lock.$isPhantom
 
   readonly id: ToField<ID>
 
@@ -1046,6 +1052,7 @@ export class Lock implements StructClass {
       typeName: Lock.$typeName,
       fullTypeName: composeSuiType(Lock.$typeName, ...[]) as `${typeof PKG_V21}::kiosk::Lock`,
       typeArgs: [] as [],
+      isPhantom: Lock.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Lock.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Lock.fromFieldsWithTypes(item),
@@ -1161,12 +1168,12 @@ export type ItemListedReified<T0 extends PhantomTypeArgument> = Reified<
 export class ItemListed<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::kiosk::ItemListed`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = ItemListed.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::kiosk::ItemListed<${PhantomToTypeStr<T0>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = ItemListed.$isPhantom
 
   readonly kiosk: ToField<ID>
   readonly id: ToField<ID>
@@ -1194,6 +1201,7 @@ export class ItemListed<T0 extends PhantomTypeArgument> implements StructClass {
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::kiosk::ItemListed<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: ItemListed.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => ItemListed.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ItemListed.fromFieldsWithTypes(T0, item),
@@ -1369,12 +1377,12 @@ export type ItemPurchasedReified<T0 extends PhantomTypeArgument> = Reified<
 export class ItemPurchased<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::kiosk::ItemPurchased`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = ItemPurchased.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::kiosk::ItemPurchased<${PhantomToTypeStr<T0>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = ItemPurchased.$isPhantom
 
   readonly kiosk: ToField<ID>
   readonly id: ToField<ID>
@@ -1402,6 +1410,7 @@ export class ItemPurchased<T0 extends PhantomTypeArgument> implements StructClas
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::kiosk::ItemPurchased<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: ItemPurchased.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => ItemPurchased.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ItemPurchased.fromFieldsWithTypes(T0, item),
@@ -1576,12 +1585,12 @@ export type ItemDelistedReified<T0 extends PhantomTypeArgument> = Reified<
 export class ItemDelisted<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::kiosk::ItemDelisted`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = ItemDelisted.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::kiosk::ItemDelisted<${PhantomToTypeStr<T0>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = ItemDelisted.$isPhantom
 
   readonly kiosk: ToField<ID>
   readonly id: ToField<ID>
@@ -1607,6 +1616,7 @@ export class ItemDelisted<T0 extends PhantomTypeArgument> implements StructClass
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::kiosk::ItemDelisted<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: ItemDelisted.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => ItemDelisted.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ItemDelisted.fromFieldsWithTypes(T0, item),

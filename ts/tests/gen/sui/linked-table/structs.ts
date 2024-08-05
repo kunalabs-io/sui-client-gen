@@ -56,12 +56,12 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
 {
   static readonly $typeName = `${PKG_V21}::linked_table::LinkedTable`
   static readonly $numTypeParams = 2
+  static readonly $isPhantom = [false, true] as const
 
   readonly $typeName = LinkedTable.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::linked_table::LinkedTable<${ToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
-
   readonly $typeArgs: [ToTypeStr<K>, PhantomToTypeStr<V>]
+  readonly $isPhantom = LinkedTable.$isPhantom
 
   readonly id: ToField<UID>
   readonly size: ToField<'u64'>
@@ -98,6 +98,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
         ToTypeStr<ToTypeArgument<K>>,
         PhantomToTypeStr<ToPhantomTypeArgument<V>>,
       ],
+      isPhantom: LinkedTable.$isPhantom,
       reifiedTypeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => LinkedTable.fromFields([K, V], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => LinkedTable.fromFieldsWithTypes([K, V], item),
@@ -300,12 +301,12 @@ export type NodeReified<K extends TypeArgument, V extends TypeArgument> = Reifie
 export class Node<K extends TypeArgument, V extends TypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::linked_table::Node`
   static readonly $numTypeParams = 2
+  static readonly $isPhantom = [false, false] as const
 
   readonly $typeName = Node.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::linked_table::Node<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
-
   readonly $typeArgs: [ToTypeStr<K>, ToTypeStr<V>]
+  readonly $isPhantom = Node.$isPhantom
 
   readonly prev: ToField<Option<K>>
   readonly next: ToField<Option<K>>
@@ -337,6 +338,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
         ToTypeStr<ToTypeArgument<K>>,
         ToTypeStr<ToTypeArgument<V>>,
       ],
+      isPhantom: Node.$isPhantom,
       reifiedTypeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => Node.fromFields([K, V], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Node.fromFieldsWithTypes([K, V], item),

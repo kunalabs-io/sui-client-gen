@@ -45,12 +45,12 @@ export type ExtensionReified = Reified<Extension, ExtensionFields>
 export class Extension implements StructClass {
   static readonly $typeName = `${PKG_V21}::kiosk_extension::Extension`
   static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
 
   readonly $typeName = Extension.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::kiosk_extension::Extension`
-
   readonly $typeArgs: []
+  readonly $isPhantom = Extension.$isPhantom
 
   readonly storage: ToField<Bag>
   readonly permissions: ToField<'u128'>
@@ -76,6 +76,7 @@ export class Extension implements StructClass {
         ...[]
       ) as `${typeof PKG_V21}::kiosk_extension::Extension`,
       typeArgs: [] as [],
+      isPhantom: Extension.$isPhantom,
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Extension.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Extension.fromFieldsWithTypes(item),
@@ -205,12 +206,12 @@ export type ExtensionKeyReified<Ext extends PhantomTypeArgument> = Reified<
 export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::kiosk_extension::ExtensionKey`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = ExtensionKey.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::kiosk_extension::ExtensionKey<${PhantomToTypeStr<Ext>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<Ext>]
+  readonly $isPhantom = ExtensionKey.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -234,6 +235,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
         ...[extractType(Ext)]
       ) as `${typeof PKG_V21}::kiosk_extension::ExtensionKey<${PhantomToTypeStr<ToPhantomTypeArgument<Ext>>}>`,
       typeArgs: [extractType(Ext)] as [PhantomToTypeStr<ToPhantomTypeArgument<Ext>>],
+      isPhantom: ExtensionKey.$isPhantom,
       reifiedTypeArgs: [Ext],
       fromFields: (fields: Record<string, any>) => ExtensionKey.fromFields(Ext, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ExtensionKey.fromFieldsWithTypes(Ext, item),

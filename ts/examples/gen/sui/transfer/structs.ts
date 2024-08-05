@@ -47,12 +47,12 @@ export type ReceivingReified<T extends PhantomTypeArgument> = Reified<
 export class Receiving<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::transfer::Receiving`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = Receiving.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::transfer::Receiving<${PhantomToTypeStr<T>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T>]
+  readonly $isPhantom = Receiving.$isPhantom
 
   readonly id: ToField<ID>
   readonly version: ToField<'u64'>
@@ -78,6 +78,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
         ...[extractType(T)]
       ) as `${typeof PKG_V21}::transfer::Receiving<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      isPhantom: Receiving.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Receiving.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Receiving.fromFieldsWithTypes(T, item),

@@ -42,12 +42,12 @@ export type BalanceReified<T extends PhantomTypeArgument> = Reified<Balance<T>, 
 export class Balance<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::balance::Balance`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = Balance.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::balance::Balance<${PhantomToTypeStr<T>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T>]
+  readonly $isPhantom = Balance.$isPhantom
 
   readonly value: ToField<'u64'>
 
@@ -71,6 +71,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
         ...[extractType(T)]
       ) as `${typeof PKG_V21}::balance::Balance<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      isPhantom: Balance.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Balance.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Balance.fromFieldsWithTypes(T, item),
@@ -227,12 +228,12 @@ export type SupplyReified<T extends PhantomTypeArgument> = Reified<Supply<T>, Su
 export class Supply<T extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::balance::Supply`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = Supply.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::balance::Supply<${PhantomToTypeStr<T>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T>]
+  readonly $isPhantom = Supply.$isPhantom
 
   readonly value: ToField<'u64'>
 
@@ -256,6 +257,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
         ...[extractType(T)]
       ) as `${typeof PKG_V21}::balance::Supply<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      isPhantom: Supply.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Supply.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Supply.fromFieldsWithTypes(T, item),

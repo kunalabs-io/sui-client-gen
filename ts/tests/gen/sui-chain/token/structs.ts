@@ -51,12 +51,12 @@ export type TokenReified<T0 extends PhantomTypeArgument> = Reified<Token<T0>, To
 export class Token<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::token::Token`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = Token.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::token::Token<${PhantomToTypeStr<T0>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = Token.$isPhantom
 
   readonly id: ToField<UID>
   readonly balance: ToField<Balance<T0>>
@@ -82,6 +82,7 @@ export class Token<T0 extends PhantomTypeArgument> implements StructClass {
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::token::Token<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: Token.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Token.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Token.fromFieldsWithTypes(T0, item),
@@ -251,12 +252,12 @@ export type TokenPolicyCapReified<T0 extends PhantomTypeArgument> = Reified<
 export class TokenPolicyCap<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::token::TokenPolicyCap`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = TokenPolicyCap.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::token::TokenPolicyCap<${PhantomToTypeStr<T0>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = TokenPolicyCap.$isPhantom
 
   readonly id: ToField<UID>
   readonly for: ToField<ID>
@@ -282,6 +283,7 @@ export class TokenPolicyCap<T0 extends PhantomTypeArgument> implements StructCla
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::token::TokenPolicyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: TokenPolicyCap.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => TokenPolicyCap.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TokenPolicyCap.fromFieldsWithTypes(T0, item),
@@ -452,12 +454,12 @@ export type TokenPolicyReified<T0 extends PhantomTypeArgument> = Reified<
 export class TokenPolicy<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::token::TokenPolicy`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = TokenPolicy.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::token::TokenPolicy<${PhantomToTypeStr<T0>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = TokenPolicy.$isPhantom
 
   readonly id: ToField<UID>
   readonly spentBalance: ToField<Balance<T0>>
@@ -485,6 +487,7 @@ export class TokenPolicy<T0 extends PhantomTypeArgument> implements StructClass 
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::token::TokenPolicy<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: TokenPolicy.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => TokenPolicy.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TokenPolicy.fromFieldsWithTypes(T0, item),
@@ -672,12 +675,12 @@ export type ActionRequestReified<T0 extends PhantomTypeArgument> = Reified<
 export class ActionRequest<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::token::ActionRequest`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = ActionRequest.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::token::ActionRequest<${PhantomToTypeStr<T0>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = ActionRequest.$isPhantom
 
   readonly name: ToField<String>
   readonly amount: ToField<'u64'>
@@ -711,6 +714,7 @@ export class ActionRequest<T0 extends PhantomTypeArgument> implements StructClas
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::token::ActionRequest<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: ActionRequest.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => ActionRequest.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ActionRequest.fromFieldsWithTypes(T0, item),
@@ -919,12 +923,12 @@ export type RuleKeyReified<T0 extends PhantomTypeArgument> = Reified<RuleKey<T0>
 export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::token::RuleKey`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = RuleKey.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::token::RuleKey<${PhantomToTypeStr<T0>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = RuleKey.$isPhantom
 
   readonly isProtected: ToField<'bool'>
 
@@ -948,6 +952,7 @@ export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::token::RuleKey<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: RuleKey.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => RuleKey.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => RuleKey.fromFieldsWithTypes(T0, item),
@@ -1112,12 +1117,12 @@ export type TokenPolicyCreatedReified<T0 extends PhantomTypeArgument> = Reified<
 export class TokenPolicyCreated<T0 extends PhantomTypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::token::TokenPolicyCreated`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
 
   readonly $typeName = TokenPolicyCreated.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::token::TokenPolicyCreated<${PhantomToTypeStr<T0>}>`
-
   readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = TokenPolicyCreated.$isPhantom
 
   readonly id: ToField<ID>
   readonly isMutable: ToField<'bool'>
@@ -1143,6 +1148,7 @@ export class TokenPolicyCreated<T0 extends PhantomTypeArgument> implements Struc
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::token::TokenPolicyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: TokenPolicyCreated.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => TokenPolicyCreated.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>

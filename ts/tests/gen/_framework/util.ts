@@ -88,10 +88,6 @@ export function parseTypeName(name: string): { typeName: string; typeArgs: strin
 }
 
 export function isTransactionArgument(arg: GenericArg): arg is TransactionArgument {
-  if (typeof arg === 'function') {
-    throw new Error('Transaction plugins are not supported')
-  }
-
   if (!arg || typeof arg !== 'object' || Array.isArray(arg)) {
     return false
   }
@@ -99,35 +95,11 @@ export function isTransactionArgument(arg: GenericArg): arg is TransactionArgume
   return 'GasCoin' in arg || 'Input' in arg || 'Result' in arg || 'NestedResult' in arg
 }
 
-export function isTransactionObjectArgument(arg: GenericArg): arg is TransactionObjectArgument {
-  if (typeof arg === 'function') {
-    throw new Error('Transaction plugins are not supported')
-  }
-
-  if (!isTransactionArgument(arg)) {
-    return false
-  }
-
-  if ('Input' in arg && arg.type === 'pure') {
-    return false
-  }
-
-  return true
-}
-
 export function obj(tx: Transaction, arg: TransactionObjectInput) {
-  if (typeof arg === 'function') {
-    throw new Error('Transaction plugins are not supported')
-  }
-
   return isTransactionArgument(arg) ? arg : tx.object(arg)
 }
 
-export function pure(tx: Transaction, arg: PureArg, type: string) {
-  if (typeof arg === 'function') {
-    throw new Error('Transaction plugins are not supported')
-  }
-
+export function pure(tx: Transaction, arg: PureArg, type: string): TransactionArgument {
   if (isTransactionArgument(arg)) {
     return obj(tx, arg)
   }
@@ -165,15 +137,61 @@ export function pure(tx: Transaction, arg: PureArg, type: string) {
     }
   }
 
-  function isOrHasNestedTransactionArgument(arg: PureArg): boolean {
-    if (typeof arg === 'function') {
-      throw new Error('Transaction plugins are not supported')
+  function hasUndefinedOrNull(items: PureArg[]) {
+    for (const item of items) {
+      if (typeof item === 'undefined' || item === null) {
+        return true
+      }
+
+      if (Array.isArray(item)) {
+        return hasUndefinedOrNull(item)
+      }
     }
 
-    if (Array.isArray(arg)) {
-      return arg.some(item => isOrHasNestedTransactionArgument(item))
+    return false
+  }
+
+  function consistsOnlyOfPrimitiveValues(items: PureArg[]) {
+    for (const item of items) {
+      if (!Array.isArray(item)) {
+        if (item === null) {
+          continue
+        }
+        switch (typeof item) {
+          case 'string':
+          case 'number':
+          case 'bigint':
+          case 'boolean':
+            continue
+          default:
+            return false
+        }
+      }
+
+      return consistsOnlyOfPrimitiveValues(item)
     }
-    return isTransactionArgument(arg)
+
+    return true
+  }
+
+  function hasPrimitiveValues(items: PureArg[]) {
+    for (const item of items) {
+      if (!Array.isArray(item)) {
+        switch (typeof item) {
+          case 'string':
+          case 'number':
+          case 'bigint':
+          case 'boolean':
+            return true
+          default:
+            continue
+        }
+      }
+
+      return hasPrimitiveValues(item)
+    }
+
+    return false
   }
 
   // handle some cases when TransactionArgument is nested within a vector or option
@@ -181,12 +199,21 @@ export function pure(tx: Transaction, arg: PureArg, type: string) {
   switch (typeName) {
     case '0x1::option::Option':
       if (arg === null) {
-        return tx.pure(bcs.option(bcs.Bool).serialize(null)) // bcs.Bool is arbitrary
+        return tx.pure.option('bool', null) // 'bool' is arbitrary
       }
-      if (isOrHasNestedTransactionArgument(arg)) {
-        throw new Error('nesting TransactionArgument is not supported')
+      if (consistsOnlyOfPrimitiveValues([arg])) {
+        return tx.pure(getBcsForType(type).serialize(arg))
       }
-      break
+      if (hasPrimitiveValues([arg])) {
+        throw new Error('mixing primitive and TransactionArgument values is not supported')
+      }
+
+      // wrap it with some
+      return tx.moveCall({
+        target: `0x1::option::some`,
+        typeArguments: [typeArgs[0]],
+        arguments: [pure(tx, arg, typeArgs[0])],
+      })
     case 'vector':
       if (!Array.isArray(arg)) {
         throw new Error('expected an array for vector type')
@@ -194,31 +221,26 @@ export function pure(tx: Transaction, arg: PureArg, type: string) {
       if (arg.length === 0) {
         return tx.pure(bcs.vector(bcs.Bool).serialize([])) // bcs.Bool is arbitrary
       }
-      if (arg.some(arg => Array.isArray(arg) && isOrHasNestedTransactionArgument(arg))) {
-        throw new Error('nesting TransactionArgument is not supported')
+      if (hasUndefinedOrNull(arg)) {
+        throw new Error('the provided array contains undefined or null values')
       }
-      if (
-        isTransactionArgument(arg[0]) &&
-        arg.filter(arg => !isTransactionArgument(arg)).length > 0
-      ) {
-        throw new Error('mixing TransactionArgument with other types is not supported')
+      if (consistsOnlyOfPrimitiveValues(arg)) {
+        return tx.pure(getBcsForType(type).serialize(arg))
       }
-      if (isTransactionObjectArgument(arg[0])) {
-        return tx.makeMoveVec({
-          type: typeArgs[0],
-          elements: arg as Array<TransactionObjectArgument>,
-        })
+      if (hasPrimitiveValues(arg)) {
+        throw new Error('mixing primitive and TransactionArgument values is not supported')
       }
-  }
 
-  return tx.pure(getBcsForType(type).serialize(arg))
+      return tx.makeMoveVec({
+        type: typeArgs[0],
+        elements: arg as Array<TransactionObjectArgument>,
+      })
+    default:
+      return tx.pure(getBcsForType(type).serialize(arg))
+  }
 }
 
 export function option(tx: Transaction, type: string, arg: GenericArg | null) {
-  if (typeof arg === 'function') {
-    throw new Error('Transaction plugins are not supported')
-  }
-
   if (isTransactionArgument(arg)) {
     return arg
   }
@@ -245,10 +267,6 @@ export function option(tx: Transaction, type: string, arg: GenericArg | null) {
 }
 
 export function generic(tx: Transaction, type: string, arg: GenericArg) {
-  if (typeof arg === 'function') {
-    throw new Error('Transaction plugins are not supported')
-  }
-
   if (typeArgIsPure(type)) {
     return pure(tx, arg as PureArg | TransactionArgument, type)
   } else {

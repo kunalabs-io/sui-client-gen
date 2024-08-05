@@ -43,12 +43,12 @@ export type WrapperReified<T0 extends TypeArgument> = Reified<Wrapper<T0>, Wrapp
 export class Wrapper<T0 extends TypeArgument> implements StructClass {
   static readonly $typeName = `${PKG_V21}::dynamic_object_field::Wrapper`
   static readonly $numTypeParams = 1
+  static readonly $isPhantom = [false] as const
 
   readonly $typeName = Wrapper.$typeName
-
   readonly $fullTypeName: `${typeof PKG_V21}::dynamic_object_field::Wrapper<${ToTypeStr<T0>}>`
-
   readonly $typeArgs: [ToTypeStr<T0>]
+  readonly $isPhantom = Wrapper.$isPhantom
 
   readonly name: ToField<T0>
 
@@ -72,6 +72,7 @@ export class Wrapper<T0 extends TypeArgument> implements StructClass {
         ...[extractType(T0)]
       ) as `${typeof PKG_V21}::dynamic_object_field::Wrapper<${ToTypeStr<ToTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [ToTypeStr<ToTypeArgument<T0>>],
+      isPhantom: Wrapper.$isPhantom,
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Wrapper.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Wrapper.fromFieldsWithTypes(T0, item),
