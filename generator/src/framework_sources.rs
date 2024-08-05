@@ -476,9 +476,10 @@ import { FieldsWithTypes, compressSuiType, parseTypeName } from './util'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 export interface StructClass {
-  $typeName: string
-  $fullTypeName: string
-  $typeArgs: string[]
+  readonly $typeName: string
+  readonly $fullTypeName: string
+  readonly $typeArgs: string[]
+  readonly $isPhantom: readonly boolean[]
   toJSONField(): Record<string, any>
   toJSON(): Record<string, any>
 }
@@ -515,6 +516,7 @@ export interface StructClassReified<T extends StructClass, Fields> {
   typeName: T['$typeName'] // e.g., '0x2::balance::Balance', without type arguments
   fullTypeName: ToTypeStr<T> // e.g., '0x2::balance::Balance<0x2::sui:SUI>'
   typeArgs: T['$typeArgs'] // e.g., ['0x2::sui:SUI']
+  isPhantom: T['$isPhantom'] // e.g., [true, false]
   reifiedTypeArgs: Array<Reified<TypeArgument, any> | PhantomReified<PhantomTypeArgument>>
   bcs: BcsType<any>
   fromFields(fields: Record<string, any>): T

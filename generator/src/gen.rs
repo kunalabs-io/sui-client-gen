@@ -1708,6 +1708,18 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             }
         };
 
+        // `[true, false]`
+        let type_arg_is_phantom = (0..type_params.len()).map(|idx| strct.is_phantom_parameter(idx));
+        let is_phantom_value_toks = &quote! {
+            [$(for is_phantom in type_arg_is_phantom {
+                $(if is_phantom {
+                    true,
+                } else {
+                    false,
+                })
+            })]
+        };
+
         let is_option = self.get_full_name_with_address_str(strct) == "0x1::option::Option";
 
         quote_in! { *tokens =>
@@ -1723,7 +1735,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         quote_in! { *tokens =>
             export class $(&struct_name)$(self.gen_params_toks(strct, type_params_str.clone(), &extends_type_argument, &extends_phantom_type_argument)) implements $struct_class {
                 static readonly $$typeName = $(self.gen_full_name_with_address(strct, true, false));
-                static readonly $$numTypeParams = $(type_params.len());$['\n']
+                static readonly $$numTypeParams = $(type_params.len());
+                static readonly $$isPhantom = $is_phantom_value_toks as const;$['\n']
 
                 $(if is_option {
                     __inner: $(&type_params_str[0]) = null as unknown as $(&type_params_str[0]); $(ref toks => {
@@ -1731,10 +1744,10 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     })$['\n'];
                 })
 
-                readonly $$typeName = $(&struct_name).$$typeName;$['\n']
-                readonly $$fullTypeName: $static_full_type_name_as_toks;$['\n']
-
-                readonly $$typeArgs: $type_args_field_type;$['\n']
+                readonly $$typeName = $(&struct_name).$$typeName;
+                readonly $$fullTypeName: $static_full_type_name_as_toks;
+                readonly $$typeArgs: $type_args_field_type;
+                readonly $$isPhantom = $(&struct_name).$$isPhantom;$['\n']
 
                 $(for field in strct.get_fields() join (; ) =>
                     readonly $(self.gen_field_name(&field)):
@@ -1779,6 +1792,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                         typeArgs: [
                             $(for param in &type_params_str join (, ) => $extract_type($param))
                         ] as $reified_type_args_as_toks,
+                        isPhantom: $(&struct_name).$$isPhantom,
                         reifiedTypeArgs: [$(for param in &type_params_str join (, ) => $param)],
                         fromFields: (fields: Record<string, any>) =>
                             $(&struct_name).fromFields(
