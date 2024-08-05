@@ -43,7 +43,7 @@ impl<'a> PackageCache<'a> {
     ) -> Result<Vec<Result<SuiRawMovePackage>>> {
         let ids = addrs
             .into_iter()
-            .map(|addr| ObjectID::from_address(addr))
+            .map(ObjectID::from_address)
             .collect::<Vec<_>>();
 
         let cache = self.cache.read().await;
@@ -70,12 +70,7 @@ impl<'a> PackageCache<'a> {
             .map(|obj_read| self.get_package_from_result(obj_read))
             .collect::<Vec<Result<_>>>();
 
-        res_map.extend(
-            to_fetch
-                .into_iter()
-                .zip(fetch_res.into_iter())
-                .map(|(addr, res)| (addr, res)),
-        );
+        res_map.extend(to_fetch.into_iter().zip(fetch_res.into_iter()));
 
         let mut cache = self.cache.write().await;
         for (id, res) in res_map.iter() {
