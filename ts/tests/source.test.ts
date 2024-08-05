@@ -2,7 +2,7 @@ import { Transaction } from '@mysten/sui/transactions'
 import { SuiClient } from '@mysten/sui/client'
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519'
 import { fromB64 } from '@mysten/sui/utils'
-import { it, expect } from 'vitest'
+import { it, expect, describe } from 'vitest'
 import {
   Bar,
   Dummy,
@@ -37,9 +37,9 @@ import { String as Utf8String } from './gen/move-stdlib/string/structs'
 import { String as AsciiString } from './gen/move-stdlib/ascii/structs'
 import { Url } from './gen/sui/url/structs'
 import { ID, UID } from './gen/sui/object/structs'
-import { structClassLoaderSource } from './gen/_framework/loader'
-import { initLoaderIfNeeded } from './gen/_framework/init-source'
+import { loader } from './gen/_framework/loader'
 import { PKG_V1 } from './gen/examples'
+import { sqrt } from './gen/sui/math/functions'
 
 const keypair = Ed25519Keypair.fromSecretKey(
   fromB64('AMVT58FaLF2tJtg/g8X2z1/vG0FvNn0jvRu9X2Wl8F+u').slice(1)
@@ -774,11 +774,7 @@ it('loads with loader correctly', async () => {
     throw new Error(`not a moveObject`)
   }
 
-  initLoaderIfNeeded()
-
-  const withGenericFieldReified = structClassLoaderSource.reified(
-    `${WithGenericField.$typeName}<${T}>`
-  )
+  const withGenericFieldReified = loader.reified(`${WithGenericField.$typeName}<${T}>`)
 
   expect(extractType(withGenericFieldReified)).toEqual(`${WithGenericField.$typeName}<${T}>`)
 
@@ -1067,4 +1063,191 @@ it('fails when fetching mismatch reified type', async () => {
   await expect(() => {
     return WithSpecialTypes.r(SUI.p, 'u8').fetch(client, id)
   }).rejects.toThrowError(`type argument mismatch at position 1: expected 'u8' but got 'u64'`)
+})
+
+describe('handles function calls with vector arguments correctly', () => {
+  it('can pass in tx.pure values', async () => {
+    const tx = new Transaction()
+
+    createWithGenericField(tx, 'vector<u8>', [tx.pure.u8(3), tx.pure.u8(4)])
+    const txRes = await client.signAndExecuteTransaction({
+      signer: keypair,
+      transaction: tx,
+      options: {
+        showEffects: true,
+      },
+    })
+    const id = txRes.effects!.created![0].reference.objectId
+    const obj = await WithGenericField.r(vector('u8')).fetch(client, id)
+    expect(obj.genericField).toEqual([3, 4])
+  })
+
+  it('can pass in primitive values', async () => {
+    const tx = new Transaction()
+
+    createWithGenericField(tx, 'vector<u8>', [3, 4])
+    const txRes = await client.signAndExecuteTransaction({
+      signer: keypair,
+      transaction: tx,
+      options: {
+        showEffects: true,
+      },
+    })
+    const id = txRes.effects!.created![0].reference.objectId
+    const obj = await WithGenericField.r(vector('u8')).fetch(client, id)
+    expect(obj.genericField).toEqual([3, 4])
+  })
+
+  it('throws when mixing primitive and TransactionArgument values', async () => {
+    const tx = new Transaction()
+
+    expect(() => {
+      createWithGenericField(tx, 'vector<u8>', [3, tx.pure.u8(4)])
+    }).toThrowError('mixing primitive and TransactionArgument values is not supported')
+  })
+
+  it('can pass in mixed tx.pure and command result values', async () => {
+    const tx = new Transaction()
+
+    const val = sqrt(tx, 36n)
+    createWithGenericField(tx, 'vector<u64>', [tx.pure.u64(3), val])
+
+    const txRes = await client.signAndExecuteTransaction({
+      signer: keypair,
+      transaction: tx,
+      options: {
+        showEffects: true,
+      },
+    })
+    const id = txRes.effects!.created![0].reference.objectId
+    const obj = await WithGenericField.r(vector('u64')).fetch(client, id)
+    expect(obj.genericField).toEqual([3n, 6n])
+  })
+
+  it('throws when mixing primitive and command result values', async () => {
+    const tx = new Transaction()
+    const val = sqrt(tx, 36n)
+    expect(() => {
+      createWithGenericField(tx, 'vector<u64>', [3, val])
+    }).toThrowError('mixing primitive and TransactionArgument values is not supported')
+  })
+
+  it('can use intents as values and can mix with tx.pure', async () => {
+    const tx = new Transaction()
+
+    const intent1 = (tx: Transaction) => tx.pure.u8(3)
+    const intent2 = (tx: Transaction) => tx.pure.u8(4)
+
+    createWithGenericField(tx, 'vector<u8>', [intent1(tx), intent2(tx), tx.pure.u8(7)])
+
+    const txRes = await client.signAndExecuteTransaction({
+      signer: keypair,
+      transaction: tx,
+      options: {
+        showEffects: true,
+      },
+    })
+    const id = txRes.effects!.created![0].reference.objectId
+    const obj = await WithGenericField.r(vector('u8')).fetch(client, id)
+    expect(obj.genericField).toEqual([3, 4, 7])
+  })
+
+  it('throws when mixing primitive and intent values', async () => {
+    const tx = new Transaction()
+
+    const intent = (tx: Transaction) => tx.pure.u8(3)
+    expect(() => {
+      createWithGenericField(tx, 'vector<u8>', [3, intent(tx)])
+    }).toThrowError('mixing primitive and TransactionArgument values is not supported')
+  })
+})
+
+describe('handles function calls with option arguments correctly', () => {
+  it('can use primitive value as option directly', async () => {
+    const tx = new Transaction()
+
+    createWithGenericField(tx, `${Option.$typeName}<u8>`, 3)
+    const txRes = await client.signAndExecuteTransaction({
+      signer: keypair,
+      transaction: tx,
+      options: {
+        showEffects: true,
+      },
+    })
+    const id = txRes.effects!.created![0].reference.objectId
+    const obj = await WithGenericField.r(Option.r('u8')).fetch(client, id)
+    expect(obj.genericField).toEqual(3)
+  })
+
+  it('can pass in tx.pure values', async () => {
+    const tx = new Transaction()
+
+    createWithGenericField(tx, `${Option.$typeName}<vector<u8>>`, [tx.pure.u8(3), tx.pure.u8(4)])
+    const txRes = await client.signAndExecuteTransaction({
+      signer: keypair,
+      transaction: tx,
+      options: {
+        showEffects: true,
+      },
+    })
+    const id = txRes.effects!.created![0].reference.objectId
+    const obj = await WithGenericField.r(Option.r(vector('u8'))).fetch(client, id)
+    expect(obj.genericField).toEqual([3, 4])
+  })
+
+  it('throws when mixing primitive and TransactionArgument values', async () => {
+    const tx = new Transaction()
+
+    expect(() => {
+      createWithGenericField(tx, `${Option.$typeName}<vector<u8>>`, [3, tx.pure.u8(4)])
+    }).toThrowError('mixing primitive and TransactionArgument values is not supported')
+  })
+
+  it('can use none function call result as a value', async () => {
+    const tx = new Transaction()
+
+    createWithGenericField(tx, `${Option.$typeName}<u8>`, none(tx, 'u8'))
+    const txRes = await client.signAndExecuteTransaction({
+      signer: keypair,
+      transaction: tx,
+      options: {
+        showEffects: true,
+      },
+    })
+    const id = txRes.effects!.created![0].reference.objectId
+    const obj = await WithGenericField.r(Option.r('u8')).fetch(client, id)
+    expect(obj.genericField).toEqual(null)
+  })
+
+  it('can use null as values', async () => {
+    const tx = new Transaction()
+
+    createWithGenericField(tx, `${Option.$typeName}<u8>`, null)
+    const txRes = await client.signAndExecuteTransaction({
+      signer: keypair,
+      transaction: tx,
+      options: {
+        showEffects: true,
+      },
+    })
+    const id = txRes.effects!.created![0].reference.objectId
+    const obj = await WithGenericField.r(Option.r('u8')).fetch(client, id)
+    expect(obj.genericField).toEqual(null)
+  })
+
+  it('handles nested vector of options as inner type correctly', async () => {
+    const tx = new Transaction()
+
+    createWithGenericField(tx, `${Option.$typeName}<vector<${Option.$typeName}<u8>>>`, [3, null, 4])
+    const txRes = await client.signAndExecuteTransaction({
+      signer: keypair,
+      transaction: tx,
+      options: {
+        showEffects: true,
+      },
+    })
+    const id = txRes.effects!.created![0].reference.objectId
+    const obj = await WithGenericField.r(Option.r(vector(Option.r('u8')))).fetch(client, id)
+    expect(obj.genericField).toEqual([3, null, 4])
+  })
 })
