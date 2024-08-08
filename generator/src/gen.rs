@@ -1127,7 +1127,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             .framework
             .import("reified", "ToTypeStr")
             .with_alias("ToPhantom");
-        let vector = &self.framework.import("reified", "Vector");
+        let vector = &self.framework.import("vector", "Vector");
 
         let field_type = match ty {
             Type::Primitive(ty) => match ty {

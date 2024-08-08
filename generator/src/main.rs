@@ -150,6 +150,10 @@ async fn main() -> Result<()> {
         framework_sources::REIFIED,
         out_root.join("_framework").join("reified.ts").as_ref(),
     )?;
+    write_str_to_file(
+        framework_sources::VECTOR,
+        out_root.join("_framework").join("vector.ts").as_ref(),
+    )?;
     write_tokens_to_file(
         &gen_init_loader_ts(
             match source_pkgs.is_empty() {
