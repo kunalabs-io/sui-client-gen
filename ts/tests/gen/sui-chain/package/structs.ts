@@ -5,7 +5,6 @@ import {
   StructClass,
   ToField,
   ToTypeStr,
-  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
@@ -13,6 +12,7 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { Vector } from '../../_framework/vector'
 import { String } from '../../move-stdlib-chain/ascii/structs'
 import { PKG_V21 } from '../index'
 import { ID, UID } from '../object/structs'
@@ -36,6 +36,8 @@ export interface PublisherFields {
 export type PublisherReified = Reified<Publisher, PublisherFields>
 
 export class Publisher implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::package::Publisher`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -197,6 +199,8 @@ export interface UpgradeCapFields {
 export type UpgradeCapReified = Reified<UpgradeCap, UpgradeCapFields>
 
 export class UpgradeCap implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::package::UpgradeCap`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -365,6 +369,8 @@ export interface UpgradeTicketFields {
 export type UpgradeTicketReified = Reified<UpgradeTicket, UpgradeTicketFields>
 
 export class UpgradeTicket implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::package::UpgradeTicket`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -531,6 +537,8 @@ export interface UpgradeReceiptFields {
 export type UpgradeReceiptReified = Reified<UpgradeReceipt, UpgradeReceiptFields>
 
 export class UpgradeReceipt implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::package::UpgradeReceipt`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

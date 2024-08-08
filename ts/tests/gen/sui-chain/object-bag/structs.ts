@@ -31,6 +31,8 @@ export interface ObjectBagFields {
 export type ObjectBagReified = Reified<ObjectBag, ObjectBagFields>
 
 export class ObjectBag implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::object_bag::ObjectBag`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

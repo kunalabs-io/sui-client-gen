@@ -5,7 +5,6 @@ import {
   StructClass,
   ToField,
   ToTypeStr,
-  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
@@ -13,6 +12,7 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { Vector } from '../../_framework/vector'
 import { String } from '../../move-stdlib/ascii/structs'
 import { Option } from '../../move-stdlib/option/structs'
 import { String as String1 } from '../../move-stdlib/string/structs'
@@ -36,6 +36,8 @@ export interface ExampleStructFields {
 export type ExampleStructReified = Reified<ExampleStruct, ExampleStructFields>
 
 export class ExampleStruct implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::examples::ExampleStruct`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -186,6 +188,8 @@ export interface SpecialTypesStructFields {
 export type SpecialTypesStructReified = Reified<SpecialTypesStruct, SpecialTypesStructFields>
 
 export class SpecialTypesStruct implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::examples::SpecialTypesStruct`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

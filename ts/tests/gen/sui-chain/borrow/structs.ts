@@ -44,6 +44,8 @@ export interface ReferentFields<T0 extends TypeArgument> {
 export type ReferentReified<T0 extends TypeArgument> = Reified<Referent<T0>, ReferentFields<T0>>
 
 export class Referent<T0 extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::borrow::Referent`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
@@ -248,6 +250,8 @@ export interface BorrowFields {
 export type BorrowReified = Reified<Borrow, BorrowFields>
 
 export class Borrow implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::borrow::Borrow`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

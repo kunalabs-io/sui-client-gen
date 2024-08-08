@@ -5,7 +5,6 @@ import {
   StructClass,
   ToField,
   ToTypeStr,
-  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
@@ -13,6 +12,7 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { Vector } from '../../_framework/vector'
 import { PKG_V21 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
@@ -32,6 +32,8 @@ export interface CurveFields {
 export type CurveReified = Reified<Curve, CurveFields>
 
 export class Curve implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::groth16::Curve`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -170,6 +172,8 @@ export interface PreparedVerifyingKeyFields {
 export type PreparedVerifyingKeyReified = Reified<PreparedVerifyingKey, PreparedVerifyingKeyFields>
 
 export class PreparedVerifyingKey implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::groth16::PreparedVerifyingKey`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -351,6 +355,8 @@ export interface PublicProofInputsFields {
 export type PublicProofInputsReified = Reified<PublicProofInputs, PublicProofInputsFields>
 
 export class PublicProofInputs implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::groth16::PublicProofInputs`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -495,6 +501,8 @@ export interface ProofPointsFields {
 export type ProofPointsReified = Reified<ProofPoints, ProofPointsFields>
 
 export class ProofPoints implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::groth16::ProofPoints`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

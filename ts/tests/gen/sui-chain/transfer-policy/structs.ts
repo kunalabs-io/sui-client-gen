@@ -47,6 +47,8 @@ export interface RuleKeyFields<T0 extends PhantomTypeArgument> {
 export type RuleKeyReified<T0 extends PhantomTypeArgument> = Reified<RuleKey<T0>, RuleKeyFields<T0>>
 
 export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::transfer_policy::RuleKey`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -243,6 +245,8 @@ export type TransferRequestReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class TransferRequest<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::transfer_policy::TransferRequest`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -459,6 +463,8 @@ export type TransferPolicyReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class TransferPolicy<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::transfer_policy::TransferPolicy`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -670,6 +676,8 @@ export type TransferPolicyCapReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class TransferPolicyCap<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::transfer_policy::TransferPolicyCap`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -872,6 +880,8 @@ export type TransferPolicyCreatedReified<T0 extends PhantomTypeArgument> = Reifi
 >
 
 export class TransferPolicyCreated<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::transfer_policy::TransferPolicyCreated`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -1069,6 +1079,8 @@ export type TransferPolicyDestroyedReified<T0 extends PhantomTypeArgument> = Rei
 >
 
 export class TransferPolicyDestroyed<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::transfer_policy::TransferPolicyDestroyed`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const

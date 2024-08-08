@@ -35,11 +35,11 @@ export class StructClassLoader {
   }
 
   reified<T extends Primitive>(type: T): T
-  reified(type: `vector<${string}>`): VectorClassReified<VectorClass>
+  reified(type: `vector<${string}>`): VectorClassReified<VectorClass, any>
   reified(type: string): StructClassReified<StructClass, any>
   reified(
     type: string
-  ): StructClassReified<StructClass, any> | VectorClassReified<VectorClass> | string {
+  ): StructClassReified<StructClass, any> | VectorClassReified<VectorClass, any> | string {
     const { typeName, typeArgs } = parseTypeName(compressSuiType(type))
     switch (typeName) {
       case 'bool':

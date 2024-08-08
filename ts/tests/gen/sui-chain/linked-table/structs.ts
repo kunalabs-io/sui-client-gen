@@ -54,6 +54,8 @@ export type LinkedTableReified<T0 extends TypeArgument, T1 extends PhantomTypeAr
 export class LinkedTable<T0 extends TypeArgument, T1 extends PhantomTypeArgument>
   implements StructClass
 {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::linked_table::LinkedTable`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, true] as const
@@ -304,6 +306,8 @@ export type NodeReified<T0 extends TypeArgument, T1 extends TypeArgument> = Reif
 >
 
 export class Node<T0 extends TypeArgument, T1 extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::linked_table::Node`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const

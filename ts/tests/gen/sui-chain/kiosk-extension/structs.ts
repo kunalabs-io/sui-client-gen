@@ -43,6 +43,8 @@ export interface ExtensionFields {
 export type ExtensionReified = Reified<Extension, ExtensionFields>
 
 export class Extension implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::kiosk_extension::Extension`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -204,6 +206,8 @@ export type ExtensionKeyReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class ExtensionKey<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::kiosk_extension::ExtensionKey`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const

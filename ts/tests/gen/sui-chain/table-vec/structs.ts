@@ -45,6 +45,8 @@ export type TableVecReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class TableVec<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::table_vec::TableVec`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const

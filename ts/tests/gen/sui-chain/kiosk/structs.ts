@@ -46,6 +46,8 @@ export interface BorrowFields {
 export type BorrowReified = Reified<Borrow, BorrowFields>
 
 export class Borrow implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::kiosk::Borrow`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -198,6 +200,8 @@ export interface KioskFields {
 export type KioskReified = Reified<Kiosk, KioskFields>
 
 export class Kiosk implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::kiosk::Kiosk`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -374,6 +378,8 @@ export interface KioskOwnerCapFields {
 export type KioskOwnerCapReified = Reified<KioskOwnerCap, KioskOwnerCapFields>
 
 export class KioskOwnerCap implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::kiosk::KioskOwnerCap`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -531,6 +537,8 @@ export type PurchaseCapReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class PurchaseCap<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::kiosk::PurchaseCap`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -742,6 +750,8 @@ export interface ItemFields {
 export type ItemReified = Reified<Item, ItemFields>
 
 export class Item implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::kiosk::Item`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -878,6 +888,8 @@ export interface ListingFields {
 export type ListingReified = Reified<Listing, ListingFields>
 
 export class Listing implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::kiosk::Listing`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -1026,6 +1038,8 @@ export interface LockFields {
 export type LockReified = Reified<Lock, LockFields>
 
 export class Lock implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::kiosk::Lock`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -1166,6 +1180,8 @@ export type ItemListedReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class ItemListed<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::kiosk::ItemListed`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -1375,6 +1391,8 @@ export type ItemPurchasedReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class ItemPurchased<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::kiosk::ItemPurchased`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -1583,6 +1601,8 @@ export type ItemDelistedReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class ItemDelisted<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::kiosk::ItemDelisted`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const

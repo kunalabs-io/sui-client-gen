@@ -29,6 +29,8 @@ export interface G1Fields {
 export type G1Reified = Reified<G1, G1Fields>
 
 export class G1 implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::bls12381::G1`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -166,6 +168,8 @@ export interface G2Fields {
 export type G2Reified = Reified<G2, G2Fields>
 
 export class G2 implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::bls12381::G2`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -303,6 +307,8 @@ export interface GTFields {
 export type GTReified = Reified<GT, GTFields>
 
 export class GT implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::bls12381::GT`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -440,6 +446,8 @@ export interface ScalarFields {
 export type ScalarReified = Reified<Scalar, ScalarFields>
 
 export class Scalar implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::bls12381::Scalar`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

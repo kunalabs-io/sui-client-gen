@@ -46,6 +46,8 @@ export interface AdminCapFields {
 export type AdminCapReified = Reified<AdminCap, AdminCapFields>
 
 export class AdminCap implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::pool::AdminCap`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -186,6 +188,8 @@ export type LPReified<A extends PhantomTypeArgument, B extends PhantomTypeArgume
 export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   implements StructClass
 {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::pool::LP`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, true] as const
@@ -412,6 +416,8 @@ export type PoolReified<A extends PhantomTypeArgument, B extends PhantomTypeArgu
 export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   implements StructClass
 {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::pool::Pool`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, true] as const
@@ -690,6 +696,8 @@ export interface PoolCreationEventFields {
 export type PoolCreationEventReified = Reified<PoolCreationEvent, PoolCreationEventFields>
 
 export class PoolCreationEvent implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::pool::PoolCreationEvent`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -835,6 +843,8 @@ export interface PoolRegistryFields {
 export type PoolRegistryReified = Reified<PoolRegistry, PoolRegistryFields>
 
 export class PoolRegistry implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::pool::PoolRegistry`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -996,6 +1006,8 @@ export interface PoolRegistryItemFields {
 export type PoolRegistryItemReified = Reified<PoolRegistryItem, PoolRegistryItemFields>
 
 export class PoolRegistryItem implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::pool::PoolRegistryItem`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

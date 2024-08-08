@@ -29,6 +29,8 @@ export interface SUIFields {
 export type SUIReified = Reified<SUI, SUIFields>
 
 export class SUI implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::sui::SUI`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

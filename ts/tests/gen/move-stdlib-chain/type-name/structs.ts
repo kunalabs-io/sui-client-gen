@@ -30,6 +30,8 @@ export interface TypeNameFields {
 export type TypeNameReified = Reified<TypeName, TypeNameFields>
 
 export class TypeName implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V8}::type_name::TypeName`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

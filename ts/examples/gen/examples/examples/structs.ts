@@ -8,7 +8,6 @@ import {
   StructClass,
   ToField,
   ToTypeStr,
-  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
@@ -16,6 +15,7 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { Vector } from '../../_framework/vector'
 import { ID, UID } from '../../sui/object/structs'
 import { PKG_V1 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
@@ -36,6 +36,8 @@ export interface ExampleStructFields {
 export type ExampleStructReified = Reified<ExampleStruct, ExampleStructFields>
 
 export class ExampleStruct implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::examples::ExampleStruct`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -186,6 +188,8 @@ export interface SpecialTypesStructFields {
 export type SpecialTypesStructReified = Reified<SpecialTypesStruct, SpecialTypesStructFields>
 
 export class SpecialTypesStruct implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::examples::SpecialTypesStruct`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

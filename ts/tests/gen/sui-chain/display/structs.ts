@@ -45,6 +45,8 @@ export interface DisplayFields<T0 extends PhantomTypeArgument> {
 export type DisplayReified<T0 extends PhantomTypeArgument> = Reified<Display<T0>, DisplayFields<T0>>
 
 export class Display<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::display::Display`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -255,6 +257,8 @@ export type DisplayCreatedReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class DisplayCreated<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::display::DisplayCreated`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -446,6 +450,8 @@ export type VersionUpdatedReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class VersionUpdated<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::display::VersionUpdated`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const

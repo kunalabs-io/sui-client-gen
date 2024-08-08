@@ -31,6 +31,8 @@ export interface ClockFields {
 export type ClockReified = Reified<Clock, ClockFields>
 
 export class Clock implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::clock::Clock`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

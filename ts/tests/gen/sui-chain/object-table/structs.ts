@@ -47,6 +47,8 @@ export type ObjectTableReified<
 export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeArgument>
   implements StructClass
 {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::object_table::ObjectTable`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, true] as const

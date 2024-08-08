@@ -7,7 +7,6 @@ import {
   ToTypeArgument,
   ToTypeStr,
   TypeArgument,
-  Vector,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -24,6 +23,7 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
+import { Vector } from '../../_framework/vector'
 import { PKG_V21 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
@@ -44,6 +44,8 @@ export interface EntryFields<T extends TypeArgument> {
 export type EntryReified<T extends TypeArgument> = Reified<Entry<T>, EntryFields<T>>
 
 export class Entry<T extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::priority_queue::Entry`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
@@ -245,6 +247,8 @@ export type PriorityQueueReified<T extends TypeArgument> = Reified<
 >
 
 export class PriorityQueue<T extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::priority_queue::PriorityQueue`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const

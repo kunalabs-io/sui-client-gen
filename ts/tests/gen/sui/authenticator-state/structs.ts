@@ -5,7 +5,6 @@ import {
   StructClass,
   ToField,
   ToTypeStr,
-  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
@@ -13,6 +12,7 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { Vector } from '../../_framework/vector'
 import { String } from '../../move-stdlib/string/structs'
 import { PKG_V21 } from '../index'
 import { UID } from '../object/structs'
@@ -36,6 +36,8 @@ export interface ActiveJwkFields {
 export type ActiveJwkReified = Reified<ActiveJwk, ActiveJwkFields>
 
 export class ActiveJwk implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::authenticator_state::ActiveJwk`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -195,6 +197,8 @@ export interface AuthenticatorStateFields {
 export type AuthenticatorStateReified = Reified<AuthenticatorState, AuthenticatorStateFields>
 
 export class AuthenticatorState implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::authenticator_state::AuthenticatorState`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -350,6 +354,8 @@ export type AuthenticatorStateInnerReified = Reified<
 >
 
 export class AuthenticatorStateInner implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::authenticator_state::AuthenticatorStateInner`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -513,6 +519,8 @@ export interface JWKFields {
 export type JWKReified = Reified<JWK, JWKFields>
 
 export class JWK implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::authenticator_state::JWK`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -679,6 +687,8 @@ export interface JwkIdFields {
 export type JwkIdReified = Reified<JwkId, JwkIdFields>
 
 export class JwkId implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::authenticator_state::JwkId`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

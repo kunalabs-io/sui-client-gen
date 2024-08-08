@@ -31,6 +31,8 @@ export interface BagFields {
 export type BagReified = Reified<Bag, BagFields>
 
 export class Bag implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::bag::Bag`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

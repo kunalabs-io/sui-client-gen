@@ -40,6 +40,8 @@ export interface BalanceFields<T extends PhantomTypeArgument> {
 export type BalanceReified<T extends PhantomTypeArgument> = Reified<Balance<T>, BalanceFields<T>>
 
 export class Balance<T extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::balance::Balance`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -226,6 +228,8 @@ export interface SupplyFields<T extends PhantomTypeArgument> {
 export type SupplyReified<T extends PhantomTypeArgument> = Reified<Supply<T>, SupplyFields<T>>
 
 export class Supply<T extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::balance::Supply`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const

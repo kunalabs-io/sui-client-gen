@@ -5,7 +5,6 @@ import {
   StructClass,
   ToField,
   ToTypeStr,
-  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
@@ -13,6 +12,7 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { Vector } from '../../_framework/vector'
 import { PKG_V21 } from '../index'
 import { UID } from '../object/structs'
 import { Versioned } from '../versioned/structs'
@@ -35,6 +35,8 @@ export interface RandomFields {
 export type RandomReified = Reified<Random, RandomFields>
 
 export class Random implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::random::Random`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -185,6 +187,8 @@ export interface RandomGeneratorFields {
 export type RandomGeneratorReified = Reified<RandomGenerator, RandomGeneratorFields>
 
 export class RandomGenerator implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::random::RandomGenerator`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -346,6 +350,8 @@ export interface RandomInnerFields {
 export type RandomInnerReified = Reified<RandomInner, RandomInnerFields>
 
 export class RandomInner implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::random::RandomInner`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

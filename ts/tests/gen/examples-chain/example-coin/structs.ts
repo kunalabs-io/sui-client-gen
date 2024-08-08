@@ -33,6 +33,8 @@ export interface EXAMPLE_COINFields {
 export type EXAMPLE_COINReified = Reified<EXAMPLE_COIN, EXAMPLE_COINFields>
 
 export class EXAMPLE_COIN implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::example_coin::EXAMPLE_COIN`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -174,6 +176,8 @@ export interface FaucetFields {
 export type FaucetReified = Reified<Faucet, FaucetFields>
 
 export class Faucet implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::example_coin::Faucet`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

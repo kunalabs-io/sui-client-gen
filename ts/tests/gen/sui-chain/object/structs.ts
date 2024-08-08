@@ -29,6 +29,8 @@ export interface IDFields {
 export type IDReified = Reified<ID, IDFields>
 
 export class ID implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::object::ID`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -167,6 +169,8 @@ export interface UIDFields {
 export type UIDReified = Reified<UID, UIDFields>
 
 export class UID implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::object::UID`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

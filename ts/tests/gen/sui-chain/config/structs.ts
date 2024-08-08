@@ -46,6 +46,8 @@ export interface ConfigFields<T0 extends PhantomTypeArgument> {
 export type ConfigReified<T0 extends PhantomTypeArgument> = Reified<Config<T0>, ConfigFields<T0>>
 
 export class Config<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::config::Config`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -232,6 +234,8 @@ export interface SettingFields<T0 extends TypeArgument> {
 export type SettingReified<T0 extends TypeArgument> = Reified<Setting<T0>, SettingFields<T0>>
 
 export class Setting<T0 extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::config::Setting`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
@@ -436,6 +440,8 @@ export type SettingDataReified<T0 extends TypeArgument> = Reified<
 >
 
 export class SettingData<T0 extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::config::SettingData`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const

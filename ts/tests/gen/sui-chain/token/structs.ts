@@ -49,6 +49,8 @@ export interface TokenFields<T0 extends PhantomTypeArgument> {
 export type TokenReified<T0 extends PhantomTypeArgument> = Reified<Token<T0>, TokenFields<T0>>
 
 export class Token<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::token::Token`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -250,6 +252,8 @@ export type TokenPolicyCapReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class TokenPolicyCap<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::token::TokenPolicyCap`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -452,6 +456,8 @@ export type TokenPolicyReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class TokenPolicy<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::token::TokenPolicy`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -673,6 +679,8 @@ export type ActionRequestReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class ActionRequest<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::token::ActionRequest`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -921,6 +929,8 @@ export interface RuleKeyFields<T0 extends PhantomTypeArgument> {
 export type RuleKeyReified<T0 extends PhantomTypeArgument> = Reified<RuleKey<T0>, RuleKeyFields<T0>>
 
 export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::token::RuleKey`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -1115,6 +1125,8 @@ export type TokenPolicyCreatedReified<T0 extends PhantomTypeArgument> = Reified<
 >
 
 export class TokenPolicyCreated<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::token::TokenPolicyCreated`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const

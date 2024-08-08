@@ -47,6 +47,8 @@ export type TableReified<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
 export class Table<T0 extends PhantomTypeArgument, T1 extends PhantomTypeArgument>
   implements StructClass
 {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::table::Table`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, true] as const

@@ -41,6 +41,8 @@ export interface WrapperFields<T0 extends TypeArgument> {
 export type WrapperReified<T0 extends TypeArgument> = Reified<Wrapper<T0>, WrapperFields<T0>>
 
 export class Wrapper<T0 extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::dynamic_object_field::Wrapper`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const

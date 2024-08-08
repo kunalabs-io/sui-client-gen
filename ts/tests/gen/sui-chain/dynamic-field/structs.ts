@@ -47,6 +47,8 @@ export type FieldReified<T0 extends TypeArgument, T1 extends TypeArgument> = Rei
 >
 
 export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::dynamic_field::Field`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const

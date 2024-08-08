@@ -8,7 +8,6 @@ import {
   ToField,
   ToPhantomTypeArgument,
   ToTypeStr,
-  Vector,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -24,6 +23,7 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
+import { Vector } from '../../_framework/vector'
 import { PKG_V21 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
@@ -43,6 +43,8 @@ export interface ElementFields<T0 extends PhantomTypeArgument> {
 export type ElementReified<T0 extends PhantomTypeArgument> = Reified<Element<T0>, ElementFields<T0>>
 
 export class Element<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::group_ops::Element`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const

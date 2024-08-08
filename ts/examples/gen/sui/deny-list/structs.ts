@@ -5,7 +5,6 @@ import {
   StructClass,
   ToField,
   ToTypeStr,
-  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
@@ -13,6 +12,7 @@ import {
   ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { Vector } from '../../_framework/vector'
 import { Bag } from '../bag/structs'
 import { PKG_V21 } from '../index'
 import { UID } from '../object/structs'
@@ -37,6 +37,8 @@ export interface DenyListFields {
 export type DenyListReified = Reified<DenyList, DenyListFields>
 
 export class DenyList implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::deny_list::DenyList`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -190,6 +192,8 @@ export interface PerTypeListFields {
 export type PerTypeListReified = Reified<PerTypeList, PerTypeListFields>
 
 export class PerTypeList implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::deny_list::PerTypeList`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

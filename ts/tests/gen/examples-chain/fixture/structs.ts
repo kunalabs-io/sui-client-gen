@@ -10,7 +10,6 @@ import {
   ToTypeArgument,
   ToTypeStr,
   TypeArgument,
-  Vector,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -28,6 +27,7 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
+import { Vector } from '../../_framework/vector'
 import { String as String1 } from '../../move-stdlib-chain/ascii/structs'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { String } from '../../move-stdlib-chain/string/structs'
@@ -55,6 +55,8 @@ export interface DummyFields {
 export type DummyReified = Reified<Dummy, DummyFields>
 
 export class Dummy implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::fixture::Dummy`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -196,6 +198,8 @@ export type WithGenericFieldReified<T0 extends TypeArgument> = Reified<
 >
 
 export class WithGenericField<T0 extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::fixture::WithGenericField`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
@@ -401,6 +405,8 @@ export interface BarFields {
 export type BarReified = Reified<Bar, BarFields>
 
 export class Bar implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::fixture::Bar`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -542,6 +548,8 @@ export type WithTwoGenericsReified<T0 extends TypeArgument, T1 extends TypeArgum
 export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument>
   implements StructClass
 {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::fixture::WithTwoGenerics`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const
@@ -774,6 +782,8 @@ export interface FooFields<T0 extends TypeArgument> {
 export type FooReified<T0 extends TypeArgument> = Reified<Foo<T0>, FooFields<T0>>
 
 export class Foo<T0 extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::fixture::Foo`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
@@ -1172,6 +1182,8 @@ export type WithSpecialTypesReified<
 export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArgument>
   implements StructClass
 {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::fixture::WithSpecialTypes`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, false] as const
@@ -1543,6 +1555,8 @@ export class WithSpecialTypesAsGenerics<
   T7 extends TypeArgument,
 > implements StructClass
 {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::fixture::WithSpecialTypesAsGenerics`
   static readonly $numTypeParams = 8
   static readonly $isPhantom = [false, false, false, false, false, false, false, false] as const
@@ -2137,6 +2151,8 @@ export type WithSpecialTypesInVectorsReified<T0 extends TypeArgument> = Reified<
 >
 
 export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::fixture::WithSpecialTypesInVectors`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const

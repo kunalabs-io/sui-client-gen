@@ -7,7 +7,6 @@ import {
   ToTypeArgument,
   ToTypeStr,
   TypeArgument,
-  Vector,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -24,6 +23,7 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
+import { Vector } from '../../_framework/vector'
 import { PKG_V8 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
@@ -46,6 +46,8 @@ export type OptionReified<Element extends TypeArgument> = Reified<
 >
 
 export class Option<Element extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V8}::option::Option`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const

@@ -45,6 +45,8 @@ export type ReceivingReified<T extends PhantomTypeArgument> = Reified<
 >
 
 export class Receiving<T extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::transfer::Receiving`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const

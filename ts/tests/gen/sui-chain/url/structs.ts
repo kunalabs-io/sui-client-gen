@@ -30,6 +30,8 @@ export interface UrlFields {
 export type UrlReified = Reified<Url, UrlFields>
 
 export class Url implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::url::Url`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

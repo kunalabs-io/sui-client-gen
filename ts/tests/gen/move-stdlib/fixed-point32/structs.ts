@@ -29,6 +29,8 @@ export interface FixedPoint32Fields {
 export type FixedPoint32Reified = Reified<FixedPoint32, FixedPoint32Fields>
 
 export class FixedPoint32 implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V8}::fixed_point32::FixedPoint32`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

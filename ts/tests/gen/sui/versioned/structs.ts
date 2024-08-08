@@ -31,6 +31,8 @@ export interface VersionChangeCapFields {
 export type VersionChangeCapReified = Reified<VersionChangeCap, VersionChangeCapFields>
 
 export class VersionChangeCap implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::versioned::VersionChangeCap`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -183,6 +185,8 @@ export interface VersionedFields {
 export type VersionedReified = Reified<Versioned, VersionedFields>
 
 export class Versioned implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::versioned::Versioned`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

@@ -5,7 +5,6 @@ import {
   StructClass,
   ToField,
   ToTypeStr,
-  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
@@ -13,6 +12,7 @@ import {
   phantom,
 } from '../../../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
+import { Vector } from '../../../../_framework/vector'
 import { PKG_V8 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
@@ -33,6 +33,8 @@ export interface BitVectorFields {
 export type BitVectorReified = Reified<BitVector, BitVectorFields>
 
 export class BitVector implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V8}::bit_vector::BitVector`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

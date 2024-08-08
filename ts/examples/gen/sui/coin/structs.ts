@@ -48,6 +48,8 @@ export interface CoinFields<T extends PhantomTypeArgument> {
 export type CoinReified<T extends PhantomTypeArgument> = Reified<Coin<T>, CoinFields<T>>
 
 export class Coin<T extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::coin::Coin`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -253,6 +255,8 @@ export type CoinMetadataReified<T extends PhantomTypeArgument> = Reified<
 >
 
 export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::coin::CoinMetadata`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -481,6 +485,8 @@ export type CurrencyCreatedReified<T extends PhantomTypeArgument> = Reified<
 >
 
 export class CurrencyCreated<T extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::coin::CurrencyCreated`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -671,6 +677,8 @@ export interface DenyCapFields<T extends PhantomTypeArgument> {
 export type DenyCapReified<T extends PhantomTypeArgument> = Reified<DenyCap<T>, DenyCapFields<T>>
 
 export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::coin::DenyCap`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -862,6 +870,8 @@ export type RegulatedCoinMetadataReified<T extends PhantomTypeArgument> = Reifie
 >
 
 export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::coin::RegulatedCoinMetadata`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
@@ -1074,6 +1084,8 @@ export type TreasuryCapReified<T extends PhantomTypeArgument> = Reified<
 >
 
 export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::coin::TreasuryCap`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const

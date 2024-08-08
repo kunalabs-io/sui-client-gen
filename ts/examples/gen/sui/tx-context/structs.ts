@@ -5,7 +5,6 @@ import {
   StructClass,
   ToField,
   ToTypeStr,
-  Vector,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
@@ -13,6 +12,7 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import { Vector } from '../../_framework/vector'
 import { PKG_V21 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
@@ -36,6 +36,8 @@ export interface TxContextFields {
 export type TxContextReified = Reified<TxContext, TxContextFields>
 
 export class TxContext implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::tx_context::TxContext`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

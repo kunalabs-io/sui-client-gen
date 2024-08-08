@@ -7,7 +7,6 @@ import {
   ToTypeArgument,
   ToTypeStr,
   TypeArgument,
-  Vector,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -24,6 +23,7 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
+import { Vector } from '../../_framework/vector'
 import { PKG_V21 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
@@ -47,6 +47,8 @@ export type EntryReified<K extends TypeArgument, V extends TypeArgument> = Reifi
 >
 
 export class Entry<K extends TypeArgument, V extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::vec_map::Entry`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const
@@ -255,6 +257,8 @@ export type VecMapReified<K extends TypeArgument, V extends TypeArgument> = Reif
 >
 
 export class VecMap<K extends TypeArgument, V extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::vec_map::VecMap`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const

@@ -33,6 +33,8 @@ export interface VerifiedIssuerFields {
 export type VerifiedIssuerReified = Reified<VerifiedIssuer, VerifiedIssuerFields>
 
 export class VerifiedIssuer implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V21}::zklogin_verified_issuer::VerifiedIssuer`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const

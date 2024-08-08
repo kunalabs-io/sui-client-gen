@@ -29,6 +29,8 @@ export interface AddedInAnUpgradeFields {
 export type AddedInAnUpgradeReified = Reified<AddedInAnUpgrade, AddedInAnUpgradeFields>
 
 export class AddedInAnUpgrade implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V2}::other_module::AddedInAnUpgrade`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
@@ -176,6 +178,8 @@ export type StructFromOtherModuleReified = Reified<
 >
 
 export class StructFromOtherModule implements StructClass {
+  __StructClass = true as const
+
   static readonly $typeName = `${PKG_V1}::other_module::StructFromOtherModule`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
