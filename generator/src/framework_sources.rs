@@ -525,7 +525,7 @@ export interface VectorClass {
   toJSONField(): any[]
   toJSON(): Record<string, any>
 
-  readonly vec: any
+  readonly elements: any
 
   __VectorClass: true
 }
@@ -775,7 +775,7 @@ export function decodeFromFields(reified: Reified<TypeArgument, any>, field: any
       return `0x${field}`
   }
   if (reified.kind === 'VectorClassReified') {
-    return reified.fromFields(field).vec
+    return reified.fromFields(field).elements
   }
   switch (reified.typeName) {
     case '0x1::string::String':
@@ -813,7 +813,7 @@ export function decodeFromFieldsWithTypes(reified: Reified<TypeArgument, any>, i
       return item
   }
   if (reified.kind === 'VectorClassReified') {
-    return reified.fromFieldsWithTypes(item).vec
+    return reified.fromFieldsWithTypes(item).elements
   }
   switch (reified.typeName) {
     case '0x1::string::String':
@@ -916,7 +916,7 @@ export function decodeFromJSONField(typeArg: Reified<TypeArgument, any>, field: 
       return field
   }
   if (typeArg.kind === 'VectorClassReified') {
-    return typeArg.fromJSONField(field).vec
+    return typeArg.fromJSONField(field).elements
   }
   switch (typeArg.typeName) {
     case '0x1::string::String':
@@ -972,12 +972,13 @@ export class Vector<T extends TypeArgument> implements VectorClass {
 
   __VectorClass = true as const
 
-  readonly vec: Array<ToField<T>>
+  readonly elements: Array<ToField<T>>
+
   constructor(typeArgs: [ToTypeStr<T>], elements: VectorElements<T>) {
     this.$fullTypeName = composeSuiType(this.$typeName, ...typeArgs) as `vector<${ToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
-    this.vec = elements
+    this.elements = elements
   }
 
   static reified<T extends Reified<TypeArgument, any>>(T: T): VectorReified<ToTypeArgument<T>> {
@@ -1035,7 +1036,7 @@ export class Vector<T extends TypeArgument> implements VectorClass {
   }
 
   toJSONField() {
-    return this.vec.map(field => field.toJSONField())
+    return this.elements.map(field => field.toJSONField())
   }
 
   toJSON() {
