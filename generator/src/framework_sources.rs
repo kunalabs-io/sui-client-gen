@@ -961,6 +961,8 @@ export type VectorElements<T extends TypeArgument> = Array<ToField<T>>
 export type VectorReified<T extends TypeArgument> = VectorClassReified<Vector<T>, VectorElements<T>>
 
 export class Vector<T extends TypeArgument> implements VectorClass {
+  __VectorClass = true as const
+
   static readonly $typeName = 'vector'
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
@@ -969,8 +971,6 @@ export class Vector<T extends TypeArgument> implements VectorClass {
   readonly $fullTypeName: `vector<${ToTypeStr<T>}>`
   readonly $typeArgs: [ToTypeStr<T>]
   readonly $isPhantom = [false] as const
-
-  __VectorClass = true as const
 
   readonly elements: Array<ToField<T>>
 

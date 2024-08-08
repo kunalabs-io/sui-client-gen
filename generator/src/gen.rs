@@ -1755,6 +1755,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         tokens.push();
         quote_in! { *tokens =>
             export class $(&struct_name)$(self.gen_params_toks(strct, type_params_str.clone(), &extends_type_argument, &extends_phantom_type_argument)) implements $struct_class {
+                __StructClass = true as const;$['\n']
+
                 static readonly $$typeName = $(self.gen_full_name_with_address(strct, true, false));
                 static readonly $$numTypeParams = $(type_params.len());
                 static readonly $$isPhantom = $is_phantom_value_toks as const;$['\n']
@@ -1769,8 +1771,6 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 readonly $$fullTypeName: $static_full_type_name_as_toks;
                 readonly $$typeArgs: $type_args_field_type;
                 readonly $$isPhantom = $(&struct_name).$$isPhantom;$['\n']
-
-                __StructClass = true as const;$['\n']
 
                 $(for field in strct.get_fields() join (; ) =>
                     readonly $(self.gen_field_name(&field)):
