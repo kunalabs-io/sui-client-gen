@@ -1770,6 +1770,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 readonly $$typeArgs: $type_args_field_type;
                 readonly $$isPhantom = $(&struct_name).$$isPhantom;$['\n']
 
+                __StructClass = true as const;$['\n']
+
                 $(for field in strct.get_fields() join (; ) =>
                     readonly $(self.gen_field_name(&field)):
                         $(self.gen_struct_class_field_type(

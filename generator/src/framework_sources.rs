@@ -45,11 +45,11 @@ export class StructClassLoader {
   }
 
   reified<T extends Primitive>(type: T): T
-  reified(type: `vector<${string}>`): VectorClassReified<VectorClass>
+  reified(type: `vector<${string}>`): VectorClassReified<VectorClass, any>
   reified(type: string): StructClassReified<StructClass, any>
   reified(
     type: string
-  ): StructClassReified<StructClass, any> | VectorClassReified<VectorClass> | string {
+  ): StructClassReified<StructClass, any> | VectorClassReified<VectorClass, any> | string {
     const { typeName, typeArgs } = parseTypeName(compressSuiType(type))
     switch (typeName) {
       case 'bool':
@@ -500,7 +500,7 @@ export function composeSuiType(typeName: string, ...typeArgs: string[]): string 
 pub static REIFIED: &str = r#"
 import { bcs, BcsType } from '@mysten/sui/bcs'
 import { fromHEX, toHEX } from '@mysten/sui/utils'
-import { FieldsWithTypes, compressSuiType, parseTypeName } from './util'
+import { FieldsWithTypes, composeSuiType, compressSuiType, parseTypeName } from './util'
 import { SuiClient, SuiParsedData } from '@mysten/sui/client'
 
 export interface StructClass {
@@ -510,31 +510,21 @@ export interface StructClass {
   readonly $isPhantom: readonly boolean[]
   toJSONField(): Record<string, any>
   toJSON(): Record<string, any>
+
+  __StructClass: true
 }
 
 export interface VectorClass {
-  $fullTypeName: string
+  readonly $typeName: 'vector'
+  readonly $fullTypeName: string
+  readonly $typeArgs: [string]
+  readonly $isPhantom: readonly [false]
   toJSONField(): any[]
+  toJSON(): Record<string, any>
 
   readonly vec: any
 
-  readonly kind: 'VectorClass'
-}
-
-export class Vector<T extends TypeArgument> implements VectorClass {
-  readonly $fullTypeName: `vector<${ToTypeStr<T>}>`
-
-  readonly vec: Array<ToField<T>>
-  constructor(fullTypeName: string, vec: Array<ToField<T>>) {
-    this.$fullTypeName = fullTypeName as `vector<${ToTypeStr<T>}>`
-    this.vec = vec
-  }
-
-  toJSONField(): Array<ToJSON<T>> {
-    return null as any
-  }
-
-  readonly kind = 'VectorClass'
+  __VectorClass: true
 }
 
 export type Primitive = 'bool' | 'u8' | 'u16' | 'u32' | 'u64' | 'u128' | 'u256' | 'address'
@@ -558,12 +548,19 @@ export interface StructClassReified<T extends StructClass, Fields> {
   kind: 'StructClassReified'
 }
 
-export interface VectorClassReified<T extends VectorClass> {
+export interface VectorClassReified<T extends VectorClass, Elements> {
+  typeName: T['$typeName']
   fullTypeName: ToTypeStr<T>
+  typeArgs: T['$typeArgs']
+  isPhantom: readonly [false]
+  reifiedTypeArgs: Array<Reified<TypeArgument, any>>
   bcs: BcsType<any>
   fromFields(fields: any[]): T
   fromFieldsWithTypes(item: FieldsWithTypes): T
+  fromBcs(data: Uint8Array): T
   fromJSONField: (field: any) => T
+  fromJSON: (json: Record<string, any>) => T
+  new: (elements: Elements) => T
   kind: 'VectorClassReified'
 }
 
@@ -572,16 +569,16 @@ export type Reified<T extends TypeArgument, Fields> = T extends Primitive
   : T extends StructClass
   ? StructClassReified<T, Fields>
   : T extends VectorClass
-  ? VectorClassReified<T>
+  ? VectorClassReified<T, Fields>
   : never
 
 export type ToTypeArgument<
-  T extends Primitive | StructClassReified<StructClass, any> | VectorClassReified<VectorClass>,
+  T extends Primitive | StructClassReified<StructClass, any> | VectorClassReified<VectorClass, any>,
 > = T extends Primitive
   ? T
   : T extends StructClassReified<infer U, any>
   ? U
-  : T extends VectorClassReified<infer U>
+  : T extends VectorClassReified<infer U, any>
   ? U
   : never
 
@@ -593,6 +590,115 @@ export type PhantomTypeArgument = string
 export interface PhantomReified<P> {
   phantomType: P
   kind: 'PhantomReified'
+}
+
+export type VectorElements<T extends TypeArgument> = Array<ToField<T>>
+
+export type VectorReified<T extends TypeArgument> = VectorClassReified<Vector<T>, VectorElements<T>>
+
+export class Vector<T extends TypeArgument> implements VectorClass {
+  static readonly $typeName = 'vector'
+  static readonly $numTypeParams = 1
+  static readonly $isPhantom = [false] as const
+
+  readonly $typeName = 'vector'
+  readonly $fullTypeName: `vector<${ToTypeStr<T>}>`
+  readonly $typeArgs: [ToTypeStr<T>]
+  readonly $isPhantom = [false] as const
+
+  __VectorClass = true as const
+
+  readonly vec: Array<ToField<T>>
+  constructor(typeArgs: [ToTypeStr<T>], elements: VectorElements<T>) {
+    this.$fullTypeName = composeSuiType(this.$typeName, ...typeArgs) as `vector<${ToTypeStr<T>}>`
+    this.$typeArgs = typeArgs
+
+    this.vec = elements
+  }
+
+  static reified<T extends Reified<TypeArgument, any>>(T: T): VectorReified<ToTypeArgument<T>> {
+    return {
+      typeName: Vector.$typeName,
+      fullTypeName: composeSuiType(
+        Vector.$typeName,
+        ...[extractType(T)]
+      ) as `vector<${ToTypeStr<ToTypeArgument<T>>}>`,
+      typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      isPhantom: Vector.$isPhantom,
+      reifiedTypeArgs: [T],
+      fromFields: (elements: any[]) => Vector.fromFields(T, elements),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Vector.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => Vector.fromBcs(T, data),
+      bcs: Vector.bcs(toBcs(T)),
+      fromJSONField: (field: any) => Vector.fromJSONField(T, field),
+      fromJSON: (json: any) => Vector.fromJSON(T, json),
+      new: (elements: VectorElements<ToTypeArgument<T>>) => {
+        return new Vector([extractType(T)], elements)
+      },
+      kind: 'VectorClassReified',
+    }
+  }
+
+  static get r() {
+    return Vector.reified
+  }
+
+  static get bcs() {
+    return bcs.vector
+  }
+
+  static fromFields<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    elements: any[]
+  ): Vector<ToTypeArgument<T>> {
+    return Vector.reified(typeArg).new(elements.map(element => decodeFromFields(typeArg, element)))
+  }
+
+  static fromFieldsWithTypes<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    item: FieldsWithTypes
+  ): Vector<ToTypeArgument<T>> {
+    return Vector.reified(typeArg).new(
+      (item as unknown as any[]).map((field: any) => decodeFromFieldsWithTypes(typeArg, field))
+    )
+  }
+
+  static fromBcs<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    data: Uint8Array
+  ): Vector<ToTypeArgument<T>> {
+    return Vector.fromFields(typeArg, Vector.bcs(toBcs(typeArg)).parse(data))
+  }
+
+  toJSONField() {
+    return this.vec.map(field => field.toJSONField())
+  }
+
+  toJSON() {
+    return {
+      $typeName: this.$typeName,
+      $typeArgs: this.$typeArgs,
+      elements: this.toJSONField(),
+    }
+  }
+
+  static fromJSONField<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    field: any[]
+  ): Vector<ToTypeArgument<T>> {
+    return Vector.reified(typeArg).new(field.map(field => decodeFromJSONField(typeArg, field)))
+  }
+
+  static fromJSON<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    json: any
+  ): Vector<ToTypeArgument<T>> {
+    if (json.$typeName !== Vector.$typeName) {
+      throw new Error('not a vector json object')
+    }
+
+    return Vector.fromJSONField(typeArg, json.elements)
+  }
 }
 
 export function phantom<T extends Reified<TypeArgument, any>>(
@@ -627,32 +733,8 @@ export type PhantomToTypeStr<T extends PhantomTypeArgument> = T extends PhantomT
 
 export function vector<T extends Reified<TypeArgument, any>>(
   T: T
-): VectorClassReified<Vector<ToTypeArgument<T>>> {
-  const fullTypeName = `vector<${extractType(T)}>` as `vector<${ToTypeStr<ToTypeArgument<T>>}>`
-
-  return {
-    fullTypeName,
-    bcs: bcs.vector(toBcs(T)),
-    fromFieldsWithTypes: (item: FieldsWithTypes) => {
-      return new Vector(
-        fullTypeName,
-        (item as unknown as any[]).map((field: any) => decodeFromFieldsWithTypes(T, field))
-      )
-    },
-    fromFields: (fields: any[]) => {
-      return new Vector(
-        fullTypeName,
-        fields.map(field => decodeFromFields(T, field))
-      )
-    },
-
-    fromJSONField: (field: any) =>
-      new Vector(
-        fullTypeName,
-        field.map((field: any) => decodeFromJSONField(T, field))
-      ),
-    kind: 'VectorClassReified',
-  }
+): VectorClassReified<Vector<ToTypeArgument<T>>, VectorElements<ToTypeArgument<T>>> {
+  return Vector.reified(T)
 }
 
 export type ToJSON<T extends TypeArgument> = T extends 'bool'
