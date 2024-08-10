@@ -24,6 +24,15 @@ const JS_RESERVED_WORDS: [&str; 64] = [
     "try", "typeof", "var", "void", "volatile", "while", "with", "yield"
 ];
 
+#[rustfmt::skip]
+const JS_STRICTLY_RESERVED_WORDS: [&str; 37] = [
+    "await", "break", "case", "catch", "class", "const", "continue", "debugger",
+    "default", "delete", "do", "else", "export", "extends", "false", "finally",
+    "for", "function", "if", "import", "in", "instanceof", "new", "null", "return",
+    "super", "switch", "this", "throw", "true", "try", "typeof", "var", "void",
+    "while", "with", "yield"
+];
+
 /// Returns module name that's used in import paths (converts kebab case as that's idiomatic in TS).
 pub fn module_import_name(module: &ModuleEnv) -> String {
     module
@@ -983,13 +992,21 @@ impl<'env, 'a> FunctionsGen<'env, 'a> {
         let func_type_param_names = self.func_type_param_names(func);
         let single_param = param_field_names.len() == 1;
 
+        let convert_reserved_if_needed = |name: &str| {
+            if JS_STRICTLY_RESERVED_WORDS.contains(&name) {
+                name.to_owned() + "_"
+            } else {
+                name.to_owned()
+            }
+        };
+
         quote_in! { *tokens =>
             export function $(FunctionsGen::fun_name(func))(
                 tx: $transaction,
                 $(gen_type_args_param(type_arg_count, None::<&str>, ","))
                 $(match param_field_names.len() {
                     0 => (),
-                    1 => $(&param_field_names[0].0): $(self.param_type_to_field_type(&param_field_names[0].1)),
+                    1 => $(convert_reserved_if_needed(&param_field_names[0].0)): $(self.param_type_to_field_type(&param_field_names[0].1)),
                     _ => args: $(FunctionsGen::fun_arg_if_name(func))
                 })
             ) {
@@ -1003,7 +1020,7 @@ impl<'env, 'a> FunctionsGen<'env, 'a> {
                     arguments: [
                         $(if param_field_names.len() == 1 {
                             $(self.param_to_tx_arg(
-                                param_field_names[0].1.clone(), param_field_names[0].0.clone(),
+                                param_field_names[0].1.clone(), convert_reserved_if_needed(&param_field_names[0].0),
                                 func_type_param_names, single_param
                             ))
                         } else {
