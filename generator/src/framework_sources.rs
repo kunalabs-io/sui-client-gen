@@ -695,7 +695,7 @@ export type ToField<T extends TypeArgument> = T extends 'bool'
     }
   ? ToField<U> | null
   : T extends VectorClass
-  ? T['vec']
+  ? T['elements']
   : T extends StructClass
   ? T
   : never
@@ -954,6 +954,7 @@ import {
   TypeArgument,
   VectorClass,
   VectorClassReified,
+  fieldToJSON,
 } from './reified'
 import { composeSuiType, FieldsWithTypes } from './util'
 
@@ -1037,7 +1038,7 @@ export class Vector<T extends TypeArgument> implements VectorClass {
   }
 
   toJSONField() {
-    return this.elements.map(field => field.toJSONField())
+    return this.elements.map(element => fieldToJSON(this.$typeArgs[0], element))
   }
 
   toJSON() {
