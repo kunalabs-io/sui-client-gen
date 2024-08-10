@@ -19,7 +19,7 @@ import { Vector } from '../../_framework/vector'
 import { ID, UID } from '../../sui/object/structs'
 import { PKG_V1 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
 
 /* ============================== ExampleStruct =============================== */
@@ -76,6 +76,7 @@ export class ExampleStruct implements StructClass {
       fromJSONField: (field: any) => ExampleStruct.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ExampleStruct.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ExampleStruct.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => ExampleStruct.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => ExampleStruct.fetch(client, id),
       new: (fields: ExampleStructFields) => {
         return new ExampleStruct([], fields)
@@ -153,6 +154,22 @@ export class ExampleStruct implements StructClass {
     return ExampleStruct.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): ExampleStruct {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isExampleStruct(data.bcs.type)) {
+        throw new Error(`object at is not a ExampleStruct object`)
+      }
+
+      return ExampleStruct.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return ExampleStruct.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<ExampleStruct> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -162,7 +179,7 @@ export class ExampleStruct implements StructClass {
       throw new Error(`object at id ${id} is not a ExampleStruct object`)
     }
 
-    return ExampleStruct.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return ExampleStruct.fromSuiObjectData(res.data)
   }
 }
 
@@ -244,6 +261,7 @@ export class SpecialTypesStruct implements StructClass {
       fromJSONField: (field: any) => SpecialTypesStruct.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => SpecialTypesStruct.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => SpecialTypesStruct.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => SpecialTypesStruct.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => SpecialTypesStruct.fetch(client, id),
       new: (fields: SpecialTypesStructFields) => {
         return new SpecialTypesStruct([], fields)
@@ -378,6 +396,22 @@ export class SpecialTypesStruct implements StructClass {
     return SpecialTypesStruct.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): SpecialTypesStruct {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isSpecialTypesStruct(data.bcs.type)) {
+        throw new Error(`object at is not a SpecialTypesStruct object`)
+      }
+
+      return SpecialTypesStruct.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return SpecialTypesStruct.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<SpecialTypesStruct> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -387,6 +421,6 @@ export class SpecialTypesStruct implements StructClass {
       throw new Error(`object at id ${id} is not a SpecialTypesStruct object`)
     }
 
-    return SpecialTypesStruct.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return SpecialTypesStruct.fromSuiObjectData(res.data)
   }
 }

@@ -12,7 +12,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { PKG_V21 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Scalar =============================== */
@@ -69,6 +69,7 @@ export class Scalar implements StructClass {
       fromJSONField: (field: any) => Scalar.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Scalar.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Scalar.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => Scalar.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => Scalar.fetch(client, id),
       new: (fields: ScalarFields) => {
         return new Scalar([], fields)
@@ -144,6 +145,22 @@ export class Scalar implements StructClass {
     return Scalar.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): Scalar {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isScalar(data.bcs.type)) {
+        throw new Error(`object at is not a Scalar object`)
+      }
+
+      return Scalar.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Scalar.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<Scalar> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -153,7 +170,7 @@ export class Scalar implements StructClass {
       throw new Error(`object at id ${id} is not a Scalar object`)
     }
 
-    return Scalar.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return Scalar.fromSuiObjectData(res.data)
   }
 }
 
@@ -208,6 +225,7 @@ export class G1 implements StructClass {
       fromJSONField: (field: any) => G1.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => G1.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => G1.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => G1.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => G1.fetch(client, id),
       new: (fields: G1Fields) => {
         return new G1([], fields)
@@ -283,6 +301,22 @@ export class G1 implements StructClass {
     return G1.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): G1 {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isG1(data.bcs.type)) {
+        throw new Error(`object at is not a G1 object`)
+      }
+
+      return G1.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return G1.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<G1> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -292,7 +326,7 @@ export class G1 implements StructClass {
       throw new Error(`object at id ${id} is not a G1 object`)
     }
 
-    return G1.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return G1.fromSuiObjectData(res.data)
   }
 }
 
@@ -347,6 +381,7 @@ export class G2 implements StructClass {
       fromJSONField: (field: any) => G2.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => G2.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => G2.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => G2.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => G2.fetch(client, id),
       new: (fields: G2Fields) => {
         return new G2([], fields)
@@ -422,6 +457,22 @@ export class G2 implements StructClass {
     return G2.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): G2 {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isG2(data.bcs.type)) {
+        throw new Error(`object at is not a G2 object`)
+      }
+
+      return G2.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return G2.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<G2> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -431,7 +482,7 @@ export class G2 implements StructClass {
       throw new Error(`object at id ${id} is not a G2 object`)
     }
 
-    return G2.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return G2.fromSuiObjectData(res.data)
   }
 }
 
@@ -486,6 +537,7 @@ export class GT implements StructClass {
       fromJSONField: (field: any) => GT.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => GT.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => GT.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => GT.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => GT.fetch(client, id),
       new: (fields: GTFields) => {
         return new GT([], fields)
@@ -561,6 +613,22 @@ export class GT implements StructClass {
     return GT.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): GT {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isGT(data.bcs.type)) {
+        throw new Error(`object at is not a GT object`)
+      }
+
+      return GT.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return GT.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<GT> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -570,6 +638,6 @@ export class GT implements StructClass {
       throw new Error(`object at id ${id} is not a GT object`)
     }
 
-    return GT.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return GT.fromSuiObjectData(res.data)
   }
 }

@@ -26,7 +26,7 @@ import { PKG_V21 } from '../index'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Display =============================== */
@@ -91,6 +91,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
       fromJSONField: (field: any) => Display.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Display.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Display.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => Display.fromSuiObjectData(T, content),
       fetch: async (client: SuiClient, id: string) => Display.fetch(client, T, id),
       new: (fields: DisplayFields<ToPhantomTypeArgument<T>>) => {
         return new Display([extractType(T)], fields)
@@ -209,6 +210,39 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
     return Display.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    data: SuiObjectData
+  ): Display<ToPhantomTypeArgument<T>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isDisplay(data.bcs.type)) {
+        throw new Error(`object at is not a Display object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return Display.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Display.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
@@ -222,21 +256,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a Display object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return Display.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return Display.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -299,6 +319,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
       fromJSONField: (field: any) => DisplayCreated.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => DisplayCreated.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => DisplayCreated.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => DisplayCreated.fromSuiObjectData(T, content),
       fetch: async (client: SuiClient, id: string) => DisplayCreated.fetch(client, T, id),
       new: (fields: DisplayCreatedFields<ToPhantomTypeArgument<T>>) => {
         return new DisplayCreated([extractType(T)], fields)
@@ -400,6 +421,39 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
     return DisplayCreated.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    data: SuiObjectData
+  ): DisplayCreated<ToPhantomTypeArgument<T>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isDisplayCreated(data.bcs.type)) {
+        throw new Error(`object at is not a DisplayCreated object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return DisplayCreated.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return DisplayCreated.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
@@ -413,21 +467,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
       throw new Error(`object at id ${id} is not a DisplayCreated object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return DisplayCreated.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return DisplayCreated.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -496,6 +536,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
       fromJSONField: (field: any) => VersionUpdated.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => VersionUpdated.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => VersionUpdated.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => VersionUpdated.fromSuiObjectData(T, content),
       fetch: async (client: SuiClient, id: string) => VersionUpdated.fetch(client, T, id),
       new: (fields: VersionUpdatedFields<ToPhantomTypeArgument<T>>) => {
         return new VersionUpdated([extractType(T)], fields)
@@ -614,6 +655,39 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
     return VersionUpdated.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    data: SuiObjectData
+  ): VersionUpdated<ToPhantomTypeArgument<T>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isVersionUpdated(data.bcs.type)) {
+        throw new Error(`object at is not a VersionUpdated object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return VersionUpdated.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return VersionUpdated.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
@@ -627,20 +701,6 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
       throw new Error(`object at id ${id} is not a VersionUpdated object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return VersionUpdated.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return VersionUpdated.fromSuiObjectData(typeArg, res.data)
   }
 }

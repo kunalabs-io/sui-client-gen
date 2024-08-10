@@ -1,7 +1,7 @@
 import { bcs, BcsType } from '@mysten/sui/bcs'
 import { fromHEX, toHEX } from '@mysten/sui/utils'
 import { FieldsWithTypes, compressSuiType, parseTypeName } from './util'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiParsedData, SuiObjectData } from '@mysten/sui/client'
 
 // for backwards compatibility
 export { vector } from './vector'
@@ -46,6 +46,7 @@ export interface StructClassReified<T extends StructClass, Fields> {
   fromJSONField: (field: any) => T
   fromJSON: (json: Record<string, any>) => T
   fromSuiParsedData: (content: SuiParsedData) => T
+  fromSuiObjectData: (data: SuiObjectData) => T
   fetch: (client: SuiClient, id: string) => Promise<T>
   new: (fields: Fields) => T
   kind: 'StructClassReified'
@@ -194,7 +195,7 @@ export type ToField<T extends TypeArgument> = T extends 'bool'
                               }
                             ? ToField<U> | null
                             : T extends VectorClass
-                              ? T['vec']
+                              ? T['elements']
                               : T extends StructClass
                                 ? T
                                 : never

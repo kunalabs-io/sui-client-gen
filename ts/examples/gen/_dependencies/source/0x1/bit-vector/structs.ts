@@ -15,7 +15,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_f
 import { Vector } from '../../../../_framework/vector'
 import { PKG_V8 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== BitVector =============================== */
@@ -75,6 +75,7 @@ export class BitVector implements StructClass {
       fromJSONField: (field: any) => BitVector.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => BitVector.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => BitVector.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => BitVector.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => BitVector.fetch(client, id),
       new: (fields: BitVectorFields) => {
         return new BitVector([], fields)
@@ -159,6 +160,22 @@ export class BitVector implements StructClass {
     return BitVector.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): BitVector {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isBitVector(data.bcs.type)) {
+        throw new Error(`object at is not a BitVector object`)
+      }
+
+      return BitVector.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return BitVector.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<BitVector> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -168,6 +185,6 @@ export class BitVector implements StructClass {
       throw new Error(`object at id ${id} is not a BitVector object`)
     }
 
-    return BitVector.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return BitVector.fromSuiObjectData(res.data)
   }
 }

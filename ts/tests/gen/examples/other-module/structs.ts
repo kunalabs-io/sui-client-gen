@@ -12,7 +12,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { PKG_V1, PKG_V2 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== AddedInAnUpgrade =============================== */
@@ -69,6 +69,7 @@ export class AddedInAnUpgrade implements StructClass {
       fromJSONField: (field: any) => AddedInAnUpgrade.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => AddedInAnUpgrade.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => AddedInAnUpgrade.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => AddedInAnUpgrade.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => AddedInAnUpgrade.fetch(client, id),
       new: (fields: AddedInAnUpgradeFields) => {
         return new AddedInAnUpgrade([], fields)
@@ -148,6 +149,22 @@ export class AddedInAnUpgrade implements StructClass {
     return AddedInAnUpgrade.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): AddedInAnUpgrade {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isAddedInAnUpgrade(data.bcs.type)) {
+        throw new Error(`object at is not a AddedInAnUpgrade object`)
+      }
+
+      return AddedInAnUpgrade.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return AddedInAnUpgrade.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<AddedInAnUpgrade> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -157,7 +174,7 @@ export class AddedInAnUpgrade implements StructClass {
       throw new Error(`object at id ${id} is not a AddedInAnUpgrade object`)
     }
 
-    return AddedInAnUpgrade.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return AddedInAnUpgrade.fromSuiObjectData(res.data)
   }
 }
 
@@ -220,6 +237,8 @@ export class StructFromOtherModule implements StructClass {
       fromJSON: (json: Record<string, any>) => StructFromOtherModule.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) =>
         StructFromOtherModule.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) =>
+        StructFromOtherModule.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => StructFromOtherModule.fetch(client, id),
       new: (fields: StructFromOtherModuleFields) => {
         return new StructFromOtherModule([], fields)
@@ -301,6 +320,22 @@ export class StructFromOtherModule implements StructClass {
     return StructFromOtherModule.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): StructFromOtherModule {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isStructFromOtherModule(data.bcs.type)) {
+        throw new Error(`object at is not a StructFromOtherModule object`)
+      }
+
+      return StructFromOtherModule.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return StructFromOtherModule.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<StructFromOtherModule> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -310,6 +345,6 @@ export class StructFromOtherModule implements StructClass {
       throw new Error(`object at id ${id} is not a StructFromOtherModule object`)
     }
 
-    return StructFromOtherModule.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return StructFromOtherModule.fromSuiObjectData(res.data)
   }
 }

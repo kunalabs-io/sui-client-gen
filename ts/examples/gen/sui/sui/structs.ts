@@ -12,7 +12,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { PKG_V21 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== SUI =============================== */
@@ -63,6 +63,7 @@ export class SUI implements StructClass {
       fromJSONField: (field: any) => SUI.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => SUI.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => SUI.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => SUI.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => SUI.fetch(client, id),
       new: (fields: SUIFields) => {
         return new SUI([], fields)
@@ -138,6 +139,22 @@ export class SUI implements StructClass {
     return SUI.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): SUI {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isSUI(data.bcs.type)) {
+        throw new Error(`object at is not a SUI object`)
+      }
+
+      return SUI.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return SUI.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<SUI> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -147,6 +164,6 @@ export class SUI implements StructClass {
       throw new Error(`object at id ${id} is not a SUI object`)
     }
 
-    return SUI.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return SUI.fromSuiObjectData(res.data)
   }
 }

@@ -25,7 +25,7 @@ import {
 import { PKG_V21 } from '../index'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Field =============================== */
@@ -97,6 +97,7 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements 
       fromJSONField: (field: any) => Field.fromJSONField([T0, T1], field),
       fromJSON: (json: Record<string, any>) => Field.fromJSON([T0, T1], json),
       fromSuiParsedData: (content: SuiParsedData) => Field.fromSuiParsedData([T0, T1], content),
+      fromSuiObjectData: (content: SuiObjectData) => Field.fromSuiObjectData([T0, T1], content),
       fetch: async (client: SuiClient, id: string) => Field.fetch(client, [T0, T1], id),
       new: (fields: FieldFields<ToTypeArgument<T0>, ToTypeArgument<T1>>) => {
         return new Field([extractType(T0), extractType(T1)], fields)
@@ -214,6 +215,41 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements 
     return Field.fromFieldsWithTypes(typeArgs, content)
   }
 
+  static fromSuiObjectData<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends Reified<TypeArgument, any>,
+  >(typeArgs: [T0, T1], data: SuiObjectData): Field<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isField(data.bcs.type)) {
+        throw new Error(`object at is not a Field object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 2) {
+        throw new Error(
+          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+        )
+      }
+      for (let i = 0; i < 2; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
+      }
+
+      return Field.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Field.fromSuiParsedData(typeArgs, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArgs: [T0, T1],
@@ -227,22 +263,6 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements 
       throw new Error(`object at id ${id} is not a Field object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 2) {
-      throw new Error(
-        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
-      )
-    }
-    for (let i = 0; i < 2; i++) {
-      const gotTypeArg = compressSuiType(gotTypeArgs[i])
-      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-      if (gotTypeArg !== expectedTypeArg) {
-        throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
-      }
-    }
-
-    return Field.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
+    return Field.fromSuiObjectData(typeArgs, res.data)
   }
 }

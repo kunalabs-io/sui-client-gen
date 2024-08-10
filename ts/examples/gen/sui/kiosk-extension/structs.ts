@@ -24,7 +24,7 @@ import {
 import { Bag } from '../bag/structs'
 import { PKG_V21 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Extension =============================== */
@@ -87,6 +87,7 @@ export class Extension implements StructClass {
       fromJSONField: (field: any) => Extension.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Extension.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Extension.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => Extension.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => Extension.fetch(client, id),
       new: (fields: ExtensionFields) => {
         return new Extension([], fields)
@@ -176,6 +177,22 @@ export class Extension implements StructClass {
     return Extension.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): Extension {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isExtension(data.bcs.type)) {
+        throw new Error(`object at is not a Extension object`)
+      }
+
+      return Extension.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Extension.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<Extension> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -185,7 +202,7 @@ export class Extension implements StructClass {
       throw new Error(`object at id ${id} is not a Extension object`)
     }
 
-    return Extension.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return Extension.fromSuiObjectData(res.data)
   }
 }
 
@@ -248,6 +265,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
       fromJSONField: (field: any) => ExtensionKey.fromJSONField(Ext, field),
       fromJSON: (json: Record<string, any>) => ExtensionKey.fromJSON(Ext, json),
       fromSuiParsedData: (content: SuiParsedData) => ExtensionKey.fromSuiParsedData(Ext, content),
+      fromSuiObjectData: (content: SuiObjectData) => ExtensionKey.fromSuiObjectData(Ext, content),
       fetch: async (client: SuiClient, id: string) => ExtensionKey.fetch(client, Ext, id),
       new: (fields: ExtensionKeyFields<ToPhantomTypeArgument<Ext>>) => {
         return new ExtensionKey([extractType(Ext)], fields)
@@ -353,6 +371,39 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
     return ExtensionKey.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<Ext extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: Ext,
+    data: SuiObjectData
+  ): ExtensionKey<ToPhantomTypeArgument<Ext>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isExtensionKey(data.bcs.type)) {
+        throw new Error(`object at is not a ExtensionKey object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return ExtensionKey.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return ExtensionKey.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<Ext extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: Ext,
@@ -366,20 +417,6 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
       throw new Error(`object at id ${id} is not a ExtensionKey object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return ExtensionKey.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return ExtensionKey.fromSuiObjectData(typeArg, res.data)
   }
 }

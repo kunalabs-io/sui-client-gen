@@ -24,7 +24,7 @@ import {
 } from '../../_framework/util'
 import { PKG_V21 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Wrapper =============================== */
@@ -83,6 +83,7 @@ export class Wrapper<T0 extends TypeArgument> implements StructClass {
       fromJSONField: (field: any) => Wrapper.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => Wrapper.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => Wrapper.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) => Wrapper.fromSuiObjectData(T0, content),
       fetch: async (client: SuiClient, id: string) => Wrapper.fetch(client, T0, id),
       new: (fields: WrapperFields<ToTypeArgument<T0>>) => {
         return new Wrapper([extractType(T0)], fields)
@@ -187,6 +188,39 @@ export class Wrapper<T0 extends TypeArgument> implements StructClass {
     return Wrapper.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T0 extends Reified<TypeArgument, any>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): Wrapper<ToTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isWrapper(data.bcs.type)) {
+        throw new Error(`object at is not a Wrapper object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return Wrapper.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Wrapper.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArg: T0,
@@ -200,20 +234,6 @@ export class Wrapper<T0 extends TypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a Wrapper object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return Wrapper.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return Wrapper.fromSuiObjectData(typeArg, res.data)
   }
 }

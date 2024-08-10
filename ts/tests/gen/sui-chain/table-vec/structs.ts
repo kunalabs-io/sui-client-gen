@@ -25,7 +25,7 @@ import {
 import { PKG_V21 } from '../index'
 import { Table } from '../table/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== TableVec =============================== */
@@ -87,6 +87,7 @@ export class TableVec<T0 extends PhantomTypeArgument> implements StructClass {
       fromJSONField: (field: any) => TableVec.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => TableVec.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => TableVec.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) => TableVec.fromSuiObjectData(T0, content),
       fetch: async (client: SuiClient, id: string) => TableVec.fetch(client, T0, id),
       new: (fields: TableVecFields<ToPhantomTypeArgument<T0>>) => {
         return new TableVec([extractType(T0)], fields)
@@ -195,6 +196,39 @@ export class TableVec<T0 extends PhantomTypeArgument> implements StructClass {
     return TableVec.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): TableVec<ToPhantomTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isTableVec(data.bcs.type)) {
+        throw new Error(`object at is not a TableVec object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return TableVec.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return TableVec.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
@@ -208,20 +242,6 @@ export class TableVec<T0 extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a TableVec object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return TableVec.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return TableVec.fromSuiObjectData(typeArg, res.data)
   }
 }

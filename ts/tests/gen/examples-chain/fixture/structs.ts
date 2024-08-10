@@ -38,7 +38,7 @@ import { Url } from '../../sui-chain/url/structs'
 import { PKG_V1 } from '../index'
 import { StructFromOtherModule } from '../other-module/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Dummy =============================== */
@@ -92,6 +92,7 @@ export class Dummy implements StructClass {
       fromJSONField: (field: any) => Dummy.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Dummy.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Dummy.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => Dummy.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => Dummy.fetch(client, id),
       new: (fields: DummyFields) => {
         return new Dummy([], fields)
@@ -167,6 +168,22 @@ export class Dummy implements StructClass {
     return Dummy.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): Dummy {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isDummy(data.bcs.type)) {
+        throw new Error(`object at is not a Dummy object`)
+      }
+
+      return Dummy.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Dummy.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<Dummy> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -176,7 +193,7 @@ export class Dummy implements StructClass {
       throw new Error(`object at id ${id} is not a Dummy object`)
     }
 
-    return Dummy.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return Dummy.fromSuiObjectData(res.data)
   }
 }
 
@@ -244,6 +261,8 @@ export class WithGenericField<T0 extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => WithGenericField.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) =>
         WithGenericField.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) =>
+        WithGenericField.fromSuiObjectData(T0, content),
       fetch: async (client: SuiClient, id: string) => WithGenericField.fetch(client, T0, id),
       new: (fields: WithGenericFieldFields<ToTypeArgument<T0>>) => {
         return new WithGenericField([extractType(T0)], fields)
@@ -360,6 +379,39 @@ export class WithGenericField<T0 extends TypeArgument> implements StructClass {
     return WithGenericField.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T0 extends Reified<TypeArgument, any>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): WithGenericField<ToTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isWithGenericField(data.bcs.type)) {
+        throw new Error(`object at is not a WithGenericField object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return WithGenericField.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return WithGenericField.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArg: T0,
@@ -373,21 +425,7 @@ export class WithGenericField<T0 extends TypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a WithGenericField object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return WithGenericField.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return WithGenericField.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -442,6 +480,7 @@ export class Bar implements StructClass {
       fromJSONField: (field: any) => Bar.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Bar.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Bar.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => Bar.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => Bar.fetch(client, id),
       new: (fields: BarFields) => {
         return new Bar([], fields)
@@ -515,6 +554,22 @@ export class Bar implements StructClass {
     return Bar.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): Bar {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isBar(data.bcs.type)) {
+        throw new Error(`object at is not a Bar object`)
+      }
+
+      return Bar.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Bar.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<Bar> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -524,7 +579,7 @@ export class Bar implements StructClass {
       throw new Error(`object at id ${id} is not a Bar object`)
     }
 
-    return Bar.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return Bar.fromSuiObjectData(res.data)
   }
 }
 
@@ -601,6 +656,8 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument>
       fromJSON: (json: Record<string, any>) => WithTwoGenerics.fromJSON([T0, T1], json),
       fromSuiParsedData: (content: SuiParsedData) =>
         WithTwoGenerics.fromSuiParsedData([T0, T1], content),
+      fromSuiObjectData: (content: SuiObjectData) =>
+        WithTwoGenerics.fromSuiObjectData([T0, T1], content),
       fetch: async (client: SuiClient, id: string) => WithTwoGenerics.fetch(client, [T0, T1], id),
       new: (fields: WithTwoGenericsFields<ToTypeArgument<T0>, ToTypeArgument<T1>>) => {
         return new WithTwoGenerics([extractType(T0), extractType(T1)], fields)
@@ -722,6 +779,44 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument>
     return WithTwoGenerics.fromFieldsWithTypes(typeArgs, content)
   }
 
+  static fromSuiObjectData<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends Reified<TypeArgument, any>,
+  >(
+    typeArgs: [T0, T1],
+    data: SuiObjectData
+  ): WithTwoGenerics<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isWithTwoGenerics(data.bcs.type)) {
+        throw new Error(`object at is not a WithTwoGenerics object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 2) {
+        throw new Error(
+          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+        )
+      }
+      for (let i = 0; i < 2; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
+      }
+
+      return WithTwoGenerics.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return WithTwoGenerics.fromSuiParsedData(typeArgs, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArgs: [T0, T1],
@@ -735,23 +830,7 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument>
       throw new Error(`object at id ${id} is not a WithTwoGenerics object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 2) {
-      throw new Error(
-        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
-      )
-    }
-    for (let i = 0; i < 2; i++) {
-      const gotTypeArg = compressSuiType(gotTypeArgs[i])
-      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-      if (gotTypeArg !== expectedTypeArg) {
-        throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
-      }
-    }
-
-    return WithTwoGenerics.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
+    return WithTwoGenerics.fromSuiObjectData(typeArgs, res.data)
   }
 }
 
@@ -850,6 +929,7 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
       fromJSONField: (field: any) => Foo.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => Foo.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => Foo.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) => Foo.fromSuiObjectData(T0, content),
       fetch: async (client: SuiClient, id: string) => Foo.fetch(client, T0, id),
       new: (fields: FooFields<ToTypeArgument<T0>>) => {
         return new Foo([extractType(T0)], fields)
@@ -1120,6 +1200,39 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
     return Foo.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T0 extends Reified<TypeArgument, any>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): Foo<ToTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isFoo(data.bcs.type)) {
+        throw new Error(`object at is not a Foo object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return Foo.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Foo.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArg: T0,
@@ -1133,21 +1246,7 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a Foo object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return Foo.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return Foo.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -1257,6 +1356,8 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
       fromJSON: (json: Record<string, any>) => WithSpecialTypes.fromJSON([T0, T1], json),
       fromSuiParsedData: (content: SuiParsedData) =>
         WithSpecialTypes.fromSuiParsedData([T0, T1], content),
+      fromSuiObjectData: (content: SuiObjectData) =>
+        WithSpecialTypes.fromSuiObjectData([T0, T1], content),
       fetch: async (client: SuiClient, id: string) => WithSpecialTypes.fetch(client, [T0, T1], id),
       new: (fields: WithSpecialTypesFields<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>>) => {
         return new WithSpecialTypes([extractType(T0), extractType(T1)], fields)
@@ -1466,6 +1567,44 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     return WithSpecialTypes.fromFieldsWithTypes(typeArgs, content)
   }
 
+  static fromSuiObjectData<
+    T0 extends PhantomReified<PhantomTypeArgument>,
+    T1 extends Reified<TypeArgument, any>,
+  >(
+    typeArgs: [T0, T1],
+    data: SuiObjectData
+  ): WithSpecialTypes<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isWithSpecialTypes(data.bcs.type)) {
+        throw new Error(`object at is not a WithSpecialTypes object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 2) {
+        throw new Error(
+          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+        )
+      }
+      for (let i = 0; i < 2; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
+      }
+
+      return WithSpecialTypes.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return WithSpecialTypes.fromSuiParsedData(typeArgs, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<
     T0 extends PhantomReified<PhantomTypeArgument>,
     T1 extends Reified<TypeArgument, any>,
@@ -1482,23 +1621,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
       throw new Error(`object at id ${id} is not a WithSpecialTypes object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 2) {
-      throw new Error(
-        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
-      )
-    }
-    for (let i = 0; i < 2; i++) {
-      const gotTypeArg = compressSuiType(gotTypeArgs[i])
-      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-      if (gotTypeArg !== expectedTypeArg) {
-        throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
-      }
-    }
-
-    return WithSpecialTypes.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
+    return WithSpecialTypes.fromSuiObjectData(typeArgs, res.data)
   }
 }
 
@@ -1701,6 +1824,8 @@ export class WithSpecialTypesAsGenerics<
         WithSpecialTypesAsGenerics.fromJSON([T0, T1, T2, T3, T4, T5, T6, T7], json),
       fromSuiParsedData: (content: SuiParsedData) =>
         WithSpecialTypesAsGenerics.fromSuiParsedData([T0, T1, T2, T3, T4, T5, T6, T7], content),
+      fromSuiObjectData: (content: SuiObjectData) =>
+        WithSpecialTypesAsGenerics.fromSuiObjectData([T0, T1, T2, T3, T4, T5, T6, T7], content),
       fetch: async (client: SuiClient, id: string) =>
         WithSpecialTypesAsGenerics.fetch(client, [T0, T1, T2, T3, T4, T5, T6, T7], id),
       new: (
@@ -2070,6 +2195,59 @@ export class WithSpecialTypesAsGenerics<
     return WithSpecialTypesAsGenerics.fromFieldsWithTypes(typeArgs, content)
   }
 
+  static fromSuiObjectData<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends Reified<TypeArgument, any>,
+    T2 extends Reified<TypeArgument, any>,
+    T3 extends Reified<TypeArgument, any>,
+    T4 extends Reified<TypeArgument, any>,
+    T5 extends Reified<TypeArgument, any>,
+    T6 extends Reified<TypeArgument, any>,
+    T7 extends Reified<TypeArgument, any>,
+  >(
+    typeArgs: [T0, T1, T2, T3, T4, T5, T6, T7],
+    data: SuiObjectData
+  ): WithSpecialTypesAsGenerics<
+    ToTypeArgument<T0>,
+    ToTypeArgument<T1>,
+    ToTypeArgument<T2>,
+    ToTypeArgument<T3>,
+    ToTypeArgument<T4>,
+    ToTypeArgument<T5>,
+    ToTypeArgument<T6>,
+    ToTypeArgument<T7>
+  > {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isWithSpecialTypesAsGenerics(data.bcs.type)) {
+        throw new Error(`object at is not a WithSpecialTypesAsGenerics object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 8) {
+        throw new Error(
+          `type argument mismatch: expected 8 type arguments but got ${gotTypeArgs.length}`
+        )
+      }
+      for (let i = 0; i < 8; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
+      }
+
+      return WithSpecialTypesAsGenerics.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return WithSpecialTypesAsGenerics.fromSuiParsedData(typeArgs, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<
     T0 extends Reified<TypeArgument, any>,
     T1 extends Reified<TypeArgument, any>,
@@ -2108,23 +2286,7 @@ export class WithSpecialTypesAsGenerics<
       throw new Error(`object at id ${id} is not a WithSpecialTypesAsGenerics object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 8) {
-      throw new Error(
-        `type argument mismatch: expected 8 type arguments but got ${gotTypeArgs.length}`
-      )
-    }
-    for (let i = 0; i < 8; i++) {
-      const gotTypeArg = compressSuiType(gotTypeArgs[i])
-      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-      if (gotTypeArg !== expectedTypeArg) {
-        throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
-      }
-    }
-
-    return WithSpecialTypesAsGenerics.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
+    return WithSpecialTypesAsGenerics.fromSuiObjectData(typeArgs, res.data)
   }
 }
 
@@ -2207,6 +2369,8 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
       fromJSON: (json: Record<string, any>) => WithSpecialTypesInVectors.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) =>
         WithSpecialTypesInVectors.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) =>
+        WithSpecialTypesInVectors.fromSuiObjectData(T0, content),
       fetch: async (client: SuiClient, id: string) =>
         WithSpecialTypesInVectors.fetch(client, T0, id),
       new: (fields: WithSpecialTypesInVectorsFields<ToTypeArgument<T0>>) => {
@@ -2366,6 +2530,39 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
     return WithSpecialTypesInVectors.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T0 extends Reified<TypeArgument, any>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): WithSpecialTypesInVectors<ToTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isWithSpecialTypesInVectors(data.bcs.type)) {
+        throw new Error(`object at is not a WithSpecialTypesInVectors object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return WithSpecialTypesInVectors.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return WithSpecialTypesInVectors.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArg: T0,
@@ -2384,20 +2581,6 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
       throw new Error(`object at id ${id} is not a WithSpecialTypesInVectors object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return WithSpecialTypesInVectors.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return WithSpecialTypesInVectors.fromSuiObjectData(typeArg, res.data)
   }
 }

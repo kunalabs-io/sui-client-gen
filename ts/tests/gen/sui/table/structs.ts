@@ -24,7 +24,7 @@ import {
 import { PKG_V21 } from '../index'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Table =============================== */
@@ -98,6 +98,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
       fromJSONField: (field: any) => Table.fromJSONField([K, V], field),
       fromJSON: (json: Record<string, any>) => Table.fromJSON([K, V], json),
       fromSuiParsedData: (content: SuiParsedData) => Table.fromSuiParsedData([K, V], content),
+      fromSuiObjectData: (content: SuiObjectData) => Table.fromSuiObjectData([K, V], content),
       fetch: async (client: SuiClient, id: string) => Table.fetch(client, [K, V], id),
       new: (fields: TableFields<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>) => {
         return new Table([extractType(K), extractType(V)], fields)
@@ -224,6 +225,44 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
     return Table.fromFieldsWithTypes(typeArgs, content)
   }
 
+  static fromSuiObjectData<
+    K extends PhantomReified<PhantomTypeArgument>,
+    V extends PhantomReified<PhantomTypeArgument>,
+  >(
+    typeArgs: [K, V],
+    data: SuiObjectData
+  ): Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isTable(data.bcs.type)) {
+        throw new Error(`object at is not a Table object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 2) {
+        throw new Error(
+          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+        )
+      }
+      for (let i = 0; i < 2; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
+      }
+
+      return Table.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Table.fromSuiParsedData(typeArgs, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<
     K extends PhantomReified<PhantomTypeArgument>,
     V extends PhantomReified<PhantomTypeArgument>,
@@ -240,22 +279,6 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
       throw new Error(`object at id ${id} is not a Table object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 2) {
-      throw new Error(
-        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
-      )
-    }
-    for (let i = 0; i < 2; i++) {
-      const gotTypeArg = compressSuiType(gotTypeArgs[i])
-      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-      if (gotTypeArg !== expectedTypeArg) {
-        throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
-      }
-    }
-
-    return Table.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
+    return Table.fromSuiObjectData(typeArgs, res.data)
   }
 }

@@ -12,7 +12,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { PKG_V8 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== FixedPoint32 =============================== */
@@ -69,6 +69,7 @@ export class FixedPoint32 implements StructClass {
       fromJSONField: (field: any) => FixedPoint32.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => FixedPoint32.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => FixedPoint32.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => FixedPoint32.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => FixedPoint32.fetch(client, id),
       new: (fields: FixedPoint32Fields) => {
         return new FixedPoint32([], fields)
@@ -144,6 +145,22 @@ export class FixedPoint32 implements StructClass {
     return FixedPoint32.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): FixedPoint32 {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isFixedPoint32(data.bcs.type)) {
+        throw new Error(`object at is not a FixedPoint32 object`)
+      }
+
+      return FixedPoint32.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return FixedPoint32.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<FixedPoint32> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -153,6 +170,6 @@ export class FixedPoint32 implements StructClass {
       throw new Error(`object at id ${id} is not a FixedPoint32 object`)
     }
 
-    return FixedPoint32.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return FixedPoint32.fromSuiObjectData(res.data)
   }
 }

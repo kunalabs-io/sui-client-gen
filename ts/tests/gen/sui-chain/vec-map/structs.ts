@@ -26,7 +26,7 @@ import {
 import { Vector } from '../../_framework/vector'
 import { PKG_V21 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Entry =============================== */
@@ -95,6 +95,7 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> implements 
       fromJSONField: (field: any) => Entry.fromJSONField([T0, T1], field),
       fromJSON: (json: Record<string, any>) => Entry.fromJSON([T0, T1], json),
       fromSuiParsedData: (content: SuiParsedData) => Entry.fromSuiParsedData([T0, T1], content),
+      fromSuiObjectData: (content: SuiObjectData) => Entry.fromSuiObjectData([T0, T1], content),
       fetch: async (client: SuiClient, id: string) => Entry.fetch(client, [T0, T1], id),
       new: (fields: EntryFields<ToTypeArgument<T0>, ToTypeArgument<T1>>) => {
         return new Entry([extractType(T0), extractType(T1)], fields)
@@ -207,6 +208,41 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> implements 
     return Entry.fromFieldsWithTypes(typeArgs, content)
   }
 
+  static fromSuiObjectData<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends Reified<TypeArgument, any>,
+  >(typeArgs: [T0, T1], data: SuiObjectData): Entry<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isEntry(data.bcs.type)) {
+        throw new Error(`object at is not a Entry object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 2) {
+        throw new Error(
+          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+        )
+      }
+      for (let i = 0; i < 2; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
+      }
+
+      return Entry.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Entry.fromSuiParsedData(typeArgs, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArgs: [T0, T1],
@@ -220,23 +256,7 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> implements 
       throw new Error(`object at id ${id} is not a Entry object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 2) {
-      throw new Error(
-        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
-      )
-    }
-    for (let i = 0; i < 2; i++) {
-      const gotTypeArg = compressSuiType(gotTypeArgs[i])
-      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-      if (gotTypeArg !== expectedTypeArg) {
-        throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
-      }
-    }
-
-    return Entry.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
+    return Entry.fromSuiObjectData(typeArgs, res.data)
   }
 }
 
@@ -303,6 +323,7 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> implements
       fromJSONField: (field: any) => VecMap.fromJSONField([T0, T1], field),
       fromJSON: (json: Record<string, any>) => VecMap.fromJSON([T0, T1], json),
       fromSuiParsedData: (content: SuiParsedData) => VecMap.fromSuiParsedData([T0, T1], content),
+      fromSuiObjectData: (content: SuiObjectData) => VecMap.fromSuiObjectData([T0, T1], content),
       fetch: async (client: SuiClient, id: string) => VecMap.fetch(client, [T0, T1], id),
       new: (fields: VecMapFields<ToTypeArgument<T0>, ToTypeArgument<T1>>) => {
         return new VecMap([extractType(T0), extractType(T1)], fields)
@@ -425,6 +446,41 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> implements
     return VecMap.fromFieldsWithTypes(typeArgs, content)
   }
 
+  static fromSuiObjectData<
+    T0 extends Reified<TypeArgument, any>,
+    T1 extends Reified<TypeArgument, any>,
+  >(typeArgs: [T0, T1], data: SuiObjectData): VecMap<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isVecMap(data.bcs.type)) {
+        throw new Error(`object at is not a VecMap object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 2) {
+        throw new Error(
+          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+        )
+      }
+      for (let i = 0; i < 2; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
+      }
+
+      return VecMap.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return VecMap.fromSuiParsedData(typeArgs, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArgs: [T0, T1],
@@ -438,22 +494,6 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> implements
       throw new Error(`object at id ${id} is not a VecMap object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 2) {
-      throw new Error(
-        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
-      )
-    }
-    for (let i = 0; i < 2; i++) {
-      const gotTypeArg = compressSuiType(gotTypeArgs[i])
-      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-      if (gotTypeArg !== expectedTypeArg) {
-        throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
-      }
-    }
-
-    return VecMap.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
+    return VecMap.fromSuiObjectData(typeArgs, res.data)
   }
 }

@@ -15,7 +15,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framewo
 import { Vector } from '../../_framework/vector'
 import { PKG_V21 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Curve =============================== */
@@ -69,6 +69,7 @@ export class Curve implements StructClass {
       fromJSONField: (field: any) => Curve.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Curve.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Curve.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => Curve.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => Curve.fetch(client, id),
       new: (fields: CurveFields) => {
         return new Curve([], fields)
@@ -142,6 +143,22 @@ export class Curve implements StructClass {
     return Curve.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): Curve {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isCurve(data.bcs.type)) {
+        throw new Error(`object at is not a Curve object`)
+      }
+
+      return Curve.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Curve.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<Curve> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -151,7 +168,7 @@ export class Curve implements StructClass {
       throw new Error(`object at id ${id} is not a Curve object`)
     }
 
-    return Curve.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return Curve.fromSuiObjectData(res.data)
   }
 }
 
@@ -220,6 +237,8 @@ export class PreparedVerifyingKey implements StructClass {
       fromJSON: (json: Record<string, any>) => PreparedVerifyingKey.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) =>
         PreparedVerifyingKey.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) =>
+        PreparedVerifyingKey.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => PreparedVerifyingKey.fetch(client, id),
       new: (fields: PreparedVerifyingKeyFields) => {
         return new PreparedVerifyingKey([], fields)
@@ -328,6 +347,22 @@ export class PreparedVerifyingKey implements StructClass {
     return PreparedVerifyingKey.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): PreparedVerifyingKey {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isPreparedVerifyingKey(data.bcs.type)) {
+        throw new Error(`object at is not a PreparedVerifyingKey object`)
+      }
+
+      return PreparedVerifyingKey.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return PreparedVerifyingKey.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<PreparedVerifyingKey> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -337,7 +372,7 @@ export class PreparedVerifyingKey implements StructClass {
       throw new Error(`object at id ${id} is not a PreparedVerifyingKey object`)
     }
 
-    return PreparedVerifyingKey.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return PreparedVerifyingKey.fromSuiObjectData(res.data)
   }
 }
 
@@ -395,6 +430,7 @@ export class ProofPoints implements StructClass {
       fromJSONField: (field: any) => ProofPoints.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ProofPoints.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ProofPoints.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => ProofPoints.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => ProofPoints.fetch(client, id),
       new: (fields: ProofPointsFields) => {
         return new ProofPoints([], fields)
@@ -474,6 +510,22 @@ export class ProofPoints implements StructClass {
     return ProofPoints.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): ProofPoints {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isProofPoints(data.bcs.type)) {
+        throw new Error(`object at is not a ProofPoints object`)
+      }
+
+      return ProofPoints.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return ProofPoints.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<ProofPoints> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -483,7 +535,7 @@ export class ProofPoints implements StructClass {
       throw new Error(`object at id ${id} is not a ProofPoints object`)
     }
 
-    return ProofPoints.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return ProofPoints.fromSuiObjectData(res.data)
   }
 }
 
@@ -541,6 +593,7 @@ export class PublicProofInputs implements StructClass {
       fromJSONField: (field: any) => PublicProofInputs.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => PublicProofInputs.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => PublicProofInputs.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => PublicProofInputs.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => PublicProofInputs.fetch(client, id),
       new: (fields: PublicProofInputsFields) => {
         return new PublicProofInputs([], fields)
@@ -620,6 +673,22 @@ export class PublicProofInputs implements StructClass {
     return PublicProofInputs.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): PublicProofInputs {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isPublicProofInputs(data.bcs.type)) {
+        throw new Error(`object at is not a PublicProofInputs object`)
+      }
+
+      return PublicProofInputs.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return PublicProofInputs.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<PublicProofInputs> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -629,6 +698,6 @@ export class PublicProofInputs implements StructClass {
       throw new Error(`object at id ${id} is not a PublicProofInputs object`)
     }
 
-    return PublicProofInputs.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return PublicProofInputs.fromSuiObjectData(res.data)
   }
 }

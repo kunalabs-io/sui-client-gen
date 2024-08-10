@@ -13,7 +13,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framewo
 import { String } from '../ascii/structs'
 import { PKG_V8 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== TypeName =============================== */
@@ -70,6 +70,7 @@ export class TypeName implements StructClass {
       fromJSONField: (field: any) => TypeName.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => TypeName.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => TypeName.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => TypeName.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => TypeName.fetch(client, id),
       new: (fields: TypeNameFields) => {
         return new TypeName([], fields)
@@ -145,6 +146,22 @@ export class TypeName implements StructClass {
     return TypeName.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): TypeName {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isTypeName(data.bcs.type)) {
+        throw new Error(`object at is not a TypeName object`)
+      }
+
+      return TypeName.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return TypeName.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<TypeName> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -154,6 +171,6 @@ export class TypeName implements StructClass {
       throw new Error(`object at id ${id} is not a TypeName object`)
     }
 
-    return TypeName.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return TypeName.fromSuiObjectData(res.data)
   }
 }

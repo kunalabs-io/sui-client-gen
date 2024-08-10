@@ -29,7 +29,7 @@ import { Option } from '../../move-stdlib/option/structs'
 import { PKG_V21 } from '../index'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== LinkedTable =============================== */
@@ -109,6 +109,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
       fromJSONField: (field: any) => LinkedTable.fromJSONField([K, V], field),
       fromJSON: (json: Record<string, any>) => LinkedTable.fromJSON([K, V], json),
       fromSuiParsedData: (content: SuiParsedData) => LinkedTable.fromSuiParsedData([K, V], content),
+      fromSuiObjectData: (content: SuiObjectData) => LinkedTable.fromSuiObjectData([K, V], content),
       fetch: async (client: SuiClient, id: string) => LinkedTable.fetch(client, [K, V], id),
       new: (fields: LinkedTableFields<ToTypeArgument<K>, ToPhantomTypeArgument<V>>) => {
         return new LinkedTable([extractType(K), extractType(V)], fields)
@@ -246,6 +247,44 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
     return LinkedTable.fromFieldsWithTypes(typeArgs, content)
   }
 
+  static fromSuiObjectData<
+    K extends Reified<TypeArgument, any>,
+    V extends PhantomReified<PhantomTypeArgument>,
+  >(
+    typeArgs: [K, V],
+    data: SuiObjectData
+  ): LinkedTable<ToTypeArgument<K>, ToPhantomTypeArgument<V>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isLinkedTable(data.bcs.type)) {
+        throw new Error(`object at is not a LinkedTable object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 2) {
+        throw new Error(
+          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+        )
+      }
+      for (let i = 0; i < 2; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
+      }
+
+      return LinkedTable.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return LinkedTable.fromSuiParsedData(typeArgs, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<
     K extends Reified<TypeArgument, any>,
     V extends PhantomReified<PhantomTypeArgument>,
@@ -262,23 +301,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
       throw new Error(`object at id ${id} is not a LinkedTable object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 2) {
-      throw new Error(
-        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
-      )
-    }
-    for (let i = 0; i < 2; i++) {
-      const gotTypeArg = compressSuiType(gotTypeArgs[i])
-      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-      if (gotTypeArg !== expectedTypeArg) {
-        throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
-      }
-    }
-
-    return LinkedTable.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
+    return LinkedTable.fromSuiObjectData(typeArgs, res.data)
   }
 }
 
@@ -351,6 +374,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
       fromJSONField: (field: any) => Node.fromJSONField([K, V], field),
       fromJSON: (json: Record<string, any>) => Node.fromJSON([K, V], json),
       fromSuiParsedData: (content: SuiParsedData) => Node.fromSuiParsedData([K, V], content),
+      fromSuiObjectData: (content: SuiObjectData) => Node.fromSuiObjectData([K, V], content),
       fetch: async (client: SuiClient, id: string) => Node.fetch(client, [K, V], id),
       new: (fields: NodeFields<ToTypeArgument<K>, ToTypeArgument<V>>) => {
         return new Node([extractType(K), extractType(V)], fields)
@@ -468,6 +492,41 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
     return Node.fromFieldsWithTypes(typeArgs, content)
   }
 
+  static fromSuiObjectData<
+    K extends Reified<TypeArgument, any>,
+    V extends Reified<TypeArgument, any>,
+  >(typeArgs: [K, V], data: SuiObjectData): Node<ToTypeArgument<K>, ToTypeArgument<V>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isNode(data.bcs.type)) {
+        throw new Error(`object at is not a Node object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 2) {
+        throw new Error(
+          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+        )
+      }
+      for (let i = 0; i < 2; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
+      }
+
+      return Node.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Node.fromSuiParsedData(typeArgs, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<K extends Reified<TypeArgument, any>, V extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArgs: [K, V],
@@ -481,22 +540,6 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
       throw new Error(`object at id ${id} is not a Node object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 2) {
-      throw new Error(
-        `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
-      )
-    }
-    for (let i = 0; i < 2; i++) {
-      const gotTypeArg = compressSuiType(gotTypeArgs[i])
-      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-      if (gotTypeArg !== expectedTypeArg) {
-        throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
-      }
-    }
-
-    return Node.fromBcs(typeArgs, fromB64(res.data.bcs.bcsBytes))
+    return Node.fromSuiObjectData(typeArgs, res.data)
   }
 }

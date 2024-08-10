@@ -15,7 +15,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framewo
 import { Vector } from '../../_framework/vector'
 import { PKG_V21 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== BCS =============================== */
@@ -66,6 +66,7 @@ export class BCS implements StructClass {
       fromJSONField: (field: any) => BCS.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => BCS.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => BCS.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => BCS.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => BCS.fetch(client, id),
       new: (fields: BCSFields) => {
         return new BCS([], fields)
@@ -141,6 +142,22 @@ export class BCS implements StructClass {
     return BCS.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): BCS {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isBCS(data.bcs.type)) {
+        throw new Error(`object at is not a BCS object`)
+      }
+
+      return BCS.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return BCS.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<BCS> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -150,6 +167,6 @@ export class BCS implements StructClass {
       throw new Error(`object at id ${id} is not a BCS object`)
     }
 
-    return BCS.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return BCS.fromSuiObjectData(res.data)
   }
 }

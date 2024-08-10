@@ -30,7 +30,7 @@ import { PKG_V21 } from '../index'
 import { ID, UID } from '../object/structs'
 import { Url } from '../url/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Coin =============================== */
@@ -92,6 +92,7 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
       fromJSONField: (field: any) => Coin.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Coin.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Coin.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => Coin.fromSuiObjectData(T, content),
       fetch: async (client: SuiClient, id: string) => Coin.fetch(client, T, id),
       new: (fields: CoinFields<ToPhantomTypeArgument<T>>) => {
         return new Coin([extractType(T)], fields)
@@ -202,6 +203,39 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
     return Coin.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    data: SuiObjectData
+  ): Coin<ToPhantomTypeArgument<T>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isCoin(data.bcs.type)) {
+        throw new Error(`object at is not a Coin object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return Coin.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Coin.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
@@ -215,21 +249,7 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a Coin object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return Coin.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return Coin.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -307,6 +327,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
       fromJSONField: (field: any) => CoinMetadata.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => CoinMetadata.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => CoinMetadata.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => CoinMetadata.fromSuiObjectData(T, content),
       fetch: async (client: SuiClient, id: string) => CoinMetadata.fetch(client, T, id),
       new: (fields: CoinMetadataFields<ToPhantomTypeArgument<T>>) => {
         return new CoinMetadata([extractType(T)], fields)
@@ -437,6 +458,39 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
     return CoinMetadata.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    data: SuiObjectData
+  ): CoinMetadata<ToPhantomTypeArgument<T>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isCoinMetadata(data.bcs.type)) {
+        throw new Error(`object at is not a CoinMetadata object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return CoinMetadata.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return CoinMetadata.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
@@ -450,21 +504,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
       throw new Error(`object at id ${id} is not a CoinMetadata object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return CoinMetadata.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return CoinMetadata.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -527,6 +567,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
       fromJSONField: (field: any) => CurrencyCreated.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => CurrencyCreated.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => CurrencyCreated.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => CurrencyCreated.fromSuiObjectData(T, content),
       fetch: async (client: SuiClient, id: string) => CurrencyCreated.fetch(client, T, id),
       new: (fields: CurrencyCreatedFields<ToPhantomTypeArgument<T>>) => {
         return new CurrencyCreated([extractType(T)], fields)
@@ -632,6 +673,39 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
     return CurrencyCreated.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    data: SuiObjectData
+  ): CurrencyCreated<ToPhantomTypeArgument<T>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isCurrencyCreated(data.bcs.type)) {
+        throw new Error(`object at is not a CurrencyCreated object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return CurrencyCreated.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return CurrencyCreated.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
@@ -645,21 +719,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
       throw new Error(`object at id ${id} is not a CurrencyCreated object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return CurrencyCreated.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return CurrencyCreated.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -719,6 +779,7 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
       fromJSONField: (field: any) => DenyCap.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => DenyCap.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => DenyCap.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => DenyCap.fromSuiObjectData(T, content),
       fetch: async (client: SuiClient, id: string) => DenyCap.fetch(client, T, id),
       new: (fields: DenyCapFields<ToPhantomTypeArgument<T>>) => {
         return new DenyCap([extractType(T)], fields)
@@ -820,6 +881,39 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
     return DenyCap.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    data: SuiObjectData
+  ): DenyCap<ToPhantomTypeArgument<T>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isDenyCap(data.bcs.type)) {
+        throw new Error(`object at is not a DenyCap object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return DenyCap.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return DenyCap.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
@@ -833,21 +927,7 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a DenyCap object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return DenyCap.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return DenyCap.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -918,6 +998,8 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
       fromJSON: (json: Record<string, any>) => RegulatedCoinMetadata.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) =>
         RegulatedCoinMetadata.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) =>
+        RegulatedCoinMetadata.fromSuiObjectData(T, content),
       fetch: async (client: SuiClient, id: string) => RegulatedCoinMetadata.fetch(client, T, id),
       new: (fields: RegulatedCoinMetadataFields<ToPhantomTypeArgument<T>>) => {
         return new RegulatedCoinMetadata([extractType(T)], fields)
@@ -1035,6 +1117,39 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
     return RegulatedCoinMetadata.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    data: SuiObjectData
+  ): RegulatedCoinMetadata<ToPhantomTypeArgument<T>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isRegulatedCoinMetadata(data.bcs.type)) {
+        throw new Error(`object at is not a RegulatedCoinMetadata object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return RegulatedCoinMetadata.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return RegulatedCoinMetadata.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
@@ -1048,21 +1163,7 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
       throw new Error(`object at id ${id} is not a RegulatedCoinMetadata object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return RegulatedCoinMetadata.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return RegulatedCoinMetadata.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -1128,6 +1229,7 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
       fromJSONField: (field: any) => TreasuryCap.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => TreasuryCap.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => TreasuryCap.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => TreasuryCap.fromSuiObjectData(T, content),
       fetch: async (client: SuiClient, id: string) => TreasuryCap.fetch(client, T, id),
       new: (fields: TreasuryCapFields<ToPhantomTypeArgument<T>>) => {
         return new TreasuryCap([extractType(T)], fields)
@@ -1238,6 +1340,39 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
     return TreasuryCap.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    data: SuiObjectData
+  ): TreasuryCap<ToPhantomTypeArgument<T>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isTreasuryCap(data.bcs.type)) {
+        throw new Error(`object at is not a TreasuryCap object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return TreasuryCap.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return TreasuryCap.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
@@ -1251,20 +1386,6 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a TreasuryCap object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return TreasuryCap.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return TreasuryCap.fromSuiObjectData(typeArg, res.data)
   }
 }

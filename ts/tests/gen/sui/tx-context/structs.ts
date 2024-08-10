@@ -15,7 +15,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framewo
 import { Vector } from '../../_framework/vector'
 import { PKG_V21 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
 
 /* ============================== TxContext =============================== */
@@ -84,6 +84,7 @@ export class TxContext implements StructClass {
       fromJSONField: (field: any) => TxContext.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => TxContext.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => TxContext.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => TxContext.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => TxContext.fetch(client, id),
       new: (fields: TxContextFields) => {
         return new TxContext([], fields)
@@ -186,6 +187,22 @@ export class TxContext implements StructClass {
     return TxContext.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): TxContext {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isTxContext(data.bcs.type)) {
+        throw new Error(`object at is not a TxContext object`)
+      }
+
+      return TxContext.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return TxContext.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<TxContext> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -195,6 +212,6 @@ export class TxContext implements StructClass {
       throw new Error(`object at id ${id} is not a TxContext object`)
     }
 
-    return TxContext.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return TxContext.fromSuiObjectData(res.data)
   }
 }

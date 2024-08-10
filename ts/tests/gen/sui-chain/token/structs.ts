@@ -31,7 +31,7 @@ import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
 import { VecSet } from '../vec-set/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
 
 /* ============================== Token =============================== */
@@ -93,6 +93,7 @@ export class Token<T0 extends PhantomTypeArgument> implements StructClass {
       fromJSONField: (field: any) => Token.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => Token.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => Token.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) => Token.fromSuiObjectData(T0, content),
       fetch: async (client: SuiClient, id: string) => Token.fetch(client, T0, id),
       new: (fields: TokenFields<ToPhantomTypeArgument<T0>>) => {
         return new Token([extractType(T0)], fields)
@@ -203,6 +204,39 @@ export class Token<T0 extends PhantomTypeArgument> implements StructClass {
     return Token.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): Token<ToPhantomTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isToken(data.bcs.type)) {
+        throw new Error(`object at is not a Token object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return Token.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Token.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
@@ -216,21 +250,7 @@ export class Token<T0 extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a Token object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return Token.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return Token.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -296,6 +316,7 @@ export class TokenPolicyCap<T0 extends PhantomTypeArgument> implements StructCla
       fromJSONField: (field: any) => TokenPolicyCap.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => TokenPolicyCap.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => TokenPolicyCap.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) => TokenPolicyCap.fromSuiObjectData(T0, content),
       fetch: async (client: SuiClient, id: string) => TokenPolicyCap.fetch(client, T0, id),
       new: (fields: TokenPolicyCapFields<ToPhantomTypeArgument<T0>>) => {
         return new TokenPolicyCap([extractType(T0)], fields)
@@ -406,6 +427,39 @@ export class TokenPolicyCap<T0 extends PhantomTypeArgument> implements StructCla
     return TokenPolicyCap.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isTokenPolicyCap(data.bcs.type)) {
+        throw new Error(`object at is not a TokenPolicyCap object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return TokenPolicyCap.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return TokenPolicyCap.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
@@ -419,21 +473,7 @@ export class TokenPolicyCap<T0 extends PhantomTypeArgument> implements StructCla
       throw new Error(`object at id ${id} is not a TokenPolicyCap object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return TokenPolicyCap.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return TokenPolicyCap.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -502,6 +542,7 @@ export class TokenPolicy<T0 extends PhantomTypeArgument> implements StructClass 
       fromJSONField: (field: any) => TokenPolicy.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => TokenPolicy.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => TokenPolicy.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) => TokenPolicy.fromSuiObjectData(T0, content),
       fetch: async (client: SuiClient, id: string) => TokenPolicy.fetch(client, T0, id),
       new: (fields: TokenPolicyFields<ToPhantomTypeArgument<T0>>) => {
         return new TokenPolicy([extractType(T0)], fields)
@@ -626,6 +667,39 @@ export class TokenPolicy<T0 extends PhantomTypeArgument> implements StructClass 
     return TokenPolicy.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isTokenPolicy(data.bcs.type)) {
+        throw new Error(`object at is not a TokenPolicy object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return TokenPolicy.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return TokenPolicy.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
@@ -639,21 +713,7 @@ export class TokenPolicy<T0 extends PhantomTypeArgument> implements StructClass 
       throw new Error(`object at id ${id} is not a TokenPolicy object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return TokenPolicy.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return TokenPolicy.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -731,6 +791,7 @@ export class ActionRequest<T0 extends PhantomTypeArgument> implements StructClas
       fromJSONField: (field: any) => ActionRequest.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => ActionRequest.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => ActionRequest.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) => ActionRequest.fromSuiObjectData(T0, content),
       fetch: async (client: SuiClient, id: string) => ActionRequest.fetch(client, T0, id),
       new: (fields: ActionRequestFields<ToPhantomTypeArgument<T0>>) => {
         return new ActionRequest([extractType(T0)], fields)
@@ -884,6 +945,39 @@ export class ActionRequest<T0 extends PhantomTypeArgument> implements StructClas
     return ActionRequest.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): ActionRequest<ToPhantomTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isActionRequest(data.bcs.type)) {
+        throw new Error(`object at is not a ActionRequest object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return ActionRequest.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return ActionRequest.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
@@ -897,21 +991,7 @@ export class ActionRequest<T0 extends PhantomTypeArgument> implements StructClas
       throw new Error(`object at id ${id} is not a ActionRequest object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return ActionRequest.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return ActionRequest.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -971,6 +1051,7 @@ export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
       fromJSONField: (field: any) => RuleKey.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => RuleKey.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => RuleKey.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) => RuleKey.fromSuiObjectData(T0, content),
       fetch: async (client: SuiClient, id: string) => RuleKey.fetch(client, T0, id),
       new: (fields: RuleKeyFields<ToPhantomTypeArgument<T0>>) => {
         return new RuleKey([extractType(T0)], fields)
@@ -1076,6 +1157,39 @@ export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
     return RuleKey.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): RuleKey<ToPhantomTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isRuleKey(data.bcs.type)) {
+        throw new Error(`object at is not a RuleKey object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return RuleKey.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return RuleKey.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
@@ -1089,21 +1203,7 @@ export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a RuleKey object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return RuleKey.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return RuleKey.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -1171,6 +1271,8 @@ export class TokenPolicyCreated<T0 extends PhantomTypeArgument> implements Struc
       fromJSON: (json: Record<string, any>) => TokenPolicyCreated.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) =>
         TokenPolicyCreated.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) =>
+        TokenPolicyCreated.fromSuiObjectData(T0, content),
       fetch: async (client: SuiClient, id: string) => TokenPolicyCreated.fetch(client, T0, id),
       new: (fields: TokenPolicyCreatedFields<ToPhantomTypeArgument<T0>>) => {
         return new TokenPolicyCreated([extractType(T0)], fields)
@@ -1281,6 +1383,39 @@ export class TokenPolicyCreated<T0 extends PhantomTypeArgument> implements Struc
     return TokenPolicyCreated.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): TokenPolicyCreated<ToPhantomTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isTokenPolicyCreated(data.bcs.type)) {
+        throw new Error(`object at is not a TokenPolicyCreated object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return TokenPolicyCreated.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return TokenPolicyCreated.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
@@ -1294,20 +1429,6 @@ export class TokenPolicyCreated<T0 extends PhantomTypeArgument> implements Struc
       throw new Error(`object at id ${id} is not a TokenPolicyCreated object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return TokenPolicyCreated.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return TokenPolicyCreated.fromSuiObjectData(typeArg, res.data)
   }
 }

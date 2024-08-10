@@ -23,7 +23,7 @@ import {
 } from '../../_framework/util'
 import { PKG_V21 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Supply =============================== */
@@ -82,6 +82,7 @@ export class Supply<T0 extends PhantomTypeArgument> implements StructClass {
       fromJSONField: (field: any) => Supply.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => Supply.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => Supply.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) => Supply.fromSuiObjectData(T0, content),
       fetch: async (client: SuiClient, id: string) => Supply.fetch(client, T0, id),
       new: (fields: SupplyFields<ToPhantomTypeArgument<T0>>) => {
         return new Supply([extractType(T0)], fields)
@@ -183,6 +184,39 @@ export class Supply<T0 extends PhantomTypeArgument> implements StructClass {
     return Supply.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): Supply<ToPhantomTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isSupply(data.bcs.type)) {
+        throw new Error(`object at is not a Supply object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return Supply.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Supply.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
@@ -196,21 +230,7 @@ export class Supply<T0 extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a Supply object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return Supply.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return Supply.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -270,6 +290,7 @@ export class Balance<T0 extends PhantomTypeArgument> implements StructClass {
       fromJSONField: (field: any) => Balance.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => Balance.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => Balance.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) => Balance.fromSuiObjectData(T0, content),
       fetch: async (client: SuiClient, id: string) => Balance.fetch(client, T0, id),
       new: (fields: BalanceFields<ToPhantomTypeArgument<T0>>) => {
         return new Balance([extractType(T0)], fields)
@@ -371,6 +392,39 @@ export class Balance<T0 extends PhantomTypeArgument> implements StructClass {
     return Balance.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): Balance<ToPhantomTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isBalance(data.bcs.type)) {
+        throw new Error(`object at is not a Balance object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return Balance.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Balance.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T0,
@@ -384,20 +438,6 @@ export class Balance<T0 extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a Balance object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return Balance.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return Balance.fromSuiObjectData(typeArg, res.data)
   }
 }

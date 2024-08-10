@@ -26,7 +26,7 @@ import {
 import { Vector } from '../../../../_framework/vector'
 import { PKG_V8 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Option =============================== */
@@ -90,6 +90,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
       fromJSONField: (field: any) => Option.fromJSONField(Element, field),
       fromJSON: (json: Record<string, any>) => Option.fromJSON(Element, json),
       fromSuiParsedData: (content: SuiParsedData) => Option.fromSuiParsedData(Element, content),
+      fromSuiObjectData: (content: SuiObjectData) => Option.fromSuiObjectData(Element, content),
       fetch: async (client: SuiClient, id: string) => Option.fetch(client, Element, id),
       new: (fields: OptionFields<ToTypeArgument<Element>>) => {
         return new Option([extractType(Element)], fields)
@@ -198,6 +199,39 @@ export class Option<Element extends TypeArgument> implements StructClass {
     return Option.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<Element extends Reified<TypeArgument, any>>(
+    typeArg: Element,
+    data: SuiObjectData
+  ): Option<ToTypeArgument<Element>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isOption(data.bcs.type)) {
+        throw new Error(`object at is not a Option object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return Option.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Option.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<Element extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArg: Element,
@@ -211,20 +245,6 @@ export class Option<Element extends TypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a Option object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return Option.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return Option.fromSuiObjectData(typeArg, res.data)
   }
 }

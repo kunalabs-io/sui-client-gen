@@ -28,7 +28,7 @@ import { PKG_V21 } from '../index'
 import { ID, UID } from '../object/structs'
 import { SUI } from '../sui/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
 
 /* ============================== Borrow =============================== */
@@ -85,6 +85,7 @@ export class Borrow implements StructClass {
       fromJSONField: (field: any) => Borrow.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Borrow.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Borrow.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => Borrow.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => Borrow.fetch(client, id),
       new: (fields: BorrowFields) => {
         return new Borrow([], fields)
@@ -169,6 +170,22 @@ export class Borrow implements StructClass {
     return Borrow.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): Borrow {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isBorrow(data.bcs.type)) {
+        throw new Error(`object at is not a Borrow object`)
+      }
+
+      return Borrow.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Borrow.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<Borrow> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -178,7 +195,7 @@ export class Borrow implements StructClass {
       throw new Error(`object at id ${id} is not a Borrow object`)
     }
 
-    return Borrow.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return Borrow.fromSuiObjectData(res.data)
   }
 }
 
@@ -233,6 +250,7 @@ export class Item implements StructClass {
       fromJSONField: (field: any) => Item.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Item.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Item.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => Item.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => Item.fetch(client, id),
       new: (fields: ItemFields) => {
         return new Item([], fields)
@@ -306,6 +324,22 @@ export class Item implements StructClass {
     return Item.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): Item {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isItem(data.bcs.type)) {
+        throw new Error(`object at is not a Item object`)
+      }
+
+      return Item.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Item.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<Item> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -315,7 +349,7 @@ export class Item implements StructClass {
       throw new Error(`object at id ${id} is not a Item object`)
     }
 
-    return Item.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return Item.fromSuiObjectData(res.data)
   }
 }
 
@@ -381,6 +415,7 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
       fromJSONField: (field: any) => ItemDelisted.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => ItemDelisted.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => ItemDelisted.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => ItemDelisted.fromSuiObjectData(T, content),
       fetch: async (client: SuiClient, id: string) => ItemDelisted.fetch(client, T, id),
       new: (fields: ItemDelistedFields<ToPhantomTypeArgument<T>>) => {
         return new ItemDelisted([extractType(T)], fields)
@@ -491,6 +526,39 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
     return ItemDelisted.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    data: SuiObjectData
+  ): ItemDelisted<ToPhantomTypeArgument<T>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isItemDelisted(data.bcs.type)) {
+        throw new Error(`object at is not a ItemDelisted object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return ItemDelisted.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return ItemDelisted.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
@@ -504,21 +572,7 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
       throw new Error(`object at id ${id} is not a ItemDelisted object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return ItemDelisted.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return ItemDelisted.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -587,6 +641,7 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
       fromJSONField: (field: any) => ItemListed.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => ItemListed.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => ItemListed.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => ItemListed.fromSuiObjectData(T, content),
       fetch: async (client: SuiClient, id: string) => ItemListed.fetch(client, T, id),
       new: (fields: ItemListedFields<ToPhantomTypeArgument<T>>) => {
         return new ItemListed([extractType(T)], fields)
@@ -702,6 +757,39 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
     return ItemListed.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    data: SuiObjectData
+  ): ItemListed<ToPhantomTypeArgument<T>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isItemListed(data.bcs.type)) {
+        throw new Error(`object at is not a ItemListed object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return ItemListed.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return ItemListed.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
@@ -715,21 +803,7 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a ItemListed object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return ItemListed.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return ItemListed.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -798,6 +872,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
       fromJSONField: (field: any) => ItemPurchased.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => ItemPurchased.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => ItemPurchased.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => ItemPurchased.fromSuiObjectData(T, content),
       fetch: async (client: SuiClient, id: string) => ItemPurchased.fetch(client, T, id),
       new: (fields: ItemPurchasedFields<ToPhantomTypeArgument<T>>) => {
         return new ItemPurchased([extractType(T)], fields)
@@ -913,6 +988,39 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
     return ItemPurchased.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    data: SuiObjectData
+  ): ItemPurchased<ToPhantomTypeArgument<T>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isItemPurchased(data.bcs.type)) {
+        throw new Error(`object at is not a ItemPurchased object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return ItemPurchased.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return ItemPurchased.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
@@ -926,21 +1034,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
       throw new Error(`object at id ${id} is not a ItemPurchased object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return ItemPurchased.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return ItemPurchased.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -1007,6 +1101,7 @@ export class Kiosk implements StructClass {
       fromJSONField: (field: any) => Kiosk.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Kiosk.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Kiosk.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => Kiosk.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => Kiosk.fetch(client, id),
       new: (fields: KioskFields) => {
         return new Kiosk([], fields)
@@ -1112,6 +1207,22 @@ export class Kiosk implements StructClass {
     return Kiosk.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): Kiosk {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isKiosk(data.bcs.type)) {
+        throw new Error(`object at is not a Kiosk object`)
+      }
+
+      return Kiosk.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Kiosk.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<Kiosk> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -1121,7 +1232,7 @@ export class Kiosk implements StructClass {
       throw new Error(`object at id ${id} is not a Kiosk object`)
     }
 
-    return Kiosk.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return Kiosk.fromSuiObjectData(res.data)
   }
 }
 
@@ -1182,6 +1293,7 @@ export class KioskOwnerCap implements StructClass {
       fromJSONField: (field: any) => KioskOwnerCap.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => KioskOwnerCap.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => KioskOwnerCap.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => KioskOwnerCap.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => KioskOwnerCap.fetch(client, id),
       new: (fields: KioskOwnerCapFields) => {
         return new KioskOwnerCap([], fields)
@@ -1266,6 +1378,22 @@ export class KioskOwnerCap implements StructClass {
     return KioskOwnerCap.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): KioskOwnerCap {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isKioskOwnerCap(data.bcs.type)) {
+        throw new Error(`object at is not a KioskOwnerCap object`)
+      }
+
+      return KioskOwnerCap.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return KioskOwnerCap.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<KioskOwnerCap> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -1275,7 +1403,7 @@ export class KioskOwnerCap implements StructClass {
       throw new Error(`object at id ${id} is not a KioskOwnerCap object`)
     }
 
-    return KioskOwnerCap.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return KioskOwnerCap.fromSuiObjectData(res.data)
   }
 }
 
@@ -1333,6 +1461,7 @@ export class Listing implements StructClass {
       fromJSONField: (field: any) => Listing.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Listing.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Listing.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => Listing.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => Listing.fetch(client, id),
       new: (fields: ListingFields) => {
         return new Listing([], fields)
@@ -1417,6 +1546,22 @@ export class Listing implements StructClass {
     return Listing.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): Listing {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isListing(data.bcs.type)) {
+        throw new Error(`object at is not a Listing object`)
+      }
+
+      return Listing.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Listing.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<Listing> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -1426,7 +1571,7 @@ export class Listing implements StructClass {
       throw new Error(`object at id ${id} is not a Listing object`)
     }
 
-    return Listing.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return Listing.fromSuiObjectData(res.data)
   }
 }
 
@@ -1481,6 +1626,7 @@ export class Lock implements StructClass {
       fromJSONField: (field: any) => Lock.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Lock.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Lock.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => Lock.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => Lock.fetch(client, id),
       new: (fields: LockFields) => {
         return new Lock([], fields)
@@ -1554,6 +1700,22 @@ export class Lock implements StructClass {
     return Lock.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): Lock {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isLock(data.bcs.type)) {
+        throw new Error(`object at is not a Lock object`)
+      }
+
+      return Lock.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Lock.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<Lock> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -1563,7 +1725,7 @@ export class Lock implements StructClass {
       throw new Error(`object at id ${id} is not a Lock object`)
     }
 
-    return Lock.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return Lock.fromSuiObjectData(res.data)
   }
 }
 
@@ -1635,6 +1797,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
       fromJSONField: (field: any) => PurchaseCap.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => PurchaseCap.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => PurchaseCap.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => PurchaseCap.fromSuiObjectData(T, content),
       fetch: async (client: SuiClient, id: string) => PurchaseCap.fetch(client, T, id),
       new: (fields: PurchaseCapFields<ToPhantomTypeArgument<T>>) => {
         return new PurchaseCap([extractType(T)], fields)
@@ -1755,6 +1918,39 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
     return PurchaseCap.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    data: SuiObjectData
+  ): PurchaseCap<ToPhantomTypeArgument<T>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isPurchaseCap(data.bcs.type)) {
+        throw new Error(`object at is not a PurchaseCap object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return PurchaseCap.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return PurchaseCap.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SuiClient,
     typeArg: T,
@@ -1768,20 +1964,6 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a PurchaseCap object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return PurchaseCap.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return PurchaseCap.fromSuiObjectData(typeArg, res.data)
   }
 }

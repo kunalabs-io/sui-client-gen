@@ -14,7 +14,7 @@ import { String } from '../../move-stdlib-chain/string/structs'
 import { PKG_V21 } from '../index'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
 
 /* ============================== VerifiedIssuer =============================== */
@@ -77,6 +77,7 @@ export class VerifiedIssuer implements StructClass {
       fromJSONField: (field: any) => VerifiedIssuer.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => VerifiedIssuer.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => VerifiedIssuer.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => VerifiedIssuer.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => VerifiedIssuer.fetch(client, id),
       new: (fields: VerifiedIssuerFields) => {
         return new VerifiedIssuer([], fields)
@@ -169,6 +170,22 @@ export class VerifiedIssuer implements StructClass {
     return VerifiedIssuer.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): VerifiedIssuer {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isVerifiedIssuer(data.bcs.type)) {
+        throw new Error(`object at is not a VerifiedIssuer object`)
+      }
+
+      return VerifiedIssuer.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return VerifiedIssuer.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<VerifiedIssuer> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -178,6 +195,6 @@ export class VerifiedIssuer implements StructClass {
       throw new Error(`object at id ${id} is not a VerifiedIssuer object`)
     }
 
-    return VerifiedIssuer.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return VerifiedIssuer.fromSuiObjectData(res.data)
   }
 }

@@ -26,7 +26,7 @@ import {
 import { Vector } from '../../_framework/vector'
 import { PKG_V21 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== VecSet =============================== */
@@ -83,6 +83,7 @@ export class VecSet<T0 extends TypeArgument> implements StructClass {
       fromJSONField: (field: any) => VecSet.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => VecSet.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => VecSet.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) => VecSet.fromSuiObjectData(T0, content),
       fetch: async (client: SuiClient, id: string) => VecSet.fetch(client, T0, id),
       new: (fields: VecSetFields<ToTypeArgument<T0>>) => {
         return new VecSet([extractType(T0)], fields)
@@ -191,6 +192,39 @@ export class VecSet<T0 extends TypeArgument> implements StructClass {
     return VecSet.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T0 extends Reified<TypeArgument, any>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): VecSet<ToTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isVecSet(data.bcs.type)) {
+        throw new Error(`object at is not a VecSet object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return VecSet.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return VecSet.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArg: T0,
@@ -204,20 +238,6 @@ export class VecSet<T0 extends TypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a VecSet object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return VecSet.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return VecSet.fromSuiObjectData(typeArg, res.data)
   }
 }

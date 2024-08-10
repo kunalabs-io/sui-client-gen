@@ -17,7 +17,7 @@ import { String } from '../../move-stdlib/string/structs'
 import { PKG_V21 } from '../index'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== ActiveJwk =============================== */
@@ -80,6 +80,7 @@ export class ActiveJwk implements StructClass {
       fromJSONField: (field: any) => ActiveJwk.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ActiveJwk.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ActiveJwk.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => ActiveJwk.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => ActiveJwk.fetch(client, id),
       new: (fields: ActiveJwkFields) => {
         return new ActiveJwk([], fields)
@@ -169,6 +170,22 @@ export class ActiveJwk implements StructClass {
     return ActiveJwk.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): ActiveJwk {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isActiveJwk(data.bcs.type)) {
+        throw new Error(`object at is not a ActiveJwk object`)
+      }
+
+      return ActiveJwk.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return ActiveJwk.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<ActiveJwk> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -178,7 +195,7 @@ export class ActiveJwk implements StructClass {
       throw new Error(`object at id ${id} is not a ActiveJwk object`)
     }
 
-    return ActiveJwk.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return ActiveJwk.fromSuiObjectData(res.data)
   }
 }
 
@@ -239,6 +256,7 @@ export class AuthenticatorState implements StructClass {
       fromJSONField: (field: any) => AuthenticatorState.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => AuthenticatorState.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => AuthenticatorState.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => AuthenticatorState.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => AuthenticatorState.fetch(client, id),
       new: (fields: AuthenticatorStateFields) => {
         return new AuthenticatorState([], fields)
@@ -323,6 +341,22 @@ export class AuthenticatorState implements StructClass {
     return AuthenticatorState.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): AuthenticatorState {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isAuthenticatorState(data.bcs.type)) {
+        throw new Error(`object at is not a AuthenticatorState object`)
+      }
+
+      return AuthenticatorState.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return AuthenticatorState.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<AuthenticatorState> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -332,7 +366,7 @@ export class AuthenticatorState implements StructClass {
       throw new Error(`object at id ${id} is not a AuthenticatorState object`)
     }
 
-    return AuthenticatorState.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return AuthenticatorState.fromSuiObjectData(res.data)
   }
 }
 
@@ -398,6 +432,8 @@ export class AuthenticatorStateInner implements StructClass {
       fromJSON: (json: Record<string, any>) => AuthenticatorStateInner.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) =>
         AuthenticatorStateInner.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) =>
+        AuthenticatorStateInner.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => AuthenticatorStateInner.fetch(client, id),
       new: (fields: AuthenticatorStateInnerFields) => {
         return new AuthenticatorStateInner([], fields)
@@ -487,6 +523,22 @@ export class AuthenticatorStateInner implements StructClass {
     return AuthenticatorStateInner.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): AuthenticatorStateInner {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isAuthenticatorStateInner(data.bcs.type)) {
+        throw new Error(`object at is not a AuthenticatorStateInner object`)
+      }
+
+      return AuthenticatorStateInner.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return AuthenticatorStateInner.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<AuthenticatorStateInner> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -498,7 +550,7 @@ export class AuthenticatorStateInner implements StructClass {
       throw new Error(`object at id ${id} is not a AuthenticatorStateInner object`)
     }
 
-    return AuthenticatorStateInner.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return AuthenticatorStateInner.fromSuiObjectData(res.data)
   }
 }
 
@@ -565,6 +617,7 @@ export class JWK implements StructClass {
       fromJSONField: (field: any) => JWK.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => JWK.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => JWK.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => JWK.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => JWK.fetch(client, id),
       new: (fields: JWKFields) => {
         return new JWK([], fields)
@@ -659,6 +712,22 @@ export class JWK implements StructClass {
     return JWK.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): JWK {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isJWK(data.bcs.type)) {
+        throw new Error(`object at is not a JWK object`)
+      }
+
+      return JWK.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return JWK.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<JWK> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -668,7 +737,7 @@ export class JWK implements StructClass {
       throw new Error(`object at id ${id} is not a JWK object`)
     }
 
-    return JWK.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return JWK.fromSuiObjectData(res.data)
   }
 }
 
@@ -729,6 +798,7 @@ export class JwkId implements StructClass {
       fromJSONField: (field: any) => JwkId.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => JwkId.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => JwkId.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => JwkId.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => JwkId.fetch(client, id),
       new: (fields: JwkIdFields) => {
         return new JwkId([], fields)
@@ -813,6 +883,22 @@ export class JwkId implements StructClass {
     return JwkId.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): JwkId {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isJwkId(data.bcs.type)) {
+        throw new Error(`object at is not a JwkId object`)
+      }
+
+      return JwkId.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return JwkId.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<JwkId> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -822,6 +908,6 @@ export class JwkId implements StructClass {
       throw new Error(`object at id ${id} is not a JwkId object`)
     }
 
-    return JwkId.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return JwkId.fromSuiObjectData(res.data)
   }
 }

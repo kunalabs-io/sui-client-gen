@@ -26,7 +26,7 @@ import {
 import { Vector } from '../../_framework/vector'
 import { PKG_V21 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== PriorityQueue =============================== */
@@ -88,6 +88,7 @@ export class PriorityQueue<T0 extends TypeArgument> implements StructClass {
       fromJSONField: (field: any) => PriorityQueue.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => PriorityQueue.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => PriorityQueue.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) => PriorityQueue.fromSuiObjectData(T0, content),
       fetch: async (client: SuiClient, id: string) => PriorityQueue.fetch(client, T0, id),
       new: (fields: PriorityQueueFields<ToTypeArgument<T0>>) => {
         return new PriorityQueue([extractType(T0)], fields)
@@ -202,6 +203,39 @@ export class PriorityQueue<T0 extends TypeArgument> implements StructClass {
     return PriorityQueue.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T0 extends Reified<TypeArgument, any>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): PriorityQueue<ToTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isPriorityQueue(data.bcs.type)) {
+        throw new Error(`object at is not a PriorityQueue object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return PriorityQueue.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return PriorityQueue.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArg: T0,
@@ -215,21 +249,7 @@ export class PriorityQueue<T0 extends TypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a PriorityQueue object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return PriorityQueue.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return PriorityQueue.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -290,6 +310,7 @@ export class Entry<T0 extends TypeArgument> implements StructClass {
       fromJSONField: (field: any) => Entry.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => Entry.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => Entry.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) => Entry.fromSuiObjectData(T0, content),
       fetch: async (client: SuiClient, id: string) => Entry.fetch(client, T0, id),
       new: (fields: EntryFields<ToTypeArgument<T0>>) => {
         return new Entry([extractType(T0)], fields)
@@ -403,6 +424,39 @@ export class Entry<T0 extends TypeArgument> implements StructClass {
     return Entry.fromFieldsWithTypes(typeArg, content)
   }
 
+  static fromSuiObjectData<T0 extends Reified<TypeArgument, any>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): Entry<ToTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isEntry(data.bcs.type)) {
+        throw new Error(`object at is not a Entry object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return Entry.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Entry.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch<T0 extends Reified<TypeArgument, any>>(
     client: SuiClient,
     typeArg: T0,
@@ -416,20 +470,6 @@ export class Entry<T0 extends TypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a Entry object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.data.bcs.type).typeArgs
-    if (gotTypeArgs.length !== 1) {
-      throw new Error(
-        `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-      )
-    }
-    const gotTypeArg = compressSuiType(gotTypeArgs[0])
-    const expectedTypeArg = compressSuiType(extractType(typeArg))
-    if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-      throw new Error(
-        `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-      )
-    }
-
-    return Entry.fromBcs(typeArg, fromB64(res.data.bcs.bcsBytes))
+    return Entry.fromSuiObjectData(typeArg, res.data)
   }
 }

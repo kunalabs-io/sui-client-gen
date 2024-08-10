@@ -16,7 +16,7 @@ import { TreasuryCap } from '../../sui/coin/structs'
 import { UID } from '../../sui/object/structs'
 import { PKG_V1 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== EXAMPLE_COIN =============================== */
@@ -73,6 +73,7 @@ export class EXAMPLE_COIN implements StructClass {
       fromJSONField: (field: any) => EXAMPLE_COIN.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => EXAMPLE_COIN.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => EXAMPLE_COIN.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => EXAMPLE_COIN.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => EXAMPLE_COIN.fetch(client, id),
       new: (fields: EXAMPLE_COINFields) => {
         return new EXAMPLE_COIN([], fields)
@@ -148,6 +149,22 @@ export class EXAMPLE_COIN implements StructClass {
     return EXAMPLE_COIN.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): EXAMPLE_COIN {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isEXAMPLE_COIN(data.bcs.type)) {
+        throw new Error(`object at is not a EXAMPLE_COIN object`)
+      }
+
+      return EXAMPLE_COIN.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return EXAMPLE_COIN.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<EXAMPLE_COIN> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -157,7 +174,7 @@ export class EXAMPLE_COIN implements StructClass {
       throw new Error(`object at id ${id} is not a EXAMPLE_COIN object`)
     }
 
-    return EXAMPLE_COIN.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return EXAMPLE_COIN.fromSuiObjectData(res.data)
   }
 }
 
@@ -218,6 +235,7 @@ export class Faucet implements StructClass {
       fromJSONField: (field: any) => Faucet.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Faucet.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Faucet.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => Faucet.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => Faucet.fetch(client, id),
       new: (fields: FaucetFields) => {
         return new Faucet([], fields)
@@ -311,6 +329,22 @@ export class Faucet implements StructClass {
     return Faucet.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): Faucet {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isFaucet(data.bcs.type)) {
+        throw new Error(`object at is not a Faucet object`)
+      }
+
+      return Faucet.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Faucet.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<Faucet> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -320,6 +354,6 @@ export class Faucet implements StructClass {
       throw new Error(`object at id ${id} is not a Faucet object`)
     }
 
-    return Faucet.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return Faucet.fromSuiObjectData(res.data)
   }
 }

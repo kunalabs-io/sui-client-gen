@@ -13,7 +13,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framewo
 import { PKG_V21 } from '../index'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Bag =============================== */
@@ -67,6 +67,7 @@ export class Bag implements StructClass {
       fromJSONField: (field: any) => Bag.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Bag.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Bag.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => Bag.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => Bag.fetch(client, id),
       new: (fields: BagFields) => {
         return new Bag([], fields)
@@ -151,6 +152,22 @@ export class Bag implements StructClass {
     return Bag.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): Bag {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isBag(data.bcs.type)) {
+        throw new Error(`object at is not a Bag object`)
+      }
+
+      return Bag.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Bag.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<Bag> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -160,6 +177,6 @@ export class Bag implements StructClass {
       throw new Error(`object at id ${id} is not a Bag object`)
     }
 
-    return Bag.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return Bag.fromSuiObjectData(res.data)
   }
 }

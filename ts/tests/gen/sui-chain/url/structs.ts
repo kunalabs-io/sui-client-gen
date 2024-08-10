@@ -13,7 +13,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framewo
 import { String } from '../../move-stdlib-chain/ascii/structs'
 import { PKG_V21 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Url =============================== */
@@ -64,6 +64,7 @@ export class Url implements StructClass {
       fromJSONField: (field: any) => Url.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Url.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Url.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => Url.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => Url.fetch(client, id),
       new: (fields: UrlFields) => {
         return new Url([], fields)
@@ -137,6 +138,22 @@ export class Url implements StructClass {
     return Url.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): Url {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isUrl(data.bcs.type)) {
+        throw new Error(`object at is not a Url object`)
+      }
+
+      return Url.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Url.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<Url> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -146,6 +163,6 @@ export class Url implements StructClass {
       throw new Error(`object at id ${id} is not a Url object`)
     }
 
-    return Url.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return Url.fromSuiObjectData(res.data)
   }
 }

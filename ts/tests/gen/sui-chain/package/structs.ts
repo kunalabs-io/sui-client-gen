@@ -17,7 +17,7 @@ import { String } from '../../move-stdlib-chain/ascii/structs'
 import { PKG_V21 } from '../index'
 import { ID, UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Publisher =============================== */
@@ -80,6 +80,7 @@ export class Publisher implements StructClass {
       fromJSONField: (field: any) => Publisher.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Publisher.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Publisher.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => Publisher.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => Publisher.fetch(client, id),
       new: (fields: PublisherFields) => {
         return new Publisher([], fields)
@@ -169,6 +170,22 @@ export class Publisher implements StructClass {
     return Publisher.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): Publisher {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isPublisher(data.bcs.type)) {
+        throw new Error(`object at is not a Publisher object`)
+      }
+
+      return Publisher.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Publisher.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<Publisher> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -178,7 +195,7 @@ export class Publisher implements StructClass {
       throw new Error(`object at id ${id} is not a Publisher object`)
     }
 
-    return Publisher.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return Publisher.fromSuiObjectData(res.data)
   }
 }
 
@@ -245,6 +262,7 @@ export class UpgradeCap implements StructClass {
       fromJSONField: (field: any) => UpgradeCap.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UpgradeCap.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => UpgradeCap.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => UpgradeCap.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => UpgradeCap.fetch(client, id),
       new: (fields: UpgradeCapFields) => {
         return new UpgradeCap([], fields)
@@ -339,6 +357,22 @@ export class UpgradeCap implements StructClass {
     return UpgradeCap.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): UpgradeCap {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isUpgradeCap(data.bcs.type)) {
+        throw new Error(`object at is not a UpgradeCap object`)
+      }
+
+      return UpgradeCap.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return UpgradeCap.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<UpgradeCap> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -348,7 +382,7 @@ export class UpgradeCap implements StructClass {
       throw new Error(`object at id ${id} is not a UpgradeCap object`)
     }
 
-    return UpgradeCap.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return UpgradeCap.fromSuiObjectData(res.data)
   }
 }
 
@@ -415,6 +449,7 @@ export class UpgradeTicket implements StructClass {
       fromJSONField: (field: any) => UpgradeTicket.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UpgradeTicket.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => UpgradeTicket.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => UpgradeTicket.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => UpgradeTicket.fetch(client, id),
       new: (fields: UpgradeTicketFields) => {
         return new UpgradeTicket([], fields)
@@ -509,6 +544,22 @@ export class UpgradeTicket implements StructClass {
     return UpgradeTicket.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): UpgradeTicket {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isUpgradeTicket(data.bcs.type)) {
+        throw new Error(`object at is not a UpgradeTicket object`)
+      }
+
+      return UpgradeTicket.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return UpgradeTicket.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<UpgradeTicket> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -518,7 +569,7 @@ export class UpgradeTicket implements StructClass {
       throw new Error(`object at id ${id} is not a UpgradeTicket object`)
     }
 
-    return UpgradeTicket.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return UpgradeTicket.fromSuiObjectData(res.data)
   }
 }
 
@@ -579,6 +630,7 @@ export class UpgradeReceipt implements StructClass {
       fromJSONField: (field: any) => UpgradeReceipt.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UpgradeReceipt.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => UpgradeReceipt.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => UpgradeReceipt.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => UpgradeReceipt.fetch(client, id),
       new: (fields: UpgradeReceiptFields) => {
         return new UpgradeReceipt([], fields)
@@ -663,6 +715,22 @@ export class UpgradeReceipt implements StructClass {
     return UpgradeReceipt.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): UpgradeReceipt {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isUpgradeReceipt(data.bcs.type)) {
+        throw new Error(`object at is not a UpgradeReceipt object`)
+      }
+
+      return UpgradeReceipt.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return UpgradeReceipt.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<UpgradeReceipt> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -672,6 +740,6 @@ export class UpgradeReceipt implements StructClass {
       throw new Error(`object at id ${id} is not a UpgradeReceipt object`)
     }
 
-    return UpgradeReceipt.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return UpgradeReceipt.fromSuiObjectData(res.data)
   }
 }

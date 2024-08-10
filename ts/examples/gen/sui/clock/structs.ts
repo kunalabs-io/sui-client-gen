@@ -13,7 +13,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framewo
 import { PKG_V21 } from '../index'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== Clock =============================== */
@@ -70,6 +70,7 @@ export class Clock implements StructClass {
       fromJSONField: (field: any) => Clock.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Clock.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Clock.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => Clock.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => Clock.fetch(client, id),
       new: (fields: ClockFields) => {
         return new Clock([], fields)
@@ -154,6 +155,22 @@ export class Clock implements StructClass {
     return Clock.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): Clock {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isClock(data.bcs.type)) {
+        throw new Error(`object at is not a Clock object`)
+      }
+
+      return Clock.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Clock.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<Clock> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -163,6 +180,6 @@ export class Clock implements StructClass {
       throw new Error(`object at id ${id} is not a Clock object`)
     }
 
-    return Clock.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return Clock.fromSuiObjectData(res.data)
   }
 }

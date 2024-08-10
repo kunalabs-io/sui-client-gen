@@ -15,7 +15,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_f
 import { Vector } from '../../../../_framework/vector'
 import { PKG_V8 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== String =============================== */
@@ -69,6 +69,7 @@ export class String implements StructClass {
       fromJSONField: (field: any) => String.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => String.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => String.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => String.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => String.fetch(client, id),
       new: (fields: StringFields) => {
         return new String([], fields)
@@ -144,6 +145,22 @@ export class String implements StructClass {
     return String.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): String {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isString(data.bcs.type)) {
+        throw new Error(`object at is not a String object`)
+      }
+
+      return String.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return String.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<String> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -153,6 +170,6 @@ export class String implements StructClass {
       throw new Error(`object at id ${id} is not a String object`)
     }
 
-    return String.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return String.fromSuiObjectData(res.data)
   }
 }

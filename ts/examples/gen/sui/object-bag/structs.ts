@@ -13,7 +13,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framewo
 import { PKG_V21 } from '../index'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== ObjectBag =============================== */
@@ -73,6 +73,7 @@ export class ObjectBag implements StructClass {
       fromJSONField: (field: any) => ObjectBag.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ObjectBag.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ObjectBag.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => ObjectBag.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => ObjectBag.fetch(client, id),
       new: (fields: ObjectBagFields) => {
         return new ObjectBag([], fields)
@@ -157,6 +158,22 @@ export class ObjectBag implements StructClass {
     return ObjectBag.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): ObjectBag {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isObjectBag(data.bcs.type)) {
+        throw new Error(`object at is not a ObjectBag object`)
+      }
+
+      return ObjectBag.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return ObjectBag.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<ObjectBag> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -166,6 +183,6 @@ export class ObjectBag implements StructClass {
       throw new Error(`object at id ${id} is not a ObjectBag object`)
     }
 
-    return ObjectBag.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return ObjectBag.fromSuiObjectData(res.data)
   }
 }

@@ -19,7 +19,7 @@ import { UID } from '../object/structs'
 import { Table } from '../table/structs'
 import { VecSet } from '../vec-set/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
 /* ============================== DenyList =============================== */
@@ -79,6 +79,7 @@ export class DenyList implements StructClass {
       fromJSONField: (field: any) => DenyList.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => DenyList.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => DenyList.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => DenyList.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => DenyList.fetch(client, id),
       new: (fields: DenyListFields) => {
         return new DenyList([], fields)
@@ -163,6 +164,22 @@ export class DenyList implements StructClass {
     return DenyList.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): DenyList {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isDenyList(data.bcs.type)) {
+        throw new Error(`object at is not a DenyList object`)
+      }
+
+      return DenyList.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return DenyList.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<DenyList> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -172,7 +189,7 @@ export class DenyList implements StructClass {
       throw new Error(`object at id ${id} is not a DenyList object`)
     }
 
-    return DenyList.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return DenyList.fromSuiObjectData(res.data)
   }
 }
 
@@ -236,6 +253,7 @@ export class PerTypeList implements StructClass {
       fromJSONField: (field: any) => PerTypeList.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => PerTypeList.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => PerTypeList.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => PerTypeList.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => PerTypeList.fetch(client, id),
       new: (fields: PerTypeListFields) => {
         return new PerTypeList([], fields)
@@ -352,6 +370,22 @@ export class PerTypeList implements StructClass {
     return PerTypeList.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): PerTypeList {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isPerTypeList(data.bcs.type)) {
+        throw new Error(`object at is not a PerTypeList object`)
+      }
+
+      return PerTypeList.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return PerTypeList.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<PerTypeList> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -361,6 +395,6 @@ export class PerTypeList implements StructClass {
       throw new Error(`object at id ${id} is not a PerTypeList object`)
     }
 
-    return PerTypeList.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return PerTypeList.fromSuiObjectData(res.data)
   }
 }

@@ -12,7 +12,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { PKG_V21 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiParsedData } from '@mysten/sui/client'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
 
 /* ============================== ID =============================== */
@@ -66,6 +66,7 @@ export class ID implements StructClass {
       fromJSONField: (field: any) => ID.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ID.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ID.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => ID.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => ID.fetch(client, id),
       new: (fields: IDFields) => {
         return new ID([], fields)
@@ -142,6 +143,22 @@ export class ID implements StructClass {
     return ID.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): ID {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isID(data.bcs.type)) {
+        throw new Error(`object at is not a ID object`)
+      }
+
+      return ID.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return ID.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<ID> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -151,7 +168,7 @@ export class ID implements StructClass {
       throw new Error(`object at id ${id} is not a ID object`)
     }
 
-    return ID.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return ID.fromSuiObjectData(res.data)
   }
 }
 
@@ -206,6 +223,7 @@ export class UID implements StructClass {
       fromJSONField: (field: any) => UID.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UID.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => UID.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => UID.fromSuiObjectData(content),
       fetch: async (client: SuiClient, id: string) => UID.fetch(client, id),
       new: (fields: UIDFields) => {
         return new UID([], fields)
@@ -279,6 +297,22 @@ export class UID implements StructClass {
     return UID.fromFieldsWithTypes(content)
   }
 
+  static fromSuiObjectData(data: SuiObjectData): UID {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isUID(data.bcs.type)) {
+        throw new Error(`object at is not a UID object`)
+      }
+
+      return UID.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return UID.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
   static async fetch(client: SuiClient, id: string): Promise<UID> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
@@ -288,6 +322,6 @@ export class UID implements StructClass {
       throw new Error(`object at id ${id} is not a UID object`)
     }
 
-    return UID.fromBcs(fromB64(res.data.bcs.bcsBytes))
+    return UID.fromSuiObjectData(res.data)
   }
 }
