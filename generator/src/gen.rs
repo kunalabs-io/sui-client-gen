@@ -1588,6 +1588,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             .framework
             .import("reified", "assertFieldsWithTypesArgsMatch");
         let sui_parsed_data = &js::import("@mysten/sui/client", "SuiParsedData");
+        let sui_object_data = &js::import("@mysten/sui/client", "SuiObjectData");
         let sui_client = &js::import("@mysten/sui/client", "SuiClient");
         let bcs = &js::import("@mysten/sui/bcs", "bcs");
         let bcs_type = &js::import("@mysten/sui/bcs", "BcsType");
@@ -1884,6 +1885,15 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             ),
                         fromSuiParsedData: (content: $sui_parsed_data) =>
                             $(&struct_name).fromSuiParsedData(
+                                $(match type_params.len() {
+                                    0 => (),
+                                    1 => { $(type_params_str[0].clone()), },
+                                    _ => { [$(for param in &type_params_str join (, ) => $param)], },
+                                })
+                                content,
+                            ),
+                        fromSuiObjectData: (content: $sui_object_data) =>
+                            $(&struct_name).fromSuiObjectData(
                                 $(match type_params.len() {
                                     0 => (),
                                     1 => { $(type_params_str[0].clone()), },
@@ -2189,6 +2199,76 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     );
                 }$['\n']
 
+                static fromSuiObjectData$(params_toks_for_reified)(
+                    $type_args_param_if_any data: $sui_object_data
+                ): $(&struct_name)$(params_toks_for_to_type_argument) {
+                    if (data.bcs) {
+                        if (data.bcs.dataType !== "moveObject" || !is$(&struct_name)(data.bcs.type)) {
+                            throw new Error($(self.interpolate(
+                                format!("object at is not a {} object", &struct_name))
+                            ));
+                        }$['\n']
+                        $(match type_params.len() {
+                            0 => (),
+                            1 => {
+                                const gotTypeArgs = $parse_type_name(data.bcs.type).typeArgs;
+                                if (gotTypeArgs.length !== 1) {
+                                    throw new Error($(self.interpolate(
+                                        "type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'".to_string()
+                                    )));
+                                };
+                                const gotTypeArg = $compress_sui_type(gotTypeArgs[0]);
+                                const expectedTypeArg = $compress_sui_type($extract_type(typeArg));
+                                if (gotTypeArg !== $compress_sui_type($extract_type(typeArg))) {
+                                    throw new Error($(self.interpolate(
+                                        "type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'".to_string()
+                                    )));
+                                };
+                            },
+                            n => {
+                                const gotTypeArgs = $parse_type_name(data.bcs.type).typeArgs;
+                                if (gotTypeArgs.length !== $n) {
+                                    throw new Error($(self.interpolate(
+                                        format!("type argument mismatch: expected {} type arguments but got ${{gotTypeArgs.length}}", n)
+                                    )));
+                                };
+                                for (let i = 0; i < $n; i++) {
+                                    const gotTypeArg = $compress_sui_type(gotTypeArgs[i]);
+                                    const expectedTypeArg = $compress_sui_type($extract_type(typeArgs[i]));
+                                    if (gotTypeArg !== expectedTypeArg) {
+                                        throw new Error($(self.interpolate(
+                                            "type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'".to_string()
+                                        )));
+                                    }
+                                };
+                            }
+                        })$['\n']
+
+                        return $(&struct_name).fromBcs(
+                            $(match type_params.len() {
+                                0 => (),
+                                1 => { typeArg, },
+                                _ => { typeArgs, },
+                            })
+                            $from_b64(data.bcs.bcsBytes)
+                        );
+                    }
+                    if (data.content) {
+                        return $(&struct_name).fromSuiParsedData(
+                            $(match type_params.len() {
+                                0 => (),
+                                1 => { typeArg, },
+                                _ => { typeArgs, },
+                            })
+                            data.content
+                        )
+                    }
+
+                    throw new Error(
+                        "Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request."
+                    );
+                }$['\n']
+
                 static async fetch$(params_toks_for_reified)(
                     client: $sui_client, $type_args_param_if_any id: string
                 ): Promise<$(&struct_name)$(params_toks_for_to_type_argument)> {
@@ -2208,49 +2288,14 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             format!("object at id ${{id}} is not a {} object", &struct_name))
                         ));
                     }$['\n']
-                    $(match type_params.len() {
-                        0 => (),
-                        1 => {
-                            const gotTypeArgs = $parse_type_name(res.data.bcs.type).typeArgs;
-                            if (gotTypeArgs.length !== 1) {
-                                throw new Error($(self.interpolate(
-                                    "type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'".to_string()
-                                )));
-                            };
-                            const gotTypeArg = $compress_sui_type(gotTypeArgs[0]);
-                            const expectedTypeArg = $compress_sui_type($extract_type(typeArg));
-                            if (gotTypeArg !== $compress_sui_type($extract_type(typeArg))) {
-                                throw new Error($(self.interpolate(
-                                    "type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'".to_string()
-                                )));
-                            };
-                        },
-                        n => {
-                            const gotTypeArgs = $parse_type_name(res.data.bcs.type).typeArgs;
-                            if (gotTypeArgs.length !== $n) {
-                                throw new Error($(self.interpolate(
-                                    format!("type argument mismatch: expected {} type arguments but got ${{gotTypeArgs.length}}", n)
-                                )));
-                            };
-                            for (let i = 0; i < $n; i++) {
-                                const gotTypeArg = $compress_sui_type(gotTypeArgs[i]);
-                                const expectedTypeArg = $compress_sui_type($extract_type(typeArgs[i]));
-                                if (gotTypeArg !== expectedTypeArg) {
-                                    throw new Error($(self.interpolate(
-                                        "type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'".to_string()
-                                    )));
-                                }
-                            };
-                        }
-                    })$['\n']
 
-                    return $(&struct_name).fromBcs(
+                    return $(&struct_name).fromSuiObjectData(
                         $(match type_params.len() {
                             0 => (),
                             1 => { typeArg, },
                             _ => { typeArgs, },
                         })
-                        $from_b64(res.data.bcs.bcsBytes)
+                        res.data
                     );
                 }$['\n']
             }
