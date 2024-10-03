@@ -146,6 +146,9 @@ async fn build_source_model<Progress: Write>(
     let resolved_graph =
         build_config.resolution_graph_for_package(stub_path, None, &mut io::stderr())?;
 
+    // TOOD remove hardcoding of id
+    //let resolved_graph = build_config.resolution_graph_for_package(stub_path, Some(103.to_string()), &mut io::stderr())?;
+
     let source_id_map = find_address_origins(&resolved_graph);
     let source_published_at = resolve_published_at(&resolved_graph, &source_id_map);
 
@@ -160,6 +163,7 @@ async fn build_source_model<Progress: Write>(
 
     let mut stderr = StandardStream::stderr(ColorChoice::Always);
     source_env.report_diag(&mut stderr, Severity::Warning);
+    source_env.report_diag(&mut stderr, Severity::Error);
 
     if source_env.has_errors() {
         bail!("Source model has errors.");
@@ -216,8 +220,15 @@ async fn build_on_chain_model<Progress: Write>(
     }
 
     let module_map = Modules::new(modules.iter());
-    let dep_graph = module_map.compute_dependency_graph();
-    let topo_order = dep_graph.compute_topological_order()?;
+    //let dep_graph = module_map.compute_dependency_graph();
+    //let topo_order = dep_graph.compute_topological_order()?;
+
+    //let all_modules = Modules::new(self.get_modules_and_deps());
+
+    // SAFETY: package built successfully
+    //let topo_order = all_modules.compute_topological_order().unwrap();
+
+    let topo_order = module_map.compute_topological_order().unwrap();
 
     let on_chain_env = run_bytecode_model_builder(topo_order)?;
 
