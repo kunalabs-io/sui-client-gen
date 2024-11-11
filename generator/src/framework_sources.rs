@@ -679,16 +679,6 @@ export type ToField<T extends TypeArgument> = T extends 'bool'
   ? bigint
   : T extends 'address'
   ? string
-  : T extends { $typeName: '0x1::string::String' }
-  ? string
-  : T extends { $typeName: '0x1::ascii::String' }
-  ? string
-  : T extends { $typeName: '0x2::object::UID' }
-  ? string
-  : T extends { $typeName: '0x2::object::ID' }
-  ? string
-  : T extends { $typeName: '0x2::url::Url' }
-  ? string
   : T extends {
       $typeName: '0x1::option::Option'
       __inner: infer U extends TypeArgument
