@@ -124,6 +124,9 @@ it('creates and decodes an object with object as type param', async () => {
       showEffects: true,
     },
   })
+  await client.waitForTransaction({
+    digest: res.digest,
+  })
 
   const id = res.effects!.created![0].reference.objectId
 
@@ -287,6 +290,9 @@ it('creates and decodes Foo with vector of objects as type param', async () => {
       showEffects: true,
     },
   })
+  await client.waitForTransaction({
+    digest: res.digest,
+  })
 
   const id = res.effects!.created![0].reference.objectId
 
@@ -396,6 +402,9 @@ it('decodes special-cased types correctly', async () => {
       showEffects: true,
     },
   })
+  await client.waitForTransaction({
+    digest: res.digest,
+  })
 
   const id = res.effects!.created![0].reference.objectId
 
@@ -483,6 +492,9 @@ it('decodes special-cased types as generics correctly', async () => {
       showEffects: true,
     },
   })
+  await client.waitForTransaction({
+    digest: res.digest,
+  })
 
   const id = res.effects!.created![0].reference.objectId
 
@@ -562,6 +574,9 @@ it('calls function correctly when special types are used', async () => {
     options: {
       showEffects: true,
     },
+  })
+  await client.waitForTransaction({
+    digest: res.digest,
   })
 
   const id = res.effects!.created![0].reference.objectId
@@ -647,6 +662,9 @@ it('calls function correctly when special types are used as generics', async () 
       showEffects: true,
     },
   })
+  await client.waitForTransaction({
+    digest: res.digest,
+  })
 
   const id = res.effects!.created![0].reference.objectId
 
@@ -697,6 +715,9 @@ it('calls function correctly when special types are used as as vectors', async (
     options: {
       showEffects: true,
     },
+  })
+  await client.waitForTransaction({
+    digest: res.digest,
   })
 
   const id = res.effects!.created![0].reference.objectId
@@ -759,6 +780,9 @@ it('loads with loader correctly', async () => {
     options: {
       showEffects: true,
     },
+  })
+  await client.waitForTransaction({
+    digest: res.digest,
   })
 
   const id = res.effects!.created![0].reference.objectId
@@ -945,6 +969,9 @@ it('decodes address field correctly', async () => {
       showEffects: true,
     },
   })
+  await client.waitForTransaction({
+    digest: res.digest,
+  })
 
   const id = res.effects!.created![0].reference.objectId
 
@@ -1053,6 +1080,9 @@ it('fails when fetching mismatch reified type', async () => {
       showEffects: true,
     },
   })
+  await client.waitForTransaction({
+    digest: res.digest,
+  })
   const id = res.effects!.created![0].reference.objectId
 
   await expect(() => {
@@ -1077,6 +1107,9 @@ describe('handles function calls with vector arguments correctly', () => {
         showEffects: true,
       },
     })
+    await client.waitForTransaction({
+      digest: txRes.digest,
+    })
     const id = txRes.effects!.created![0].reference.objectId
     const obj = await WithGenericField.r(vector('u8')).fetch(client, id)
     expect(obj.genericField).toEqual([3, 4])
@@ -1092,6 +1125,9 @@ describe('handles function calls with vector arguments correctly', () => {
       options: {
         showEffects: true,
       },
+    })
+    await client.waitForTransaction({
+      digest: txRes.digest,
     })
     const id = txRes.effects!.created![0].reference.objectId
     const obj = await WithGenericField.r(vector('u8')).fetch(client, id)
@@ -1118,6 +1154,9 @@ describe('handles function calls with vector arguments correctly', () => {
       options: {
         showEffects: true,
       },
+    })
+    await client.waitForTransaction({
+      digest: txRes.digest,
     })
     const id = txRes.effects!.created![0].reference.objectId
     const obj = await WithGenericField.r(vector('u64')).fetch(client, id)
@@ -1147,6 +1186,9 @@ describe('handles function calls with vector arguments correctly', () => {
         showEffects: true,
       },
     })
+    await client.waitForTransaction({
+      digest: txRes.digest,
+    })
     const id = txRes.effects!.created![0].reference.objectId
     const obj = await WithGenericField.r(vector('u8')).fetch(client, id)
     expect(obj.genericField).toEqual([3, 4, 7])
@@ -1174,6 +1216,9 @@ describe('handles function calls with option arguments correctly', () => {
         showEffects: true,
       },
     })
+    await client.waitForTransaction({
+      digest: txRes.digest,
+    })
     const id = txRes.effects!.created![0].reference.objectId
     const obj = await WithGenericField.r(Option.r('u8')).fetch(client, id)
     expect(obj.genericField).toEqual(3)
@@ -1189,6 +1234,9 @@ describe('handles function calls with option arguments correctly', () => {
       options: {
         showEffects: true,
       },
+    })
+    await client.waitForTransaction({
+      digest: txRes.digest,
     })
     const id = txRes.effects!.created![0].reference.objectId
     const obj = await WithGenericField.r(Option.r(vector('u8'))).fetch(client, id)
@@ -1214,6 +1262,9 @@ describe('handles function calls with option arguments correctly', () => {
         showEffects: true,
       },
     })
+    await client.waitForTransaction({
+      digest: txRes.digest,
+    })
     const id = txRes.effects!.created![0].reference.objectId
     const obj = await WithGenericField.r(Option.r('u8')).fetch(client, id)
     expect(obj.genericField).toEqual(null)
@@ -1230,6 +1281,9 @@ describe('handles function calls with option arguments correctly', () => {
         showEffects: true,
       },
     })
+    await client.waitForTransaction({
+      digest: txRes.digest,
+    })
     const id = txRes.effects!.created![0].reference.objectId
     const obj = await WithGenericField.r(Option.r('u8')).fetch(client, id)
     expect(obj.genericField).toEqual(null)
@@ -1245,6 +1299,9 @@ describe('handles function calls with option arguments correctly', () => {
       options: {
         showEffects: true,
       },
+    })
+    await client.waitForTransaction({
+      digest: txRes.digest,
     })
     const id = txRes.effects!.created![0].reference.objectId
     const obj = await WithGenericField.r(Option.r(vector(Option.r('u8')))).fetch(client, id)
