@@ -395,7 +395,8 @@ fn gen_packages_for_model(
             );
 
             for strct in module.get_structs() {
-                structs_gen.gen_struct_sep_comment(&mut tokens, &strct);
+                //println!("{}", strct.get_full_name_str());
+                structs_gen.gen_datatype_sep_comment(&mut tokens, &strct);
 
                 // type check function
                 structs_gen.gen_is_type_func(&mut tokens, &strct);
@@ -406,6 +407,23 @@ fn gen_packages_for_model(
                 // struct class
                 structs_gen.gen_struct_class(&mut tokens, &strct);
             }
+
+            // TODO do the same for enums here
+            // iterate over all enums
+            // and add gen_enum_class to StructsGen
+            for enm in module.get_enums() {
+                structs_gen.gen_datatype_sep_comment(&mut tokens, &enm);
+
+                // // type check function
+                structs_gen.gen_is_type_func_enum(&mut tokens, &enm);
+
+                // // fields interface
+                structs_gen.gen_variant_type_enum(&mut tokens, &enm);
+
+                // enum class
+                structs_gen.gen_enum_class(&mut tokens, &enm);
+            }
+
             write_tokens_to_file(&tokens, &module_path.join("structs.ts"))?;
         }
     }
