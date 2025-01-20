@@ -1006,12 +1006,13 @@ impl<'env, 'a> FunctionsGen<'env, 'a> {
                 $(gen_type_args_param(type_arg_count, None::<&str>, ","))
                 $(match param_field_names.len() {
                     0 => (),
-                    1 => $(convert_reserved_if_needed(&param_field_names[0].0)): $(self.param_type_to_field_type(&param_field_names[0].1)),
-                    _ => args: $(FunctionsGen::fun_arg_if_name(func))
+                    1 => $(convert_reserved_if_needed(&param_field_names[0].0)): $(self.param_type_to_field_type(&param_field_names[0].1))$(","),
+                    _ => args: $(FunctionsGen::fun_arg_if_name(func))$(",")
                 })
+                $("publishedAt: string = ")$published_at
             ) {
                 return tx.moveCall({
-                    target: $[str]($($published_at)::$[const](func.get_full_name_str())),
+                    target: $[str]($(publishedAt)::$[const](func.get_full_name_str())),
                     $(match type_arg_count {
                         0 => (),
                         1 => { typeArguments: [typeArg], },
