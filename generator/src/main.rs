@@ -7,7 +7,7 @@ use colored::*;
 use genco::fmt;
 use genco::prelude::*;
 use move_core_types::account_address::AccountAddress;
-use move_model::model::ModuleEnv;
+use move_model_2::{compiled_model, model, source_model};
 use move_package::source_package::parsed_manifest::PackageName;
 use move_symbol_pool::Symbol;
 use std::io::Write;
@@ -17,7 +17,9 @@ use sui_client_gen::gen::{
 };
 use sui_client_gen::gen::{FrameworkImportCtx, FunctionsGen, StructClassImportCtx, StructsGen};
 use sui_client_gen::manifest::{parse_gen_manifest_from_file, GenManifest, Package};
-use sui_client_gen::model_builder::{build_models, ModelResult, TypeOriginTable, VersionTable};
+use sui_client_gen::model_builder::{
+    build_models, OnChainModelResult, SourceModelResult, TypeOriginTable, VersionTable,
+};
 use sui_client_gen::package_cache::PackageCache;
 use sui_move_build::SuiPackageHooks;
 use sui_sdk::SuiClientBuilder;
@@ -93,39 +95,15 @@ async fn main() -> Result<()> {
     }
 
     // separate modules by package
-    let mut source_pkgs: BTreeMap<AccountAddress, Vec<ModuleEnv>> = BTreeMap::new();
-    match &source_model {
-        Some(m) => {
-            for module in m.env.get_modules() {
-                let pkg_id = *module.self_address();
-                match source_pkgs.get_mut(&pkg_id) {
-                    Some(modules) => modules.push(module),
-                    None => {
-                        let modules = vec![module];
-                        source_pkgs.insert(pkg_id, modules);
-                    }
-                }
-            }
-        }
-        None => (),
-    };
+    let source_pkgs: BTreeMap<AccountAddress, source_model::Package> = source_model
+        .as_ref()
+        .map(|m| m.env.packages().map(|pkg| (pkg.address(), pkg)).collect())
+        .unwrap_or_default();
 
-    let mut on_chain_pkgs: BTreeMap<AccountAddress, Vec<ModuleEnv>> = BTreeMap::new();
-    match &on_chain_model {
-        Some(m) => {
-            for module in m.env.get_modules() {
-                let pkg_id = *module.self_address();
-                match on_chain_pkgs.get_mut(&pkg_id) {
-                    Some(modules) => modules.push(module),
-                    None => {
-                        let modules = vec![module];
-                        on_chain_pkgs.insert(pkg_id, modules);
-                    }
-                }
-            }
-        }
-        None => (),
-    };
+    let on_chain_pkgs: BTreeMap<AccountAddress, compiled_model::Package> = on_chain_model
+        .as_ref()
+        .map(|m| m.env.packages().map(|pkg| (pkg.address(), pkg)).collect())
+        .unwrap_or_default();
 
     // gen top-level packages and dependencies
     let (source_top_level_addr_map, on_chain_top_level_addr_map) =
@@ -190,7 +168,6 @@ async fn main() -> Result<()> {
             &out_root,
         )?;
     }
-
     if let Some(m) = &on_chain_model {
         writeln!(
             progress_output,
@@ -265,8 +242,8 @@ fn write_str_to_file(s: &str, path: &Path) -> Result<()> {
 
 /// Creates a mapping between address and package name for top-level packages.
 fn resolve_top_level_pkg_addr_map(
-    source_model: &Option<ModelResult>,
-    on_chain_model: &Option<ModelResult>,
+    source_model: &Option<SourceModelResult>,
+    on_chain_model: &Option<OnChainModelResult>,
     manifest: &GenManifest,
 ) -> (
     BTreeMap<AccountAddress, Symbol>,
@@ -319,8 +296,8 @@ fn resolve_top_level_pkg_addr_map(
     (source_top_level_id_map, on_chain_top_level_id_map)
 }
 
-fn gen_packages_for_model(
-    pkgs: BTreeMap<AccountAddress, Vec<ModuleEnv>>,
+fn gen_packages_for_model<const HAS_SOURCE: usize>(
+    pkgs: BTreeMap<AccountAddress, model::Package<HAS_SOURCE>>,
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
     published_at_map: &BTreeMap<AccountAddress, AccountAddress>,
     type_origin_table: &TypeOriginTable,
@@ -332,7 +309,7 @@ fn gen_packages_for_model(
         return Ok(());
     }
 
-    for (pkg_id, modules) in pkgs.iter() {
+    for (pkg_id, pkg) in pkgs.iter() {
         let is_top_level = top_level_pkg_names.contains_key(pkg_id);
         let levels_from_root = if is_top_level { 0 } else { 2 };
 
@@ -361,50 +338,63 @@ fn gen_packages_for_model(
         write_tokens_to_file(&tokens, &package_path.join("index.ts"))?;
 
         // generate init.ts
-        let tokens = gen_package_init_ts(modules, &FrameworkImportCtx::new(levels_from_root + 1));
+        let tokens = gen_package_init_ts(pkg, &FrameworkImportCtx::new(levels_from_root + 1));
         write_tokens_to_file(&tokens, &package_path.join("init.ts"))?;
 
         // generate modules
-        for module in modules {
-            let module_path = package_path.join(module_import_name(module));
+        for module in pkg.modules() {
+            let module_path = package_path.join(module_import_name(module.name()));
             std::fs::create_dir_all(&module_path)?;
 
             // generate <module>/functions.ts
             if is_top_level {
                 let mut tokens = js::Tokens::new();
-                let mut func_gen = FunctionsGen::new(
-                    module.env,
-                    FrameworkImportCtx::new(levels_from_root + 2),
-                    StructClassImportCtx::for_func_gen(module, is_source, top_level_pkg_names),
-                );
-                for func in module.get_functions() {
-                    func_gen.gen_fun_args_if(&func, &mut tokens)?;
-                    func_gen.gen_fun_binding(&func, &mut tokens)?;
+                let mut import_ctx =
+                    &mut StructClassImportCtx::for_func_gen(&module, top_level_pkg_names);
+                for func in module.functions() {
+                    let func_gen_res = FunctionsGen::new(
+                        import_ctx,
+                        FrameworkImportCtx::new(levels_from_root + 2),
+                        func,
+                    );
+                    let mut func_gen = match func_gen_res {
+                        Ok(func_gen) => func_gen,
+                        Err(ic) => {
+                            import_ctx = ic;
+                            continue;
+                        }
+                    };
+                    func_gen.gen_fun_args_if(&mut tokens)?;
+                    func_gen.gen_fun_binding(&mut tokens)?;
+                    import_ctx = func_gen.import_ctx;
                 }
                 write_tokens_to_file(&tokens, &module_path.join("functions.ts"))?;
             }
 
             // generate <module>/structs.ts
             let mut tokens = js::Tokens::new();
-            let mut structs_gen = StructsGen::new(
-                module.env,
-                StructClassImportCtx::for_struct_gen(module, is_source, top_level_pkg_names),
-                FrameworkImportCtx::new(levels_from_root + 2),
-                type_origin_table,
-                version_table,
-            );
+            let mut import_ctx =
+                &mut StructClassImportCtx::for_struct_gen(&module, top_level_pkg_names);
 
-            for strct in module.get_structs() {
-                structs_gen.gen_struct_sep_comment(&mut tokens, &strct);
+            for strct in module.structs() {
+                let mut structs_gen = StructsGen::new(
+                    import_ctx,
+                    FrameworkImportCtx::new(levels_from_root + 2),
+                    type_origin_table,
+                    version_table,
+                    strct,
+                );
+                structs_gen.gen_struct_sep_comment(&mut tokens);
 
                 // type check function
-                structs_gen.gen_is_type_func(&mut tokens, &strct);
+                structs_gen.gen_is_type_func(&mut tokens);
 
                 // fields interface
-                structs_gen.gen_fields_if(&mut tokens, &strct);
+                structs_gen.gen_fields_if(&mut tokens);
 
                 // struct class
-                structs_gen.gen_struct_class(&mut tokens, &strct);
+                structs_gen.gen_struct_class(&mut tokens);
+                import_ctx = structs_gen.import_ctx;
             }
             write_tokens_to_file(&tokens, &module_path.join("structs.ts"))?;
         }
