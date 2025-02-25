@@ -1,23 +1,18 @@
 use crate::manifest::{self as GM};
 use crate::package_cache::PackageCache;
 use anyhow::{bail, Context, Result};
-use codespan_reporting::{
-    diagnostic::Severity,
-    term::termcolor::{ColorChoice, StandardStream},
-};
+use codespan_reporting::term::termcolor::{ColorChoice, StandardStream};
 use colored::*;
 use core::fmt;
 use futures::future;
 use move_binary_format::file_format::CompiledModule;
-use move_bytecode_utils::Modules;
 use move_compiler::editions as ME;
 use move_core_types::account_address::AccountAddress;
-use move_model::model::GlobalEnv;
-use move_model::{self, run_bytecode_model_builder};
-use move_package::compilation::model_builder::ModelBuilder;
+use move_model_2::model::{self, Model};
+use move_package::compilation::model_builder;
 use move_package::resolution::resolution_graph::ResolvedGraph;
 use move_package::source_package::parsed_manifest as PM;
-use move_package::{BuildConfig as MoveBuildConfig, ModelConfig};
+use move_package::BuildConfig as MoveBuildConfig;
 use std::collections::{BTreeMap, HashSet, VecDeque};
 use std::fs::{self, File};
 use std::io::{self, Write};
@@ -39,9 +34,12 @@ struct SubstTOML<'a>(&'a PM::Substitution);
 pub type TypeOriginTable = BTreeMap<AccountAddress, BTreeMap<String, AccountAddress>>;
 pub type VersionTable = BTreeMap<AccountAddress, BTreeMap<AccountAddress, SequenceNumber>>;
 
-pub struct ModelResult {
+pub type SourceModelResult = ModelResult<{ model::WITH_SOURCE }>;
+pub type OnChainModelResult = ModelResult<{ model::WITHOUT_SOURCE }>;
+
+pub struct ModelResult<const HAS_SOURCE: usize> {
     /// Move model for packages defined in gen.toml
-    pub env: GlobalEnv,
+    pub env: Model<HAS_SOURCE>,
     /// Map from id to package name
     pub id_map: BTreeMap<AccountAddress, PM::PackageName>,
     /// Map from original package ID to the published at ID
@@ -57,14 +55,13 @@ pub async fn build_models<Progress: Write>(
     packages: &GM::Packages,
     manifest_path: &Path,
     progress_output: &mut Progress,
-) -> Result<(Option<ModelResult>, Option<ModelResult>)> {
+) -> Result<(Option<SourceModelResult>, Option<OnChainModelResult>)> {
     // separate source and on-chain packages
     let mut source_pkgs: Vec<(PM::PackageName, PM::InternalDependency)> = vec![];
     let mut on_chain_pkgs: Vec<(PM::PackageName, GM::OnChainPackage)> = vec![];
     for (name, pkg) in packages.iter() {
         match pkg.clone() {
             GM::Package::Dependency(PM::Dependency::Internal(mut dep)) => match &dep.kind {
-                // for local dependencies, convert relative paths to absolute since the stub root is in different directory
                 PM::DependencyKind::Local(relative_path) => {
                     let absolute_path =
                         fs::canonicalize(manifest_path.parent().unwrap().join(relative_path))
@@ -115,7 +112,7 @@ async fn build_source_model<Progress: Write>(
     pkgs: Vec<(PM::PackageName, PM::InternalDependency)>,
     cache: &mut PackageCache<'_>,
     progress_output: &mut Progress,
-) -> Result<ModelResult> {
+) -> Result<SourceModelResult> {
     writeln!(
         progress_output,
         "{}",
@@ -149,21 +146,8 @@ async fn build_source_model<Progress: Write>(
     let source_id_map = find_address_origins(&resolved_graph);
     let source_published_at = resolve_published_at(&resolved_graph, &source_id_map);
 
-    let source_env = ModelBuilder::create(
-        resolved_graph,
-        ModelConfig {
-            all_files_as_targets: true,
-            target_filter: None,
-        },
-    )
-    .build_model()?;
-
     let mut stderr = StandardStream::stderr(ColorChoice::Always);
-    source_env.report_diag(&mut stderr, Severity::Warning);
-
-    if source_env.has_errors() {
-        bail!("Source model has errors.");
-    }
+    let source_env = model_builder::build(resolved_graph, &mut stderr)?;
 
     // resolve type origins
     let type_origin_table = resolve_type_origin_table(
@@ -189,7 +173,7 @@ async fn build_on_chain_model<Progress: Write>(
     pkgs: Vec<(PM::PackageName, GM::OnChainPackage)>,
     cache: &mut PackageCache<'_>,
     progress_output: &mut Progress,
-) -> Result<ModelResult> {
+) -> Result<OnChainModelResult> {
     writeln!(
         progress_output,
         "{}",
@@ -215,17 +199,6 @@ async fn build_on_chain_model<Progress: Write>(
         }
     }
 
-    let module_map = Modules::new(modules.iter());
-    let topo_order = module_map.compute_topological_order()?;
-
-    let on_chain_env = run_bytecode_model_builder(topo_order)?;
-
-    let mut stderr = StandardStream::stderr(ColorChoice::Always);
-    on_chain_env.report_diag(&mut stderr, Severity::Warning);
-    if on_chain_env.has_errors() {
-        bail!("On-chain model has errors.");
-    }
-
     let mut on_chain_id_map: BTreeMap<AccountAddress, PM::PackageName> = BTreeMap::new();
     let mut on_chain_published_at: BTreeMap<AccountAddress, AccountAddress> = BTreeMap::new();
     for (name, pkg) in pkgs {
@@ -235,19 +208,21 @@ async fn build_on_chain_model<Progress: Write>(
         on_chain_published_at.insert(*original_id, pkg.id);
     }
 
+    let env = Model::from_compiled(&on_chain_id_map, modules);
+
     // resolve type origins
     let type_origin_table = resolve_type_origin_table(
         cache,
         &on_chain_id_map,
         &on_chain_published_at,
-        &on_chain_env,
+        &env,
         progress_output,
     )
     .await?;
     let version_table = resolve_version_table(cache, &type_origin_table).await?;
 
     Ok(ModelResult {
-        env: on_chain_env,
+        env,
         id_map: on_chain_id_map,
         published_at: on_chain_published_at,
         type_origin_table,
@@ -416,11 +391,11 @@ async fn resolve_original_package_id(
     Ok(id)
 }
 
-async fn resolve_type_origin_table<Progress: Write>(
+async fn resolve_type_origin_table<Progress: Write, const HAS_SOURCE: usize>(
     cache: &mut PackageCache<'_>,
     id_map: &BTreeMap<AccountAddress, PM::PackageName>,
     published_at: &BTreeMap<AccountAddress, AccountAddress>,
-    model: &GlobalEnv,
+    model: &Model<HAS_SOURCE>,
     progress_output: &mut Progress,
 ) -> Result<TypeOriginTable> {
     let mut type_origin_table = BTreeMap::new();
@@ -468,17 +443,17 @@ async fn resolve_type_origin_table<Progress: Write>(
     }
     // populate type origin table with remaining modules from the model (that couldn't be resolved from chain).
     // in this case we set origin of all types to the package's original id.
-    for module in model.get_modules() {
-        let original_id = *module.self_address();
+    for module in model.modules() {
+        let original_id = module.package().address();
+        let module_name = module.name();
         type_origin_table
             .entry(original_id)
             .or_insert_with(BTreeMap::new);
         let origin_map = type_origin_table.get_mut(&original_id).unwrap();
-        for strct in module.get_structs() {
-            if origin_map.contains_key(&strct.get_full_name_str()) {
-                continue;
-            };
-            origin_map.insert(strct.get_full_name_str(), original_id);
+        for s in module.structs() {
+            let name = s.name();
+            let full_name = format!("{module_name}::{name}");
+            origin_map.entry(full_name).or_insert(original_id);
         }
     }
 
@@ -517,7 +492,7 @@ async fn resolve_version_table(
     Ok(version_table)
 }
 
-impl<'a> fmt::Display for DependencyTOML<'a> {
+impl fmt::Display for DependencyTOML<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let DependencyTOML(
             name,
@@ -552,7 +527,7 @@ impl<'a> fmt::Display for DependencyTOML<'a> {
                 f.write_str(&path_escape(subdir)?)?;
             }
             PM::DependencyKind::OnChain(_) => {
-                // not supported
+                unreachable!("not supported")
             }
         }
 
@@ -575,7 +550,7 @@ impl<'a> fmt::Display for DependencyTOML<'a> {
     }
 }
 
-impl<'a> fmt::Display for SubstTOML<'a> {
+impl fmt::Display for SubstTOML<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         /// Write an individual key value pair in the substitution.
         fn write_subst(

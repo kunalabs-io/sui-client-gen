@@ -99,7 +99,7 @@ pub fn parse_packages(tval: TV) -> Result<Packages> {
         TV::Table(table) => {
             let mut pkgs = BTreeMap::new();
             for (pkg_name, dep) in table.into_iter() {
-                let pkg_name_ident = PackageName::from(pkg_name.clone());
+                let pkg_name_ident = PackageName::from(pkg_name);
                 let dep = parse_package(dep)?;
                 pkgs.insert(pkg_name_ident, dep);
             }

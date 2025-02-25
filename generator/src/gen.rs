@@ -1,16 +1,14 @@
 use std::collections::{BTreeMap, HashMap};
 
-use anyhow::{bail, Result};
+use crate::model_builder::{TypeOriginTable, VersionTable};
+use anyhow::Result;
 use convert_case::{Case, Casing};
 use genco::prelude::*;
 use genco::tokens::{Item, ItemStr};
-use move_binary_format::normalized::Type as MType;
 use move_core_types::account_address::AccountAddress;
-use move_model::model::{DatatypeId, FieldEnv, FunctionEnv, GlobalEnv, ModuleEnv, StructEnv};
-use move_model::symbol::{Symbol, SymbolPool};
-use move_model::ty::{PrimitiveType, Type};
-
-use crate::model_builder::{TypeOriginTable, VersionTable};
+use move_model_2::compiled::Type;
+use move_model_2::model::{self, Datatype, SourceKind, WITH_SOURCE};
+use move_symbol_pool::Symbol;
 
 #[rustfmt::skip]
 const JS_RESERVED_WORDS: [&str; 64] = [
@@ -34,21 +32,27 @@ const JS_STRICTLY_RESERVED_WORDS: [&str; 37] = [
 ];
 
 /// Returns module name that's used in import paths (converts kebab case as that's idiomatic in TS).
-pub fn module_import_name(module: &ModuleEnv) -> String {
+pub fn module_import_name(module: Symbol) -> String {
     module
-        .get_name()
-        .display(module.env.symbol_pool())
         .to_string()
         .from_case(Case::Snake)
         .to_case(Case::Kebab)
 }
 
 /// Returns package name that's used in import paths (converts to kebab case as that's idiomatic in TS).
-pub fn package_import_name(pkg_name: move_symbol_pool::Symbol) -> String {
+pub fn package_import_name(pkg_name: Symbol) -> String {
     pkg_name
         .to_string()
         .from_case(Case::Pascal)
         .to_case(Case::Kebab)
+}
+
+fn struct_full_name<const HAS_SOURCE: SourceKind>(s: &model::Struct<HAS_SOURCE>) -> String {
+    format!("{}::{}", s.module().name(), s.name())
+}
+
+fn func_full_name<const HAS_SOURCE: SourceKind>(f: &model::Function<HAS_SOURCE>) -> String {
+    format!("{}::{}", f.module().name(), f.name())
 }
 
 pub struct FrameworkImportCtx {
@@ -70,134 +74,121 @@ impl FrameworkImportCtx {
         FrameworkImportCtx { framework_rel_path }
     }
 
-    pub fn import(&self, module: &str, name: &str) -> js::Import {
+    fn import(&self, module: &str, name: &str) -> js::Import {
         js::import(format!("{}/{}", self.framework_rel_path, module), name)
     }
 }
 
 /// A context for generating import paths for struct classes. This is needed to avoid name conflicts
 /// when importing different structs of the same name.
-pub struct StructClassImportCtx<'env, 'a> {
+pub struct StructClassImportCtx<'a> {
     // a map storing class names that have already been used and their import paths
     // to avoid name conflicts
     reserved_names: HashMap<String, Vec<String>>,
-    module: &'env ModuleEnv<'env>,
+    package_address: AccountAddress,
+    module: Symbol,
     is_top_level: bool,
-    is_source: bool,
     top_level_pkg_names: &'a BTreeMap<AccountAddress, move_symbol_pool::Symbol>,
     is_structs_gen: bool,
 }
 
-impl<'env, 'a> StructClassImportCtx<'env, 'a> {
-    fn new(
+impl<'a> StructClassImportCtx<'a> {
+    pub fn new<const HAS_SOURCE: SourceKind>(
         reserved_names: Vec<String>,
-        module: &'env ModuleEnv,
-        is_source: bool,
+        module: &model::Module<HAS_SOURCE>,
         top_level_pkg_names: &'a BTreeMap<AccountAddress, move_symbol_pool::Symbol>,
         is_structs_gen: bool,
     ) -> Self {
+        let package_address = module.package().address();
+        let module = module.name();
         StructClassImportCtx {
             reserved_names: reserved_names
                 .into_iter()
                 .map(|name| (name, vec!["".to_string()]))
                 .collect(),
+            package_address,
             module,
-            is_top_level: top_level_pkg_names.contains_key(module.self_address()),
-            is_source,
+            is_top_level: top_level_pkg_names.contains_key(&package_address),
             top_level_pkg_names,
             is_structs_gen,
         }
     }
 
-    pub fn for_func_gen(
-        module: &'env ModuleEnv,
-        is_source: bool,
+    pub fn for_func_gen<const HAS_SOURCE: SourceKind>(
+        module: &model::Module<HAS_SOURCE>,
         top_level_pkg_names: &'a BTreeMap<AccountAddress, move_symbol_pool::Symbol>,
     ) -> Self {
         let reserved_names = vec![];
         let is_structs_gen = false;
-        StructClassImportCtx::new(
-            reserved_names,
-            module,
-            is_source,
-            top_level_pkg_names,
-            is_structs_gen,
-        )
+        StructClassImportCtx::new(reserved_names, module, top_level_pkg_names, is_structs_gen)
     }
 
-    pub fn for_struct_gen(
-        module: &'env ModuleEnv,
-        is_source: bool,
+    pub fn for_struct_gen<const HAS_SOURCE: SourceKind>(
+        module: &model::Module<HAS_SOURCE>,
         top_level_pkg_names: &'a BTreeMap<AccountAddress, move_symbol_pool::Symbol>,
     ) -> Self {
-        let struct_names = module.get_structs().map(|strct| {
-            strct
-                .get_name()
-                .display(module.env.symbol_pool())
-                .to_string()
-        });
-        let enum_names = module
-            .get_enums()
-            .map(|enm| enm.get_name().display(module.env.symbol_pool()).to_string());
-
-        let reserved_names = struct_names.chain(enum_names).collect();
+        let reserved_names = module
+            .structs()
+            .map(|s| s.name())
+            .chain(module.enums().map(|e| e.name()))
+            .map(|s| s.to_string())
+            .collect();
         let is_structs_gen = true;
-
-        StructClassImportCtx::new(
-            reserved_names,
-            module,
-            is_source,
-            top_level_pkg_names,
-            is_structs_gen,
-        )
+        StructClassImportCtx::new(reserved_names, module, top_level_pkg_names, is_structs_gen)
     }
 
     /// Returns the import path for a struct. If the struct is defined in the current module,
     /// returns `None`.
-    pub fn import_path_for_struct(&self, strct: &StructEnv) -> Option<String> {
-        let module_name = module_import_name(&strct.module_env);
-
-        if strct.module_env.self_address() == self.module.self_address()
-            && strct.module_env.get_id() == self.module.get_id()
-        {
+    fn import_path_for_struct<const HAS_SOURCE: SourceKind>(
+        &self,
+        strct: &model::Struct<HAS_SOURCE>,
+    ) -> Option<String> {
+        let module = strct.module();
+        let module_name = module_import_name(module.name());
+        let same_package = module.package().address() == self.package_address;
+        if same_package && module.name() == self.module {
             // if the struct is defined in the current module, we don't need to import anything
             if self.is_structs_gen {
                 None
             } else {
                 Some("./structs".to_string())
             }
-        } else if strct.module_env.self_address() == self.module.self_address() {
+        } else if same_package {
             // if the struct is defined in a different module in the same package, we use
             // the short version of the import path
             Some(format!("../{}/structs", module_name))
         } else {
             let strct_is_top_level = self
                 .top_level_pkg_names
-                .contains_key(strct.module_env.self_address());
+                .contains_key(&module.package().address());
 
             if self.is_top_level && strct_is_top_level {
                 let strct_pkg_name = package_import_name(
                     *self
                         .top_level_pkg_names
-                        .get(strct.module_env.self_address())
+                        .get(&module.package().address())
                         .unwrap(),
                 );
 
                 Some(format!("../../{}/{}/structs", strct_pkg_name, module_name))
             } else if self.is_top_level {
-                let dep_dir = if self.is_source { "source" } else { "onchain" };
+                let dep_dir = if HAS_SOURCE == WITH_SOURCE {
+                    "source"
+                } else {
+                    "onchain"
+                };
 
                 Some(format!(
                     "../../_dependencies/{}/{}/{}/structs",
                     dep_dir,
-                    strct.module_env.self_address().to_hex_literal(),
+                    module.package().address().to_hex_literal(),
                     module_name
                 ))
             } else if strct_is_top_level {
                 let strct_pkg_name = package_import_name(
                     *self
                         .top_level_pkg_names
-                        .get(strct.module_env.self_address())
+                        .get(&module.package().address())
                         .unwrap(),
                 );
 
@@ -208,7 +199,7 @@ impl<'env, 'a> StructClassImportCtx<'env, 'a> {
             } else {
                 Some(format!(
                     "../../{}/{}/structs",
-                    strct.module_env.self_address().to_hex_literal(),
+                    module.package().address().to_hex_literal(),
                     module_name
                 ))
             }
@@ -224,8 +215,11 @@ impl<'env, 'a> StructClassImportCtx<'env, 'a> {
 
     /// Returns the class name for a struct and imports it if necessary. If a class with the same name
     /// has already been imported, imports it with an alias (e.g. Foo1, Foo2, etc.).
-    pub fn get_class(&mut self, strct: &StructEnv) -> js::Tokens {
-        let class_name = strct.get_name().display(strct.symbol_pool()).to_string();
+    fn get_class<const HAS_SOURCE: SourceKind>(
+        &mut self,
+        strct: &model::Struct<HAS_SOURCE>,
+    ) -> js::Tokens {
+        let class_name = strct.name().to_string();
         let import_path = self.import_path_for_struct(strct);
 
         let import_path = match import_path {
@@ -259,19 +253,23 @@ impl<'env, 'a> StructClassImportCtx<'env, 'a> {
     }
 }
 
-fn get_origin_pkg_addr(strct: &StructEnv, type_origin_table: &TypeOriginTable) -> AccountAddress {
-    let addr = strct.module_env.self_address();
-    let types = type_origin_table.get(addr).unwrap_or_else(|| {
+fn get_origin_pkg_addr<const HAS_SOURCE: SourceKind>(
+    strct: &model::Struct<HAS_SOURCE>,
+    type_origin_table: &TypeOriginTable,
+) -> AccountAddress {
+    let addr = strct.module().package().address();
+    let types = type_origin_table.get(&addr).unwrap_or_else(|| {
         panic!(
             "expected origin table to exist for packge {}",
             addr.to_hex_literal()
         )
     });
-    let origin_addr = types.get(&strct.get_full_name_str()).unwrap_or_else(|| {
+    let full_name = struct_full_name(strct);
+    let origin_addr = types.get(&full_name).unwrap_or_else(|| {
         panic!(
             "unable to find origin address for struct {} in package {}. \
             check consistency between original id and published at for this package.",
-            strct.get_full_name_str(),
+            full_name,
             addr.to_hex_literal()
         )
     });
@@ -279,28 +277,25 @@ fn get_origin_pkg_addr(strct: &StructEnv, type_origin_table: &TypeOriginTable) -
     *origin_addr
 }
 
-fn get_full_name_with_address_str(
-    strct: &StructEnv,
+fn strct_qualified_member_name<const HAS_SOURCE: SourceKind>(
+    strct: &model::Struct<HAS_SOURCE>,
     type_origin_table: &TypeOriginTable,
-) -> String {
-    let origin_pkg_addr = get_origin_pkg_addr(strct, type_origin_table);
-    format!(
-        "{}::{}",
-        origin_pkg_addr.to_hex_literal(),
-        strct.get_full_name_str()
-    )
+) -> (AccountAddress, Symbol, Symbol) {
+    let origin_package = get_origin_pkg_addr(strct, type_origin_table);
+    let module = strct.module();
+    (origin_package, module.name(), strct.name())
 }
 
-fn gen_full_name_with_address(
-    strct: &StructEnv,
+fn gen_full_name_with_address<const HAS_SOURCE: SourceKind>(
+    strct: &model::Struct<HAS_SOURCE>,
     type_origin_table: &TypeOriginTable,
     version_table: &VersionTable,
     open_quote: bool,
     as_type: bool,
 ) -> js::Tokens {
     let origin_pkg_addr = get_origin_pkg_addr(strct, type_origin_table);
-    let self_addr = strct.module_env.self_address();
-    let versions = version_table.get(self_addr).unwrap_or_else(|| {
+    let self_addr = strct.module().package().address();
+    let versions = version_table.get(&self_addr).unwrap_or_else(|| {
         panic!(
             "expected version table to exist for packge {}",
             self_addr.to_hex_literal()
@@ -327,7 +322,7 @@ fn gen_full_name_with_address(
         quote_in!(toks => $pkg_import);
     }
     toks.append(Item::Literal(ItemStr::from("}")));
-    quote_in!(toks => ::$(strct.get_full_name_str()));
+    quote_in!(toks => ::$(struct_full_name(strct)));
     if open_quote {
         toks.append(Item::CloseQuote);
     }
@@ -335,17 +330,25 @@ fn gen_full_name_with_address(
     toks
 }
 
-pub fn gen_package_init_ts(modules: &[ModuleEnv], framework: &FrameworkImportCtx) -> js::Tokens {
+/// Generates a TS interface field name from a struct field.
+fn gen_field_name(field: Symbol) -> impl FormatInto<JavaScript> {
+    let name = field.to_string().to_case(Case::Camel);
+    quote_fn! {
+        $name
+    }
+}
+
+pub fn gen_package_init_ts<const HAS_SOURCE: SourceKind>(
+    pkg: &model::Package<HAS_SOURCE>,
+    framework: &FrameworkImportCtx,
+) -> js::Tokens {
     let struct_class_loader = &framework.import("loader", "StructClassLoader");
     // TODO use canonical module names
     quote! {
         export function registerClasses(loader: $struct_class_loader) {
             $(ref toks {
-                for module in modules.iter() {
-                    let module_name = module
-                        .get_name()
-                        .display(module.env.symbol_pool())
-                        .to_string();
+                for module in pkg.modules() {
+                    let module_name = module.name().to_string();
 
                     let mut imported_name = module_name.to_case(Case::Camel);
                     if JS_RESERVED_WORDS.contains(&imported_name.as_str()) {
@@ -353,16 +356,13 @@ pub fn gen_package_init_ts(modules: &[ModuleEnv], framework: &FrameworkImportCtx
                     }
 
                     let module_import = &js::import(
-                        format!("./{}/structs", module_import_name(module)),
+                        format!("./{}/structs", module_import_name(module.name())),
                         imported_name,
                     )
                     .into_wildcard();
 
-                    for strct in module.get_structs() {
-                        let strct_name = strct
-                            .get_name()
-                            .display(module.env.symbol_pool())
-                            .to_string();
+                    for strct in module.structs() {
+                        let strct_name = strct.name().to_string();
 
                         quote_in! { *toks =>
                             loader.register($(module_import).$(strct_name));$['\r']
@@ -426,26 +426,24 @@ pub fn gen_init_loader_ts(
 
     let mut toks = js::Tokens::new();
 
-    match &source_pkgs_info {
-        Some((pkg_ids, top_level_pkg_names)) => quote_in!(toks =>
+    if let Some((pkg_ids, top_level_pkg_names)) = &source_pkgs_info {
+        quote_in!(toks =>
             function registerClassesSource(loader: $struct_class_loader) {
                 $(ref toks {
                     gen_init_loader_register_classes_fn_body_toks(pkg_ids.clone(), top_level_pkg_names, true, toks)
                 })
             }$['\n']
-        ),
-        None => (),
+        )
     };
 
-    match &onchain_pkgs_info {
-        Some((pkg_ids, top_level_pkg_names)) => quote_in!(toks =>
+    if let Some((pkg_ids, top_level_pkg_names)) = &onchain_pkgs_info {
+        quote_in!(toks =>
             function registerClassesOnchain(loader: $struct_class_loader) {
                 $(ref toks {
                     gen_init_loader_register_classes_fn_body_toks(pkg_ids.clone(), top_level_pkg_names, false, toks)
                 })
             }$['\n']
-        ),
-        None => (),
+        )
     };
 
     match (&source_pkgs_info, &onchain_pkgs_info) {
@@ -495,26 +493,30 @@ enum QuoteItem {
     Literal(String),
 }
 
-fn todo_panic_if_enum(module: &ModuleEnv, id: &DatatypeId) {
-    if module.find_enum(id.symbol()).is_some() {
-        todo!("enums are not supported yet")
+fn todo_panic_if_enum<'a, const HAS_SOURCE: SourceKind>(
+    module: &model::Module<'a, HAS_SOURCE>,
+    id: Symbol,
+) -> model::Struct<'a, HAS_SOURCE> {
+    match module.datatype(id) {
+        Datatype::Struct(s) => s,
+        Datatype::Enum(_) => panic!("enums are not supported yet"),
     }
 }
 
-fn gen_bcs_def_for_type(
+fn gen_bcs_def_for_type<const HAS_SOURCE: SourceKind>(
     ty: &Type,
-    env: &GlobalEnv,
-    type_param_names: &Vec<QuoteItem>,
+    env: &model::Model<HAS_SOURCE>,
+    type_param_names: &[QuoteItem],
     import_ctx: &mut StructClassImportCtx,
 ) -> js::Tokens {
     let mut toks = js::Tokens::new();
     toks.append(Item::OpenQuote(true));
 
-    fn inner(
+    fn inner<const HAS_SOURCE: SourceKind>(
         toks: &mut Tokens<JavaScript>,
         ty: &Type,
-        env: &GlobalEnv,
-        type_param_names: &Vec<QuoteItem>,
+        env: &model::Model<HAS_SOURCE>,
+        type_param_names: &[QuoteItem],
         import_ctx: &mut StructClassImportCtx,
     ) {
         match ty {
@@ -526,11 +528,12 @@ fn gen_bcs_def_for_type(
                 }
                 QuoteItem::Literal(s) => toks.append(Item::Literal(ItemStr::from(s))),
             },
-            Type::Datatype(mid, sid, ts) => {
-                let module_env = env.get_module(*mid);
-                todo_panic_if_enum(&module_env, sid);
+            Type::Datatype(id_tys) => {
+                let (id, ts) = &**id_tys;
+                let ((pid, mid), sid) = *id;
+                let module_env = env.module((pid, mid));
 
-                let struct_env = module_env.into_struct(*sid);
+                let struct_env = todo_panic_if_enum(&module_env, sid);
                 let class = import_ctx.get_class(&struct_env);
 
                 toks.append(Item::Literal(ItemStr::from("${")));
@@ -555,19 +558,15 @@ fn gen_bcs_def_for_type(
                 inner(toks, ty, env, type_param_names, import_ctx);
                 quote_in! { *toks => > };
             }
-            Type::Primitive(ty) => match ty {
-                PrimitiveType::U8 => quote_in!(*toks => u8),
-                PrimitiveType::U16 => quote_in!(*toks => u16),
-                PrimitiveType::U32 => quote_in!(*toks => u32),
-                PrimitiveType::U64 => quote_in!(*toks => u64),
-                PrimitiveType::U128 => quote_in!(*toks => u128),
-                PrimitiveType::U256 => quote_in!(*toks => u256),
-                PrimitiveType::Bool => quote_in!(*toks => bool),
-                PrimitiveType::Address => quote_in!(*toks => address),
-                PrimitiveType::Signer => quote_in!(*toks => signer),
-                _ => panic!("unexpected type: {:?}", ty),
-            },
-            _ => panic!("unexpected type: {:?}", ty),
+            Type::U8 => quote_in!(*toks => u8),
+            Type::U16 => quote_in!(*toks => u16),
+            Type::U32 => quote_in!(*toks => u32),
+            Type::U64 => quote_in!(*toks => u64),
+            Type::U128 => quote_in!(*toks => u128),
+            Type::U256 => quote_in!(*toks => u256),
+            Type::Bool => quote_in!(*toks => bool),
+            Type::Address => quote_in!(*toks => address),
+            Type::Reference(_, _) => panic!("unexpected type: {:?}", ty),
         }
     }
 
@@ -577,62 +576,123 @@ fn gen_bcs_def_for_type(
     toks
 }
 
-pub struct FunctionsGen<'env, 'a> {
-    env: &'env GlobalEnv,
-    framework: FrameworkImportCtx,
-    import_ctx: StructClassImportCtx<'env, 'a>,
+fn type_is_pure(ty: &Type) -> bool {
+    match ty {
+        Type::U8
+        | Type::U16
+        | Type::U32
+        | Type::U64
+        | Type::U128
+        | Type::U256
+        | Type::Bool
+        | Type::Address => true,
+        Type::Reference(_, ty) => type_is_pure(ty),
+        Type::Vector(ty) => type_is_pure(ty),
+        Type::Datatype(id_tys) => {
+            let (id, ts) = &**id_tys;
+            let ((pid, mid), sid) = *id;
+            match (pid, mid.as_str(), sid.as_str()) {
+                (AccountAddress::ONE, "string", "String")
+                | (AccountAddress::ONE, "ascii", "String")
+                | (AccountAddress::TWO, "object", "ID") => true,
+                (AccountAddress::ONE, "option", "Option") => type_is_pure(&ts[0]),
+                _ => false,
+            }
+        }
+        _ => false,
+    }
 }
 
-impl<'env, 'a> FunctionsGen<'env, 'a> {
+// returns Option's type argument if the type is Option
+fn type_is_option(ty: &Type) -> Option<&Type> {
+    match ty {
+        Type::Datatype(id_tys) => {
+            let (id, ts) = &**id_tys;
+            let ((pid, mid), sid) = *id;
+            match (pid, mid.as_str(), sid.as_str()) {
+                (AccountAddress::ONE, "option", "Option") => Some(&ts[0]),
+                _ => None,
+            }
+        }
+        Type::Reference(_, ty) => type_is_option(ty),
+        _ => None,
+    }
+}
+
+fn type_is_tx_context(ty: &Type) -> bool {
+    match ty {
+        Type::Datatype(id_tys) => {
+            let (id, _ts) = &**id_tys;
+            let ((address, module), name) = *id;
+            address == AccountAddress::TWO
+                && module.as_str() == "tx_context"
+                && name.as_str() == "TxContext"
+        }
+        Type::Reference(_, ty) => type_is_tx_context(ty),
+        _ => false,
+    }
+}
+
+pub struct FunctionsGen<'a, 'model, const HAS_SOURCE: SourceKind> {
+    pub import_ctx: &'a mut StructClassImportCtx<'a>,
+    framework: FrameworkImportCtx,
+    func: model::Function<'model, HAS_SOURCE>,
+}
+
+impl<'a, 'model, const HAS_SOURCE: SourceKind> FunctionsGen<'a, 'model, HAS_SOURCE> {
+    /// Returns Ok(self) if the function has a compiled representation
+    /// Otherwise returns Err(import_ctx) simply to help with lifetime issues
     pub fn new(
-        env: &'env GlobalEnv,
+        import_ctx: &'a mut StructClassImportCtx<'a>,
         framework: FrameworkImportCtx,
-        import_ctx: StructClassImportCtx<'env, 'a>,
-    ) -> Self {
-        FunctionsGen {
-            env,
-            framework,
-            import_ctx,
+        func: model::Function<'model, HAS_SOURCE>,
+    ) -> Result<Self, &'a mut StructClassImportCtx<'a>> {
+        if func.maybe_compiled().is_none() {
+            // skip functions without compiled representation, e.g. macros
+            assert!(HAS_SOURCE == WITH_SOURCE);
+            Err(import_ctx)
+        } else {
+            Ok(FunctionsGen {
+                import_ctx,
+                framework,
+                func,
+            })
         }
     }
 
-    fn symbol_pool(&self) -> &SymbolPool {
-        self.env.symbol_pool()
+    fn gen_bcs_def_for_type(&mut self, ty: &Type, type_param_names: &[QuoteItem]) -> js::Tokens {
+        gen_bcs_def_for_type(ty, self.func.model(), type_param_names, self.import_ctx)
     }
 
-    fn gen_bcs_def_for_type(&mut self, ty: &Type, type_param_names: &Vec<QuoteItem>) -> js::Tokens {
-        gen_bcs_def_for_type(ty, self.env, type_param_names, &mut self.import_ctx)
-    }
-
-    fn field_name_from_type(&self, ty: &Type, type_param_names: Vec<Symbol>) -> Result<String> {
+    fn field_name_from_type(&self, ty: &Type, type_param_names: &[String]) -> Result<String> {
         let name = match ty {
-            Type::Primitive(ty) => format!("{}", ty),
+            Type::U8 => "u8".to_string(),
+            Type::U16 => "u16".to_string(),
+            Type::U32 => "u32".to_string(),
+            Type::U64 => "u64".to_string(),
+            Type::U128 => "u128".to_string(),
+            Type::U256 => "u256".to_string(),
+            Type::Bool => "bool".to_string(),
+            Type::Address => "address".to_string(),
             Type::Vector(ty) => {
                 "vec".to_string()
                     + &self
                         .field_name_from_type(ty, type_param_names)?
                         .to_case(Case::Pascal)
             }
-            Type::Datatype(mid, sid, _) => {
-                let module = self.env.get_module(*mid);
-                todo_panic_if_enum(&module, sid);
-
-                module
-                    .get_struct(*sid)
-                    .get_identifier()
-                    .unwrap()
+            Type::Datatype(id_tys) => {
+                let (id, _ts) = &**id_tys;
+                let ((pid, mid), sid) = *id;
+                let module = self.func.model().module((pid, mid));
+                todo_panic_if_enum(&module, sid)
+                    .name()
                     .to_string()
                     .to_case(Case::Camel)
             }
             Type::Reference(_, ty) => self.field_name_from_type(ty, type_param_names)?,
             Type::TypeParameter(idx) => type_param_names[*idx as usize]
-                .display(self.symbol_pool())
-                .to_string()
+                .to_owned()
                 .to_case(Case::Camel),
-            _ => bail!(
-                "unexpected type: {}",
-                ty.display(&self.env.get_type_display_ctx())
-            ),
         };
         Ok(name)
     }
@@ -641,119 +701,94 @@ impl<'env, 'a> FunctionsGen<'env, 'a> {
         &self,
         name: Option<Symbol>,
         type_: &Type,
-        type_param_names: Vec<Symbol>,
+        type_param_names: &[String],
     ) -> String {
         if let Some(name) = name {
-            let mut name = name
-                .display(self.symbol_pool())
-                .to_string()
-                .to_case(Case::Camel);
-
+            let name = name.to_string().to_case(Case::Camel);
             // When the param name is `_` we use the type as the field name.
             if name.is_empty() {
-                name = self.field_name_from_type(type_, type_param_names).unwrap();
-            };
-
-            name
+                self.field_name_from_type(type_, type_param_names).unwrap()
+            } else {
+                name
+            }
         } else {
             self.field_name_from_type(type_, type_param_names).unwrap()
         }
     }
 
-    fn is_tx_context(&self, ty: &Type) -> bool {
-        match ty {
-            Type::Datatype(mid, sid, ts) => {
-                let module_env = self.env.get_module(*mid);
-                if module_env.find_enum(sid.symbol()).is_some() {
-                    return false;
-                }
-
-                match self.env.get_datatype(*mid, *sid, ts).unwrap() {
-                    MType::Struct {
-                        address,
-                        module,
-                        name,
-                        type_arguments: _,
-                    } => {
-                        address == AccountAddress::TWO
-                            && module.into_string() == "tx_context"
-                            && name.into_string() == "TxContext"
-                    }
-                    _ => panic!(),
-                }
-            }
-            Type::Reference(_, ty) => self.is_tx_context(ty),
-            _ => false,
+    /// Returns type parameter names for a function. If type parameter names are not defined
+    /// it will return `T0`, `T1`, etc.
+    fn func_type_param_names(&self) -> Vec<String> {
+        match self.func.kind() {
+            model::Kind::WithSource(func) => func
+                .info()
+                .signature
+                .type_parameters
+                .iter()
+                .map(|tp| tp.user_specified_name.value.to_string())
+                .collect(),
+            model::Kind::WithoutSource(func) => (0..func.compiled().type_parameters.len())
+                .map(|idx| format!("T{}", idx))
+                .collect(),
         }
     }
 
-    /// Returns type parameter names for a function. If type parameter names are not defined
-    /// it will return `T0`, `T1`, etc.
-    fn func_type_param_names(&self, func: &FunctionEnv) -> Vec<Symbol> {
-        func.get_named_type_parameters()
-            .into_iter()
-            .map(|param| {
-                let name = param.0.display(self.symbol_pool()).to_string();
-
-                if name.starts_with("unknown#") {
-                    let name = name.replace("unknown#", "T");
-                    self.symbol_pool().make(&name)
-                } else {
-                    param.0
-                }
-            })
-            .collect()
+    fn parameter_variable_names(&self) -> Option<Vec<Symbol>> {
+        match self.func.kind() {
+            model::Kind::WithSource(func) => Some(
+                func.info()
+                    .signature
+                    .parameters
+                    .iter()
+                    .map(|(_mut, v, _ty)| v.value.name)
+                    .collect(),
+            ),
+            model::Kind::WithoutSource(_) => None,
+        }
     }
 
     // Generates TS interface field names from function's params. Used in the `<..>Args` interface
     // or function binding params.
     // If the param names are not defined (e.g. `_`), it will generate a name based on the type.
     // In case this causes a name collision, it will append a number to the name.
-    fn params_to_field_names(
-        &self,
-        func: &FunctionEnv,
-        ignore_tx_context: bool,
-    ) -> Vec<(String, Type)> {
-        let params = func.get_parameters();
-        let param_types = func.get_parameter_types();
-        let type_param_names = self.func_type_param_names(func);
+    fn params_to_field_names(&self, ignore_tx_context: bool) -> Vec<(String, Type)> {
+        let params = self.parameter_variable_names();
+        let param_types = &self.func.maybe_compiled().unwrap().parameters;
+        let type_param_names = self.func_type_param_names();
 
-        let param_to_field_name = |idx: usize| {
+        let param_to_field_name = |idx: usize, type_: &Type| {
             // When there are no named parameters (e.g. on-chain modules), the `params` vector
             // will always be empty. In this case, we generate names based on the type.
-            if params.len() == func.get_parameter_count() {
-                let param = &params[idx];
-                self.param_to_field_name(Some(param.0), &param.1, type_param_names.clone())
+            if let Some(params) = &params {
+                self.param_to_field_name(Some(params[idx]), type_, &type_param_names)
             } else {
-                let type_ = &param_types[idx];
-                self.param_to_field_name(None, type_, type_param_names.clone())
+                self.param_to_field_name(None, type_, &type_param_names)
             }
         };
 
         let mut name_count = HashMap::<String, usize>::new();
 
-        #[allow(clippy::needless_range_loop)]
-        for idx in 0..func.get_parameter_count() {
-            let type_ = &param_types[idx];
-            if ignore_tx_context && self.is_tx_context(type_) {
+        for (idx, type_) in param_types.iter().enumerate() {
+            if ignore_tx_context && type_is_tx_context(type_) {
                 continue;
             }
 
-            let name = param_to_field_name(idx);
+            let name = param_to_field_name(idx, type_);
             let count = name_count.get(&name).map(|count| *count + 1).unwrap_or(1);
             name_count.insert(name, count);
         }
 
         let mut current_count = HashMap::<String, usize>::new();
 
-        (0..func.get_parameter_count())
-            .filter_map(|idx| {
-                let type_ = param_types[idx].clone();
-                if ignore_tx_context && self.is_tx_context(&type_) {
+        param_types
+            .iter()
+            .enumerate()
+            .filter_map(|(idx, type_)| {
+                if ignore_tx_context && type_is_tx_context(type_) {
                     return None;
                 }
 
-                let mut name = param_to_field_name(idx);
+                let mut name = param_to_field_name(idx, type_);
                 let total_count = name_count.get(&name).unwrap();
 
                 let i = current_count
@@ -768,21 +803,18 @@ impl<'env, 'a> FunctionsGen<'env, 'a> {
                     name
                 };
 
-                Some((name, type_))
+                Some((name, type_.clone()))
             })
             .collect()
     }
 
-    fn fun_arg_if_name(func: &FunctionEnv) -> String {
-        let name = func.get_name_str();
+    fn fun_arg_if_name(&self) -> String {
+        let name = self.func.name().to_string();
 
         // function names ending with `_` are common, so handle this specifically
         // TODO: remove this once there's a more general way to handle this
-        if name.ends_with('_') {
-            return name.from_case(Case::Snake).to_case(Case::Pascal) + "_Args";
-        } else {
-            return name.from_case(Case::Snake).to_case(Case::Pascal) + "Args";
-        }
+        name.from_case(Case::Snake).to_case(Case::Pascal)
+            + if name.ends_with('_') { "_Args" } else { "Args" }
     }
 
     /// Generates a TS type for a function's parameter type. Used in the `<..>Args` interface.
@@ -793,57 +825,48 @@ impl<'env, 'a> FunctionsGen<'env, 'a> {
             &js::import("@mysten/sui/transactions", "TransactionObjectInput");
 
         match ty {
-            Type::Primitive(ty) => match ty {
-                PrimitiveType::U8 | PrimitiveType::U16 | PrimitiveType::U32 => {
-                    quote!(number | $transaction_argument)
-                }
-                PrimitiveType::U64 | PrimitiveType::U128 | PrimitiveType::U256 => {
-                    quote!(bigint | $transaction_argument)
-                }
-                PrimitiveType::Bool => quote!(boolean | $transaction_argument),
-                PrimitiveType::Address => quote!(string | $transaction_argument),
-                PrimitiveType::Signer => quote!(string | $transaction_argument),
-                _ => panic!("unexpected primitive type: {:?}", ty),
-            },
+            Type::U8 | Type::U16 | Type::U32 => {
+                quote!(number | $transaction_argument)
+            }
+            Type::U64 | Type::U128 | Type::U256 => {
+                quote!(bigint | $transaction_argument)
+            }
+            Type::Bool => quote!(boolean | $transaction_argument),
+            Type::Address => quote!(string | $transaction_argument),
             Type::Vector(ty) => {
                 quote!(Array<$(self.param_type_to_field_type(ty))> | $transaction_argument)
             }
-            Type::Datatype(mid, sid, ts) => {
-                let module = self.env.get_module(*mid);
-                todo_panic_if_enum(&module, sid);
-
-                let strct = module.get_struct(*sid);
-
-                match strct.get_full_name_with_address().as_ref() {
-                    "0x1::string::String" | "0x1::ascii::String" => {
+            Type::Datatype(id_tys) => {
+                let (id, ts) = &**id_tys;
+                let ((pid, mid), sid) = *id;
+                match (pid, mid.as_str(), sid.as_str()) {
+                    (AccountAddress::ONE, "string", "String")
+                    | (AccountAddress::ONE, "ascii", "String") => {
                         quote!(string | $transaction_argument)
                     }
-                    "0x2::object::ID" => quote!(string | $transaction_argument),
-                    "0x1::option::Option" => {
-                        quote!(($(self.param_type_to_field_type(&ts[0])) | $(transaction_argument) | null))
+                    (AccountAddress::TWO, "object", "ID") => {
+                        quote!(string | $transaction_argument)
+                    }
+                    (AccountAddress::ONE, "option", "Option") => {
+                        quote!(($(self.param_type_to_field_type(&ts[0])) | $transaction_argument | null))
                     }
                     _ => quote!($transaction_object_input),
                 }
             }
             Type::Reference(_, ty) => self.param_type_to_field_type(ty),
             Type::TypeParameter(_) => quote!($generic_arg),
-            _ => panic!("unexpected type: {:?}", ty),
         }
     }
 
     /// Generates the `<..>Args` interface for a function.
-    pub fn gen_fun_args_if(
-        &self,
-        func: &FunctionEnv,
-        tokens: &mut Tokens<JavaScript>,
-    ) -> Result<()> {
-        let param_field_names = self.params_to_field_names(func, true);
+    pub fn gen_fun_args_if(&self, tokens: &mut Tokens<JavaScript>) -> Result<()> {
+        let param_field_names = self.params_to_field_names(true);
         if param_field_names.len() < 2 {
             return Ok(());
         }
 
         quote_in! { *tokens =>
-            export interface $(FunctionsGen::fun_arg_if_name(func)) {
+            export interface $(self.fun_arg_if_name()) {
                 $(for (field_name, param_type) in param_field_names join (; )=>
                     $field_name: $(self.param_type_to_field_type(&param_type))
                 )
@@ -851,47 +874,6 @@ impl<'env, 'a> FunctionsGen<'env, 'a> {
         };
 
         Ok(())
-    }
-
-    fn is_pure(&self, ty: &Type) -> bool {
-        match ty {
-            Type::Primitive(_) => true,
-            Type::Reference(_, ty) => self.is_pure(ty),
-            Type::Vector(ty) => self.is_pure(ty),
-            Type::Datatype(mid, sid, ts) => {
-                let module = self.env.get_module(*mid);
-                todo_panic_if_enum(&module, sid);
-
-                let strct = module.get_struct(*sid);
-
-                match strct.get_full_name_with_address().as_ref() {
-                    "0x1::string::String" | "0x1::ascii::String" => true,
-                    "0x2::object::ID" => true,
-                    "0x1::option::Option" => self.is_pure(&ts[0]),
-                    _ => false,
-                }
-            }
-            _ => false,
-        }
-    }
-
-    // returns Option's type argument if the type is Option
-    fn is_option<'b>(&self, ty: &'b Type) -> Option<&'b Type> {
-        match ty {
-            Type::Datatype(mid, sid, ts) => {
-                let module = self.env.get_module(*mid);
-                todo_panic_if_enum(&module, sid);
-
-                let strct = module.get_struct(*sid);
-
-                match strct.get_full_name_with_address().as_ref() {
-                    "0x1::option::Option" => Some(&ts[0]),
-                    _ => None,
-                }
-            }
-            Type::Reference(_, ty) => self.is_option(ty),
-            _ => None,
-        }
     }
 
     #[allow(clippy::only_used_in_recursion)]
@@ -906,7 +888,7 @@ impl<'env, 'a> FunctionsGen<'env, 'a> {
         &mut self,
         ty: Type,
         arg_field_name: String,
-        func_type_param_names: Vec<Symbol>,
+        func_type_param_names: &[String],
         single_param: bool,
     ) -> js::Tokens {
         let import_with_possible_alias = |field_name: &str| {
@@ -936,9 +918,9 @@ impl<'env, 'a> FunctionsGen<'env, 'a> {
         let ty = self.type_strip_ref(ty);
         let ty_tok = self.gen_bcs_def_for_type(&ty, &type_param_names);
 
-        if self.is_pure(&ty) {
+        if type_is_pure(&ty) {
             quote!($pure(tx, $arg_field_name, $ty_tok))
-        } else if let Some(ty) = self.is_option(&ty) {
+        } else if let Some(ty) = type_is_option(&ty) {
             let ty_tok = self.gen_bcs_def_for_type(ty, &type_param_names);
             quote!($option(tx, $ty_tok, $arg_field_name))
         } else {
@@ -959,9 +941,11 @@ impl<'env, 'a> FunctionsGen<'env, 'a> {
     }
 
     /// Returns the TS function binding name for a function.
-    pub fn fun_name(func: &FunctionEnv) -> String {
+    fn fun_name(&self) -> String {
+        let func = self.func;
         let mut fun_name_str = func
-            .get_name_str()
+            .name()
+            .to_string()
             .from_case(Case::Snake)
             .to_case(Case::Camel);
         if JS_RESERVED_WORDS.contains(&fun_name_str.as_str()) {
@@ -969,27 +953,21 @@ impl<'env, 'a> FunctionsGen<'env, 'a> {
         };
         // function names ending with `_` are common, so handle this specifically
         // TODO: remove this once there's a more general way to handle this
-        if func.get_name_str().ends_with('_') {
+        if func.name().as_str().ends_with('_') {
             fun_name_str.push('_');
         }
         fun_name_str
     }
 
     /// Generates a function binding for a function.
-    pub fn gen_fun_binding(
-        &mut self,
-        func: &FunctionEnv,
-        tokens: &mut Tokens<JavaScript>,
-    ) -> Result<()> {
+    pub fn gen_fun_binding(&mut self, tokens: &mut Tokens<JavaScript>) -> Result<()> {
         let transaction = &js::import("@mysten/sui/transactions", "Transaction");
         let published_at = &js::import("..", "PUBLISHED_AT");
 
-        func.get_type_parameter_count();
+        let param_field_names = self.params_to_field_names(true);
 
-        let param_field_names = self.params_to_field_names(func, true);
-        let type_arg_count = func.get_type_parameter_count();
-
-        let func_type_param_names = self.func_type_param_names(func);
+        let func_type_param_names = self.func_type_param_names();
+        let type_arg_count = func_type_param_names.len();
         let single_param = param_field_names.len() == 1;
 
         let convert_reserved_if_needed = |name: &str| {
@@ -1001,17 +979,17 @@ impl<'env, 'a> FunctionsGen<'env, 'a> {
         };
 
         quote_in! { *tokens =>
-            export function $(FunctionsGen::fun_name(func))(
+            export function $(self.fun_name())(
                 tx: $transaction,
                 $(gen_type_args_param(type_arg_count, None::<&str>, ","))
                 $(match param_field_names.len() {
                     0 => (),
                     1 => $(convert_reserved_if_needed(&param_field_names[0].0)): $(self.param_type_to_field_type(&param_field_names[0].1)),
-                    _ => args: $(FunctionsGen::fun_arg_if_name(func))
+                    _ => args: $(self.fun_arg_if_name())
                 })
             ) {
                 return tx.moveCall({
-                    target: $[str]($($published_at)::$[const](func.get_full_name_str())),
+                    target: $[str]($($published_at)::$[const](func_full_name(&self.func))),
                     $(match type_arg_count {
                         0 => (),
                         1 => { typeArguments: [typeArg], },
@@ -1021,13 +999,13 @@ impl<'env, 'a> FunctionsGen<'env, 'a> {
                         $(if param_field_names.len() == 1 {
                             $(self.param_to_tx_arg(
                                 param_field_names[0].1.clone(), convert_reserved_if_needed(&param_field_names[0].0),
-                                func_type_param_names, single_param
+                                &func_type_param_names, single_param
                             ))
                         } else {
                             $(for (field_name, type_) in param_field_names join (, ) =>
                                 $(self.param_to_tx_arg(
                                     type_, "args.".to_string() + &field_name,
-                                    func_type_param_names.clone(), single_param
+                                    &func_type_param_names, single_param
                                 ))
                             )
                         })
@@ -1046,43 +1024,34 @@ enum ExtendsOrWraps {
     Wraps(js::Tokens),
 }
 
-pub struct StructsGen<'env, 'a> {
-    env: &'env GlobalEnv,
-    import_ctx: StructClassImportCtx<'env, 'a>,
+pub struct StructsGen<'a, 'model, const HAS_SOURCE: SourceKind> {
+    pub import_ctx: &'a mut StructClassImportCtx<'a>,
     framework: FrameworkImportCtx,
-    type_origin_table: &'env TypeOriginTable,
-    version_table: &'env VersionTable,
+    type_origin_table: &'a TypeOriginTable,
+    version_table: &'a VersionTable,
+    strct: model::Struct<'model, HAS_SOURCE>,
 }
 
-impl<'env, 'a> StructsGen<'env, 'a> {
+impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE> {
     pub fn new(
-        env: &'env GlobalEnv,
-        import_ctx: StructClassImportCtx<'env, 'a>,
+        import_ctx: &'a mut StructClassImportCtx<'a>,
         framework: FrameworkImportCtx,
-        type_origin_table: &'env TypeOriginTable,
-        version_table: &'env VersionTable,
+        type_origin_table: &'a TypeOriginTable,
+        version_table: &'a VersionTable,
+        strct: model::Struct<'model, HAS_SOURCE>,
     ) -> Self {
         StructsGen {
-            env,
             import_ctx,
             framework,
             type_origin_table,
             version_table,
+            strct,
         }
     }
 
-    fn get_full_name_with_address_str(&self, strct: &StructEnv) -> String {
-        get_full_name_with_address_str(strct, self.type_origin_table)
-    }
-
-    fn gen_full_name_with_address(
-        &self,
-        strct: &StructEnv,
-        open_quote: bool,
-        as_type: bool,
-    ) -> js::Tokens {
+    fn gen_full_name_with_address(&self, open_quote: bool, as_type: bool) -> js::Tokens {
         gen_full_name_with_address(
-            strct,
+            &self.strct,
             self.type_origin_table,
             self.version_table,
             open_quote,
@@ -1090,38 +1059,20 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         )
     }
 
-    fn gen_bcs_def_for_type(&mut self, ty: &Type, type_param_names: &Vec<QuoteItem>) -> js::Tokens {
-        gen_bcs_def_for_type(ty, self.env, type_param_names, &mut self.import_ctx)
-    }
-
-    fn symbol_pool(&self) -> &SymbolPool {
-        self.env.symbol_pool()
-    }
-
-    /// Generates a TS interface field name from a struct field.
-    fn gen_field_name(&self, field: &FieldEnv) -> impl FormatInto<JavaScript> {
-        let name = field
-            .get_name()
-            .display(self.symbol_pool())
-            .to_string()
-            .to_case(Case::Camel);
-        quote_fn! {
-            $name
-        }
+    fn gen_bcs_def_for_type(&mut self, ty: &Type, type_param_names: &[QuoteItem]) -> js::Tokens {
+        gen_bcs_def_for_type(ty, self.strct.model(), type_param_names, self.import_ctx)
     }
 
     /// Generates a TS interface field type for a struct field. References class structs generated
     /// in other modules by importing them when needed.
     fn gen_struct_class_field_type(
         &mut self,
-        strct: &StructEnv,
         ty: &Type,
-        type_param_names: Vec<Symbol>,
+        type_param_names: &[String],
         wrap_non_phantom_type_parameter: Option<js::Tokens>,
         wrap_phantom_type_parameter: Option<js::Tokens>,
     ) -> js::Tokens {
         self.gen_struct_class_field_type_inner(
-            strct,
             ty,
             type_param_names,
             wrap_non_phantom_type_parameter,
@@ -1132,9 +1083,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
     fn gen_struct_class_field_type_inner(
         &mut self,
-        strct: &StructEnv,
         ty: &Type,
-        type_param_names: Vec<Symbol>,
+        type_param_names: &[String],
         wrap_non_phantom_type_parameter: Option<js::Tokens>,
         wrap_phantom_type_parameter: Option<js::Tokens>,
         is_top_level: bool,
@@ -1147,43 +1097,43 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let vector = &self.framework.import("vector", "Vector");
 
         let field_type = match ty {
-            Type::Primitive(ty) => match ty {
-                PrimitiveType::U8 => quote!($[str](u8)),
-                PrimitiveType::U16 => quote!($[str](u16)),
-                PrimitiveType::U32 => quote!($[str](u32)),
-                PrimitiveType::U64 => quote!($[str](u64)),
-                PrimitiveType::U128 => quote!($[str](u128)),
-                PrimitiveType::U256 => quote!($[str](u256)),
-                PrimitiveType::Bool => quote!($[str](bool)),
-                PrimitiveType::Address => quote!($[str](address)),
-                _ => panic!("unexpected primitive type: {:?}", ty),
-            },
+            Type::U8 => quote!($[str](u8)),
+            Type::U16 => quote!($[str](u16)),
+            Type::U32 => quote!($[str](u32)),
+            Type::U64 => quote!($[str](u64)),
+            Type::U128 => quote!($[str](u128)),
+            Type::U256 => quote!($[str](u256)),
+            Type::Bool => quote!($[str](bool)),
+            Type::Address => quote!($[str](address)),
             Type::Vector(ty) => {
                 quote!($vector<$(self.gen_struct_class_field_type_inner(
-                    strct, ty, type_param_names, wrap_non_phantom_type_parameter, wrap_phantom_type_parameter, false
+                    ty, type_param_names, wrap_non_phantom_type_parameter, wrap_phantom_type_parameter, false
                 ))>)
             }
-            Type::Datatype(mid, sid, ts) => {
-                let field_module = self.env.get_module(*mid);
-                todo_panic_if_enum(&field_module, sid);
+            Type::Datatype(id_tys) => {
+                let (id, ts) = &**id_tys;
+                let ((pid, mid), sid) = *id;
+                let field_module = self.strct.model().module((pid, mid));
 
-                let field_strct = field_module.get_struct(*sid);
+                let field_strct = todo_panic_if_enum(&field_module, sid);
                 let class = self.import_ctx.get_class(&field_strct);
 
-                let type_param_inner_toks = (0..ts.len()).map(|idx| {
-                    let wrap_to_phantom = field_strct.is_phantom_parameter(idx)
-                        && match &ts[idx] {
+                let strct_type_params = &self.strct.compiled().type_parameters;
+                let field_strct_type_params = &field_strct.compiled().type_parameters;
+                let type_param_inner_toks = ts.iter().enumerate().map(|(idx, t)| {
+                    let is_phantom = field_strct_type_params[idx].is_phantom;
+                    let wrap_to_phantom = is_phantom
+                        && match t {
                             Type::TypeParameter(t_idx) => {
-                                !strct.is_phantom_parameter(*t_idx as usize)
+                                !strct_type_params[*t_idx as usize].is_phantom
                             }
-                            Type::Datatype(_, _, _) | Type::Vector(_) => true,
+                            Type::Datatype(_) | Type::Vector(_) => true,
                             _ => false,
                         };
 
                     let inner = self.gen_struct_class_field_type_inner(
-                        strct,
-                        &ts[idx],
-                        type_param_names.clone(),
+                        t,
+                        type_param_names,
                         wrap_non_phantom_type_parameter.clone(),
                         wrap_phantom_type_parameter.clone(),
                         false,
@@ -1200,11 +1150,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 }))
             }
             Type::TypeParameter(idx) => {
-                let ty = type_param_names[*idx as usize]
-                    .display(self.symbol_pool())
-                    .to_string();
+                let ty = type_param_names[*idx as usize].clone();
 
-                let is_phantom = strct.is_phantom_parameter(*idx as usize);
+                let is_phantom = self.strct.compiled().type_parameters[*idx as usize].is_phantom;
                 let wrap = if is_phantom {
                     wrap_phantom_type_parameter
                 } else {
@@ -1216,7 +1164,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     None => quote!($ty),
                 }
             }
-            _ => panic!("unexpected type: {:?}", ty),
+            Type::Reference(_, _) => panic!("unexpected type: {:?}", ty),
         };
 
         if is_top_level {
@@ -1228,136 +1176,126 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
     /// Returns the type parameters of a struct. If the source map is available, the type parameters
     /// are named according to the source map. Otherwise, they are named `T0`, `T1`, etc.
-    fn strct_type_param_names(&self, strct: &StructEnv) -> Vec<Symbol> {
-        let symbol_pool = strct.module_env.env.symbol_pool();
-
-        strct
-            .get_named_type_parameters()
-            .into_iter()
-            .map(|param| {
-                let name = param.0.display(self.symbol_pool()).to_string();
-
-                if name.starts_with("unknown#") {
-                    let name = name.replace("unknown#", "T");
-                    symbol_pool.make(&name)
-                } else {
-                    param.0
-                }
-            })
-            .collect()
+    fn strct_type_param_names(&self) -> Vec<String> {
+        match self.strct.kind() {
+            model::Kind::WithSource(strct) => strct
+                .info()
+                .type_parameters
+                .iter()
+                .map(|param| param.param.user_specified_name.value.to_string())
+                .collect(),
+            model::Kind::WithoutSource(strct) => (0..strct.compiled().type_parameters.len())
+                .map(|idx| format!("T{}", idx))
+                .collect(),
+        }
     }
 
-    fn strct_non_phantom_type_param_names(&self, strct: &StructEnv) -> Vec<Symbol> {
-        let type_params = self.strct_type_param_names(strct);
+    fn strct_non_phantom_type_param_names(&self) -> Vec<String> {
+        let type_params = self.strct_type_param_names();
 
-        (0..strct.get_type_parameters().len())
-            .filter_map(|idx| {
-                if strct.is_phantom_parameter(idx) {
+        self.strct
+            .compiled()
+            .type_parameters
+            .iter()
+            .zip(type_params)
+            .filter_map(|(compiled, name)| {
+                if !compiled.is_phantom {
+                    Some(name)
+                } else {
                     None
-                } else {
-                    Some(type_params[idx])
                 }
             })
             .collect()
     }
 
-    pub fn gen_struct_bcs_def_field_value(
+    fn gen_struct_bcs_def_field_value(
         &mut self,
         ty: &Type,
-        type_param_names: Vec<Symbol>,
+        type_param_names: &[String],
     ) -> js::Tokens {
         let bcs = &js::import("@mysten/sui/bcs", "bcs");
         let from_hex = &js::import("@mysten/sui/utils", "fromHEX");
         let to_hex = &js::import("@mysten/sui/utils", "toHEX");
         match ty {
-            Type::Primitive(ty) => match ty {
-                PrimitiveType::U8 => quote!($bcs.u8()),
-                PrimitiveType::U16 => quote!($bcs.u16()),
-                PrimitiveType::U32 => quote!($bcs.u32()),
-                PrimitiveType::U64 => quote!($bcs.u64()),
-                PrimitiveType::U128 => quote!($bcs.u128()),
-                PrimitiveType::U256 => quote!($bcs.u256()),
-                PrimitiveType::Bool => quote!($bcs.bool()),
-                PrimitiveType::Address => quote!($bcs.bytes(32).transform({
-                    input: (val: string) => $from_hex(val),
-                    output: (val: Uint8Array) => $to_hex(val),
-                })),
-                PrimitiveType::Signer => quote!($bcs.bytes(32)),
-                _ => panic!("unexpected primitive type: {:?}", ty),
-            },
+            Type::U8 => quote!($bcs.u8()),
+            Type::U16 => quote!($bcs.u16()),
+            Type::U32 => quote!($bcs.u32()),
+            Type::U64 => quote!($bcs.u64()),
+            Type::U128 => quote!($bcs.u128()),
+            Type::U256 => quote!($bcs.u256()),
+            Type::Bool => quote!($bcs.bool()),
+            Type::Address => quote!($bcs.bytes(32).transform({
+                input: (val: string) => $from_hex(val),
+                output: (val: Uint8Array) => $to_hex(val),
+            })),
             Type::Vector(ty) => {
                 quote!($bcs.vector($(self.gen_struct_bcs_def_field_value(ty, type_param_names))))
             }
-            Type::Datatype(mid, sid, ts) => {
-                let field_module = self.env.get_module(*mid);
-                todo_panic_if_enum(&field_module, sid);
-                let field_strct = field_module.get_struct(*sid);
+            Type::Datatype(id_tys) => {
+                let (id, ts) = &**id_tys;
+                let ((pid, mid), sid) = *id;
+                let field_module = self.strct.model().module((pid, mid));
+                let field_strct = todo_panic_if_enum(&field_module, sid);
 
                 let class = self.import_ctx.get_class(&field_strct);
+                let field_strct_type_params = &field_strct.compiled().type_parameters;
                 let non_phantom_param_idxs = (0..ts.len())
-                    .filter(|idx| !field_strct.is_phantom_parameter(*idx))
+                    .filter(|idx| !field_strct_type_params[*idx].is_phantom)
                     .collect::<Vec<_>>();
 
                 quote!($class.bcs$(if !non_phantom_param_idxs.is_empty() {
                     ($(for idx in non_phantom_param_idxs join (, ) =>
-                        $(self.gen_struct_bcs_def_field_value(&ts[idx], type_param_names.clone()))
+                        $(self.gen_struct_bcs_def_field_value(&ts[idx], type_param_names))
                     ))
                 }))
             }
             Type::TypeParameter(idx) => {
-                quote!($(type_param_names[*idx as usize].display(self.symbol_pool()).to_string()))
+                quote!($(type_param_names[*idx as usize].to_owned()))
             }
-            _ => panic!("unexpected type: {:?}", ty),
+            Type::Reference(_, _) => panic!("unexpected type: {:?}", ty),
         }
     }
 
-    pub fn gen_reified(
-        &mut self,
-        strct: &StructEnv,
-        ty: &Type,
-        type_param_names: &Vec<Tokens<JavaScript>>,
-    ) -> js::Tokens {
+    fn gen_reified(&mut self, ty: &Type, type_param_names: &[Tokens<JavaScript>]) -> js::Tokens {
         let reified = &self.framework.import("reified", "reified").into_wildcard();
         match ty {
-            Type::Primitive(ty) => match ty {
-                PrimitiveType::U8 => quote!($[str](u8)),
-                PrimitiveType::U16 => quote!($[str](u16)),
-                PrimitiveType::U32 => quote!($[str](u32)),
-                PrimitiveType::U64 => quote!($[str](u64)),
-                PrimitiveType::U128 => quote!($[str](u128)),
-                PrimitiveType::U256 => quote!($[str](u256)),
-                PrimitiveType::Bool => quote!($[str](bool)),
-                PrimitiveType::Address => quote!($[str](address)),
-                _ => panic!("unexpected primitive type: {:?}", ty),
-            },
+            Type::U8 => quote!($[str](u8)),
+            Type::U16 => quote!($[str](u16)),
+            Type::U32 => quote!($[str](u32)),
+            Type::U64 => quote!($[str](u64)),
+            Type::U128 => quote!($[str](u128)),
+            Type::U256 => quote!($[str](u256)),
+            Type::Bool => quote!($[str](bool)),
+            Type::Address => quote!($[str](address)),
             Type::Vector(ty) => {
-                quote!($reified.vector($(self.gen_reified(strct, ty, type_param_names))))
+                quote!($reified.vector($(self.gen_reified(ty, type_param_names))))
             }
-            Type::Datatype(mid, sid, ts) => {
-                let field_module = self.env.get_module(*mid);
-                todo_panic_if_enum(&field_module, sid);
-                let field_strct = field_module.get_struct(*sid);
+            Type::Datatype(id_tys) => {
+                let (id, ts) = &**id_tys;
+                let ((pid, mid), sid) = *id;
+                let field_module = self.strct.model().module((pid, mid));
 
+                let field_strct = todo_panic_if_enum(&field_module, sid);
                 let class = self.import_ctx.get_class(&field_strct);
 
-                let mut toks: Vec<js::Tokens> = vec![];
-                for (idx, ty) in ts.iter().enumerate() {
-                    let wrap_to_phantom = field_strct.is_phantom_parameter(idx)
+                let strct_type_params = &self.strct.compiled().type_parameters;
+                let field_strct_type_params = &field_strct.compiled().type_parameters;
+                let toks = ts.iter().enumerate().map(|(idx, ty)| {
+                    let wrap_to_phantom = field_strct_type_params[idx].is_phantom
                         && match &ts[idx] {
                             Type::TypeParameter(t_idx) => {
-                                !strct.is_phantom_parameter(*t_idx as usize)
+                                !strct_type_params[*t_idx as usize].is_phantom
                             }
                             _ => true,
                         };
 
-                    let inner = self.gen_reified(strct, ty, type_param_names);
-                    let tok = if wrap_to_phantom {
+                    let inner = self.gen_reified(ty, type_param_names);
+                    if wrap_to_phantom {
                         quote!($reified.phantom($inner))
                     } else {
                         quote!($inner)
-                    };
-                    toks.push(tok);
-                }
+                    }
+                });
 
                 quote!($class.reified($(if !ts.is_empty() {
                     $(for t in toks join (, ) => $t)
@@ -1366,102 +1304,92 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             Type::TypeParameter(idx) => {
                 quote!($(type_param_names[*idx as usize].clone()))
             }
-            _ => panic!("unexpected type: {:?}", ty),
+            Type::Reference(_, _) => panic!("unexpected type: {:?}", ty),
         }
     }
 
-    fn gen_from_fields_field_decode(&mut self, field: &FieldEnv) -> js::Tokens {
+    fn gen_from_fields_field_decode(
+        &mut self,
+        strct_type_arity: usize,
+        name: Symbol,
+        type_: &Type,
+    ) -> js::Tokens {
         let decode_from_fields = &self.framework.import("reified", "decodeFromFields");
 
-        let strct = &field.parent_env;
+        let field_arg_name = format!("fields.{name}");
 
-        match strct {
-            move_model::model::EnclosingEnv::Struct(strct) => {
-                let field_arg_name =
-                    format!("fields.{}", field.get_name().display(self.symbol_pool()));
+        let type_param_names = match strct_type_arity {
+            0 => vec![],
+            1 => vec![quote!(typeArg)],
+            n => (0..n).map(|idx| quote!(typeArgs[$idx])).collect::<Vec<_>>(),
+        };
+        let reified = self.gen_reified(type_, &type_param_names);
 
-                let type_param_names = match strct.get_type_parameters().len() {
-                    0 => vec![],
-                    1 => vec![quote!(typeArg)],
-                    n => (0..n).map(|idx| quote!(typeArgs[$idx])).collect::<Vec<_>>(),
-                };
-                let reified = self.gen_reified(strct, &field.get_type(), &type_param_names);
-
-                quote!(
-                    $decode_from_fields($(reified), $(field_arg_name))
-                )
-            }
-            move_model::model::EnclosingEnv::Variant(_) => todo!("enums not supported yet"),
-        }
+        quote!(
+            $decode_from_fields($(reified), $(field_arg_name))
+        )
     }
 
-    fn gen_from_fields_with_types_field_decode(&mut self, field: &FieldEnv) -> js::Tokens {
+    fn gen_from_fields_with_types_field_decode(
+        &mut self,
+        strct_type_arity: usize,
+        name: Symbol,
+        type_: &Type,
+    ) -> js::Tokens {
         let decode_from_fields_with_types_generic_or_special = &self
             .framework
             .import("reified", "decodeFromFieldsWithTypes");
 
-        let strct = &field.parent_env;
+        let field_arg_name = format!("item.fields.{name}");
 
-        let field_arg_name = format!(
-            "item.fields.{}",
-            field.get_name().display(self.symbol_pool())
-        );
+        let type_param_names = match strct_type_arity {
+            0 => vec![],
+            1 => vec![quote!(typeArg)],
+            n => (0..n).map(|idx| quote!(typeArgs[$idx])).collect::<Vec<_>>(),
+        };
+        let reified = self.gen_reified(type_, &type_param_names);
 
-        match strct {
-            move_model::model::EnclosingEnv::Struct(strct) => {
-                let type_param_names = match strct.get_type_parameters().len() {
-                    0 => vec![],
-                    1 => vec![quote!(typeArg)],
-                    n => (0..n).map(|idx| quote!(typeArgs[$idx])).collect::<Vec<_>>(),
-                };
-                let reified = self.gen_reified(strct, &field.get_type(), &type_param_names);
-
-                quote!(
-                    $decode_from_fields_with_types_generic_or_special($(reified), $(field_arg_name))
-                )
-            }
-            move_model::model::EnclosingEnv::Variant(_) => todo!("enums not supported yet"),
-        }
+        quote!(
+            $decode_from_fields_with_types_generic_or_special($(reified), $(field_arg_name))
+        )
     }
 
-    fn gen_from_json_field_field_decode(&mut self, field: &FieldEnv) -> js::Tokens {
+    fn gen_from_json_field_field_decode(
+        &mut self,
+        strct_type_arity: usize,
+        name: Symbol,
+        type_: &Type,
+    ) -> js::Tokens {
         let decode_from_json_field = &self.framework.import("reified", "decodeFromJSONField");
 
-        let strct = &field.parent_env;
+        let field_arg_name = quote!(field.$(gen_field_name(name)));
 
-        let field_arg_name = quote!(field.$(self.gen_field_name(field)));
+        let type_param_names = match strct_type_arity {
+            0 => vec![],
+            1 => vec![quote!(typeArg)],
+            n => (0..n).map(|idx| quote!(typeArgs[$idx])).collect::<Vec<_>>(),
+        };
+        let reified = self.gen_reified(type_, &type_param_names);
 
-        match strct {
-            move_model::model::EnclosingEnv::Struct(strct) => {
-                let type_param_names = match strct.get_type_parameters().len() {
-                    0 => vec![],
-                    1 => vec![quote!(typeArg)],
-                    n => (0..n).map(|idx| quote!(typeArgs[$idx])).collect::<Vec<_>>(),
-                };
-                let reified = self.gen_reified(strct, &field.get_type(), &type_param_names);
-
-                quote!(
-                    $decode_from_json_field($(reified), $(field_arg_name))
-                )
-            }
-            move_model::model::EnclosingEnv::Variant(_) => todo!(),
-        }
+        quote!(
+            $decode_from_json_field($(reified), $(field_arg_name))
+        )
     }
 
     /// Generates the `is<StructName>` function for a struct.
-    pub fn gen_is_type_func(&self, tokens: &mut js::Tokens, strct: &StructEnv) {
+    pub fn gen_is_type_func(&self, tokens: &mut js::Tokens) {
         let compress_sui_type = &self.framework.import("util", "compressSuiType");
 
-        let struct_name = strct.get_name().display(self.symbol_pool()).to_string();
-        let type_params = self.strct_type_param_names(strct);
+        let struct_name = self.strct.name().to_string();
+        let type_params = self.strct_type_param_names();
 
         quote_in! { *tokens =>
             export function is$(&struct_name)(type: string): boolean {
                 type = $compress_sui_type(type);
                 $(if type_params.is_empty() {
-                    return type === $(self.gen_full_name_with_address(strct, true, false))
+                    return type === $(self.gen_full_name_with_address(true, false))
                 } else {
-                    return type.startsWith($(self.gen_full_name_with_address(strct, true, false)) + '<')
+                    return type.startsWith($(self.gen_full_name_with_address(true, false)) + '<')
                 });
             }
         }
@@ -1473,7 +1401,6 @@ impl<'env, 'a> StructsGen<'env, 'a> {
     /// E.g. for `struct Foo<T, P>`, this generates `<T, P>`.
     fn gen_params_toks(
         &self,
-        strct: &StructEnv,
         param_names: Vec<impl FormatInto<JavaScript>>,
         extends_or_wraps_non_phantom: &ExtendsOrWraps,
         extends_or_wraps_phantom: &ExtendsOrWraps,
@@ -1482,8 +1409,9 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             return quote!();
         }
 
+        let compiled_type_parameters = &self.strct.compiled().type_parameters;
         let extend_or_wrap = |idx: usize| {
-            if strct.is_phantom_parameter(idx) {
+            if compiled_type_parameters[idx].is_phantom {
                 extends_or_wraps_phantom
             } else {
                 extends_or_wraps_non_phantom
@@ -1511,30 +1439,24 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         quote!(<$(for param in param_toks join (, ) => $param)>)
     }
 
-    fn fields_if_name(&self, strct: &StructEnv) -> String {
-        let struct_name = strct.get_name().display(self.symbol_pool()).to_string();
-        format!("{}Fields", &struct_name)
+    fn fields_if_name(&self) -> String {
+        format!("{}Fields", self.strct.name())
     }
 
     /// Generates the `<StructName>Fields` interface name including its type parameters.
     fn gen_fields_if_name_with_params(
         &self,
-        strct: &StructEnv,
         extends_or_wraps_non_phantom: &ExtendsOrWraps,
         extends_or_wraps_phantom: &ExtendsOrWraps,
     ) -> js::Tokens {
-        let type_params_str = self
-            .strct_type_param_names(strct)
-            .iter()
-            .map(|param| param.display(self.symbol_pool()).to_string())
-            .collect::<Vec<_>>();
-        quote! { $(self.fields_if_name(strct))$(
-            self.gen_params_toks(strct, type_params_str, extends_or_wraps_non_phantom, extends_or_wraps_phantom)
+        let type_params = self.strct_type_param_names();
+        quote! { $(self.fields_if_name())$(
+            self.gen_params_toks(type_params, extends_or_wraps_non_phantom, extends_or_wraps_phantom)
         ) }
     }
 
     /// Generates the `<StructName>Fields` interface.
-    pub fn gen_fields_if(&mut self, tokens: &mut js::Tokens, strct: &StructEnv) {
+    pub fn gen_fields_if(&mut self, tokens: &mut js::Tokens) {
         let type_argument = &self.framework.import("reified", "TypeArgument");
         let phantom_type_argument = &self.framework.import("reified", "PhantomTypeArgument");
 
@@ -1543,10 +1465,10 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
         tokens.push();
         quote_in! { *tokens =>
-            export interface $(self.gen_fields_if_name_with_params(strct, &extends_non_phantom, &extends_phantom)) {
-                $(for field in strct.get_fields() join (; )=>
-                    $(self.gen_field_name(&field)): $(
-                        self.gen_struct_class_field_type(strct, &field.get_type(), self.strct_type_param_names(strct), None, None)
+            export interface $(self.gen_fields_if_name_with_params( &extends_non_phantom, &extends_phantom)) {
+                $(for field in &self.strct.compiled().fields join (; )=>
+                    $(gen_field_name(field.name)): $(
+                        self.gen_struct_class_field_type(&field.type_, &self.strct_type_param_names(), None, None)
                     )
                 )
             }
@@ -1564,7 +1486,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
     }
 
     /// Generates the struct class for a struct.
-    pub fn gen_struct_class(&mut self, tokens: &mut js::Tokens, strct: &StructEnv) {
+    pub fn gen_struct_class(&mut self, tokens: &mut js::Tokens) {
         let fields_with_types = &self.framework.import("util", "FieldsWithTypes");
         let compose_sui_type = &self.framework.import("util", "composeSuiType");
         let struct_class = &self.framework.import("reified", "StructClass");
@@ -1595,22 +1517,12 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let from_b64 = &js::import("@mysten/sui/utils", "fromB64");
         let compress_sui_type = &self.framework.import("util", "compressSuiType");
 
-        strct.get_abilities().has_key();
-
-        let struct_name = strct.get_name().display(self.symbol_pool()).to_string();
-        let type_params = self.strct_type_param_names(strct);
-        let type_params_str = type_params
-            .iter()
-            .map(|param| param.display(self.symbol_pool()).to_string())
-            .collect::<Vec<_>>();
-        let fields = strct.get_fields().collect::<Vec<_>>();
-        let non_phantom_params = self.strct_non_phantom_type_param_names(strct);
-        let non_phantom_param_strs = non_phantom_params
-            .iter()
-            .map(|param| param.display(self.symbol_pool()).to_string())
-            .collect::<Vec<_>>();
+        let struct_name = self.strct.name().to_string();
+        let type_params = self.strct_type_param_names();
+        let non_phantom_params = self.strct_non_phantom_type_param_names();
+        let strct_type_params = &self.strct.compiled().type_parameters;
         let non_phantom_param_idxs = (0..type_params.len())
-            .filter(|idx| !strct.is_phantom_parameter(*idx))
+            .filter(|&idx| !strct_type_params[idx].is_phantom)
             .collect::<Vec<_>>();
 
         let bcs_def_name = if non_phantom_params.is_empty() {
@@ -1619,7 +1531,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             self.interpolate(format!(
                 "{}<{}>",
                 &struct_name,
-                non_phantom_param_strs
+                non_phantom_params
                     .iter()
                     .map(|param| format!("${{{}.name}}", param))
                     .collect::<Vec<_>>()
@@ -1629,8 +1541,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
         // readonly $typeArg: string
         // readonly $typeArgs: [ToTypeStr<T>, PhantomToTypeStr<P>, ...]
-        let type_args_field_type: &js::Tokens = &quote!([$(for (idx, param) in type_params_str.iter().enumerate() join (, ) =>
-            $(if strct.is_phantom_parameter(idx) {
+        let type_args_field_type: &js::Tokens = &quote!([$(for (idx, param) in type_params.iter().enumerate() join (, ) =>
+            $(if strct_type_params[idx].is_phantom {
                 $phantom_to_type_str<$param>
             } else {
                 $to_type_str<$param>
@@ -1642,10 +1554,10 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         let type_args_param_if_any: &js::Tokens = &match type_params.len() {
             0 => quote!(),
             1 => quote!(
-                typeArg: $(type_params[0].display(self.symbol_pool()).to_string()),
+                typeArg: $(type_params[0].clone()),
             ),
             _ => quote!(typeArgs: [$(for idx in 0..type_params.len() join (, ) =>
-                    $(&type_params[idx].display(self.symbol_pool()).to_string())
+                    $(&type_params[idx].clone())
                 )],),
         };
 
@@ -1657,15 +1569,15 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
         // <T extends Reified<TypeArgument, any>, P extends PhantomReified<PhantomTypeArgument>>
         let params_toks_for_reified = &{
-            let toks = type_params_str.iter().enumerate().map(|(idx, param)| {
-                if strct.is_phantom_parameter(idx) {
+            let toks = type_params.iter().enumerate().map(|(idx, param)| {
+                if strct_type_params[idx].is_phantom {
                     quote!($param extends $phantom_reified<$phantom_type_argument>)
                 } else {
                     quote!($param extends $reified<$type_argument, any>)
                 }
             });
 
-            if type_params_str.is_empty() {
+            if type_params.is_empty() {
                 quote!()
             } else {
                 quote!(<$(for tok in toks join (, ) => $tok)>)
@@ -1674,22 +1586,21 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
         // <ToTypeArgument<T>, ToPhantomTypeArgument<P>>
         let params_toks_for_to_type_argument = &self.gen_params_toks(
-            strct,
-            type_params_str.clone(),
+            type_params.clone(),
             &wraps_to_type_argument,
             &wraps_phantom_to_type_argument,
         );
 
         // `0x2::foo::Bar<${ToTypeStr<ToTypeArgument<T>>}, ${ToTypeStr<ToPhantomTypeArgument<P>>}>`
         let reified_full_type_name_as_toks = match type_params.len() {
-            0 => quote!($(self.gen_full_name_with_address(strct, true, true))),
+            0 => quote!($(self.gen_full_name_with_address( true, true))),
             _ => {
                 let mut toks = js::Tokens::new();
                 toks.append(Item::OpenQuote(true));
-                quote_in!(toks => $(self.gen_full_name_with_address(strct, false, true)));
+                quote_in!(toks => $(self.gen_full_name_with_address( false, true)));
                 toks.append(Item::Literal(ItemStr::from("<")));
-                for (idx, param) in type_params_str.iter().enumerate() {
-                    let is_phantom = strct.is_phantom_parameter(idx);
+                for (idx, param) in type_params.iter().enumerate() {
+                    let is_phantom = strct_type_params[idx].is_phantom;
 
                     toks.append(Item::Literal(ItemStr::from("${")));
                     if is_phantom {
@@ -1699,7 +1610,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     }
                     toks.append(Item::Literal(ItemStr::from("}")));
 
-                    let is_last = idx == &type_params_str.len() - 1;
+                    let is_last = idx == &type_params.len() - 1;
                     if !is_last {
                         toks.append(Item::Literal(ItemStr::from(", ")));
                     }
@@ -1711,8 +1622,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         };
 
         // [PhantomToTypeStr<ToPhantomTypeArgument<T>>, ToTypeStr<ToTypeArgument<P>>, ...]
-        let reified_type_args_as_toks = &quote!([$(for(idx, param) in type_params_str.iter().enumerate() join (, ) =>
-            $(if strct.is_phantom_parameter(idx) {
+        let reified_type_args_as_toks = &quote!([$(for(idx, param) in type_params.iter().enumerate() join (, ) =>
+            $(if strct_type_params[idx].is_phantom {
                 $phantom_to_type_str<$to_phantom_type_argument<$param>>
             } else {
                 $to_type_str<$to_type_argument<$param>>
@@ -1721,22 +1632,22 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
         // `0x2::foo::Bar<${ToTypeStr<T>}, ${ToTypeStr<P>}>`
         let static_full_type_name_as_toks = &match type_params.len() {
-            0 => quote!($(self.gen_full_name_with_address(strct, true, true))),
+            0 => quote!($(self.gen_full_name_with_address(true, true))),
             _ => {
                 let mut toks = js::Tokens::new();
                 toks.append(Item::OpenQuote(true));
-                quote_in!(toks => $(self.gen_full_name_with_address(strct, false, true)));
+                quote_in!(toks => $(self.gen_full_name_with_address(false, true)));
                 toks.append(Item::Literal(ItemStr::from("<")));
-                for (idx, param) in type_params_str.iter().enumerate() {
+                for (idx, param) in type_params.iter().enumerate() {
                     toks.append(Item::Literal(ItemStr::from("${")));
-                    if strct.is_phantom_parameter(idx) {
+                    if strct_type_params[idx].is_phantom {
                         quote_in!(toks => $phantom_to_type_str<$param>);
                     } else {
                         quote_in!(toks => $to_type_str<$param>);
                     }
                     toks.append(Item::Literal(ItemStr::from("}")));
 
-                    let is_last = idx == &type_params_str.len() - 1;
+                    let is_last = idx == &type_params.len() - 1;
                     if !is_last {
                         toks.append(Item::Literal(ItemStr::from(", ")));
                     }
@@ -1748,7 +1659,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         };
 
         // `[true, false]`
-        let type_arg_is_phantom = (0..type_params.len()).map(|idx| strct.is_phantom_parameter(idx));
+        let type_arg_is_phantom =
+            (0..type_params.len()).map(|idx| strct_type_params[idx].is_phantom);
         let is_phantom_value_toks = &quote! {
             [$(for is_phantom in type_arg_is_phantom {
                 $(if is_phantom {
@@ -1759,28 +1671,31 @@ impl<'env, 'a> StructsGen<'env, 'a> {
             })]
         };
 
-        let is_option = self.get_full_name_with_address_str(strct) == "0x1::option::Option";
+        let (a, m, n) = strct_qualified_member_name(&self.strct, self.type_origin_table);
+        let is_option = (a, m.as_str(), n.as_str()) == (AccountAddress::ONE, "option", "Option");
 
         quote_in! { *tokens =>
             export type $(&struct_name)Reified$(self.gen_params_toks(
-                strct, type_params_str.clone(), &extends_type_argument, &extends_phantom_type_argument
+                type_params.clone(), &extends_type_argument, &extends_phantom_type_argument
             )) = $reified<
-                $(&struct_name)$(self.gen_params_toks(strct, type_params_str.clone(), &ExtendsOrWraps::None, &ExtendsOrWraps::None)),
-                $(&struct_name)Fields$(self.gen_params_toks(strct, type_params_str.clone(), &ExtendsOrWraps::None, &ExtendsOrWraps::None))
+                $(&struct_name)$(self.gen_params_toks(type_params.clone(), &ExtendsOrWraps::None, &ExtendsOrWraps::None)),
+                $(&struct_name)Fields$(self.gen_params_toks(type_params.clone(), &ExtendsOrWraps::None, &ExtendsOrWraps::None))
             >;$['\n']
         }
 
         tokens.push();
+        let strct_type_arity = type_params.len();
+        let fields = self.strct.compiled().fields.clone();
         quote_in! { *tokens =>
-            export class $(&struct_name)$(self.gen_params_toks(strct, type_params_str.clone(), &extends_type_argument, &extends_phantom_type_argument)) implements $struct_class {
+            export class $(&struct_name)$(self.gen_params_toks(type_params.clone(), &extends_type_argument, &extends_phantom_type_argument)) implements $struct_class {
                 __StructClass = true as const;$['\n']
 
-                static readonly $$typeName = $(self.gen_full_name_with_address(strct, true, false));
+                static readonly $$typeName = $(self.gen_full_name_with_address(true, false));
                 static readonly $$numTypeParams = $(type_params.len());
                 static readonly $$isPhantom = $is_phantom_value_toks as const;$['\n']
 
                 $(if is_option {
-                    __inner: $(&type_params_str[0]) = null as unknown as $(&type_params_str[0]); $(ref toks => {
+                    __inner: $(&type_params[0]) = null as unknown as $(&type_params[0]); $(ref toks => {
                         toks.append("// for type checking in reified.ts")
                     })$['\n'];
                 })
@@ -1790,16 +1705,16 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 readonly $$typeArgs: $type_args_field_type;
                 readonly $$isPhantom = $(&struct_name).$$isPhantom;$['\n']
 
-                $(for field in strct.get_fields() join (; ) =>
-                    readonly $(self.gen_field_name(&field)):
+                $(for field in &fields join (; ) =>
+                    readonly $(gen_field_name(field.name)):
                         $(self.gen_struct_class_field_type(
-                            strct, &field.get_type(), self.strct_type_param_names(strct), None, None
+                            &field.type_, &self.strct_type_param_names(), None, None
                         ))
                 )$['\n']
 
                 private constructor(typeArgs: $type_args_field_type, $(match fields.len() {
                         0 => (),
-                        _ => { fields: $(self.gen_fields_if_name_with_params(strct, &ExtendsOrWraps::None, &ExtendsOrWraps::None)), }
+                        _ => { fields: $(self.gen_fields_if_name_with_params(&ExtendsOrWraps::None, &ExtendsOrWraps::None)), }
                     })
                 ) {
                     this.$$fullTypeName = $compose_sui_type(
@@ -1812,7 +1727,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                         0 => (),
                         _ => {
                             $(for field in &fields join (; ) =>
-                                this.$(self.gen_field_name(field)) = fields.$(self.gen_field_name(field));
+                                this.$(gen_field_name(field.name)) = fields.$(gen_field_name(field.name));
                             )
                         }
                     })
@@ -1820,27 +1735,27 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
 
                 static reified$(params_toks_for_reified)(
-                    $(for param in type_params_str.iter() join (, ) => $param: $param)
+                    $(for param in type_params.iter() join (, ) => $param: $param)
                 ): $(&struct_name)Reified$(
-                    self.gen_params_toks(strct, type_params_str.clone(), &wraps_to_type_argument, &wraps_phantom_to_type_argument)
+                    self.gen_params_toks(type_params.clone(), &wraps_to_type_argument, &wraps_phantom_to_type_argument)
                 ) {
                     return {
                         typeName: $(&struct_name).$$typeName,
                         fullTypeName: $compose_sui_type(
                             $(&struct_name).$$typeName,
-                            ...[$(for param in &type_params_str join (, ) => $extract_type($param))]
+                            ...[$(for param in &type_params join (, ) => $extract_type($param))]
                         ) as $reified_full_type_name_as_toks,
                         typeArgs: [
-                            $(for param in &type_params_str join (, ) => $extract_type($param))
+                            $(for param in &type_params join (, ) => $extract_type($param))
                         ] as $reified_type_args_as_toks,
                         isPhantom: $(&struct_name).$$isPhantom,
-                        reifiedTypeArgs: [$(for param in &type_params_str join (, ) => $param)],
+                        reifiedTypeArgs: [$(for param in &type_params join (, ) => $param)],
                         fromFields: (fields: Record<string, any>) =>
                             $(&struct_name).fromFields(
                                 $(match type_params.len() {
                                     0 => (),
-                                    1 => { $(type_params_str[0].clone()), },
-                                    _ => { [$(for param in &type_params_str join (, ) => $param)], },
+                                    1 => { $(type_params[0].clone()), },
+                                    _ => { [$(for param in &type_params join (, ) => $param)], },
                                 })
                                 fields,
                             ),
@@ -1848,8 +1763,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             $(&struct_name).fromFieldsWithTypes(
                                 $(match type_params.len() {
                                     0 => (),
-                                    1 => { $(type_params_str[0].clone()), },
-                                    _ => { [$(for param in &type_params_str join (, ) => $param)], },
+                                    1 => { $(type_params[0].clone()), },
+                                    _ => { [$(for param in &type_params join (, ) => $param)], },
                                 })
                                 item,
                             ),
@@ -1857,20 +1772,20 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             $(&struct_name).fromBcs(
                                 $(match type_params.len() {
                                     0 => (),
-                                    1 => { $(type_params_str[0].clone()), },
-                                    _ => { [$(for param in &type_params_str join (, ) => $param)], },
+                                    1 => { $(type_params[0].clone()), },
+                                    _ => { [$(for param in &type_params join (, ) => $param)], },
                                 })
                                 data,
                             ),
                         bcs: $(&struct_name).bcs$(if !non_phantom_params.is_empty() {
-                            ($(for param in &non_phantom_param_strs join (, ) => $to_bcs($param)))
+                            ($(for param in &non_phantom_params join (, ) => $to_bcs($param)))
                         }),
                         fromJSONField: (field: any) =>
                             $(&struct_name).fromJSONField(
                                 $(match type_params.len() {
                                     0 => (),
-                                    1 => { $(type_params_str[0].clone()), },
-                                    _ => { [$(for param in &type_params_str join (, ) => $param)], },
+                                    1 => { $(type_params[0].clone()), },
+                                    _ => { [$(for param in &type_params join (, ) => $param)], },
                                 })
                                 field,
                             ),
@@ -1878,8 +1793,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             $(&struct_name).fromJSON(
                                 $(match type_params.len() {
                                     0 => (),
-                                    1 => { $(type_params_str[0].clone()), },
-                                    _ => { [$(for param in &type_params_str join (, ) => $param)], },
+                                    1 => { $(type_params[0].clone()), },
+                                    _ => { [$(for param in &type_params join (, ) => $param)], },
                                 })
                                 json,
                             ),
@@ -1887,8 +1802,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             $(&struct_name).fromSuiParsedData(
                                 $(match type_params.len() {
                                     0 => (),
-                                    1 => { $(type_params_str[0].clone()), },
-                                    _ => { [$(for param in &type_params_str join (, ) => $param)], },
+                                    1 => { $(type_params[0].clone()), },
+                                    _ => { [$(for param in &type_params join (, ) => $param)], },
                                 })
                                 content,
                             ),
@@ -1896,8 +1811,8 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             $(&struct_name).fromSuiObjectData(
                                 $(match type_params.len() {
                                     0 => (),
-                                    1 => { $(type_params_str[0].clone()), },
-                                    _ => { [$(for param in &type_params_str join (, ) => $param)], },
+                                    1 => { $(type_params[0].clone()), },
+                                    _ => { [$(for param in &type_params join (, ) => $param)], },
                                 })
                                 content,
                             ),
@@ -1905,19 +1820,19 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             client,
                             $(match type_params.len() {
                                 0 => (),
-                                1 => { $(type_params_str[0].clone()), },
-                                _ => { [$(for param in &type_params_str join (, ) => $param)], },
+                                1 => { $(type_params[0].clone()), },
+                                _ => { [$(for param in &type_params join (, ) => $param)], },
                             })
                             id,
                         ),
                         new: (
                             $(match fields.len() {
                                 0 => (),
-                                _ => { fields: $(self.gen_fields_if_name_with_params(strct, &wraps_to_type_argument, &wraps_phantom_to_type_argument)), }
+                                _ => { fields: $(self.gen_fields_if_name_with_params(&wraps_to_type_argument, &wraps_phantom_to_type_argument)), }
                             })
                         ) => {
                             return new $(&struct_name)(
-                                [$(for param in &type_params_str join (, ) => $extract_type($param))],
+                                [$(for param in &type_params join (, ) => $extract_type($param))],
                                 $(match fields.len() {
                                     0 => (),
                                     _ => fields,
@@ -1937,10 +1852,10 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                 }$['\n']
 
                 static phantom$(params_toks_for_reified)(
-                    $(for param in type_params_str.iter() join (, ) => $param: $param)
+                    $(for param in type_params.iter() join (, ) => $param: $param)
                 ): $phantom_reified<$to_type_str<$(&struct_name)$(params_toks_for_to_type_argument)>> {
                     return $phantom($(&struct_name).reified(
-                        $(for param in type_params_str.iter() join (, ) => $param)
+                        $(for param in type_params.iter() join (, ) => $param)
                     ));
                 }
 
@@ -1954,15 +1869,15 @@ impl<'env, 'a> StructsGen<'env, 'a> {
 
                 static get bcs() {
                     return $(if !non_phantom_params.is_empty() {
-                        <$(for param in non_phantom_param_strs.iter() join (, ) =>
+                        <$(for param in non_phantom_params.iter() join (, ) =>
                             $param extends $bcs_type<any>
-                        )>($(for param in non_phantom_param_strs.iter() join (, ) =>
+                        )>($(for param in non_phantom_params.iter() join (, ) =>
                             $param: $param
                         )) =>
                     }) $bcs.struct($bcs_def_name, {$['\n']
-                        $(for field in strct.get_fields() join (, ) =>
-                            $(field.get_name().display(self.symbol_pool()).to_string()):
-                                $(self.gen_struct_bcs_def_field_value(&field.get_type(), self.strct_type_param_names(strct)))
+                        $(for field in &fields join (, ) =>
+                            $(field.name.to_string()):
+                                $(self.gen_struct_bcs_def_field_value(&field.type_, &self.strct_type_param_names()))
                         )$['\n']
                     $['\n']})
                 };$['\n']
@@ -1981,7 +1896,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             0 => (),
                             _ => {{
                                 $(for field in &fields join (, ) =>
-                                    $(self.gen_field_name(field)): $(self.gen_from_fields_field_decode(field))
+                                    $(gen_field_name(field.name)): $(self.gen_from_fields_field_decode(strct_type_arity, field.name, &field.type_))
                                 )
                             }}
                         })
@@ -2017,7 +1932,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             0 => (),
                             _ => {{
                                 $(for field in &fields join (, ) =>
-                                    $(self.gen_field_name(field)): $(self.gen_from_fields_with_types_field_decode(field))
+                                    $(gen_field_name(field.name)): $(self.gen_from_fields_with_types_field_decode(strct_type_arity, field.name, &field.type_))
                                 )
                             }}
                         })
@@ -2050,40 +1965,42 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                     return {$['\n']
                         $(ref toks {
                             let this_type_args = |idx: usize| quote!(this.$$typeArgs[$idx]);
-                            let type_param_names = (0..strct.get_type_parameters().len())
+                            let type_param_names = (0..strct_type_arity)
                                 .map(|idx| QuoteItem::Interpolated(this_type_args(idx)))
                                 .collect::<Vec<_>>();
 
                             for field in fields.iter() {
-                                let name = self.gen_field_name(field);
-                                let this_name = quote!(this.$(self.gen_field_name(field)));
+                                let name = gen_field_name(field.name);
+                                let this_name = quote!(this.$(gen_field_name(field.name)));
 
                                 let field_type_param = self.gen_struct_class_field_type_inner(
-                                    strct, &field.get_type(), self.strct_type_param_names(strct), None, None, false
+                                    &field.type_, &self.strct_type_param_names(), None, None, false
                                 );
 
-                                match field.get_type() {
-                                    Type::Datatype(mid, sid, _) => {
-                                        let field_module = self.env.get_module(mid);
-                                        todo_panic_if_enum(&field_module, &sid);
-                                        let field_strct = field_module.get_struct(sid);
+                                match &field.type_ {
+                                    Type::Datatype(id_tys) => {
+                                        let (id, _ts) = &**id_tys;
+                                        let ((pid, mid), sid) = *id;
+                                        let field_module = self.strct.model().module((pid, mid));
+                                        let field_strct = todo_panic_if_enum(&field_module, sid);
 
                                         // handle special types
-                                        match self.get_full_name_with_address_str(&field_strct).as_ref() {
-                                            "0x1::string::String" | "0x1::ascii::String" => {
+                                        let (fs_a, fs_m, fs_n) = strct_qualified_member_name(&field_strct, self.type_origin_table);
+                                        match (fs_a, fs_m.as_str(), fs_n.as_str()) {
+                                            (AccountAddress::ONE, "string", "String") |    (AccountAddress::ONE, "ascii", "String")  => {
                                                 quote_in!(*toks => $name: $this_name,)
                                             }
-                                            "0x2::url::Url" => {
+                                            (AccountAddress::TWO, "url", "Url") => {
                                                 quote_in!(*toks => $name: $this_name,)
                                             }
-                                            "0x2::object::ID" => {
+                                            (AccountAddress::TWO, "object", "ID") => {
                                                 quote_in!(*toks => $name: $this_name,)
                                             }
-                                            "0x2::object::UID" => {
+                                            (AccountAddress::TWO, "object", "UID") => {
                                                 quote_in!(*toks => $name: $this_name, )
                                             }
-                                            "0x1::option::Option" => {
-                                                let type_name = self.gen_bcs_def_for_type(&field.get_type(), &type_param_names);
+                                            (AccountAddress::ONE, "option", "Option") => {
+                                                let type_name = self.gen_bcs_def_for_type(&field.type_, &type_param_names);
                                                 quote_in!(*toks => $name: $field_to_json<$field_type_param>($type_name, $this_name),)
                                             }
                                             _ => {
@@ -2091,24 +2008,23 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                                             }
                                         }
                                     }
-                                    Type::Primitive(ty) => match ty {
-                                        PrimitiveType::U64 | PrimitiveType::U128 | PrimitiveType::U256 => {
-                                            quote_in!(*toks => $name: $this_name.toString(),)
-                                        }
-                                        _ => {
-                                            quote_in!(*toks => $name: $this_name,)
-                                        }
-                                    },
+                                    Type::U64 | Type::U128 | Type::U256 => {
+                                        quote_in!(*toks => $name: $this_name.toString(),)
+                                    }
+                                    Type::U8 |
+                                    Type::U16 | Type::U32 | Type::Bool | Type::Address => {
+                                        quote_in!(*toks => $name: $this_name,)
+                                    }
                                     Type::Vector(_) => {
-                                        let type_name = self.gen_bcs_def_for_type(&field.get_type(), &type_param_names);
+                                        let type_name = self.gen_bcs_def_for_type(&field.type_, &type_param_names);
 
                                         quote_in!(*toks => $name: $field_to_json<$field_type_param>($type_name, $this_name),)
                                     }
                                     Type::TypeParameter(i) => {
-                                        quote_in!(*toks => $name: $field_to_json<$field_type_param>($(this_type_args(i as usize)), $this_name),)
+                                        quote_in!(*toks => $name: $field_to_json<$field_type_param>($(this_type_args(*i as usize)), $this_name),)
                                     }
                                     _ => {
-                                        let name = self.gen_field_name(field);
+                                        let name = gen_field_name(field.name);
                                         quote_in!(*toks => $name: $this_name.toJSONField(),)
                                     },
 
@@ -2140,7 +2056,7 @@ impl<'env, 'a> StructsGen<'env, 'a> {
                             0 => (),
                             _ => {{
                                 $(for field in &fields join (, ) =>
-                                    $(self.gen_field_name(field)): $(self.gen_from_json_field_field_decode(field))
+                                    $(gen_field_name(field.name)): $(self.gen_from_json_field_field_decode(strct_type_arity, field.name, &field.type_))
                                 )
                             }}
                         })
@@ -2303,12 +2219,11 @@ impl<'env, 'a> StructsGen<'env, 'a> {
         tokens.line()
     }
 
-    pub fn gen_struct_sep_comment(&self, tokens: &mut js::Tokens, strct: &StructEnv) {
-        let struct_name = strct.get_name().display(self.symbol_pool()).to_string();
+    pub fn gen_struct_sep_comment(&self, tokens: &mut js::Tokens) {
+        let struct_name = self.strct.name();
         tokens.line();
         tokens.append(format!(
-            "/* ============================== {} =============================== */",
-            struct_name
+            "/* ============================== {struct_name} =============================== */",
         ));
         tokens.line()
     }
