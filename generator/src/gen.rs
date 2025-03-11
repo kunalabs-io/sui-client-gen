@@ -668,7 +668,7 @@ impl<'env, 'a> FunctionsGen<'env, 'a> {
                     return false;
                 }
 
-                match self.env.get_struct_type(*mid, *sid, ts).unwrap() {
+                match self.env.get_datatype(*mid, *sid, ts).unwrap() {
                     MType::Struct {
                         address,
                         module,

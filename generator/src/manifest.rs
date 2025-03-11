@@ -100,7 +100,7 @@ pub fn parse_packages(tval: TV) -> Result<Packages> {
             let mut pkgs = BTreeMap::new();
             for (pkg_name, dep) in table.into_iter() {
                 let pkg_name_ident = PackageName::from(pkg_name.clone());
-                let dep = parse_package(&pkg_name, dep)?;
+                let dep = parse_package(dep)?;
                 pkgs.insert(pkg_name_ident, dep);
             }
             Ok(pkgs)
@@ -115,7 +115,7 @@ pub fn parse_packages(tval: TV) -> Result<Packages> {
     }
 }
 
-pub fn parse_package(pkg_name: &str, tval: TV) -> Result<Package> {
+pub fn parse_package(tval: TV) -> Result<Package> {
     let Some(table) = tval.as_table() else {
         bail!("Malformed dependency {}", tval);
     };
@@ -131,7 +131,7 @@ pub fn parse_package(pkg_name: &str, tval: TV) -> Result<Package> {
         };
         Ok(Package::OnChain(OnChainPackage { id }))
     } else {
-        Ok(Package::Dependency(parse_dependency(pkg_name, tval)?))
+        Ok(Package::Dependency(parse_dependency(tval)?))
     }
 }
 

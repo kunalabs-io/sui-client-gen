@@ -81,8 +81,8 @@ pub async fn build_models<Progress: Write>(
                 PM::DependencyKind::Git(_) => {
                     source_pkgs.push((*name, dep));
                 }
-                PM::DependencyKind::Custom(_) => {
-                    bail!("Encountered a custom dependency {} in gen.toml. Custom dependencies are not supported.", name)
+                PM::DependencyKind::OnChain(_) => {
+                    bail!("Encountered an on-chain dependency {} in gen.toml. On-chain dependencies are not supported.", name)
                 }
             },
             GM::Package::Dependency(PM::Dependency::External(_)) => {
@@ -216,8 +216,7 @@ async fn build_on_chain_model<Progress: Write>(
     }
 
     let module_map = Modules::new(modules.iter());
-    let dep_graph = module_map.compute_dependency_graph();
-    let topo_order = dep_graph.compute_topological_order()?;
+    let topo_order = module_map.compute_topological_order()?;
 
     let on_chain_env = run_bytecode_model_builder(topo_order)?;
 
@@ -552,7 +551,7 @@ impl<'a> fmt::Display for DependencyTOML<'a> {
                 write!(f, ", subdir = ")?;
                 f.write_str(&path_escape(subdir)?)?;
             }
-            PM::DependencyKind::Custom(_) => {
+            PM::DependencyKind::OnChain(_) => {
                 // not supported
             }
         }
