@@ -24,7 +24,7 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { PKG_V21 } from '../index'
+import { PKG_V27 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -33,7 +33,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isEntry(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V21}::priority_queue::Entry` + '<')
+  return type.startsWith(`${PKG_V27}::priority_queue::Entry` + '<')
 }
 
 export interface EntryFields<T extends TypeArgument> {
@@ -46,12 +46,12 @@ export type EntryReified<T extends TypeArgument> = Reified<Entry<T>, EntryFields
 export class Entry<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V21}::priority_queue::Entry`
+  static readonly $typeName = `${PKG_V27}::priority_queue::Entry`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
   readonly $typeName = Entry.$typeName
-  readonly $fullTypeName: `${typeof PKG_V21}::priority_queue::Entry<${ToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V27}::priority_queue::Entry<${ToTypeStr<T>}>`
   readonly $typeArgs: [ToTypeStr<T>]
   readonly $isPhantom = Entry.$isPhantom
 
@@ -62,7 +62,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Entry.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V21}::priority_queue::Entry<${ToTypeStr<T>}>`
+    ) as `${typeof PKG_V27}::priority_queue::Entry<${ToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.priority = fields.priority
@@ -75,7 +75,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Entry.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V21}::priority_queue::Entry<${ToTypeStr<ToTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V27}::priority_queue::Entry<${ToTypeStr<ToTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
       isPhantom: Entry.$isPhantom,
       reifiedTypeArgs: [T],
@@ -254,7 +254,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
 
 export function isPriorityQueue(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V21}::priority_queue::PriorityQueue` + '<')
+  return type.startsWith(`${PKG_V27}::priority_queue::PriorityQueue` + '<')
 }
 
 export interface PriorityQueueFields<T extends TypeArgument> {
@@ -269,12 +269,12 @@ export type PriorityQueueReified<T extends TypeArgument> = Reified<
 export class PriorityQueue<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V21}::priority_queue::PriorityQueue`
+  static readonly $typeName = `${PKG_V27}::priority_queue::PriorityQueue`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
   readonly $typeName = PriorityQueue.$typeName
-  readonly $fullTypeName: `${typeof PKG_V21}::priority_queue::PriorityQueue<${ToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V27}::priority_queue::PriorityQueue<${ToTypeStr<T>}>`
   readonly $typeArgs: [ToTypeStr<T>]
   readonly $isPhantom = PriorityQueue.$isPhantom
 
@@ -284,7 +284,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       PriorityQueue.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V21}::priority_queue::PriorityQueue<${ToTypeStr<T>}>`
+    ) as `${typeof PKG_V27}::priority_queue::PriorityQueue<${ToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.entries = fields.entries
@@ -298,7 +298,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         PriorityQueue.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V21}::priority_queue::PriorityQueue<${ToTypeStr<ToTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V27}::priority_queue::PriorityQueue<${ToTypeStr<ToTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
       isPhantom: PriorityQueue.$isPhantom,
       reifiedTypeArgs: [T],

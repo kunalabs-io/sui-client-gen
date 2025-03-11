@@ -5,17 +5,17 @@ import { String } from '../../move-stdlib-chain/string/structs'
 import { Url } from '../url/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function balance(tx: Transaction, typeArg: string, coin: TransactionObjectInput) {
+export function value(tx: Transaction, typeArg: string, coin: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin::balance`,
+    target: `${PUBLISHED_AT}::coin::value`,
     typeArguments: [typeArg],
     arguments: [obj(tx, coin)],
   })
 }
 
-export function value(tx: Transaction, typeArg: string, coin: TransactionObjectInput) {
+export function balance(tx: Transaction, typeArg: string, coin: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin::value`,
+    target: `${PUBLISHED_AT}::coin::balance`,
     typeArguments: [typeArg],
     arguments: [obj(tx, coin)],
   })

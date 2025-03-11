@@ -4,13 +4,6 @@ import { String as String1 } from '../ascii/structs'
 import { String } from './structs'
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
-export function bytes(tx: Transaction, string: string | TransactionArgument) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::string::bytes`,
-    arguments: [pure(tx, string, `${String.$typeName}`)],
-  })
-}
-
 export function length(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::length`,
@@ -99,6 +92,13 @@ export function asBytes(tx: Transaction, string: string | TransactionArgument) {
 export function intoBytes(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::into_bytes`,
+    arguments: [pure(tx, string, `${String.$typeName}`)],
+  })
+}
+
+export function bytes(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::string::bytes`,
     arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }

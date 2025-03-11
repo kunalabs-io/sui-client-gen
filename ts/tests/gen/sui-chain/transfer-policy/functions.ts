@@ -12,14 +12,6 @@ export function new_(tx: Transaction, typeArg: string, publisher: TransactionObj
   })
 }
 
-export function uid(tx: Transaction, typeArg: string, transferPolicy: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::uid`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, transferPolicy)],
-  })
-}
-
 export interface NewRequestArgs {
   id1: string | TransactionArgument
   u64: bigint | TransactionArgument
@@ -35,27 +27,6 @@ export function newRequest(tx: Transaction, typeArg: string, args: NewRequestArg
       pure(tx, args.u64, `u64`),
       pure(tx, args.id2, `${ID.$typeName}`),
     ],
-  })
-}
-
-export interface ConfirmRequestArgs {
-  transferPolicy: TransactionObjectInput
-  transferRequest: TransactionObjectInput
-}
-
-export function confirmRequest(tx: Transaction, typeArg: string, args: ConfirmRequestArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::confirm_request`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.transferPolicy), obj(tx, args.transferRequest)],
-  })
-}
-
-export function rules(tx: Transaction, typeArg: string, transferPolicy: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::rules`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, transferPolicy)],
   })
 }
 
@@ -95,6 +66,19 @@ export function destroyAndWithdraw(tx: Transaction, typeArg: string, args: Destr
     target: `${PUBLISHED_AT}::transfer_policy::destroy_and_withdraw`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.transferPolicy), obj(tx, args.transferPolicyCap)],
+  })
+}
+
+export interface ConfirmRequestArgs {
+  transferPolicy: TransactionObjectInput
+  transferRequest: TransactionObjectInput
+}
+
+export function confirmRequest(tx: Transaction, typeArg: string, args: ConfirmRequestArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::transfer_policy::confirm_request`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.transferPolicy), obj(tx, args.transferRequest)],
   })
 }
 
@@ -191,6 +175,14 @@ export function removeRule(
   })
 }
 
+export function uid(tx: Transaction, typeArg: string, transferPolicy: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::transfer_policy::uid`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, transferPolicy)],
+  })
+}
+
 export interface UidMutAsOwnerArgs {
   transferPolicy: TransactionObjectInput
   transferPolicyCap: TransactionObjectInput
@@ -201,6 +193,14 @@ export function uidMutAsOwner(tx: Transaction, typeArg: string, args: UidMutAsOw
     target: `${PUBLISHED_AT}::transfer_policy::uid_mut_as_owner`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.transferPolicy), obj(tx, args.transferPolicyCap)],
+  })
+}
+
+export function rules(tx: Transaction, typeArg: string, transferPolicy: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::transfer_policy::rules`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, transferPolicy)],
   })
 }
 

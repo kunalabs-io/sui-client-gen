@@ -2,14 +2,6 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj } from '../../_framework/util'
 import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function new_(tx: Transaction, typeArgs: [string, string]) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::linked_table::new`,
-    typeArguments: typeArgs,
-    arguments: [],
-  })
-}
-
 export function length(
   tx: Transaction,
   typeArgs: [string, string],
@@ -125,6 +117,14 @@ export function remove(tx: Transaction, typeArgs: [string, string], args: Remove
     target: `${PUBLISHED_AT}::linked_table::remove`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.linkedTable), generic(tx, `${typeArgs[0]}`, args.t0)],
+  })
+}
+
+export function new_(tx: Transaction, typeArgs: [string, string]) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::linked_table::new`,
+    typeArguments: typeArgs,
+    arguments: [],
   })
 }
 

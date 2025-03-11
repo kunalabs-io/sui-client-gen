@@ -217,3 +217,15 @@ export function swapRemove(tx: Transaction, typeArg: string, args: SwapRemoveArg
     arguments: [vector(tx, `${typeArg}`, args.vecT0), pure(tx, args.u64, `u64`)],
   })
 }
+
+export function flatten(
+  tx: Transaction,
+  typeArg: string,
+  vecVecT0: Array<Array<GenericArg> | TransactionArgument> | TransactionArgument
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vector::flatten`,
+    typeArguments: [typeArg],
+    arguments: [vector(tx, `vector<${typeArg}>`, vecVecT0)],
+  })
+}

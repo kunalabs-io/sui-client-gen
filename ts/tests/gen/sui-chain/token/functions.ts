@@ -5,6 +5,14 @@ import { String } from '../../move-stdlib-chain/string/structs'
 import { Balance } from '../balance/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+export function value(tx: Transaction, typeArg: string, token: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::value`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, token)],
+  })
+}
+
 export function sender(tx: Transaction, typeArg: string, actionRequest: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::token::sender`,
@@ -13,11 +21,16 @@ export function sender(tx: Transaction, typeArg: string, actionRequest: Transact
   })
 }
 
-export function value(tx: Transaction, typeArg: string, token: TransactionObjectInput) {
+export interface TransferArgs {
+  token: TransactionObjectInput
+  address: string | TransactionArgument
+}
+
+export function transfer(tx: Transaction, typeArg: string, args: TransferArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::value`,
+    target: `${PUBLISHED_AT}::token::transfer`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, token)],
+    arguments: [obj(tx, args.token), pure(tx, args.address, `address`)],
   })
 }
 
@@ -63,19 +76,6 @@ export function destroyZero(tx: Transaction, typeArg: string, token: Transaction
   })
 }
 
-export interface TransferArgs {
-  token: TransactionObjectInput
-  address: string | TransactionArgument
-}
-
-export function transfer(tx: Transaction, typeArg: string, args: TransferArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::transfer`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.token), pure(tx, args.address, `address`)],
-  })
-}
-
 export function key(tx: Transaction, typeArg: string) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::token::key`,
@@ -107,6 +107,52 @@ export function burn(tx: Transaction, typeArg: string, args: BurnArgs) {
     target: `${PUBLISHED_AT}::token::burn`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.treasuryCap), obj(tx, args.token)],
+  })
+}
+
+export interface NewRequestArgs {
+  string: string | TransactionArgument
+  u64: bigint | TransactionArgument
+  option1: string | TransactionArgument | TransactionArgument | null
+  option2: TransactionObjectInput | TransactionArgument | null
+}
+
+export function newRequest(tx: Transaction, typeArg: string, args: NewRequestArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::new_request`,
+    typeArguments: [typeArg],
+    arguments: [
+      pure(tx, args.string, `${String.$typeName}`),
+      pure(tx, args.u64, `u64`),
+      pure(tx, args.option1, `${Option.$typeName}<address>`),
+      option(tx, `${Balance.$typeName}<${typeArg}>`, args.option2),
+    ],
+  })
+}
+
+export interface ConfirmRequestArgs {
+  tokenPolicy: TransactionObjectInput
+  actionRequest: TransactionObjectInput
+}
+
+export function confirmRequest(tx: Transaction, typeArg: string, args: ConfirmRequestArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::confirm_request`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.tokenPolicy), obj(tx, args.actionRequest)],
+  })
+}
+
+export interface RulesArgs {
+  tokenPolicy: TransactionObjectInput
+  string: string | TransactionArgument
+}
+
+export function rules(tx: Transaction, typeArg: string, args: RulesArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::rules`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.tokenPolicy), pure(tx, args.string, `${String.$typeName}`)],
   })
 }
 
@@ -155,39 +201,6 @@ export function fromCoin(tx: Transaction, typeArg: string, coin: TransactionObje
     target: `${PUBLISHED_AT}::token::from_coin`,
     typeArguments: [typeArg],
     arguments: [obj(tx, coin)],
-  })
-}
-
-export interface NewRequestArgs {
-  string: string | TransactionArgument
-  u64: bigint | TransactionArgument
-  option1: string | TransactionArgument | TransactionArgument | null
-  option2: TransactionObjectInput | TransactionArgument | null
-}
-
-export function newRequest(tx: Transaction, typeArg: string, args: NewRequestArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::new_request`,
-    typeArguments: [typeArg],
-    arguments: [
-      pure(tx, args.string, `${String.$typeName}`),
-      pure(tx, args.u64, `u64`),
-      pure(tx, args.option1, `${Option.$typeName}<address>`),
-      option(tx, `${Balance.$typeName}<${typeArg}>`, args.option2),
-    ],
-  })
-}
-
-export interface ConfirmRequestArgs {
-  tokenPolicy: TransactionObjectInput
-  actionRequest: TransactionObjectInput
-}
-
-export function confirmRequest(tx: Transaction, typeArg: string, args: ConfirmRequestArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::confirm_request`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.tokenPolicy), obj(tx, args.actionRequest)],
   })
 }
 
@@ -456,19 +469,6 @@ export interface IsAllowedArgs {
 export function isAllowed(tx: Transaction, typeArg: string, args: IsAllowedArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::token::is_allowed`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.tokenPolicy), pure(tx, args.string, `${String.$typeName}`)],
-  })
-}
-
-export interface RulesArgs {
-  tokenPolicy: TransactionObjectInput
-  string: string | TransactionArgument
-}
-
-export function rules(tx: Transaction, typeArg: string, args: RulesArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::rules`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.tokenPolicy), pure(tx, args.string, `${String.$typeName}`)],
   })

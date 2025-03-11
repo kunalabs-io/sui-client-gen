@@ -2,6 +2,13 @@ import { PUBLISHED_AT } from '..'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
+export function bitwiseNot(tx: Transaction, u32: number | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u32::bitwise_not`,
+    arguments: [pure(tx, u32, `u32`)],
+  })
+}
+
 export interface MaxArgs {
   u321: number | TransactionArgument
   u322: number | TransactionArgument
@@ -64,4 +71,25 @@ export function pow(tx: Transaction, args: PowArgs) {
 
 export function sqrt(tx: Transaction, u32: number | TransactionArgument) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::u32::sqrt`, arguments: [pure(tx, u32, `u32`)] })
+}
+
+export function tryAsU8(tx: Transaction, u32: number | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u32::try_as_u8`,
+    arguments: [pure(tx, u32, `u32`)],
+  })
+}
+
+export function tryAsU16(tx: Transaction, u32: number | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u32::try_as_u16`,
+    arguments: [pure(tx, u32, `u32`)],
+  })
+}
+
+export function toString(tx: Transaction, u32: number | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u32::to_string`,
+    arguments: [pure(tx, u32, `u32`)],
+  })
 }

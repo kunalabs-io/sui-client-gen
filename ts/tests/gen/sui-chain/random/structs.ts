@@ -13,7 +13,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { PKG_V21 } from '../index'
+import { PKG_V27 } from '../index'
 import { UID } from '../object/structs'
 import { Versioned } from '../versioned/structs'
 import { bcs } from '@mysten/sui/bcs'
@@ -24,7 +24,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isRandom(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V21}::random::Random`
+  return type === `${PKG_V27}::random::Random`
 }
 
 export interface RandomFields {
@@ -37,12 +37,12 @@ export type RandomReified = Reified<Random, RandomFields>
 export class Random implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V21}::random::Random`
+  static readonly $typeName = `${PKG_V27}::random::Random`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = Random.$typeName
-  readonly $fullTypeName: `${typeof PKG_V21}::random::Random`
+  readonly $fullTypeName: `${typeof PKG_V27}::random::Random`
   readonly $typeArgs: []
   readonly $isPhantom = Random.$isPhantom
 
@@ -53,7 +53,7 @@ export class Random implements StructClass {
     this.$fullTypeName = composeSuiType(
       Random.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V21}::random::Random`
+    ) as `${typeof PKG_V27}::random::Random`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -63,7 +63,7 @@ export class Random implements StructClass {
   static reified(): RandomReified {
     return {
       typeName: Random.$typeName,
-      fullTypeName: composeSuiType(Random.$typeName, ...[]) as `${typeof PKG_V21}::random::Random`,
+      fullTypeName: composeSuiType(Random.$typeName, ...[]) as `${typeof PKG_V27}::random::Random`,
       typeArgs: [] as [],
       isPhantom: Random.$isPhantom,
       reifiedTypeArgs: [],
@@ -192,7 +192,7 @@ export class Random implements StructClass {
 
 export function isRandomInner(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V21}::random::RandomInner`
+  return type === `${PKG_V27}::random::RandomInner`
 }
 
 export interface RandomInnerFields {
@@ -207,12 +207,12 @@ export type RandomInnerReified = Reified<RandomInner, RandomInnerFields>
 export class RandomInner implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V21}::random::RandomInner`
+  static readonly $typeName = `${PKG_V27}::random::RandomInner`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = RandomInner.$typeName
-  readonly $fullTypeName: `${typeof PKG_V21}::random::RandomInner`
+  readonly $fullTypeName: `${typeof PKG_V27}::random::RandomInner`
   readonly $typeArgs: []
   readonly $isPhantom = RandomInner.$isPhantom
 
@@ -225,7 +225,7 @@ export class RandomInner implements StructClass {
     this.$fullTypeName = composeSuiType(
       RandomInner.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V21}::random::RandomInner`
+    ) as `${typeof PKG_V27}::random::RandomInner`
     this.$typeArgs = typeArgs
 
     this.version = fields.version
@@ -240,7 +240,7 @@ export class RandomInner implements StructClass {
       fullTypeName: composeSuiType(
         RandomInner.$typeName,
         ...[]
-      ) as `${typeof PKG_V21}::random::RandomInner`,
+      ) as `${typeof PKG_V27}::random::RandomInner`,
       typeArgs: [] as [],
       isPhantom: RandomInner.$isPhantom,
       reifiedTypeArgs: [],
@@ -379,7 +379,7 @@ export class RandomInner implements StructClass {
 
 export function isRandomGenerator(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V21}::random::RandomGenerator`
+  return type === `${PKG_V27}::random::RandomGenerator`
 }
 
 export interface RandomGeneratorFields {
@@ -393,12 +393,12 @@ export type RandomGeneratorReified = Reified<RandomGenerator, RandomGeneratorFie
 export class RandomGenerator implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V21}::random::RandomGenerator`
+  static readonly $typeName = `${PKG_V27}::random::RandomGenerator`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = RandomGenerator.$typeName
-  readonly $fullTypeName: `${typeof PKG_V21}::random::RandomGenerator`
+  readonly $fullTypeName: `${typeof PKG_V27}::random::RandomGenerator`
   readonly $typeArgs: []
   readonly $isPhantom = RandomGenerator.$isPhantom
 
@@ -410,7 +410,7 @@ export class RandomGenerator implements StructClass {
     this.$fullTypeName = composeSuiType(
       RandomGenerator.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V21}::random::RandomGenerator`
+    ) as `${typeof PKG_V27}::random::RandomGenerator`
     this.$typeArgs = typeArgs
 
     this.seed = fields.seed
@@ -424,7 +424,7 @@ export class RandomGenerator implements StructClass {
       fullTypeName: composeSuiType(
         RandomGenerator.$typeName,
         ...[]
-      ) as `${typeof PKG_V21}::random::RandomGenerator`,
+      ) as `${typeof PKG_V27}::random::RandomGenerator`,
       typeArgs: [] as [],
       isPhantom: RandomGenerator.$isPhantom,
       reifiedTypeArgs: [],

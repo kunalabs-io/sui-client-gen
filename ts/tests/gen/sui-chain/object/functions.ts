@@ -7,14 +7,6 @@ export function new_(tx: Transaction) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::object::new`, arguments: [] })
 }
 
-export function id(tx: Transaction, typeArg: string, t0: GenericArg) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::object::id`,
-    typeArguments: [typeArg],
-    arguments: [generic(tx, `${typeArg}`, t0)],
-  })
-}
-
 export function idToBytes(tx: Transaction, id: string | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::object::id_to_bytes`,
@@ -91,6 +83,14 @@ export function uidToAddress(tx: Transaction, uid: TransactionObjectInput) {
 
 export function delete_(tx: Transaction, uid: TransactionObjectInput) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::object::delete`, arguments: [obj(tx, uid)] })
+}
+
+export function id(tx: Transaction, typeArg: string, t0: GenericArg) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object::id`,
+    typeArguments: [typeArg],
+    arguments: [generic(tx, `${typeArg}`, t0)],
+  })
 }
 
 export function borrowId(tx: Transaction, typeArg: string, t0: GenericArg) {

@@ -78,11 +78,58 @@ export function insert(tx: Transaction, typeArgs: [string, string], args: Insert
   })
 }
 
+export interface GetArgs {
+  vecMap: TransactionObjectInput
+  t0: GenericArg
+}
+
+export function get(tx: Transaction, typeArgs: [string, string], args: GetArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::get`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.vecMap), generic(tx, `${typeArgs[0]}`, args.t0)],
+  })
+}
+
 export function size(tx: Transaction, typeArgs: [string, string], vecMap: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::size`,
     typeArguments: typeArgs,
     arguments: [obj(tx, vecMap)],
+  })
+}
+
+export function keys(tx: Transaction, typeArgs: [string, string], vecMap: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::keys`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, vecMap)],
+  })
+}
+
+export interface GetIdxOptArgs {
+  vecMap: TransactionObjectInput
+  t0: GenericArg
+}
+
+export function getIdxOpt(tx: Transaction, typeArgs: [string, string], args: GetIdxOptArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::get_idx_opt`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.vecMap), generic(tx, `${typeArgs[0]}`, args.t0)],
+  })
+}
+
+export interface GetIdxArgs {
+  vecMap: TransactionObjectInput
+  t0: GenericArg
+}
+
+export function getIdx(tx: Transaction, typeArgs: [string, string], args: GetIdxArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::get_idx`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.vecMap), generic(tx, `${typeArgs[0]}`, args.t0)],
   })
 }
 
@@ -102,19 +149,6 @@ export interface GetMutArgs {
 export function getMut(tx: Transaction, typeArgs: [string, string], args: GetMutArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_map::get_mut`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, args.vecMap), generic(tx, `${typeArgs[0]}`, args.t0)],
-  })
-}
-
-export interface GetArgs {
-  vecMap: TransactionObjectInput
-  t0: GenericArg
-}
-
-export function get(tx: Transaction, typeArgs: [string, string], args: GetArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::get`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.vecMap), generic(tx, `${typeArgs[0]}`, args.t0)],
   })
@@ -159,40 +193,6 @@ export function fromKeysValues(
     target: `${PUBLISHED_AT}::vec_map::from_keys_values`,
     typeArguments: typeArgs,
     arguments: [vector(tx, `${typeArgs[0]}`, args.vecT0), vector(tx, `${typeArgs[1]}`, args.vecT1)],
-  })
-}
-
-export function keys(tx: Transaction, typeArgs: [string, string], vecMap: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::keys`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, vecMap)],
-  })
-}
-
-export interface GetIdxOptArgs {
-  vecMap: TransactionObjectInput
-  t0: GenericArg
-}
-
-export function getIdxOpt(tx: Transaction, typeArgs: [string, string], args: GetIdxOptArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::get_idx_opt`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, args.vecMap), generic(tx, `${typeArgs[0]}`, args.t0)],
-  })
-}
-
-export interface GetIdxArgs {
-  vecMap: TransactionObjectInput
-  t0: GenericArg
-}
-
-export function getIdx(tx: Transaction, typeArgs: [string, string], args: GetIdxArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::get_idx`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, args.vecMap), generic(tx, `${typeArgs[0]}`, args.t0)],
   })
 }
 

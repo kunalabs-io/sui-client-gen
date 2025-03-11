@@ -2,6 +2,13 @@ import { PUBLISHED_AT } from '..'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
+export function bitwiseNot(tx: Transaction, u128: bigint | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u128::bitwise_not`,
+    arguments: [pure(tx, u128, `u128`)],
+  })
+}
+
 export interface MaxArgs {
   u1281: bigint | TransactionArgument
   u1282: bigint | TransactionArgument
@@ -64,4 +71,39 @@ export function pow(tx: Transaction, args: PowArgs) {
 
 export function sqrt(tx: Transaction, u128: bigint | TransactionArgument) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::u128::sqrt`, arguments: [pure(tx, u128, `u128`)] })
+}
+
+export function tryAsU8(tx: Transaction, u128: bigint | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u128::try_as_u8`,
+    arguments: [pure(tx, u128, `u128`)],
+  })
+}
+
+export function tryAsU16(tx: Transaction, u128: bigint | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u128::try_as_u16`,
+    arguments: [pure(tx, u128, `u128`)],
+  })
+}
+
+export function tryAsU32(tx: Transaction, u128: bigint | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u128::try_as_u32`,
+    arguments: [pure(tx, u128, `u128`)],
+  })
+}
+
+export function tryAsU64(tx: Transaction, u128: bigint | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u128::try_as_u64`,
+    arguments: [pure(tx, u128, `u128`)],
+  })
+}
+
+export function toString(tx: Transaction, u128: bigint | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u128::to_string`,
+    arguments: [pure(tx, u128, `u128`)],
+  })
 }

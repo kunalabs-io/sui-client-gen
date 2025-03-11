@@ -2,6 +2,13 @@ import { PUBLISHED_AT } from '..'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
+export function bitwiseNot(tx: Transaction, u8: number | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u8::bitwise_not`,
+    arguments: [pure(tx, u8, `u8`)],
+  })
+}
+
 export interface MaxArgs {
   u81: number | TransactionArgument
   u82: number | TransactionArgument
@@ -64,4 +71,8 @@ export function pow(tx: Transaction, args: PowArgs) {
 
 export function sqrt(tx: Transaction, u8: number | TransactionArgument) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::u8::sqrt`, arguments: [pure(tx, u8, `u8`)] })
+}
+
+export function toString(tx: Transaction, u8: number | TransactionArgument) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::u8::to_string`, arguments: [pure(tx, u8, `u8`)] })
 }

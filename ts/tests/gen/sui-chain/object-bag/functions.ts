@@ -2,10 +2,6 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj } from '../../_framework/util'
 import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function new_(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::object_bag::new`, arguments: [] })
-}
-
 export function length(tx: Transaction, objectBag: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::object_bag::length`,
@@ -77,6 +73,10 @@ export function remove(tx: Transaction, typeArgs: [string, string], args: Remove
     typeArguments: typeArgs,
     arguments: [obj(tx, args.objectBag), generic(tx, `${typeArgs[0]}`, args.t0)],
   })
+}
+
+export function new_(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::object_bag::new`, arguments: [] })
 }
 
 export interface AddArgs {

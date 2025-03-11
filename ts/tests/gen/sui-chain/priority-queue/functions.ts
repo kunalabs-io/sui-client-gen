@@ -3,18 +3,6 @@ import { GenericArg, generic, obj, pure, vector } from '../../_framework/util'
 import { Entry } from './structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function new_(
-  tx: Transaction,
-  typeArg: string,
-  vecEntry: Array<TransactionObjectInput> | TransactionArgument
-) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::priority_queue::new`,
-    typeArguments: [typeArg],
-    arguments: [vector(tx, `${Entry.$typeName}<${typeArg}>`, vecEntry)],
-  })
-}
-
 export interface InsertArgs {
   priorityQueue: TransactionObjectInput
   u64: bigint | TransactionArgument
@@ -30,6 +18,18 @@ export function insert(tx: Transaction, typeArg: string, args: InsertArgs) {
       pure(tx, args.u64, `u64`),
       generic(tx, `${typeArg}`, args.t0),
     ],
+  })
+}
+
+export function new_(
+  tx: Transaction,
+  typeArg: string,
+  vecEntry: Array<TransactionObjectInput> | TransactionArgument
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::priority_queue::new`,
+    typeArguments: [typeArg],
+    arguments: [vector(tx, `${Entry.$typeName}<${typeArg}>`, vecEntry)],
   })
 }
 

@@ -3,14 +3,6 @@ import { obj, pure } from '../../_framework/util'
 import { String } from '../../move-stdlib-chain/string/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function new_(tx: Transaction, typeArg: string, publisher: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::display::new`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, publisher)],
-  })
-}
-
 export interface RemoveArgs {
   display: TransactionObjectInput
   string: string | TransactionArgument
@@ -24,11 +16,11 @@ export function remove(tx: Transaction, typeArg: string, args: RemoveArgs) {
   })
 }
 
-export function version(tx: Transaction, typeArg: string, display: TransactionObjectInput) {
+export function new_(tx: Transaction, typeArg: string, publisher: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::display::version`,
+    target: `${PUBLISHED_AT}::display::new`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, display)],
+    arguments: [obj(tx, publisher)],
   })
 }
 
@@ -47,6 +39,14 @@ export function add(tx: Transaction, typeArg: string, args: AddArgs) {
       pure(tx, args.string1, `${String.$typeName}`),
       pure(tx, args.string2, `${String.$typeName}`),
     ],
+  })
+}
+
+export function version(tx: Transaction, typeArg: string, display: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::display::version`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, display)],
   })
 }
 

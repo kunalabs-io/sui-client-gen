@@ -2,6 +2,14 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+export function toBytes(tx: Transaction, typeArg: string, t0: GenericArg) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bcs::to_bytes`,
+    typeArguments: [typeArg],
+    arguments: [generic(tx, `${typeArg}`, t0)],
+  })
+}
+
 export function new_(
   tx: Transaction,
   vecU8: Array<number | TransactionArgument> | TransactionArgument
@@ -9,14 +17,6 @@ export function new_(
   return tx.moveCall({
     target: `${PUBLISHED_AT}::bcs::new`,
     arguments: [pure(tx, vecU8, `vector<u8>`)],
-  })
-}
-
-export function toBytes(tx: Transaction, typeArg: string, t0: GenericArg) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::bcs::to_bytes`,
-    typeArguments: [typeArg],
-    arguments: [generic(tx, `${typeArg}`, t0)],
   })
 }
 
@@ -100,6 +100,10 @@ export function peelVecU128(tx: Transaction, bcs: TransactionObjectInput) {
 
 export function peelVecU256(tx: Transaction, bcs: TransactionObjectInput) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_vec_u256`, arguments: [obj(tx, bcs)] })
+}
+
+export function peelEnumTag(tx: Transaction, bcs: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_enum_tag`, arguments: [obj(tx, bcs)] })
 }
 
 export function peelOptionAddress(tx: Transaction, bcs: TransactionObjectInput) {

@@ -13,7 +13,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { PKG_V21 } from '../index'
+import { PKG_V27 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -22,7 +22,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isBCS(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V21}::bcs::BCS`
+  return type === `${PKG_V27}::bcs::BCS`
 }
 
 export interface BCSFields {
@@ -34,19 +34,19 @@ export type BCSReified = Reified<BCS, BCSFields>
 export class BCS implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V21}::bcs::BCS`
+  static readonly $typeName = `${PKG_V27}::bcs::BCS`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = BCS.$typeName
-  readonly $fullTypeName: `${typeof PKG_V21}::bcs::BCS`
+  readonly $fullTypeName: `${typeof PKG_V27}::bcs::BCS`
   readonly $typeArgs: []
   readonly $isPhantom = BCS.$isPhantom
 
   readonly bytes: ToField<Vector<'u8'>>
 
   private constructor(typeArgs: [], fields: BCSFields) {
-    this.$fullTypeName = composeSuiType(BCS.$typeName, ...typeArgs) as `${typeof PKG_V21}::bcs::BCS`
+    this.$fullTypeName = composeSuiType(BCS.$typeName, ...typeArgs) as `${typeof PKG_V27}::bcs::BCS`
     this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
@@ -55,7 +55,7 @@ export class BCS implements StructClass {
   static reified(): BCSReified {
     return {
       typeName: BCS.$typeName,
-      fullTypeName: composeSuiType(BCS.$typeName, ...[]) as `${typeof PKG_V21}::bcs::BCS`,
+      fullTypeName: composeSuiType(BCS.$typeName, ...[]) as `${typeof PKG_V27}::bcs::BCS`,
       typeArgs: [] as [],
       isPhantom: BCS.$isPhantom,
       reifiedTypeArgs: [],

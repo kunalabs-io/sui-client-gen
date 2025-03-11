@@ -11,37 +11,6 @@ export function bytes(tx: Transaction, typeArg: string, element: TransactionObje
   })
 }
 
-export interface FromBytesArgs {
-  u8: number | TransactionArgument
-  vecU8: Array<number | TransactionArgument> | TransactionArgument
-  bool: boolean | TransactionArgument
-}
-
-export function fromBytes(tx: Transaction, typeArg: string, args: FromBytesArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::group_ops::from_bytes`,
-    typeArguments: [typeArg],
-    arguments: [
-      pure(tx, args.u8, `u8`),
-      pure(tx, args.vecU8, `vector<u8>`),
-      pure(tx, args.bool, `bool`),
-    ],
-  })
-}
-
-export interface EqualArgs {
-  element1: TransactionObjectInput
-  element2: TransactionObjectInput
-}
-
-export function equal(tx: Transaction, typeArg: string, args: EqualArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::group_ops::equal`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.element1), obj(tx, args.element2)],
-  })
-}
-
 export interface AddArgs {
   u8: number | TransactionArgument
   element1: TransactionObjectInput
@@ -98,6 +67,37 @@ export function div(tx: Transaction, typeArgs: [string, string], args: DivArgs) 
   })
 }
 
+export interface FromBytesArgs {
+  u8: number | TransactionArgument
+  vecU8: Array<number | TransactionArgument> | TransactionArgument
+  bool: boolean | TransactionArgument
+}
+
+export function fromBytes(tx: Transaction, typeArg: string, args: FromBytesArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::group_ops::from_bytes`,
+    typeArguments: [typeArg],
+    arguments: [
+      pure(tx, args.u8, `u8`),
+      pure(tx, args.vecU8, `vector<u8>`),
+      pure(tx, args.bool, `bool`),
+    ],
+  })
+}
+
+export interface EqualArgs {
+  element1: TransactionObjectInput
+  element2: TransactionObjectInput
+}
+
+export function equal(tx: Transaction, typeArg: string, args: EqualArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::group_ops::equal`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.element1), obj(tx, args.element2)],
+  })
+}
+
 export interface HashToArgs {
   u8: number | TransactionArgument
   vecU8: Array<number | TransactionArgument> | TransactionArgument
@@ -144,6 +144,36 @@ export function pairing(tx: Transaction, typeArgs: [string, string, string], arg
     target: `${PUBLISHED_AT}::group_ops::pairing`,
     typeArguments: typeArgs,
     arguments: [pure(tx, args.u8, `u8`), obj(tx, args.element1), obj(tx, args.element2)],
+  })
+}
+
+export interface ConvertArgs {
+  u81: number | TransactionArgument
+  u82: number | TransactionArgument
+  element: TransactionObjectInput
+}
+
+export function convert(tx: Transaction, typeArgs: [string, string], args: ConvertArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::group_ops::convert`,
+    typeArguments: typeArgs,
+    arguments: [pure(tx, args.u81, `u8`), pure(tx, args.u82, `u8`), obj(tx, args.element)],
+  })
+}
+
+export interface SumArgs {
+  u8: number | TransactionArgument
+  vecElement: Array<TransactionObjectInput> | TransactionArgument
+}
+
+export function sum(tx: Transaction, typeArg: string, args: SumArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::group_ops::sum`,
+    typeArguments: [typeArg],
+    arguments: [
+      pure(tx, args.u8, `u8`),
+      vector(tx, `${Element.$typeName}<${typeArg}>`, args.vecElement),
+    ],
   })
 }
 
@@ -270,6 +300,35 @@ export function internalPairing(tx: Transaction, args: InternalPairingArgs) {
       pure(tx, args.vecU81, `vector<u8>`),
       pure(tx, args.vecU82, `vector<u8>`),
     ],
+  })
+}
+
+export interface InternalConvertArgs {
+  u81: number | TransactionArgument
+  u82: number | TransactionArgument
+  vecU8: Array<number | TransactionArgument> | TransactionArgument
+}
+
+export function internalConvert(tx: Transaction, args: InternalConvertArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::group_ops::internal_convert`,
+    arguments: [
+      pure(tx, args.u81, `u8`),
+      pure(tx, args.u82, `u8`),
+      pure(tx, args.vecU8, `vector<u8>`),
+    ],
+  })
+}
+
+export interface InternalSumArgs {
+  u8: number | TransactionArgument
+  vecVecU8: Array<Array<number | TransactionArgument> | TransactionArgument> | TransactionArgument
+}
+
+export function internalSum(tx: Transaction, args: InternalSumArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::group_ops::internal_sum`,
+    arguments: [pure(tx, args.u8, `u8`), pure(tx, args.vecVecU8, `vector<vector<u8>>`)],
   })
 }
 

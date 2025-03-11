@@ -4,10 +4,6 @@ import { String } from '../../move-stdlib-chain/string/structs'
 import { ActiveJwk } from './structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function create(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::authenticator_state::create`, arguments: [] })
-}
-
 export interface ActiveJwkEqualArgs {
   activeJwk1: TransactionObjectInput
   activeJwk2: TransactionObjectInput
@@ -69,6 +65,10 @@ export function jwkLt(tx: Transaction, args: JwkLtArgs) {
     target: `${PUBLISHED_AT}::authenticator_state::jwk_lt`,
     arguments: [obj(tx, args.activeJwk1), obj(tx, args.activeJwk2)],
   })
+}
+
+export function create(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::authenticator_state::create`, arguments: [] })
 }
 
 export function loadInnerMut(tx: Transaction, authenticatorState: TransactionObjectInput) {

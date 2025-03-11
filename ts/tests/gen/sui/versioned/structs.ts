@@ -10,7 +10,7 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { PKG_V21 } from '../index'
+import { PKG_V27 } from '../index'
 import { ID, UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -20,7 +20,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isVersionChangeCap(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V21}::versioned::VersionChangeCap`
+  return type === `${PKG_V27}::versioned::VersionChangeCap`
 }
 
 export interface VersionChangeCapFields {
@@ -33,12 +33,12 @@ export type VersionChangeCapReified = Reified<VersionChangeCap, VersionChangeCap
 export class VersionChangeCap implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V21}::versioned::VersionChangeCap`
+  static readonly $typeName = `${PKG_V27}::versioned::VersionChangeCap`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = VersionChangeCap.$typeName
-  readonly $fullTypeName: `${typeof PKG_V21}::versioned::VersionChangeCap`
+  readonly $fullTypeName: `${typeof PKG_V27}::versioned::VersionChangeCap`
   readonly $typeArgs: []
   readonly $isPhantom = VersionChangeCap.$isPhantom
 
@@ -49,7 +49,7 @@ export class VersionChangeCap implements StructClass {
     this.$fullTypeName = composeSuiType(
       VersionChangeCap.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V21}::versioned::VersionChangeCap`
+    ) as `${typeof PKG_V27}::versioned::VersionChangeCap`
     this.$typeArgs = typeArgs
 
     this.versionedId = fields.versionedId
@@ -62,7 +62,7 @@ export class VersionChangeCap implements StructClass {
       fullTypeName: composeSuiType(
         VersionChangeCap.$typeName,
         ...[]
-      ) as `${typeof PKG_V21}::versioned::VersionChangeCap`,
+      ) as `${typeof PKG_V27}::versioned::VersionChangeCap`,
       typeArgs: [] as [],
       isPhantom: VersionChangeCap.$isPhantom,
       reifiedTypeArgs: [],
@@ -191,7 +191,7 @@ export class VersionChangeCap implements StructClass {
 
 export function isVersioned(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V21}::versioned::Versioned`
+  return type === `${PKG_V27}::versioned::Versioned`
 }
 
 export interface VersionedFields {
@@ -204,12 +204,12 @@ export type VersionedReified = Reified<Versioned, VersionedFields>
 export class Versioned implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V21}::versioned::Versioned`
+  static readonly $typeName = `${PKG_V27}::versioned::Versioned`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = Versioned.$typeName
-  readonly $fullTypeName: `${typeof PKG_V21}::versioned::Versioned`
+  readonly $fullTypeName: `${typeof PKG_V27}::versioned::Versioned`
   readonly $typeArgs: []
   readonly $isPhantom = Versioned.$isPhantom
 
@@ -220,7 +220,7 @@ export class Versioned implements StructClass {
     this.$fullTypeName = composeSuiType(
       Versioned.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V21}::versioned::Versioned`
+    ) as `${typeof PKG_V27}::versioned::Versioned`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -233,7 +233,7 @@ export class Versioned implements StructClass {
       fullTypeName: composeSuiType(
         Versioned.$typeName,
         ...[]
-      ) as `${typeof PKG_V21}::versioned::Versioned`,
+      ) as `${typeof PKG_V27}::versioned::Versioned`,
       typeArgs: [] as [],
       isPhantom: Versioned.$isPhantom,
       reifiedTypeArgs: [],

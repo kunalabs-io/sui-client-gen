@@ -5,10 +5,12 @@ import * as otherModule from './other-module/structs'
 import { StructClassLoader } from '../_framework/loader'
 
 export function registerClasses(loader: StructClassLoader) {
-  loader.register(otherModule.StructFromOtherModule)
-  loader.register(otherModule.AddedInAnUpgrade)
+  loader.register(exampleCoin.EXAMPLE_COIN)
+  loader.register(exampleCoin.Faucet)
   loader.register(examples.ExampleStruct)
   loader.register(examples.SpecialTypesStruct)
+  loader.register(otherModule.StructFromOtherModule)
+  loader.register(otherModule.AddedInAnUpgrade)
   loader.register(fixture.Dummy)
   loader.register(fixture.WithGenericField)
   loader.register(fixture.Bar)
@@ -17,6 +19,4 @@ export function registerClasses(loader: StructClassLoader) {
   loader.register(fixture.WithSpecialTypes)
   loader.register(fixture.WithSpecialTypesAsGenerics)
   loader.register(fixture.WithSpecialTypesInVectors)
-  loader.register(exampleCoin.EXAMPLE_COIN)
-  loader.register(exampleCoin.Faucet)
 }

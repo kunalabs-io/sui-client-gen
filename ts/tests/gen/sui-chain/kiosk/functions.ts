@@ -4,10 +4,6 @@ import { Option } from '../../move-stdlib-chain/option/structs'
 import { ID } from '../object/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function new_(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::new`, arguments: [] })
-}
-
 export interface BorrowArgs {
   kiosk: TransactionObjectInput
   kioskOwnerCap: TransactionObjectInput
@@ -44,8 +40,8 @@ export function borrowMut(tx: Transaction, typeArg: string, args: BorrowMutArgs)
   })
 }
 
-export function owner(tx: Transaction, kiosk: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::owner`, arguments: [obj(tx, kiosk)] })
+export function new_(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::new`, arguments: [] })
 }
 
 export interface TakeArgs {
@@ -64,10 +60,6 @@ export function take(tx: Transaction, typeArg: string, args: TakeArgs) {
       pure(tx, args.id, `${ID.$typeName}`),
     ],
   })
-}
-
-export function uid(tx: Transaction, kiosk: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::uid`, arguments: [obj(tx, kiosk)] })
 }
 
 export function default_(tx: Transaction) {
@@ -89,6 +81,10 @@ export function withdraw(tx: Transaction, args: WithdrawArgs) {
       pure(tx, args.option, `${Option.$typeName}<u64>`),
     ],
   })
+}
+
+export function uid(tx: Transaction, kiosk: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::uid`, arguments: [obj(tx, kiosk)] })
 }
 
 export interface UidMutAsOwnerArgs {
@@ -426,6 +422,10 @@ export function setAllowExtensions(tx: Transaction, args: SetAllowExtensionsArgs
 
 export function uidMut(tx: Transaction, kiosk: TransactionObjectInput) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::uid_mut`, arguments: [obj(tx, kiosk)] })
+}
+
+export function owner(tx: Transaction, kiosk: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::owner`, arguments: [obj(tx, kiosk)] })
 }
 
 export function itemCount(tx: Transaction, kiosk: TransactionObjectInput) {

@@ -11,7 +11,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib/ascii/structs'
-import { PKG_V21 } from '../index'
+import { PKG_V27 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -20,7 +20,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isUrl(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V21}::url::Url`
+  return type === `${PKG_V27}::url::Url`
 }
 
 export interface UrlFields {
@@ -32,19 +32,19 @@ export type UrlReified = Reified<Url, UrlFields>
 export class Url implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V21}::url::Url`
+  static readonly $typeName = `${PKG_V27}::url::Url`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = Url.$typeName
-  readonly $fullTypeName: `${typeof PKG_V21}::url::Url`
+  readonly $fullTypeName: `${typeof PKG_V27}::url::Url`
   readonly $typeArgs: []
   readonly $isPhantom = Url.$isPhantom
 
   readonly url: ToField<String>
 
   private constructor(typeArgs: [], fields: UrlFields) {
-    this.$fullTypeName = composeSuiType(Url.$typeName, ...typeArgs) as `${typeof PKG_V21}::url::Url`
+    this.$fullTypeName = composeSuiType(Url.$typeName, ...typeArgs) as `${typeof PKG_V27}::url::Url`
     this.$typeArgs = typeArgs
 
     this.url = fields.url
@@ -53,7 +53,7 @@ export class Url implements StructClass {
   static reified(): UrlReified {
     return {
       typeName: Url.$typeName,
-      fullTypeName: composeSuiType(Url.$typeName, ...[]) as `${typeof PKG_V21}::url::Url`,
+      fullTypeName: composeSuiType(Url.$typeName, ...[]) as `${typeof PKG_V27}::url::Url`,
       typeArgs: [] as [],
       isPhantom: Url.$isPhantom,
       reifiedTypeArgs: [],

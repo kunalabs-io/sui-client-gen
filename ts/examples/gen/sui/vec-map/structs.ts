@@ -24,7 +24,7 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { PKG_V21 } from '../index'
+import { PKG_V27 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -33,7 +33,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isEntry(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V21}::vec_map::Entry` + '<')
+  return type.startsWith(`${PKG_V27}::vec_map::Entry` + '<')
 }
 
 export interface EntryFields<K extends TypeArgument, V extends TypeArgument> {
@@ -49,12 +49,12 @@ export type EntryReified<K extends TypeArgument, V extends TypeArgument> = Reifi
 export class Entry<K extends TypeArgument, V extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V21}::vec_map::Entry`
+  static readonly $typeName = `${PKG_V27}::vec_map::Entry`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const
 
   readonly $typeName = Entry.$typeName
-  readonly $fullTypeName: `${typeof PKG_V21}::vec_map::Entry<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
+  readonly $fullTypeName: `${typeof PKG_V27}::vec_map::Entry<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
   readonly $typeArgs: [ToTypeStr<K>, ToTypeStr<V>]
   readonly $isPhantom = Entry.$isPhantom
 
@@ -65,7 +65,7 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
     this.$fullTypeName = composeSuiType(
       Entry.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V21}::vec_map::Entry<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
+    ) as `${typeof PKG_V27}::vec_map::Entry<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
     this.$typeArgs = typeArgs
 
     this.key = fields.key
@@ -81,7 +81,7 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
       fullTypeName: composeSuiType(
         Entry.$typeName,
         ...[extractType(K), extractType(V)]
-      ) as `${typeof PKG_V21}::vec_map::Entry<${ToTypeStr<ToTypeArgument<K>>}, ${ToTypeStr<ToTypeArgument<V>>}>`,
+      ) as `${typeof PKG_V27}::vec_map::Entry<${ToTypeStr<ToTypeArgument<K>>}, ${ToTypeStr<ToTypeArgument<V>>}>`,
       typeArgs: [extractType(K), extractType(V)] as [
         ToTypeStr<ToTypeArgument<K>>,
         ToTypeStr<ToTypeArgument<V>>,
@@ -264,7 +264,7 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
 
 export function isVecMap(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V21}::vec_map::VecMap` + '<')
+  return type.startsWith(`${PKG_V27}::vec_map::VecMap` + '<')
 }
 
 export interface VecMapFields<K extends TypeArgument, V extends TypeArgument> {
@@ -279,12 +279,12 @@ export type VecMapReified<K extends TypeArgument, V extends TypeArgument> = Reif
 export class VecMap<K extends TypeArgument, V extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V21}::vec_map::VecMap`
+  static readonly $typeName = `${PKG_V27}::vec_map::VecMap`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const
 
   readonly $typeName = VecMap.$typeName
-  readonly $fullTypeName: `${typeof PKG_V21}::vec_map::VecMap<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
+  readonly $fullTypeName: `${typeof PKG_V27}::vec_map::VecMap<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
   readonly $typeArgs: [ToTypeStr<K>, ToTypeStr<V>]
   readonly $isPhantom = VecMap.$isPhantom
 
@@ -294,7 +294,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
     this.$fullTypeName = composeSuiType(
       VecMap.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V21}::vec_map::VecMap<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
+    ) as `${typeof PKG_V27}::vec_map::VecMap<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
     this.$typeArgs = typeArgs
 
     this.contents = fields.contents
@@ -309,7 +309,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
       fullTypeName: composeSuiType(
         VecMap.$typeName,
         ...[extractType(K), extractType(V)]
-      ) as `${typeof PKG_V21}::vec_map::VecMap<${ToTypeStr<ToTypeArgument<K>>}, ${ToTypeStr<ToTypeArgument<V>>}>`,
+      ) as `${typeof PKG_V27}::vec_map::VecMap<${ToTypeStr<ToTypeArgument<K>>}, ${ToTypeStr<ToTypeArgument<V>>}>`,
       typeArgs: [extractType(K), extractType(V)] as [
         ToTypeStr<ToTypeArgument<K>>,
         ToTypeStr<ToTypeArgument<V>>,

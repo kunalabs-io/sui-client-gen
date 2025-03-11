@@ -24,7 +24,7 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { PKG_V21 } from '../index'
+import { PKG_V27 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -33,7 +33,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isVecSet(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V21}::vec_set::VecSet` + '<')
+  return type.startsWith(`${PKG_V27}::vec_set::VecSet` + '<')
 }
 
 export interface VecSetFields<T0 extends TypeArgument> {
@@ -45,12 +45,12 @@ export type VecSetReified<T0 extends TypeArgument> = Reified<VecSet<T0>, VecSetF
 export class VecSet<T0 extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V21}::vec_set::VecSet`
+  static readonly $typeName = `${PKG_V27}::vec_set::VecSet`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
   readonly $typeName = VecSet.$typeName
-  readonly $fullTypeName: `${typeof PKG_V21}::vec_set::VecSet<${ToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V27}::vec_set::VecSet<${ToTypeStr<T0>}>`
   readonly $typeArgs: [ToTypeStr<T0>]
   readonly $isPhantom = VecSet.$isPhantom
 
@@ -60,7 +60,7 @@ export class VecSet<T0 extends TypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       VecSet.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V21}::vec_set::VecSet<${ToTypeStr<T0>}>`
+    ) as `${typeof PKG_V27}::vec_set::VecSet<${ToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.contents = fields.contents
@@ -72,7 +72,7 @@ export class VecSet<T0 extends TypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         VecSet.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V21}::vec_set::VecSet<${ToTypeStr<ToTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V27}::vec_set::VecSet<${ToTypeStr<ToTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [ToTypeStr<ToTypeArgument<T0>>],
       isPhantom: VecSet.$isPhantom,
       reifiedTypeArgs: [T0],

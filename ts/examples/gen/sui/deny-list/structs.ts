@@ -14,7 +14,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { Bag } from '../bag/structs'
-import { PKG_V21 } from '../index'
+import { PKG_V27 } from '../index'
 import { UID } from '../object/structs'
 import { Table } from '../table/structs'
 import { VecSet } from '../vec-set/structs'
@@ -26,7 +26,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isDenyList(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V21}::deny_list::DenyList`
+  return type === `${PKG_V27}::deny_list::DenyList`
 }
 
 export interface DenyListFields {
@@ -39,12 +39,12 @@ export type DenyListReified = Reified<DenyList, DenyListFields>
 export class DenyList implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V21}::deny_list::DenyList`
+  static readonly $typeName = `${PKG_V27}::deny_list::DenyList`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = DenyList.$typeName
-  readonly $fullTypeName: `${typeof PKG_V21}::deny_list::DenyList`
+  readonly $fullTypeName: `${typeof PKG_V27}::deny_list::DenyList`
   readonly $typeArgs: []
   readonly $isPhantom = DenyList.$isPhantom
 
@@ -55,7 +55,7 @@ export class DenyList implements StructClass {
     this.$fullTypeName = composeSuiType(
       DenyList.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V21}::deny_list::DenyList`
+    ) as `${typeof PKG_V27}::deny_list::DenyList`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -68,7 +68,7 @@ export class DenyList implements StructClass {
       fullTypeName: composeSuiType(
         DenyList.$typeName,
         ...[]
-      ) as `${typeof PKG_V21}::deny_list::DenyList`,
+      ) as `${typeof PKG_V27}::deny_list::DenyList`,
       typeArgs: [] as [],
       isPhantom: DenyList.$isPhantom,
       reifiedTypeArgs: [],
@@ -197,7 +197,7 @@ export class DenyList implements StructClass {
 
 export function isPerTypeList(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V21}::deny_list::PerTypeList`
+  return type === `${PKG_V27}::deny_list::PerTypeList`
 }
 
 export interface PerTypeListFields {
@@ -211,12 +211,12 @@ export type PerTypeListReified = Reified<PerTypeList, PerTypeListFields>
 export class PerTypeList implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V21}::deny_list::PerTypeList`
+  static readonly $typeName = `${PKG_V27}::deny_list::PerTypeList`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = PerTypeList.$typeName
-  readonly $fullTypeName: `${typeof PKG_V21}::deny_list::PerTypeList`
+  readonly $fullTypeName: `${typeof PKG_V27}::deny_list::PerTypeList`
   readonly $typeArgs: []
   readonly $isPhantom = PerTypeList.$isPhantom
 
@@ -228,7 +228,7 @@ export class PerTypeList implements StructClass {
     this.$fullTypeName = composeSuiType(
       PerTypeList.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V21}::deny_list::PerTypeList`
+    ) as `${typeof PKG_V27}::deny_list::PerTypeList`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -242,7 +242,7 @@ export class PerTypeList implements StructClass {
       fullTypeName: composeSuiType(
         PerTypeList.$typeName,
         ...[]
-      ) as `${typeof PKG_V21}::deny_list::PerTypeList`,
+      ) as `${typeof PKG_V27}::deny_list::PerTypeList`,
       typeArgs: [] as [],
       isPhantom: PerTypeList.$isPhantom,
       reifiedTypeArgs: [],

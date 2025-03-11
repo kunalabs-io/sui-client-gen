@@ -13,14 +13,6 @@ export function value(tx: Transaction, typeArg: string, t: TransactionObjectInpu
   })
 }
 
-export function amount(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::amount`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, self)],
-  })
-}
-
 export interface AllowArgs {
   self: TransactionObjectInput
   cap: TransactionObjectInput
@@ -36,6 +28,14 @@ export function allow(tx: Transaction, typeArg: string, args: AllowArgs) {
       obj(tx, args.cap),
       pure(tx, args.action, `${String.$typeName}`),
     ],
+  })
+}
+
+export function amount(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::amount`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, self)],
   })
 }
 

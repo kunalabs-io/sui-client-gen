@@ -73,6 +73,26 @@ export function size(tx: Transaction, typeArg: string, vecSet: TransactionObject
   })
 }
 
+export function intoKeys(tx: Transaction, typeArg: string, vecSet: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_set::into_keys`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, vecSet)],
+  })
+}
+
+export function fromKeys(
+  tx: Transaction,
+  typeArg: string,
+  vecT0: Array<GenericArg> | TransactionArgument
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_set::from_keys`,
+    typeArguments: [typeArg],
+    arguments: [vector(tx, `${typeArg}`, vecT0)],
+  })
+}
+
 export function keys(tx: Transaction, typeArg: string, vecSet: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::vec_set::keys`,
@@ -104,25 +124,5 @@ export function getIdx(tx: Transaction, typeArg: string, args: GetIdxArgs) {
     target: `${PUBLISHED_AT}::vec_set::get_idx`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.vecSet), generic(tx, `${typeArg}`, args.t0)],
-  })
-}
-
-export function intoKeys(tx: Transaction, typeArg: string, vecSet: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_set::into_keys`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, vecSet)],
-  })
-}
-
-export function fromKeys(
-  tx: Transaction,
-  typeArg: string,
-  vecT0: Array<GenericArg> | TransactionArgument
-) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_set::from_keys`,
-    typeArguments: [typeArg],
-    arguments: [vector(tx, `${typeArg}`, vecT0)],
   })
 }

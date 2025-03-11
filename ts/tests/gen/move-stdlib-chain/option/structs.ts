@@ -24,7 +24,7 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { PKG_V8 } from '../index'
+import { PKG_V14 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -33,7 +33,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isOption(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V8}::option::Option` + '<')
+  return type.startsWith(`${PKG_V14}::option::Option` + '<')
 }
 
 export interface OptionFields<T0 extends TypeArgument> {
@@ -45,14 +45,14 @@ export type OptionReified<T0 extends TypeArgument> = Reified<Option<T0>, OptionF
 export class Option<T0 extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V8}::option::Option`
+  static readonly $typeName = `${PKG_V14}::option::Option`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
   __inner: T0 = null as unknown as T0 // for type checking in reified.ts
 
   readonly $typeName = Option.$typeName
-  readonly $fullTypeName: `${typeof PKG_V8}::option::Option<${ToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V14}::option::Option<${ToTypeStr<T0>}>`
   readonly $typeArgs: [ToTypeStr<T0>]
   readonly $isPhantom = Option.$isPhantom
 
@@ -62,7 +62,7 @@ export class Option<T0 extends TypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Option.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V8}::option::Option<${ToTypeStr<T0>}>`
+    ) as `${typeof PKG_V14}::option::Option<${ToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.vec = fields.vec
@@ -74,7 +74,7 @@ export class Option<T0 extends TypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Option.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V8}::option::Option<${ToTypeStr<ToTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V14}::option::Option<${ToTypeStr<ToTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [ToTypeStr<ToTypeArgument<T0>>],
       isPhantom: Option.$isPhantom,
       reifiedTypeArgs: [T0],
