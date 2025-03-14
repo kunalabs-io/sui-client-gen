@@ -3,32 +3,6 @@ import { obj, pure, vector } from '../../_framework/util'
 import { Coin } from '../coin/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export interface JoinArgs {
-  self: TransactionObjectInput
-  coin: TransactionObjectInput
-}
-
-export function join(tx: Transaction, typeArg: string, args: JoinArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::pay::join`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), obj(tx, args.coin)],
-  })
-}
-
-export interface SplitArgs {
-  coin: TransactionObjectInput
-  splitAmount: bigint | TransactionArgument
-}
-
-export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::pay::split`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.coin), pure(tx, args.splitAmount, `u64`)],
-  })
-}
-
 export interface DivideAndKeepArgs {
   self: TransactionObjectInput
   n: bigint | TransactionArgument
@@ -39,6 +13,19 @@ export function divideAndKeep(tx: Transaction, typeArg: string, args: DivideAndK
     target: `${PUBLISHED_AT}::pay::divide_and_keep`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), pure(tx, args.n, `u64`)],
+  })
+}
+
+export interface JoinArgs {
+  self: TransactionObjectInput
+  coin: TransactionObjectInput
+}
+
+export function join(tx: Transaction, typeArg: string, args: JoinArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::pay::join`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.self), obj(tx, args.coin)],
   })
 }
 
@@ -76,6 +63,19 @@ export function keep(tx: Transaction, typeArg: string, c: TransactionObjectInput
     target: `${PUBLISHED_AT}::pay::keep`,
     typeArguments: [typeArg],
     arguments: [obj(tx, c)],
+  })
+}
+
+export interface SplitArgs {
+  coin: TransactionObjectInput
+  splitAmount: bigint | TransactionArgument
+}
+
+export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::pay::split`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.coin), pure(tx, args.splitAmount, `u64`)],
   })
 }
 

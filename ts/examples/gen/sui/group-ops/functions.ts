@@ -3,32 +3,6 @@ import { obj, pure, vector } from '../../_framework/util'
 import { Element } from './structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function bytes(tx: Transaction, typeArg: string, e: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::group_ops::bytes`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, e)],
-  })
-}
-
-export interface FromBytesArgs {
-  type: number | TransactionArgument
-  bytes: Array<number | TransactionArgument> | TransactionArgument
-  isTrusted: boolean | TransactionArgument
-}
-
-export function fromBytes(tx: Transaction, typeArg: string, args: FromBytesArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::group_ops::from_bytes`,
-    typeArguments: [typeArg],
-    arguments: [
-      pure(tx, args.type, `u8`),
-      pure(tx, args.bytes, `vector<u8>`),
-      pure(tx, args.isTrusted, `bool`),
-    ],
-  })
-}
-
 export interface AddArgs {
   type: number | TransactionArgument
   e1: TransactionObjectInput
@@ -40,6 +14,14 @@ export function add(tx: Transaction, typeArg: string, args: AddArgs) {
     target: `${PUBLISHED_AT}::group_ops::add`,
     typeArguments: [typeArg],
     arguments: [pure(tx, args.type, `u8`), obj(tx, args.e1), obj(tx, args.e2)],
+  })
+}
+
+export function bytes(tx: Transaction, typeArg: string, e: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::group_ops::bytes`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, e)],
   })
 }
 
@@ -67,6 +49,24 @@ export function equal(tx: Transaction, typeArg: string, args: EqualArgs) {
     target: `${PUBLISHED_AT}::group_ops::equal`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.e1), obj(tx, args.e2)],
+  })
+}
+
+export interface FromBytesArgs {
+  type: number | TransactionArgument
+  bytes: Array<number | TransactionArgument> | TransactionArgument
+  isTrusted: boolean | TransactionArgument
+}
+
+export function fromBytes(tx: Transaction, typeArg: string, args: FromBytesArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::group_ops::from_bytes`,
+    typeArguments: [typeArg],
+    arguments: [
+      pure(tx, args.type, `u8`),
+      pure(tx, args.bytes, `vector<u8>`),
+      pure(tx, args.isTrusted, `bool`),
+    ],
   })
 }
 

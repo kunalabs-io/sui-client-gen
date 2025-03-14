@@ -3,6 +3,19 @@ import { GenericArg, generic, obj, pure, vector } from '../../_framework/util'
 import { Entry } from './structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+export interface CreateEntriesArgs {
+  p: Array<bigint | TransactionArgument> | TransactionArgument
+  v: Array<GenericArg> | TransactionArgument
+}
+
+export function createEntries(tx: Transaction, typeArg: string, args: CreateEntriesArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::priority_queue::create_entries`,
+    typeArguments: [typeArg],
+    arguments: [pure(tx, args.p, `vector<u64>`), vector(tx, `${typeArg}`, args.v)],
+  })
+}
+
 export interface InsertArgs {
   pq: TransactionObjectInput
   priority: bigint | TransactionArgument
@@ -18,31 +31,6 @@ export function insert(tx: Transaction, typeArg: string, args: InsertArgs) {
       pure(tx, args.priority, `u64`),
       generic(tx, `${typeArg}`, args.value),
     ],
-  })
-}
-
-export function new_(
-  tx: Transaction,
-  typeArg: string,
-  entries: Array<TransactionObjectInput> | TransactionArgument
-) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::priority_queue::new`,
-    typeArguments: [typeArg],
-    arguments: [vector(tx, `${Entry.$typeName}<${typeArg}>`, entries)],
-  })
-}
-
-export interface CreateEntriesArgs {
-  p: Array<bigint | TransactionArgument> | TransactionArgument
-  v: Array<GenericArg> | TransactionArgument
-}
-
-export function createEntries(tx: Transaction, typeArg: string, args: CreateEntriesArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::priority_queue::create_entries`,
-    typeArguments: [typeArg],
-    arguments: [pure(tx, args.p, `vector<u64>`), vector(tx, `${typeArg}`, args.v)],
   })
 }
 
@@ -65,6 +53,18 @@ export function maxHeapifyRecursive(
       pure(tx, args.len, `u64`),
       pure(tx, args.i, `u64`),
     ],
+  })
+}
+
+export function new_(
+  tx: Transaction,
+  typeArg: string,
+  entries: Array<TransactionObjectInput> | TransactionArgument
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::priority_queue::new`,
+    typeArguments: [typeArg],
+    arguments: [vector(tx, `${Entry.$typeName}<${typeArg}>`, entries)],
   })
 }
 

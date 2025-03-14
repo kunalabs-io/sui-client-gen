@@ -3,20 +3,6 @@ import { String } from '../../_dependencies/source/0x1/string/structs'
 import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function delete_(tx: Transaction, verifiedId: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::zklogin_verified_id::delete`,
-    arguments: [obj(tx, verifiedId)],
-  })
-}
-
-export function owner(tx: Transaction, verifiedId: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::zklogin_verified_id::owner`,
-    arguments: [obj(tx, verifiedId)],
-  })
-}
-
 export function audience(tx: Transaction, verifiedId: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::zklogin_verified_id::audience`,
@@ -70,6 +56,20 @@ export function checkZkloginIdInternal(tx: Transaction, args: CheckZkloginIdInte
   })
 }
 
+export function delete_(tx: Transaction, verifiedId: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::zklogin_verified_id::delete`,
+    arguments: [obj(tx, verifiedId)],
+  })
+}
+
+export function issuer(tx: Transaction, verifiedId: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::zklogin_verified_id::issuer`,
+    arguments: [obj(tx, verifiedId)],
+  })
+}
+
 export function keyClaimName(tx: Transaction, verifiedId: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::zklogin_verified_id::key_claim_name`,
@@ -84,9 +84,9 @@ export function keyClaimValue(tx: Transaction, verifiedId: TransactionObjectInpu
   })
 }
 
-export function issuer(tx: Transaction, verifiedId: TransactionObjectInput) {
+export function owner(tx: Transaction, verifiedId: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::zklogin_verified_id::issuer`,
+    target: `${PUBLISHED_AT}::zklogin_verified_id::owner`,
     arguments: [obj(tx, verifiedId)],
   })
 }

@@ -2,14 +2,6 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function value(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::balance::value`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, self)],
-  })
-}
-
 export function createStakingRewards(
   tx: Transaction,
   typeArg: string,
@@ -115,6 +107,14 @@ export function supplyValue(tx: Transaction, typeArg: string, supply: Transactio
     target: `${PUBLISHED_AT}::balance::supply_value`,
     typeArguments: [typeArg],
     arguments: [obj(tx, supply)],
+  })
+}
+
+export function value(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::balance::value`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, self)],
   })
 }
 

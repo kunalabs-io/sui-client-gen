@@ -14,10 +14,6 @@ export function deriveId(tx: Transaction, args: DeriveIdArgs) {
   })
 }
 
-export function idsCreated(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::tx_context::ids_created`, arguments: [] })
-}
-
 export function digest(tx: Transaction) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::tx_context::digest`, arguments: [] })
 }
@@ -32,6 +28,10 @@ export function epochTimestampMs(tx: Transaction) {
 
 export function freshObjectAddress(tx: Transaction) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::tx_context::fresh_object_address`, arguments: [] })
+}
+
+export function idsCreated(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::tx_context::ids_created`, arguments: [] })
 }
 
 export function sender(tx: Transaction) {

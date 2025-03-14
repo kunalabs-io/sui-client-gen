@@ -2,18 +2,6 @@ import { PUBLISHED_AT } from '..'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
-export interface MaxArgs {
-  x: bigint | TransactionArgument
-  y: bigint | TransactionArgument
-}
-
-export function max(tx: Transaction, args: MaxArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::math::max`,
-    arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
-  })
-}
-
 export interface DiffArgs {
   x: bigint | TransactionArgument
   y: bigint | TransactionArgument
@@ -34,6 +22,18 @@ export interface DivideAndRoundUpArgs {
 export function divideAndRoundUp(tx: Transaction, args: DivideAndRoundUpArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::math::divide_and_round_up`,
+    arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
+  })
+}
+
+export interface MaxArgs {
+  x: bigint | TransactionArgument
+  y: bigint | TransactionArgument
+}
+
+export function max(tx: Transaction, args: MaxArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::math::max`,
     arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
   })
 }

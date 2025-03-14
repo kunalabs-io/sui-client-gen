@@ -2,45 +2,6 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export interface BorrowArgs {
-  object: TransactionObjectInput
-  name: GenericArg
-}
-
-export function borrow(tx: Transaction, typeArgs: [string, string], args: BorrowArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::borrow`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
-  })
-}
-
-export interface BorrowMutArgs {
-  object: TransactionObjectInput
-  name: GenericArg
-}
-
-export function borrowMut(tx: Transaction, typeArgs: [string, string], args: BorrowMutArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::borrow_mut`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
-  })
-}
-
-export interface RemoveArgs {
-  object: TransactionObjectInput
-  name: GenericArg
-}
-
-export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::remove`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
-  })
-}
-
 export interface AddArgs {
   object: TransactionObjectInput
   name: GenericArg
@@ -72,6 +33,19 @@ export function addChildObject(tx: Transaction, typeArg: string, args: AddChildO
   })
 }
 
+export interface BorrowArgs {
+  object: TransactionObjectInput
+  name: GenericArg
+}
+
+export function borrow(tx: Transaction, typeArgs: [string, string], args: BorrowArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::dynamic_field::borrow`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
+  })
+}
+
 export interface BorrowChildObjectArgs {
   object: TransactionObjectInput
   id: string | TransactionArgument
@@ -99,6 +73,19 @@ export function borrowChildObjectMut(
     target: `${PUBLISHED_AT}::dynamic_field::borrow_child_object_mut`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.object), pure(tx, args.id, `address`)],
+  })
+}
+
+export interface BorrowMutArgs {
+  object: TransactionObjectInput
+  name: GenericArg
+}
+
+export function borrowMut(tx: Transaction, typeArgs: [string, string], args: BorrowMutArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::dynamic_field::borrow_mut`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
   })
 }
 
@@ -197,6 +184,19 @@ export function hashTypeAndKey(tx: Transaction, typeArg: string, args: HashTypeA
     target: `${PUBLISHED_AT}::dynamic_field::hash_type_and_key`,
     typeArguments: [typeArg],
     arguments: [pure(tx, args.parent, `address`), generic(tx, `${typeArg}`, args.k)],
+  })
+}
+
+export interface RemoveArgs {
+  object: TransactionObjectInput
+  name: GenericArg
+}
+
+export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::dynamic_field::remove`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
   })
 }
 

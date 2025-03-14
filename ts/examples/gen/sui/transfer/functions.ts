@@ -3,19 +3,6 @@ import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { ID } from '../object/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export interface TransferArgs {
-  obj: GenericArg
-  recipient: string | TransactionArgument
-}
-
-export function transfer(tx: Transaction, typeArg: string, args: TransferArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer::transfer`,
-    typeArguments: [typeArg],
-    arguments: [generic(tx, `${typeArg}`, args.obj), pure(tx, args.recipient, `address`)],
-  })
-}
-
 export function freezeObject(tx: Transaction, typeArg: string, obj: GenericArg) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer::freeze_object`,
@@ -130,6 +117,19 @@ export function shareObjectImpl(tx: Transaction, typeArg: string, obj: GenericAr
     target: `${PUBLISHED_AT}::transfer::share_object_impl`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, obj)],
+  })
+}
+
+export interface TransferArgs {
+  obj: GenericArg
+  recipient: string | TransactionArgument
+}
+
+export function transfer(tx: Transaction, typeArg: string, args: TransferArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::transfer::transfer`,
+    typeArguments: [typeArg],
+    arguments: [generic(tx, `${typeArg}`, args.obj), pure(tx, args.recipient, `address`)],
   })
 }
 
