@@ -3,35 +3,6 @@ import { String } from '../../_dependencies/source/0x1/string/structs'
 import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export interface RemoveArgs {
-  self: TransactionObjectInput
-  name: string | TransactionArgument
-}
-
-export function remove(tx: Transaction, typeArg: string, args: RemoveArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::display::remove`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), pure(tx, args.name, `${String.$typeName}`)],
-  })
-}
-
-export function new_(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::display::new`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, pub)],
-  })
-}
-
-export function version(tx: Transaction, typeArg: string, d: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::display::version`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, d)],
-  })
-}
-
 export interface AddArgs {
   self: TransactionObjectInput
   name: string | TransactionArgument
@@ -86,14 +57,6 @@ export function addMultiple(tx: Transaction, typeArg: string, args: AddMultipleA
   })
 }
 
-export function fields(tx: Transaction, typeArg: string, d: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::display::fields`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, d)],
-  })
-}
-
 export function createAndKeep(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::display::create_and_keep`,
@@ -128,9 +91,25 @@ export function edit(tx: Transaction, typeArg: string, args: EditArgs) {
   })
 }
 
+export function fields(tx: Transaction, typeArg: string, d: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::display::fields`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, d)],
+  })
+}
+
 export function isAuthorized(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::display::is_authorized`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, pub)],
+  })
+}
+
+export function new_(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::display::new`,
     typeArguments: [typeArg],
     arguments: [obj(tx, pub)],
   })
@@ -154,10 +133,31 @@ export function newWithFields(tx: Transaction, typeArg: string, args: NewWithFie
   })
 }
 
+export interface RemoveArgs {
+  self: TransactionObjectInput
+  name: string | TransactionArgument
+}
+
+export function remove(tx: Transaction, typeArg: string, args: RemoveArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::display::remove`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.self), pure(tx, args.name, `${String.$typeName}`)],
+  })
+}
+
 export function updateVersion(tx: Transaction, typeArg: string, display: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::display::update_version`,
     typeArguments: [typeArg],
     arguments: [obj(tx, display)],
+  })
+}
+
+export function version(tx: Transaction, typeArg: string, d: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::display::version`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, d)],
   })
 }

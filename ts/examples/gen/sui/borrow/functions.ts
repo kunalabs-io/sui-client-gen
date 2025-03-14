@@ -10,19 +10,19 @@ export function borrow(tx: Transaction, typeArg: string, self: TransactionObject
   })
 }
 
-export function new_(tx: Transaction, typeArg: string, value: GenericArg) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::borrow::new`,
-    typeArguments: [typeArg],
-    arguments: [generic(tx, `${typeArg}`, value)],
-  })
-}
-
 export function destroy(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::borrow::destroy`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
+  })
+}
+
+export function new_(tx: Transaction, typeArg: string, value: GenericArg) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::borrow::new`,
+    typeArguments: [typeArg],
+    arguments: [generic(tx, `${typeArg}`, value)],
   })
 }
 

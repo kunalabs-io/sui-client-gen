@@ -5,199 +5,6 @@ import { GenericArg, generic, obj, option, pure } from '../../_framework/util'
 import { Balance } from '../balance/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function value(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::value`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, t)],
-  })
-}
-
-export interface AllowArgs {
-  self: TransactionObjectInput
-  cap: TransactionObjectInput
-  action: string | TransactionArgument
-}
-
-export function allow(tx: Transaction, typeArg: string, args: AllowArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::allow`,
-    typeArguments: [typeArg],
-    arguments: [
-      obj(tx, args.self),
-      obj(tx, args.cap),
-      pure(tx, args.action, `${String.$typeName}`),
-    ],
-  })
-}
-
-export function amount(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::amount`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, self)],
-  })
-}
-
-export function sender(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::sender`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, self)],
-  })
-}
-
-export interface TransferArgs {
-  t: TransactionObjectInput
-  recipient: string | TransactionArgument
-}
-
-export function transfer(tx: Transaction, typeArg: string, args: TransferArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::transfer`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.t), pure(tx, args.recipient, `address`)],
-  })
-}
-
-export function recipient(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::recipient`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, self)],
-  })
-}
-
-export function destroyZero(tx: Transaction, typeArg: string, token: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::destroy_zero`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, token)],
-  })
-}
-
-export interface JoinArgs {
-  token: TransactionObjectInput
-  another: TransactionObjectInput
-}
-
-export function join(tx: Transaction, typeArg: string, args: JoinArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::join`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.token), obj(tx, args.another)],
-  })
-}
-
-export interface SplitArgs {
-  token: TransactionObjectInput
-  amount: bigint | TransactionArgument
-}
-
-export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::split`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.token), pure(tx, args.amount, `u64`)],
-  })
-}
-
-export function zero(tx: Transaction, typeArg: string) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::zero`,
-    typeArguments: [typeArg],
-    arguments: [],
-  })
-}
-
-export function key(tx: Transaction, typeArg: string) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::key`,
-    typeArguments: [typeArg],
-    arguments: [],
-  })
-}
-
-export interface BurnArgs {
-  cap: TransactionObjectInput
-  token: TransactionObjectInput
-}
-
-export function burn(tx: Transaction, typeArg: string, args: BurnArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::burn`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.cap), obj(tx, args.token)],
-  })
-}
-
-export interface MintArgs {
-  cap: TransactionObjectInput
-  amount: bigint | TransactionArgument
-}
-
-export function mint(tx: Transaction, typeArg: string, args: MintArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::mint`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.cap), pure(tx, args.amount, `u64`)],
-  })
-}
-
-export interface ConfirmRequestArgs {
-  policy: TransactionObjectInput
-  request: TransactionObjectInput
-}
-
-export function confirmRequest(tx: Transaction, typeArg: string, args: ConfirmRequestArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::confirm_request`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.policy), obj(tx, args.request)],
-  })
-}
-
-export interface NewRequestArgs {
-  name: string | TransactionArgument
-  amount: bigint | TransactionArgument
-  recipient: string | TransactionArgument | TransactionArgument | null
-  spentBalance: TransactionObjectInput | TransactionArgument | null
-}
-
-export function newRequest(tx: Transaction, typeArg: string, args: NewRequestArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::new_request`,
-    typeArguments: [typeArg],
-    arguments: [
-      pure(tx, args.name, `${String.$typeName}`),
-      pure(tx, args.amount, `u64`),
-      pure(tx, args.recipient, `${Option.$typeName}<address>`),
-      option(tx, `${Balance.$typeName}<${typeArg}>`, args.spentBalance),
-    ],
-  })
-}
-
-export interface RulesArgs {
-  self: TransactionObjectInput
-  action: string | TransactionArgument
-}
-
-export function rules(tx: Transaction, typeArg: string, args: RulesArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::rules`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), pure(tx, args.action, `${String.$typeName}`)],
-  })
-}
-
-export function keep(tx: Transaction, typeArg: string, token: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::keep`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, token)],
-  })
-}
-
 export function action(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::token::action`,
@@ -265,11 +72,63 @@ export function addRuleForAction(
   })
 }
 
+export interface AllowArgs {
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
+  action: string | TransactionArgument
+}
+
+export function allow(tx: Transaction, typeArg: string, args: AllowArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::allow`,
+    typeArguments: [typeArg],
+    arguments: [
+      obj(tx, args.self),
+      obj(tx, args.cap),
+      pure(tx, args.action, `${String.$typeName}`),
+    ],
+  })
+}
+
+export function amount(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::amount`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, self)],
+  })
+}
+
 export function approvals(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::token::approvals`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
+  })
+}
+
+export interface BurnArgs {
+  cap: TransactionObjectInput
+  token: TransactionObjectInput
+}
+
+export function burn(tx: Transaction, typeArg: string, args: BurnArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::burn`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.cap), obj(tx, args.token)],
+  })
+}
+
+export interface ConfirmRequestArgs {
+  policy: TransactionObjectInput
+  request: TransactionObjectInput
+}
+
+export function confirmRequest(tx: Transaction, typeArg: string, args: ConfirmRequestArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::confirm_request`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.policy), obj(tx, args.request)],
   })
 }
 
@@ -317,6 +176,14 @@ export function confirmWithTreasuryCap(
     target: `${PUBLISHED_AT}::token::confirm_with_treasury_cap`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.treasuryCap), obj(tx, args.request)],
+  })
+}
+
+export function destroyZero(tx: Transaction, typeArg: string, token: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::destroy_zero`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, token)],
   })
 }
 
@@ -400,6 +267,48 @@ export function isAllowed(tx: Transaction, typeArg: string, args: IsAllowedArgs)
   })
 }
 
+export interface JoinArgs {
+  token: TransactionObjectInput
+  another: TransactionObjectInput
+}
+
+export function join(tx: Transaction, typeArg: string, args: JoinArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::join`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.token), obj(tx, args.another)],
+  })
+}
+
+export function keep(tx: Transaction, typeArg: string, token: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::keep`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, token)],
+  })
+}
+
+export function key(tx: Transaction, typeArg: string) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::key`,
+    typeArguments: [typeArg],
+    arguments: [],
+  })
+}
+
+export interface MintArgs {
+  cap: TransactionObjectInput
+  amount: bigint | TransactionArgument
+}
+
+export function mint(tx: Transaction, typeArg: string, args: MintArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::mint`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.cap), pure(tx, args.amount, `u64`)],
+  })
+}
+
 export function newPolicy(tx: Transaction, typeArg: string, treasuryCap: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::token::new_policy`,
@@ -408,9 +317,29 @@ export function newPolicy(tx: Transaction, typeArg: string, treasuryCap: Transac
   })
 }
 
-export function spentBalance(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export interface NewRequestArgs {
+  name: string | TransactionArgument
+  amount: bigint | TransactionArgument
+  recipient: string | TransactionArgument | TransactionArgument | null
+  spentBalance: TransactionObjectInput | TransactionArgument | null
+}
+
+export function newRequest(tx: Transaction, typeArg: string, args: NewRequestArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::spent_balance`,
+    target: `${PUBLISHED_AT}::token::new_request`,
+    typeArguments: [typeArg],
+    arguments: [
+      pure(tx, args.name, `${String.$typeName}`),
+      pure(tx, args.amount, `u64`),
+      pure(tx, args.recipient, `${Option.$typeName}<address>`),
+      option(tx, `${Balance.$typeName}<${typeArg}>`, args.spentBalance),
+    ],
+  })
+}
+
+export function recipient(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::recipient`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -490,6 +419,27 @@ export function ruleConfigMut(
   })
 }
 
+export interface RulesArgs {
+  self: TransactionObjectInput
+  action: string | TransactionArgument
+}
+
+export function rules(tx: Transaction, typeArg: string, args: RulesArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::rules`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.self), pure(tx, args.action, `${String.$typeName}`)],
+  })
+}
+
+export function sender(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::sender`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, self)],
+  })
+}
+
 export function sharePolicy(tx: Transaction, typeArg: string, policy: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::token::share_policy`,
@@ -518,6 +468,27 @@ export function spent(tx: Transaction, typeArg: string, self: TransactionObjectI
   })
 }
 
+export function spentBalance(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::spent_balance`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, self)],
+  })
+}
+
+export interface SplitArgs {
+  token: TransactionObjectInput
+  amount: bigint | TransactionArgument
+}
+
+export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::split`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.token), pure(tx, args.amount, `u64`)],
+  })
+}
+
 export function toCoin(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::token::to_coin`,
@@ -530,6 +501,35 @@ export function toCoinAction(tx: Transaction) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::token::to_coin_action`, arguments: [] })
 }
 
+export interface TransferArgs {
+  t: TransactionObjectInput
+  recipient: string | TransactionArgument
+}
+
+export function transfer(tx: Transaction, typeArg: string, args: TransferArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::transfer`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.t), pure(tx, args.recipient, `address`)],
+  })
+}
+
 export function transferAction(tx: Transaction) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::token::transfer_action`, arguments: [] })
+}
+
+export function value(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::value`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, t)],
+  })
+}
+
+export function zero(tx: Transaction, typeArg: string) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::zero`,
+    typeArguments: [typeArg],
+    arguments: [],
+  })
 }

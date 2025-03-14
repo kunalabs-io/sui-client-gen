@@ -2,6 +2,24 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj } from '../../_framework/util'
 import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
 
+export interface AddArgs {
+  table: TransactionObjectInput
+  k: GenericArg
+  v: GenericArg
+}
+
+export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object_table::add`,
+    typeArguments: typeArgs,
+    arguments: [
+      obj(tx, args.table),
+      generic(tx, `${typeArgs[0]}`, args.k),
+      generic(tx, `${typeArgs[1]}`, args.v),
+    ],
+  })
+}
+
 export interface BorrowArgs {
   table: TransactionObjectInput
   k: GenericArg
@@ -73,6 +91,14 @@ export function length(tx: Transaction, typeArgs: [string, string], table: Trans
   })
 }
 
+export function new_(tx: Transaction, typeArgs: [string, string]) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object_table::new`,
+    typeArguments: typeArgs,
+    arguments: [],
+  })
+}
+
 export interface RemoveArgs {
   table: TransactionObjectInput
   k: GenericArg
@@ -83,32 +109,6 @@ export function remove(tx: Transaction, typeArgs: [string, string], args: Remove
     target: `${PUBLISHED_AT}::object_table::remove`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.table), generic(tx, `${typeArgs[0]}`, args.k)],
-  })
-}
-
-export function new_(tx: Transaction, typeArgs: [string, string]) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::object_table::new`,
-    typeArguments: typeArgs,
-    arguments: [],
-  })
-}
-
-export interface AddArgs {
-  table: TransactionObjectInput
-  k: GenericArg
-  v: GenericArg
-}
-
-export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::object_table::add`,
-    typeArguments: typeArgs,
-    arguments: [
-      obj(tx, args.table),
-      generic(tx, `${typeArgs[0]}`, args.k),
-      generic(tx, `${typeArgs[1]}`, args.v),
-    ],
   })
 }
 

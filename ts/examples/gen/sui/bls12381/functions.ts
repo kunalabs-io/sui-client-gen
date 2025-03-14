@@ -4,18 +4,6 @@ import { Element } from '../group-ops/structs'
 import { G1, G2, Scalar } from './structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export interface PairingArgs {
-  e1: TransactionObjectInput
-  e2: TransactionObjectInput
-}
-
-export function pairing(tx: Transaction, args: PairingArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::bls12381::pairing`,
-    arguments: [obj(tx, args.e1), obj(tx, args.e2)],
-  })
-}
-
 export interface Bls12381MinPkVerifyArgs {
   signature: Array<number | TransactionArgument> | TransactionArgument
   publicKey: Array<number | TransactionArgument> | TransactionArgument
@@ -303,6 +291,18 @@ export function hashToG2(
   return tx.moveCall({
     target: `${PUBLISHED_AT}::bls12381::hash_to_g2`,
     arguments: [pure(tx, m, `vector<u8>`)],
+  })
+}
+
+export interface PairingArgs {
+  e1: TransactionObjectInput
+  e2: TransactionObjectInput
+}
+
+export function pairing(tx: Transaction, args: PairingArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bls12381::pairing`,
+    arguments: [obj(tx, args.e1), obj(tx, args.e2)],
   })
 }
 

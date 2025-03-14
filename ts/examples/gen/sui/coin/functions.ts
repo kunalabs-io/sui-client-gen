@@ -5,69 +5,11 @@ import { GenericArg, generic, obj, option, pure } from '../../_framework/util'
 import { Url } from '../url/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function value(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin::value`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, self)],
-  })
-}
-
 export function balance(tx: Transaction, typeArg: string, coin: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::coin::balance`,
     typeArguments: [typeArg],
     arguments: [obj(tx, coin)],
-  })
-}
-
-export function destroyZero(tx: Transaction, typeArg: string, c: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin::destroy_zero`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, c)],
-  })
-}
-
-export interface JoinArgs {
-  self: TransactionObjectInput
-  c: TransactionObjectInput
-}
-
-export function join(tx: Transaction, typeArg: string, args: JoinArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin::join`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), obj(tx, args.c)],
-  })
-}
-
-export interface SplitArgs {
-  self: TransactionObjectInput
-  splitAmount: bigint | TransactionArgument
-}
-
-export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin::split`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), pure(tx, args.splitAmount, `u64`)],
-  })
-}
-
-export function supply(tx: Transaction, typeArg: string, treasury: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin::supply`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, treasury)],
-  })
-}
-
-export function zero(tx: Transaction, typeArg: string) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin::zero`,
-    typeArguments: [typeArg],
-    arguments: [],
   })
 }
 
@@ -185,6 +127,14 @@ export function denyListRemove(tx: Transaction, typeArg: string, args: DenyListR
   })
 }
 
+export function destroyZero(tx: Transaction, typeArg: string, c: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin::destroy_zero`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, c)],
+  })
+}
+
 export interface DivideIntoNArgs {
   self: TransactionObjectInput
   n: bigint | TransactionArgument
@@ -254,6 +204,19 @@ export function intoBalance(tx: Transaction, typeArg: string, coin: TransactionO
   })
 }
 
+export interface JoinArgs {
+  self: TransactionObjectInput
+  c: TransactionObjectInput
+}
+
+export function join(tx: Transaction, typeArg: string, args: JoinArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin::join`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.self), obj(tx, args.c)],
+  })
+}
+
 export interface MintArgs {
   cap: TransactionObjectInput
   value: bigint | TransactionArgument
@@ -304,6 +267,27 @@ export function put(tx: Transaction, typeArg: string, args: PutArgs) {
     target: `${PUBLISHED_AT}::coin::put`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.balance), obj(tx, args.coin)],
+  })
+}
+
+export interface SplitArgs {
+  self: TransactionObjectInput
+  splitAmount: bigint | TransactionArgument
+}
+
+export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin::split`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.self), pure(tx, args.splitAmount, `u64`)],
+  })
+}
+
+export function supply(tx: Transaction, typeArg: string, treasury: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin::supply`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, treasury)],
   })
 }
 
@@ -425,5 +409,21 @@ export function updateSymbol(tx: Transaction, typeArg: string, args: UpdateSymbo
       obj(tx, args.metadata),
       pure(tx, args.symbol, `${String1.$typeName}`),
     ],
+  })
+}
+
+export function value(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin::value`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, self)],
+  })
+}
+
+export function zero(tx: Transaction, typeArg: string) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin::zero`,
+    typeArguments: [typeArg],
+    arguments: [],
   })
 }

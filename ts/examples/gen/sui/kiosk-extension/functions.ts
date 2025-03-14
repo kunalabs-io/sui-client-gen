@@ -2,19 +2,6 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export interface RemoveArgs {
-  self: TransactionObjectInput
-  cap: TransactionObjectInput
-}
-
-export function remove(tx: Transaction, typeArg: string, args: RemoveArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk_extension::remove`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), obj(tx, args.cap)],
-  })
-}
-
 export interface AddArgs {
   ext: GenericArg
   self: TransactionObjectInput
@@ -31,46 +18,6 @@ export function add(tx: Transaction, typeArg: string, args: AddArgs) {
       obj(tx, args.self),
       obj(tx, args.cap),
       pure(tx, args.permissions, `u128`),
-    ],
-  })
-}
-
-export interface LockArgs {
-  ext: GenericArg
-  self: TransactionObjectInput
-  item: GenericArg
-  policy: TransactionObjectInput
-}
-
-export function lock(tx: Transaction, typeArgs: [string, string], args: LockArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk_extension::lock`,
-    typeArguments: typeArgs,
-    arguments: [
-      generic(tx, `${typeArgs[0]}`, args.ext),
-      obj(tx, args.self),
-      generic(tx, `${typeArgs[1]}`, args.item),
-      obj(tx, args.policy),
-    ],
-  })
-}
-
-export interface PlaceArgs {
-  ext: GenericArg
-  self: TransactionObjectInput
-  item: GenericArg
-  policy: TransactionObjectInput
-}
-
-export function place(tx: Transaction, typeArgs: [string, string], args: PlaceArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk_extension::place`,
-    typeArguments: typeArgs,
-    arguments: [
-      generic(tx, `${typeArgs[0]}`, args.ext),
-      obj(tx, args.self),
-      generic(tx, `${typeArgs[1]}`, args.item),
-      obj(tx, args.policy),
     ],
   })
 }
@@ -146,6 +93,59 @@ export function isInstalled(tx: Transaction, typeArg: string, self: TransactionO
     target: `${PUBLISHED_AT}::kiosk_extension::is_installed`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
+  })
+}
+
+export interface LockArgs {
+  ext: GenericArg
+  self: TransactionObjectInput
+  item: GenericArg
+  policy: TransactionObjectInput
+}
+
+export function lock(tx: Transaction, typeArgs: [string, string], args: LockArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk_extension::lock`,
+    typeArguments: typeArgs,
+    arguments: [
+      generic(tx, `${typeArgs[0]}`, args.ext),
+      obj(tx, args.self),
+      generic(tx, `${typeArgs[1]}`, args.item),
+      obj(tx, args.policy),
+    ],
+  })
+}
+
+export interface PlaceArgs {
+  ext: GenericArg
+  self: TransactionObjectInput
+  item: GenericArg
+  policy: TransactionObjectInput
+}
+
+export function place(tx: Transaction, typeArgs: [string, string], args: PlaceArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk_extension::place`,
+    typeArguments: typeArgs,
+    arguments: [
+      generic(tx, `${typeArgs[0]}`, args.ext),
+      obj(tx, args.self),
+      generic(tx, `${typeArgs[1]}`, args.item),
+      obj(tx, args.policy),
+    ],
+  })
+}
+
+export interface RemoveArgs {
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
+}
+
+export function remove(tx: Transaction, typeArg: string, args: RemoveArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk_extension::remove`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.self), obj(tx, args.cap)],
   })
 }
 

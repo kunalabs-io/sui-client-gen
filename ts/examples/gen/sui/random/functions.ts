@@ -6,17 +6,6 @@ export function create(tx: Transaction) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::random::create`, arguments: [] })
 }
 
-export function loadInner(tx: Transaction, self: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::random::load_inner`, arguments: [obj(tx, self)] })
-}
-
-export function loadInnerMut(tx: Transaction, self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::random::load_inner_mut`,
-    arguments: [obj(tx, self)],
-  })
-}
-
 export function deriveNextBlock(tx: Transaction, g: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::random::derive_next_block`,
@@ -130,6 +119,17 @@ export function generateU8InRange(tx: Transaction, args: GenerateU8InRangeArgs) 
   return tx.moveCall({
     target: `${PUBLISHED_AT}::random::generate_u8_in_range`,
     arguments: [obj(tx, args.g), pure(tx, args.min, `u8`), pure(tx, args.max, `u8`)],
+  })
+}
+
+export function loadInner(tx: Transaction, self: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::random::load_inner`, arguments: [obj(tx, self)] })
+}
+
+export function loadInnerMut(tx: Transaction, self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::random::load_inner_mut`,
+    arguments: [obj(tx, self)],
   })
 }
 

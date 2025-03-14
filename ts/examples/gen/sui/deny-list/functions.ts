@@ -2,44 +2,6 @@ import { PUBLISHED_AT } from '..'
 import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export interface ContainsArgs {
-  denyList: TransactionObjectInput
-  perTypeIndex: bigint | TransactionArgument
-  type: Array<number | TransactionArgument> | TransactionArgument
-  addr: string | TransactionArgument
-}
-
-export function contains(tx: Transaction, args: ContainsArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::deny_list::contains`,
-    arguments: [
-      obj(tx, args.denyList),
-      pure(tx, args.perTypeIndex, `u64`),
-      pure(tx, args.type, `vector<u8>`),
-      pure(tx, args.addr, `address`),
-    ],
-  })
-}
-
-export interface RemoveArgs {
-  denyList: TransactionObjectInput
-  perTypeIndex: bigint | TransactionArgument
-  type: Array<number | TransactionArgument> | TransactionArgument
-  addr: string | TransactionArgument
-}
-
-export function remove(tx: Transaction, args: RemoveArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::deny_list::remove`,
-    arguments: [
-      obj(tx, args.denyList),
-      pure(tx, args.perTypeIndex, `u64`),
-      pure(tx, args.type, `vector<u8>`),
-      pure(tx, args.addr, `address`),
-    ],
-  })
-}
-
 export interface AddArgs {
   denyList: TransactionObjectInput
   perTypeIndex: bigint | TransactionArgument
@@ -50,6 +12,25 @@ export interface AddArgs {
 export function add(tx: Transaction, args: AddArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::deny_list::add`,
+    arguments: [
+      obj(tx, args.denyList),
+      pure(tx, args.perTypeIndex, `u64`),
+      pure(tx, args.type, `vector<u8>`),
+      pure(tx, args.addr, `address`),
+    ],
+  })
+}
+
+export interface ContainsArgs {
+  denyList: TransactionObjectInput
+  perTypeIndex: bigint | TransactionArgument
+  type: Array<number | TransactionArgument> | TransactionArgument
+  addr: string | TransactionArgument
+}
+
+export function contains(tx: Transaction, args: ContainsArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::deny_list::contains`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -112,6 +93,25 @@ export function perTypeListRemove(tx: Transaction, args: PerTypeListRemoveArgs) 
     target: `${PUBLISHED_AT}::deny_list::per_type_list_remove`,
     arguments: [
       obj(tx, args.list),
+      pure(tx, args.type, `vector<u8>`),
+      pure(tx, args.addr, `address`),
+    ],
+  })
+}
+
+export interface RemoveArgs {
+  denyList: TransactionObjectInput
+  perTypeIndex: bigint | TransactionArgument
+  type: Array<number | TransactionArgument> | TransactionArgument
+  addr: string | TransactionArgument
+}
+
+export function remove(tx: Transaction, args: RemoveArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::deny_list::remove`,
+    arguments: [
+      obj(tx, args.denyList),
+      pure(tx, args.perTypeIndex, `u64`),
       pure(tx, args.type, `vector<u8>`),
       pure(tx, args.addr, `address`),
     ],
