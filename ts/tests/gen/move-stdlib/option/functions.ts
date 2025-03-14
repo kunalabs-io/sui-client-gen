@@ -26,32 +26,6 @@ export function borrowMut(
   })
 }
 
-export interface ContainsArgs {
-  t: GenericArg | TransactionArgument | null
-  eRef: GenericArg
-}
-
-export function contains(tx: Transaction, typeArg: string, args: ContainsArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::option::contains`,
-    typeArguments: [typeArg],
-    arguments: [option(tx, `${typeArg}`, args.t), generic(tx, `${typeArg}`, args.eRef)],
-  })
-}
-
-export interface SwapArgs {
-  t: GenericArg | TransactionArgument | null
-  e: GenericArg
-}
-
-export function swap(tx: Transaction, typeArg: string, args: SwapArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::option::swap`,
-    typeArguments: [typeArg],
-    arguments: [option(tx, `${typeArg}`, args.t), generic(tx, `${typeArg}`, args.e)],
-  })
-}
-
 export interface BorrowWithDefaultArgs {
   t: GenericArg | TransactionArgument | null
   defaultRef: GenericArg
@@ -62,6 +36,19 @@ export function borrowWithDefault(tx: Transaction, typeArg: string, args: Borrow
     target: `${PUBLISHED_AT}::option::borrow_with_default`,
     typeArguments: [typeArg],
     arguments: [option(tx, `${typeArg}`, args.t), generic(tx, `${typeArg}`, args.defaultRef)],
+  })
+}
+
+export interface ContainsArgs {
+  t: GenericArg | TransactionArgument | null
+  eRef: GenericArg
+}
+
+export function contains(tx: Transaction, typeArg: string, args: ContainsArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::option::contains`,
+    typeArguments: [typeArg],
+    arguments: [option(tx, `${typeArg}`, args.t), generic(tx, `${typeArg}`, args.eRef)],
   })
 }
 
@@ -177,6 +164,19 @@ export function some(tx: Transaction, typeArg: string, e: GenericArg) {
     target: `${PUBLISHED_AT}::option::some`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, e)],
+  })
+}
+
+export interface SwapArgs {
+  t: GenericArg | TransactionArgument | null
+  e: GenericArg
+}
+
+export function swap(tx: Transaction, typeArg: string, args: SwapArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::option::swap`,
+    typeArguments: [typeArg],
+    arguments: [option(tx, `${typeArg}`, args.t), generic(tx, `${typeArg}`, args.e)],
   })
 }
 

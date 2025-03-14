@@ -2,13 +2,6 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function version(tx: Transaction, versioned: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::versioned::version`,
-    arguments: [obj(tx, versioned)],
-  })
-}
-
 export interface CreateArgs {
   u64: bigint | TransactionArgument
   t0: GenericArg
@@ -75,5 +68,12 @@ export function upgrade(tx: Transaction, typeArg: string, args: UpgradeArgs) {
       generic(tx, `${typeArg}`, args.t0),
       obj(tx, args.versionChangeCap),
     ],
+  })
+}
+
+export function version(tx: Transaction, versioned: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::versioned::version`,
+    arguments: [obj(tx, versioned)],
   })
 }

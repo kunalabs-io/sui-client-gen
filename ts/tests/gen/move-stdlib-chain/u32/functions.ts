@@ -9,30 +9,6 @@ export function bitwiseNot(tx: Transaction, u32: number | TransactionArgument) {
   })
 }
 
-export interface MaxArgs {
-  u321: number | TransactionArgument
-  u322: number | TransactionArgument
-}
-
-export function max(tx: Transaction, args: MaxArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::u32::max`,
-    arguments: [pure(tx, args.u321, `u32`), pure(tx, args.u322, `u32`)],
-  })
-}
-
-export interface MinArgs {
-  u321: number | TransactionArgument
-  u322: number | TransactionArgument
-}
-
-export function min(tx: Transaction, args: MinArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::u32::min`,
-    arguments: [pure(tx, args.u321, `u32`), pure(tx, args.u322, `u32`)],
-  })
-}
-
 export interface DiffArgs {
   u321: number | TransactionArgument
   u322: number | TransactionArgument
@@ -57,6 +33,30 @@ export function divideAndRoundUp(tx: Transaction, args: DivideAndRoundUpArgs) {
   })
 }
 
+export interface MaxArgs {
+  u321: number | TransactionArgument
+  u322: number | TransactionArgument
+}
+
+export function max(tx: Transaction, args: MaxArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u32::max`,
+    arguments: [pure(tx, args.u321, `u32`), pure(tx, args.u322, `u32`)],
+  })
+}
+
+export interface MinArgs {
+  u321: number | TransactionArgument
+  u322: number | TransactionArgument
+}
+
+export function min(tx: Transaction, args: MinArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u32::min`,
+    arguments: [pure(tx, args.u321, `u32`), pure(tx, args.u322, `u32`)],
+  })
+}
+
 export interface PowArgs {
   u32: number | TransactionArgument
   u8: number | TransactionArgument
@@ -73,9 +73,9 @@ export function sqrt(tx: Transaction, u32: number | TransactionArgument) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::u32::sqrt`, arguments: [pure(tx, u32, `u32`)] })
 }
 
-export function tryAsU8(tx: Transaction, u32: number | TransactionArgument) {
+export function toString(tx: Transaction, u32: number | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u32::try_as_u8`,
+    target: `${PUBLISHED_AT}::u32::to_string`,
     arguments: [pure(tx, u32, `u32`)],
   })
 }
@@ -87,9 +87,9 @@ export function tryAsU16(tx: Transaction, u32: number | TransactionArgument) {
   })
 }
 
-export function toString(tx: Transaction, u32: number | TransactionArgument) {
+export function tryAsU8(tx: Transaction, u32: number | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u32::to_string`,
+    target: `${PUBLISHED_AT}::u32::try_as_u8`,
     arguments: [pure(tx, u32, `u32`)],
   })
 }

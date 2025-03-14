@@ -3,9 +3,9 @@ import { obj, pure } from '../../_framework/util'
 import { String } from './structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function length(tx: Transaction, string: string | TransactionArgument) {
+export function allCharactersPrintable(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::ascii::length`,
+    target: `${PUBLISHED_AT}::ascii::all_characters_printable`,
     arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
@@ -25,10 +25,32 @@ export function append(tx: Transaction, args: AppendArgs) {
   })
 }
 
-export function isEmpty(tx: Transaction, string: string | TransactionArgument) {
+export function asBytes(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::ascii::is_empty`,
+    target: `${PUBLISHED_AT}::ascii::as_bytes`,
     arguments: [pure(tx, string, `${String.$typeName}`)],
+  })
+}
+
+export function byte_(tx: Transaction, char: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::ascii::byte`, arguments: [obj(tx, char)] })
+}
+
+export function char_(tx: Transaction, u8: number | TransactionArgument) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::ascii::char`, arguments: [pure(tx, u8, `u8`)] })
+}
+
+export function charToLowercase(tx: Transaction, u8: number | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::ascii::char_to_lowercase`,
+    arguments: [pure(tx, u8, `u8`)],
+  })
+}
+
+export function charToUppercase(tx: Transaction, u8: number | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::ascii::char_to_uppercase`,
+    arguments: [pure(tx, u8, `u8`)],
   })
 }
 
@@ -64,33 +86,44 @@ export function insert(tx: Transaction, args: InsertArgs) {
   })
 }
 
-export function char_(tx: Transaction, u8: number | TransactionArgument) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::ascii::char`, arguments: [pure(tx, u8, `u8`)] })
-}
-
-export function string(
-  tx: Transaction,
-  vecU8: Array<number | TransactionArgument> | TransactionArgument
-) {
+export function intoBytes(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::ascii::string`,
-    arguments: [pure(tx, vecU8, `vector<u8>`)],
+    target: `${PUBLISHED_AT}::ascii::into_bytes`,
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
-export function tryString(
-  tx: Transaction,
-  vecU8: Array<number | TransactionArgument> | TransactionArgument
-) {
+export function isEmpty(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::ascii::try_string`,
-    arguments: [pure(tx, vecU8, `vector<u8>`)],
+    target: `${PUBLISHED_AT}::ascii::is_empty`,
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
-export function allCharactersPrintable(tx: Transaction, string: string | TransactionArgument) {
+export function isPrintableChar(tx: Transaction, u8: number | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::ascii::all_characters_printable`,
+    target: `${PUBLISHED_AT}::ascii::is_printable_char`,
+    arguments: [pure(tx, u8, `u8`)],
+  })
+}
+
+export function isValidChar(tx: Transaction, u8: number | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::ascii::is_valid_char`,
+    arguments: [pure(tx, u8, `u8`)],
+  })
+}
+
+export function length(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::ascii::length`,
+    arguments: [pure(tx, string, `${String.$typeName}`)],
+  })
+}
+
+export function popChar(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::ascii::pop_char`,
     arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
@@ -107,10 +140,13 @@ export function pushChar(tx: Transaction, args: PushCharArgs) {
   })
 }
 
-export function popChar(tx: Transaction, string: string | TransactionArgument) {
+export function string(
+  tx: Transaction,
+  vecU8: Array<number | TransactionArgument> | TransactionArgument
+) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::ascii::pop_char`,
-    arguments: [pure(tx, string, `${String.$typeName}`)],
+    target: `${PUBLISHED_AT}::ascii::string`,
+    arguments: [pure(tx, vecU8, `vector<u8>`)],
   })
 }
 
@@ -131,35 +167,10 @@ export function substring(tx: Transaction, args: SubstringArgs) {
   })
 }
 
-export function asBytes(tx: Transaction, string: string | TransactionArgument) {
+export function toLowercase(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::ascii::as_bytes`,
+    target: `${PUBLISHED_AT}::ascii::to_lowercase`,
     arguments: [pure(tx, string, `${String.$typeName}`)],
-  })
-}
-
-export function intoBytes(tx: Transaction, string: string | TransactionArgument) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::ascii::into_bytes`,
-    arguments: [pure(tx, string, `${String.$typeName}`)],
-  })
-}
-
-export function byte_(tx: Transaction, char: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::ascii::byte`, arguments: [obj(tx, char)] })
-}
-
-export function isValidChar(tx: Transaction, u8: number | TransactionArgument) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::ascii::is_valid_char`,
-    arguments: [pure(tx, u8, `u8`)],
-  })
-}
-
-export function isPrintableChar(tx: Transaction, u8: number | TransactionArgument) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::ascii::is_printable_char`,
-    arguments: [pure(tx, u8, `u8`)],
   })
 }
 
@@ -170,23 +181,12 @@ export function toUppercase(tx: Transaction, string: string | TransactionArgumen
   })
 }
 
-export function toLowercase(tx: Transaction, string: string | TransactionArgument) {
+export function tryString(
+  tx: Transaction,
+  vecU8: Array<number | TransactionArgument> | TransactionArgument
+) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::ascii::to_lowercase`,
-    arguments: [pure(tx, string, `${String.$typeName}`)],
-  })
-}
-
-export function charToUppercase(tx: Transaction, u8: number | TransactionArgument) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::ascii::char_to_uppercase`,
-    arguments: [pure(tx, u8, `u8`)],
-  })
-}
-
-export function charToLowercase(tx: Transaction, u8: number | TransactionArgument) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::ascii::char_to_lowercase`,
-    arguments: [pure(tx, u8, `u8`)],
+    target: `${PUBLISHED_AT}::ascii::try_string`,
+    arguments: [pure(tx, vecU8, `vector<u8>`)],
   })
 }

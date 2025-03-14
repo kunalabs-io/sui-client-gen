@@ -2,6 +2,24 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj } from '../../_framework/util'
 import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
 
+export interface AddArgs {
+  uid: TransactionObjectInput
+  t0: GenericArg
+  t1: GenericArg
+}
+
+export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::dynamic_object_field::add`,
+    typeArguments: typeArgs,
+    arguments: [
+      obj(tx, args.uid),
+      generic(tx, `${typeArgs[0]}`, args.t0),
+      generic(tx, `${typeArgs[1]}`, args.t1),
+    ],
+  })
+}
+
 export interface BorrowArgs {
   uid: TransactionObjectInput
   t0: GenericArg
@@ -25,50 +43,6 @@ export function borrowMut(tx: Transaction, typeArgs: [string, string], args: Bor
     target: `${PUBLISHED_AT}::dynamic_object_field::borrow_mut`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.uid), generic(tx, `${typeArgs[0]}`, args.t0)],
-  })
-}
-
-export interface RemoveArgs {
-  uid: TransactionObjectInput
-  t0: GenericArg
-}
-
-export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_object_field::remove`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, args.uid), generic(tx, `${typeArgs[0]}`, args.t0)],
-  })
-}
-
-export interface AddArgs {
-  uid: TransactionObjectInput
-  t0: GenericArg
-  t1: GenericArg
-}
-
-export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_object_field::add`,
-    typeArguments: typeArgs,
-    arguments: [
-      obj(tx, args.uid),
-      generic(tx, `${typeArgs[0]}`, args.t0),
-      generic(tx, `${typeArgs[1]}`, args.t1),
-    ],
-  })
-}
-
-export interface IdArgs {
-  uid: TransactionObjectInput
-  t0: GenericArg
-}
-
-export function id(tx: Transaction, typeArg: string, args: IdArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_object_field::id`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.uid), generic(tx, `${typeArg}`, args.t0)],
   })
 }
 
@@ -99,6 +73,19 @@ export function existsWithType(
     target: `${PUBLISHED_AT}::dynamic_object_field::exists_with_type`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.uid), generic(tx, `${typeArgs[0]}`, args.t0)],
+  })
+}
+
+export interface IdArgs {
+  uid: TransactionObjectInput
+  t0: GenericArg
+}
+
+export function id(tx: Transaction, typeArg: string, args: IdArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::dynamic_object_field::id`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.uid), generic(tx, `${typeArg}`, args.t0)],
   })
 }
 
@@ -154,6 +141,23 @@ export function internalBorrowMut(
   })
 }
 
+export interface InternalExistsWithTypeArgs {
+  uid: TransactionObjectInput
+  t0: GenericArg
+}
+
+export function internalExistsWithType(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: InternalExistsWithTypeArgs
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::dynamic_object_field::internal_exists_with_type`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.uid), generic(tx, `${typeArgs[0]}`, args.t0)],
+  })
+}
+
 export interface InternalRemoveArgs {
   uid: TransactionObjectInput
   t0: GenericArg
@@ -171,18 +175,14 @@ export function internalRemove(
   })
 }
 
-export interface InternalExistsWithTypeArgs {
+export interface RemoveArgs {
   uid: TransactionObjectInput
   t0: GenericArg
 }
 
-export function internalExistsWithType(
-  tx: Transaction,
-  typeArgs: [string, string],
-  args: InternalExistsWithTypeArgs
-) {
+export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_object_field::internal_exists_with_type`,
+    target: `${PUBLISHED_AT}::dynamic_object_field::remove`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.uid), generic(tx, `${typeArgs[0]}`, args.t0)],
   })

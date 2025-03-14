@@ -4,30 +4,6 @@ import { Option } from '../../move-stdlib/option/structs'
 import { ID } from '../object/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function default_(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::default`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, pub)],
-  })
-}
-
-export function new_(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::new`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, pub)],
-  })
-}
-
-export function uid(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::uid`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, self)],
-  })
-}
-
 export interface AddReceiptArgs {
   rule: GenericArg
   request: TransactionObjectInput
@@ -88,6 +64,14 @@ export function confirmRequest(tx: Transaction, typeArg: string, args: ConfirmRe
   })
 }
 
+export function default_(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::transfer_policy::default`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, pub)],
+  })
+}
+
 export interface DestroyAndWithdrawArgs {
   self: TransactionObjectInput
   cap: TransactionObjectInput
@@ -142,6 +126,14 @@ export function item(tx: Transaction, typeArg: string, self: TransactionObjectIn
   })
 }
 
+export function new_(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::transfer_policy::new`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, pub)],
+  })
+}
+
 export interface NewRequestArgs {
   item: string | TransactionArgument
   paid: bigint | TransactionArgument
@@ -188,6 +180,14 @@ export function removeRule(
 export function rules(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer_policy::rules`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, self)],
+  })
+}
+
+export function uid(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::transfer_policy::uid`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })

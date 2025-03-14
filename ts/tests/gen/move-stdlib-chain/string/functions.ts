@@ -4,13 +4,6 @@ import { String as String1 } from '../ascii/structs'
 import { String } from './structs'
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
-export function length(tx: Transaction, string: string | TransactionArgument) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::string::length`,
-    arguments: [pure(tx, string, `${String.$typeName}`)],
-  })
-}
-
 export interface AppendArgs {
   string1: string | TransactionArgument
   string2: string | TransactionArgument
@@ -26,10 +19,36 @@ export function append(tx: Transaction, args: AppendArgs) {
   })
 }
 
-export function isEmpty(tx: Transaction, string: string | TransactionArgument) {
+export interface AppendUtf8Args {
+  string: string | TransactionArgument
+  vecU8: Array<number | TransactionArgument> | TransactionArgument
+}
+
+export function appendUtf8(tx: Transaction, args: AppendUtf8Args) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::string::is_empty`,
+    target: `${PUBLISHED_AT}::string::append_utf8`,
+    arguments: [pure(tx, args.string, `${String.$typeName}`), pure(tx, args.vecU8, `vector<u8>`)],
+  })
+}
+
+export function asBytes(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::string::as_bytes`,
     arguments: [pure(tx, string, `${String.$typeName}`)],
+  })
+}
+
+export function bytes(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::string::bytes`,
+    arguments: [pure(tx, string, `${String.$typeName}`)],
+  })
+}
+
+export function fromAscii(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::string::from_ascii`,
+    arguments: [pure(tx, string, `${String1.$typeName}`)],
   })
 }
 
@@ -65,90 +84,6 @@ export function insert(tx: Transaction, args: InsertArgs) {
   })
 }
 
-export interface SubstringArgs {
-  string: string | TransactionArgument
-  u641: bigint | TransactionArgument
-  u642: bigint | TransactionArgument
-}
-
-export function substring(tx: Transaction, args: SubstringArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::string::substring`,
-    arguments: [
-      pure(tx, args.string, `${String.$typeName}`),
-      pure(tx, args.u641, `u64`),
-      pure(tx, args.u642, `u64`),
-    ],
-  })
-}
-
-export function asBytes(tx: Transaction, string: string | TransactionArgument) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::string::as_bytes`,
-    arguments: [pure(tx, string, `${String.$typeName}`)],
-  })
-}
-
-export function intoBytes(tx: Transaction, string: string | TransactionArgument) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::string::into_bytes`,
-    arguments: [pure(tx, string, `${String.$typeName}`)],
-  })
-}
-
-export function bytes(tx: Transaction, string: string | TransactionArgument) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::string::bytes`,
-    arguments: [pure(tx, string, `${String.$typeName}`)],
-  })
-}
-
-export function utf8(
-  tx: Transaction,
-  vecU8: Array<number | TransactionArgument> | TransactionArgument
-) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::string::utf8`,
-    arguments: [pure(tx, vecU8, `vector<u8>`)],
-  })
-}
-
-export function fromAscii(tx: Transaction, string: string | TransactionArgument) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::string::from_ascii`,
-    arguments: [pure(tx, string, `${String1.$typeName}`)],
-  })
-}
-
-export function toAscii(tx: Transaction, string: string | TransactionArgument) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::string::to_ascii`,
-    arguments: [pure(tx, string, `${String.$typeName}`)],
-  })
-}
-
-export function tryUtf8(
-  tx: Transaction,
-  vecU8: Array<number | TransactionArgument> | TransactionArgument
-) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::string::try_utf8`,
-    arguments: [pure(tx, vecU8, `vector<u8>`)],
-  })
-}
-
-export interface AppendUtf8Args {
-  string: string | TransactionArgument
-  vecU8: Array<number | TransactionArgument> | TransactionArgument
-}
-
-export function appendUtf8(tx: Transaction, args: AppendUtf8Args) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::string::append_utf8`,
-    arguments: [pure(tx, args.string, `${String.$typeName}`), pure(tx, args.vecU8, `vector<u8>`)],
-  })
-}
-
 export function internalCheckUtf8(
   tx: Transaction,
   vecU8: Array<number | TransactionArgument> | TransactionArgument
@@ -156,6 +91,18 @@ export function internalCheckUtf8(
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::internal_check_utf8`,
     arguments: [pure(tx, vecU8, `vector<u8>`)],
+  })
+}
+
+export interface InternalIndexOfArgs {
+  vecU81: Array<number | TransactionArgument> | TransactionArgument
+  vecU82: Array<number | TransactionArgument> | TransactionArgument
+}
+
+export function internalIndexOf(tx: Transaction, args: InternalIndexOfArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::string::internal_index_of`,
+    arguments: [pure(tx, args.vecU81, `vector<u8>`), pure(tx, args.vecU82, `vector<u8>`)],
   })
 }
 
@@ -188,15 +135,24 @@ export function internalSubString(tx: Transaction, args: InternalSubStringArgs) 
   })
 }
 
-export interface InternalIndexOfArgs {
-  vecU81: Array<number | TransactionArgument> | TransactionArgument
-  vecU82: Array<number | TransactionArgument> | TransactionArgument
+export function intoBytes(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::string::into_bytes`,
+    arguments: [pure(tx, string, `${String.$typeName}`)],
+  })
 }
 
-export function internalIndexOf(tx: Transaction, args: InternalIndexOfArgs) {
+export function isEmpty(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::string::internal_index_of`,
-    arguments: [pure(tx, args.vecU81, `vector<u8>`), pure(tx, args.vecU82, `vector<u8>`)],
+    target: `${PUBLISHED_AT}::string::is_empty`,
+    arguments: [pure(tx, string, `${String.$typeName}`)],
+  })
+}
+
+export function length(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::string::length`,
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
@@ -214,5 +170,49 @@ export function subString(tx: Transaction, args: SubStringArgs) {
       pure(tx, args.u641, `u64`),
       pure(tx, args.u642, `u64`),
     ],
+  })
+}
+
+export interface SubstringArgs {
+  string: string | TransactionArgument
+  u641: bigint | TransactionArgument
+  u642: bigint | TransactionArgument
+}
+
+export function substring(tx: Transaction, args: SubstringArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::string::substring`,
+    arguments: [
+      pure(tx, args.string, `${String.$typeName}`),
+      pure(tx, args.u641, `u64`),
+      pure(tx, args.u642, `u64`),
+    ],
+  })
+}
+
+export function toAscii(tx: Transaction, string: string | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::string::to_ascii`,
+    arguments: [pure(tx, string, `${String.$typeName}`)],
+  })
+}
+
+export function tryUtf8(
+  tx: Transaction,
+  vecU8: Array<number | TransactionArgument> | TransactionArgument
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::string::try_utf8`,
+    arguments: [pure(tx, vecU8, `vector<u8>`)],
+  })
+}
+
+export function utf8(
+  tx: Transaction,
+  vecU8: Array<number | TransactionArgument> | TransactionArgument
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::string::utf8`,
+    arguments: [pure(tx, vecU8, `vector<u8>`)],
   })
 }

@@ -36,6 +36,14 @@ export function destroyEmpty(tx: Transaction, typeArg: string, t: TransactionObj
   })
 }
 
+export function drop(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::table_vec::drop`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, t)],
+  })
+}
+
 export function empty(tx: Transaction, typeArg: string) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::table_vec::empty`,
@@ -113,13 +121,5 @@ export function swapRemove(tx: Transaction, typeArg: string, args: SwapRemoveArg
     target: `${PUBLISHED_AT}::table_vec::swap_remove`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.t), pure(tx, args.i, `u64`)],
-  })
-}
-
-export function drop(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::drop`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, t)],
   })
 }

@@ -2,17 +2,17 @@ import { PUBLISHED_AT } from '..'
 import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function value(tx: Transaction, pcrEntry: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::nitro_attestation::value`,
-    arguments: [obj(tx, pcrEntry)],
-  })
-}
-
 export function digest(tx: Transaction, nitroAttestationDocument: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::nitro_attestation::digest`,
     arguments: [obj(tx, nitroAttestationDocument)],
+  })
+}
+
+export function index(tx: Transaction, pcrEntry: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::nitro_attestation::index`,
+    arguments: [obj(tx, pcrEntry)],
   })
 }
 
@@ -28,6 +28,21 @@ export function loadNitroAttestation(tx: Transaction, args: LoadNitroAttestation
   })
 }
 
+export interface LoadNitroAttestationInternalArgs {
+  vecU8: Array<number | TransactionArgument> | TransactionArgument
+  u64: bigint | TransactionArgument
+}
+
+export function loadNitroAttestationInternal(
+  tx: Transaction,
+  args: LoadNitroAttestationInternalArgs
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::nitro_attestation::load_nitro_attestation_internal`,
+    arguments: [pure(tx, args.vecU8, `vector<u8>`), pure(tx, args.u64, `u64`)],
+  })
+}
+
 export function moduleId(tx: Transaction, nitroAttestationDocument: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::nitro_attestation::module_id`,
@@ -35,9 +50,9 @@ export function moduleId(tx: Transaction, nitroAttestationDocument: TransactionO
   })
 }
 
-export function timestamp(tx: Transaction, nitroAttestationDocument: TransactionObjectInput) {
+export function nonce(tx: Transaction, nitroAttestationDocument: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::nitro_attestation::timestamp`,
+    target: `${PUBLISHED_AT}::nitro_attestation::nonce`,
     arguments: [obj(tx, nitroAttestationDocument)],
   })
 }
@@ -56,6 +71,13 @@ export function publicKey(tx: Transaction, nitroAttestationDocument: Transaction
   })
 }
 
+export function timestamp(tx: Transaction, nitroAttestationDocument: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::nitro_attestation::timestamp`,
+    arguments: [obj(tx, nitroAttestationDocument)],
+  })
+}
+
 export function userData(tx: Transaction, nitroAttestationDocument: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::nitro_attestation::user_data`,
@@ -63,31 +85,9 @@ export function userData(tx: Transaction, nitroAttestationDocument: TransactionO
   })
 }
 
-export function nonce(tx: Transaction, nitroAttestationDocument: TransactionObjectInput) {
+export function value(tx: Transaction, pcrEntry: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::nitro_attestation::nonce`,
-    arguments: [obj(tx, nitroAttestationDocument)],
-  })
-}
-
-export function index(tx: Transaction, pcrEntry: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::nitro_attestation::index`,
+    target: `${PUBLISHED_AT}::nitro_attestation::value`,
     arguments: [obj(tx, pcrEntry)],
-  })
-}
-
-export interface LoadNitroAttestationInternalArgs {
-  vecU8: Array<number | TransactionArgument> | TransactionArgument
-  u64: bigint | TransactionArgument
-}
-
-export function loadNitroAttestationInternal(
-  tx: Transaction,
-  args: LoadNitroAttestationInternalArgs
-) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::nitro_attestation::load_nitro_attestation_internal`,
-    arguments: [pure(tx, args.vecU8, `vector<u8>`), pure(tx, args.u64, `u64`)],
   })
 }

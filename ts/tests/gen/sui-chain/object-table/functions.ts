@@ -2,15 +2,21 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj } from '../../_framework/util'
 import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function length(
-  tx: Transaction,
-  typeArgs: [string, string],
+export interface AddArgs {
   objectTable: TransactionObjectInput
-) {
+  t0: GenericArg
+  t1: GenericArg
+}
+
+export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::object_table::length`,
+    target: `${PUBLISHED_AT}::object_table::add`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, objectTable)],
+    arguments: [
+      obj(tx, args.objectTable),
+      generic(tx, `${typeArgs[0]}`, args.t0),
+      generic(tx, `${typeArgs[1]}`, args.t1),
+    ],
   })
 }
 
@@ -40,6 +46,19 @@ export function borrowMut(tx: Transaction, typeArgs: [string, string], args: Bor
   })
 }
 
+export interface ContainsArgs {
+  objectTable: TransactionObjectInput
+  t0: GenericArg
+}
+
+export function contains(tx: Transaction, typeArgs: [string, string], args: ContainsArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object_table::contains`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.objectTable), generic(tx, `${typeArgs[0]}`, args.t0)],
+  })
+}
+
 export function destroyEmpty(
   tx: Transaction,
   typeArgs: [string, string],
@@ -64,16 +83,23 @@ export function isEmpty(
   })
 }
 
-export interface ContainsArgs {
+export function length(
+  tx: Transaction,
+  typeArgs: [string, string],
   objectTable: TransactionObjectInput
-  t0: GenericArg
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object_table::length`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, objectTable)],
+  })
 }
 
-export function contains(tx: Transaction, typeArgs: [string, string], args: ContainsArgs) {
+export function new_(tx: Transaction, typeArgs: [string, string]) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::object_table::contains`,
+    target: `${PUBLISHED_AT}::object_table::new`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.objectTable), generic(tx, `${typeArgs[0]}`, args.t0)],
+    arguments: [],
   })
 }
 
@@ -87,32 +113,6 @@ export function remove(tx: Transaction, typeArgs: [string, string], args: Remove
     target: `${PUBLISHED_AT}::object_table::remove`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.objectTable), generic(tx, `${typeArgs[0]}`, args.t0)],
-  })
-}
-
-export function new_(tx: Transaction, typeArgs: [string, string]) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::object_table::new`,
-    typeArguments: typeArgs,
-    arguments: [],
-  })
-}
-
-export interface AddArgs {
-  objectTable: TransactionObjectInput
-  t0: GenericArg
-  t1: GenericArg
-}
-
-export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::object_table::add`,
-    typeArguments: typeArgs,
-    arguments: [
-      obj(tx, args.objectTable),
-      generic(tx, `${typeArgs[0]}`, args.t0),
-      generic(tx, `${typeArgs[1]}`, args.t1),
-    ],
   })
 }
 

@@ -2,13 +2,6 @@ import { PUBLISHED_AT } from '..'
 import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function length(tx: Transaction, bitvector: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::bit_vector::length`,
-    arguments: [obj(tx, bitvector)],
-  })
-}
-
 export interface IsIndexSetArgs {
   bitvector: TransactionObjectInput
   bitIndex: bigint | TransactionArgument
@@ -18,6 +11,13 @@ export function isIndexSet(tx: Transaction, args: IsIndexSetArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::bit_vector::is_index_set`,
     arguments: [obj(tx, args.bitvector), pure(tx, args.bitIndex, `u64`)],
+  })
+}
+
+export function length(tx: Transaction, bitvector: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bit_vector::length`,
+    arguments: [obj(tx, bitvector)],
   })
 }
 

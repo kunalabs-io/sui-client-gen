@@ -9,30 +9,6 @@ export function bitwiseNot(tx: Transaction, u8: number | TransactionArgument) {
   })
 }
 
-export interface MaxArgs {
-  u81: number | TransactionArgument
-  u82: number | TransactionArgument
-}
-
-export function max(tx: Transaction, args: MaxArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::u8::max`,
-    arguments: [pure(tx, args.u81, `u8`), pure(tx, args.u82, `u8`)],
-  })
-}
-
-export interface MinArgs {
-  u81: number | TransactionArgument
-  u82: number | TransactionArgument
-}
-
-export function min(tx: Transaction, args: MinArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::u8::min`,
-    arguments: [pure(tx, args.u81, `u8`), pure(tx, args.u82, `u8`)],
-  })
-}
-
 export interface DiffArgs {
   u81: number | TransactionArgument
   u82: number | TransactionArgument
@@ -53,6 +29,30 @@ export interface DivideAndRoundUpArgs {
 export function divideAndRoundUp(tx: Transaction, args: DivideAndRoundUpArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::u8::divide_and_round_up`,
+    arguments: [pure(tx, args.u81, `u8`), pure(tx, args.u82, `u8`)],
+  })
+}
+
+export interface MaxArgs {
+  u81: number | TransactionArgument
+  u82: number | TransactionArgument
+}
+
+export function max(tx: Transaction, args: MaxArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u8::max`,
+    arguments: [pure(tx, args.u81, `u8`), pure(tx, args.u82, `u8`)],
+  })
+}
+
+export interface MinArgs {
+  u81: number | TransactionArgument
+  u82: number | TransactionArgument
+}
+
+export function min(tx: Transaction, args: MinArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u8::min`,
     arguments: [pure(tx, args.u81, `u8`), pure(tx, args.u82, `u8`)],
   })
 }

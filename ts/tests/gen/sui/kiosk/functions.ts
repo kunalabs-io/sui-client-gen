@@ -32,81 +32,6 @@ export function borrowMut(tx: Transaction, typeArg: string, args: BorrowMutArgs)
   })
 }
 
-export function default_(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::default`, arguments: [] })
-}
-
-export function new_(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::new`, arguments: [] })
-}
-
-export function uid(tx: Transaction, self: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::uid`, arguments: [obj(tx, self)] })
-}
-
-export interface ListArgs {
-  self: TransactionObjectInput
-  cap: TransactionObjectInput
-  id: string | TransactionArgument
-  price: bigint | TransactionArgument
-}
-
-export function list(tx: Transaction, typeArg: string, args: ListArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::list`,
-    typeArguments: [typeArg],
-    arguments: [
-      obj(tx, args.self),
-      obj(tx, args.cap),
-      pure(tx, args.id, `${ID.$typeName}`),
-      pure(tx, args.price, `u64`),
-    ],
-  })
-}
-
-export interface TakeArgs {
-  self: TransactionObjectInput
-  cap: TransactionObjectInput
-  id: string | TransactionArgument
-}
-
-export function take(tx: Transaction, typeArg: string, args: TakeArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::take`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), obj(tx, args.cap), pure(tx, args.id, `${ID.$typeName}`)],
-  })
-}
-
-export interface UidMutAsOwnerArgs {
-  self: TransactionObjectInput
-  cap: TransactionObjectInput
-}
-
-export function uidMutAsOwner(tx: Transaction, args: UidMutAsOwnerArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::uid_mut_as_owner`,
-    arguments: [obj(tx, args.self), obj(tx, args.cap)],
-  })
-}
-
-export interface WithdrawArgs {
-  self: TransactionObjectInput
-  cap: TransactionObjectInput
-  amount: bigint | TransactionArgument | TransactionArgument | null
-}
-
-export function withdraw(tx: Transaction, args: WithdrawArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::withdraw`,
-    arguments: [
-      obj(tx, args.self),
-      obj(tx, args.cap),
-      pure(tx, args.amount, `${Option.$typeName}<u64>`),
-    ],
-  })
-}
-
 export interface BorrowValArgs {
   self: TransactionObjectInput
   cap: TransactionObjectInput
@@ -131,6 +56,10 @@ export function closeAndWithdraw(tx: Transaction, args: CloseAndWithdrawArgs) {
     target: `${PUBLISHED_AT}::kiosk::close_and_withdraw`,
     arguments: [obj(tx, args.self), obj(tx, args.cap)],
   })
+}
+
+export function default_(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::default`, arguments: [] })
 }
 
 export interface DelistArgs {
@@ -231,6 +160,26 @@ export function kioskOwnerCapFor(tx: Transaction, cap: TransactionObjectInput) {
   })
 }
 
+export interface ListArgs {
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
+  id: string | TransactionArgument
+  price: bigint | TransactionArgument
+}
+
+export function list(tx: Transaction, typeArg: string, args: ListArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk::list`,
+    typeArguments: [typeArg],
+    arguments: [
+      obj(tx, args.self),
+      obj(tx, args.cap),
+      pure(tx, args.id, `${ID.$typeName}`),
+      pure(tx, args.price, `u64`),
+    ],
+  })
+}
+
 export interface ListWithPurchaseCapArgs {
   self: TransactionObjectInput
   cap: TransactionObjectInput
@@ -286,6 +235,10 @@ export function lockInternal(tx: Transaction, typeArg: string, args: LockInterna
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), generic(tx, `${typeArg}`, args.item)],
   })
+}
+
+export function new_(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::new`, arguments: [] })
 }
 
 export function owner(tx: Transaction, self: TransactionObjectInput) {
@@ -479,13 +432,60 @@ export function setOwnerCustom(tx: Transaction, args: SetOwnerCustomArgs) {
   })
 }
 
+export interface TakeArgs {
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
+  id: string | TransactionArgument
+}
+
+export function take(tx: Transaction, typeArg: string, args: TakeArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk::take`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.self), obj(tx, args.cap), pure(tx, args.id, `${ID.$typeName}`)],
+  })
+}
+
+export function uid(tx: Transaction, self: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::uid`, arguments: [obj(tx, self)] })
+}
+
 export function uidMut(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::uid_mut`, arguments: [obj(tx, self)] })
+}
+
+export interface UidMutAsOwnerArgs {
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
+}
+
+export function uidMutAsOwner(tx: Transaction, args: UidMutAsOwnerArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk::uid_mut_as_owner`,
+    arguments: [obj(tx, args.self), obj(tx, args.cap)],
+  })
 }
 
 export function uidMutInternal(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::kiosk::uid_mut_internal`,
     arguments: [obj(tx, self)],
+  })
+}
+
+export interface WithdrawArgs {
+  self: TransactionObjectInput
+  cap: TransactionObjectInput
+  amount: bigint | TransactionArgument | TransactionArgument | null
+}
+
+export function withdraw(tx: Transaction, args: WithdrawArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk::withdraw`,
+    arguments: [
+      obj(tx, args.self),
+      obj(tx, args.cap),
+      pure(tx, args.amount, `${Option.$typeName}<u64>`),
+    ],
   })
 }

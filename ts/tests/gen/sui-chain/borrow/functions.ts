@@ -10,6 +10,14 @@ export function borrow(tx: Transaction, typeArg: string, referent: TransactionOb
   })
 }
 
+export function destroy(tx: Transaction, typeArg: string, referent: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::borrow::destroy`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, referent)],
+  })
+}
+
 export function new_(tx: Transaction, typeArg: string, t0: GenericArg) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::borrow::new`,
@@ -29,13 +37,5 @@ export function putBack(tx: Transaction, typeArg: string, args: PutBackArgs) {
     target: `${PUBLISHED_AT}::borrow::put_back`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.referent), generic(tx, `${typeArg}`, args.t0), obj(tx, args.borrow)],
-  })
-}
-
-export function destroy(tx: Transaction, typeArg: string, referent: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::borrow::destroy`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, referent)],
   })
 }

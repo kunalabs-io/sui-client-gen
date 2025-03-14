@@ -2,6 +2,13 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+export function intoRemainderBytes(tx: Transaction, bcs: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bcs::into_remainder_bytes`,
+    arguments: [obj(tx, bcs)],
+  })
+}
+
 export function new_(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument
@@ -9,21 +16,6 @@ export function new_(
   return tx.moveCall({
     target: `${PUBLISHED_AT}::bcs::new`,
     arguments: [pure(tx, bytes, `vector<u8>`)],
-  })
-}
-
-export function toBytes(tx: Transaction, typeArg: string, value: GenericArg) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::bcs::to_bytes`,
-    typeArguments: [typeArg],
-    arguments: [generic(tx, `${typeArg}`, value)],
-  })
-}
-
-export function intoRemainderBytes(tx: Transaction, bcs: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::bcs::into_remainder_bytes`,
-    arguments: [obj(tx, bcs)],
   })
 }
 
@@ -109,4 +101,12 @@ export function peelVecU8(tx: Transaction, bcs: TransactionObjectInput) {
 
 export function peelVecVecU8(tx: Transaction, bcs: TransactionObjectInput) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::bcs::peel_vec_vec_u8`, arguments: [obj(tx, bcs)] })
+}
+
+export function toBytes(tx: Transaction, typeArg: string, value: GenericArg) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bcs::to_bytes`,
+    typeArguments: [typeArg],
+    arguments: [generic(tx, `${typeArg}`, value)],
+  })
 }
