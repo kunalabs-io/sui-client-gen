@@ -62,13 +62,20 @@ impl<'a> PackageCache<'a> {
 
         let to_fetch = to_fetch.into_iter().collect::<Vec<_>>();
 
-        let fetch_res = self
-            .rpc_client
-            .multi_get_object_with_options(to_fetch.clone(), SuiObjectDataOptions::new().with_bcs())
-            .await?
-            .into_iter()
-            .map(|obj_read| self.get_package_from_result(obj_read))
-            .collect::<Vec<Result<_>>>();
+        let mut fetch_res = vec![];
+        for chunk in to_fetch.chunks(50) {
+            fetch_res.extend(
+                self.rpc_client
+                    .multi_get_object_with_options(
+                        chunk.to_vec(),
+                        SuiObjectDataOptions::new().with_bcs(),
+                    )
+                    .await?
+                    .into_iter()
+                    .map(|obj_read| self.get_package_from_result(obj_read))
+                    .collect::<Vec<Result<_>>>(),
+            );
+        }
 
         res_map.extend(to_fetch.into_iter().zip(fetch_res.into_iter()));
 
