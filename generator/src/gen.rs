@@ -984,12 +984,13 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> FunctionsGen<'a, 'model, HAS_SOUR
                 $(gen_type_args_param(type_arg_count, None::<&str>, ","))
                 $(match param_field_names.len() {
                     0 => (),
-                    1 => $(convert_reserved_if_needed(&param_field_names[0].0)): $(self.param_type_to_field_type(&param_field_names[0].1)),
-                    _ => args: $(self.fun_arg_if_name())
+                    1 => {$(convert_reserved_if_needed(&param_field_names[0].0)): $(self.param_type_to_field_type(&param_field_names[0].1)),},
+                    _ => {args: $(self.fun_arg_if_name()),}
                 })
+                published_at: string = $published_at
             ) {
                 return tx.moveCall({
-                    target: $[str]($($published_at)::$[const](func_full_name(&self.func))),
+                    target: $[str]($(published_at)::$[const](func_full_name(&self.func))),
                     $(match type_arg_count {
                         0 => (),
                         1 => { typeArguments: [typeArg], },
