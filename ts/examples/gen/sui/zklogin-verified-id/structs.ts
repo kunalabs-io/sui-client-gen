@@ -11,7 +11,7 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { PKG_V27 } from '../index'
+import { PKG_V29 } from '../index'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -21,7 +21,7 @@ import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
 
 export function isVerifiedID(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V27}::zklogin_verified_id::VerifiedID`
+  return type === `${PKG_V29}::zklogin_verified_id::VerifiedID`
 }
 
 export interface VerifiedIDFields {
@@ -38,12 +38,12 @@ export type VerifiedIDReified = Reified<VerifiedID, VerifiedIDFields>
 export class VerifiedID implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::zklogin_verified_id::VerifiedID`
+  static readonly $typeName = `${PKG_V29}::zklogin_verified_id::VerifiedID`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = VerifiedID.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::zklogin_verified_id::VerifiedID`
+  readonly $fullTypeName: `${typeof PKG_V29}::zklogin_verified_id::VerifiedID`
   readonly $typeArgs: []
   readonly $isPhantom = VerifiedID.$isPhantom
 
@@ -58,7 +58,7 @@ export class VerifiedID implements StructClass {
     this.$fullTypeName = composeSuiType(
       VerifiedID.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::zklogin_verified_id::VerifiedID`
+    ) as `${typeof PKG_V29}::zklogin_verified_id::VerifiedID`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -75,7 +75,7 @@ export class VerifiedID implements StructClass {
       fullTypeName: composeSuiType(
         VerifiedID.$typeName,
         ...[]
-      ) as `${typeof PKG_V27}::zklogin_verified_id::VerifiedID`,
+      ) as `${typeof PKG_V29}::zklogin_verified_id::VerifiedID`,
       typeArgs: [] as [],
       isPhantom: VerifiedID.$isPhantom,
       reifiedTypeArgs: [],

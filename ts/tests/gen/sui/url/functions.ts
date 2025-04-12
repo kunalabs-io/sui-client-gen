@@ -3,10 +3,6 @@ import { obj, pure } from '../../_framework/util'
 import { String } from '../../move-stdlib/ascii/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function innerUrl(tx: Transaction, self: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::url::inner_url`, arguments: [obj(tx, self)] })
-}
-
 export function newUnsafe(tx: Transaction, url: string | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::url::new_unsafe`,
@@ -22,6 +18,10 @@ export function newUnsafeFromBytes(
     target: `${PUBLISHED_AT}::url::new_unsafe_from_bytes`,
     arguments: [pure(tx, bytes, `vector<u8>`)],
   })
+}
+
+export function innerUrl(tx: Transaction, self: TransactionObjectInput) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::url::inner_url`, arguments: [obj(tx, self)] })
 }
 
 export interface UpdateArgs {

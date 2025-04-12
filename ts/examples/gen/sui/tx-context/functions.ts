@@ -2,16 +2,8 @@ import { PUBLISHED_AT } from '..'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
-export interface DeriveIdArgs {
-  txHash: Array<number | TransactionArgument> | TransactionArgument
-  idsCreated: bigint | TransactionArgument
-}
-
-export function deriveId(tx: Transaction, args: DeriveIdArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::tx_context::derive_id`,
-    arguments: [pure(tx, args.txHash, `vector<u8>`), pure(tx, args.idsCreated, `u64`)],
-  })
+export function sender(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::tx_context::sender`, arguments: [] })
 }
 
 export function digest(tx: Transaction) {
@@ -34,6 +26,14 @@ export function idsCreated(tx: Transaction) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::tx_context::ids_created`, arguments: [] })
 }
 
-export function sender(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::tx_context::sender`, arguments: [] })
+export interface DeriveIdArgs {
+  txHash: Array<number | TransactionArgument> | TransactionArgument
+  idsCreated: bigint | TransactionArgument
+}
+
+export function deriveId(tx: Transaction, args: DeriveIdArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::tx_context::derive_id`,
+    arguments: [pure(tx, args.txHash, `vector<u8>`), pure(tx, args.idsCreated, `u64`)],
+  })
 }

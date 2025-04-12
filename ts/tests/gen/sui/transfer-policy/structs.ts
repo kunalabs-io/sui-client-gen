@@ -25,7 +25,7 @@ import {
 } from '../../_framework/util'
 import { TypeName } from '../../move-stdlib/type-name/structs'
 import { Balance } from '../balance/structs'
-import { PKG_V27 } from '../index'
+import { PKG_V29 } from '../index'
 import { ID, UID } from '../object/structs'
 import { SUI } from '../sui/structs'
 import { VecSet } from '../vec-set/structs'
@@ -33,123 +33,147 @@ import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
-/* ============================== RuleKey =============================== */
+/* ============================== TransferRequest =============================== */
 
-export function isRuleKey(type: string): boolean {
+export function isTransferRequest(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V27}::transfer_policy::RuleKey` + '<')
+  return type.startsWith(`${PKG_V29}::transfer_policy::TransferRequest` + '<')
 }
 
-export interface RuleKeyFields<T extends PhantomTypeArgument> {
-  dummyField: ToField<'bool'>
+export interface TransferRequestFields<T extends PhantomTypeArgument> {
+  item: ToField<ID>
+  paid: ToField<'u64'>
+  from: ToField<ID>
+  receipts: ToField<VecSet<TypeName>>
 }
 
-export type RuleKeyReified<T extends PhantomTypeArgument> = Reified<RuleKey<T>, RuleKeyFields<T>>
+export type TransferRequestReified<T extends PhantomTypeArgument> = Reified<
+  TransferRequest<T>,
+  TransferRequestFields<T>
+>
 
-export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
+export class TransferRequest<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::transfer_policy::RuleKey`
+  static readonly $typeName = `${PKG_V29}::transfer_policy::TransferRequest`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = RuleKey.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::transfer_policy::RuleKey<${PhantomToTypeStr<T>}>`
+  readonly $typeName = TransferRequest.$typeName
+  readonly $fullTypeName: `${typeof PKG_V29}::transfer_policy::TransferRequest<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = RuleKey.$isPhantom
+  readonly $isPhantom = TransferRequest.$isPhantom
 
-  readonly dummyField: ToField<'bool'>
+  readonly item: ToField<ID>
+  readonly paid: ToField<'u64'>
+  readonly from: ToField<ID>
+  readonly receipts: ToField<VecSet<TypeName>>
 
-  private constructor(typeArgs: [PhantomToTypeStr<T>], fields: RuleKeyFields<T>) {
+  private constructor(typeArgs: [PhantomToTypeStr<T>], fields: TransferRequestFields<T>) {
     this.$fullTypeName = composeSuiType(
-      RuleKey.$typeName,
+      TransferRequest.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::transfer_policy::RuleKey<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V29}::transfer_policy::TransferRequest<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
-    this.dummyField = fields.dummyField
+    this.item = fields.item
+    this.paid = fields.paid
+    this.from = fields.from
+    this.receipts = fields.receipts
   }
 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
-  ): RuleKeyReified<ToPhantomTypeArgument<T>> {
+  ): TransferRequestReified<ToPhantomTypeArgument<T>> {
     return {
-      typeName: RuleKey.$typeName,
+      typeName: TransferRequest.$typeName,
       fullTypeName: composeSuiType(
-        RuleKey.$typeName,
+        TransferRequest.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V27}::transfer_policy::RuleKey<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V29}::transfer_policy::TransferRequest<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
-      isPhantom: RuleKey.$isPhantom,
+      isPhantom: TransferRequest.$isPhantom,
       reifiedTypeArgs: [T],
-      fromFields: (fields: Record<string, any>) => RuleKey.fromFields(T, fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => RuleKey.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => RuleKey.fromBcs(T, data),
-      bcs: RuleKey.bcs,
-      fromJSONField: (field: any) => RuleKey.fromJSONField(T, field),
-      fromJSON: (json: Record<string, any>) => RuleKey.fromJSON(T, json),
-      fromSuiParsedData: (content: SuiParsedData) => RuleKey.fromSuiParsedData(T, content),
-      fromSuiObjectData: (content: SuiObjectData) => RuleKey.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => RuleKey.fetch(client, T, id),
-      new: (fields: RuleKeyFields<ToPhantomTypeArgument<T>>) => {
-        return new RuleKey([extractType(T)], fields)
+      fromFields: (fields: Record<string, any>) => TransferRequest.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => TransferRequest.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => TransferRequest.fromBcs(T, data),
+      bcs: TransferRequest.bcs,
+      fromJSONField: (field: any) => TransferRequest.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => TransferRequest.fromJSON(T, json),
+      fromSuiParsedData: (content: SuiParsedData) => TransferRequest.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => TransferRequest.fromSuiObjectData(T, content),
+      fetch: async (client: SuiClient, id: string) => TransferRequest.fetch(client, T, id),
+      new: (fields: TransferRequestFields<ToPhantomTypeArgument<T>>) => {
+        return new TransferRequest([extractType(T)], fields)
       },
       kind: 'StructClassReified',
     }
   }
 
   static get r() {
-    return RuleKey.reified
+    return TransferRequest.reified
   }
 
   static phantom<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
-  ): PhantomReified<ToTypeStr<RuleKey<ToPhantomTypeArgument<T>>>> {
-    return phantom(RuleKey.reified(T))
+  ): PhantomReified<ToTypeStr<TransferRequest<ToPhantomTypeArgument<T>>>> {
+    return phantom(TransferRequest.reified(T))
   }
   static get p() {
-    return RuleKey.phantom
+    return TransferRequest.phantom
   }
 
   static get bcs() {
-    return bcs.struct('RuleKey', {
-      dummy_field: bcs.bool(),
+    return bcs.struct('TransferRequest', {
+      item: ID.bcs,
+      paid: bcs.u64(),
+      from: ID.bcs,
+      receipts: VecSet.bcs(TypeName.bcs),
     })
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     fields: Record<string, any>
-  ): RuleKey<ToPhantomTypeArgument<T>> {
-    return RuleKey.reified(typeArg).new({
-      dummyField: decodeFromFields('bool', fields.dummy_field),
+  ): TransferRequest<ToPhantomTypeArgument<T>> {
+    return TransferRequest.reified(typeArg).new({
+      item: decodeFromFields(ID.reified(), fields.item),
+      paid: decodeFromFields('u64', fields.paid),
+      from: decodeFromFields(ID.reified(), fields.from),
+      receipts: decodeFromFields(VecSet.reified(TypeName.reified()), fields.receipts),
     })
   }
 
   static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     item: FieldsWithTypes
-  ): RuleKey<ToPhantomTypeArgument<T>> {
-    if (!isRuleKey(item.type)) {
-      throw new Error('not a RuleKey type')
+  ): TransferRequest<ToPhantomTypeArgument<T>> {
+    if (!isTransferRequest(item.type)) {
+      throw new Error('not a TransferRequest type')
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return RuleKey.reified(typeArg).new({
-      dummyField: decodeFromFieldsWithTypes('bool', item.fields.dummy_field),
+    return TransferRequest.reified(typeArg).new({
+      item: decodeFromFieldsWithTypes(ID.reified(), item.fields.item),
+      paid: decodeFromFieldsWithTypes('u64', item.fields.paid),
+      from: decodeFromFieldsWithTypes(ID.reified(), item.fields.from),
+      receipts: decodeFromFieldsWithTypes(VecSet.reified(TypeName.reified()), item.fields.receipts),
     })
   }
 
   static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: Uint8Array
-  ): RuleKey<ToPhantomTypeArgument<T>> {
-    return RuleKey.fromFields(typeArg, RuleKey.bcs.parse(data))
+  ): TransferRequest<ToPhantomTypeArgument<T>> {
+    return TransferRequest.fromFields(typeArg, TransferRequest.bcs.parse(data))
   }
 
   toJSONField() {
     return {
-      dummyField: this.dummyField,
+      item: this.item,
+      paid: this.paid.toString(),
+      from: this.from,
+      receipts: this.receipts.toJSONField(),
     }
   }
 
@@ -160,48 +184,51 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     field: any
-  ): RuleKey<ToPhantomTypeArgument<T>> {
-    return RuleKey.reified(typeArg).new({
-      dummyField: decodeFromJSONField('bool', field.dummyField),
+  ): TransferRequest<ToPhantomTypeArgument<T>> {
+    return TransferRequest.reified(typeArg).new({
+      item: decodeFromJSONField(ID.reified(), field.item),
+      paid: decodeFromJSONField('u64', field.paid),
+      from: decodeFromJSONField(ID.reified(), field.from),
+      receipts: decodeFromJSONField(VecSet.reified(TypeName.reified()), field.receipts),
     })
   }
 
   static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     json: Record<string, any>
-  ): RuleKey<ToPhantomTypeArgument<T>> {
-    if (json.$typeName !== RuleKey.$typeName) {
+  ): TransferRequest<ToPhantomTypeArgument<T>> {
+    if (json.$typeName !== TransferRequest.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(RuleKey.$typeName, extractType(typeArg)),
+      composeSuiType(TransferRequest.$typeName, extractType(typeArg)),
       json.$typeArgs,
       [typeArg]
     )
 
-    return RuleKey.fromJSONField(typeArg, json)
+    return TransferRequest.fromJSONField(typeArg, json)
   }
 
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData
-  ): RuleKey<ToPhantomTypeArgument<T>> {
+  ): TransferRequest<ToPhantomTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
-    if (!isRuleKey(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a RuleKey object`)
+    if (!isTransferRequest(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a TransferRequest object`)
     }
-    return RuleKey.fromFieldsWithTypes(typeArg, content)
+    return TransferRequest.fromFieldsWithTypes(typeArg, content)
   }
 
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData
-  ): RuleKey<ToPhantomTypeArgument<T>> {
+  ): TransferRequest<ToPhantomTypeArgument<T>> {
     if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isRuleKey(data.bcs.type)) {
-        throw new Error(`object at is not a RuleKey object`)
+      if (data.bcs.dataType !== 'moveObject' || !isTransferRequest(data.bcs.type)) {
+        throw new Error(`object at is not a TransferRequest object`)
       }
 
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
@@ -218,10 +245,10 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
         )
       }
 
-      return RuleKey.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return TransferRequest.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
     }
     if (data.content) {
-      return RuleKey.fromSuiParsedData(typeArg, data.content)
+      return TransferRequest.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
       'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
@@ -232,16 +259,16 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
     client: SuiClient,
     typeArg: T,
     id: string
-  ): Promise<RuleKey<ToPhantomTypeArgument<T>>> {
+  ): Promise<TransferRequest<ToPhantomTypeArgument<T>>> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
-      throw new Error(`error fetching RuleKey object at id ${id}: ${res.error.code}`)
+      throw new Error(`error fetching TransferRequest object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isRuleKey(res.data.bcs.type)) {
-      throw new Error(`object at id ${id} is not a RuleKey object`)
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferRequest(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a TransferRequest object`)
     }
 
-    return RuleKey.fromSuiObjectData(typeArg, res.data)
+    return TransferRequest.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -249,7 +276,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
 
 export function isTransferPolicy(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V27}::transfer_policy::TransferPolicy` + '<')
+  return type.startsWith(`${PKG_V29}::transfer_policy::TransferPolicy` + '<')
 }
 
 export interface TransferPolicyFields<T extends PhantomTypeArgument> {
@@ -266,12 +293,12 @@ export type TransferPolicyReified<T extends PhantomTypeArgument> = Reified<
 export class TransferPolicy<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::transfer_policy::TransferPolicy`
+  static readonly $typeName = `${PKG_V29}::transfer_policy::TransferPolicy`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = TransferPolicy.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::transfer_policy::TransferPolicy<${PhantomToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V29}::transfer_policy::TransferPolicy<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
   readonly $isPhantom = TransferPolicy.$isPhantom
 
@@ -283,7 +310,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
     this.$fullTypeName = composeSuiType(
       TransferPolicy.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::transfer_policy::TransferPolicy<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V29}::transfer_policy::TransferPolicy<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -299,7 +326,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
       fullTypeName: composeSuiType(
         TransferPolicy.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V27}::transfer_policy::TransferPolicy<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V29}::transfer_policy::TransferPolicy<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       isPhantom: TransferPolicy.$isPhantom,
       reifiedTypeArgs: [T],
@@ -483,7 +510,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
 
 export function isTransferPolicyCap(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V27}::transfer_policy::TransferPolicyCap` + '<')
+  return type.startsWith(`${PKG_V29}::transfer_policy::TransferPolicyCap` + '<')
 }
 
 export interface TransferPolicyCapFields<T extends PhantomTypeArgument> {
@@ -499,12 +526,12 @@ export type TransferPolicyCapReified<T extends PhantomTypeArgument> = Reified<
 export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::transfer_policy::TransferPolicyCap`
+  static readonly $typeName = `${PKG_V29}::transfer_policy::TransferPolicyCap`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = TransferPolicyCap.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V29}::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
   readonly $isPhantom = TransferPolicyCap.$isPhantom
 
@@ -515,7 +542,7 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructC
     this.$fullTypeName = composeSuiType(
       TransferPolicyCap.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V29}::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -530,7 +557,7 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructC
       fullTypeName: composeSuiType(
         TransferPolicyCap.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V27}::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V29}::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       isPhantom: TransferPolicyCap.$isPhantom,
       reifiedTypeArgs: [T],
@@ -709,7 +736,7 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructC
 
 export function isTransferPolicyCreated(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V27}::transfer_policy::TransferPolicyCreated` + '<')
+  return type.startsWith(`${PKG_V29}::transfer_policy::TransferPolicyCreated` + '<')
 }
 
 export interface TransferPolicyCreatedFields<T extends PhantomTypeArgument> {
@@ -724,12 +751,12 @@ export type TransferPolicyCreatedReified<T extends PhantomTypeArgument> = Reifie
 export class TransferPolicyCreated<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::transfer_policy::TransferPolicyCreated`
+  static readonly $typeName = `${PKG_V29}::transfer_policy::TransferPolicyCreated`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = TransferPolicyCreated.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V29}::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
   readonly $isPhantom = TransferPolicyCreated.$isPhantom
 
@@ -739,7 +766,7 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> implements Str
     this.$fullTypeName = composeSuiType(
       TransferPolicyCreated.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V29}::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -753,7 +780,7 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> implements Str
       fullTypeName: composeSuiType(
         TransferPolicyCreated.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V27}::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V29}::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       isPhantom: TransferPolicyCreated.$isPhantom,
       reifiedTypeArgs: [T],
@@ -929,7 +956,7 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> implements Str
 
 export function isTransferPolicyDestroyed(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V27}::transfer_policy::TransferPolicyDestroyed` + '<')
+  return type.startsWith(`${PKG_V29}::transfer_policy::TransferPolicyDestroyed` + '<')
 }
 
 export interface TransferPolicyDestroyedFields<T extends PhantomTypeArgument> {
@@ -944,12 +971,12 @@ export type TransferPolicyDestroyedReified<T extends PhantomTypeArgument> = Reif
 export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::transfer_policy::TransferPolicyDestroyed`
+  static readonly $typeName = `${PKG_V29}::transfer_policy::TransferPolicyDestroyed`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = TransferPolicyDestroyed.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<T>}>`
+  readonly $fullTypeName: `${typeof PKG_V29}::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
   readonly $isPhantom = TransferPolicyDestroyed.$isPhantom
 
@@ -959,7 +986,7 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements S
     this.$fullTypeName = composeSuiType(
       TransferPolicyDestroyed.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V29}::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -973,7 +1000,7 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements S
       fullTypeName: composeSuiType(
         TransferPolicyDestroyed.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V27}::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V29}::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       isPhantom: TransferPolicyDestroyed.$isPhantom,
       reifiedTypeArgs: [T],
@@ -1147,147 +1174,123 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements S
   }
 }
 
-/* ============================== TransferRequest =============================== */
+/* ============================== RuleKey =============================== */
 
-export function isTransferRequest(type: string): boolean {
+export function isRuleKey(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V27}::transfer_policy::TransferRequest` + '<')
+  return type.startsWith(`${PKG_V29}::transfer_policy::RuleKey` + '<')
 }
 
-export interface TransferRequestFields<T extends PhantomTypeArgument> {
-  item: ToField<ID>
-  paid: ToField<'u64'>
-  from: ToField<ID>
-  receipts: ToField<VecSet<TypeName>>
+export interface RuleKeyFields<T extends PhantomTypeArgument> {
+  dummyField: ToField<'bool'>
 }
 
-export type TransferRequestReified<T extends PhantomTypeArgument> = Reified<
-  TransferRequest<T>,
-  TransferRequestFields<T>
->
+export type RuleKeyReified<T extends PhantomTypeArgument> = Reified<RuleKey<T>, RuleKeyFields<T>>
 
-export class TransferRequest<T extends PhantomTypeArgument> implements StructClass {
+export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::transfer_policy::TransferRequest`
+  static readonly $typeName = `${PKG_V29}::transfer_policy::RuleKey`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = TransferRequest.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::transfer_policy::TransferRequest<${PhantomToTypeStr<T>}>`
+  readonly $typeName = RuleKey.$typeName
+  readonly $fullTypeName: `${typeof PKG_V29}::transfer_policy::RuleKey<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = TransferRequest.$isPhantom
+  readonly $isPhantom = RuleKey.$isPhantom
 
-  readonly item: ToField<ID>
-  readonly paid: ToField<'u64'>
-  readonly from: ToField<ID>
-  readonly receipts: ToField<VecSet<TypeName>>
+  readonly dummyField: ToField<'bool'>
 
-  private constructor(typeArgs: [PhantomToTypeStr<T>], fields: TransferRequestFields<T>) {
+  private constructor(typeArgs: [PhantomToTypeStr<T>], fields: RuleKeyFields<T>) {
     this.$fullTypeName = composeSuiType(
-      TransferRequest.$typeName,
+      RuleKey.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::transfer_policy::TransferRequest<${PhantomToTypeStr<T>}>`
+    ) as `${typeof PKG_V29}::transfer_policy::RuleKey<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
-    this.item = fields.item
-    this.paid = fields.paid
-    this.from = fields.from
-    this.receipts = fields.receipts
+    this.dummyField = fields.dummyField
   }
 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
-  ): TransferRequestReified<ToPhantomTypeArgument<T>> {
+  ): RuleKeyReified<ToPhantomTypeArgument<T>> {
     return {
-      typeName: TransferRequest.$typeName,
+      typeName: RuleKey.$typeName,
       fullTypeName: composeSuiType(
-        TransferRequest.$typeName,
+        RuleKey.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V27}::transfer_policy::TransferRequest<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
+      ) as `${typeof PKG_V29}::transfer_policy::RuleKey<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
-      isPhantom: TransferRequest.$isPhantom,
+      isPhantom: RuleKey.$isPhantom,
       reifiedTypeArgs: [T],
-      fromFields: (fields: Record<string, any>) => TransferRequest.fromFields(T, fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => TransferRequest.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => TransferRequest.fromBcs(T, data),
-      bcs: TransferRequest.bcs,
-      fromJSONField: (field: any) => TransferRequest.fromJSONField(T, field),
-      fromJSON: (json: Record<string, any>) => TransferRequest.fromJSON(T, json),
-      fromSuiParsedData: (content: SuiParsedData) => TransferRequest.fromSuiParsedData(T, content),
-      fromSuiObjectData: (content: SuiObjectData) => TransferRequest.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => TransferRequest.fetch(client, T, id),
-      new: (fields: TransferRequestFields<ToPhantomTypeArgument<T>>) => {
-        return new TransferRequest([extractType(T)], fields)
+      fromFields: (fields: Record<string, any>) => RuleKey.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => RuleKey.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => RuleKey.fromBcs(T, data),
+      bcs: RuleKey.bcs,
+      fromJSONField: (field: any) => RuleKey.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => RuleKey.fromJSON(T, json),
+      fromSuiParsedData: (content: SuiParsedData) => RuleKey.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => RuleKey.fromSuiObjectData(T, content),
+      fetch: async (client: SuiClient, id: string) => RuleKey.fetch(client, T, id),
+      new: (fields: RuleKeyFields<ToPhantomTypeArgument<T>>) => {
+        return new RuleKey([extractType(T)], fields)
       },
       kind: 'StructClassReified',
     }
   }
 
   static get r() {
-    return TransferRequest.reified
+    return RuleKey.reified
   }
 
   static phantom<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
-  ): PhantomReified<ToTypeStr<TransferRequest<ToPhantomTypeArgument<T>>>> {
-    return phantom(TransferRequest.reified(T))
+  ): PhantomReified<ToTypeStr<RuleKey<ToPhantomTypeArgument<T>>>> {
+    return phantom(RuleKey.reified(T))
   }
   static get p() {
-    return TransferRequest.phantom
+    return RuleKey.phantom
   }
 
   static get bcs() {
-    return bcs.struct('TransferRequest', {
-      item: ID.bcs,
-      paid: bcs.u64(),
-      from: ID.bcs,
-      receipts: VecSet.bcs(TypeName.bcs),
+    return bcs.struct('RuleKey', {
+      dummy_field: bcs.bool(),
     })
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     fields: Record<string, any>
-  ): TransferRequest<ToPhantomTypeArgument<T>> {
-    return TransferRequest.reified(typeArg).new({
-      item: decodeFromFields(ID.reified(), fields.item),
-      paid: decodeFromFields('u64', fields.paid),
-      from: decodeFromFields(ID.reified(), fields.from),
-      receipts: decodeFromFields(VecSet.reified(TypeName.reified()), fields.receipts),
+  ): RuleKey<ToPhantomTypeArgument<T>> {
+    return RuleKey.reified(typeArg).new({
+      dummyField: decodeFromFields('bool', fields.dummy_field),
     })
   }
 
   static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     item: FieldsWithTypes
-  ): TransferRequest<ToPhantomTypeArgument<T>> {
-    if (!isTransferRequest(item.type)) {
-      throw new Error('not a TransferRequest type')
+  ): RuleKey<ToPhantomTypeArgument<T>> {
+    if (!isRuleKey(item.type)) {
+      throw new Error('not a RuleKey type')
     }
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
-    return TransferRequest.reified(typeArg).new({
-      item: decodeFromFieldsWithTypes(ID.reified(), item.fields.item),
-      paid: decodeFromFieldsWithTypes('u64', item.fields.paid),
-      from: decodeFromFieldsWithTypes(ID.reified(), item.fields.from),
-      receipts: decodeFromFieldsWithTypes(VecSet.reified(TypeName.reified()), item.fields.receipts),
+    return RuleKey.reified(typeArg).new({
+      dummyField: decodeFromFieldsWithTypes('bool', item.fields.dummy_field),
     })
   }
 
   static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: Uint8Array
-  ): TransferRequest<ToPhantomTypeArgument<T>> {
-    return TransferRequest.fromFields(typeArg, TransferRequest.bcs.parse(data))
+  ): RuleKey<ToPhantomTypeArgument<T>> {
+    return RuleKey.fromFields(typeArg, RuleKey.bcs.parse(data))
   }
 
   toJSONField() {
     return {
-      item: this.item,
-      paid: this.paid.toString(),
-      from: this.from,
-      receipts: this.receipts.toJSONField(),
+      dummyField: this.dummyField,
     }
   }
 
@@ -1298,51 +1301,48 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     field: any
-  ): TransferRequest<ToPhantomTypeArgument<T>> {
-    return TransferRequest.reified(typeArg).new({
-      item: decodeFromJSONField(ID.reified(), field.item),
-      paid: decodeFromJSONField('u64', field.paid),
-      from: decodeFromJSONField(ID.reified(), field.from),
-      receipts: decodeFromJSONField(VecSet.reified(TypeName.reified()), field.receipts),
+  ): RuleKey<ToPhantomTypeArgument<T>> {
+    return RuleKey.reified(typeArg).new({
+      dummyField: decodeFromJSONField('bool', field.dummyField),
     })
   }
 
   static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     json: Record<string, any>
-  ): TransferRequest<ToPhantomTypeArgument<T>> {
-    if (json.$typeName !== TransferRequest.$typeName) {
+  ): RuleKey<ToPhantomTypeArgument<T>> {
+    if (json.$typeName !== RuleKey.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(TransferRequest.$typeName, extractType(typeArg)),
+      composeSuiType(RuleKey.$typeName, extractType(typeArg)),
       json.$typeArgs,
       [typeArg]
     )
 
-    return TransferRequest.fromJSONField(typeArg, json)
+    return RuleKey.fromJSONField(typeArg, json)
   }
 
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData
-  ): TransferRequest<ToPhantomTypeArgument<T>> {
+  ): RuleKey<ToPhantomTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
-    if (!isTransferRequest(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a TransferRequest object`)
+    if (!isRuleKey(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a RuleKey object`)
     }
-    return TransferRequest.fromFieldsWithTypes(typeArg, content)
+    return RuleKey.fromFieldsWithTypes(typeArg, content)
   }
 
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData
-  ): TransferRequest<ToPhantomTypeArgument<T>> {
+  ): RuleKey<ToPhantomTypeArgument<T>> {
     if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isTransferRequest(data.bcs.type)) {
-        throw new Error(`object at is not a TransferRequest object`)
+      if (data.bcs.dataType !== 'moveObject' || !isRuleKey(data.bcs.type)) {
+        throw new Error(`object at is not a RuleKey object`)
       }
 
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
@@ -1359,10 +1359,10 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
         )
       }
 
-      return TransferRequest.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return RuleKey.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
     }
     if (data.content) {
-      return TransferRequest.fromSuiParsedData(typeArg, data.content)
+      return RuleKey.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
       'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
@@ -1373,15 +1373,15 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
     client: SuiClient,
     typeArg: T,
     id: string
-  ): Promise<TransferRequest<ToPhantomTypeArgument<T>>> {
+  ): Promise<RuleKey<ToPhantomTypeArgument<T>>> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
-      throw new Error(`error fetching TransferRequest object at id ${id}: ${res.error.code}`)
+      throw new Error(`error fetching RuleKey object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferRequest(res.data.bcs.type)) {
-      throw new Error(`object at id ${id} is not a TransferRequest object`)
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isRuleKey(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a RuleKey object`)
     }
 
-    return TransferRequest.fromSuiObjectData(typeArg, res.data)
+    return RuleKey.fromSuiObjectData(typeArg, res.data)
   }
 }

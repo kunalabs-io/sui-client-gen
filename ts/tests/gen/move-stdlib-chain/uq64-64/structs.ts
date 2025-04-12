@@ -10,7 +10,7 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { PKG_V14 } from '../index'
+import { PKG_V15 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -19,7 +19,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isUQ64_64(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V14}::uq64_64::UQ64_64`
+  return type === `${PKG_V15}::uq64_64::UQ64_64`
 }
 
 export interface UQ64_64Fields {
@@ -31,12 +31,12 @@ export type UQ64_64Reified = Reified<UQ64_64, UQ64_64Fields>
 export class UQ64_64 implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V14}::uq64_64::UQ64_64`
+  static readonly $typeName = `${PKG_V15}::uq64_64::UQ64_64`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = UQ64_64.$typeName
-  readonly $fullTypeName: `${typeof PKG_V14}::uq64_64::UQ64_64`
+  readonly $fullTypeName: `${typeof PKG_V15}::uq64_64::UQ64_64`
   readonly $typeArgs: []
   readonly $isPhantom = UQ64_64.$isPhantom
 
@@ -46,7 +46,7 @@ export class UQ64_64 implements StructClass {
     this.$fullTypeName = composeSuiType(
       UQ64_64.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V14}::uq64_64::UQ64_64`
+    ) as `${typeof PKG_V15}::uq64_64::UQ64_64`
     this.$typeArgs = typeArgs
 
     this.pos0 = fields.pos0
@@ -58,7 +58,7 @@ export class UQ64_64 implements StructClass {
       fullTypeName: composeSuiType(
         UQ64_64.$typeName,
         ...[]
-      ) as `${typeof PKG_V14}::uq64_64::UQ64_64`,
+      ) as `${typeof PKG_V15}::uq64_64::UQ64_64`,
       typeArgs: [] as [],
       isPhantom: UQ64_64.$isPhantom,
       reifiedTypeArgs: [],

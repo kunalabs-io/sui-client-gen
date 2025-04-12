@@ -41,6 +41,391 @@ import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
+/* ============================== Dummy =============================== */
+
+export function isDummy(type: string): boolean {
+  type = compressSuiType(type)
+  return type === `${PKG_V1}::fixture::Dummy`
+}
+
+export interface DummyFields {
+  dummyField: ToField<'bool'>
+}
+
+export type DummyReified = Reified<Dummy, DummyFields>
+
+export class Dummy implements StructClass {
+  __StructClass = true as const
+
+  static readonly $typeName = `${PKG_V1}::fixture::Dummy`
+  static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
+
+  readonly $typeName = Dummy.$typeName
+  readonly $fullTypeName: `${typeof PKG_V1}::fixture::Dummy`
+  readonly $typeArgs: []
+  readonly $isPhantom = Dummy.$isPhantom
+
+  readonly dummyField: ToField<'bool'>
+
+  private constructor(typeArgs: [], fields: DummyFields) {
+    this.$fullTypeName = composeSuiType(
+      Dummy.$typeName,
+      ...typeArgs
+    ) as `${typeof PKG_V1}::fixture::Dummy`
+    this.$typeArgs = typeArgs
+
+    this.dummyField = fields.dummyField
+  }
+
+  static reified(): DummyReified {
+    return {
+      typeName: Dummy.$typeName,
+      fullTypeName: composeSuiType(Dummy.$typeName, ...[]) as `${typeof PKG_V1}::fixture::Dummy`,
+      typeArgs: [] as [],
+      isPhantom: Dummy.$isPhantom,
+      reifiedTypeArgs: [],
+      fromFields: (fields: Record<string, any>) => Dummy.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Dummy.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => Dummy.fromBcs(data),
+      bcs: Dummy.bcs,
+      fromJSONField: (field: any) => Dummy.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => Dummy.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => Dummy.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => Dummy.fromSuiObjectData(content),
+      fetch: async (client: SuiClient, id: string) => Dummy.fetch(client, id),
+      new: (fields: DummyFields) => {
+        return new Dummy([], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return Dummy.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<Dummy>> {
+    return phantom(Dummy.reified())
+  }
+  static get p() {
+    return Dummy.phantom()
+  }
+
+  static get bcs() {
+    return bcs.struct('Dummy', {
+      dummy_field: bcs.bool(),
+    })
+  }
+
+  static fromFields(fields: Record<string, any>): Dummy {
+    return Dummy.reified().new({ dummyField: decodeFromFields('bool', fields.dummy_field) })
+  }
+
+  static fromFieldsWithTypes(item: FieldsWithTypes): Dummy {
+    if (!isDummy(item.type)) {
+      throw new Error('not a Dummy type')
+    }
+
+    return Dummy.reified().new({
+      dummyField: decodeFromFieldsWithTypes('bool', item.fields.dummy_field),
+    })
+  }
+
+  static fromBcs(data: Uint8Array): Dummy {
+    return Dummy.fromFields(Dummy.bcs.parse(data))
+  }
+
+  toJSONField() {
+    return {
+      dummyField: this.dummyField,
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): Dummy {
+    return Dummy.reified().new({ dummyField: decodeFromJSONField('bool', field.dummyField) })
+  }
+
+  static fromJSON(json: Record<string, any>): Dummy {
+    if (json.$typeName !== Dummy.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return Dummy.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): Dummy {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isDummy(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a Dummy object`)
+    }
+    return Dummy.fromFieldsWithTypes(content)
+  }
+
+  static fromSuiObjectData(data: SuiObjectData): Dummy {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isDummy(data.bcs.type)) {
+        throw new Error(`object at is not a Dummy object`)
+      }
+
+      return Dummy.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Dummy.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<Dummy> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching Dummy object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isDummy(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a Dummy object`)
+    }
+
+    return Dummy.fromSuiObjectData(res.data)
+  }
+}
+
+/* ============================== WithGenericField =============================== */
+
+export function isWithGenericField(type: string): boolean {
+  type = compressSuiType(type)
+  return type.startsWith(`${PKG_V1}::fixture::WithGenericField` + '<')
+}
+
+export interface WithGenericFieldFields<T extends TypeArgument> {
+  id: ToField<UID>
+  genericField: ToField<T>
+}
+
+export type WithGenericFieldReified<T extends TypeArgument> = Reified<
+  WithGenericField<T>,
+  WithGenericFieldFields<T>
+>
+
+export class WithGenericField<T extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
+  static readonly $typeName = `${PKG_V1}::fixture::WithGenericField`
+  static readonly $numTypeParams = 1
+  static readonly $isPhantom = [false] as const
+
+  readonly $typeName = WithGenericField.$typeName
+  readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithGenericField<${ToTypeStr<T>}>`
+  readonly $typeArgs: [ToTypeStr<T>]
+  readonly $isPhantom = WithGenericField.$isPhantom
+
+  readonly id: ToField<UID>
+  readonly genericField: ToField<T>
+
+  private constructor(typeArgs: [ToTypeStr<T>], fields: WithGenericFieldFields<T>) {
+    this.$fullTypeName = composeSuiType(
+      WithGenericField.$typeName,
+      ...typeArgs
+    ) as `${typeof PKG_V1}::fixture::WithGenericField<${ToTypeStr<T>}>`
+    this.$typeArgs = typeArgs
+
+    this.id = fields.id
+    this.genericField = fields.genericField
+  }
+
+  static reified<T extends Reified<TypeArgument, any>>(
+    T: T
+  ): WithGenericFieldReified<ToTypeArgument<T>> {
+    return {
+      typeName: WithGenericField.$typeName,
+      fullTypeName: composeSuiType(
+        WithGenericField.$typeName,
+        ...[extractType(T)]
+      ) as `${typeof PKG_V1}::fixture::WithGenericField<${ToTypeStr<ToTypeArgument<T>>}>`,
+      typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      isPhantom: WithGenericField.$isPhantom,
+      reifiedTypeArgs: [T],
+      fromFields: (fields: Record<string, any>) => WithGenericField.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => WithGenericField.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => WithGenericField.fromBcs(T, data),
+      bcs: WithGenericField.bcs(toBcs(T)),
+      fromJSONField: (field: any) => WithGenericField.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => WithGenericField.fromJSON(T, json),
+      fromSuiParsedData: (content: SuiParsedData) => WithGenericField.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => WithGenericField.fromSuiObjectData(T, content),
+      fetch: async (client: SuiClient, id: string) => WithGenericField.fetch(client, T, id),
+      new: (fields: WithGenericFieldFields<ToTypeArgument<T>>) => {
+        return new WithGenericField([extractType(T)], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return WithGenericField.reified
+  }
+
+  static phantom<T extends Reified<TypeArgument, any>>(
+    T: T
+  ): PhantomReified<ToTypeStr<WithGenericField<ToTypeArgument<T>>>> {
+    return phantom(WithGenericField.reified(T))
+  }
+  static get p() {
+    return WithGenericField.phantom
+  }
+
+  static get bcs() {
+    return <T extends BcsType<any>>(T: T) =>
+      bcs.struct(`WithGenericField<${T.name}>`, {
+        id: UID.bcs,
+        generic_field: T,
+      })
+  }
+
+  static fromFields<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    fields: Record<string, any>
+  ): WithGenericField<ToTypeArgument<T>> {
+    return WithGenericField.reified(typeArg).new({
+      id: decodeFromFields(UID.reified(), fields.id),
+      genericField: decodeFromFields(typeArg, fields.generic_field),
+    })
+  }
+
+  static fromFieldsWithTypes<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    item: FieldsWithTypes
+  ): WithGenericField<ToTypeArgument<T>> {
+    if (!isWithGenericField(item.type)) {
+      throw new Error('not a WithGenericField type')
+    }
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
+
+    return WithGenericField.reified(typeArg).new({
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      genericField: decodeFromFieldsWithTypes(typeArg, item.fields.generic_field),
+    })
+  }
+
+  static fromBcs<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    data: Uint8Array
+  ): WithGenericField<ToTypeArgument<T>> {
+    const typeArgs = [typeArg]
+
+    return WithGenericField.fromFields(
+      typeArg,
+      WithGenericField.bcs(toBcs(typeArgs[0])).parse(data)
+    )
+  }
+
+  toJSONField() {
+    return {
+      id: this.id,
+      genericField: fieldToJSON<T>(this.$typeArgs[0], this.genericField),
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    field: any
+  ): WithGenericField<ToTypeArgument<T>> {
+    return WithGenericField.reified(typeArg).new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      genericField: decodeFromJSONField(typeArg, field.genericField),
+    })
+  }
+
+  static fromJSON<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    json: Record<string, any>
+  ): WithGenericField<ToTypeArgument<T>> {
+    if (json.$typeName !== WithGenericField.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(WithGenericField.$typeName, extractType(typeArg)),
+      json.$typeArgs,
+      [typeArg]
+    )
+
+    return WithGenericField.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    content: SuiParsedData
+  ): WithGenericField<ToTypeArgument<T>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isWithGenericField(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a WithGenericField object`)
+    }
+    return WithGenericField.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static fromSuiObjectData<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    data: SuiObjectData
+  ): WithGenericField<ToTypeArgument<T>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isWithGenericField(data.bcs.type)) {
+        throw new Error(`object at is not a WithGenericField object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return WithGenericField.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return WithGenericField.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
+  static async fetch<T extends Reified<TypeArgument, any>>(
+    client: SuiClient,
+    typeArg: T,
+    id: string
+  ): Promise<WithGenericField<ToTypeArgument<T>>> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching WithGenericField object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isWithGenericField(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a WithGenericField object`)
+    }
+
+    return WithGenericField.fromSuiObjectData(typeArg, res.data)
+  }
+}
+
 /* ============================== Bar =============================== */
 
 export function isBar(type: string): boolean {
@@ -195,104 +580,150 @@ export class Bar implements StructClass {
   }
 }
 
-/* ============================== Dummy =============================== */
+/* ============================== WithTwoGenerics =============================== */
 
-export function isDummy(type: string): boolean {
+export function isWithTwoGenerics(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V1}::fixture::Dummy`
+  return type.startsWith(`${PKG_V1}::fixture::WithTwoGenerics` + '<')
 }
 
-export interface DummyFields {
-  dummyField: ToField<'bool'>
+export interface WithTwoGenericsFields<T extends TypeArgument, U extends TypeArgument> {
+  genericField1: ToField<T>
+  genericField2: ToField<U>
 }
 
-export type DummyReified = Reified<Dummy, DummyFields>
+export type WithTwoGenericsReified<T extends TypeArgument, U extends TypeArgument> = Reified<
+  WithTwoGenerics<T, U>,
+  WithTwoGenericsFields<T, U>
+>
 
-export class Dummy implements StructClass {
+export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
+  implements StructClass
+{
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V1}::fixture::Dummy`
-  static readonly $numTypeParams = 0
-  static readonly $isPhantom = [] as const
+  static readonly $typeName = `${PKG_V1}::fixture::WithTwoGenerics`
+  static readonly $numTypeParams = 2
+  static readonly $isPhantom = [false, false] as const
 
-  readonly $typeName = Dummy.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::fixture::Dummy`
-  readonly $typeArgs: []
-  readonly $isPhantom = Dummy.$isPhantom
+  readonly $typeName = WithTwoGenerics.$typeName
+  readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithTwoGenerics<${ToTypeStr<T>}, ${ToTypeStr<U>}>`
+  readonly $typeArgs: [ToTypeStr<T>, ToTypeStr<U>]
+  readonly $isPhantom = WithTwoGenerics.$isPhantom
 
-  readonly dummyField: ToField<'bool'>
+  readonly genericField1: ToField<T>
+  readonly genericField2: ToField<U>
 
-  private constructor(typeArgs: [], fields: DummyFields) {
+  private constructor(typeArgs: [ToTypeStr<T>, ToTypeStr<U>], fields: WithTwoGenericsFields<T, U>) {
     this.$fullTypeName = composeSuiType(
-      Dummy.$typeName,
+      WithTwoGenerics.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V1}::fixture::Dummy`
+    ) as `${typeof PKG_V1}::fixture::WithTwoGenerics<${ToTypeStr<T>}, ${ToTypeStr<U>}>`
     this.$typeArgs = typeArgs
 
-    this.dummyField = fields.dummyField
+    this.genericField1 = fields.genericField1
+    this.genericField2 = fields.genericField2
   }
 
-  static reified(): DummyReified {
+  static reified<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
+    T: T,
+    U: U
+  ): WithTwoGenericsReified<ToTypeArgument<T>, ToTypeArgument<U>> {
     return {
-      typeName: Dummy.$typeName,
-      fullTypeName: composeSuiType(Dummy.$typeName, ...[]) as `${typeof PKG_V1}::fixture::Dummy`,
-      typeArgs: [] as [],
-      isPhantom: Dummy.$isPhantom,
-      reifiedTypeArgs: [],
-      fromFields: (fields: Record<string, any>) => Dummy.fromFields(fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => Dummy.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Dummy.fromBcs(data),
-      bcs: Dummy.bcs,
-      fromJSONField: (field: any) => Dummy.fromJSONField(field),
-      fromJSON: (json: Record<string, any>) => Dummy.fromJSON(json),
-      fromSuiParsedData: (content: SuiParsedData) => Dummy.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Dummy.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Dummy.fetch(client, id),
-      new: (fields: DummyFields) => {
-        return new Dummy([], fields)
+      typeName: WithTwoGenerics.$typeName,
+      fullTypeName: composeSuiType(
+        WithTwoGenerics.$typeName,
+        ...[extractType(T), extractType(U)]
+      ) as `${typeof PKG_V1}::fixture::WithTwoGenerics<${ToTypeStr<ToTypeArgument<T>>}, ${ToTypeStr<ToTypeArgument<U>>}>`,
+      typeArgs: [extractType(T), extractType(U)] as [
+        ToTypeStr<ToTypeArgument<T>>,
+        ToTypeStr<ToTypeArgument<U>>,
+      ],
+      isPhantom: WithTwoGenerics.$isPhantom,
+      reifiedTypeArgs: [T, U],
+      fromFields: (fields: Record<string, any>) => WithTwoGenerics.fromFields([T, U], fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) =>
+        WithTwoGenerics.fromFieldsWithTypes([T, U], item),
+      fromBcs: (data: Uint8Array) => WithTwoGenerics.fromBcs([T, U], data),
+      bcs: WithTwoGenerics.bcs(toBcs(T), toBcs(U)),
+      fromJSONField: (field: any) => WithTwoGenerics.fromJSONField([T, U], field),
+      fromJSON: (json: Record<string, any>) => WithTwoGenerics.fromJSON([T, U], json),
+      fromSuiParsedData: (content: SuiParsedData) =>
+        WithTwoGenerics.fromSuiParsedData([T, U], content),
+      fromSuiObjectData: (content: SuiObjectData) =>
+        WithTwoGenerics.fromSuiObjectData([T, U], content),
+      fetch: async (client: SuiClient, id: string) => WithTwoGenerics.fetch(client, [T, U], id),
+      new: (fields: WithTwoGenericsFields<ToTypeArgument<T>, ToTypeArgument<U>>) => {
+        return new WithTwoGenerics([extractType(T), extractType(U)], fields)
       },
       kind: 'StructClassReified',
     }
   }
 
   static get r() {
-    return Dummy.reified()
+    return WithTwoGenerics.reified
   }
 
-  static phantom(): PhantomReified<ToTypeStr<Dummy>> {
-    return phantom(Dummy.reified())
+  static phantom<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
+    T: T,
+    U: U
+  ): PhantomReified<ToTypeStr<WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>>>> {
+    return phantom(WithTwoGenerics.reified(T, U))
   }
   static get p() {
-    return Dummy.phantom()
+    return WithTwoGenerics.phantom
   }
 
   static get bcs() {
-    return bcs.struct('Dummy', {
-      dummy_field: bcs.bool(),
+    return <T extends BcsType<any>, U extends BcsType<any>>(T: T, U: U) =>
+      bcs.struct(`WithTwoGenerics<${T.name}, ${U.name}>`, {
+        generic_field_1: T,
+        generic_field_2: U,
+      })
+  }
+
+  static fromFields<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
+    typeArgs: [T, U],
+    fields: Record<string, any>
+  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
+    return WithTwoGenerics.reified(typeArgs[0], typeArgs[1]).new({
+      genericField1: decodeFromFields(typeArgs[0], fields.generic_field_1),
+      genericField2: decodeFromFields(typeArgs[1], fields.generic_field_2),
     })
   }
 
-  static fromFields(fields: Record<string, any>): Dummy {
-    return Dummy.reified().new({ dummyField: decodeFromFields('bool', fields.dummy_field) })
-  }
-
-  static fromFieldsWithTypes(item: FieldsWithTypes): Dummy {
-    if (!isDummy(item.type)) {
-      throw new Error('not a Dummy type')
+  static fromFieldsWithTypes<
+    T extends Reified<TypeArgument, any>,
+    U extends Reified<TypeArgument, any>,
+  >(
+    typeArgs: [T, U],
+    item: FieldsWithTypes
+  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
+    if (!isWithTwoGenerics(item.type)) {
+      throw new Error('not a WithTwoGenerics type')
     }
+    assertFieldsWithTypesArgsMatch(item, typeArgs)
 
-    return Dummy.reified().new({
-      dummyField: decodeFromFieldsWithTypes('bool', item.fields.dummy_field),
+    return WithTwoGenerics.reified(typeArgs[0], typeArgs[1]).new({
+      genericField1: decodeFromFieldsWithTypes(typeArgs[0], item.fields.generic_field_1),
+      genericField2: decodeFromFieldsWithTypes(typeArgs[1], item.fields.generic_field_2),
     })
   }
 
-  static fromBcs(data: Uint8Array): Dummy {
-    return Dummy.fromFields(Dummy.bcs.parse(data))
+  static fromBcs<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
+    typeArgs: [T, U],
+    data: Uint8Array
+  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
+    return WithTwoGenerics.fromFields(
+      typeArgs,
+      WithTwoGenerics.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data)
+    )
   }
 
   toJSONField() {
     return {
-      dummyField: this.dummyField,
+      genericField1: fieldToJSON<T>(this.$typeArgs[0], this.genericField1),
+      genericField2: fieldToJSON<U>(this.$typeArgs[1], this.genericField2),
     }
   }
 
@@ -300,54 +731,97 @@ export class Dummy implements StructClass {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
-  static fromJSONField(field: any): Dummy {
-    return Dummy.reified().new({ dummyField: decodeFromJSONField('bool', field.dummyField) })
+  static fromJSONField<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
+    typeArgs: [T, U],
+    field: any
+  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
+    return WithTwoGenerics.reified(typeArgs[0], typeArgs[1]).new({
+      genericField1: decodeFromJSONField(typeArgs[0], field.genericField1),
+      genericField2: decodeFromJSONField(typeArgs[1], field.genericField2),
+    })
   }
 
-  static fromJSON(json: Record<string, any>): Dummy {
-    if (json.$typeName !== Dummy.$typeName) {
+  static fromJSON<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
+    typeArgs: [T, U],
+    json: Record<string, any>
+  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
+    if (json.$typeName !== WithTwoGenerics.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(WithTwoGenerics.$typeName, ...typeArgs.map(extractType)),
+      json.$typeArgs,
+      typeArgs
+    )
 
-    return Dummy.fromJSONField(json)
+    return WithTwoGenerics.fromJSONField(typeArgs, json)
   }
 
-  static fromSuiParsedData(content: SuiParsedData): Dummy {
+  static fromSuiParsedData<
+    T extends Reified<TypeArgument, any>,
+    U extends Reified<TypeArgument, any>,
+  >(
+    typeArgs: [T, U],
+    content: SuiParsedData
+  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
-    if (!isDummy(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Dummy object`)
+    if (!isWithTwoGenerics(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a WithTwoGenerics object`)
     }
-    return Dummy.fromFieldsWithTypes(content)
+    return WithTwoGenerics.fromFieldsWithTypes(typeArgs, content)
   }
 
-  static fromSuiObjectData(data: SuiObjectData): Dummy {
+  static fromSuiObjectData<
+    T extends Reified<TypeArgument, any>,
+    U extends Reified<TypeArgument, any>,
+  >(typeArgs: [T, U], data: SuiObjectData): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
     if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isDummy(data.bcs.type)) {
-        throw new Error(`object at is not a Dummy object`)
+      if (data.bcs.dataType !== 'moveObject' || !isWithTwoGenerics(data.bcs.type)) {
+        throw new Error(`object at is not a WithTwoGenerics object`)
       }
 
-      return Dummy.fromBcs(fromB64(data.bcs.bcsBytes))
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 2) {
+        throw new Error(
+          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+        )
+      }
+      for (let i = 0; i < 2; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
+      }
+
+      return WithTwoGenerics.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
     }
     if (data.content) {
-      return Dummy.fromSuiParsedData(data.content)
+      return WithTwoGenerics.fromSuiParsedData(typeArgs, data.content)
     }
     throw new Error(
       'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Dummy> {
+  static async fetch<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
+    client: SuiClient,
+    typeArgs: [T, U],
+    id: string
+  ): Promise<WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>>> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
-      throw new Error(`error fetching Dummy object at id ${id}: ${res.error.code}`)
+      throw new Error(`error fetching WithTwoGenerics object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isDummy(res.data.bcs.type)) {
-      throw new Error(`object at id ${id} is not a Dummy object`)
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isWithTwoGenerics(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a WithTwoGenerics object`)
     }
 
-    return Dummy.fromSuiObjectData(res.data)
+    return WithTwoGenerics.fromSuiObjectData(typeArgs, res.data)
   }
 }
 
@@ -764,235 +1238,6 @@ export class Foo<T extends TypeArgument> implements StructClass {
     }
 
     return Foo.fromSuiObjectData(typeArg, res.data)
-  }
-}
-
-/* ============================== WithGenericField =============================== */
-
-export function isWithGenericField(type: string): boolean {
-  type = compressSuiType(type)
-  return type.startsWith(`${PKG_V1}::fixture::WithGenericField` + '<')
-}
-
-export interface WithGenericFieldFields<T extends TypeArgument> {
-  id: ToField<UID>
-  genericField: ToField<T>
-}
-
-export type WithGenericFieldReified<T extends TypeArgument> = Reified<
-  WithGenericField<T>,
-  WithGenericFieldFields<T>
->
-
-export class WithGenericField<T extends TypeArgument> implements StructClass {
-  __StructClass = true as const
-
-  static readonly $typeName = `${PKG_V1}::fixture::WithGenericField`
-  static readonly $numTypeParams = 1
-  static readonly $isPhantom = [false] as const
-
-  readonly $typeName = WithGenericField.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithGenericField<${ToTypeStr<T>}>`
-  readonly $typeArgs: [ToTypeStr<T>]
-  readonly $isPhantom = WithGenericField.$isPhantom
-
-  readonly id: ToField<UID>
-  readonly genericField: ToField<T>
-
-  private constructor(typeArgs: [ToTypeStr<T>], fields: WithGenericFieldFields<T>) {
-    this.$fullTypeName = composeSuiType(
-      WithGenericField.$typeName,
-      ...typeArgs
-    ) as `${typeof PKG_V1}::fixture::WithGenericField<${ToTypeStr<T>}>`
-    this.$typeArgs = typeArgs
-
-    this.id = fields.id
-    this.genericField = fields.genericField
-  }
-
-  static reified<T extends Reified<TypeArgument, any>>(
-    T: T
-  ): WithGenericFieldReified<ToTypeArgument<T>> {
-    return {
-      typeName: WithGenericField.$typeName,
-      fullTypeName: composeSuiType(
-        WithGenericField.$typeName,
-        ...[extractType(T)]
-      ) as `${typeof PKG_V1}::fixture::WithGenericField<${ToTypeStr<ToTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
-      isPhantom: WithGenericField.$isPhantom,
-      reifiedTypeArgs: [T],
-      fromFields: (fields: Record<string, any>) => WithGenericField.fromFields(T, fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => WithGenericField.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => WithGenericField.fromBcs(T, data),
-      bcs: WithGenericField.bcs(toBcs(T)),
-      fromJSONField: (field: any) => WithGenericField.fromJSONField(T, field),
-      fromJSON: (json: Record<string, any>) => WithGenericField.fromJSON(T, json),
-      fromSuiParsedData: (content: SuiParsedData) => WithGenericField.fromSuiParsedData(T, content),
-      fromSuiObjectData: (content: SuiObjectData) => WithGenericField.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => WithGenericField.fetch(client, T, id),
-      new: (fields: WithGenericFieldFields<ToTypeArgument<T>>) => {
-        return new WithGenericField([extractType(T)], fields)
-      },
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return WithGenericField.reified
-  }
-
-  static phantom<T extends Reified<TypeArgument, any>>(
-    T: T
-  ): PhantomReified<ToTypeStr<WithGenericField<ToTypeArgument<T>>>> {
-    return phantom(WithGenericField.reified(T))
-  }
-  static get p() {
-    return WithGenericField.phantom
-  }
-
-  static get bcs() {
-    return <T extends BcsType<any>>(T: T) =>
-      bcs.struct(`WithGenericField<${T.name}>`, {
-        id: UID.bcs,
-        generic_field: T,
-      })
-  }
-
-  static fromFields<T extends Reified<TypeArgument, any>>(
-    typeArg: T,
-    fields: Record<string, any>
-  ): WithGenericField<ToTypeArgument<T>> {
-    return WithGenericField.reified(typeArg).new({
-      id: decodeFromFields(UID.reified(), fields.id),
-      genericField: decodeFromFields(typeArg, fields.generic_field),
-    })
-  }
-
-  static fromFieldsWithTypes<T extends Reified<TypeArgument, any>>(
-    typeArg: T,
-    item: FieldsWithTypes
-  ): WithGenericField<ToTypeArgument<T>> {
-    if (!isWithGenericField(item.type)) {
-      throw new Error('not a WithGenericField type')
-    }
-    assertFieldsWithTypesArgsMatch(item, [typeArg])
-
-    return WithGenericField.reified(typeArg).new({
-      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
-      genericField: decodeFromFieldsWithTypes(typeArg, item.fields.generic_field),
-    })
-  }
-
-  static fromBcs<T extends Reified<TypeArgument, any>>(
-    typeArg: T,
-    data: Uint8Array
-  ): WithGenericField<ToTypeArgument<T>> {
-    const typeArgs = [typeArg]
-
-    return WithGenericField.fromFields(
-      typeArg,
-      WithGenericField.bcs(toBcs(typeArgs[0])).parse(data)
-    )
-  }
-
-  toJSONField() {
-    return {
-      id: this.id,
-      genericField: fieldToJSON<T>(this.$typeArgs[0], this.genericField),
-    }
-  }
-
-  toJSON() {
-    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
-  }
-
-  static fromJSONField<T extends Reified<TypeArgument, any>>(
-    typeArg: T,
-    field: any
-  ): WithGenericField<ToTypeArgument<T>> {
-    return WithGenericField.reified(typeArg).new({
-      id: decodeFromJSONField(UID.reified(), field.id),
-      genericField: decodeFromJSONField(typeArg, field.genericField),
-    })
-  }
-
-  static fromJSON<T extends Reified<TypeArgument, any>>(
-    typeArg: T,
-    json: Record<string, any>
-  ): WithGenericField<ToTypeArgument<T>> {
-    if (json.$typeName !== WithGenericField.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
-    }
-    assertReifiedTypeArgsMatch(
-      composeSuiType(WithGenericField.$typeName, extractType(typeArg)),
-      json.$typeArgs,
-      [typeArg]
-    )
-
-    return WithGenericField.fromJSONField(typeArg, json)
-  }
-
-  static fromSuiParsedData<T extends Reified<TypeArgument, any>>(
-    typeArg: T,
-    content: SuiParsedData
-  ): WithGenericField<ToTypeArgument<T>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isWithGenericField(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a WithGenericField object`)
-    }
-    return WithGenericField.fromFieldsWithTypes(typeArg, content)
-  }
-
-  static fromSuiObjectData<T extends Reified<TypeArgument, any>>(
-    typeArg: T,
-    data: SuiObjectData
-  ): WithGenericField<ToTypeArgument<T>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isWithGenericField(data.bcs.type)) {
-        throw new Error(`object at is not a WithGenericField object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-        )
-      }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
-      }
-
-      return WithGenericField.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return WithGenericField.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
-    )
-  }
-
-  static async fetch<T extends Reified<TypeArgument, any>>(
-    client: SuiClient,
-    typeArg: T,
-    id: string
-  ): Promise<WithGenericField<ToTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching WithGenericField object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isWithGenericField(res.data.bcs.type)) {
-      throw new Error(`object at id ${id} is not a WithGenericField object`)
-    }
-
-    return WithGenericField.fromSuiObjectData(typeArg, res.data)
   }
 }
 
@@ -2325,250 +2570,5 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     }
 
     return WithSpecialTypesInVectors.fromSuiObjectData(typeArg, res.data)
-  }
-}
-
-/* ============================== WithTwoGenerics =============================== */
-
-export function isWithTwoGenerics(type: string): boolean {
-  type = compressSuiType(type)
-  return type.startsWith(`${PKG_V1}::fixture::WithTwoGenerics` + '<')
-}
-
-export interface WithTwoGenericsFields<T extends TypeArgument, U extends TypeArgument> {
-  genericField1: ToField<T>
-  genericField2: ToField<U>
-}
-
-export type WithTwoGenericsReified<T extends TypeArgument, U extends TypeArgument> = Reified<
-  WithTwoGenerics<T, U>,
-  WithTwoGenericsFields<T, U>
->
-
-export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
-  implements StructClass
-{
-  __StructClass = true as const
-
-  static readonly $typeName = `${PKG_V1}::fixture::WithTwoGenerics`
-  static readonly $numTypeParams = 2
-  static readonly $isPhantom = [false, false] as const
-
-  readonly $typeName = WithTwoGenerics.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithTwoGenerics<${ToTypeStr<T>}, ${ToTypeStr<U>}>`
-  readonly $typeArgs: [ToTypeStr<T>, ToTypeStr<U>]
-  readonly $isPhantom = WithTwoGenerics.$isPhantom
-
-  readonly genericField1: ToField<T>
-  readonly genericField2: ToField<U>
-
-  private constructor(typeArgs: [ToTypeStr<T>, ToTypeStr<U>], fields: WithTwoGenericsFields<T, U>) {
-    this.$fullTypeName = composeSuiType(
-      WithTwoGenerics.$typeName,
-      ...typeArgs
-    ) as `${typeof PKG_V1}::fixture::WithTwoGenerics<${ToTypeStr<T>}, ${ToTypeStr<U>}>`
-    this.$typeArgs = typeArgs
-
-    this.genericField1 = fields.genericField1
-    this.genericField2 = fields.genericField2
-  }
-
-  static reified<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
-    T: T,
-    U: U
-  ): WithTwoGenericsReified<ToTypeArgument<T>, ToTypeArgument<U>> {
-    return {
-      typeName: WithTwoGenerics.$typeName,
-      fullTypeName: composeSuiType(
-        WithTwoGenerics.$typeName,
-        ...[extractType(T), extractType(U)]
-      ) as `${typeof PKG_V1}::fixture::WithTwoGenerics<${ToTypeStr<ToTypeArgument<T>>}, ${ToTypeStr<ToTypeArgument<U>>}>`,
-      typeArgs: [extractType(T), extractType(U)] as [
-        ToTypeStr<ToTypeArgument<T>>,
-        ToTypeStr<ToTypeArgument<U>>,
-      ],
-      isPhantom: WithTwoGenerics.$isPhantom,
-      reifiedTypeArgs: [T, U],
-      fromFields: (fields: Record<string, any>) => WithTwoGenerics.fromFields([T, U], fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) =>
-        WithTwoGenerics.fromFieldsWithTypes([T, U], item),
-      fromBcs: (data: Uint8Array) => WithTwoGenerics.fromBcs([T, U], data),
-      bcs: WithTwoGenerics.bcs(toBcs(T), toBcs(U)),
-      fromJSONField: (field: any) => WithTwoGenerics.fromJSONField([T, U], field),
-      fromJSON: (json: Record<string, any>) => WithTwoGenerics.fromJSON([T, U], json),
-      fromSuiParsedData: (content: SuiParsedData) =>
-        WithTwoGenerics.fromSuiParsedData([T, U], content),
-      fromSuiObjectData: (content: SuiObjectData) =>
-        WithTwoGenerics.fromSuiObjectData([T, U], content),
-      fetch: async (client: SuiClient, id: string) => WithTwoGenerics.fetch(client, [T, U], id),
-      new: (fields: WithTwoGenericsFields<ToTypeArgument<T>, ToTypeArgument<U>>) => {
-        return new WithTwoGenerics([extractType(T), extractType(U)], fields)
-      },
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return WithTwoGenerics.reified
-  }
-
-  static phantom<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
-    T: T,
-    U: U
-  ): PhantomReified<ToTypeStr<WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>>>> {
-    return phantom(WithTwoGenerics.reified(T, U))
-  }
-  static get p() {
-    return WithTwoGenerics.phantom
-  }
-
-  static get bcs() {
-    return <T extends BcsType<any>, U extends BcsType<any>>(T: T, U: U) =>
-      bcs.struct(`WithTwoGenerics<${T.name}, ${U.name}>`, {
-        generic_field_1: T,
-        generic_field_2: U,
-      })
-  }
-
-  static fromFields<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
-    typeArgs: [T, U],
-    fields: Record<string, any>
-  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
-    return WithTwoGenerics.reified(typeArgs[0], typeArgs[1]).new({
-      genericField1: decodeFromFields(typeArgs[0], fields.generic_field_1),
-      genericField2: decodeFromFields(typeArgs[1], fields.generic_field_2),
-    })
-  }
-
-  static fromFieldsWithTypes<
-    T extends Reified<TypeArgument, any>,
-    U extends Reified<TypeArgument, any>,
-  >(
-    typeArgs: [T, U],
-    item: FieldsWithTypes
-  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
-    if (!isWithTwoGenerics(item.type)) {
-      throw new Error('not a WithTwoGenerics type')
-    }
-    assertFieldsWithTypesArgsMatch(item, typeArgs)
-
-    return WithTwoGenerics.reified(typeArgs[0], typeArgs[1]).new({
-      genericField1: decodeFromFieldsWithTypes(typeArgs[0], item.fields.generic_field_1),
-      genericField2: decodeFromFieldsWithTypes(typeArgs[1], item.fields.generic_field_2),
-    })
-  }
-
-  static fromBcs<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
-    typeArgs: [T, U],
-    data: Uint8Array
-  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
-    return WithTwoGenerics.fromFields(
-      typeArgs,
-      WithTwoGenerics.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data)
-    )
-  }
-
-  toJSONField() {
-    return {
-      genericField1: fieldToJSON<T>(this.$typeArgs[0], this.genericField1),
-      genericField2: fieldToJSON<U>(this.$typeArgs[1], this.genericField2),
-    }
-  }
-
-  toJSON() {
-    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
-  }
-
-  static fromJSONField<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
-    typeArgs: [T, U],
-    field: any
-  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
-    return WithTwoGenerics.reified(typeArgs[0], typeArgs[1]).new({
-      genericField1: decodeFromJSONField(typeArgs[0], field.genericField1),
-      genericField2: decodeFromJSONField(typeArgs[1], field.genericField2),
-    })
-  }
-
-  static fromJSON<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
-    typeArgs: [T, U],
-    json: Record<string, any>
-  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
-    if (json.$typeName !== WithTwoGenerics.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
-    }
-    assertReifiedTypeArgsMatch(
-      composeSuiType(WithTwoGenerics.$typeName, ...typeArgs.map(extractType)),
-      json.$typeArgs,
-      typeArgs
-    )
-
-    return WithTwoGenerics.fromJSONField(typeArgs, json)
-  }
-
-  static fromSuiParsedData<
-    T extends Reified<TypeArgument, any>,
-    U extends Reified<TypeArgument, any>,
-  >(
-    typeArgs: [T, U],
-    content: SuiParsedData
-  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isWithTwoGenerics(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a WithTwoGenerics object`)
-    }
-    return WithTwoGenerics.fromFieldsWithTypes(typeArgs, content)
-  }
-
-  static fromSuiObjectData<
-    T extends Reified<TypeArgument, any>,
-    U extends Reified<TypeArgument, any>,
-  >(typeArgs: [T, U], data: SuiObjectData): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isWithTwoGenerics(data.bcs.type)) {
-        throw new Error(`object at is not a WithTwoGenerics object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 2) {
-        throw new Error(
-          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
-        )
-      }
-      for (let i = 0; i < 2; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-          )
-        }
-      }
-
-      return WithTwoGenerics.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return WithTwoGenerics.fromSuiParsedData(typeArgs, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
-    )
-  }
-
-  static async fetch<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
-    client: SuiClient,
-    typeArgs: [T, U],
-    id: string
-  ): Promise<WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching WithTwoGenerics object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isWithTwoGenerics(res.data.bcs.type)) {
-      throw new Error(`object at id ${id} is not a WithTwoGenerics object`)
-    }
-
-    return WithTwoGenerics.fromSuiObjectData(typeArgs, res.data)
   }
 }

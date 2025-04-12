@@ -22,7 +22,7 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { PKG_V27 } from '../index'
+import { PKG_V29 } from '../index'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -32,7 +32,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isField(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V27}::dynamic_field::Field` + '<')
+  return type.startsWith(`${PKG_V29}::dynamic_field::Field` + '<')
 }
 
 export interface FieldFields<Name extends TypeArgument, Value extends TypeArgument> {
@@ -49,12 +49,12 @@ export type FieldReified<Name extends TypeArgument, Value extends TypeArgument> 
 export class Field<Name extends TypeArgument, Value extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::dynamic_field::Field`
+  static readonly $typeName = `${PKG_V29}::dynamic_field::Field`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const
 
   readonly $typeName = Field.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::dynamic_field::Field<${ToTypeStr<Name>}, ${ToTypeStr<Value>}>`
+  readonly $fullTypeName: `${typeof PKG_V29}::dynamic_field::Field<${ToTypeStr<Name>}, ${ToTypeStr<Value>}>`
   readonly $typeArgs: [ToTypeStr<Name>, ToTypeStr<Value>]
   readonly $isPhantom = Field.$isPhantom
 
@@ -69,7 +69,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     this.$fullTypeName = composeSuiType(
       Field.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::dynamic_field::Field<${ToTypeStr<Name>}, ${ToTypeStr<Value>}>`
+    ) as `${typeof PKG_V29}::dynamic_field::Field<${ToTypeStr<Name>}, ${ToTypeStr<Value>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -86,7 +86,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
       fullTypeName: composeSuiType(
         Field.$typeName,
         ...[extractType(Name), extractType(Value)]
-      ) as `${typeof PKG_V27}::dynamic_field::Field<${ToTypeStr<ToTypeArgument<Name>>}, ${ToTypeStr<ToTypeArgument<Value>>}>`,
+      ) as `${typeof PKG_V29}::dynamic_field::Field<${ToTypeStr<ToTypeArgument<Name>>}, ${ToTypeStr<ToTypeArgument<Value>>}>`,
       typeArgs: [extractType(Name), extractType(Value)] as [
         ToTypeStr<ToTypeArgument<Name>>,
         ToTypeStr<ToTypeArgument<Value>>,

@@ -2,6 +2,92 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj, pure, vector } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+export function empty(tx: Transaction, typeArgs: [string, string]) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::empty`,
+    typeArguments: typeArgs,
+    arguments: [],
+  })
+}
+
+export interface InsertArgs {
+  self: TransactionObjectInput
+  key: GenericArg
+  value: GenericArg
+}
+
+export function insert(tx: Transaction, typeArgs: [string, string], args: InsertArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::insert`,
+    typeArguments: typeArgs,
+    arguments: [
+      obj(tx, args.self),
+      generic(tx, `${typeArgs[0]}`, args.key),
+      generic(tx, `${typeArgs[1]}`, args.value),
+    ],
+  })
+}
+
+export interface RemoveArgs {
+  self: TransactionObjectInput
+  key: GenericArg
+}
+
+export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::remove`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
+  })
+}
+
+export function pop(tx: Transaction, typeArgs: [string, string], self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::pop`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, self)],
+  })
+}
+
+export interface GetMutArgs {
+  self: TransactionObjectInput
+  key: GenericArg
+}
+
+export function getMut(tx: Transaction, typeArgs: [string, string], args: GetMutArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::get_mut`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
+  })
+}
+
+export interface GetArgs {
+  self: TransactionObjectInput
+  key: GenericArg
+}
+
+export function get(tx: Transaction, typeArgs: [string, string], args: GetArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::get`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
+  })
+}
+
+export interface TryGetArgs {
+  self: TransactionObjectInput
+  key: GenericArg
+}
+
+export function tryGet(tx: Transaction, typeArgs: [string, string], args: TryGetArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::try_get`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
+  })
+}
+
 export interface ContainsArgs {
   self: TransactionObjectInput
   key: GenericArg
@@ -12,6 +98,22 @@ export function contains(tx: Transaction, typeArgs: [string, string], args: Cont
     target: `${PUBLISHED_AT}::vec_map::contains`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
+  })
+}
+
+export function size(tx: Transaction, typeArgs: [string, string], self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::size`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, self)],
+  })
+}
+
+export function isEmpty(tx: Transaction, typeArgs: [string, string], self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::is_empty`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, self)],
   })
 }
 
@@ -27,11 +129,15 @@ export function destroyEmpty(
   })
 }
 
-export function empty(tx: Transaction, typeArgs: [string, string]) {
+export function intoKeysValues(
+  tx: Transaction,
+  typeArgs: [string, string],
+  self: TransactionObjectInput
+) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::empty`,
+    target: `${PUBLISHED_AT}::vec_map::into_keys_values`,
     typeArguments: typeArgs,
-    arguments: [],
+    arguments: [obj(tx, self)],
   })
 }
 
@@ -52,14 +158,35 @@ export function fromKeysValues(
   })
 }
 
-export interface GetArgs {
+export function keys(tx: Transaction, typeArgs: [string, string], self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::keys`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, self)],
+  })
+}
+
+export interface GetIdxOptArgs {
   self: TransactionObjectInput
   key: GenericArg
 }
 
-export function get(tx: Transaction, typeArgs: [string, string], args: GetArgs) {
+export function getIdxOpt(tx: Transaction, typeArgs: [string, string], args: GetIdxOptArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::get`,
+    target: `${PUBLISHED_AT}::vec_map::get_idx_opt`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
+  })
+}
+
+export interface GetIdxArgs {
+  self: TransactionObjectInput
+  key: GenericArg
+}
+
+export function getIdx(tx: Transaction, typeArgs: [string, string], args: GetIdxArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::get_idx`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
   })
@@ -99,112 +226,6 @@ export function getEntryByIdxMut(
   })
 }
 
-export interface GetIdxArgs {
-  self: TransactionObjectInput
-  key: GenericArg
-}
-
-export function getIdx(tx: Transaction, typeArgs: [string, string], args: GetIdxArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::get_idx`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
-  })
-}
-
-export interface GetIdxOptArgs {
-  self: TransactionObjectInput
-  key: GenericArg
-}
-
-export function getIdxOpt(tx: Transaction, typeArgs: [string, string], args: GetIdxOptArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::get_idx_opt`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
-  })
-}
-
-export interface GetMutArgs {
-  self: TransactionObjectInput
-  key: GenericArg
-}
-
-export function getMut(tx: Transaction, typeArgs: [string, string], args: GetMutArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::get_mut`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
-  })
-}
-
-export interface InsertArgs {
-  self: TransactionObjectInput
-  key: GenericArg
-  value: GenericArg
-}
-
-export function insert(tx: Transaction, typeArgs: [string, string], args: InsertArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::insert`,
-    typeArguments: typeArgs,
-    arguments: [
-      obj(tx, args.self),
-      generic(tx, `${typeArgs[0]}`, args.key),
-      generic(tx, `${typeArgs[1]}`, args.value),
-    ],
-  })
-}
-
-export function intoKeysValues(
-  tx: Transaction,
-  typeArgs: [string, string],
-  self: TransactionObjectInput
-) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::into_keys_values`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, self)],
-  })
-}
-
-export function isEmpty(tx: Transaction, typeArgs: [string, string], self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::is_empty`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, self)],
-  })
-}
-
-export function keys(tx: Transaction, typeArgs: [string, string], self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::keys`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, self)],
-  })
-}
-
-export function pop(tx: Transaction, typeArgs: [string, string], self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::pop`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, self)],
-  })
-}
-
-export interface RemoveArgs {
-  self: TransactionObjectInput
-  key: GenericArg
-}
-
-export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::remove`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
-  })
-}
-
 export interface RemoveEntryByIdxArgs {
   self: TransactionObjectInput
   idx: bigint | TransactionArgument
@@ -219,26 +240,5 @@ export function removeEntryByIdx(
     target: `${PUBLISHED_AT}::vec_map::remove_entry_by_idx`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.self), pure(tx, args.idx, `u64`)],
-  })
-}
-
-export function size(tx: Transaction, typeArgs: [string, string], self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::size`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, self)],
-  })
-}
-
-export interface TryGetArgs {
-  self: TransactionObjectInput
-  key: GenericArg
-}
-
-export function tryGet(tx: Transaction, typeArgs: [string, string], args: TryGetArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::try_get`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
   })
 }

@@ -7,8 +7,8 @@ import * as typeName from './type-name/structs'
 import { StructClassLoader } from '../_framework/loader'
 
 export function registerClasses(loader: StructClassLoader) {
-  loader.register(ascii.Char)
   loader.register(ascii.String)
+  loader.register(ascii.Char)
   loader.register(bitVector.BitVector)
   loader.register(fixedPoint32.FixedPoint32)
   loader.register(option.Option)

@@ -3,6 +3,54 @@ import { obj, pure, vector } from '../../_framework/util'
 import { Coin } from '../coin/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+export function keep(tx: Transaction, typeArg: string, c: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::pay::keep`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, c)],
+  })
+}
+
+export interface SplitArgs {
+  coin: TransactionObjectInput
+  splitAmount: bigint | TransactionArgument
+}
+
+export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::pay::split`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.coin), pure(tx, args.splitAmount, `u64`)],
+  })
+}
+
+export interface SplitVecArgs {
+  self: TransactionObjectInput
+  splitAmounts: Array<bigint | TransactionArgument> | TransactionArgument
+}
+
+export function splitVec(tx: Transaction, typeArg: string, args: SplitVecArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::pay::split_vec`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.self), pure(tx, args.splitAmounts, `vector<u64>`)],
+  })
+}
+
+export interface SplitAndTransferArgs {
+  c: TransactionObjectInput
+  amount: bigint | TransactionArgument
+  recipient: string | TransactionArgument
+}
+
+export function splitAndTransfer(tx: Transaction, typeArg: string, args: SplitAndTransferArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::pay::split_and_transfer`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.c), pure(tx, args.amount, `u64`), pure(tx, args.recipient, `address`)],
+  })
+}
+
 export interface DivideAndKeepArgs {
   self: TransactionObjectInput
   n: bigint | TransactionArgument
@@ -55,53 +103,5 @@ export function joinVecAndTransfer(tx: Transaction, typeArg: string, args: JoinV
       vector(tx, `${Coin.$typeName}<${typeArg}>`, args.coins),
       pure(tx, args.receiver, `address`),
     ],
-  })
-}
-
-export function keep(tx: Transaction, typeArg: string, c: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::pay::keep`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, c)],
-  })
-}
-
-export interface SplitArgs {
-  coin: TransactionObjectInput
-  splitAmount: bigint | TransactionArgument
-}
-
-export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::pay::split`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.coin), pure(tx, args.splitAmount, `u64`)],
-  })
-}
-
-export interface SplitAndTransferArgs {
-  c: TransactionObjectInput
-  amount: bigint | TransactionArgument
-  recipient: string | TransactionArgument
-}
-
-export function splitAndTransfer(tx: Transaction, typeArg: string, args: SplitAndTransferArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::pay::split_and_transfer`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.c), pure(tx, args.amount, `u64`), pure(tx, args.recipient, `address`)],
-  })
-}
-
-export interface SplitVecArgs {
-  self: TransactionObjectInput
-  splitAmounts: Array<bigint | TransactionArgument> | TransactionArgument
-}
-
-export function splitVec(tx: Transaction, typeArg: string, args: SplitVecArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::pay::split_vec`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), pure(tx, args.splitAmounts, `vector<u64>`)],
   })
 }

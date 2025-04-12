@@ -26,7 +26,7 @@ import { Option } from '../../move-stdlib-chain/option/structs'
 import { String } from '../../move-stdlib-chain/string/structs'
 import { TypeName } from '../../move-stdlib-chain/type-name/structs'
 import { Balance } from '../balance/structs'
-import { PKG_V27 } from '../index'
+import { PKG_V29 } from '../index'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
 import { VecSet } from '../vec-set/structs'
@@ -34,11 +34,694 @@ import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
 
+/* ============================== Token =============================== */
+
+export function isToken(type: string): boolean {
+  type = compressSuiType(type)
+  return type.startsWith(`${PKG_V29}::token::Token` + '<')
+}
+
+export interface TokenFields<T0 extends PhantomTypeArgument> {
+  id: ToField<UID>
+  balance: ToField<Balance<T0>>
+}
+
+export type TokenReified<T0 extends PhantomTypeArgument> = Reified<Token<T0>, TokenFields<T0>>
+
+export class Token<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
+  static readonly $typeName = `${PKG_V29}::token::Token`
+  static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
+
+  readonly $typeName = Token.$typeName
+  readonly $fullTypeName: `${typeof PKG_V29}::token::Token<${PhantomToTypeStr<T0>}>`
+  readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = Token.$isPhantom
+
+  readonly id: ToField<UID>
+  readonly balance: ToField<Balance<T0>>
+
+  private constructor(typeArgs: [PhantomToTypeStr<T0>], fields: TokenFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      Token.$typeName,
+      ...typeArgs
+    ) as `${typeof PKG_V29}::token::Token<${PhantomToTypeStr<T0>}>`
+    this.$typeArgs = typeArgs
+
+    this.id = fields.id
+    this.balance = fields.balance
+  }
+
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): TokenReified<ToPhantomTypeArgument<T0>> {
+    return {
+      typeName: Token.$typeName,
+      fullTypeName: composeSuiType(
+        Token.$typeName,
+        ...[extractType(T0)]
+      ) as `${typeof PKG_V29}::token::Token<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: Token.$isPhantom,
+      reifiedTypeArgs: [T0],
+      fromFields: (fields: Record<string, any>) => Token.fromFields(T0, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Token.fromFieldsWithTypes(T0, item),
+      fromBcs: (data: Uint8Array) => Token.fromBcs(T0, data),
+      bcs: Token.bcs,
+      fromJSONField: (field: any) => Token.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => Token.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => Token.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) => Token.fromSuiObjectData(T0, content),
+      fetch: async (client: SuiClient, id: string) => Token.fetch(client, T0, id),
+      new: (fields: TokenFields<ToPhantomTypeArgument<T0>>) => {
+        return new Token([extractType(T0)], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return Token.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<Token<ToPhantomTypeArgument<T0>>>> {
+    return phantom(Token.reified(T0))
+  }
+  static get p() {
+    return Token.phantom
+  }
+
+  static get bcs() {
+    return bcs.struct('Token', {
+      id: UID.bcs,
+      balance: Balance.bcs,
+    })
+  }
+
+  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): Token<ToPhantomTypeArgument<T0>> {
+    return Token.reified(typeArg).new({
+      id: decodeFromFields(UID.reified(), fields.id),
+      balance: decodeFromFields(Balance.reified(typeArg), fields.balance),
+    })
+  }
+
+  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): Token<ToPhantomTypeArgument<T0>> {
+    if (!isToken(item.type)) {
+      throw new Error('not a Token type')
+    }
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
+
+    return Token.reified(typeArg).new({
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      balance: decodeFromFieldsWithTypes(Balance.reified(typeArg), item.fields.balance),
+    })
+  }
+
+  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    data: Uint8Array
+  ): Token<ToPhantomTypeArgument<T0>> {
+    return Token.fromFields(typeArg, Token.bcs.parse(data))
+  }
+
+  toJSONField() {
+    return {
+      id: this.id,
+      balance: this.balance.toJSONField(),
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    field: any
+  ): Token<ToPhantomTypeArgument<T0>> {
+    return Token.reified(typeArg).new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      balance: decodeFromJSONField(Balance.reified(typeArg), field.balance),
+    })
+  }
+
+  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): Token<ToPhantomTypeArgument<T0>> {
+    if (json.$typeName !== Token.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Token.$typeName, extractType(typeArg)),
+      json.$typeArgs,
+      [typeArg]
+    )
+
+    return Token.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    content: SuiParsedData
+  ): Token<ToPhantomTypeArgument<T0>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isToken(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a Token object`)
+    }
+    return Token.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static fromSuiObjectData<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): Token<ToPhantomTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isToken(data.bcs.type)) {
+        throw new Error(`object at is not a Token object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return Token.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Token.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
+  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
+    client: SuiClient,
+    typeArg: T0,
+    id: string
+  ): Promise<Token<ToPhantomTypeArgument<T0>>> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching Token object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isToken(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a Token object`)
+    }
+
+    return Token.fromSuiObjectData(typeArg, res.data)
+  }
+}
+
+/* ============================== TokenPolicyCap =============================== */
+
+export function isTokenPolicyCap(type: string): boolean {
+  type = compressSuiType(type)
+  return type.startsWith(`${PKG_V29}::token::TokenPolicyCap` + '<')
+}
+
+export interface TokenPolicyCapFields<T0 extends PhantomTypeArgument> {
+  id: ToField<UID>
+  for: ToField<ID>
+}
+
+export type TokenPolicyCapReified<T0 extends PhantomTypeArgument> = Reified<
+  TokenPolicyCap<T0>,
+  TokenPolicyCapFields<T0>
+>
+
+export class TokenPolicyCap<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
+  static readonly $typeName = `${PKG_V29}::token::TokenPolicyCap`
+  static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
+
+  readonly $typeName = TokenPolicyCap.$typeName
+  readonly $fullTypeName: `${typeof PKG_V29}::token::TokenPolicyCap<${PhantomToTypeStr<T0>}>`
+  readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = TokenPolicyCap.$isPhantom
+
+  readonly id: ToField<UID>
+  readonly for: ToField<ID>
+
+  private constructor(typeArgs: [PhantomToTypeStr<T0>], fields: TokenPolicyCapFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      TokenPolicyCap.$typeName,
+      ...typeArgs
+    ) as `${typeof PKG_V29}::token::TokenPolicyCap<${PhantomToTypeStr<T0>}>`
+    this.$typeArgs = typeArgs
+
+    this.id = fields.id
+    this.for = fields.for
+  }
+
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): TokenPolicyCapReified<ToPhantomTypeArgument<T0>> {
+    return {
+      typeName: TokenPolicyCap.$typeName,
+      fullTypeName: composeSuiType(
+        TokenPolicyCap.$typeName,
+        ...[extractType(T0)]
+      ) as `${typeof PKG_V29}::token::TokenPolicyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: TokenPolicyCap.$isPhantom,
+      reifiedTypeArgs: [T0],
+      fromFields: (fields: Record<string, any>) => TokenPolicyCap.fromFields(T0, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => TokenPolicyCap.fromFieldsWithTypes(T0, item),
+      fromBcs: (data: Uint8Array) => TokenPolicyCap.fromBcs(T0, data),
+      bcs: TokenPolicyCap.bcs,
+      fromJSONField: (field: any) => TokenPolicyCap.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => TokenPolicyCap.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => TokenPolicyCap.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) => TokenPolicyCap.fromSuiObjectData(T0, content),
+      fetch: async (client: SuiClient, id: string) => TokenPolicyCap.fetch(client, T0, id),
+      new: (fields: TokenPolicyCapFields<ToPhantomTypeArgument<T0>>) => {
+        return new TokenPolicyCap([extractType(T0)], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return TokenPolicyCap.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<TokenPolicyCap<ToPhantomTypeArgument<T0>>>> {
+    return phantom(TokenPolicyCap.reified(T0))
+  }
+  static get p() {
+    return TokenPolicyCap.phantom
+  }
+
+  static get bcs() {
+    return bcs.struct('TokenPolicyCap', {
+      id: UID.bcs,
+      for: ID.bcs,
+    })
+  }
+
+  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
+    return TokenPolicyCap.reified(typeArg).new({
+      id: decodeFromFields(UID.reified(), fields.id),
+      for: decodeFromFields(ID.reified(), fields.for),
+    })
+  }
+
+  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
+    if (!isTokenPolicyCap(item.type)) {
+      throw new Error('not a TokenPolicyCap type')
+    }
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
+
+    return TokenPolicyCap.reified(typeArg).new({
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      for: decodeFromFieldsWithTypes(ID.reified(), item.fields.for),
+    })
+  }
+
+  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    data: Uint8Array
+  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
+    return TokenPolicyCap.fromFields(typeArg, TokenPolicyCap.bcs.parse(data))
+  }
+
+  toJSONField() {
+    return {
+      id: this.id,
+      for: this.for,
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    field: any
+  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
+    return TokenPolicyCap.reified(typeArg).new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      for: decodeFromJSONField(ID.reified(), field.for),
+    })
+  }
+
+  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
+    if (json.$typeName !== TokenPolicyCap.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(TokenPolicyCap.$typeName, extractType(typeArg)),
+      json.$typeArgs,
+      [typeArg]
+    )
+
+    return TokenPolicyCap.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    content: SuiParsedData
+  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isTokenPolicyCap(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a TokenPolicyCap object`)
+    }
+    return TokenPolicyCap.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static fromSuiObjectData<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isTokenPolicyCap(data.bcs.type)) {
+        throw new Error(`object at is not a TokenPolicyCap object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return TokenPolicyCap.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return TokenPolicyCap.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
+  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
+    client: SuiClient,
+    typeArg: T0,
+    id: string
+  ): Promise<TokenPolicyCap<ToPhantomTypeArgument<T0>>> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching TokenPolicyCap object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isTokenPolicyCap(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a TokenPolicyCap object`)
+    }
+
+    return TokenPolicyCap.fromSuiObjectData(typeArg, res.data)
+  }
+}
+
+/* ============================== TokenPolicy =============================== */
+
+export function isTokenPolicy(type: string): boolean {
+  type = compressSuiType(type)
+  return type.startsWith(`${PKG_V29}::token::TokenPolicy` + '<')
+}
+
+export interface TokenPolicyFields<T0 extends PhantomTypeArgument> {
+  id: ToField<UID>
+  spentBalance: ToField<Balance<T0>>
+  rules: ToField<VecMap<String, VecSet<TypeName>>>
+}
+
+export type TokenPolicyReified<T0 extends PhantomTypeArgument> = Reified<
+  TokenPolicy<T0>,
+  TokenPolicyFields<T0>
+>
+
+export class TokenPolicy<T0 extends PhantomTypeArgument> implements StructClass {
+  __StructClass = true as const
+
+  static readonly $typeName = `${PKG_V29}::token::TokenPolicy`
+  static readonly $numTypeParams = 1
+  static readonly $isPhantom = [true] as const
+
+  readonly $typeName = TokenPolicy.$typeName
+  readonly $fullTypeName: `${typeof PKG_V29}::token::TokenPolicy<${PhantomToTypeStr<T0>}>`
+  readonly $typeArgs: [PhantomToTypeStr<T0>]
+  readonly $isPhantom = TokenPolicy.$isPhantom
+
+  readonly id: ToField<UID>
+  readonly spentBalance: ToField<Balance<T0>>
+  readonly rules: ToField<VecMap<String, VecSet<TypeName>>>
+
+  private constructor(typeArgs: [PhantomToTypeStr<T0>], fields: TokenPolicyFields<T0>) {
+    this.$fullTypeName = composeSuiType(
+      TokenPolicy.$typeName,
+      ...typeArgs
+    ) as `${typeof PKG_V29}::token::TokenPolicy<${PhantomToTypeStr<T0>}>`
+    this.$typeArgs = typeArgs
+
+    this.id = fields.id
+    this.spentBalance = fields.spentBalance
+    this.rules = fields.rules
+  }
+
+  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): TokenPolicyReified<ToPhantomTypeArgument<T0>> {
+    return {
+      typeName: TokenPolicy.$typeName,
+      fullTypeName: composeSuiType(
+        TokenPolicy.$typeName,
+        ...[extractType(T0)]
+      ) as `${typeof PKG_V29}::token::TokenPolicy<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
+      isPhantom: TokenPolicy.$isPhantom,
+      reifiedTypeArgs: [T0],
+      fromFields: (fields: Record<string, any>) => TokenPolicy.fromFields(T0, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => TokenPolicy.fromFieldsWithTypes(T0, item),
+      fromBcs: (data: Uint8Array) => TokenPolicy.fromBcs(T0, data),
+      bcs: TokenPolicy.bcs,
+      fromJSONField: (field: any) => TokenPolicy.fromJSONField(T0, field),
+      fromJSON: (json: Record<string, any>) => TokenPolicy.fromJSON(T0, json),
+      fromSuiParsedData: (content: SuiParsedData) => TokenPolicy.fromSuiParsedData(T0, content),
+      fromSuiObjectData: (content: SuiObjectData) => TokenPolicy.fromSuiObjectData(T0, content),
+      fetch: async (client: SuiClient, id: string) => TokenPolicy.fetch(client, T0, id),
+      new: (fields: TokenPolicyFields<ToPhantomTypeArgument<T0>>) => {
+        return new TokenPolicy([extractType(T0)], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return TokenPolicy.reified
+  }
+
+  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
+    T0: T0
+  ): PhantomReified<ToTypeStr<TokenPolicy<ToPhantomTypeArgument<T0>>>> {
+    return phantom(TokenPolicy.reified(T0))
+  }
+  static get p() {
+    return TokenPolicy.phantom
+  }
+
+  static get bcs() {
+    return bcs.struct('TokenPolicy', {
+      id: UID.bcs,
+      spent_balance: Balance.bcs,
+      rules: VecMap.bcs(String.bcs, VecSet.bcs(TypeName.bcs)),
+    })
+  }
+
+  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    fields: Record<string, any>
+  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
+    return TokenPolicy.reified(typeArg).new({
+      id: decodeFromFields(UID.reified(), fields.id),
+      spentBalance: decodeFromFields(Balance.reified(typeArg), fields.spent_balance),
+      rules: decodeFromFields(
+        VecMap.reified(String.reified(), VecSet.reified(TypeName.reified())),
+        fields.rules
+      ),
+    })
+  }
+
+  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    item: FieldsWithTypes
+  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
+    if (!isTokenPolicy(item.type)) {
+      throw new Error('not a TokenPolicy type')
+    }
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
+
+    return TokenPolicy.reified(typeArg).new({
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      spentBalance: decodeFromFieldsWithTypes(Balance.reified(typeArg), item.fields.spent_balance),
+      rules: decodeFromFieldsWithTypes(
+        VecMap.reified(String.reified(), VecSet.reified(TypeName.reified())),
+        item.fields.rules
+      ),
+    })
+  }
+
+  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    data: Uint8Array
+  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
+    return TokenPolicy.fromFields(typeArg, TokenPolicy.bcs.parse(data))
+  }
+
+  toJSONField() {
+    return {
+      id: this.id,
+      spentBalance: this.spentBalance.toJSONField(),
+      rules: this.rules.toJSONField(),
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    field: any
+  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
+    return TokenPolicy.reified(typeArg).new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      spentBalance: decodeFromJSONField(Balance.reified(typeArg), field.spentBalance),
+      rules: decodeFromJSONField(
+        VecMap.reified(String.reified(), VecSet.reified(TypeName.reified())),
+        field.rules
+      ),
+    })
+  }
+
+  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    json: Record<string, any>
+  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
+    if (json.$typeName !== TokenPolicy.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(TokenPolicy.$typeName, extractType(typeArg)),
+      json.$typeArgs,
+      [typeArg]
+    )
+
+    return TokenPolicy.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    content: SuiParsedData
+  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isTokenPolicy(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a TokenPolicy object`)
+    }
+    return TokenPolicy.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static fromSuiObjectData<T0 extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T0,
+    data: SuiObjectData
+  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isTokenPolicy(data.bcs.type)) {
+        throw new Error(`object at is not a TokenPolicy object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+        )
+      }
+      const gotTypeArg = compressSuiType(gotTypeArgs[0])
+      const expectedTypeArg = compressSuiType(extractType(typeArg))
+      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
+        throw new Error(
+          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+
+      return TokenPolicy.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return TokenPolicy.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
+  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
+    client: SuiClient,
+    typeArg: T0,
+    id: string
+  ): Promise<TokenPolicy<ToPhantomTypeArgument<T0>>> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching TokenPolicy object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isTokenPolicy(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a TokenPolicy object`)
+    }
+
+    return TokenPolicy.fromSuiObjectData(typeArg, res.data)
+  }
+}
+
 /* ============================== ActionRequest =============================== */
 
 export function isActionRequest(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V27}::token::ActionRequest` + '<')
+  return type.startsWith(`${PKG_V29}::token::ActionRequest` + '<')
 }
 
 export interface ActionRequestFields<T0 extends PhantomTypeArgument> {
@@ -58,12 +741,12 @@ export type ActionRequestReified<T0 extends PhantomTypeArgument> = Reified<
 export class ActionRequest<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::token::ActionRequest`
+  static readonly $typeName = `${PKG_V29}::token::ActionRequest`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = ActionRequest.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::token::ActionRequest<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V29}::token::ActionRequest<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = ActionRequest.$isPhantom
 
@@ -78,7 +761,7 @@ export class ActionRequest<T0 extends PhantomTypeArgument> implements StructClas
     this.$fullTypeName = composeSuiType(
       ActionRequest.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::token::ActionRequest<${PhantomToTypeStr<T0>}>`
+    ) as `${typeof PKG_V29}::token::ActionRequest<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.name = fields.name
@@ -97,7 +780,7 @@ export class ActionRequest<T0 extends PhantomTypeArgument> implements StructClas
       fullTypeName: composeSuiType(
         ActionRequest.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V27}::token::ActionRequest<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V29}::token::ActionRequest<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: ActionRequest.$isPhantom,
       reifiedTypeArgs: [T0],
@@ -316,7 +999,7 @@ export class ActionRequest<T0 extends PhantomTypeArgument> implements StructClas
 
 export function isRuleKey(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V27}::token::RuleKey` + '<')
+  return type.startsWith(`${PKG_V29}::token::RuleKey` + '<')
 }
 
 export interface RuleKeyFields<T0 extends PhantomTypeArgument> {
@@ -328,12 +1011,12 @@ export type RuleKeyReified<T0 extends PhantomTypeArgument> = Reified<RuleKey<T0>
 export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::token::RuleKey`
+  static readonly $typeName = `${PKG_V29}::token::RuleKey`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = RuleKey.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::token::RuleKey<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V29}::token::RuleKey<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = RuleKey.$isPhantom
 
@@ -343,7 +1026,7 @@ export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       RuleKey.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::token::RuleKey<${PhantomToTypeStr<T0>}>`
+    ) as `${typeof PKG_V29}::token::RuleKey<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.isProtected = fields.isProtected
@@ -357,7 +1040,7 @@ export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         RuleKey.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V27}::token::RuleKey<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V29}::token::RuleKey<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: RuleKey.$isPhantom,
       reifiedTypeArgs: [T0],
@@ -524,694 +1207,11 @@ export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
   }
 }
 
-/* ============================== Token =============================== */
-
-export function isToken(type: string): boolean {
-  type = compressSuiType(type)
-  return type.startsWith(`${PKG_V27}::token::Token` + '<')
-}
-
-export interface TokenFields<T0 extends PhantomTypeArgument> {
-  id: ToField<UID>
-  balance: ToField<Balance<T0>>
-}
-
-export type TokenReified<T0 extends PhantomTypeArgument> = Reified<Token<T0>, TokenFields<T0>>
-
-export class Token<T0 extends PhantomTypeArgument> implements StructClass {
-  __StructClass = true as const
-
-  static readonly $typeName = `${PKG_V27}::token::Token`
-  static readonly $numTypeParams = 1
-  static readonly $isPhantom = [true] as const
-
-  readonly $typeName = Token.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::token::Token<${PhantomToTypeStr<T0>}>`
-  readonly $typeArgs: [PhantomToTypeStr<T0>]
-  readonly $isPhantom = Token.$isPhantom
-
-  readonly id: ToField<UID>
-  readonly balance: ToField<Balance<T0>>
-
-  private constructor(typeArgs: [PhantomToTypeStr<T0>], fields: TokenFields<T0>) {
-    this.$fullTypeName = composeSuiType(
-      Token.$typeName,
-      ...typeArgs
-    ) as `${typeof PKG_V27}::token::Token<${PhantomToTypeStr<T0>}>`
-    this.$typeArgs = typeArgs
-
-    this.id = fields.id
-    this.balance = fields.balance
-  }
-
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): TokenReified<ToPhantomTypeArgument<T0>> {
-    return {
-      typeName: Token.$typeName,
-      fullTypeName: composeSuiType(
-        Token.$typeName,
-        ...[extractType(T0)]
-      ) as `${typeof PKG_V27}::token::Token<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
-      typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
-      isPhantom: Token.$isPhantom,
-      reifiedTypeArgs: [T0],
-      fromFields: (fields: Record<string, any>) => Token.fromFields(T0, fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => Token.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => Token.fromBcs(T0, data),
-      bcs: Token.bcs,
-      fromJSONField: (field: any) => Token.fromJSONField(T0, field),
-      fromJSON: (json: Record<string, any>) => Token.fromJSON(T0, json),
-      fromSuiParsedData: (content: SuiParsedData) => Token.fromSuiParsedData(T0, content),
-      fromSuiObjectData: (content: SuiObjectData) => Token.fromSuiObjectData(T0, content),
-      fetch: async (client: SuiClient, id: string) => Token.fetch(client, T0, id),
-      new: (fields: TokenFields<ToPhantomTypeArgument<T0>>) => {
-        return new Token([extractType(T0)], fields)
-      },
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return Token.reified
-  }
-
-  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): PhantomReified<ToTypeStr<Token<ToPhantomTypeArgument<T0>>>> {
-    return phantom(Token.reified(T0))
-  }
-  static get p() {
-    return Token.phantom
-  }
-
-  static get bcs() {
-    return bcs.struct('Token', {
-      id: UID.bcs,
-      balance: Balance.bcs,
-    })
-  }
-
-  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    fields: Record<string, any>
-  ): Token<ToPhantomTypeArgument<T0>> {
-    return Token.reified(typeArg).new({
-      id: decodeFromFields(UID.reified(), fields.id),
-      balance: decodeFromFields(Balance.reified(typeArg), fields.balance),
-    })
-  }
-
-  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    item: FieldsWithTypes
-  ): Token<ToPhantomTypeArgument<T0>> {
-    if (!isToken(item.type)) {
-      throw new Error('not a Token type')
-    }
-    assertFieldsWithTypesArgsMatch(item, [typeArg])
-
-    return Token.reified(typeArg).new({
-      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
-      balance: decodeFromFieldsWithTypes(Balance.reified(typeArg), item.fields.balance),
-    })
-  }
-
-  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    data: Uint8Array
-  ): Token<ToPhantomTypeArgument<T0>> {
-    return Token.fromFields(typeArg, Token.bcs.parse(data))
-  }
-
-  toJSONField() {
-    return {
-      id: this.id,
-      balance: this.balance.toJSONField(),
-    }
-  }
-
-  toJSON() {
-    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
-  }
-
-  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    field: any
-  ): Token<ToPhantomTypeArgument<T0>> {
-    return Token.reified(typeArg).new({
-      id: decodeFromJSONField(UID.reified(), field.id),
-      balance: decodeFromJSONField(Balance.reified(typeArg), field.balance),
-    })
-  }
-
-  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    json: Record<string, any>
-  ): Token<ToPhantomTypeArgument<T0>> {
-    if (json.$typeName !== Token.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
-    }
-    assertReifiedTypeArgsMatch(
-      composeSuiType(Token.$typeName, extractType(typeArg)),
-      json.$typeArgs,
-      [typeArg]
-    )
-
-    return Token.fromJSONField(typeArg, json)
-  }
-
-  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    content: SuiParsedData
-  ): Token<ToPhantomTypeArgument<T0>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isToken(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Token object`)
-    }
-    return Token.fromFieldsWithTypes(typeArg, content)
-  }
-
-  static fromSuiObjectData<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    data: SuiObjectData
-  ): Token<ToPhantomTypeArgument<T0>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isToken(data.bcs.type)) {
-        throw new Error(`object at is not a Token object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-        )
-      }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
-      }
-
-      return Token.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Token.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
-    )
-  }
-
-  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
-    typeArg: T0,
-    id: string
-  ): Promise<Token<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Token object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isToken(res.data.bcs.type)) {
-      throw new Error(`object at id ${id} is not a Token object`)
-    }
-
-    return Token.fromSuiObjectData(typeArg, res.data)
-  }
-}
-
-/* ============================== TokenPolicy =============================== */
-
-export function isTokenPolicy(type: string): boolean {
-  type = compressSuiType(type)
-  return type.startsWith(`${PKG_V27}::token::TokenPolicy` + '<')
-}
-
-export interface TokenPolicyFields<T0 extends PhantomTypeArgument> {
-  id: ToField<UID>
-  spentBalance: ToField<Balance<T0>>
-  rules: ToField<VecMap<String, VecSet<TypeName>>>
-}
-
-export type TokenPolicyReified<T0 extends PhantomTypeArgument> = Reified<
-  TokenPolicy<T0>,
-  TokenPolicyFields<T0>
->
-
-export class TokenPolicy<T0 extends PhantomTypeArgument> implements StructClass {
-  __StructClass = true as const
-
-  static readonly $typeName = `${PKG_V27}::token::TokenPolicy`
-  static readonly $numTypeParams = 1
-  static readonly $isPhantom = [true] as const
-
-  readonly $typeName = TokenPolicy.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::token::TokenPolicy<${PhantomToTypeStr<T0>}>`
-  readonly $typeArgs: [PhantomToTypeStr<T0>]
-  readonly $isPhantom = TokenPolicy.$isPhantom
-
-  readonly id: ToField<UID>
-  readonly spentBalance: ToField<Balance<T0>>
-  readonly rules: ToField<VecMap<String, VecSet<TypeName>>>
-
-  private constructor(typeArgs: [PhantomToTypeStr<T0>], fields: TokenPolicyFields<T0>) {
-    this.$fullTypeName = composeSuiType(
-      TokenPolicy.$typeName,
-      ...typeArgs
-    ) as `${typeof PKG_V27}::token::TokenPolicy<${PhantomToTypeStr<T0>}>`
-    this.$typeArgs = typeArgs
-
-    this.id = fields.id
-    this.spentBalance = fields.spentBalance
-    this.rules = fields.rules
-  }
-
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): TokenPolicyReified<ToPhantomTypeArgument<T0>> {
-    return {
-      typeName: TokenPolicy.$typeName,
-      fullTypeName: composeSuiType(
-        TokenPolicy.$typeName,
-        ...[extractType(T0)]
-      ) as `${typeof PKG_V27}::token::TokenPolicy<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
-      typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
-      isPhantom: TokenPolicy.$isPhantom,
-      reifiedTypeArgs: [T0],
-      fromFields: (fields: Record<string, any>) => TokenPolicy.fromFields(T0, fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => TokenPolicy.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => TokenPolicy.fromBcs(T0, data),
-      bcs: TokenPolicy.bcs,
-      fromJSONField: (field: any) => TokenPolicy.fromJSONField(T0, field),
-      fromJSON: (json: Record<string, any>) => TokenPolicy.fromJSON(T0, json),
-      fromSuiParsedData: (content: SuiParsedData) => TokenPolicy.fromSuiParsedData(T0, content),
-      fromSuiObjectData: (content: SuiObjectData) => TokenPolicy.fromSuiObjectData(T0, content),
-      fetch: async (client: SuiClient, id: string) => TokenPolicy.fetch(client, T0, id),
-      new: (fields: TokenPolicyFields<ToPhantomTypeArgument<T0>>) => {
-        return new TokenPolicy([extractType(T0)], fields)
-      },
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return TokenPolicy.reified
-  }
-
-  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): PhantomReified<ToTypeStr<TokenPolicy<ToPhantomTypeArgument<T0>>>> {
-    return phantom(TokenPolicy.reified(T0))
-  }
-  static get p() {
-    return TokenPolicy.phantom
-  }
-
-  static get bcs() {
-    return bcs.struct('TokenPolicy', {
-      id: UID.bcs,
-      spent_balance: Balance.bcs,
-      rules: VecMap.bcs(String.bcs, VecSet.bcs(TypeName.bcs)),
-    })
-  }
-
-  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    fields: Record<string, any>
-  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
-    return TokenPolicy.reified(typeArg).new({
-      id: decodeFromFields(UID.reified(), fields.id),
-      spentBalance: decodeFromFields(Balance.reified(typeArg), fields.spent_balance),
-      rules: decodeFromFields(
-        VecMap.reified(String.reified(), VecSet.reified(TypeName.reified())),
-        fields.rules
-      ),
-    })
-  }
-
-  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    item: FieldsWithTypes
-  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
-    if (!isTokenPolicy(item.type)) {
-      throw new Error('not a TokenPolicy type')
-    }
-    assertFieldsWithTypesArgsMatch(item, [typeArg])
-
-    return TokenPolicy.reified(typeArg).new({
-      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
-      spentBalance: decodeFromFieldsWithTypes(Balance.reified(typeArg), item.fields.spent_balance),
-      rules: decodeFromFieldsWithTypes(
-        VecMap.reified(String.reified(), VecSet.reified(TypeName.reified())),
-        item.fields.rules
-      ),
-    })
-  }
-
-  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    data: Uint8Array
-  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
-    return TokenPolicy.fromFields(typeArg, TokenPolicy.bcs.parse(data))
-  }
-
-  toJSONField() {
-    return {
-      id: this.id,
-      spentBalance: this.spentBalance.toJSONField(),
-      rules: this.rules.toJSONField(),
-    }
-  }
-
-  toJSON() {
-    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
-  }
-
-  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    field: any
-  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
-    return TokenPolicy.reified(typeArg).new({
-      id: decodeFromJSONField(UID.reified(), field.id),
-      spentBalance: decodeFromJSONField(Balance.reified(typeArg), field.spentBalance),
-      rules: decodeFromJSONField(
-        VecMap.reified(String.reified(), VecSet.reified(TypeName.reified())),
-        field.rules
-      ),
-    })
-  }
-
-  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    json: Record<string, any>
-  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
-    if (json.$typeName !== TokenPolicy.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
-    }
-    assertReifiedTypeArgsMatch(
-      composeSuiType(TokenPolicy.$typeName, extractType(typeArg)),
-      json.$typeArgs,
-      [typeArg]
-    )
-
-    return TokenPolicy.fromJSONField(typeArg, json)
-  }
-
-  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    content: SuiParsedData
-  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isTokenPolicy(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a TokenPolicy object`)
-    }
-    return TokenPolicy.fromFieldsWithTypes(typeArg, content)
-  }
-
-  static fromSuiObjectData<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    data: SuiObjectData
-  ): TokenPolicy<ToPhantomTypeArgument<T0>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isTokenPolicy(data.bcs.type)) {
-        throw new Error(`object at is not a TokenPolicy object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-        )
-      }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
-      }
-
-      return TokenPolicy.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return TokenPolicy.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
-    )
-  }
-
-  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
-    typeArg: T0,
-    id: string
-  ): Promise<TokenPolicy<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching TokenPolicy object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isTokenPolicy(res.data.bcs.type)) {
-      throw new Error(`object at id ${id} is not a TokenPolicy object`)
-    }
-
-    return TokenPolicy.fromSuiObjectData(typeArg, res.data)
-  }
-}
-
-/* ============================== TokenPolicyCap =============================== */
-
-export function isTokenPolicyCap(type: string): boolean {
-  type = compressSuiType(type)
-  return type.startsWith(`${PKG_V27}::token::TokenPolicyCap` + '<')
-}
-
-export interface TokenPolicyCapFields<T0 extends PhantomTypeArgument> {
-  id: ToField<UID>
-  for: ToField<ID>
-}
-
-export type TokenPolicyCapReified<T0 extends PhantomTypeArgument> = Reified<
-  TokenPolicyCap<T0>,
-  TokenPolicyCapFields<T0>
->
-
-export class TokenPolicyCap<T0 extends PhantomTypeArgument> implements StructClass {
-  __StructClass = true as const
-
-  static readonly $typeName = `${PKG_V27}::token::TokenPolicyCap`
-  static readonly $numTypeParams = 1
-  static readonly $isPhantom = [true] as const
-
-  readonly $typeName = TokenPolicyCap.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::token::TokenPolicyCap<${PhantomToTypeStr<T0>}>`
-  readonly $typeArgs: [PhantomToTypeStr<T0>]
-  readonly $isPhantom = TokenPolicyCap.$isPhantom
-
-  readonly id: ToField<UID>
-  readonly for: ToField<ID>
-
-  private constructor(typeArgs: [PhantomToTypeStr<T0>], fields: TokenPolicyCapFields<T0>) {
-    this.$fullTypeName = composeSuiType(
-      TokenPolicyCap.$typeName,
-      ...typeArgs
-    ) as `${typeof PKG_V27}::token::TokenPolicyCap<${PhantomToTypeStr<T0>}>`
-    this.$typeArgs = typeArgs
-
-    this.id = fields.id
-    this.for = fields.for
-  }
-
-  static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): TokenPolicyCapReified<ToPhantomTypeArgument<T0>> {
-    return {
-      typeName: TokenPolicyCap.$typeName,
-      fullTypeName: composeSuiType(
-        TokenPolicyCap.$typeName,
-        ...[extractType(T0)]
-      ) as `${typeof PKG_V27}::token::TokenPolicyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
-      typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
-      isPhantom: TokenPolicyCap.$isPhantom,
-      reifiedTypeArgs: [T0],
-      fromFields: (fields: Record<string, any>) => TokenPolicyCap.fromFields(T0, fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => TokenPolicyCap.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => TokenPolicyCap.fromBcs(T0, data),
-      bcs: TokenPolicyCap.bcs,
-      fromJSONField: (field: any) => TokenPolicyCap.fromJSONField(T0, field),
-      fromJSON: (json: Record<string, any>) => TokenPolicyCap.fromJSON(T0, json),
-      fromSuiParsedData: (content: SuiParsedData) => TokenPolicyCap.fromSuiParsedData(T0, content),
-      fromSuiObjectData: (content: SuiObjectData) => TokenPolicyCap.fromSuiObjectData(T0, content),
-      fetch: async (client: SuiClient, id: string) => TokenPolicyCap.fetch(client, T0, id),
-      new: (fields: TokenPolicyCapFields<ToPhantomTypeArgument<T0>>) => {
-        return new TokenPolicyCap([extractType(T0)], fields)
-      },
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return TokenPolicyCap.reified
-  }
-
-  static phantom<T0 extends PhantomReified<PhantomTypeArgument>>(
-    T0: T0
-  ): PhantomReified<ToTypeStr<TokenPolicyCap<ToPhantomTypeArgument<T0>>>> {
-    return phantom(TokenPolicyCap.reified(T0))
-  }
-  static get p() {
-    return TokenPolicyCap.phantom
-  }
-
-  static get bcs() {
-    return bcs.struct('TokenPolicyCap', {
-      id: UID.bcs,
-      for: ID.bcs,
-    })
-  }
-
-  static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    fields: Record<string, any>
-  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
-    return TokenPolicyCap.reified(typeArg).new({
-      id: decodeFromFields(UID.reified(), fields.id),
-      for: decodeFromFields(ID.reified(), fields.for),
-    })
-  }
-
-  static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    item: FieldsWithTypes
-  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
-    if (!isTokenPolicyCap(item.type)) {
-      throw new Error('not a TokenPolicyCap type')
-    }
-    assertFieldsWithTypesArgsMatch(item, [typeArg])
-
-    return TokenPolicyCap.reified(typeArg).new({
-      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
-      for: decodeFromFieldsWithTypes(ID.reified(), item.fields.for),
-    })
-  }
-
-  static fromBcs<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    data: Uint8Array
-  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
-    return TokenPolicyCap.fromFields(typeArg, TokenPolicyCap.bcs.parse(data))
-  }
-
-  toJSONField() {
-    return {
-      id: this.id,
-      for: this.for,
-    }
-  }
-
-  toJSON() {
-    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
-  }
-
-  static fromJSONField<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    field: any
-  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
-    return TokenPolicyCap.reified(typeArg).new({
-      id: decodeFromJSONField(UID.reified(), field.id),
-      for: decodeFromJSONField(ID.reified(), field.for),
-    })
-  }
-
-  static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    json: Record<string, any>
-  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
-    if (json.$typeName !== TokenPolicyCap.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
-    }
-    assertReifiedTypeArgsMatch(
-      composeSuiType(TokenPolicyCap.$typeName, extractType(typeArg)),
-      json.$typeArgs,
-      [typeArg]
-    )
-
-    return TokenPolicyCap.fromJSONField(typeArg, json)
-  }
-
-  static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    content: SuiParsedData
-  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isTokenPolicyCap(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a TokenPolicyCap object`)
-    }
-    return TokenPolicyCap.fromFieldsWithTypes(typeArg, content)
-  }
-
-  static fromSuiObjectData<T0 extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T0,
-    data: SuiObjectData
-  ): TokenPolicyCap<ToPhantomTypeArgument<T0>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isTokenPolicyCap(data.bcs.type)) {
-        throw new Error(`object at is not a TokenPolicyCap object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
-        )
-      }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
-      }
-
-      return TokenPolicyCap.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return TokenPolicyCap.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
-    )
-  }
-
-  static async fetch<T0 extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
-    typeArg: T0,
-    id: string
-  ): Promise<TokenPolicyCap<ToPhantomTypeArgument<T0>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching TokenPolicyCap object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isTokenPolicyCap(res.data.bcs.type)) {
-      throw new Error(`object at id ${id} is not a TokenPolicyCap object`)
-    }
-
-    return TokenPolicyCap.fromSuiObjectData(typeArg, res.data)
-  }
-}
-
 /* ============================== TokenPolicyCreated =============================== */
 
 export function isTokenPolicyCreated(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V27}::token::TokenPolicyCreated` + '<')
+  return type.startsWith(`${PKG_V29}::token::TokenPolicyCreated` + '<')
 }
 
 export interface TokenPolicyCreatedFields<T0 extends PhantomTypeArgument> {
@@ -1227,12 +1227,12 @@ export type TokenPolicyCreatedReified<T0 extends PhantomTypeArgument> = Reified<
 export class TokenPolicyCreated<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::token::TokenPolicyCreated`
+  static readonly $typeName = `${PKG_V29}::token::TokenPolicyCreated`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = TokenPolicyCreated.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::token::TokenPolicyCreated<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V29}::token::TokenPolicyCreated<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = TokenPolicyCreated.$isPhantom
 
@@ -1243,7 +1243,7 @@ export class TokenPolicyCreated<T0 extends PhantomTypeArgument> implements Struc
     this.$fullTypeName = composeSuiType(
       TokenPolicyCreated.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::token::TokenPolicyCreated<${PhantomToTypeStr<T0>}>`
+    ) as `${typeof PKG_V29}::token::TokenPolicyCreated<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -1258,7 +1258,7 @@ export class TokenPolicyCreated<T0 extends PhantomTypeArgument> implements Struc
       fullTypeName: composeSuiType(
         TokenPolicyCreated.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V27}::token::TokenPolicyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V29}::token::TokenPolicyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: TokenPolicyCreated.$isPhantom,
       reifiedTypeArgs: [T0],

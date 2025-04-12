@@ -22,22 +22,6 @@ export function add(tx: Transaction, typeArg: string, args: AddArgs) {
   })
 }
 
-export function canLock(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk_extension::can_lock`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, self)],
-  })
-}
-
-export function canPlace(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk_extension::can_place`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, self)],
-  })
-}
-
 export interface DisableArgs {
   self: TransactionObjectInput
   cap: TransactionObjectInput
@@ -61,78 +45,6 @@ export function enable(tx: Transaction, typeArg: string, args: EnableArgs) {
     target: `${PUBLISHED_AT}::kiosk_extension::enable`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), obj(tx, args.cap)],
-  })
-}
-
-export function extension(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk_extension::extension`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, self)],
-  })
-}
-
-export function extensionMut(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk_extension::extension_mut`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, self)],
-  })
-}
-
-export function isEnabled(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk_extension::is_enabled`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, self)],
-  })
-}
-
-export function isInstalled(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk_extension::is_installed`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, self)],
-  })
-}
-
-export interface LockArgs {
-  ext: GenericArg
-  self: TransactionObjectInput
-  item: GenericArg
-  policy: TransactionObjectInput
-}
-
-export function lock(tx: Transaction, typeArgs: [string, string], args: LockArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk_extension::lock`,
-    typeArguments: typeArgs,
-    arguments: [
-      generic(tx, `${typeArgs[0]}`, args.ext),
-      obj(tx, args.self),
-      generic(tx, `${typeArgs[1]}`, args.item),
-      obj(tx, args.policy),
-    ],
-  })
-}
-
-export interface PlaceArgs {
-  ext: GenericArg
-  self: TransactionObjectInput
-  item: GenericArg
-  policy: TransactionObjectInput
-}
-
-export function place(tx: Transaction, typeArgs: [string, string], args: PlaceArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk_extension::place`,
-    typeArguments: typeArgs,
-    arguments: [
-      generic(tx, `${typeArgs[0]}`, args.ext),
-      obj(tx, args.self),
-      generic(tx, `${typeArgs[1]}`, args.item),
-      obj(tx, args.policy),
-    ],
   })
 }
 
@@ -172,5 +84,93 @@ export function storageMut(tx: Transaction, typeArg: string, args: StorageMutArg
     target: `${PUBLISHED_AT}::kiosk_extension::storage_mut`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, args.ext), obj(tx, args.self)],
+  })
+}
+
+export interface PlaceArgs {
+  ext: GenericArg
+  self: TransactionObjectInput
+  item: GenericArg
+  policy: TransactionObjectInput
+}
+
+export function place(tx: Transaction, typeArgs: [string, string], args: PlaceArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk_extension::place`,
+    typeArguments: typeArgs,
+    arguments: [
+      generic(tx, `${typeArgs[0]}`, args.ext),
+      obj(tx, args.self),
+      generic(tx, `${typeArgs[1]}`, args.item),
+      obj(tx, args.policy),
+    ],
+  })
+}
+
+export interface LockArgs {
+  ext: GenericArg
+  self: TransactionObjectInput
+  item: GenericArg
+  policy: TransactionObjectInput
+}
+
+export function lock(tx: Transaction, typeArgs: [string, string], args: LockArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk_extension::lock`,
+    typeArguments: typeArgs,
+    arguments: [
+      generic(tx, `${typeArgs[0]}`, args.ext),
+      obj(tx, args.self),
+      generic(tx, `${typeArgs[1]}`, args.item),
+      obj(tx, args.policy),
+    ],
+  })
+}
+
+export function isInstalled(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk_extension::is_installed`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, self)],
+  })
+}
+
+export function isEnabled(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk_extension::is_enabled`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, self)],
+  })
+}
+
+export function canPlace(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk_extension::can_place`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, self)],
+  })
+}
+
+export function canLock(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk_extension::can_lock`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, self)],
+  })
+}
+
+export function extension(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk_extension::extension`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, self)],
+  })
+}
+
+export function extensionMut(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk_extension::extension_mut`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, self)],
   })
 }

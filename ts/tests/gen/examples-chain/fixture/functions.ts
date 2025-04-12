@@ -7,10 +7,35 @@ import { ID } from '../../sui-chain/object/structs'
 import { Bar, WithTwoGenerics } from './structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+export function createWithGenericField(tx: Transaction, typeArg: string, t0: GenericArg) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::fixture::create_with_generic_field`,
+    typeArguments: [typeArg],
+    arguments: [generic(tx, `${typeArg}`, t0)],
+  })
+}
+
 export function createBar(tx: Transaction, u64: bigint | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::fixture::create_bar`,
     arguments: [pure(tx, u64, `u64`)],
+  })
+}
+
+export interface CreateWithTwoGenericsArgs {
+  t0: GenericArg
+  t1: GenericArg
+}
+
+export function createWithTwoGenerics(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: CreateWithTwoGenericsArgs
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::fixture::create_with_two_generics`,
+    typeArguments: typeArgs,
+    arguments: [generic(tx, `${typeArgs[0]}`, args.t0), generic(tx, `${typeArgs[1]}`, args.t1)],
   })
 }
 
@@ -151,30 +176,5 @@ export function createSpecialInVectors(
       pure(tx, args.vecOption1, `vector<${Option.$typeName}<u64>>`),
       vector(tx, `${Option.$typeName}<${typeArg}>`, args.vecOption2),
     ],
-  })
-}
-
-export function createWithGenericField(tx: Transaction, typeArg: string, t0: GenericArg) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::fixture::create_with_generic_field`,
-    typeArguments: [typeArg],
-    arguments: [generic(tx, `${typeArg}`, t0)],
-  })
-}
-
-export interface CreateWithTwoGenericsArgs {
-  t0: GenericArg
-  t1: GenericArg
-}
-
-export function createWithTwoGenerics(
-  tx: Transaction,
-  typeArgs: [string, string],
-  args: CreateWithTwoGenericsArgs
-) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::fixture::create_with_two_generics`,
-    typeArguments: typeArgs,
-    arguments: [generic(tx, `${typeArgs[0]}`, args.t0), generic(tx, `${typeArgs[1]}`, args.t1)],
   })
 }

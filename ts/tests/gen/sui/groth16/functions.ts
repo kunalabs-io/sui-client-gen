@@ -10,6 +10,52 @@ export function bn254(tx: Transaction) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::groth16::bn254`, arguments: [] })
 }
 
+export interface PvkFromBytesArgs {
+  vkGammaAbcG1Bytes: Array<number | TransactionArgument> | TransactionArgument
+  alphaG1BetaG2Bytes: Array<number | TransactionArgument> | TransactionArgument
+  gammaG2NegPcBytes: Array<number | TransactionArgument> | TransactionArgument
+  deltaG2NegPcBytes: Array<number | TransactionArgument> | TransactionArgument
+}
+
+export function pvkFromBytes(tx: Transaction, args: PvkFromBytesArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::groth16::pvk_from_bytes`,
+    arguments: [
+      pure(tx, args.vkGammaAbcG1Bytes, `vector<u8>`),
+      pure(tx, args.alphaG1BetaG2Bytes, `vector<u8>`),
+      pure(tx, args.gammaG2NegPcBytes, `vector<u8>`),
+      pure(tx, args.deltaG2NegPcBytes, `vector<u8>`),
+    ],
+  })
+}
+
+export function pvkToBytes(tx: Transaction, pvk: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::groth16::pvk_to_bytes`,
+    arguments: [obj(tx, pvk)],
+  })
+}
+
+export function publicProofInputsFromBytes(
+  tx: Transaction,
+  bytes: Array<number | TransactionArgument> | TransactionArgument
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::groth16::public_proof_inputs_from_bytes`,
+    arguments: [pure(tx, bytes, `vector<u8>`)],
+  })
+}
+
+export function proofPointsFromBytes(
+  tx: Transaction,
+  bytes: Array<number | TransactionArgument> | TransactionArgument
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::groth16::proof_points_from_bytes`,
+    arguments: [pure(tx, bytes, `vector<u8>`)],
+  })
+}
+
 export interface PrepareVerifyingKeyArgs {
   curve: TransactionObjectInput
   verifyingKey: Array<number | TransactionArgument> | TransactionArgument
@@ -34,52 +80,6 @@ export function prepareVerifyingKeyInternal(
   return tx.moveCall({
     target: `${PUBLISHED_AT}::groth16::prepare_verifying_key_internal`,
     arguments: [pure(tx, args.curve, `u8`), pure(tx, args.verifyingKey, `vector<u8>`)],
-  })
-}
-
-export function proofPointsFromBytes(
-  tx: Transaction,
-  bytes: Array<number | TransactionArgument> | TransactionArgument
-) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::groth16::proof_points_from_bytes`,
-    arguments: [pure(tx, bytes, `vector<u8>`)],
-  })
-}
-
-export function publicProofInputsFromBytes(
-  tx: Transaction,
-  bytes: Array<number | TransactionArgument> | TransactionArgument
-) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::groth16::public_proof_inputs_from_bytes`,
-    arguments: [pure(tx, bytes, `vector<u8>`)],
-  })
-}
-
-export interface PvkFromBytesArgs {
-  vkGammaAbcG1Bytes: Array<number | TransactionArgument> | TransactionArgument
-  alphaG1BetaG2Bytes: Array<number | TransactionArgument> | TransactionArgument
-  gammaG2NegPcBytes: Array<number | TransactionArgument> | TransactionArgument
-  deltaG2NegPcBytes: Array<number | TransactionArgument> | TransactionArgument
-}
-
-export function pvkFromBytes(tx: Transaction, args: PvkFromBytesArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::groth16::pvk_from_bytes`,
-    arguments: [
-      pure(tx, args.vkGammaAbcG1Bytes, `vector<u8>`),
-      pure(tx, args.alphaG1BetaG2Bytes, `vector<u8>`),
-      pure(tx, args.gammaG2NegPcBytes, `vector<u8>`),
-      pure(tx, args.deltaG2NegPcBytes, `vector<u8>`),
-    ],
-  })
-}
-
-export function pvkToBytes(tx: Transaction, pvk: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::groth16::pvk_to_bytes`,
-    arguments: [obj(tx, pvk)],
   })
 }
 

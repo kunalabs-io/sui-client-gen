@@ -3,6 +3,39 @@ import { obj, pure } from '../../_framework/util'
 import { String } from '../../move-stdlib/string/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+export function owner(tx: Transaction, verifiedIssuer: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::zklogin_verified_issuer::owner`,
+    arguments: [obj(tx, verifiedIssuer)],
+  })
+}
+
+export function issuer(tx: Transaction, verifiedIssuer: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::zklogin_verified_issuer::issuer`,
+    arguments: [obj(tx, verifiedIssuer)],
+  })
+}
+
+export function delete_(tx: Transaction, verifiedIssuer: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::zklogin_verified_issuer::delete`,
+    arguments: [obj(tx, verifiedIssuer)],
+  })
+}
+
+export interface VerifyZkloginIssuerArgs {
+  addressSeed: bigint | TransactionArgument
+  issuer: string | TransactionArgument
+}
+
+export function verifyZkloginIssuer(tx: Transaction, args: VerifyZkloginIssuerArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::zklogin_verified_issuer::verify_zklogin_issuer`,
+    arguments: [pure(tx, args.addressSeed, `u256`), pure(tx, args.issuer, `${String.$typeName}`)],
+  })
+}
+
 export interface CheckZkloginIssuerArgs {
   address: string | TransactionArgument
   addressSeed: bigint | TransactionArgument
@@ -34,38 +67,5 @@ export function checkZkloginIssuerInternal(tx: Transaction, args: CheckZkloginIs
       pure(tx, args.addressSeed, `u256`),
       pure(tx, args.issuer, `vector<u8>`),
     ],
-  })
-}
-
-export function delete_(tx: Transaction, verifiedIssuer: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::zklogin_verified_issuer::delete`,
-    arguments: [obj(tx, verifiedIssuer)],
-  })
-}
-
-export function issuer(tx: Transaction, verifiedIssuer: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::zklogin_verified_issuer::issuer`,
-    arguments: [obj(tx, verifiedIssuer)],
-  })
-}
-
-export function owner(tx: Transaction, verifiedIssuer: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::zklogin_verified_issuer::owner`,
-    arguments: [obj(tx, verifiedIssuer)],
-  })
-}
-
-export interface VerifyZkloginIssuerArgs {
-  addressSeed: bigint | TransactionArgument
-  issuer: string | TransactionArgument
-}
-
-export function verifyZkloginIssuer(tx: Transaction, args: VerifyZkloginIssuerArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::zklogin_verified_issuer::verify_zklogin_issuer`,
-    arguments: [pure(tx, args.addressSeed, `u256`), pure(tx, args.issuer, `${String.$typeName}`)],
   })
 }

@@ -46,6 +46,19 @@ export function borrowMut(tx: Transaction, typeArgs: [string, string], args: Bor
   })
 }
 
+export interface RemoveArgs {
+  object: TransactionObjectInput
+  name: GenericArg
+}
+
+export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::dynamic_object_field::remove`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
+  })
+}
+
 export interface Exists_Args {
   object: TransactionObjectInput
   name: GenericArg
@@ -86,18 +99,5 @@ export function id(tx: Transaction, typeArg: string, args: IdArgs) {
     target: `${PUBLISHED_AT}::dynamic_object_field::id`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.object), generic(tx, `${typeArg}`, args.name)],
-  })
-}
-
-export interface RemoveArgs {
-  object: TransactionObjectInput
-  name: GenericArg
-}
-
-export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_object_field::remove`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
   })
 }

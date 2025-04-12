@@ -7,10 +7,38 @@ import { ID } from '../../sui/object/structs'
 import { Bar, WithTwoGenerics } from './structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+export function createWithGenericField(tx: Transaction, typeArg: string, genericField: GenericArg) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::fixture::create_with_generic_field`,
+    typeArguments: [typeArg],
+    arguments: [generic(tx, `${typeArg}`, genericField)],
+  })
+}
+
 export function createBar(tx: Transaction, value: bigint | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::fixture::create_bar`,
     arguments: [pure(tx, value, `u64`)],
+  })
+}
+
+export interface CreateWithTwoGenericsArgs {
+  genericField1: GenericArg
+  genericField2: GenericArg
+}
+
+export function createWithTwoGenerics(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: CreateWithTwoGenericsArgs
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::fixture::create_with_two_generics`,
+    typeArguments: typeArgs,
+    arguments: [
+      generic(tx, `${typeArgs[0]}`, args.genericField1),
+      generic(tx, `${typeArgs[1]}`, args.genericField2),
+    ],
   })
 }
 
@@ -150,34 +178,6 @@ export function createSpecialInVectors(
       vector(tx, `${Bar.$typeName}`, args.bar),
       pure(tx, args.option, `vector<${Option.$typeName}<u64>>`),
       vector(tx, `${Option.$typeName}<${typeArg}>`, args.optionGeneric),
-    ],
-  })
-}
-
-export function createWithGenericField(tx: Transaction, typeArg: string, genericField: GenericArg) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::fixture::create_with_generic_field`,
-    typeArguments: [typeArg],
-    arguments: [generic(tx, `${typeArg}`, genericField)],
-  })
-}
-
-export interface CreateWithTwoGenericsArgs {
-  genericField1: GenericArg
-  genericField2: GenericArg
-}
-
-export function createWithTwoGenerics(
-  tx: Transaction,
-  typeArgs: [string, string],
-  args: CreateWithTwoGenericsArgs
-) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::fixture::create_with_two_generics`,
-    typeArguments: typeArgs,
-    arguments: [
-      generic(tx, `${typeArgs[0]}`, args.genericField1),
-      generic(tx, `${typeArgs[1]}`, args.genericField2),
     ],
   })
 }

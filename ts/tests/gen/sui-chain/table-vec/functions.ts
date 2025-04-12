@@ -2,48 +2,6 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export interface BorrowArgs {
-  tableVec: TransactionObjectInput
-  u64: bigint | TransactionArgument
-}
-
-export function borrow(tx: Transaction, typeArg: string, args: BorrowArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::borrow`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.tableVec), pure(tx, args.u64, `u64`)],
-  })
-}
-
-export interface BorrowMutArgs {
-  tableVec: TransactionObjectInput
-  u64: bigint | TransactionArgument
-}
-
-export function borrowMut(tx: Transaction, typeArg: string, args: BorrowMutArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::borrow_mut`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.tableVec), pure(tx, args.u64, `u64`)],
-  })
-}
-
-export function destroyEmpty(tx: Transaction, typeArg: string, tableVec: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::destroy_empty`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, tableVec)],
-  })
-}
-
-export function drop(tx: Transaction, typeArg: string, tableVec: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::drop`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, tableVec)],
-  })
-}
-
 export function empty(tx: Transaction, typeArg: string) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::table_vec::empty`,
@@ -52,11 +10,11 @@ export function empty(tx: Transaction, typeArg: string) {
   })
 }
 
-export function isEmpty(tx: Transaction, typeArg: string, tableVec: TransactionObjectInput) {
+export function singleton(tx: Transaction, typeArg: string, t0: GenericArg) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::is_empty`,
+    target: `${PUBLISHED_AT}::table_vec::singleton`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, tableVec)],
+    arguments: [generic(tx, `${typeArg}`, t0)],
   })
 }
 
@@ -68,11 +26,24 @@ export function length(tx: Transaction, typeArg: string, tableVec: TransactionOb
   })
 }
 
-export function popBack(tx: Transaction, typeArg: string, tableVec: TransactionObjectInput) {
+export function isEmpty(tx: Transaction, typeArg: string, tableVec: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::pop_back`,
+    target: `${PUBLISHED_AT}::table_vec::is_empty`,
     typeArguments: [typeArg],
     arguments: [obj(tx, tableVec)],
+  })
+}
+
+export interface BorrowArgs {
+  tableVec: TransactionObjectInput
+  u64: bigint | TransactionArgument
+}
+
+export function borrow(tx: Transaction, typeArg: string, args: BorrowArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::table_vec::borrow`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, args.tableVec), pure(tx, args.u64, `u64`)],
   })
 }
 
@@ -89,11 +60,40 @@ export function pushBack(tx: Transaction, typeArg: string, args: PushBackArgs) {
   })
 }
 
-export function singleton(tx: Transaction, typeArg: string, t0: GenericArg) {
+export interface BorrowMutArgs {
+  tableVec: TransactionObjectInput
+  u64: bigint | TransactionArgument
+}
+
+export function borrowMut(tx: Transaction, typeArg: string, args: BorrowMutArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::singleton`,
+    target: `${PUBLISHED_AT}::table_vec::borrow_mut`,
     typeArguments: [typeArg],
-    arguments: [generic(tx, `${typeArg}`, t0)],
+    arguments: [obj(tx, args.tableVec), pure(tx, args.u64, `u64`)],
+  })
+}
+
+export function popBack(tx: Transaction, typeArg: string, tableVec: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::table_vec::pop_back`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, tableVec)],
+  })
+}
+
+export function destroyEmpty(tx: Transaction, typeArg: string, tableVec: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::table_vec::destroy_empty`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, tableVec)],
+  })
+}
+
+export function drop(tx: Transaction, typeArg: string, tableVec: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::table_vec::drop`,
+    typeArguments: [typeArg],
+    arguments: [obj(tx, tableVec)],
   })
 }
 

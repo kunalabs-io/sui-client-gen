@@ -11,7 +11,7 @@ import {
 } from '../../../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { String } from '../ascii/structs'
-import { PKG_V14 } from '../index'
+import { PKG_V15 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -20,7 +20,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isTypeName(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V14}::type_name::TypeName`
+  return type === `${PKG_V15}::type_name::TypeName`
 }
 
 export interface TypeNameFields {
@@ -32,12 +32,12 @@ export type TypeNameReified = Reified<TypeName, TypeNameFields>
 export class TypeName implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V14}::type_name::TypeName`
+  static readonly $typeName = `${PKG_V15}::type_name::TypeName`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = TypeName.$typeName
-  readonly $fullTypeName: `${typeof PKG_V14}::type_name::TypeName`
+  readonly $fullTypeName: `${typeof PKG_V15}::type_name::TypeName`
   readonly $typeArgs: []
   readonly $isPhantom = TypeName.$isPhantom
 
@@ -47,7 +47,7 @@ export class TypeName implements StructClass {
     this.$fullTypeName = composeSuiType(
       TypeName.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V14}::type_name::TypeName`
+    ) as `${typeof PKG_V15}::type_name::TypeName`
     this.$typeArgs = typeArgs
 
     this.name = fields.name
@@ -59,7 +59,7 @@ export class TypeName implements StructClass {
       fullTypeName: composeSuiType(
         TypeName.$typeName,
         ...[]
-      ) as `${typeof PKG_V14}::type_name::TypeName`,
+      ) as `${typeof PKG_V15}::type_name::TypeName`,
       typeArgs: [] as [],
       isPhantom: TypeName.$isPhantom,
       reifiedTypeArgs: [],

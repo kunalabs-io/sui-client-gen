@@ -14,196 +14,17 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { String } from '../../move-stdlib-chain/string/structs'
-import { PKG_V27 } from '../index'
+import { PKG_V29 } from '../index'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
-/* ============================== ActiveJwk =============================== */
-
-export function isActiveJwk(type: string): boolean {
-  type = compressSuiType(type)
-  return type === `${PKG_V27}::authenticator_state::ActiveJwk`
-}
-
-export interface ActiveJwkFields {
-  jwkId: ToField<JwkId>
-  jwk: ToField<JWK>
-  epoch: ToField<'u64'>
-}
-
-export type ActiveJwkReified = Reified<ActiveJwk, ActiveJwkFields>
-
-export class ActiveJwk implements StructClass {
-  __StructClass = true as const
-
-  static readonly $typeName = `${PKG_V27}::authenticator_state::ActiveJwk`
-  static readonly $numTypeParams = 0
-  static readonly $isPhantom = [] as const
-
-  readonly $typeName = ActiveJwk.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::authenticator_state::ActiveJwk`
-  readonly $typeArgs: []
-  readonly $isPhantom = ActiveJwk.$isPhantom
-
-  readonly jwkId: ToField<JwkId>
-  readonly jwk: ToField<JWK>
-  readonly epoch: ToField<'u64'>
-
-  private constructor(typeArgs: [], fields: ActiveJwkFields) {
-    this.$fullTypeName = composeSuiType(
-      ActiveJwk.$typeName,
-      ...typeArgs
-    ) as `${typeof PKG_V27}::authenticator_state::ActiveJwk`
-    this.$typeArgs = typeArgs
-
-    this.jwkId = fields.jwkId
-    this.jwk = fields.jwk
-    this.epoch = fields.epoch
-  }
-
-  static reified(): ActiveJwkReified {
-    return {
-      typeName: ActiveJwk.$typeName,
-      fullTypeName: composeSuiType(
-        ActiveJwk.$typeName,
-        ...[]
-      ) as `${typeof PKG_V27}::authenticator_state::ActiveJwk`,
-      typeArgs: [] as [],
-      isPhantom: ActiveJwk.$isPhantom,
-      reifiedTypeArgs: [],
-      fromFields: (fields: Record<string, any>) => ActiveJwk.fromFields(fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => ActiveJwk.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => ActiveJwk.fromBcs(data),
-      bcs: ActiveJwk.bcs,
-      fromJSONField: (field: any) => ActiveJwk.fromJSONField(field),
-      fromJSON: (json: Record<string, any>) => ActiveJwk.fromJSON(json),
-      fromSuiParsedData: (content: SuiParsedData) => ActiveJwk.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => ActiveJwk.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => ActiveJwk.fetch(client, id),
-      new: (fields: ActiveJwkFields) => {
-        return new ActiveJwk([], fields)
-      },
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return ActiveJwk.reified()
-  }
-
-  static phantom(): PhantomReified<ToTypeStr<ActiveJwk>> {
-    return phantom(ActiveJwk.reified())
-  }
-  static get p() {
-    return ActiveJwk.phantom()
-  }
-
-  static get bcs() {
-    return bcs.struct('ActiveJwk', {
-      jwk_id: JwkId.bcs,
-      jwk: JWK.bcs,
-      epoch: bcs.u64(),
-    })
-  }
-
-  static fromFields(fields: Record<string, any>): ActiveJwk {
-    return ActiveJwk.reified().new({
-      jwkId: decodeFromFields(JwkId.reified(), fields.jwk_id),
-      jwk: decodeFromFields(JWK.reified(), fields.jwk),
-      epoch: decodeFromFields('u64', fields.epoch),
-    })
-  }
-
-  static fromFieldsWithTypes(item: FieldsWithTypes): ActiveJwk {
-    if (!isActiveJwk(item.type)) {
-      throw new Error('not a ActiveJwk type')
-    }
-
-    return ActiveJwk.reified().new({
-      jwkId: decodeFromFieldsWithTypes(JwkId.reified(), item.fields.jwk_id),
-      jwk: decodeFromFieldsWithTypes(JWK.reified(), item.fields.jwk),
-      epoch: decodeFromFieldsWithTypes('u64', item.fields.epoch),
-    })
-  }
-
-  static fromBcs(data: Uint8Array): ActiveJwk {
-    return ActiveJwk.fromFields(ActiveJwk.bcs.parse(data))
-  }
-
-  toJSONField() {
-    return {
-      jwkId: this.jwkId.toJSONField(),
-      jwk: this.jwk.toJSONField(),
-      epoch: this.epoch.toString(),
-    }
-  }
-
-  toJSON() {
-    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
-  }
-
-  static fromJSONField(field: any): ActiveJwk {
-    return ActiveJwk.reified().new({
-      jwkId: decodeFromJSONField(JwkId.reified(), field.jwkId),
-      jwk: decodeFromJSONField(JWK.reified(), field.jwk),
-      epoch: decodeFromJSONField('u64', field.epoch),
-    })
-  }
-
-  static fromJSON(json: Record<string, any>): ActiveJwk {
-    if (json.$typeName !== ActiveJwk.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
-    }
-
-    return ActiveJwk.fromJSONField(json)
-  }
-
-  static fromSuiParsedData(content: SuiParsedData): ActiveJwk {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isActiveJwk(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a ActiveJwk object`)
-    }
-    return ActiveJwk.fromFieldsWithTypes(content)
-  }
-
-  static fromSuiObjectData(data: SuiObjectData): ActiveJwk {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isActiveJwk(data.bcs.type)) {
-        throw new Error(`object at is not a ActiveJwk object`)
-      }
-
-      return ActiveJwk.fromBcs(fromB64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return ActiveJwk.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
-    )
-  }
-
-  static async fetch(client: SuiClient, id: string): Promise<ActiveJwk> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching ActiveJwk object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isActiveJwk(res.data.bcs.type)) {
-      throw new Error(`object at id ${id} is not a ActiveJwk object`)
-    }
-
-    return ActiveJwk.fromSuiObjectData(res.data)
-  }
-}
-
 /* ============================== AuthenticatorState =============================== */
 
 export function isAuthenticatorState(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V27}::authenticator_state::AuthenticatorState`
+  return type === `${PKG_V29}::authenticator_state::AuthenticatorState`
 }
 
 export interface AuthenticatorStateFields {
@@ -216,12 +37,12 @@ export type AuthenticatorStateReified = Reified<AuthenticatorState, Authenticato
 export class AuthenticatorState implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::authenticator_state::AuthenticatorState`
+  static readonly $typeName = `${PKG_V29}::authenticator_state::AuthenticatorState`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = AuthenticatorState.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::authenticator_state::AuthenticatorState`
+  readonly $fullTypeName: `${typeof PKG_V29}::authenticator_state::AuthenticatorState`
   readonly $typeArgs: []
   readonly $isPhantom = AuthenticatorState.$isPhantom
 
@@ -232,7 +53,7 @@ export class AuthenticatorState implements StructClass {
     this.$fullTypeName = composeSuiType(
       AuthenticatorState.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::authenticator_state::AuthenticatorState`
+    ) as `${typeof PKG_V29}::authenticator_state::AuthenticatorState`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -245,7 +66,7 @@ export class AuthenticatorState implements StructClass {
       fullTypeName: composeSuiType(
         AuthenticatorState.$typeName,
         ...[]
-      ) as `${typeof PKG_V27}::authenticator_state::AuthenticatorState`,
+      ) as `${typeof PKG_V29}::authenticator_state::AuthenticatorState`,
       typeArgs: [] as [],
       isPhantom: AuthenticatorState.$isPhantom,
       reifiedTypeArgs: [],
@@ -374,7 +195,7 @@ export class AuthenticatorState implements StructClass {
 
 export function isAuthenticatorStateInner(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V27}::authenticator_state::AuthenticatorStateInner`
+  return type === `${PKG_V29}::authenticator_state::AuthenticatorStateInner`
 }
 
 export interface AuthenticatorStateInnerFields {
@@ -390,12 +211,12 @@ export type AuthenticatorStateInnerReified = Reified<
 export class AuthenticatorStateInner implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::authenticator_state::AuthenticatorStateInner`
+  static readonly $typeName = `${PKG_V29}::authenticator_state::AuthenticatorStateInner`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = AuthenticatorStateInner.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::authenticator_state::AuthenticatorStateInner`
+  readonly $fullTypeName: `${typeof PKG_V29}::authenticator_state::AuthenticatorStateInner`
   readonly $typeArgs: []
   readonly $isPhantom = AuthenticatorStateInner.$isPhantom
 
@@ -406,7 +227,7 @@ export class AuthenticatorStateInner implements StructClass {
     this.$fullTypeName = composeSuiType(
       AuthenticatorStateInner.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::authenticator_state::AuthenticatorStateInner`
+    ) as `${typeof PKG_V29}::authenticator_state::AuthenticatorStateInner`
     this.$typeArgs = typeArgs
 
     this.version = fields.version
@@ -419,7 +240,7 @@ export class AuthenticatorStateInner implements StructClass {
       fullTypeName: composeSuiType(
         AuthenticatorStateInner.$typeName,
         ...[]
-      ) as `${typeof PKG_V27}::authenticator_state::AuthenticatorStateInner`,
+      ) as `${typeof PKG_V29}::authenticator_state::AuthenticatorStateInner`,
       typeArgs: [] as [],
       isPhantom: AuthenticatorStateInner.$isPhantom,
       reifiedTypeArgs: [],
@@ -558,7 +379,7 @@ export class AuthenticatorStateInner implements StructClass {
 
 export function isJWK(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V27}::authenticator_state::JWK`
+  return type === `${PKG_V29}::authenticator_state::JWK`
 }
 
 export interface JWKFields {
@@ -573,12 +394,12 @@ export type JWKReified = Reified<JWK, JWKFields>
 export class JWK implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::authenticator_state::JWK`
+  static readonly $typeName = `${PKG_V29}::authenticator_state::JWK`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = JWK.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::authenticator_state::JWK`
+  readonly $fullTypeName: `${typeof PKG_V29}::authenticator_state::JWK`
   readonly $typeArgs: []
   readonly $isPhantom = JWK.$isPhantom
 
@@ -591,7 +412,7 @@ export class JWK implements StructClass {
     this.$fullTypeName = composeSuiType(
       JWK.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::authenticator_state::JWK`
+    ) as `${typeof PKG_V29}::authenticator_state::JWK`
     this.$typeArgs = typeArgs
 
     this.kty = fields.kty
@@ -606,7 +427,7 @@ export class JWK implements StructClass {
       fullTypeName: composeSuiType(
         JWK.$typeName,
         ...[]
-      ) as `${typeof PKG_V27}::authenticator_state::JWK`,
+      ) as `${typeof PKG_V29}::authenticator_state::JWK`,
       typeArgs: [] as [],
       isPhantom: JWK.$isPhantom,
       reifiedTypeArgs: [],
@@ -745,7 +566,7 @@ export class JWK implements StructClass {
 
 export function isJwkId(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V27}::authenticator_state::JwkId`
+  return type === `${PKG_V29}::authenticator_state::JwkId`
 }
 
 export interface JwkIdFields {
@@ -758,12 +579,12 @@ export type JwkIdReified = Reified<JwkId, JwkIdFields>
 export class JwkId implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::authenticator_state::JwkId`
+  static readonly $typeName = `${PKG_V29}::authenticator_state::JwkId`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = JwkId.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::authenticator_state::JwkId`
+  readonly $fullTypeName: `${typeof PKG_V29}::authenticator_state::JwkId`
   readonly $typeArgs: []
   readonly $isPhantom = JwkId.$isPhantom
 
@@ -774,7 +595,7 @@ export class JwkId implements StructClass {
     this.$fullTypeName = composeSuiType(
       JwkId.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::authenticator_state::JwkId`
+    ) as `${typeof PKG_V29}::authenticator_state::JwkId`
     this.$typeArgs = typeArgs
 
     this.iss = fields.iss
@@ -787,7 +608,7 @@ export class JwkId implements StructClass {
       fullTypeName: composeSuiType(
         JwkId.$typeName,
         ...[]
-      ) as `${typeof PKG_V27}::authenticator_state::JwkId`,
+      ) as `${typeof PKG_V29}::authenticator_state::JwkId`,
       typeArgs: [] as [],
       isPhantom: JwkId.$isPhantom,
       reifiedTypeArgs: [],
@@ -909,5 +730,184 @@ export class JwkId implements StructClass {
     }
 
     return JwkId.fromSuiObjectData(res.data)
+  }
+}
+
+/* ============================== ActiveJwk =============================== */
+
+export function isActiveJwk(type: string): boolean {
+  type = compressSuiType(type)
+  return type === `${PKG_V29}::authenticator_state::ActiveJwk`
+}
+
+export interface ActiveJwkFields {
+  jwkId: ToField<JwkId>
+  jwk: ToField<JWK>
+  epoch: ToField<'u64'>
+}
+
+export type ActiveJwkReified = Reified<ActiveJwk, ActiveJwkFields>
+
+export class ActiveJwk implements StructClass {
+  __StructClass = true as const
+
+  static readonly $typeName = `${PKG_V29}::authenticator_state::ActiveJwk`
+  static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
+
+  readonly $typeName = ActiveJwk.$typeName
+  readonly $fullTypeName: `${typeof PKG_V29}::authenticator_state::ActiveJwk`
+  readonly $typeArgs: []
+  readonly $isPhantom = ActiveJwk.$isPhantom
+
+  readonly jwkId: ToField<JwkId>
+  readonly jwk: ToField<JWK>
+  readonly epoch: ToField<'u64'>
+
+  private constructor(typeArgs: [], fields: ActiveJwkFields) {
+    this.$fullTypeName = composeSuiType(
+      ActiveJwk.$typeName,
+      ...typeArgs
+    ) as `${typeof PKG_V29}::authenticator_state::ActiveJwk`
+    this.$typeArgs = typeArgs
+
+    this.jwkId = fields.jwkId
+    this.jwk = fields.jwk
+    this.epoch = fields.epoch
+  }
+
+  static reified(): ActiveJwkReified {
+    return {
+      typeName: ActiveJwk.$typeName,
+      fullTypeName: composeSuiType(
+        ActiveJwk.$typeName,
+        ...[]
+      ) as `${typeof PKG_V29}::authenticator_state::ActiveJwk`,
+      typeArgs: [] as [],
+      isPhantom: ActiveJwk.$isPhantom,
+      reifiedTypeArgs: [],
+      fromFields: (fields: Record<string, any>) => ActiveJwk.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => ActiveJwk.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => ActiveJwk.fromBcs(data),
+      bcs: ActiveJwk.bcs,
+      fromJSONField: (field: any) => ActiveJwk.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => ActiveJwk.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => ActiveJwk.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => ActiveJwk.fromSuiObjectData(content),
+      fetch: async (client: SuiClient, id: string) => ActiveJwk.fetch(client, id),
+      new: (fields: ActiveJwkFields) => {
+        return new ActiveJwk([], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return ActiveJwk.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<ActiveJwk>> {
+    return phantom(ActiveJwk.reified())
+  }
+  static get p() {
+    return ActiveJwk.phantom()
+  }
+
+  static get bcs() {
+    return bcs.struct('ActiveJwk', {
+      jwk_id: JwkId.bcs,
+      jwk: JWK.bcs,
+      epoch: bcs.u64(),
+    })
+  }
+
+  static fromFields(fields: Record<string, any>): ActiveJwk {
+    return ActiveJwk.reified().new({
+      jwkId: decodeFromFields(JwkId.reified(), fields.jwk_id),
+      jwk: decodeFromFields(JWK.reified(), fields.jwk),
+      epoch: decodeFromFields('u64', fields.epoch),
+    })
+  }
+
+  static fromFieldsWithTypes(item: FieldsWithTypes): ActiveJwk {
+    if (!isActiveJwk(item.type)) {
+      throw new Error('not a ActiveJwk type')
+    }
+
+    return ActiveJwk.reified().new({
+      jwkId: decodeFromFieldsWithTypes(JwkId.reified(), item.fields.jwk_id),
+      jwk: decodeFromFieldsWithTypes(JWK.reified(), item.fields.jwk),
+      epoch: decodeFromFieldsWithTypes('u64', item.fields.epoch),
+    })
+  }
+
+  static fromBcs(data: Uint8Array): ActiveJwk {
+    return ActiveJwk.fromFields(ActiveJwk.bcs.parse(data))
+  }
+
+  toJSONField() {
+    return {
+      jwkId: this.jwkId.toJSONField(),
+      jwk: this.jwk.toJSONField(),
+      epoch: this.epoch.toString(),
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): ActiveJwk {
+    return ActiveJwk.reified().new({
+      jwkId: decodeFromJSONField(JwkId.reified(), field.jwkId),
+      jwk: decodeFromJSONField(JWK.reified(), field.jwk),
+      epoch: decodeFromJSONField('u64', field.epoch),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): ActiveJwk {
+    if (json.$typeName !== ActiveJwk.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return ActiveJwk.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): ActiveJwk {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isActiveJwk(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a ActiveJwk object`)
+    }
+    return ActiveJwk.fromFieldsWithTypes(content)
+  }
+
+  static fromSuiObjectData(data: SuiObjectData): ActiveJwk {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isActiveJwk(data.bcs.type)) {
+        throw new Error(`object at is not a ActiveJwk object`)
+      }
+
+      return ActiveJwk.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return ActiveJwk.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<ActiveJwk> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching ActiveJwk object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isActiveJwk(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a ActiveJwk object`)
+    }
+
+    return ActiveJwk.fromSuiObjectData(res.data)
   }
 }

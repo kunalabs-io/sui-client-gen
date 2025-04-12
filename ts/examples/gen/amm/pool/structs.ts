@@ -32,102 +32,109 @@ import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
 
-/* ============================== AdminCap =============================== */
+/* ============================== PoolCreationEvent =============================== */
 
-export function isAdminCap(type: string): boolean {
+export function isPoolCreationEvent(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V1}::pool::AdminCap`
+  return type === `${PKG_V1}::pool::PoolCreationEvent`
 }
 
-export interface AdminCapFields {
-  id: ToField<UID>
+export interface PoolCreationEventFields {
+  poolId: ToField<ID>
 }
 
-export type AdminCapReified = Reified<AdminCap, AdminCapFields>
+export type PoolCreationEventReified = Reified<PoolCreationEvent, PoolCreationEventFields>
 
-export class AdminCap implements StructClass {
+export class PoolCreationEvent implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V1}::pool::AdminCap`
+  static readonly $typeName = `${PKG_V1}::pool::PoolCreationEvent`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = AdminCap.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::pool::AdminCap`
+  readonly $typeName = PoolCreationEvent.$typeName
+  readonly $fullTypeName: `${typeof PKG_V1}::pool::PoolCreationEvent`
   readonly $typeArgs: []
-  readonly $isPhantom = AdminCap.$isPhantom
+  readonly $isPhantom = PoolCreationEvent.$isPhantom
 
-  readonly id: ToField<UID>
+  readonly poolId: ToField<ID>
 
-  private constructor(typeArgs: [], fields: AdminCapFields) {
+  private constructor(typeArgs: [], fields: PoolCreationEventFields) {
     this.$fullTypeName = composeSuiType(
-      AdminCap.$typeName,
+      PoolCreationEvent.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V1}::pool::AdminCap`
+    ) as `${typeof PKG_V1}::pool::PoolCreationEvent`
     this.$typeArgs = typeArgs
 
-    this.id = fields.id
+    this.poolId = fields.poolId
   }
 
-  static reified(): AdminCapReified {
+  static reified(): PoolCreationEventReified {
     return {
-      typeName: AdminCap.$typeName,
-      fullTypeName: composeSuiType(AdminCap.$typeName, ...[]) as `${typeof PKG_V1}::pool::AdminCap`,
+      typeName: PoolCreationEvent.$typeName,
+      fullTypeName: composeSuiType(
+        PoolCreationEvent.$typeName,
+        ...[]
+      ) as `${typeof PKG_V1}::pool::PoolCreationEvent`,
       typeArgs: [] as [],
-      isPhantom: AdminCap.$isPhantom,
+      isPhantom: PoolCreationEvent.$isPhantom,
       reifiedTypeArgs: [],
-      fromFields: (fields: Record<string, any>) => AdminCap.fromFields(fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => AdminCap.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => AdminCap.fromBcs(data),
-      bcs: AdminCap.bcs,
-      fromJSONField: (field: any) => AdminCap.fromJSONField(field),
-      fromJSON: (json: Record<string, any>) => AdminCap.fromJSON(json),
-      fromSuiParsedData: (content: SuiParsedData) => AdminCap.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => AdminCap.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => AdminCap.fetch(client, id),
-      new: (fields: AdminCapFields) => {
-        return new AdminCap([], fields)
+      fromFields: (fields: Record<string, any>) => PoolCreationEvent.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => PoolCreationEvent.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => PoolCreationEvent.fromBcs(data),
+      bcs: PoolCreationEvent.bcs,
+      fromJSONField: (field: any) => PoolCreationEvent.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => PoolCreationEvent.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => PoolCreationEvent.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => PoolCreationEvent.fromSuiObjectData(content),
+      fetch: async (client: SuiClient, id: string) => PoolCreationEvent.fetch(client, id),
+      new: (fields: PoolCreationEventFields) => {
+        return new PoolCreationEvent([], fields)
       },
       kind: 'StructClassReified',
     }
   }
 
   static get r() {
-    return AdminCap.reified()
+    return PoolCreationEvent.reified()
   }
 
-  static phantom(): PhantomReified<ToTypeStr<AdminCap>> {
-    return phantom(AdminCap.reified())
+  static phantom(): PhantomReified<ToTypeStr<PoolCreationEvent>> {
+    return phantom(PoolCreationEvent.reified())
   }
   static get p() {
-    return AdminCap.phantom()
+    return PoolCreationEvent.phantom()
   }
 
   static get bcs() {
-    return bcs.struct('AdminCap', {
-      id: UID.bcs,
+    return bcs.struct('PoolCreationEvent', {
+      pool_id: ID.bcs,
     })
   }
 
-  static fromFields(fields: Record<string, any>): AdminCap {
-    return AdminCap.reified().new({ id: decodeFromFields(UID.reified(), fields.id) })
+  static fromFields(fields: Record<string, any>): PoolCreationEvent {
+    return PoolCreationEvent.reified().new({
+      poolId: decodeFromFields(ID.reified(), fields.pool_id),
+    })
   }
 
-  static fromFieldsWithTypes(item: FieldsWithTypes): AdminCap {
-    if (!isAdminCap(item.type)) {
-      throw new Error('not a AdminCap type')
+  static fromFieldsWithTypes(item: FieldsWithTypes): PoolCreationEvent {
+    if (!isPoolCreationEvent(item.type)) {
+      throw new Error('not a PoolCreationEvent type')
     }
 
-    return AdminCap.reified().new({ id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id) })
+    return PoolCreationEvent.reified().new({
+      poolId: decodeFromFieldsWithTypes(ID.reified(), item.fields.pool_id),
+    })
   }
 
-  static fromBcs(data: Uint8Array): AdminCap {
-    return AdminCap.fromFields(AdminCap.bcs.parse(data))
+  static fromBcs(data: Uint8Array): PoolCreationEvent {
+    return PoolCreationEvent.fromFields(PoolCreationEvent.bcs.parse(data))
   }
 
   toJSONField() {
     return {
-      id: this.id,
+      poolId: this.poolId,
     }
   }
 
@@ -135,54 +142,56 @@ export class AdminCap implements StructClass {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
-  static fromJSONField(field: any): AdminCap {
-    return AdminCap.reified().new({ id: decodeFromJSONField(UID.reified(), field.id) })
+  static fromJSONField(field: any): PoolCreationEvent {
+    return PoolCreationEvent.reified().new({
+      poolId: decodeFromJSONField(ID.reified(), field.poolId),
+    })
   }
 
-  static fromJSON(json: Record<string, any>): AdminCap {
-    if (json.$typeName !== AdminCap.$typeName) {
+  static fromJSON(json: Record<string, any>): PoolCreationEvent {
+    if (json.$typeName !== PoolCreationEvent.$typeName) {
       throw new Error('not a WithTwoGenerics json object')
     }
 
-    return AdminCap.fromJSONField(json)
+    return PoolCreationEvent.fromJSONField(json)
   }
 
-  static fromSuiParsedData(content: SuiParsedData): AdminCap {
+  static fromSuiParsedData(content: SuiParsedData): PoolCreationEvent {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
     }
-    if (!isAdminCap(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a AdminCap object`)
+    if (!isPoolCreationEvent(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a PoolCreationEvent object`)
     }
-    return AdminCap.fromFieldsWithTypes(content)
+    return PoolCreationEvent.fromFieldsWithTypes(content)
   }
 
-  static fromSuiObjectData(data: SuiObjectData): AdminCap {
+  static fromSuiObjectData(data: SuiObjectData): PoolCreationEvent {
     if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isAdminCap(data.bcs.type)) {
-        throw new Error(`object at is not a AdminCap object`)
+      if (data.bcs.dataType !== 'moveObject' || !isPoolCreationEvent(data.bcs.type)) {
+        throw new Error(`object at is not a PoolCreationEvent object`)
       }
 
-      return AdminCap.fromBcs(fromB64(data.bcs.bcsBytes))
+      return PoolCreationEvent.fromBcs(fromB64(data.bcs.bcsBytes))
     }
     if (data.content) {
-      return AdminCap.fromSuiParsedData(data.content)
+      return PoolCreationEvent.fromSuiParsedData(data.content)
     }
     throw new Error(
       'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<AdminCap> {
+  static async fetch(client: SuiClient, id: string): Promise<PoolCreationEvent> {
     const res = await client.getObject({ id, options: { showBcs: true } })
     if (res.error) {
-      throw new Error(`error fetching AdminCap object at id ${id}: ${res.error.code}`)
+      throw new Error(`error fetching PoolCreationEvent object at id ${id}: ${res.error.code}`)
     }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isAdminCap(res.data.bcs.type)) {
-      throw new Error(`object at id ${id} is not a AdminCap object`)
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isPoolCreationEvent(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a PoolCreationEvent object`)
     }
 
-    return AdminCap.fromSuiObjectData(res.data)
+    return PoolCreationEvent.fromSuiObjectData(res.data)
   }
 }
 
@@ -742,169 +751,6 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   }
 }
 
-/* ============================== PoolCreationEvent =============================== */
-
-export function isPoolCreationEvent(type: string): boolean {
-  type = compressSuiType(type)
-  return type === `${PKG_V1}::pool::PoolCreationEvent`
-}
-
-export interface PoolCreationEventFields {
-  poolId: ToField<ID>
-}
-
-export type PoolCreationEventReified = Reified<PoolCreationEvent, PoolCreationEventFields>
-
-export class PoolCreationEvent implements StructClass {
-  __StructClass = true as const
-
-  static readonly $typeName = `${PKG_V1}::pool::PoolCreationEvent`
-  static readonly $numTypeParams = 0
-  static readonly $isPhantom = [] as const
-
-  readonly $typeName = PoolCreationEvent.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::pool::PoolCreationEvent`
-  readonly $typeArgs: []
-  readonly $isPhantom = PoolCreationEvent.$isPhantom
-
-  readonly poolId: ToField<ID>
-
-  private constructor(typeArgs: [], fields: PoolCreationEventFields) {
-    this.$fullTypeName = composeSuiType(
-      PoolCreationEvent.$typeName,
-      ...typeArgs
-    ) as `${typeof PKG_V1}::pool::PoolCreationEvent`
-    this.$typeArgs = typeArgs
-
-    this.poolId = fields.poolId
-  }
-
-  static reified(): PoolCreationEventReified {
-    return {
-      typeName: PoolCreationEvent.$typeName,
-      fullTypeName: composeSuiType(
-        PoolCreationEvent.$typeName,
-        ...[]
-      ) as `${typeof PKG_V1}::pool::PoolCreationEvent`,
-      typeArgs: [] as [],
-      isPhantom: PoolCreationEvent.$isPhantom,
-      reifiedTypeArgs: [],
-      fromFields: (fields: Record<string, any>) => PoolCreationEvent.fromFields(fields),
-      fromFieldsWithTypes: (item: FieldsWithTypes) => PoolCreationEvent.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => PoolCreationEvent.fromBcs(data),
-      bcs: PoolCreationEvent.bcs,
-      fromJSONField: (field: any) => PoolCreationEvent.fromJSONField(field),
-      fromJSON: (json: Record<string, any>) => PoolCreationEvent.fromJSON(json),
-      fromSuiParsedData: (content: SuiParsedData) => PoolCreationEvent.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => PoolCreationEvent.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => PoolCreationEvent.fetch(client, id),
-      new: (fields: PoolCreationEventFields) => {
-        return new PoolCreationEvent([], fields)
-      },
-      kind: 'StructClassReified',
-    }
-  }
-
-  static get r() {
-    return PoolCreationEvent.reified()
-  }
-
-  static phantom(): PhantomReified<ToTypeStr<PoolCreationEvent>> {
-    return phantom(PoolCreationEvent.reified())
-  }
-  static get p() {
-    return PoolCreationEvent.phantom()
-  }
-
-  static get bcs() {
-    return bcs.struct('PoolCreationEvent', {
-      pool_id: ID.bcs,
-    })
-  }
-
-  static fromFields(fields: Record<string, any>): PoolCreationEvent {
-    return PoolCreationEvent.reified().new({
-      poolId: decodeFromFields(ID.reified(), fields.pool_id),
-    })
-  }
-
-  static fromFieldsWithTypes(item: FieldsWithTypes): PoolCreationEvent {
-    if (!isPoolCreationEvent(item.type)) {
-      throw new Error('not a PoolCreationEvent type')
-    }
-
-    return PoolCreationEvent.reified().new({
-      poolId: decodeFromFieldsWithTypes(ID.reified(), item.fields.pool_id),
-    })
-  }
-
-  static fromBcs(data: Uint8Array): PoolCreationEvent {
-    return PoolCreationEvent.fromFields(PoolCreationEvent.bcs.parse(data))
-  }
-
-  toJSONField() {
-    return {
-      poolId: this.poolId,
-    }
-  }
-
-  toJSON() {
-    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
-  }
-
-  static fromJSONField(field: any): PoolCreationEvent {
-    return PoolCreationEvent.reified().new({
-      poolId: decodeFromJSONField(ID.reified(), field.poolId),
-    })
-  }
-
-  static fromJSON(json: Record<string, any>): PoolCreationEvent {
-    if (json.$typeName !== PoolCreationEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
-    }
-
-    return PoolCreationEvent.fromJSONField(json)
-  }
-
-  static fromSuiParsedData(content: SuiParsedData): PoolCreationEvent {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isPoolCreationEvent(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a PoolCreationEvent object`)
-    }
-    return PoolCreationEvent.fromFieldsWithTypes(content)
-  }
-
-  static fromSuiObjectData(data: SuiObjectData): PoolCreationEvent {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isPoolCreationEvent(data.bcs.type)) {
-        throw new Error(`object at is not a PoolCreationEvent object`)
-      }
-
-      return PoolCreationEvent.fromBcs(fromB64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return PoolCreationEvent.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
-    )
-  }
-
-  static async fetch(client: SuiClient, id: string): Promise<PoolCreationEvent> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching PoolCreationEvent object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isPoolCreationEvent(res.data.bcs.type)) {
-      throw new Error(`object at id ${id} is not a PoolCreationEvent object`)
-    }
-
-    return PoolCreationEvent.fromSuiObjectData(res.data)
-  }
-}
-
 /* ============================== PoolRegistry =============================== */
 
 export function isPoolRegistry(type: string): boolean {
@@ -1253,5 +1099,159 @@ export class PoolRegistryItem implements StructClass {
     }
 
     return PoolRegistryItem.fromSuiObjectData(res.data)
+  }
+}
+
+/* ============================== AdminCap =============================== */
+
+export function isAdminCap(type: string): boolean {
+  type = compressSuiType(type)
+  return type === `${PKG_V1}::pool::AdminCap`
+}
+
+export interface AdminCapFields {
+  id: ToField<UID>
+}
+
+export type AdminCapReified = Reified<AdminCap, AdminCapFields>
+
+export class AdminCap implements StructClass {
+  __StructClass = true as const
+
+  static readonly $typeName = `${PKG_V1}::pool::AdminCap`
+  static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
+
+  readonly $typeName = AdminCap.$typeName
+  readonly $fullTypeName: `${typeof PKG_V1}::pool::AdminCap`
+  readonly $typeArgs: []
+  readonly $isPhantom = AdminCap.$isPhantom
+
+  readonly id: ToField<UID>
+
+  private constructor(typeArgs: [], fields: AdminCapFields) {
+    this.$fullTypeName = composeSuiType(
+      AdminCap.$typeName,
+      ...typeArgs
+    ) as `${typeof PKG_V1}::pool::AdminCap`
+    this.$typeArgs = typeArgs
+
+    this.id = fields.id
+  }
+
+  static reified(): AdminCapReified {
+    return {
+      typeName: AdminCap.$typeName,
+      fullTypeName: composeSuiType(AdminCap.$typeName, ...[]) as `${typeof PKG_V1}::pool::AdminCap`,
+      typeArgs: [] as [],
+      isPhantom: AdminCap.$isPhantom,
+      reifiedTypeArgs: [],
+      fromFields: (fields: Record<string, any>) => AdminCap.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => AdminCap.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => AdminCap.fromBcs(data),
+      bcs: AdminCap.bcs,
+      fromJSONField: (field: any) => AdminCap.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => AdminCap.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => AdminCap.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => AdminCap.fromSuiObjectData(content),
+      fetch: async (client: SuiClient, id: string) => AdminCap.fetch(client, id),
+      new: (fields: AdminCapFields) => {
+        return new AdminCap([], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return AdminCap.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<AdminCap>> {
+    return phantom(AdminCap.reified())
+  }
+  static get p() {
+    return AdminCap.phantom()
+  }
+
+  static get bcs() {
+    return bcs.struct('AdminCap', {
+      id: UID.bcs,
+    })
+  }
+
+  static fromFields(fields: Record<string, any>): AdminCap {
+    return AdminCap.reified().new({ id: decodeFromFields(UID.reified(), fields.id) })
+  }
+
+  static fromFieldsWithTypes(item: FieldsWithTypes): AdminCap {
+    if (!isAdminCap(item.type)) {
+      throw new Error('not a AdminCap type')
+    }
+
+    return AdminCap.reified().new({ id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id) })
+  }
+
+  static fromBcs(data: Uint8Array): AdminCap {
+    return AdminCap.fromFields(AdminCap.bcs.parse(data))
+  }
+
+  toJSONField() {
+    return {
+      id: this.id,
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): AdminCap {
+    return AdminCap.reified().new({ id: decodeFromJSONField(UID.reified(), field.id) })
+  }
+
+  static fromJSON(json: Record<string, any>): AdminCap {
+    if (json.$typeName !== AdminCap.$typeName) {
+      throw new Error('not a WithTwoGenerics json object')
+    }
+
+    return AdminCap.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): AdminCap {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isAdminCap(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a AdminCap object`)
+    }
+    return AdminCap.fromFieldsWithTypes(content)
+  }
+
+  static fromSuiObjectData(data: SuiObjectData): AdminCap {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isAdminCap(data.bcs.type)) {
+        throw new Error(`object at is not a AdminCap object`)
+      }
+
+      return AdminCap.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return AdminCap.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<AdminCap> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching AdminCap object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isAdminCap(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a AdminCap object`)
+    }
+
+    return AdminCap.fromSuiObjectData(res.data)
   }
 }

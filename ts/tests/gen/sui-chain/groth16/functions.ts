@@ -10,6 +10,52 @@ export function bn254(tx: Transaction) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::groth16::bn254`, arguments: [] })
 }
 
+export interface PvkFromBytesArgs {
+  vecU81: Array<number | TransactionArgument> | TransactionArgument
+  vecU82: Array<number | TransactionArgument> | TransactionArgument
+  vecU83: Array<number | TransactionArgument> | TransactionArgument
+  vecU84: Array<number | TransactionArgument> | TransactionArgument
+}
+
+export function pvkFromBytes(tx: Transaction, args: PvkFromBytesArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::groth16::pvk_from_bytes`,
+    arguments: [
+      pure(tx, args.vecU81, `vector<u8>`),
+      pure(tx, args.vecU82, `vector<u8>`),
+      pure(tx, args.vecU83, `vector<u8>`),
+      pure(tx, args.vecU84, `vector<u8>`),
+    ],
+  })
+}
+
+export function pvkToBytes(tx: Transaction, preparedVerifyingKey: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::groth16::pvk_to_bytes`,
+    arguments: [obj(tx, preparedVerifyingKey)],
+  })
+}
+
+export function publicProofInputsFromBytes(
+  tx: Transaction,
+  vecU8: Array<number | TransactionArgument> | TransactionArgument
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::groth16::public_proof_inputs_from_bytes`,
+    arguments: [pure(tx, vecU8, `vector<u8>`)],
+  })
+}
+
+export function proofPointsFromBytes(
+  tx: Transaction,
+  vecU8: Array<number | TransactionArgument> | TransactionArgument
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::groth16::proof_points_from_bytes`,
+    arguments: [pure(tx, vecU8, `vector<u8>`)],
+  })
+}
+
 export interface PrepareVerifyingKeyArgs {
   curve: TransactionObjectInput
   vecU8: Array<number | TransactionArgument> | TransactionArgument
@@ -34,52 +80,6 @@ export function prepareVerifyingKeyInternal(
   return tx.moveCall({
     target: `${PUBLISHED_AT}::groth16::prepare_verifying_key_internal`,
     arguments: [pure(tx, args.u8, `u8`), pure(tx, args.vecU8, `vector<u8>`)],
-  })
-}
-
-export function proofPointsFromBytes(
-  tx: Transaction,
-  vecU8: Array<number | TransactionArgument> | TransactionArgument
-) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::groth16::proof_points_from_bytes`,
-    arguments: [pure(tx, vecU8, `vector<u8>`)],
-  })
-}
-
-export function publicProofInputsFromBytes(
-  tx: Transaction,
-  vecU8: Array<number | TransactionArgument> | TransactionArgument
-) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::groth16::public_proof_inputs_from_bytes`,
-    arguments: [pure(tx, vecU8, `vector<u8>`)],
-  })
-}
-
-export interface PvkFromBytesArgs {
-  vecU81: Array<number | TransactionArgument> | TransactionArgument
-  vecU82: Array<number | TransactionArgument> | TransactionArgument
-  vecU83: Array<number | TransactionArgument> | TransactionArgument
-  vecU84: Array<number | TransactionArgument> | TransactionArgument
-}
-
-export function pvkFromBytes(tx: Transaction, args: PvkFromBytesArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::groth16::pvk_from_bytes`,
-    arguments: [
-      pure(tx, args.vecU81, `vector<u8>`),
-      pure(tx, args.vecU82, `vector<u8>`),
-      pure(tx, args.vecU83, `vector<u8>`),
-      pure(tx, args.vecU84, `vector<u8>`),
-    ],
-  })
-}
-
-export function pvkToBytes(tx: Transaction, preparedVerifyingKey: TransactionObjectInput) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::groth16::pvk_to_bytes`,
-    arguments: [obj(tx, preparedVerifyingKey)],
   })
 }
 

@@ -2,6 +2,10 @@ import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj } from '../../_framework/util'
 import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
 
+export function new_(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::object_bag::new`, arguments: [] })
+}
+
 export interface AddArgs {
   objectBag: TransactionObjectInput
   t0: GenericArg
@@ -46,6 +50,19 @@ export function borrowMut(tx: Transaction, typeArgs: [string, string], args: Bor
   })
 }
 
+export interface RemoveArgs {
+  objectBag: TransactionObjectInput
+  t0: GenericArg
+}
+
+export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object_bag::remove`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, args.objectBag), generic(tx, `${typeArgs[0]}`, args.t0)],
+  })
+}
+
 export interface ContainsArgs {
   objectBag: TransactionObjectInput
   t0: GenericArg
@@ -76,9 +93,9 @@ export function containsWithType(
   })
 }
 
-export function destroyEmpty(tx: Transaction, objectBag: TransactionObjectInput) {
+export function length(tx: Transaction, objectBag: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::object_bag::destroy_empty`,
+    target: `${PUBLISHED_AT}::object_bag::length`,
     arguments: [obj(tx, objectBag)],
   })
 }
@@ -90,27 +107,10 @@ export function isEmpty(tx: Transaction, objectBag: TransactionObjectInput) {
   })
 }
 
-export function length(tx: Transaction, objectBag: TransactionObjectInput) {
+export function destroyEmpty(tx: Transaction, objectBag: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::object_bag::length`,
+    target: `${PUBLISHED_AT}::object_bag::destroy_empty`,
     arguments: [obj(tx, objectBag)],
-  })
-}
-
-export function new_(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::object_bag::new`, arguments: [] })
-}
-
-export interface RemoveArgs {
-  objectBag: TransactionObjectInput
-  t0: GenericArg
-}
-
-export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::object_bag::remove`,
-    typeArguments: typeArgs,
-    arguments: [obj(tx, args.objectBag), generic(tx, `${typeArgs[0]}`, args.t0)],
   })
 }
 

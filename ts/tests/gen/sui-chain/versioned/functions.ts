@@ -15,10 +15,9 @@ export function create(tx: Transaction, typeArg: string, args: CreateArgs) {
   })
 }
 
-export function destroy(tx: Transaction, typeArg: string, versioned: TransactionObjectInput) {
+export function version(tx: Transaction, versioned: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::versioned::destroy`,
-    typeArguments: [typeArg],
+    target: `${PUBLISHED_AT}::versioned::version`,
     arguments: [obj(tx, versioned)],
   })
 }
@@ -71,9 +70,10 @@ export function upgrade(tx: Transaction, typeArg: string, args: UpgradeArgs) {
   })
 }
 
-export function version(tx: Transaction, versioned: TransactionObjectInput) {
+export function destroy(tx: Transaction, typeArg: string, versioned: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::versioned::version`,
+    target: `${PUBLISHED_AT}::versioned::destroy`,
+    typeArguments: [typeArg],
     arguments: [obj(tx, versioned)],
   })
 }

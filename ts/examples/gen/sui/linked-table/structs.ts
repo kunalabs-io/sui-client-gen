@@ -26,7 +26,7 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { PKG_V27 } from '../index'
+import { PKG_V29 } from '../index'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -36,7 +36,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isLinkedTable(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V27}::linked_table::LinkedTable` + '<')
+  return type.startsWith(`${PKG_V29}::linked_table::LinkedTable` + '<')
 }
 
 export interface LinkedTableFields<K extends TypeArgument, V extends PhantomTypeArgument> {
@@ -56,12 +56,12 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
 {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::linked_table::LinkedTable`
+  static readonly $typeName = `${PKG_V29}::linked_table::LinkedTable`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, true] as const
 
   readonly $typeName = LinkedTable.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::linked_table::LinkedTable<${ToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
+  readonly $fullTypeName: `${typeof PKG_V29}::linked_table::LinkedTable<${ToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
   readonly $typeArgs: [ToTypeStr<K>, PhantomToTypeStr<V>]
   readonly $isPhantom = LinkedTable.$isPhantom
 
@@ -77,7 +77,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
     this.$fullTypeName = composeSuiType(
       LinkedTable.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::linked_table::LinkedTable<${ToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
+    ) as `${typeof PKG_V29}::linked_table::LinkedTable<${ToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -95,7 +95,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
       fullTypeName: composeSuiType(
         LinkedTable.$typeName,
         ...[extractType(K), extractType(V)]
-      ) as `${typeof PKG_V27}::linked_table::LinkedTable<${ToTypeStr<ToTypeArgument<K>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<V>>}>`,
+      ) as `${typeof PKG_V29}::linked_table::LinkedTable<${ToTypeStr<ToTypeArgument<K>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<V>>}>`,
       typeArgs: [extractType(K), extractType(V)] as [
         ToTypeStr<ToTypeArgument<K>>,
         PhantomToTypeStr<ToPhantomTypeArgument<V>>,
@@ -309,7 +309,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
 
 export function isNode(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V27}::linked_table::Node` + '<')
+  return type.startsWith(`${PKG_V29}::linked_table::Node` + '<')
 }
 
 export interface NodeFields<K extends TypeArgument, V extends TypeArgument> {
@@ -326,12 +326,12 @@ export type NodeReified<K extends TypeArgument, V extends TypeArgument> = Reifie
 export class Node<K extends TypeArgument, V extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V27}::linked_table::Node`
+  static readonly $typeName = `${PKG_V29}::linked_table::Node`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const
 
   readonly $typeName = Node.$typeName
-  readonly $fullTypeName: `${typeof PKG_V27}::linked_table::Node<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
+  readonly $fullTypeName: `${typeof PKG_V29}::linked_table::Node<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
   readonly $typeArgs: [ToTypeStr<K>, ToTypeStr<V>]
   readonly $isPhantom = Node.$isPhantom
 
@@ -343,7 +343,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
     this.$fullTypeName = composeSuiType(
       Node.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V27}::linked_table::Node<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
+    ) as `${typeof PKG_V29}::linked_table::Node<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
     this.$typeArgs = typeArgs
 
     this.prev = fields.prev
@@ -360,7 +360,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
       fullTypeName: composeSuiType(
         Node.$typeName,
         ...[extractType(K), extractType(V)]
-      ) as `${typeof PKG_V27}::linked_table::Node<${ToTypeStr<ToTypeArgument<K>>}, ${ToTypeStr<ToTypeArgument<V>>}>`,
+      ) as `${typeof PKG_V29}::linked_table::Node<${ToTypeStr<ToTypeArgument<K>>}, ${ToTypeStr<ToTypeArgument<V>>}>`,
       typeArgs: [extractType(K), extractType(V)] as [
         ToTypeStr<ToTypeArgument<K>>,
         ToTypeStr<ToTypeArgument<V>>,
