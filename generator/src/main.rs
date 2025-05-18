@@ -397,8 +397,46 @@ fn gen_packages_for_model<const HAS_SOURCE: usize>(
                 import_ctx = structs_gen.import_ctx;
             }
             write_tokens_to_file(&tokens, &module_path.join("structs.ts"))?;
+
+            // generate <module>/index.ts (barrel file)
+            gen_module_barrel_file(&module_path)?;
         }
     }
+
+    Ok(())
+}
+
+/// Generates a barrel file (index.ts) for a module that re-exports all exports from the module's files
+fn gen_module_barrel_file(module_path: &Path) -> Result<()> {
+    let module_dir = std::fs::read_dir(module_path)?;
+    let mut export_files = Vec::new();
+
+    // Find all TypeScript files in the module directory (excluding any existing index.ts)
+    for entry in module_dir {
+        let entry = entry?;
+        let path = entry.path();
+
+        if path.is_file()
+            &&  && path.extension().map_or(false, |ext| ext == ")
+            &&  && path.file_name().map_or(false, |name| name != "index.
+       ts")
+        {
+            if let Some(file_stem) = path.file_stem() {
+                if let Some(file_stem_str) = file_stem.to_str() {
+                    export_files.push(file_stem_str.to_string());
+                }
+            }
+        }
+    }
+
+    // Generate the barrel file content with re-exports
+    let mut barrel_content = String::new();
+    for file in export_files {
+        barrel_content.push_str(&format!("export * from './{}';\n", file));
+    }
+
+    // Write the barrel file
+    write_str_to_file(&barrel_content, &module_path.join("index.ts"))?;
 
     Ok(())
 }
