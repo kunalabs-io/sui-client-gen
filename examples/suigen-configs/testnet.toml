@@ -1,0 +1,5 @@
+[config]
+rpc = "https://fullnode.testnet.sui.io:443"
+
+[packages]
+champ_market = { id = "0x41f17137266d55fe4a1c954e081fe12505a846313fae514c5064abd5e6c7181d" } # https://testnet.suivision.xyz/txblock/8PEBmDbw7envc3xChMbB4MtHgPZEF7i8cjfwTU1vLLVM

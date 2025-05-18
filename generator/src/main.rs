@@ -325,17 +325,41 @@ fn gen_packages_for_model<const HAS_SOURCE: usize>(
 
         std::fs::create_dir_all(&package_path)?;
 
-        // generate index.ts
+        // Generate module paths for the export statements
+        let module_imports = pkg
+            .modules()
+            .map(|module| module_import_name(module.name()))
+            .collect::<Vec<_>>();
+
+        // generate index.ts with metadata and module exports
         let published_at = published_at_map.get(pkg_id).unwrap_or(pkg_id);
         let versions = version_table.get(pkg_id).unwrap();
-        let tokens: js::Tokens = quote!(
-            export const PACKAGE_ID = $[str]($[const](pkg_id.to_hex_literal()));
-            export const PUBLISHED_AT = $[str]($[const](published_at.to_hex_literal()));
-            $(for (published_at, version) in versions {
-                export const PKG_V$(version.value()) = $[str]($[const](published_at.to_hex_literal()));
-            })
+        let mut index_content = format!(
+            "export const PACKAGE_ID = '{}';\n\
+             export const PUBLISHED_AT = '{}';\n",
+            pkg_id.to_hex_literal(),
+            published_at.to_hex_literal()
         );
-        write_tokens_to_file(&tokens, &package_path.join("index.ts"))?;
+
+        // Add version exports
+        for (published_at, version) in versions {
+            index_content.push_str(&format!(
+                "export const PKG_V{} = '{}';\n",
+                version.value(),
+                published_at.to_hex_literal()
+            ));
+        }
+
+        // Add module exports with namespaces
+        index_content.push_str("\n// Module exports\n");
+        for module_name in &module_imports {
+            index_content.push_str(&format!(
+                "export * as {} from './{}';\n",
+                module_name, module_name
+            ));
+        }
+
+        write_str_to_file(&index_content, &package_path.join("index.ts"))?;
 
         // generate init.ts
         let tokens = gen_package_init_ts(pkg, &FrameworkImportCtx::new(levels_from_root + 1));
@@ -417,9 +441,8 @@ fn gen_module_barrel_file(module_path: &Path) -> Result<()> {
         let path = entry.path();
 
         if path.is_file()
-            &&  && path.extension().map_or(false, |ext| ext == ")
-            &&  && path.file_name().map_or(false, |name| name != "index.
-       ts")
+            && path.extension().is_some_and(|ext| ext == "ts")
+            && path.file_name().is_some_and(|name| name != "index.ts")
         {
             if let Some(file_stem) = path.file_stem() {
                 if let Some(file_stem_str) = file_stem.to_str() {

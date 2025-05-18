@@ -1,2 +1,4 @@
 sui.log.*
 target/
+
+examples/ts-suigen/
