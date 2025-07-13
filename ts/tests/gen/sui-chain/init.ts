@@ -1,3 +1,4 @@
+import * as accumulator from './accumulator/structs'
 import * as authenticatorState from './authenticator-state/structs'
 import * as bag from './bag/structs'
 import * as balance from './balance/structs'
@@ -21,6 +22,7 @@ import * as objectBag from './object-bag/structs'
 import * as objectTable from './object-table/structs'
 import * as object from './object/structs'
 import * as package_ from './package/structs'
+import * as party from './party/structs'
 import * as priorityQueue from './priority-queue/structs'
 import * as random from './random/structs'
 import * as sui from './sui/structs'
@@ -39,6 +41,7 @@ import * as zkloginVerifiedIssuer from './zklogin-verified-issuer/structs'
 import { StructClassLoader } from '../_framework/loader'
 
 export function registerClasses(loader: StructClassLoader) {
+  loader.register(accumulator.AccumulatorRoot)
   loader.register(authenticatorState.AuthenticatorState)
   loader.register(authenticatorState.AuthenticatorStateInner)
   loader.register(authenticatorState.JWK)
@@ -107,6 +110,8 @@ export function registerClasses(loader: StructClassLoader) {
   loader.register(package_.UpgradeCap)
   loader.register(package_.UpgradeTicket)
   loader.register(package_.UpgradeReceipt)
+  loader.register(party.Party)
+  loader.register(party.Permissions)
   loader.register(priorityQueue.PriorityQueue)
   loader.register(priorityQueue.Entry)
   loader.register(random.Random)

@@ -13,7 +13,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { PKG_V15 } from '../index'
+import { PKG_V16 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -22,7 +22,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isBitVector(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V15}::bit_vector::BitVector`
+  return type === `${PKG_V16}::bit_vector::BitVector`
 }
 
 export interface BitVectorFields {
@@ -35,12 +35,12 @@ export type BitVectorReified = Reified<BitVector, BitVectorFields>
 export class BitVector implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V15}::bit_vector::BitVector`
+  static readonly $typeName = `${PKG_V16}::bit_vector::BitVector`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = BitVector.$typeName
-  readonly $fullTypeName: `${typeof PKG_V15}::bit_vector::BitVector`
+  readonly $fullTypeName: `${typeof PKG_V16}::bit_vector::BitVector`
   readonly $typeArgs: []
   readonly $isPhantom = BitVector.$isPhantom
 
@@ -51,7 +51,7 @@ export class BitVector implements StructClass {
     this.$fullTypeName = composeSuiType(
       BitVector.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V15}::bit_vector::BitVector`
+    ) as `${typeof PKG_V16}::bit_vector::BitVector`
     this.$typeArgs = typeArgs
 
     this.length = fields.length
@@ -64,7 +64,7 @@ export class BitVector implements StructClass {
       fullTypeName: composeSuiType(
         BitVector.$typeName,
         ...[]
-      ) as `${typeof PKG_V15}::bit_vector::BitVector`,
+      ) as `${typeof PKG_V16}::bit_vector::BitVector`,
       typeArgs: [] as [],
       isPhantom: BitVector.$isPhantom,
       reifiedTypeArgs: [],

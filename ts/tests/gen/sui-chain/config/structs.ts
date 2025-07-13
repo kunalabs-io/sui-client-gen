@@ -26,7 +26,7 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Option } from '../../move-stdlib-chain/option/structs'
-import { PKG_V29 } from '../index'
+import { PKG_V32 } from '../index'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -36,7 +36,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isConfig(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V29}::config::Config` + '<')
+  return type.startsWith(`${PKG_V32}::config::Config` + '<')
 }
 
 export interface ConfigFields<T0 extends PhantomTypeArgument> {
@@ -48,12 +48,12 @@ export type ConfigReified<T0 extends PhantomTypeArgument> = Reified<Config<T0>, 
 export class Config<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V29}::config::Config`
+  static readonly $typeName = `${PKG_V32}::config::Config`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = Config.$typeName
-  readonly $fullTypeName: `${typeof PKG_V29}::config::Config<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V32}::config::Config<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = Config.$isPhantom
 
@@ -63,7 +63,7 @@ export class Config<T0 extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Config.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V29}::config::Config<${PhantomToTypeStr<T0>}>`
+    ) as `${typeof PKG_V32}::config::Config<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -77,7 +77,7 @@ export class Config<T0 extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Config.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V29}::config::Config<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V32}::config::Config<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: Config.$isPhantom,
       reifiedTypeArgs: [T0],
@@ -244,7 +244,7 @@ export class Config<T0 extends PhantomTypeArgument> implements StructClass {
 
 export function isSetting(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V29}::config::Setting` + '<')
+  return type.startsWith(`${PKG_V32}::config::Setting` + '<')
 }
 
 export interface SettingFields<T0 extends TypeArgument> {
@@ -256,12 +256,12 @@ export type SettingReified<T0 extends TypeArgument> = Reified<Setting<T0>, Setti
 export class Setting<T0 extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V29}::config::Setting`
+  static readonly $typeName = `${PKG_V32}::config::Setting`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
   readonly $typeName = Setting.$typeName
-  readonly $fullTypeName: `${typeof PKG_V29}::config::Setting<${ToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V32}::config::Setting<${ToTypeStr<T0>}>`
   readonly $typeArgs: [ToTypeStr<T0>]
   readonly $isPhantom = Setting.$isPhantom
 
@@ -271,7 +271,7 @@ export class Setting<T0 extends TypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Setting.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V29}::config::Setting<${ToTypeStr<T0>}>`
+    ) as `${typeof PKG_V32}::config::Setting<${ToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.data = fields.data
@@ -285,7 +285,7 @@ export class Setting<T0 extends TypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Setting.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V29}::config::Setting<${ToTypeStr<ToTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V32}::config::Setting<${ToTypeStr<ToTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [ToTypeStr<ToTypeArgument<T0>>],
       isPhantom: Setting.$isPhantom,
       reifiedTypeArgs: [T0],
@@ -465,7 +465,7 @@ export class Setting<T0 extends TypeArgument> implements StructClass {
 
 export function isSettingData(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V29}::config::SettingData` + '<')
+  return type.startsWith(`${PKG_V32}::config::SettingData` + '<')
 }
 
 export interface SettingDataFields<T0 extends TypeArgument> {
@@ -482,12 +482,12 @@ export type SettingDataReified<T0 extends TypeArgument> = Reified<
 export class SettingData<T0 extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V29}::config::SettingData`
+  static readonly $typeName = `${PKG_V32}::config::SettingData`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
   readonly $typeName = SettingData.$typeName
-  readonly $fullTypeName: `${typeof PKG_V29}::config::SettingData<${ToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V32}::config::SettingData<${ToTypeStr<T0>}>`
   readonly $typeArgs: [ToTypeStr<T0>]
   readonly $isPhantom = SettingData.$isPhantom
 
@@ -499,7 +499,7 @@ export class SettingData<T0 extends TypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       SettingData.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V29}::config::SettingData<${ToTypeStr<T0>}>`
+    ) as `${typeof PKG_V32}::config::SettingData<${ToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.newerValueEpoch = fields.newerValueEpoch
@@ -515,7 +515,7 @@ export class SettingData<T0 extends TypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         SettingData.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V29}::config::SettingData<${ToTypeStr<ToTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V32}::config::SettingData<${ToTypeStr<ToTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [ToTypeStr<ToTypeArgument<T0>>],
       isPhantom: SettingData.$isPhantom,
       reifiedTypeArgs: [T0],

@@ -24,7 +24,7 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { PKG_V29 } from '../index'
+import { PKG_V32 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -33,7 +33,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isElement(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V29}::group_ops::Element` + '<')
+  return type.startsWith(`${PKG_V32}::group_ops::Element` + '<')
 }
 
 export interface ElementFields<T0 extends PhantomTypeArgument> {
@@ -45,12 +45,12 @@ export type ElementReified<T0 extends PhantomTypeArgument> = Reified<Element<T0>
 export class Element<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V29}::group_ops::Element`
+  static readonly $typeName = `${PKG_V32}::group_ops::Element`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = Element.$typeName
-  readonly $fullTypeName: `${typeof PKG_V29}::group_ops::Element<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `${typeof PKG_V32}::group_ops::Element<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = Element.$isPhantom
 
@@ -60,7 +60,7 @@ export class Element<T0 extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Element.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V29}::group_ops::Element<${PhantomToTypeStr<T0>}>`
+    ) as `${typeof PKG_V32}::group_ops::Element<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
@@ -74,7 +74,7 @@ export class Element<T0 extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Element.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V29}::group_ops::Element<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `${typeof PKG_V32}::group_ops::Element<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: Element.$isPhantom,
       reifiedTypeArgs: [T0],

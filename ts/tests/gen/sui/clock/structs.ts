@@ -10,7 +10,7 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { PKG_V29 } from '../index'
+import { PKG_V32 } from '../index'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -20,7 +20,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isClock(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V29}::clock::Clock`
+  return type === `${PKG_V32}::clock::Clock`
 }
 
 export interface ClockFields {
@@ -33,12 +33,12 @@ export type ClockReified = Reified<Clock, ClockFields>
 export class Clock implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V29}::clock::Clock`
+  static readonly $typeName = `${PKG_V32}::clock::Clock`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = Clock.$typeName
-  readonly $fullTypeName: `${typeof PKG_V29}::clock::Clock`
+  readonly $fullTypeName: `${typeof PKG_V32}::clock::Clock`
   readonly $typeArgs: []
   readonly $isPhantom = Clock.$isPhantom
 
@@ -49,7 +49,7 @@ export class Clock implements StructClass {
     this.$fullTypeName = composeSuiType(
       Clock.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V29}::clock::Clock`
+    ) as `${typeof PKG_V32}::clock::Clock`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -59,7 +59,7 @@ export class Clock implements StructClass {
   static reified(): ClockReified {
     return {
       typeName: Clock.$typeName,
-      fullTypeName: composeSuiType(Clock.$typeName, ...[]) as `${typeof PKG_V29}::clock::Clock`,
+      fullTypeName: composeSuiType(Clock.$typeName, ...[]) as `${typeof PKG_V32}::clock::Clock`,
       typeArgs: [] as [],
       isPhantom: Clock.$isPhantom,
       reifiedTypeArgs: [],

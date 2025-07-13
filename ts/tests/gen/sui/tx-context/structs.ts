@@ -13,7 +13,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { PKG_V29 } from '../index'
+import { PKG_V32 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
@@ -22,7 +22,7 @@ import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
 
 export function isTxContext(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V29}::tx_context::TxContext`
+  return type === `${PKG_V32}::tx_context::TxContext`
 }
 
 export interface TxContextFields {
@@ -38,12 +38,12 @@ export type TxContextReified = Reified<TxContext, TxContextFields>
 export class TxContext implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V29}::tx_context::TxContext`
+  static readonly $typeName = `${PKG_V32}::tx_context::TxContext`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = TxContext.$typeName
-  readonly $fullTypeName: `${typeof PKG_V29}::tx_context::TxContext`
+  readonly $fullTypeName: `${typeof PKG_V32}::tx_context::TxContext`
   readonly $typeArgs: []
   readonly $isPhantom = TxContext.$isPhantom
 
@@ -57,7 +57,7 @@ export class TxContext implements StructClass {
     this.$fullTypeName = composeSuiType(
       TxContext.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V29}::tx_context::TxContext`
+    ) as `${typeof PKG_V32}::tx_context::TxContext`
     this.$typeArgs = typeArgs
 
     this.sender = fields.sender
@@ -73,7 +73,7 @@ export class TxContext implements StructClass {
       fullTypeName: composeSuiType(
         TxContext.$typeName,
         ...[]
-      ) as `${typeof PKG_V29}::tx_context::TxContext`,
+      ) as `${typeof PKG_V32}::tx_context::TxContext`,
       typeArgs: [] as [],
       isPhantom: TxContext.$isPhantom,
       reifiedTypeArgs: [],

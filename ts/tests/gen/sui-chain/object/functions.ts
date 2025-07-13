@@ -54,6 +54,20 @@ export function suiDenyListObjectId(tx: Transaction) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::object::sui_deny_list_object_id`, arguments: [] })
 }
 
+export function suiAccumulatorRootObjectId(tx: Transaction) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object::sui_accumulator_root_object_id`,
+    arguments: [],
+  })
+}
+
+export function suiAccumulatorRootAddress(tx: Transaction) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object::sui_accumulator_root_address`,
+    arguments: [],
+  })
+}
+
 export function bridge(tx: Transaction) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::object::bridge`, arguments: [] })
 }

@@ -10,7 +10,7 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { PKG_V29 } from '../index'
+import { PKG_V32 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
@@ -19,7 +19,7 @@ import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
 
 export function isID(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V29}::object::ID`
+  return type === `${PKG_V32}::object::ID`
 }
 
 export interface IDFields {
@@ -31,12 +31,12 @@ export type IDReified = Reified<ID, IDFields>
 export class ID implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V29}::object::ID`
+  static readonly $typeName = `${PKG_V32}::object::ID`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = ID.$typeName
-  readonly $fullTypeName: `${typeof PKG_V29}::object::ID`
+  readonly $fullTypeName: `${typeof PKG_V32}::object::ID`
   readonly $typeArgs: []
   readonly $isPhantom = ID.$isPhantom
 
@@ -46,7 +46,7 @@ export class ID implements StructClass {
     this.$fullTypeName = composeSuiType(
       ID.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V29}::object::ID`
+    ) as `${typeof PKG_V32}::object::ID`
     this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
@@ -55,7 +55,7 @@ export class ID implements StructClass {
   static reified(): IDReified {
     return {
       typeName: ID.$typeName,
-      fullTypeName: composeSuiType(ID.$typeName, ...[]) as `${typeof PKG_V29}::object::ID`,
+      fullTypeName: composeSuiType(ID.$typeName, ...[]) as `${typeof PKG_V32}::object::ID`,
       typeArgs: [] as [],
       isPhantom: ID.$isPhantom,
       reifiedTypeArgs: [],
@@ -176,7 +176,7 @@ export class ID implements StructClass {
 
 export function isUID(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V29}::object::UID`
+  return type === `${PKG_V32}::object::UID`
 }
 
 export interface UIDFields {
@@ -188,12 +188,12 @@ export type UIDReified = Reified<UID, UIDFields>
 export class UID implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V29}::object::UID`
+  static readonly $typeName = `${PKG_V32}::object::UID`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = UID.$typeName
-  readonly $fullTypeName: `${typeof PKG_V29}::object::UID`
+  readonly $fullTypeName: `${typeof PKG_V32}::object::UID`
   readonly $typeArgs: []
   readonly $isPhantom = UID.$isPhantom
 
@@ -203,7 +203,7 @@ export class UID implements StructClass {
     this.$fullTypeName = composeSuiType(
       UID.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V29}::object::UID`
+    ) as `${typeof PKG_V32}::object::UID`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -212,7 +212,7 @@ export class UID implements StructClass {
   static reified(): UIDReified {
     return {
       typeName: UID.$typeName,
-      fullTypeName: composeSuiType(UID.$typeName, ...[]) as `${typeof PKG_V29}::object::UID`,
+      fullTypeName: composeSuiType(UID.$typeName, ...[]) as `${typeof PKG_V32}::object::UID`,
       typeArgs: [] as [],
       isPhantom: UID.$isPhantom,
       reifiedTypeArgs: [],
