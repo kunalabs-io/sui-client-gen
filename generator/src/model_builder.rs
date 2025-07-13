@@ -8,7 +8,8 @@ use futures::future;
 use move_binary_format::file_format::CompiledModule;
 use move_compiler::editions as ME;
 use move_core_types::account_address::AccountAddress;
-use move_model_2::model::{self, Model};
+use move_model_2::model::Model;
+use move_model_2::source_kind::{SourceKind, WithSource, WithoutSource};
 use move_package::compilation::model_builder;
 use move_package::resolution::resolution_graph::ResolvedGraph;
 use move_package::source_package::parsed_manifest as PM;
@@ -34,12 +35,12 @@ struct SubstTOML<'a>(&'a PM::Substitution);
 pub type TypeOriginTable = BTreeMap<AccountAddress, BTreeMap<String, AccountAddress>>;
 pub type VersionTable = BTreeMap<AccountAddress, BTreeMap<AccountAddress, SequenceNumber>>;
 
-pub type SourceModelResult = ModelResult<{ model::WITH_SOURCE }>;
-pub type OnChainModelResult = ModelResult<{ model::WITHOUT_SOURCE }>;
+pub type SourceModelResult = ModelResult<WithSource>;
+pub type OnChainModelResult = ModelResult<WithoutSource>;
 
-pub struct ModelResult<const HAS_SOURCE: usize> {
+pub struct ModelResult<HasSource: SourceKind> {
     /// Move model for packages defined in gen.toml
-    pub env: Model<HAS_SOURCE>,
+    pub env: Model<HasSource>,
     /// Map from id to package name
     pub id_map: BTreeMap<AccountAddress, PM::PackageName>,
     /// Map from original package ID to the published at ID
@@ -391,11 +392,11 @@ async fn resolve_original_package_id(
     Ok(id)
 }
 
-async fn resolve_type_origin_table<Progress: Write, const HAS_SOURCE: usize>(
+async fn resolve_type_origin_table<Progress: Write, HasSource: SourceKind>(
     cache: &mut PackageCache<'_>,
     id_map: &BTreeMap<AccountAddress, PM::PackageName>,
     published_at: &BTreeMap<AccountAddress, AccountAddress>,
-    model: &Model<HAS_SOURCE>,
+    model: &Model<HasSource>,
     progress_output: &mut Progress,
 ) -> Result<TypeOriginTable> {
     let mut type_origin_table = BTreeMap::new();

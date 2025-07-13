@@ -7,6 +7,7 @@ use colored::*;
 use genco::fmt;
 use genco::prelude::*;
 use move_core_types::account_address::AccountAddress;
+use move_model_2::source_kind::SourceKind;
 use move_model_2::{compiled_model, model, source_model};
 use move_package::source_package::parsed_manifest::PackageName;
 use move_symbol_pool::Symbol;
@@ -296,8 +297,8 @@ fn resolve_top_level_pkg_addr_map(
     (source_top_level_id_map, on_chain_top_level_id_map)
 }
 
-fn gen_packages_for_model<const HAS_SOURCE: usize>(
-    pkgs: BTreeMap<AccountAddress, model::Package<HAS_SOURCE>>,
+fn gen_packages_for_model<HasSource: SourceKind>(
+    pkgs: BTreeMap<AccountAddress, model::Package<HasSource>>,
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
     published_at_map: &BTreeMap<AccountAddress, AccountAddress>,
     type_origin_table: &TypeOriginTable,
@@ -349,8 +350,11 @@ fn gen_packages_for_model<const HAS_SOURCE: usize>(
             // generate <module>/functions.ts
             if is_top_level {
                 let mut tokens = js::Tokens::new();
-                let mut import_ctx =
-                    &mut StructClassImportCtx::for_func_gen(&module, top_level_pkg_names);
+                let mut import_ctx = &mut StructClassImportCtx::for_func_gen(
+                    &module,
+                    top_level_pkg_names,
+                    is_source,
+                );
                 for func in module.functions() {
                     let func_gen_res = FunctionsGen::new(
                         import_ctx,
@@ -374,7 +378,7 @@ fn gen_packages_for_model<const HAS_SOURCE: usize>(
             // generate <module>/structs.ts
             let mut tokens = js::Tokens::new();
             let mut import_ctx =
-                &mut StructClassImportCtx::for_struct_gen(&module, top_level_pkg_names);
+                &mut StructClassImportCtx::for_struct_gen(&module, top_level_pkg_names, is_source);
 
             for strct in module.structs() {
                 let mut structs_gen = StructsGen::new(

@@ -6,8 +6,9 @@ use convert_case::{Case, Casing};
 use genco::prelude::*;
 use genco::tokens::{Item, ItemStr};
 use move_core_types::account_address::AccountAddress;
-use move_model_2::compiled::Type;
-use move_model_2::model::{self, Datatype, SourceKind, WITH_SOURCE};
+use move_model_2::model::{self, Datatype};
+use move_model_2::normalized::Type;
+use move_model_2::source_kind::SourceKind;
 use move_symbol_pool::Symbol;
 
 #[rustfmt::skip]
@@ -47,11 +48,11 @@ pub fn package_import_name(pkg_name: Symbol) -> String {
         .to_case(Case::Kebab)
 }
 
-fn struct_full_name<const HAS_SOURCE: SourceKind>(s: &model::Struct<HAS_SOURCE>) -> String {
+fn struct_full_name<HasSource: SourceKind>(s: &model::Struct<HasSource>) -> String {
     format!("{}::{}", s.module().name(), s.name())
 }
 
-fn func_full_name<const HAS_SOURCE: SourceKind>(f: &model::Function<HAS_SOURCE>) -> String {
+fn func_full_name<HasSource: SourceKind>(f: &model::Function<HasSource>) -> String {
     format!("{}::{}", f.module().name(), f.name())
 }
 
@@ -90,14 +91,16 @@ pub struct StructClassImportCtx<'a> {
     is_top_level: bool,
     top_level_pkg_names: &'a BTreeMap<AccountAddress, move_symbol_pool::Symbol>,
     is_structs_gen: bool,
+    is_source: bool,
 }
 
 impl<'a> StructClassImportCtx<'a> {
-    pub fn new<const HAS_SOURCE: SourceKind>(
+    pub fn new<HasSource: SourceKind>(
         reserved_names: Vec<String>,
-        module: &model::Module<HAS_SOURCE>,
+        module: &model::Module<HasSource>,
         top_level_pkg_names: &'a BTreeMap<AccountAddress, move_symbol_pool::Symbol>,
         is_structs_gen: bool,
+        is_source: bool,
     ) -> Self {
         let package_address = module.package().address();
         let module = module.name();
@@ -111,21 +114,30 @@ impl<'a> StructClassImportCtx<'a> {
             is_top_level: top_level_pkg_names.contains_key(&package_address),
             top_level_pkg_names,
             is_structs_gen,
+            is_source,
         }
     }
 
-    pub fn for_func_gen<const HAS_SOURCE: SourceKind>(
-        module: &model::Module<HAS_SOURCE>,
+    pub fn for_func_gen<HasSource: SourceKind>(
+        module: &model::Module<HasSource>,
         top_level_pkg_names: &'a BTreeMap<AccountAddress, move_symbol_pool::Symbol>,
+        is_source: bool,
     ) -> Self {
         let reserved_names = vec![];
         let is_structs_gen = false;
-        StructClassImportCtx::new(reserved_names, module, top_level_pkg_names, is_structs_gen)
+        StructClassImportCtx::new(
+            reserved_names,
+            module,
+            top_level_pkg_names,
+            is_structs_gen,
+            is_source,
+        )
     }
 
-    pub fn for_struct_gen<const HAS_SOURCE: SourceKind>(
-        module: &model::Module<HAS_SOURCE>,
+    pub fn for_struct_gen<HasSource: SourceKind>(
+        module: &model::Module<HasSource>,
         top_level_pkg_names: &'a BTreeMap<AccountAddress, move_symbol_pool::Symbol>,
+        is_source: bool,
     ) -> Self {
         let reserved_names = module
             .structs()
@@ -134,14 +146,20 @@ impl<'a> StructClassImportCtx<'a> {
             .map(|s| s.to_string())
             .collect();
         let is_structs_gen = true;
-        StructClassImportCtx::new(reserved_names, module, top_level_pkg_names, is_structs_gen)
+        StructClassImportCtx::new(
+            reserved_names,
+            module,
+            top_level_pkg_names,
+            is_structs_gen,
+            is_source,
+        )
     }
 
     /// Returns the import path for a struct. If the struct is defined in the current module,
     /// returns `None`.
-    fn import_path_for_struct<const HAS_SOURCE: SourceKind>(
+    fn import_path_for_struct<HasSource: SourceKind>(
         &self,
-        strct: &model::Struct<HAS_SOURCE>,
+        strct: &model::Struct<HasSource>,
     ) -> Option<String> {
         let module = strct.module();
         let module_name = module_import_name(module.name());
@@ -172,11 +190,7 @@ impl<'a> StructClassImportCtx<'a> {
 
                 Some(format!("../../{}/{}/structs", strct_pkg_name, module_name))
             } else if self.is_top_level {
-                let dep_dir = if HAS_SOURCE == WITH_SOURCE {
-                    "source"
-                } else {
-                    "onchain"
-                };
+                let dep_dir = if self.is_source { "source" } else { "onchain" };
 
                 Some(format!(
                     "../../_dependencies/{}/{}/{}/structs",
@@ -215,10 +229,7 @@ impl<'a> StructClassImportCtx<'a> {
 
     /// Returns the class name for a struct and imports it if necessary. If a class with the same name
     /// has already been imported, imports it with an alias (e.g. Foo1, Foo2, etc.).
-    fn get_class<const HAS_SOURCE: SourceKind>(
-        &mut self,
-        strct: &model::Struct<HAS_SOURCE>,
-    ) -> js::Tokens {
+    fn get_class<HasSource: SourceKind>(&mut self, strct: &model::Struct<HasSource>) -> js::Tokens {
         let class_name = strct.name().to_string();
         let import_path = self.import_path_for_struct(strct);
 
@@ -253,8 +264,8 @@ impl<'a> StructClassImportCtx<'a> {
     }
 }
 
-fn get_origin_pkg_addr<const HAS_SOURCE: SourceKind>(
-    strct: &model::Struct<HAS_SOURCE>,
+fn get_origin_pkg_addr<HasSource: SourceKind>(
+    strct: &model::Struct<HasSource>,
     type_origin_table: &TypeOriginTable,
 ) -> AccountAddress {
     let addr = strct.module().package().address();
@@ -277,8 +288,8 @@ fn get_origin_pkg_addr<const HAS_SOURCE: SourceKind>(
     *origin_addr
 }
 
-fn strct_qualified_member_name<const HAS_SOURCE: SourceKind>(
-    strct: &model::Struct<HAS_SOURCE>,
+fn strct_qualified_member_name<HasSource: SourceKind>(
+    strct: &model::Struct<HasSource>,
     type_origin_table: &TypeOriginTable,
 ) -> (AccountAddress, Symbol, Symbol) {
     let origin_package = get_origin_pkg_addr(strct, type_origin_table);
@@ -286,8 +297,8 @@ fn strct_qualified_member_name<const HAS_SOURCE: SourceKind>(
     (origin_package, module.name(), strct.name())
 }
 
-fn gen_full_name_with_address<const HAS_SOURCE: SourceKind>(
-    strct: &model::Struct<HAS_SOURCE>,
+fn gen_full_name_with_address<HasSource: SourceKind>(
+    strct: &model::Struct<HasSource>,
     type_origin_table: &TypeOriginTable,
     version_table: &VersionTable,
     open_quote: bool,
@@ -338,8 +349,8 @@ fn gen_field_name(field: Symbol) -> impl FormatInto<JavaScript> {
     }
 }
 
-pub fn gen_package_init_ts<const HAS_SOURCE: SourceKind>(
-    pkg: &model::Package<HAS_SOURCE>,
+pub fn gen_package_init_ts<HasSource: SourceKind>(
+    pkg: &model::Package<HasSource>,
     framework: &FrameworkImportCtx,
 ) -> js::Tokens {
     let struct_class_loader = &framework.import("loader", "StructClassLoader");
@@ -493,29 +504,29 @@ enum QuoteItem {
     Literal(String),
 }
 
-fn todo_panic_if_enum<'a, const HAS_SOURCE: SourceKind>(
-    module: &model::Module<'a, HAS_SOURCE>,
-    id: Symbol,
-) -> model::Struct<'a, HAS_SOURCE> {
-    match module.datatype(id) {
+fn todo_panic_if_enum<'a, HasSource: SourceKind>(
+    module: &model::Module<'a, HasSource>,
+    name: Symbol,
+) -> model::Struct<'a, HasSource> {
+    match module.datatype(name) {
         Datatype::Struct(s) => s,
         Datatype::Enum(_) => panic!("enums are not supported yet"),
     }
 }
 
-fn gen_bcs_def_for_type<const HAS_SOURCE: SourceKind>(
+fn gen_bcs_def_for_type<HasSource: SourceKind>(
     ty: &Type,
-    env: &model::Model<HAS_SOURCE>,
+    env: &model::Model<HasSource>,
     type_param_names: &[QuoteItem],
     import_ctx: &mut StructClassImportCtx,
 ) -> js::Tokens {
     let mut toks = js::Tokens::new();
     toks.append(Item::OpenQuote(true));
 
-    fn inner<const HAS_SOURCE: SourceKind>(
+    fn inner<HasSource: SourceKind>(
         toks: &mut Tokens<JavaScript>,
         ty: &Type,
-        env: &model::Model<HAS_SOURCE>,
+        env: &model::Model<HasSource>,
         type_param_names: &[QuoteItem],
         import_ctx: &mut StructClassImportCtx,
     ) {
@@ -528,18 +539,17 @@ fn gen_bcs_def_for_type<const HAS_SOURCE: SourceKind>(
                 }
                 QuoteItem::Literal(s) => toks.append(Item::Literal(ItemStr::from(s))),
             },
-            Type::Datatype(id_tys) => {
-                let (id, ts) = &**id_tys;
-                let ((pid, mid), sid) = *id;
-                let module_env = env.module((pid, mid));
+            Type::Datatype(dt) => {
+                let module_env = env.module(dt.module);
 
-                let struct_env = todo_panic_if_enum(&module_env, sid);
+                let struct_env = todo_panic_if_enum(&module_env, dt.name);
                 let class = import_ctx.get_class(&struct_env);
 
                 toks.append(Item::Literal(ItemStr::from("${")));
                 quote_in! { *toks => $(class).$$typeName };
                 toks.append(Item::Literal(ItemStr::from("}")));
 
+                let ts = &dt.type_arguments;
                 if !ts.is_empty() {
                     quote_in! { *toks => < };
                     let len = ts.len();
@@ -567,6 +577,7 @@ fn gen_bcs_def_for_type<const HAS_SOURCE: SourceKind>(
             Type::Bool => quote_in!(*toks => bool),
             Type::Address => quote_in!(*toks => address),
             Type::Reference(_, _) => panic!("unexpected type: {:?}", ty),
+            Type::Signer => panic!("unexpected type: {:?}", ty),
         }
     }
 
@@ -588,14 +599,12 @@ fn type_is_pure(ty: &Type) -> bool {
         | Type::Address => true,
         Type::Reference(_, ty) => type_is_pure(ty),
         Type::Vector(ty) => type_is_pure(ty),
-        Type::Datatype(id_tys) => {
-            let (id, ts) = &**id_tys;
-            let ((pid, mid), sid) = *id;
-            match (pid, mid.as_str(), sid.as_str()) {
+        Type::Datatype(dt) => {
+            match (dt.module.address, dt.module.name.as_str(), dt.name.as_str()) {
                 (AccountAddress::ONE, "string", "String")
                 | (AccountAddress::ONE, "ascii", "String")
                 | (AccountAddress::TWO, "object", "ID") => true,
-                (AccountAddress::ONE, "option", "Option") => type_is_pure(&ts[0]),
+                (AccountAddress::ONE, "option", "Option") => type_is_pure(&dt.type_arguments[0]),
                 _ => false,
             }
         }
@@ -606,11 +615,9 @@ fn type_is_pure(ty: &Type) -> bool {
 // returns Option's type argument if the type is Option
 fn type_is_option(ty: &Type) -> Option<&Type> {
     match ty {
-        Type::Datatype(id_tys) => {
-            let (id, ts) = &**id_tys;
-            let ((pid, mid), sid) = *id;
-            match (pid, mid.as_str(), sid.as_str()) {
-                (AccountAddress::ONE, "option", "Option") => Some(&ts[0]),
+        Type::Datatype(dt) => {
+            match (dt.module.address, dt.module.name.as_str(), dt.name.as_str()) {
+                (AccountAddress::ONE, "option", "Option") => Some(&dt.type_arguments[0]),
                 _ => None,
             }
         }
@@ -621,35 +628,32 @@ fn type_is_option(ty: &Type) -> Option<&Type> {
 
 fn type_is_tx_context(ty: &Type) -> bool {
     match ty {
-        Type::Datatype(id_tys) => {
-            let (id, _ts) = &**id_tys;
-            let ((address, module), name) = *id;
-            address == AccountAddress::TWO
-                && module.as_str() == "tx_context"
-                && name.as_str() == "TxContext"
+        Type::Datatype(dt) => {
+            dt.module.address == AccountAddress::TWO
+                && dt.module.name.as_str() == "tx_context"
+                && dt.name.as_str() == "TxContext"
         }
         Type::Reference(_, ty) => type_is_tx_context(ty),
         _ => false,
     }
 }
 
-pub struct FunctionsGen<'a, 'model, const HAS_SOURCE: SourceKind> {
+pub struct FunctionsGen<'a, 'model, HasSource: SourceKind> {
     pub import_ctx: &'a mut StructClassImportCtx<'a>,
     framework: FrameworkImportCtx,
-    func: model::Function<'model, HAS_SOURCE>,
+    func: model::Function<'model, HasSource>,
 }
 
-impl<'a, 'model, const HAS_SOURCE: SourceKind> FunctionsGen<'a, 'model, HAS_SOURCE> {
+impl<'a, 'model, HasSource: SourceKind> FunctionsGen<'a, 'model, HasSource> {
     /// Returns Ok(self) if the function has a compiled representation
     /// Otherwise returns Err(import_ctx) simply to help with lifetime issues
     pub fn new(
         import_ctx: &'a mut StructClassImportCtx<'a>,
         framework: FrameworkImportCtx,
-        func: model::Function<'model, HAS_SOURCE>,
+        func: model::Function<'model, HasSource>,
     ) -> Result<Self, &'a mut StructClassImportCtx<'a>> {
         if func.maybe_compiled().is_none() {
             // skip functions without compiled representation, e.g. macros
-            assert!(HAS_SOURCE == WITH_SOURCE);
             Err(import_ctx)
         } else {
             Ok(FunctionsGen {
@@ -680,11 +684,9 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> FunctionsGen<'a, 'model, HAS_SOUR
                         .field_name_from_type(ty, type_param_names)?
                         .to_case(Case::Pascal)
             }
-            Type::Datatype(id_tys) => {
-                let (id, _ts) = &**id_tys;
-                let ((pid, mid), sid) = *id;
-                let module = self.func.model().module((pid, mid));
-                todo_panic_if_enum(&module, sid)
+            Type::Datatype(dt) => {
+                let module = self.func.model().module(dt.module);
+                todo_panic_if_enum(&module, dt.name)
                     .name()
                     .to_string()
                     .to_case(Case::Camel)
@@ -693,6 +695,7 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> FunctionsGen<'a, 'model, HAS_SOUR
             Type::TypeParameter(idx) => type_param_names[*idx as usize]
                 .to_owned()
                 .to_case(Case::Camel),
+            Type::Signer => panic!("unexpected type: {:?}", ty),
         };
         Ok(name)
     }
@@ -805,6 +808,7 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> FunctionsGen<'a, 'model, HAS_SOUR
 
                 Some((name, type_.clone()))
             })
+            .map(|(name, type_)| (name, (*type_).clone()))
             .collect()
     }
 
@@ -836,10 +840,8 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> FunctionsGen<'a, 'model, HAS_SOUR
             Type::Vector(ty) => {
                 quote!(Array<$(self.param_type_to_field_type(ty))> | $transaction_argument)
             }
-            Type::Datatype(id_tys) => {
-                let (id, ts) = &**id_tys;
-                let ((pid, mid), sid) = *id;
-                match (pid, mid.as_str(), sid.as_str()) {
+            Type::Datatype(dt) => {
+                match (dt.module.address, dt.module.name.as_str(), dt.name.as_str()) {
                     (AccountAddress::ONE, "string", "String")
                     | (AccountAddress::ONE, "ascii", "String") => {
                         quote!(string | $transaction_argument)
@@ -848,13 +850,14 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> FunctionsGen<'a, 'model, HAS_SOUR
                         quote!(string | $transaction_argument)
                     }
                     (AccountAddress::ONE, "option", "Option") => {
-                        quote!(($(self.param_type_to_field_type(&ts[0])) | $transaction_argument | null))
+                        quote!(($(self.param_type_to_field_type(&dt.type_arguments[0])) | $transaction_argument | null))
                     }
                     _ => quote!($transaction_object_input),
                 }
             }
             Type::Reference(_, ty) => self.param_type_to_field_type(ty),
             Type::TypeParameter(_) => quote!($generic_arg),
+            Type::Signer => panic!("unexpected type: {:?}", ty),
         }
     }
 
@@ -1024,21 +1027,21 @@ enum ExtendsOrWraps {
     Wraps(js::Tokens),
 }
 
-pub struct StructsGen<'a, 'model, const HAS_SOURCE: SourceKind> {
+pub struct StructsGen<'a, 'model, HasSource: SourceKind> {
     pub import_ctx: &'a mut StructClassImportCtx<'a>,
     framework: FrameworkImportCtx,
     type_origin_table: &'a TypeOriginTable,
     version_table: &'a VersionTable,
-    strct: model::Struct<'model, HAS_SOURCE>,
+    strct: model::Struct<'model, HasSource>,
 }
 
-impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE> {
+impl<'a, 'model, HasSource: SourceKind> StructsGen<'a, 'model, HasSource> {
     pub fn new(
         import_ctx: &'a mut StructClassImportCtx<'a>,
         framework: FrameworkImportCtx,
         type_origin_table: &'a TypeOriginTable,
         version_table: &'a VersionTable,
-        strct: model::Struct<'model, HAS_SOURCE>,
+        strct: model::Struct<'model, HasSource>,
     ) -> Self {
         StructsGen {
             import_ctx,
@@ -1110,17 +1113,15 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
                     ty, type_param_names, wrap_non_phantom_type_parameter, wrap_phantom_type_parameter, false
                 ))>)
             }
-            Type::Datatype(id_tys) => {
-                let (id, ts) = &**id_tys;
-                let ((pid, mid), sid) = *id;
-                let field_module = self.strct.model().module((pid, mid));
+            Type::Datatype(dt) => {
+                let field_module = self.strct.model().module(dt.module);
 
-                let field_strct = todo_panic_if_enum(&field_module, sid);
+                let field_strct = todo_panic_if_enum(&field_module, dt.name);
                 let class = self.import_ctx.get_class(&field_strct);
 
                 let strct_type_params = &self.strct.compiled().type_parameters;
                 let field_strct_type_params = &field_strct.compiled().type_parameters;
-                let type_param_inner_toks = ts.iter().enumerate().map(|(idx, t)| {
+                let type_param_inner_toks = dt.type_arguments.iter().enumerate().map(|(idx, t)| {
                     let is_phantom = field_strct_type_params[idx].is_phantom;
                     let wrap_to_phantom = is_phantom
                         && match t {
@@ -1145,7 +1146,7 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
                     }
                 });
 
-                quote!($class$(if !ts.is_empty() {
+                quote!($class$(if !dt.type_arguments.is_empty() {
                     <$(for param in type_param_inner_toks join (, ) => $param)>
                 }))
             }
@@ -1165,6 +1166,7 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
                 }
             }
             Type::Reference(_, _) => panic!("unexpected type: {:?}", ty),
+            Type::Signer => panic!("unexpected type: {:?}", ty),
         };
 
         if is_top_level {
@@ -1231,21 +1233,19 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
             Type::Vector(ty) => {
                 quote!($bcs.vector($(self.gen_struct_bcs_def_field_value(ty, type_param_names))))
             }
-            Type::Datatype(id_tys) => {
-                let (id, ts) = &**id_tys;
-                let ((pid, mid), sid) = *id;
-                let field_module = self.strct.model().module((pid, mid));
-                let field_strct = todo_panic_if_enum(&field_module, sid);
+            Type::Datatype(dt) => {
+                let field_module = self.strct.model().module(dt.module);
+                let field_strct = todo_panic_if_enum(&field_module, dt.name);
 
                 let class = self.import_ctx.get_class(&field_strct);
                 let field_strct_type_params = &field_strct.compiled().type_parameters;
-                let non_phantom_param_idxs = (0..ts.len())
+                let non_phantom_param_idxs = (0..dt.type_arguments.len())
                     .filter(|idx| !field_strct_type_params[*idx].is_phantom)
                     .collect::<Vec<_>>();
 
                 quote!($class.bcs$(if !non_phantom_param_idxs.is_empty() {
                     ($(for idx in non_phantom_param_idxs join (, ) =>
-                        $(self.gen_struct_bcs_def_field_value(&ts[idx], type_param_names))
+                        $(self.gen_struct_bcs_def_field_value(&dt.type_arguments[idx], type_param_names))
                     ))
                 }))
             }
@@ -1253,6 +1253,7 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
                 quote!($(type_param_names[*idx as usize].to_owned()))
             }
             Type::Reference(_, _) => panic!("unexpected type: {:?}", ty),
+            Type::Signer => panic!("unexpected type: {:?}", ty),
         }
     }
 
@@ -1270,16 +1271,15 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
             Type::Vector(ty) => {
                 quote!($reified.vector($(self.gen_reified(ty, type_param_names))))
             }
-            Type::Datatype(id_tys) => {
-                let (id, ts) = &**id_tys;
-                let ((pid, mid), sid) = *id;
-                let field_module = self.strct.model().module((pid, mid));
+            Type::Datatype(dt) => {
+                let field_module = self.strct.model().module(dt.module);
 
-                let field_strct = todo_panic_if_enum(&field_module, sid);
+                let field_strct = todo_panic_if_enum(&field_module, dt.name);
                 let class = self.import_ctx.get_class(&field_strct);
 
                 let strct_type_params = &self.strct.compiled().type_parameters;
                 let field_strct_type_params = &field_strct.compiled().type_parameters;
+                let ts = &dt.type_arguments;
                 let toks = ts.iter().enumerate().map(|(idx, ty)| {
                     let wrap_to_phantom = field_strct_type_params[idx].is_phantom
                         && match &ts[idx] {
@@ -1305,6 +1305,7 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
                 quote!($(type_param_names[*idx as usize].clone()))
             }
             Type::Reference(_, _) => panic!("unexpected type: {:?}", ty),
+            Type::Signer => panic!("unexpected type: {:?}", ty),
         }
     }
 
@@ -1466,7 +1467,7 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
         tokens.push();
         quote_in! { *tokens =>
             export interface $(self.gen_fields_if_name_with_params( &extends_non_phantom, &extends_phantom)) {
-                $(for field in &self.strct.compiled().fields join (; )=>
+                $(for (_, field) in &self.strct.compiled().fields.0 join (; )=>
                     $(gen_field_name(field.name)): $(
                         self.gen_struct_class_field_type(&field.type_, &self.strct_type_param_names(), None, None)
                     )
@@ -1685,7 +1686,7 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
 
         tokens.push();
         let strct_type_arity = type_params.len();
-        let fields = self.strct.compiled().fields.clone();
+        let fields = self.strct.compiled().fields.0.clone();
         quote_in! { *tokens =>
             export class $(&struct_name)$(self.gen_params_toks(type_params.clone(), &extends_type_argument, &extends_phantom_type_argument)) implements $struct_class {
                 __StructClass = true as const;$['\n']
@@ -1705,7 +1706,7 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
                 readonly $$typeArgs: $type_args_field_type;
                 readonly $$isPhantom = $(&struct_name).$$isPhantom;$['\n']
 
-                $(for field in &fields join (; ) =>
+                $(for (_, field) in &fields join (; ) =>
                     readonly $(gen_field_name(field.name)):
                         $(self.gen_struct_class_field_type(
                             &field.type_, &self.strct_type_param_names(), None, None
@@ -1726,7 +1727,7 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
                     $(match fields.len() {
                         0 => (),
                         _ => {
-                            $(for field in &fields join (; ) =>
+                            $(for (_, field) in &fields join (; ) =>
                                 this.$(gen_field_name(field.name)) = fields.$(gen_field_name(field.name));
                             )
                         }
@@ -1875,7 +1876,7 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
                             $param: $param
                         )) =>
                     }) $bcs.struct($bcs_def_name, {$['\n']
-                        $(for field in &fields join (, ) =>
+                        $(for (_, field) in &fields join (, ) =>
                             $(field.name.to_string()):
                                 $(self.gen_struct_bcs_def_field_value(&field.type_, &self.strct_type_param_names()))
                         )$['\n']
@@ -1895,7 +1896,7 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
                         $(match fields.len() {
                             0 => (),
                             _ => {{
-                                $(for field in &fields join (, ) =>
+                                $(for (_, field) in &fields join (, ) =>
                                     $(gen_field_name(field.name)): $(self.gen_from_fields_field_decode(strct_type_arity, field.name, &field.type_))
                                 )
                             }}
@@ -1931,7 +1932,7 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
                         $(match fields.len() {
                             0 => (),
                             _ => {{
-                                $(for field in &fields join (, ) =>
+                                $(for (_, field) in &fields join (, ) =>
                                     $(gen_field_name(field.name)): $(self.gen_from_fields_with_types_field_decode(strct_type_arity, field.name, &field.type_))
                                 )
                             }}
@@ -1969,7 +1970,7 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
                                 .map(|idx| QuoteItem::Interpolated(this_type_args(idx)))
                                 .collect::<Vec<_>>();
 
-                            for field in fields.iter() {
+                            for (_, field) in fields.iter() {
                                 let name = gen_field_name(field.name);
                                 let this_name = quote!(this.$(gen_field_name(field.name)));
 
@@ -1978,11 +1979,9 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
                                 );
 
                                 match &field.type_ {
-                                    Type::Datatype(id_tys) => {
-                                        let (id, _ts) = &**id_tys;
-                                        let ((pid, mid), sid) = *id;
-                                        let field_module = self.strct.model().module((pid, mid));
-                                        let field_strct = todo_panic_if_enum(&field_module, sid);
+                                    Type::Datatype(dt) => {
+                                        let field_module = self.strct.model().module(dt.module);
+                                        let field_strct = todo_panic_if_enum(&field_module, dt.name);
 
                                         // handle special types
                                         let (fs_a, fs_m, fs_n) = strct_qualified_member_name(&field_strct, self.type_origin_table);
@@ -2055,7 +2054,7 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
                         $(match fields.len() {
                             0 => (),
                             _ => {{
-                                $(for field in &fields join (, ) =>
+                                $(for (_, field) in &fields join (, ) =>
                                     $(gen_field_name(field.name)): $(self.gen_from_json_field_field_decode(strct_type_arity, field.name, &field.type_))
                                 )
                             }}
