@@ -23,6 +23,7 @@ use sui_client_gen::model_builder::{
 };
 use sui_client_gen::package_cache::PackageCache;
 use sui_move_build::SuiPackageHooks;
+use sui_sdk::types::SYSTEM_PACKAGE_ADDRESSES;
 use sui_sdk::SuiClientBuilder;
 
 const DEFAULT_RPC: &str = "https://fullnode.mainnet.sui.io:443";
@@ -329,13 +330,17 @@ fn gen_packages_for_model<HasSource: SourceKind>(
         // generate index.ts
         let published_at = published_at_map.get(pkg_id).unwrap_or(pkg_id);
         let versions = version_table.get(pkg_id).unwrap();
-        let tokens: js::Tokens = quote!(
+        let mut tokens: js::Tokens = quote!(
             export const PACKAGE_ID = $[str]($[const](pkg_id.to_hex_literal()));
             export const PUBLISHED_AT = $[str]($[const](published_at.to_hex_literal()));
-            $(for (published_at, version) in versions {
-                export const PKG_V$(version.value()) = $[str]($[const](published_at.to_hex_literal()));
-            })
         );
+        if !SYSTEM_PACKAGE_ADDRESSES.contains(pkg_id) {
+            for (ver_published_at, version) in versions {
+                quote_in! { tokens =>
+                    export const PKG_V$(version.value()) = $[str]($[const](ver_published_at.to_hex_literal()));
+                }
+            }
+        }
         write_tokens_to_file(&tokens, &package_path.join("index.ts"))?;
 
         // generate init.ts

@@ -4,12 +4,13 @@ use crate::model_builder::{TypeOriginTable, VersionTable};
 use anyhow::Result;
 use convert_case::{Case, Casing};
 use genco::prelude::*;
-use genco::tokens::{Item, ItemStr};
+use genco::tokens::{static_literal, Item, ItemStr};
 use move_core_types::account_address::AccountAddress;
 use move_model_2::model::{self, Datatype};
 use move_model_2::normalized::Type;
 use move_model_2::source_kind::SourceKind;
 use move_symbol_pool::Symbol;
+use sui_sdk::types::SYSTEM_PACKAGE_ADDRESSES;
 
 #[rustfmt::skip]
 const JS_RESERVED_WORDS: [&str; 64] = [
@@ -304,41 +305,60 @@ fn gen_full_name_with_address<HasSource: SourceKind>(
     open_quote: bool,
     as_type: bool,
 ) -> js::Tokens {
-    let origin_pkg_addr = get_origin_pkg_addr(strct, type_origin_table);
-    let self_addr = strct.module().package().address();
-    let versions = version_table.get(&self_addr).unwrap_or_else(|| {
-        panic!(
-            "expected version table to exist for packge {}",
-            self_addr.to_hex_literal()
-        )
-    });
-    let version = versions.get(&origin_pkg_addr).unwrap_or_else(|| {
-        panic!(
-            "expected version to exist for package {} in package {}",
-            origin_pkg_addr.to_hex_literal(),
-            self_addr.to_hex_literal()
-        )
-    });
-    let pkg_import = js::import("../index", format!("PKG_V{}", version.value()));
+    if SYSTEM_PACKAGE_ADDRESSES.contains(&strct.module().package().address()) {
+        let full_name = format!(
+            "{}::{}::{}",
+            strct.module().package().address().to_hex_literal(),
+            strct.module().name(),
+            strct.name()
+        );
+        let mut toks = js::Tokens::new();
+        if open_quote {
+            toks.append(Item::OpenQuote(true));
+        }
+        toks.append(Item::Literal(ItemStr::from(full_name)));
+        if open_quote {
+            toks.append(Item::CloseQuote);
+        }
 
-    // `${PKG_V1}::module::name`
-    let mut toks = js::Tokens::new();
-    if open_quote {
-        toks.append(Item::OpenQuote(true));
-    }
-    toks.append(Item::Literal(ItemStr::from("${")));
-    if as_type {
-        quote_in!(toks => typeof $pkg_import)
+        toks
     } else {
-        quote_in!(toks => $pkg_import);
-    }
-    toks.append(Item::Literal(ItemStr::from("}")));
-    quote_in!(toks => ::$(struct_full_name(strct)));
-    if open_quote {
-        toks.append(Item::CloseQuote);
-    }
+        let origin_pkg_addr = get_origin_pkg_addr(strct, type_origin_table);
+        let self_addr = strct.module().package().address();
+        let versions = version_table.get(&self_addr).unwrap_or_else(|| {
+            panic!(
+                "expected version table to exist for packge {}",
+                self_addr.to_hex_literal()
+            )
+        });
+        let version = versions.get(&origin_pkg_addr).unwrap_or_else(|| {
+            panic!(
+                "expected version to exist for package {} in package {}",
+                origin_pkg_addr.to_hex_literal(),
+                self_addr.to_hex_literal()
+            )
+        });
+        let pkg_import = js::import("../index", format!("PKG_V{}", version.value()));
 
-    toks
+        // `${PKG_V1}::module::name`
+        let mut toks = js::Tokens::new();
+        if open_quote {
+            toks.append(Item::OpenQuote(true));
+        }
+        toks.append(Item::Literal(ItemStr::from("${")));
+        if as_type {
+            quote_in!(toks => typeof $pkg_import)
+        } else {
+            quote_in!(toks => $pkg_import);
+        }
+        toks.append(Item::Literal(ItemStr::from("}")));
+        quote_in!(toks => ::$(struct_full_name(strct)));
+        if open_quote {
+            toks.append(Item::CloseQuote);
+        }
+
+        toks
+    }
 }
 
 /// Generates a TS interface field name from a struct field.
