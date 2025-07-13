@@ -21,7 +21,6 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { PKG_V32 } from '../index'
 import { ID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -31,7 +30,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isReceiving(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::transfer::Receiving` + '<')
+  return type.startsWith(`0x2::transfer::Receiving` + '<')
 }
 
 export interface ReceivingFields<T0 extends PhantomTypeArgument> {
@@ -47,12 +46,12 @@ export type ReceivingReified<T0 extends PhantomTypeArgument> = Reified<
 export class Receiving<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::transfer::Receiving`
+  static readonly $typeName = `0x2::transfer::Receiving`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = Receiving.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::transfer::Receiving<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `0x2::transfer::Receiving<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = Receiving.$isPhantom
 
@@ -63,7 +62,7 @@ export class Receiving<T0 extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Receiving.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::transfer::Receiving<${PhantomToTypeStr<T0>}>`
+    ) as `0x2::transfer::Receiving<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -78,7 +77,7 @@ export class Receiving<T0 extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Receiving.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V32}::transfer::Receiving<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::transfer::Receiving<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: Receiving.$isPhantom,
       reifiedTypeArgs: [T0],

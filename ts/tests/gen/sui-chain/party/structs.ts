@@ -10,7 +10,6 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { PKG_V32 } from '../index'
 import { VecMap } from '../vec-map/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -20,7 +19,7 @@ import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
 
 export function isParty(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::party::Party`
+  return type === `0x2::party::Party`
 }
 
 export interface PartyFields {
@@ -33,12 +32,12 @@ export type PartyReified = Reified<Party, PartyFields>
 export class Party implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::party::Party`
+  static readonly $typeName = `0x2::party::Party`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = Party.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::party::Party`
+  readonly $fullTypeName: `0x2::party::Party`
   readonly $typeArgs: []
   readonly $isPhantom = Party.$isPhantom
 
@@ -46,10 +45,7 @@ export class Party implements StructClass {
   readonly members: ToField<VecMap<'address', Permissions>>
 
   private constructor(typeArgs: [], fields: PartyFields) {
-    this.$fullTypeName = composeSuiType(
-      Party.$typeName,
-      ...typeArgs
-    ) as `${typeof PKG_V32}::party::Party`
+    this.$fullTypeName = composeSuiType(Party.$typeName, ...typeArgs) as `0x2::party::Party`
     this.$typeArgs = typeArgs
 
     this.default = fields.default
@@ -59,7 +55,7 @@ export class Party implements StructClass {
   static reified(): PartyReified {
     return {
       typeName: Party.$typeName,
-      fullTypeName: composeSuiType(Party.$typeName, ...[]) as `${typeof PKG_V32}::party::Party`,
+      fullTypeName: composeSuiType(Party.$typeName, ...[]) as `0x2::party::Party`,
       typeArgs: [] as [],
       isPhantom: Party.$isPhantom,
       reifiedTypeArgs: [],
@@ -197,7 +193,7 @@ export class Party implements StructClass {
 
 export function isPermissions(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::party::Permissions`
+  return type === `0x2::party::Permissions`
 }
 
 export interface PermissionsFields {
@@ -209,12 +205,12 @@ export type PermissionsReified = Reified<Permissions, PermissionsFields>
 export class Permissions implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::party::Permissions`
+  static readonly $typeName = `0x2::party::Permissions`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = Permissions.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::party::Permissions`
+  readonly $fullTypeName: `0x2::party::Permissions`
   readonly $typeArgs: []
   readonly $isPhantom = Permissions.$isPhantom
 
@@ -224,7 +220,7 @@ export class Permissions implements StructClass {
     this.$fullTypeName = composeSuiType(
       Permissions.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::party::Permissions`
+    ) as `0x2::party::Permissions`
     this.$typeArgs = typeArgs
 
     this.pos0 = fields.pos0
@@ -233,10 +229,7 @@ export class Permissions implements StructClass {
   static reified(): PermissionsReified {
     return {
       typeName: Permissions.$typeName,
-      fullTypeName: composeSuiType(
-        Permissions.$typeName,
-        ...[]
-      ) as `${typeof PKG_V32}::party::Permissions`,
+      fullTypeName: composeSuiType(Permissions.$typeName, ...[]) as `0x2::party::Permissions`,
       typeArgs: [] as [],
       isPhantom: Permissions.$isPhantom,
       reifiedTypeArgs: [],

@@ -13,7 +13,6 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { PKG_V32 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -22,7 +21,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isCurve(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::groth16::Curve`
+  return type === `0x2::groth16::Curve`
 }
 
 export interface CurveFields {
@@ -34,22 +33,19 @@ export type CurveReified = Reified<Curve, CurveFields>
 export class Curve implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::groth16::Curve`
+  static readonly $typeName = `0x2::groth16::Curve`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = Curve.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::groth16::Curve`
+  readonly $fullTypeName: `0x2::groth16::Curve`
   readonly $typeArgs: []
   readonly $isPhantom = Curve.$isPhantom
 
   readonly id: ToField<'u8'>
 
   private constructor(typeArgs: [], fields: CurveFields) {
-    this.$fullTypeName = composeSuiType(
-      Curve.$typeName,
-      ...typeArgs
-    ) as `${typeof PKG_V32}::groth16::Curve`
+    this.$fullTypeName = composeSuiType(Curve.$typeName, ...typeArgs) as `0x2::groth16::Curve`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -58,7 +54,7 @@ export class Curve implements StructClass {
   static reified(): CurveReified {
     return {
       typeName: Curve.$typeName,
-      fullTypeName: composeSuiType(Curve.$typeName, ...[]) as `${typeof PKG_V32}::groth16::Curve`,
+      fullTypeName: composeSuiType(Curve.$typeName, ...[]) as `0x2::groth16::Curve`,
       typeArgs: [] as [],
       isPhantom: Curve.$isPhantom,
       reifiedTypeArgs: [],
@@ -176,7 +172,7 @@ export class Curve implements StructClass {
 
 export function isPreparedVerifyingKey(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::groth16::PreparedVerifyingKey`
+  return type === `0x2::groth16::PreparedVerifyingKey`
 }
 
 export interface PreparedVerifyingKeyFields {
@@ -191,12 +187,12 @@ export type PreparedVerifyingKeyReified = Reified<PreparedVerifyingKey, Prepared
 export class PreparedVerifyingKey implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::groth16::PreparedVerifyingKey`
+  static readonly $typeName = `0x2::groth16::PreparedVerifyingKey`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = PreparedVerifyingKey.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::groth16::PreparedVerifyingKey`
+  readonly $fullTypeName: `0x2::groth16::PreparedVerifyingKey`
   readonly $typeArgs: []
   readonly $isPhantom = PreparedVerifyingKey.$isPhantom
 
@@ -209,7 +205,7 @@ export class PreparedVerifyingKey implements StructClass {
     this.$fullTypeName = composeSuiType(
       PreparedVerifyingKey.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::groth16::PreparedVerifyingKey`
+    ) as `0x2::groth16::PreparedVerifyingKey`
     this.$typeArgs = typeArgs
 
     this.vkGammaAbcG1Bytes = fields.vkGammaAbcG1Bytes
@@ -224,7 +220,7 @@ export class PreparedVerifyingKey implements StructClass {
       fullTypeName: composeSuiType(
         PreparedVerifyingKey.$typeName,
         ...[]
-      ) as `${typeof PKG_V32}::groth16::PreparedVerifyingKey`,
+      ) as `0x2::groth16::PreparedVerifyingKey`,
       typeArgs: [] as [],
       isPhantom: PreparedVerifyingKey.$isPhantom,
       reifiedTypeArgs: [],
@@ -380,7 +376,7 @@ export class PreparedVerifyingKey implements StructClass {
 
 export function isPublicProofInputs(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::groth16::PublicProofInputs`
+  return type === `0x2::groth16::PublicProofInputs`
 }
 
 export interface PublicProofInputsFields {
@@ -392,12 +388,12 @@ export type PublicProofInputsReified = Reified<PublicProofInputs, PublicProofInp
 export class PublicProofInputs implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::groth16::PublicProofInputs`
+  static readonly $typeName = `0x2::groth16::PublicProofInputs`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = PublicProofInputs.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::groth16::PublicProofInputs`
+  readonly $fullTypeName: `0x2::groth16::PublicProofInputs`
   readonly $typeArgs: []
   readonly $isPhantom = PublicProofInputs.$isPhantom
 
@@ -407,7 +403,7 @@ export class PublicProofInputs implements StructClass {
     this.$fullTypeName = composeSuiType(
       PublicProofInputs.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::groth16::PublicProofInputs`
+    ) as `0x2::groth16::PublicProofInputs`
     this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
@@ -419,7 +415,7 @@ export class PublicProofInputs implements StructClass {
       fullTypeName: composeSuiType(
         PublicProofInputs.$typeName,
         ...[]
-      ) as `${typeof PKG_V32}::groth16::PublicProofInputs`,
+      ) as `0x2::groth16::PublicProofInputs`,
       typeArgs: [] as [],
       isPhantom: PublicProofInputs.$isPhantom,
       reifiedTypeArgs: [],
@@ -543,7 +539,7 @@ export class PublicProofInputs implements StructClass {
 
 export function isProofPoints(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::groth16::ProofPoints`
+  return type === `0x2::groth16::ProofPoints`
 }
 
 export interface ProofPointsFields {
@@ -555,12 +551,12 @@ export type ProofPointsReified = Reified<ProofPoints, ProofPointsFields>
 export class ProofPoints implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::groth16::ProofPoints`
+  static readonly $typeName = `0x2::groth16::ProofPoints`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = ProofPoints.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::groth16::ProofPoints`
+  readonly $fullTypeName: `0x2::groth16::ProofPoints`
   readonly $typeArgs: []
   readonly $isPhantom = ProofPoints.$isPhantom
 
@@ -570,7 +566,7 @@ export class ProofPoints implements StructClass {
     this.$fullTypeName = composeSuiType(
       ProofPoints.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::groth16::ProofPoints`
+    ) as `0x2::groth16::ProofPoints`
     this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
@@ -579,10 +575,7 @@ export class ProofPoints implements StructClass {
   static reified(): ProofPointsReified {
     return {
       typeName: ProofPoints.$typeName,
-      fullTypeName: composeSuiType(
-        ProofPoints.$typeName,
-        ...[]
-      ) as `${typeof PKG_V32}::groth16::ProofPoints`,
+      fullTypeName: composeSuiType(ProofPoints.$typeName, ...[]) as `0x2::groth16::ProofPoints`,
       typeArgs: [] as [],
       isPhantom: ProofPoints.$isPhantom,
       reifiedTypeArgs: [],

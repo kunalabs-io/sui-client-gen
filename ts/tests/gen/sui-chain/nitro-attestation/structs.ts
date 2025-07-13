@@ -14,7 +14,6 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { Option } from '../../move-stdlib-chain/option/structs'
-import { PKG_V32 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -23,7 +22,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isPCREntry(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::nitro_attestation::PCREntry`
+  return type === `0x2::nitro_attestation::PCREntry`
 }
 
 export interface PCREntryFields {
@@ -36,12 +35,12 @@ export type PCREntryReified = Reified<PCREntry, PCREntryFields>
 export class PCREntry implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::nitro_attestation::PCREntry`
+  static readonly $typeName = `0x2::nitro_attestation::PCREntry`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = PCREntry.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::nitro_attestation::PCREntry`
+  readonly $fullTypeName: `0x2::nitro_attestation::PCREntry`
   readonly $typeArgs: []
   readonly $isPhantom = PCREntry.$isPhantom
 
@@ -52,7 +51,7 @@ export class PCREntry implements StructClass {
     this.$fullTypeName = composeSuiType(
       PCREntry.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::nitro_attestation::PCREntry`
+    ) as `0x2::nitro_attestation::PCREntry`
     this.$typeArgs = typeArgs
 
     this.index = fields.index
@@ -62,10 +61,7 @@ export class PCREntry implements StructClass {
   static reified(): PCREntryReified {
     return {
       typeName: PCREntry.$typeName,
-      fullTypeName: composeSuiType(
-        PCREntry.$typeName,
-        ...[]
-      ) as `${typeof PKG_V32}::nitro_attestation::PCREntry`,
+      fullTypeName: composeSuiType(PCREntry.$typeName, ...[]) as `0x2::nitro_attestation::PCREntry`,
       typeArgs: [] as [],
       isPhantom: PCREntry.$isPhantom,
       reifiedTypeArgs: [],
@@ -194,7 +190,7 @@ export class PCREntry implements StructClass {
 
 export function isNitroAttestationDocument(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::nitro_attestation::NitroAttestationDocument`
+  return type === `0x2::nitro_attestation::NitroAttestationDocument`
 }
 
 export interface NitroAttestationDocumentFields {
@@ -215,12 +211,12 @@ export type NitroAttestationDocumentReified = Reified<
 export class NitroAttestationDocument implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::nitro_attestation::NitroAttestationDocument`
+  static readonly $typeName = `0x2::nitro_attestation::NitroAttestationDocument`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = NitroAttestationDocument.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::nitro_attestation::NitroAttestationDocument`
+  readonly $fullTypeName: `0x2::nitro_attestation::NitroAttestationDocument`
   readonly $typeArgs: []
   readonly $isPhantom = NitroAttestationDocument.$isPhantom
 
@@ -236,7 +232,7 @@ export class NitroAttestationDocument implements StructClass {
     this.$fullTypeName = composeSuiType(
       NitroAttestationDocument.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::nitro_attestation::NitroAttestationDocument`
+    ) as `0x2::nitro_attestation::NitroAttestationDocument`
     this.$typeArgs = typeArgs
 
     this.moduleId = fields.moduleId
@@ -254,7 +250,7 @@ export class NitroAttestationDocument implements StructClass {
       fullTypeName: composeSuiType(
         NitroAttestationDocument.$typeName,
         ...[]
-      ) as `${typeof PKG_V32}::nitro_attestation::NitroAttestationDocument`,
+      ) as `0x2::nitro_attestation::NitroAttestationDocument`,
       typeArgs: [] as [],
       isPhantom: NitroAttestationDocument.$isPhantom,
       reifiedTypeArgs: [],

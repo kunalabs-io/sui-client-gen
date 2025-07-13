@@ -22,7 +22,6 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { PKG_V32 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -31,7 +30,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isWrapper(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::dynamic_object_field::Wrapper` + '<')
+  return type.startsWith(`0x2::dynamic_object_field::Wrapper` + '<')
 }
 
 export interface WrapperFields<Name extends TypeArgument> {
@@ -43,12 +42,12 @@ export type WrapperReified<Name extends TypeArgument> = Reified<Wrapper<Name>, W
 export class Wrapper<Name extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::dynamic_object_field::Wrapper`
+  static readonly $typeName = `0x2::dynamic_object_field::Wrapper`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
   readonly $typeName = Wrapper.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::dynamic_object_field::Wrapper<${ToTypeStr<Name>}>`
+  readonly $fullTypeName: `0x2::dynamic_object_field::Wrapper<${ToTypeStr<Name>}>`
   readonly $typeArgs: [ToTypeStr<Name>]
   readonly $isPhantom = Wrapper.$isPhantom
 
@@ -58,7 +57,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Wrapper.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::dynamic_object_field::Wrapper<${ToTypeStr<Name>}>`
+    ) as `0x2::dynamic_object_field::Wrapper<${ToTypeStr<Name>}>`
     this.$typeArgs = typeArgs
 
     this.name = fields.name
@@ -72,7 +71,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Wrapper.$typeName,
         ...[extractType(Name)]
-      ) as `${typeof PKG_V32}::dynamic_object_field::Wrapper<${ToTypeStr<ToTypeArgument<Name>>}>`,
+      ) as `0x2::dynamic_object_field::Wrapper<${ToTypeStr<ToTypeArgument<Name>>}>`,
       typeArgs: [extractType(Name)] as [ToTypeStr<ToTypeArgument<Name>>],
       isPhantom: Wrapper.$isPhantom,
       reifiedTypeArgs: [Name],

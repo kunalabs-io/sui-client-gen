@@ -10,7 +10,6 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { PKG_V32 } from '../index'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -20,7 +19,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isAccumulatorRoot(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::accumulator::AccumulatorRoot`
+  return type === `0x2::accumulator::AccumulatorRoot`
 }
 
 export interface AccumulatorRootFields {
@@ -32,12 +31,12 @@ export type AccumulatorRootReified = Reified<AccumulatorRoot, AccumulatorRootFie
 export class AccumulatorRoot implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::accumulator::AccumulatorRoot`
+  static readonly $typeName = `0x2::accumulator::AccumulatorRoot`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = AccumulatorRoot.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::accumulator::AccumulatorRoot`
+  readonly $fullTypeName: `0x2::accumulator::AccumulatorRoot`
   readonly $typeArgs: []
   readonly $isPhantom = AccumulatorRoot.$isPhantom
 
@@ -47,7 +46,7 @@ export class AccumulatorRoot implements StructClass {
     this.$fullTypeName = composeSuiType(
       AccumulatorRoot.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::accumulator::AccumulatorRoot`
+    ) as `0x2::accumulator::AccumulatorRoot`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -59,7 +58,7 @@ export class AccumulatorRoot implements StructClass {
       fullTypeName: composeSuiType(
         AccumulatorRoot.$typeName,
         ...[]
-      ) as `${typeof PKG_V32}::accumulator::AccumulatorRoot`,
+      ) as `0x2::accumulator::AccumulatorRoot`,
       typeArgs: [] as [],
       isPhantom: AccumulatorRoot.$isPhantom,
       reifiedTypeArgs: [],

@@ -10,7 +10,6 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { PKG_V16 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -19,7 +18,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isUQ32_32(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V16}::uq32_32::UQ32_32`
+  return type === `0x1::uq32_32::UQ32_32`
 }
 
 export interface UQ32_32Fields {
@@ -31,22 +30,19 @@ export type UQ32_32Reified = Reified<UQ32_32, UQ32_32Fields>
 export class UQ32_32 implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V16}::uq32_32::UQ32_32`
+  static readonly $typeName = `0x1::uq32_32::UQ32_32`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = UQ32_32.$typeName
-  readonly $fullTypeName: `${typeof PKG_V16}::uq32_32::UQ32_32`
+  readonly $fullTypeName: `0x1::uq32_32::UQ32_32`
   readonly $typeArgs: []
   readonly $isPhantom = UQ32_32.$isPhantom
 
   readonly pos0: ToField<'u64'>
 
   private constructor(typeArgs: [], fields: UQ32_32Fields) {
-    this.$fullTypeName = composeSuiType(
-      UQ32_32.$typeName,
-      ...typeArgs
-    ) as `${typeof PKG_V16}::uq32_32::UQ32_32`
+    this.$fullTypeName = composeSuiType(UQ32_32.$typeName, ...typeArgs) as `0x1::uq32_32::UQ32_32`
     this.$typeArgs = typeArgs
 
     this.pos0 = fields.pos0
@@ -55,10 +51,7 @@ export class UQ32_32 implements StructClass {
   static reified(): UQ32_32Reified {
     return {
       typeName: UQ32_32.$typeName,
-      fullTypeName: composeSuiType(
-        UQ32_32.$typeName,
-        ...[]
-      ) as `${typeof PKG_V16}::uq32_32::UQ32_32`,
+      fullTypeName: composeSuiType(UQ32_32.$typeName, ...[]) as `0x1::uq32_32::UQ32_32`,
       typeArgs: [] as [],
       isPhantom: UQ32_32.$isPhantom,
       reifiedTypeArgs: [],

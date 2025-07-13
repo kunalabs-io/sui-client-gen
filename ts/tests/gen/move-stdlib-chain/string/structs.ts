@@ -13,7 +13,6 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { PKG_V16 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -22,7 +21,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isString(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V16}::string::String`
+  return type === `0x1::string::String`
 }
 
 export interface StringFields {
@@ -34,22 +33,19 @@ export type StringReified = Reified<String, StringFields>
 export class String implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V16}::string::String`
+  static readonly $typeName = `0x1::string::String`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = String.$typeName
-  readonly $fullTypeName: `${typeof PKG_V16}::string::String`
+  readonly $fullTypeName: `0x1::string::String`
   readonly $typeArgs: []
   readonly $isPhantom = String.$isPhantom
 
   readonly bytes: ToField<Vector<'u8'>>
 
   private constructor(typeArgs: [], fields: StringFields) {
-    this.$fullTypeName = composeSuiType(
-      String.$typeName,
-      ...typeArgs
-    ) as `${typeof PKG_V16}::string::String`
+    this.$fullTypeName = composeSuiType(String.$typeName, ...typeArgs) as `0x1::string::String`
     this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
@@ -58,7 +54,7 @@ export class String implements StructClass {
   static reified(): StringReified {
     return {
       typeName: String.$typeName,
-      fullTypeName: composeSuiType(String.$typeName, ...[]) as `${typeof PKG_V16}::string::String`,
+      fullTypeName: composeSuiType(String.$typeName, ...[]) as `0x1::string::String`,
       typeArgs: [] as [],
       isPhantom: String.$isPhantom,
       reifiedTypeArgs: [],

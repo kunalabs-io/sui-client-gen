@@ -22,7 +22,6 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Bag } from '../bag/structs'
-import { PKG_V32 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -31,7 +30,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isExtension(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::kiosk_extension::Extension`
+  return type === `0x2::kiosk_extension::Extension`
 }
 
 export interface ExtensionFields {
@@ -45,12 +44,12 @@ export type ExtensionReified = Reified<Extension, ExtensionFields>
 export class Extension implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::kiosk_extension::Extension`
+  static readonly $typeName = `0x2::kiosk_extension::Extension`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = Extension.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::kiosk_extension::Extension`
+  readonly $fullTypeName: `0x2::kiosk_extension::Extension`
   readonly $typeArgs: []
   readonly $isPhantom = Extension.$isPhantom
 
@@ -62,7 +61,7 @@ export class Extension implements StructClass {
     this.$fullTypeName = composeSuiType(
       Extension.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::kiosk_extension::Extension`
+    ) as `0x2::kiosk_extension::Extension`
     this.$typeArgs = typeArgs
 
     this.storage = fields.storage
@@ -73,10 +72,7 @@ export class Extension implements StructClass {
   static reified(): ExtensionReified {
     return {
       typeName: Extension.$typeName,
-      fullTypeName: composeSuiType(
-        Extension.$typeName,
-        ...[]
-      ) as `${typeof PKG_V32}::kiosk_extension::Extension`,
+      fullTypeName: composeSuiType(Extension.$typeName, ...[]) as `0x2::kiosk_extension::Extension`,
       typeArgs: [] as [],
       isPhantom: Extension.$isPhantom,
       reifiedTypeArgs: [],
@@ -210,7 +206,7 @@ export class Extension implements StructClass {
 
 export function isExtensionKey(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::kiosk_extension::ExtensionKey` + '<')
+  return type.startsWith(`0x2::kiosk_extension::ExtensionKey` + '<')
 }
 
 export interface ExtensionKeyFields<Ext extends PhantomTypeArgument> {
@@ -225,12 +221,12 @@ export type ExtensionKeyReified<Ext extends PhantomTypeArgument> = Reified<
 export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::kiosk_extension::ExtensionKey`
+  static readonly $typeName = `0x2::kiosk_extension::ExtensionKey`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = ExtensionKey.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::kiosk_extension::ExtensionKey<${PhantomToTypeStr<Ext>}>`
+  readonly $fullTypeName: `0x2::kiosk_extension::ExtensionKey<${PhantomToTypeStr<Ext>}>`
   readonly $typeArgs: [PhantomToTypeStr<Ext>]
   readonly $isPhantom = ExtensionKey.$isPhantom
 
@@ -240,7 +236,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
     this.$fullTypeName = composeSuiType(
       ExtensionKey.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::kiosk_extension::ExtensionKey<${PhantomToTypeStr<Ext>}>`
+    ) as `0x2::kiosk_extension::ExtensionKey<${PhantomToTypeStr<Ext>}>`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -254,7 +250,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
       fullTypeName: composeSuiType(
         ExtensionKey.$typeName,
         ...[extractType(Ext)]
-      ) as `${typeof PKG_V32}::kiosk_extension::ExtensionKey<${PhantomToTypeStr<ToPhantomTypeArgument<Ext>>}>`,
+      ) as `0x2::kiosk_extension::ExtensionKey<${PhantomToTypeStr<ToPhantomTypeArgument<Ext>>}>`,
       typeArgs: [extractType(Ext)] as [PhantomToTypeStr<ToPhantomTypeArgument<Ext>>],
       isPhantom: ExtensionKey.$isPhantom,
       reifiedTypeArgs: [Ext],

@@ -10,7 +10,6 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { PKG_V32 } from '../index'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -20,7 +19,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isObjectBag(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::object_bag::ObjectBag`
+  return type === `0x2::object_bag::ObjectBag`
 }
 
 export interface ObjectBagFields {
@@ -33,12 +32,12 @@ export type ObjectBagReified = Reified<ObjectBag, ObjectBagFields>
 export class ObjectBag implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::object_bag::ObjectBag`
+  static readonly $typeName = `0x2::object_bag::ObjectBag`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = ObjectBag.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::object_bag::ObjectBag`
+  readonly $fullTypeName: `0x2::object_bag::ObjectBag`
   readonly $typeArgs: []
   readonly $isPhantom = ObjectBag.$isPhantom
 
@@ -49,7 +48,7 @@ export class ObjectBag implements StructClass {
     this.$fullTypeName = composeSuiType(
       ObjectBag.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::object_bag::ObjectBag`
+    ) as `0x2::object_bag::ObjectBag`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -59,10 +58,7 @@ export class ObjectBag implements StructClass {
   static reified(): ObjectBagReified {
     return {
       typeName: ObjectBag.$typeName,
-      fullTypeName: composeSuiType(
-        ObjectBag.$typeName,
-        ...[]
-      ) as `${typeof PKG_V32}::object_bag::ObjectBag`,
+      fullTypeName: composeSuiType(ObjectBag.$typeName, ...[]) as `0x2::object_bag::ObjectBag`,
       typeArgs: [] as [],
       isPhantom: ObjectBag.$isPhantom,
       reifiedTypeArgs: [],

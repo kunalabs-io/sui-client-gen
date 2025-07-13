@@ -25,7 +25,6 @@ import {
 } from '../../_framework/util'
 import { TypeName } from '../../move-stdlib-chain/type-name/structs'
 import { Balance } from '../balance/structs'
-import { PKG_V32 } from '../index'
 import { ID, UID } from '../object/structs'
 import { SUI } from '../sui/structs'
 import { VecSet } from '../vec-set/structs'
@@ -37,7 +36,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isTransferRequest(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::transfer_policy::TransferRequest` + '<')
+  return type.startsWith(`0x2::transfer_policy::TransferRequest` + '<')
 }
 
 export interface TransferRequestFields<T0 extends PhantomTypeArgument> {
@@ -55,12 +54,12 @@ export type TransferRequestReified<T0 extends PhantomTypeArgument> = Reified<
 export class TransferRequest<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::transfer_policy::TransferRequest`
+  static readonly $typeName = `0x2::transfer_policy::TransferRequest`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = TransferRequest.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::transfer_policy::TransferRequest<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `0x2::transfer_policy::TransferRequest<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = TransferRequest.$isPhantom
 
@@ -73,7 +72,7 @@ export class TransferRequest<T0 extends PhantomTypeArgument> implements StructCl
     this.$fullTypeName = composeSuiType(
       TransferRequest.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::transfer_policy::TransferRequest<${PhantomToTypeStr<T0>}>`
+    ) as `0x2::transfer_policy::TransferRequest<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.item = fields.item
@@ -90,7 +89,7 @@ export class TransferRequest<T0 extends PhantomTypeArgument> implements StructCl
       fullTypeName: composeSuiType(
         TransferRequest.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V32}::transfer_policy::TransferRequest<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::transfer_policy::TransferRequest<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: TransferRequest.$isPhantom,
       reifiedTypeArgs: [T0],
@@ -276,7 +275,7 @@ export class TransferRequest<T0 extends PhantomTypeArgument> implements StructCl
 
 export function isTransferPolicy(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::transfer_policy::TransferPolicy` + '<')
+  return type.startsWith(`0x2::transfer_policy::TransferPolicy` + '<')
 }
 
 export interface TransferPolicyFields<T0 extends PhantomTypeArgument> {
@@ -293,12 +292,12 @@ export type TransferPolicyReified<T0 extends PhantomTypeArgument> = Reified<
 export class TransferPolicy<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::transfer_policy::TransferPolicy`
+  static readonly $typeName = `0x2::transfer_policy::TransferPolicy`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = TransferPolicy.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::transfer_policy::TransferPolicy<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `0x2::transfer_policy::TransferPolicy<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = TransferPolicy.$isPhantom
 
@@ -310,7 +309,7 @@ export class TransferPolicy<T0 extends PhantomTypeArgument> implements StructCla
     this.$fullTypeName = composeSuiType(
       TransferPolicy.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::transfer_policy::TransferPolicy<${PhantomToTypeStr<T0>}>`
+    ) as `0x2::transfer_policy::TransferPolicy<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -326,7 +325,7 @@ export class TransferPolicy<T0 extends PhantomTypeArgument> implements StructCla
       fullTypeName: composeSuiType(
         TransferPolicy.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V32}::transfer_policy::TransferPolicy<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::transfer_policy::TransferPolicy<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: TransferPolicy.$isPhantom,
       reifiedTypeArgs: [T0],
@@ -510,7 +509,7 @@ export class TransferPolicy<T0 extends PhantomTypeArgument> implements StructCla
 
 export function isTransferPolicyCap(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::transfer_policy::TransferPolicyCap` + '<')
+  return type.startsWith(`0x2::transfer_policy::TransferPolicyCap` + '<')
 }
 
 export interface TransferPolicyCapFields<T0 extends PhantomTypeArgument> {
@@ -526,12 +525,12 @@ export type TransferPolicyCapReified<T0 extends PhantomTypeArgument> = Reified<
 export class TransferPolicyCap<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::transfer_policy::TransferPolicyCap`
+  static readonly $typeName = `0x2::transfer_policy::TransferPolicyCap`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = TransferPolicyCap.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `0x2::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = TransferPolicyCap.$isPhantom
 
@@ -542,7 +541,7 @@ export class TransferPolicyCap<T0 extends PhantomTypeArgument> implements Struct
     this.$fullTypeName = composeSuiType(
       TransferPolicyCap.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<T0>}>`
+    ) as `0x2::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -557,7 +556,7 @@ export class TransferPolicyCap<T0 extends PhantomTypeArgument> implements Struct
       fullTypeName: composeSuiType(
         TransferPolicyCap.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V32}::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: TransferPolicyCap.$isPhantom,
       reifiedTypeArgs: [T0],
@@ -736,7 +735,7 @@ export class TransferPolicyCap<T0 extends PhantomTypeArgument> implements Struct
 
 export function isTransferPolicyCreated(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::transfer_policy::TransferPolicyCreated` + '<')
+  return type.startsWith(`0x2::transfer_policy::TransferPolicyCreated` + '<')
 }
 
 export interface TransferPolicyCreatedFields<T0 extends PhantomTypeArgument> {
@@ -751,12 +750,12 @@ export type TransferPolicyCreatedReified<T0 extends PhantomTypeArgument> = Reifi
 export class TransferPolicyCreated<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::transfer_policy::TransferPolicyCreated`
+  static readonly $typeName = `0x2::transfer_policy::TransferPolicyCreated`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = TransferPolicyCreated.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `0x2::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = TransferPolicyCreated.$isPhantom
 
@@ -766,7 +765,7 @@ export class TransferPolicyCreated<T0 extends PhantomTypeArgument> implements St
     this.$fullTypeName = composeSuiType(
       TransferPolicyCreated.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<T0>}>`
+    ) as `0x2::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -780,7 +779,7 @@ export class TransferPolicyCreated<T0 extends PhantomTypeArgument> implements St
       fullTypeName: composeSuiType(
         TransferPolicyCreated.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V32}::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: TransferPolicyCreated.$isPhantom,
       reifiedTypeArgs: [T0],
@@ -956,7 +955,7 @@ export class TransferPolicyCreated<T0 extends PhantomTypeArgument> implements St
 
 export function isTransferPolicyDestroyed(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::transfer_policy::TransferPolicyDestroyed` + '<')
+  return type.startsWith(`0x2::transfer_policy::TransferPolicyDestroyed` + '<')
 }
 
 export interface TransferPolicyDestroyedFields<T0 extends PhantomTypeArgument> {
@@ -971,12 +970,12 @@ export type TransferPolicyDestroyedReified<T0 extends PhantomTypeArgument> = Rei
 export class TransferPolicyDestroyed<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::transfer_policy::TransferPolicyDestroyed`
+  static readonly $typeName = `0x2::transfer_policy::TransferPolicyDestroyed`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = TransferPolicyDestroyed.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `0x2::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = TransferPolicyDestroyed.$isPhantom
 
@@ -986,7 +985,7 @@ export class TransferPolicyDestroyed<T0 extends PhantomTypeArgument> implements 
     this.$fullTypeName = composeSuiType(
       TransferPolicyDestroyed.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<T0>}>`
+    ) as `0x2::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -1000,7 +999,7 @@ export class TransferPolicyDestroyed<T0 extends PhantomTypeArgument> implements 
       fullTypeName: composeSuiType(
         TransferPolicyDestroyed.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V32}::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: TransferPolicyDestroyed.$isPhantom,
       reifiedTypeArgs: [T0],
@@ -1178,7 +1177,7 @@ export class TransferPolicyDestroyed<T0 extends PhantomTypeArgument> implements 
 
 export function isRuleKey(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::transfer_policy::RuleKey` + '<')
+  return type.startsWith(`0x2::transfer_policy::RuleKey` + '<')
 }
 
 export interface RuleKeyFields<T0 extends PhantomTypeArgument> {
@@ -1190,12 +1189,12 @@ export type RuleKeyReified<T0 extends PhantomTypeArgument> = Reified<RuleKey<T0>
 export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::transfer_policy::RuleKey`
+  static readonly $typeName = `0x2::transfer_policy::RuleKey`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = RuleKey.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::transfer_policy::RuleKey<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `0x2::transfer_policy::RuleKey<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = RuleKey.$isPhantom
 
@@ -1205,7 +1204,7 @@ export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       RuleKey.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::transfer_policy::RuleKey<${PhantomToTypeStr<T0>}>`
+    ) as `0x2::transfer_policy::RuleKey<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -1219,7 +1218,7 @@ export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         RuleKey.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V32}::transfer_policy::RuleKey<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::transfer_policy::RuleKey<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: RuleKey.$isPhantom,
       reifiedTypeArgs: [T0],

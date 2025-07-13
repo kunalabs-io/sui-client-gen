@@ -11,7 +11,6 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { String } from '../../move-stdlib/string/structs'
-import { PKG_V32 } from '../index'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -21,7 +20,7 @@ import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
 
 export function isVerifiedIssuer(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::zklogin_verified_issuer::VerifiedIssuer`
+  return type === `0x2::zklogin_verified_issuer::VerifiedIssuer`
 }
 
 export interface VerifiedIssuerFields {
@@ -35,12 +34,12 @@ export type VerifiedIssuerReified = Reified<VerifiedIssuer, VerifiedIssuerFields
 export class VerifiedIssuer implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::zklogin_verified_issuer::VerifiedIssuer`
+  static readonly $typeName = `0x2::zklogin_verified_issuer::VerifiedIssuer`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = VerifiedIssuer.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::zklogin_verified_issuer::VerifiedIssuer`
+  readonly $fullTypeName: `0x2::zklogin_verified_issuer::VerifiedIssuer`
   readonly $typeArgs: []
   readonly $isPhantom = VerifiedIssuer.$isPhantom
 
@@ -52,7 +51,7 @@ export class VerifiedIssuer implements StructClass {
     this.$fullTypeName = composeSuiType(
       VerifiedIssuer.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::zklogin_verified_issuer::VerifiedIssuer`
+    ) as `0x2::zklogin_verified_issuer::VerifiedIssuer`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -66,7 +65,7 @@ export class VerifiedIssuer implements StructClass {
       fullTypeName: composeSuiType(
         VerifiedIssuer.$typeName,
         ...[]
-      ) as `${typeof PKG_V32}::zklogin_verified_issuer::VerifiedIssuer`,
+      ) as `0x2::zklogin_verified_issuer::VerifiedIssuer`,
       typeArgs: [] as [],
       isPhantom: VerifiedIssuer.$isPhantom,
       reifiedTypeArgs: [],

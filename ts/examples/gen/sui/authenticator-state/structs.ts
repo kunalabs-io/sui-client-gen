@@ -14,7 +14,6 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { PKG_V32 } from '../index'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -24,7 +23,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isAuthenticatorState(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::authenticator_state::AuthenticatorState`
+  return type === `0x2::authenticator_state::AuthenticatorState`
 }
 
 export interface AuthenticatorStateFields {
@@ -37,12 +36,12 @@ export type AuthenticatorStateReified = Reified<AuthenticatorState, Authenticato
 export class AuthenticatorState implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::authenticator_state::AuthenticatorState`
+  static readonly $typeName = `0x2::authenticator_state::AuthenticatorState`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = AuthenticatorState.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::authenticator_state::AuthenticatorState`
+  readonly $fullTypeName: `0x2::authenticator_state::AuthenticatorState`
   readonly $typeArgs: []
   readonly $isPhantom = AuthenticatorState.$isPhantom
 
@@ -53,7 +52,7 @@ export class AuthenticatorState implements StructClass {
     this.$fullTypeName = composeSuiType(
       AuthenticatorState.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::authenticator_state::AuthenticatorState`
+    ) as `0x2::authenticator_state::AuthenticatorState`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -66,7 +65,7 @@ export class AuthenticatorState implements StructClass {
       fullTypeName: composeSuiType(
         AuthenticatorState.$typeName,
         ...[]
-      ) as `${typeof PKG_V32}::authenticator_state::AuthenticatorState`,
+      ) as `0x2::authenticator_state::AuthenticatorState`,
       typeArgs: [] as [],
       isPhantom: AuthenticatorState.$isPhantom,
       reifiedTypeArgs: [],
@@ -195,7 +194,7 @@ export class AuthenticatorState implements StructClass {
 
 export function isAuthenticatorStateInner(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::authenticator_state::AuthenticatorStateInner`
+  return type === `0x2::authenticator_state::AuthenticatorStateInner`
 }
 
 export interface AuthenticatorStateInnerFields {
@@ -211,12 +210,12 @@ export type AuthenticatorStateInnerReified = Reified<
 export class AuthenticatorStateInner implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::authenticator_state::AuthenticatorStateInner`
+  static readonly $typeName = `0x2::authenticator_state::AuthenticatorStateInner`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = AuthenticatorStateInner.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::authenticator_state::AuthenticatorStateInner`
+  readonly $fullTypeName: `0x2::authenticator_state::AuthenticatorStateInner`
   readonly $typeArgs: []
   readonly $isPhantom = AuthenticatorStateInner.$isPhantom
 
@@ -227,7 +226,7 @@ export class AuthenticatorStateInner implements StructClass {
     this.$fullTypeName = composeSuiType(
       AuthenticatorStateInner.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::authenticator_state::AuthenticatorStateInner`
+    ) as `0x2::authenticator_state::AuthenticatorStateInner`
     this.$typeArgs = typeArgs
 
     this.version = fields.version
@@ -240,7 +239,7 @@ export class AuthenticatorStateInner implements StructClass {
       fullTypeName: composeSuiType(
         AuthenticatorStateInner.$typeName,
         ...[]
-      ) as `${typeof PKG_V32}::authenticator_state::AuthenticatorStateInner`,
+      ) as `0x2::authenticator_state::AuthenticatorStateInner`,
       typeArgs: [] as [],
       isPhantom: AuthenticatorStateInner.$isPhantom,
       reifiedTypeArgs: [],
@@ -379,7 +378,7 @@ export class AuthenticatorStateInner implements StructClass {
 
 export function isJWK(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::authenticator_state::JWK`
+  return type === `0x2::authenticator_state::JWK`
 }
 
 export interface JWKFields {
@@ -394,12 +393,12 @@ export type JWKReified = Reified<JWK, JWKFields>
 export class JWK implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::authenticator_state::JWK`
+  static readonly $typeName = `0x2::authenticator_state::JWK`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = JWK.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::authenticator_state::JWK`
+  readonly $fullTypeName: `0x2::authenticator_state::JWK`
   readonly $typeArgs: []
   readonly $isPhantom = JWK.$isPhantom
 
@@ -412,7 +411,7 @@ export class JWK implements StructClass {
     this.$fullTypeName = composeSuiType(
       JWK.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::authenticator_state::JWK`
+    ) as `0x2::authenticator_state::JWK`
     this.$typeArgs = typeArgs
 
     this.kty = fields.kty
@@ -424,10 +423,7 @@ export class JWK implements StructClass {
   static reified(): JWKReified {
     return {
       typeName: JWK.$typeName,
-      fullTypeName: composeSuiType(
-        JWK.$typeName,
-        ...[]
-      ) as `${typeof PKG_V32}::authenticator_state::JWK`,
+      fullTypeName: composeSuiType(JWK.$typeName, ...[]) as `0x2::authenticator_state::JWK`,
       typeArgs: [] as [],
       isPhantom: JWK.$isPhantom,
       reifiedTypeArgs: [],
@@ -566,7 +562,7 @@ export class JWK implements StructClass {
 
 export function isJwkId(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::authenticator_state::JwkId`
+  return type === `0x2::authenticator_state::JwkId`
 }
 
 export interface JwkIdFields {
@@ -579,12 +575,12 @@ export type JwkIdReified = Reified<JwkId, JwkIdFields>
 export class JwkId implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::authenticator_state::JwkId`
+  static readonly $typeName = `0x2::authenticator_state::JwkId`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = JwkId.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::authenticator_state::JwkId`
+  readonly $fullTypeName: `0x2::authenticator_state::JwkId`
   readonly $typeArgs: []
   readonly $isPhantom = JwkId.$isPhantom
 
@@ -595,7 +591,7 @@ export class JwkId implements StructClass {
     this.$fullTypeName = composeSuiType(
       JwkId.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::authenticator_state::JwkId`
+    ) as `0x2::authenticator_state::JwkId`
     this.$typeArgs = typeArgs
 
     this.iss = fields.iss
@@ -605,10 +601,7 @@ export class JwkId implements StructClass {
   static reified(): JwkIdReified {
     return {
       typeName: JwkId.$typeName,
-      fullTypeName: composeSuiType(
-        JwkId.$typeName,
-        ...[]
-      ) as `${typeof PKG_V32}::authenticator_state::JwkId`,
+      fullTypeName: composeSuiType(JwkId.$typeName, ...[]) as `0x2::authenticator_state::JwkId`,
       typeArgs: [] as [],
       isPhantom: JwkId.$isPhantom,
       reifiedTypeArgs: [],
@@ -737,7 +730,7 @@ export class JwkId implements StructClass {
 
 export function isActiveJwk(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V32}::authenticator_state::ActiveJwk`
+  return type === `0x2::authenticator_state::ActiveJwk`
 }
 
 export interface ActiveJwkFields {
@@ -751,12 +744,12 @@ export type ActiveJwkReified = Reified<ActiveJwk, ActiveJwkFields>
 export class ActiveJwk implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::authenticator_state::ActiveJwk`
+  static readonly $typeName = `0x2::authenticator_state::ActiveJwk`
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = ActiveJwk.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::authenticator_state::ActiveJwk`
+  readonly $fullTypeName: `0x2::authenticator_state::ActiveJwk`
   readonly $typeArgs: []
   readonly $isPhantom = ActiveJwk.$isPhantom
 
@@ -768,7 +761,7 @@ export class ActiveJwk implements StructClass {
     this.$fullTypeName = composeSuiType(
       ActiveJwk.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::authenticator_state::ActiveJwk`
+    ) as `0x2::authenticator_state::ActiveJwk`
     this.$typeArgs = typeArgs
 
     this.jwkId = fields.jwkId
@@ -782,7 +775,7 @@ export class ActiveJwk implements StructClass {
       fullTypeName: composeSuiType(
         ActiveJwk.$typeName,
         ...[]
-      ) as `${typeof PKG_V32}::authenticator_state::ActiveJwk`,
+      ) as `0x2::authenticator_state::ActiveJwk`,
       typeArgs: [] as [],
       isPhantom: ActiveJwk.$isPhantom,
       reifiedTypeArgs: [],

@@ -26,7 +26,6 @@ import { String as String1 } from '../../move-stdlib-chain/ascii/structs'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { String } from '../../move-stdlib-chain/string/structs'
 import { Balance, Supply } from '../balance/structs'
-import { PKG_V32 } from '../index'
 import { ID, UID } from '../object/structs'
 import { Url } from '../url/structs'
 import { bcs } from '@mysten/sui/bcs'
@@ -37,7 +36,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isCoin(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::coin::Coin` + '<')
+  return type.startsWith(`0x2::coin::Coin` + '<')
 }
 
 export interface CoinFields<T0 extends PhantomTypeArgument> {
@@ -50,12 +49,12 @@ export type CoinReified<T0 extends PhantomTypeArgument> = Reified<Coin<T0>, Coin
 export class Coin<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::coin::Coin`
+  static readonly $typeName = `0x2::coin::Coin`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = Coin.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::coin::Coin<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `0x2::coin::Coin<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = Coin.$isPhantom
 
@@ -66,7 +65,7 @@ export class Coin<T0 extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Coin.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::coin::Coin<${PhantomToTypeStr<T0>}>`
+    ) as `0x2::coin::Coin<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -81,7 +80,7 @@ export class Coin<T0 extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Coin.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V32}::coin::Coin<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::coin::Coin<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: Coin.$isPhantom,
       reifiedTypeArgs: [T0],
@@ -257,7 +256,7 @@ export class Coin<T0 extends PhantomTypeArgument> implements StructClass {
 
 export function isCoinMetadata(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::coin::CoinMetadata` + '<')
+  return type.startsWith(`0x2::coin::CoinMetadata` + '<')
 }
 
 export interface CoinMetadataFields<T0 extends PhantomTypeArgument> {
@@ -277,12 +276,12 @@ export type CoinMetadataReified<T0 extends PhantomTypeArgument> = Reified<
 export class CoinMetadata<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::coin::CoinMetadata`
+  static readonly $typeName = `0x2::coin::CoinMetadata`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = CoinMetadata.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::coin::CoinMetadata<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `0x2::coin::CoinMetadata<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = CoinMetadata.$isPhantom
 
@@ -297,7 +296,7 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> implements StructClass
     this.$fullTypeName = composeSuiType(
       CoinMetadata.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::coin::CoinMetadata<${PhantomToTypeStr<T0>}>`
+    ) as `0x2::coin::CoinMetadata<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -316,7 +315,7 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> implements StructClass
       fullTypeName: composeSuiType(
         CoinMetadata.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V32}::coin::CoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::coin::CoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: CoinMetadata.$isPhantom,
       reifiedTypeArgs: [T0],
@@ -512,7 +511,7 @@ export class CoinMetadata<T0 extends PhantomTypeArgument> implements StructClass
 
 export function isRegulatedCoinMetadata(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::coin::RegulatedCoinMetadata` + '<')
+  return type.startsWith(`0x2::coin::RegulatedCoinMetadata` + '<')
 }
 
 export interface RegulatedCoinMetadataFields<T0 extends PhantomTypeArgument> {
@@ -529,12 +528,12 @@ export type RegulatedCoinMetadataReified<T0 extends PhantomTypeArgument> = Reifi
 export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::coin::RegulatedCoinMetadata`
+  static readonly $typeName = `0x2::coin::RegulatedCoinMetadata`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = RegulatedCoinMetadata.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::coin::RegulatedCoinMetadata<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `0x2::coin::RegulatedCoinMetadata<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = RegulatedCoinMetadata.$isPhantom
 
@@ -546,7 +545,7 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> implements St
     this.$fullTypeName = composeSuiType(
       RegulatedCoinMetadata.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::coin::RegulatedCoinMetadata<${PhantomToTypeStr<T0>}>`
+    ) as `0x2::coin::RegulatedCoinMetadata<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -562,7 +561,7 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> implements St
       fullTypeName: composeSuiType(
         RegulatedCoinMetadata.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V32}::coin::RegulatedCoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::coin::RegulatedCoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: RegulatedCoinMetadata.$isPhantom,
       reifiedTypeArgs: [T0],
@@ -748,7 +747,7 @@ export class RegulatedCoinMetadata<T0 extends PhantomTypeArgument> implements St
 
 export function isTreasuryCap(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::coin::TreasuryCap` + '<')
+  return type.startsWith(`0x2::coin::TreasuryCap` + '<')
 }
 
 export interface TreasuryCapFields<T0 extends PhantomTypeArgument> {
@@ -764,12 +763,12 @@ export type TreasuryCapReified<T0 extends PhantomTypeArgument> = Reified<
 export class TreasuryCap<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::coin::TreasuryCap`
+  static readonly $typeName = `0x2::coin::TreasuryCap`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = TreasuryCap.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::coin::TreasuryCap<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `0x2::coin::TreasuryCap<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = TreasuryCap.$isPhantom
 
@@ -780,7 +779,7 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> implements StructClass 
     this.$fullTypeName = composeSuiType(
       TreasuryCap.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::coin::TreasuryCap<${PhantomToTypeStr<T0>}>`
+    ) as `0x2::coin::TreasuryCap<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -795,7 +794,7 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> implements StructClass 
       fullTypeName: composeSuiType(
         TreasuryCap.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V32}::coin::TreasuryCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::coin::TreasuryCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: TreasuryCap.$isPhantom,
       reifiedTypeArgs: [T0],
@@ -971,7 +970,7 @@ export class TreasuryCap<T0 extends PhantomTypeArgument> implements StructClass 
 
 export function isDenyCapV2(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::coin::DenyCapV2` + '<')
+  return type.startsWith(`0x2::coin::DenyCapV2` + '<')
 }
 
 export interface DenyCapV2Fields<T0 extends PhantomTypeArgument> {
@@ -987,12 +986,12 @@ export type DenyCapV2Reified<T0 extends PhantomTypeArgument> = Reified<
 export class DenyCapV2<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::coin::DenyCapV2`
+  static readonly $typeName = `0x2::coin::DenyCapV2`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = DenyCapV2.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::coin::DenyCapV2<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `0x2::coin::DenyCapV2<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = DenyCapV2.$isPhantom
 
@@ -1003,7 +1002,7 @@ export class DenyCapV2<T0 extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       DenyCapV2.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::coin::DenyCapV2<${PhantomToTypeStr<T0>}>`
+    ) as `0x2::coin::DenyCapV2<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -1018,7 +1017,7 @@ export class DenyCapV2<T0 extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         DenyCapV2.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V32}::coin::DenyCapV2<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::coin::DenyCapV2<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: DenyCapV2.$isPhantom,
       reifiedTypeArgs: [T0],
@@ -1194,7 +1193,7 @@ export class DenyCapV2<T0 extends PhantomTypeArgument> implements StructClass {
 
 export function isCurrencyCreated(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::coin::CurrencyCreated` + '<')
+  return type.startsWith(`0x2::coin::CurrencyCreated` + '<')
 }
 
 export interface CurrencyCreatedFields<T0 extends PhantomTypeArgument> {
@@ -1209,12 +1208,12 @@ export type CurrencyCreatedReified<T0 extends PhantomTypeArgument> = Reified<
 export class CurrencyCreated<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::coin::CurrencyCreated`
+  static readonly $typeName = `0x2::coin::CurrencyCreated`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = CurrencyCreated.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::coin::CurrencyCreated<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `0x2::coin::CurrencyCreated<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = CurrencyCreated.$isPhantom
 
@@ -1224,7 +1223,7 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> implements StructCl
     this.$fullTypeName = composeSuiType(
       CurrencyCreated.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::coin::CurrencyCreated<${PhantomToTypeStr<T0>}>`
+    ) as `0x2::coin::CurrencyCreated<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.decimals = fields.decimals
@@ -1238,7 +1237,7 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> implements StructCl
       fullTypeName: composeSuiType(
         CurrencyCreated.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V32}::coin::CurrencyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::coin::CurrencyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: CurrencyCreated.$isPhantom,
       reifiedTypeArgs: [T0],
@@ -1409,7 +1408,7 @@ export class CurrencyCreated<T0 extends PhantomTypeArgument> implements StructCl
 
 export function isDenyCap(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::coin::DenyCap` + '<')
+  return type.startsWith(`0x2::coin::DenyCap` + '<')
 }
 
 export interface DenyCapFields<T0 extends PhantomTypeArgument> {
@@ -1421,12 +1420,12 @@ export type DenyCapReified<T0 extends PhantomTypeArgument> = Reified<DenyCap<T0>
 export class DenyCap<T0 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::coin::DenyCap`
+  static readonly $typeName = `0x2::coin::DenyCap`
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
   readonly $typeName = DenyCap.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::coin::DenyCap<${PhantomToTypeStr<T0>}>`
+  readonly $fullTypeName: `0x2::coin::DenyCap<${PhantomToTypeStr<T0>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>]
   readonly $isPhantom = DenyCap.$isPhantom
 
@@ -1436,7 +1435,7 @@ export class DenyCap<T0 extends PhantomTypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       DenyCap.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::coin::DenyCap<${PhantomToTypeStr<T0>}>`
+    ) as `0x2::coin::DenyCap<${PhantomToTypeStr<T0>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -1450,7 +1449,7 @@ export class DenyCap<T0 extends PhantomTypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         DenyCap.$typeName,
         ...[extractType(T0)]
-      ) as `${typeof PKG_V32}::coin::DenyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
+      ) as `0x2::coin::DenyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}>`,
       typeArgs: [extractType(T0)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>],
       isPhantom: DenyCap.$isPhantom,
       reifiedTypeArgs: [T0],

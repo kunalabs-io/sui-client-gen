@@ -21,7 +21,6 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { PKG_V32 } from '../index'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -31,7 +30,7 @@ import { fromB64 } from '@mysten/sui/utils'
 
 export function isObjectTable(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V32}::object_table::ObjectTable` + '<')
+  return type.startsWith(`0x2::object_table::ObjectTable` + '<')
 }
 
 export interface ObjectTableFields<T0 extends PhantomTypeArgument, T1 extends PhantomTypeArgument> {
@@ -49,12 +48,12 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
 {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V32}::object_table::ObjectTable`
+  static readonly $typeName = `0x2::object_table::ObjectTable`
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, true] as const
 
   readonly $typeName = ObjectTable.$typeName
-  readonly $fullTypeName: `${typeof PKG_V32}::object_table::ObjectTable<${PhantomToTypeStr<T0>}, ${PhantomToTypeStr<T1>}>`
+  readonly $fullTypeName: `0x2::object_table::ObjectTable<${PhantomToTypeStr<T0>}, ${PhantomToTypeStr<T1>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>, PhantomToTypeStr<T1>]
   readonly $isPhantom = ObjectTable.$isPhantom
 
@@ -68,7 +67,7 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
     this.$fullTypeName = composeSuiType(
       ObjectTable.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V32}::object_table::ObjectTable<${PhantomToTypeStr<T0>}, ${PhantomToTypeStr<T1>}>`
+    ) as `0x2::object_table::ObjectTable<${PhantomToTypeStr<T0>}, ${PhantomToTypeStr<T1>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -84,7 +83,7 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
       fullTypeName: composeSuiType(
         ObjectTable.$typeName,
         ...[extractType(T0), extractType(T1)]
-      ) as `${typeof PKG_V32}::object_table::ObjectTable<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<T1>>}>`,
+      ) as `0x2::object_table::ObjectTable<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<T1>>}>`,
       typeArgs: [extractType(T0), extractType(T1)] as [
         PhantomToTypeStr<ToPhantomTypeArgument<T0>>,
         PhantomToTypeStr<ToPhantomTypeArgument<T1>>,
