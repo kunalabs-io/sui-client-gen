@@ -4,7 +4,7 @@ use crate::model_builder::{TypeOriginTable, VersionTable};
 use anyhow::Result;
 use convert_case::{Case, Casing};
 use genco::prelude::*;
-use genco::tokens::{static_literal, Item, ItemStr};
+use genco::tokens::{Item, ItemStr};
 use move_core_types::account_address::AccountAddress;
 use move_model_2::model::{self, Datatype};
 use move_model_2::normalized::Type;
@@ -1760,6 +1760,9 @@ impl<'a, 'model, HasSource: SourceKind> StructsGen<'a, 'model, HasSource> {
                 ): $(&struct_name)Reified$(
                     self.gen_params_toks(type_params.clone(), &wraps_to_type_argument, &wraps_phantom_to_type_argument)
                 ) {
+                    const reifiedBcs = $(&struct_name).bcs$(if !non_phantom_params.is_empty() {
+                        ($(for param in &non_phantom_params join (, ) => $to_bcs($param)))
+                    });
                     return {
                         typeName: $(&struct_name).$$typeName,
                         fullTypeName: $compose_sui_type(
@@ -1790,17 +1793,15 @@ impl<'a, 'model, HasSource: SourceKind> StructsGen<'a, 'model, HasSource> {
                                 item,
                             ),
                         fromBcs: (data: Uint8Array) =>
-                            $(&struct_name).fromBcs(
+                            $(&struct_name).fromFields(
                                 $(match type_params.len() {
                                     0 => (),
                                     1 => { $(type_params[0].clone()), },
                                     _ => { [$(for param in &type_params join (, ) => $param)], },
                                 })
-                                data,
+                                reifiedBcs.parse(data)
                             ),
-                        bcs: $(&struct_name).bcs$(if !non_phantom_params.is_empty() {
-                            ($(for param in &non_phantom_params join (, ) => $to_bcs($param)))
-                        }),
+                        bcs: reifiedBcs,
                         fromJSONField: (field: any) =>
                             $(&struct_name).fromJSONField(
                                 $(match type_params.len() {
@@ -1888,7 +1889,7 @@ impl<'a, 'model, HasSource: SourceKind> StructsGen<'a, 'model, HasSource> {
                     })
                 }$['\n']
 
-                static get bcs() {
+                private static instantiateBcs() {
                     return $(if !non_phantom_params.is_empty() {
                         <$(for param in non_phantom_params.iter() join (, ) =>
                             $param extends $bcs_type<any>
@@ -1901,6 +1902,15 @@ impl<'a, 'model, HasSource: SourceKind> StructsGen<'a, 'model, HasSource> {
                                 $(self.gen_struct_bcs_def_field_value(&field.type_, &self.strct_type_param_names()))
                         )$['\n']
                     $['\n']})
+                };$['\n']
+
+                private static cachedBcs: ReturnType<typeof $(&struct_name).instantiateBcs> | null = null;$['\n']
+
+                static get bcs() {
+                    if (!$(&struct_name).cachedBcs) {
+                        $(&struct_name).cachedBcs = $(&struct_name).instantiateBcs()
+                    }
+                    return $(&struct_name).cachedBcs
                 };$['\n']
 
                 static fromFields$(params_toks_for_reified)(
