@@ -53,6 +53,7 @@ export class Bag implements StructClass {
   }
 
   static reified(): BagReified {
+    const reifiedBcs = Bag.bcs
     return {
       typeName: Bag.$typeName,
       fullTypeName: composeSuiType(Bag.$typeName, ...[]) as `0x2::bag::Bag`,
@@ -61,8 +62,8 @@ export class Bag implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Bag.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Bag.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Bag.fromBcs(data),
-      bcs: Bag.bcs,
+      fromBcs: (data: Uint8Array) => Bag.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Bag.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Bag.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Bag.fromSuiParsedData(content),
@@ -86,11 +87,20 @@ export class Bag implements StructClass {
     return Bag.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Bag', {
       id: UID.bcs,
       size: bcs.u64(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Bag.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Bag.cachedBcs) {
+      Bag.cachedBcs = Bag.instantiateBcs()
+    }
+    return Bag.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Bag {

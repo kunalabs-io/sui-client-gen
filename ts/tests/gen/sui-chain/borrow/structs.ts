@@ -71,6 +71,7 @@ export class Referent<T0 extends TypeArgument> implements StructClass {
   static reified<T0 extends Reified<TypeArgument, any>>(
     T0: T0
   ): ReferentReified<ToTypeArgument<T0>> {
+    const reifiedBcs = Referent.bcs(toBcs(T0))
     return {
       typeName: Referent.$typeName,
       fullTypeName: composeSuiType(
@@ -82,8 +83,8 @@ export class Referent<T0 extends TypeArgument> implements StructClass {
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Referent.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Referent.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => Referent.fromBcs(T0, data),
-      bcs: Referent.bcs(toBcs(T0)),
+      fromBcs: (data: Uint8Array) => Referent.fromFields(T0, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Referent.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => Referent.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => Referent.fromSuiParsedData(T0, content),
@@ -109,7 +110,7 @@ export class Referent<T0 extends TypeArgument> implements StructClass {
     return Referent.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <T0 extends BcsType<any>>(T0: T0) =>
       bcs.struct(`Referent<${T0.name}>`, {
         id: bcs.bytes(32).transform({
@@ -118,6 +119,15 @@ export class Referent<T0 extends TypeArgument> implements StructClass {
         }),
         value: Option.bcs(T0),
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof Referent.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Referent.cachedBcs) {
+      Referent.cachedBcs = Referent.instantiateBcs()
+    }
+    return Referent.cachedBcs
   }
 
   static fromFields<T0 extends Reified<TypeArgument, any>>(
@@ -292,6 +302,7 @@ export class Borrow implements StructClass {
   }
 
   static reified(): BorrowReified {
+    const reifiedBcs = Borrow.bcs
     return {
       typeName: Borrow.$typeName,
       fullTypeName: composeSuiType(Borrow.$typeName, ...[]) as `0x2::borrow::Borrow`,
@@ -300,8 +311,8 @@ export class Borrow implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Borrow.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Borrow.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Borrow.fromBcs(data),
-      bcs: Borrow.bcs,
+      fromBcs: (data: Uint8Array) => Borrow.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Borrow.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Borrow.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Borrow.fromSuiParsedData(content),
@@ -325,7 +336,7 @@ export class Borrow implements StructClass {
     return Borrow.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Borrow', {
       ref: bcs.bytes(32).transform({
         input: (val: string) => fromHEX(val),
@@ -333,6 +344,15 @@ export class Borrow implements StructClass {
       }),
       obj: ID.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Borrow.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Borrow.cachedBcs) {
+      Borrow.cachedBcs = Borrow.instantiateBcs()
+    }
+    return Borrow.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Borrow {

@@ -63,6 +63,7 @@ export class Publisher implements StructClass {
   }
 
   static reified(): PublisherReified {
+    const reifiedBcs = Publisher.bcs
     return {
       typeName: Publisher.$typeName,
       fullTypeName: composeSuiType(Publisher.$typeName, ...[]) as `0x2::package::Publisher`,
@@ -71,8 +72,8 @@ export class Publisher implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Publisher.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Publisher.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Publisher.fromBcs(data),
-      bcs: Publisher.bcs,
+      fromBcs: (data: Uint8Array) => Publisher.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Publisher.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Publisher.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Publisher.fromSuiParsedData(content),
@@ -96,12 +97,21 @@ export class Publisher implements StructClass {
     return Publisher.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Publisher', {
       id: UID.bcs,
       package: String.bcs,
       module_name: String.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Publisher.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Publisher.cachedBcs) {
+      Publisher.cachedBcs = Publisher.instantiateBcs()
+    }
+    return Publisher.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Publisher {
@@ -242,6 +252,7 @@ export class UpgradeCap implements StructClass {
   }
 
   static reified(): UpgradeCapReified {
+    const reifiedBcs = UpgradeCap.bcs
     return {
       typeName: UpgradeCap.$typeName,
       fullTypeName: composeSuiType(UpgradeCap.$typeName, ...[]) as `0x2::package::UpgradeCap`,
@@ -250,8 +261,8 @@ export class UpgradeCap implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UpgradeCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeCap.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => UpgradeCap.fromBcs(data),
-      bcs: UpgradeCap.bcs,
+      fromBcs: (data: Uint8Array) => UpgradeCap.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => UpgradeCap.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UpgradeCap.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => UpgradeCap.fromSuiParsedData(content),
@@ -275,13 +286,22 @@ export class UpgradeCap implements StructClass {
     return UpgradeCap.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('UpgradeCap', {
       id: UID.bcs,
       package: ID.bcs,
       version: bcs.u64(),
       policy: bcs.u8(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof UpgradeCap.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!UpgradeCap.cachedBcs) {
+      UpgradeCap.cachedBcs = UpgradeCap.instantiateBcs()
+    }
+    return UpgradeCap.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): UpgradeCap {
@@ -426,6 +446,7 @@ export class UpgradeTicket implements StructClass {
   }
 
   static reified(): UpgradeTicketReified {
+    const reifiedBcs = UpgradeTicket.bcs
     return {
       typeName: UpgradeTicket.$typeName,
       fullTypeName: composeSuiType(UpgradeTicket.$typeName, ...[]) as `0x2::package::UpgradeTicket`,
@@ -434,8 +455,8 @@ export class UpgradeTicket implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UpgradeTicket.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeTicket.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => UpgradeTicket.fromBcs(data),
-      bcs: UpgradeTicket.bcs,
+      fromBcs: (data: Uint8Array) => UpgradeTicket.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => UpgradeTicket.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UpgradeTicket.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => UpgradeTicket.fromSuiParsedData(content),
@@ -459,13 +480,22 @@ export class UpgradeTicket implements StructClass {
     return UpgradeTicket.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('UpgradeTicket', {
       cap: ID.bcs,
       package: ID.bcs,
       policy: bcs.u8(),
       digest: bcs.vector(bcs.u8()),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof UpgradeTicket.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!UpgradeTicket.cachedBcs) {
+      UpgradeTicket.cachedBcs = UpgradeTicket.instantiateBcs()
+    }
+    return UpgradeTicket.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): UpgradeTicket {
@@ -604,6 +634,7 @@ export class UpgradeReceipt implements StructClass {
   }
 
   static reified(): UpgradeReceiptReified {
+    const reifiedBcs = UpgradeReceipt.bcs
     return {
       typeName: UpgradeReceipt.$typeName,
       fullTypeName: composeSuiType(
@@ -615,8 +646,8 @@ export class UpgradeReceipt implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UpgradeReceipt.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UpgradeReceipt.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => UpgradeReceipt.fromBcs(data),
-      bcs: UpgradeReceipt.bcs,
+      fromBcs: (data: Uint8Array) => UpgradeReceipt.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => UpgradeReceipt.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UpgradeReceipt.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => UpgradeReceipt.fromSuiParsedData(content),
@@ -640,11 +671,20 @@ export class UpgradeReceipt implements StructClass {
     return UpgradeReceipt.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('UpgradeReceipt', {
       cap: ID.bcs,
       package: ID.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof UpgradeReceipt.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!UpgradeReceipt.cachedBcs) {
+      UpgradeReceipt.cachedBcs = UpgradeReceipt.instantiateBcs()
+    }
+    return UpgradeReceipt.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): UpgradeReceipt {

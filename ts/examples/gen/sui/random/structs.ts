@@ -57,6 +57,7 @@ export class Random implements StructClass {
   }
 
   static reified(): RandomReified {
+    const reifiedBcs = Random.bcs
     return {
       typeName: Random.$typeName,
       fullTypeName: composeSuiType(Random.$typeName, ...[]) as `0x2::random::Random`,
@@ -65,8 +66,8 @@ export class Random implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Random.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Random.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Random.fromBcs(data),
-      bcs: Random.bcs,
+      fromBcs: (data: Uint8Array) => Random.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Random.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Random.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Random.fromSuiParsedData(content),
@@ -90,11 +91,20 @@ export class Random implements StructClass {
     return Random.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Random', {
       id: UID.bcs,
       inner: Versioned.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Random.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Random.cachedBcs) {
+      Random.cachedBcs = Random.instantiateBcs()
+    }
+    return Random.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Random {
@@ -231,6 +241,7 @@ export class RandomInner implements StructClass {
   }
 
   static reified(): RandomInnerReified {
+    const reifiedBcs = RandomInner.bcs
     return {
       typeName: RandomInner.$typeName,
       fullTypeName: composeSuiType(RandomInner.$typeName, ...[]) as `0x2::random::RandomInner`,
@@ -239,8 +250,8 @@ export class RandomInner implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => RandomInner.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => RandomInner.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => RandomInner.fromBcs(data),
-      bcs: RandomInner.bcs,
+      fromBcs: (data: Uint8Array) => RandomInner.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => RandomInner.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => RandomInner.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => RandomInner.fromSuiParsedData(content),
@@ -264,13 +275,22 @@ export class RandomInner implements StructClass {
     return RandomInner.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('RandomInner', {
       version: bcs.u64(),
       epoch: bcs.u64(),
       randomness_round: bcs.u64(),
       random_bytes: bcs.vector(bcs.u8()),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof RandomInner.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!RandomInner.cachedBcs) {
+      RandomInner.cachedBcs = RandomInner.instantiateBcs()
+    }
+    return RandomInner.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): RandomInner {
@@ -412,6 +432,7 @@ export class RandomGenerator implements StructClass {
   }
 
   static reified(): RandomGeneratorReified {
+    const reifiedBcs = RandomGenerator.bcs
     return {
       typeName: RandomGenerator.$typeName,
       fullTypeName: composeSuiType(
@@ -423,8 +444,8 @@ export class RandomGenerator implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => RandomGenerator.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => RandomGenerator.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => RandomGenerator.fromBcs(data),
-      bcs: RandomGenerator.bcs,
+      fromBcs: (data: Uint8Array) => RandomGenerator.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => RandomGenerator.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => RandomGenerator.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => RandomGenerator.fromSuiParsedData(content),
@@ -448,12 +469,21 @@ export class RandomGenerator implements StructClass {
     return RandomGenerator.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('RandomGenerator', {
       seed: bcs.vector(bcs.u8()),
       counter: bcs.u16(),
       buffer: bcs.vector(bcs.u8()),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof RandomGenerator.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!RandomGenerator.cachedBcs) {
+      RandomGenerator.cachedBcs = RandomGenerator.instantiateBcs()
+    }
+    return RandomGenerator.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): RandomGenerator {

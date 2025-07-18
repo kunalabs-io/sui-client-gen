@@ -68,6 +68,7 @@ export class Element<T extends PhantomTypeArgument> implements StructClass {
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): ElementReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = Element.bcs
     return {
       typeName: Element.$typeName,
       fullTypeName: composeSuiType(
@@ -79,8 +80,8 @@ export class Element<T extends PhantomTypeArgument> implements StructClass {
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Element.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Element.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => Element.fromBcs(T, data),
-      bcs: Element.bcs,
+      fromBcs: (data: Uint8Array) => Element.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Element.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Element.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Element.fromSuiParsedData(T, content),
@@ -106,10 +107,19 @@ export class Element<T extends PhantomTypeArgument> implements StructClass {
     return Element.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Element', {
       bytes: bcs.vector(bcs.u8()),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Element.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Element.cachedBcs) {
+      Element.cachedBcs = Element.instantiateBcs()
+    }
+    return Element.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(

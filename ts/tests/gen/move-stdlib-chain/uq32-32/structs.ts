@@ -49,6 +49,7 @@ export class UQ32_32 implements StructClass {
   }
 
   static reified(): UQ32_32Reified {
+    const reifiedBcs = UQ32_32.bcs
     return {
       typeName: UQ32_32.$typeName,
       fullTypeName: composeSuiType(UQ32_32.$typeName, ...[]) as `0x1::uq32_32::UQ32_32`,
@@ -57,8 +58,8 @@ export class UQ32_32 implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UQ32_32.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UQ32_32.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => UQ32_32.fromBcs(data),
-      bcs: UQ32_32.bcs,
+      fromBcs: (data: Uint8Array) => UQ32_32.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => UQ32_32.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UQ32_32.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => UQ32_32.fromSuiParsedData(content),
@@ -82,10 +83,19 @@ export class UQ32_32 implements StructClass {
     return UQ32_32.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('UQ32_32', {
       pos0: bcs.u64(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof UQ32_32.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!UQ32_32.cachedBcs) {
+      UQ32_32.cachedBcs = UQ32_32.instantiateBcs()
+    }
+    return UQ32_32.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): UQ32_32 {

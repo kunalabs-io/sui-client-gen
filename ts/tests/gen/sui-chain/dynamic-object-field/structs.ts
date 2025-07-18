@@ -66,6 +66,7 @@ export class Wrapper<T0 extends TypeArgument> implements StructClass {
   static reified<T0 extends Reified<TypeArgument, any>>(
     T0: T0
   ): WrapperReified<ToTypeArgument<T0>> {
+    const reifiedBcs = Wrapper.bcs(toBcs(T0))
     return {
       typeName: Wrapper.$typeName,
       fullTypeName: composeSuiType(
@@ -77,8 +78,8 @@ export class Wrapper<T0 extends TypeArgument> implements StructClass {
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Wrapper.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Wrapper.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => Wrapper.fromBcs(T0, data),
-      bcs: Wrapper.bcs(toBcs(T0)),
+      fromBcs: (data: Uint8Array) => Wrapper.fromFields(T0, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Wrapper.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => Wrapper.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => Wrapper.fromSuiParsedData(T0, content),
@@ -104,11 +105,20 @@ export class Wrapper<T0 extends TypeArgument> implements StructClass {
     return Wrapper.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <T0 extends BcsType<any>>(T0: T0) =>
       bcs.struct(`Wrapper<${T0.name}>`, {
         name: T0,
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof Wrapper.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Wrapper.cachedBcs) {
+      Wrapper.cachedBcs = Wrapper.instantiateBcs()
+    }
+    return Wrapper.cachedBcs
   }
 
   static fromFields<T0 extends Reified<TypeArgument, any>>(

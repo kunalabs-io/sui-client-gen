@@ -57,6 +57,7 @@ export class EXAMPLE_COIN implements StructClass {
   }
 
   static reified(): EXAMPLE_COINReified {
+    const reifiedBcs = EXAMPLE_COIN.bcs
     return {
       typeName: EXAMPLE_COIN.$typeName,
       fullTypeName: composeSuiType(
@@ -68,8 +69,8 @@ export class EXAMPLE_COIN implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => EXAMPLE_COIN.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => EXAMPLE_COIN.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => EXAMPLE_COIN.fromBcs(data),
-      bcs: EXAMPLE_COIN.bcs,
+      fromBcs: (data: Uint8Array) => EXAMPLE_COIN.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => EXAMPLE_COIN.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => EXAMPLE_COIN.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => EXAMPLE_COIN.fromSuiParsedData(content),
@@ -93,10 +94,19 @@ export class EXAMPLE_COIN implements StructClass {
     return EXAMPLE_COIN.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('EXAMPLE_COIN', {
       dummy_field: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof EXAMPLE_COIN.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!EXAMPLE_COIN.cachedBcs) {
+      EXAMPLE_COIN.cachedBcs = EXAMPLE_COIN.instantiateBcs()
+    }
+    return EXAMPLE_COIN.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): EXAMPLE_COIN {
@@ -219,6 +229,7 @@ export class Faucet implements StructClass {
   }
 
   static reified(): FaucetReified {
+    const reifiedBcs = Faucet.bcs
     return {
       typeName: Faucet.$typeName,
       fullTypeName: composeSuiType(
@@ -230,8 +241,8 @@ export class Faucet implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Faucet.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Faucet.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Faucet.fromBcs(data),
-      bcs: Faucet.bcs,
+      fromBcs: (data: Uint8Array) => Faucet.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Faucet.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Faucet.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Faucet.fromSuiParsedData(content),
@@ -255,11 +266,20 @@ export class Faucet implements StructClass {
     return Faucet.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Faucet', {
       id: UID.bcs,
       cap: TreasuryCap.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Faucet.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Faucet.cachedBcs) {
+      Faucet.cachedBcs = Faucet.instantiateBcs()
+    }
+    return Faucet.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Faucet {

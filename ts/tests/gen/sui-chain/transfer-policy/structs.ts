@@ -84,6 +84,7 @@ export class TransferRequest<T0 extends PhantomTypeArgument> implements StructCl
   static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
   ): TransferRequestReified<ToPhantomTypeArgument<T0>> {
+    const reifiedBcs = TransferRequest.bcs
     return {
       typeName: TransferRequest.$typeName,
       fullTypeName: composeSuiType(
@@ -95,8 +96,8 @@ export class TransferRequest<T0 extends PhantomTypeArgument> implements StructCl
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => TransferRequest.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TransferRequest.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => TransferRequest.fromBcs(T0, data),
-      bcs: TransferRequest.bcs,
+      fromBcs: (data: Uint8Array) => TransferRequest.fromFields(T0, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => TransferRequest.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => TransferRequest.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => TransferRequest.fromSuiParsedData(T0, content),
@@ -122,13 +123,22 @@ export class TransferRequest<T0 extends PhantomTypeArgument> implements StructCl
     return TransferRequest.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('TransferRequest', {
       item: ID.bcs,
       paid: bcs.u64(),
       from: ID.bcs,
       receipts: VecSet.bcs(TypeName.bcs),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof TransferRequest.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!TransferRequest.cachedBcs) {
+      TransferRequest.cachedBcs = TransferRequest.instantiateBcs()
+    }
+    return TransferRequest.cachedBcs
   }
 
   static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
@@ -320,6 +330,7 @@ export class TransferPolicy<T0 extends PhantomTypeArgument> implements StructCla
   static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
   ): TransferPolicyReified<ToPhantomTypeArgument<T0>> {
+    const reifiedBcs = TransferPolicy.bcs
     return {
       typeName: TransferPolicy.$typeName,
       fullTypeName: composeSuiType(
@@ -331,8 +342,8 @@ export class TransferPolicy<T0 extends PhantomTypeArgument> implements StructCla
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => TransferPolicy.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TransferPolicy.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => TransferPolicy.fromBcs(T0, data),
-      bcs: TransferPolicy.bcs,
+      fromBcs: (data: Uint8Array) => TransferPolicy.fromFields(T0, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => TransferPolicy.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => TransferPolicy.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => TransferPolicy.fromSuiParsedData(T0, content),
@@ -358,12 +369,21 @@ export class TransferPolicy<T0 extends PhantomTypeArgument> implements StructCla
     return TransferPolicy.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('TransferPolicy', {
       id: UID.bcs,
       balance: Balance.bcs,
       rules: VecSet.bcs(TypeName.bcs),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof TransferPolicy.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!TransferPolicy.cachedBcs) {
+      TransferPolicy.cachedBcs = TransferPolicy.instantiateBcs()
+    }
+    return TransferPolicy.cachedBcs
   }
 
   static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
@@ -551,6 +571,7 @@ export class TransferPolicyCap<T0 extends PhantomTypeArgument> implements Struct
   static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
   ): TransferPolicyCapReified<ToPhantomTypeArgument<T0>> {
+    const reifiedBcs = TransferPolicyCap.bcs
     return {
       typeName: TransferPolicyCap.$typeName,
       fullTypeName: composeSuiType(
@@ -563,8 +584,8 @@ export class TransferPolicyCap<T0 extends PhantomTypeArgument> implements Struct
       fromFields: (fields: Record<string, any>) => TransferPolicyCap.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         TransferPolicyCap.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => TransferPolicyCap.fromBcs(T0, data),
-      bcs: TransferPolicyCap.bcs,
+      fromBcs: (data: Uint8Array) => TransferPolicyCap.fromFields(T0, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => TransferPolicyCap.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => TransferPolicyCap.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) =>
@@ -592,11 +613,20 @@ export class TransferPolicyCap<T0 extends PhantomTypeArgument> implements Struct
     return TransferPolicyCap.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('TransferPolicyCap', {
       id: UID.bcs,
       policy_id: ID.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof TransferPolicyCap.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!TransferPolicyCap.cachedBcs) {
+      TransferPolicyCap.cachedBcs = TransferPolicyCap.instantiateBcs()
+    }
+    return TransferPolicyCap.cachedBcs
   }
 
   static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
@@ -774,6 +804,7 @@ export class TransferPolicyCreated<T0 extends PhantomTypeArgument> implements St
   static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
   ): TransferPolicyCreatedReified<ToPhantomTypeArgument<T0>> {
+    const reifiedBcs = TransferPolicyCreated.bcs
     return {
       typeName: TransferPolicyCreated.$typeName,
       fullTypeName: composeSuiType(
@@ -786,8 +817,8 @@ export class TransferPolicyCreated<T0 extends PhantomTypeArgument> implements St
       fromFields: (fields: Record<string, any>) => TransferPolicyCreated.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         TransferPolicyCreated.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => TransferPolicyCreated.fromBcs(T0, data),
-      bcs: TransferPolicyCreated.bcs,
+      fromBcs: (data: Uint8Array) => TransferPolicyCreated.fromFields(T0, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => TransferPolicyCreated.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => TransferPolicyCreated.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) =>
@@ -815,10 +846,19 @@ export class TransferPolicyCreated<T0 extends PhantomTypeArgument> implements St
     return TransferPolicyCreated.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('TransferPolicyCreated', {
       id: ID.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof TransferPolicyCreated.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!TransferPolicyCreated.cachedBcs) {
+      TransferPolicyCreated.cachedBcs = TransferPolicyCreated.instantiateBcs()
+    }
+    return TransferPolicyCreated.cachedBcs
   }
 
   static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
@@ -994,6 +1034,7 @@ export class TransferPolicyDestroyed<T0 extends PhantomTypeArgument> implements 
   static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
   ): TransferPolicyDestroyedReified<ToPhantomTypeArgument<T0>> {
+    const reifiedBcs = TransferPolicyDestroyed.bcs
     return {
       typeName: TransferPolicyDestroyed.$typeName,
       fullTypeName: composeSuiType(
@@ -1006,8 +1047,8 @@ export class TransferPolicyDestroyed<T0 extends PhantomTypeArgument> implements 
       fromFields: (fields: Record<string, any>) => TransferPolicyDestroyed.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         TransferPolicyDestroyed.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => TransferPolicyDestroyed.fromBcs(T0, data),
-      bcs: TransferPolicyDestroyed.bcs,
+      fromBcs: (data: Uint8Array) => TransferPolicyDestroyed.fromFields(T0, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => TransferPolicyDestroyed.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => TransferPolicyDestroyed.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) =>
@@ -1035,10 +1076,19 @@ export class TransferPolicyDestroyed<T0 extends PhantomTypeArgument> implements 
     return TransferPolicyDestroyed.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('TransferPolicyDestroyed', {
       id: ID.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof TransferPolicyDestroyed.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!TransferPolicyDestroyed.cachedBcs) {
+      TransferPolicyDestroyed.cachedBcs = TransferPolicyDestroyed.instantiateBcs()
+    }
+    return TransferPolicyDestroyed.cachedBcs
   }
 
   static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(
@@ -1213,6 +1263,7 @@ export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
   static reified<T0 extends PhantomReified<PhantomTypeArgument>>(
     T0: T0
   ): RuleKeyReified<ToPhantomTypeArgument<T0>> {
+    const reifiedBcs = RuleKey.bcs
     return {
       typeName: RuleKey.$typeName,
       fullTypeName: composeSuiType(
@@ -1224,8 +1275,8 @@ export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => RuleKey.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => RuleKey.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => RuleKey.fromBcs(T0, data),
-      bcs: RuleKey.bcs,
+      fromBcs: (data: Uint8Array) => RuleKey.fromFields(T0, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => RuleKey.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => RuleKey.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => RuleKey.fromSuiParsedData(T0, content),
@@ -1251,10 +1302,19 @@ export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
     return RuleKey.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('RuleKey', {
       dummy_field: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof RuleKey.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!RuleKey.cachedBcs) {
+      RuleKey.cachedBcs = RuleKey.instantiateBcs()
+    }
+    return RuleKey.cachedBcs
   }
 
   static fromFields<T0 extends PhantomReified<PhantomTypeArgument>>(

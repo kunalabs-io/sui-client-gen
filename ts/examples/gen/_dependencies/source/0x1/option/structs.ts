@@ -73,6 +73,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
   static reified<Element extends Reified<TypeArgument, any>>(
     Element: Element
   ): OptionReified<ToTypeArgument<Element>> {
+    const reifiedBcs = Option.bcs(toBcs(Element))
     return {
       typeName: Option.$typeName,
       fullTypeName: composeSuiType(
@@ -84,8 +85,8 @@ export class Option<Element extends TypeArgument> implements StructClass {
       reifiedTypeArgs: [Element],
       fromFields: (fields: Record<string, any>) => Option.fromFields(Element, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Option.fromFieldsWithTypes(Element, item),
-      fromBcs: (data: Uint8Array) => Option.fromBcs(Element, data),
-      bcs: Option.bcs(toBcs(Element)),
+      fromBcs: (data: Uint8Array) => Option.fromFields(Element, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Option.fromJSONField(Element, field),
       fromJSON: (json: Record<string, any>) => Option.fromJSON(Element, json),
       fromSuiParsedData: (content: SuiParsedData) => Option.fromSuiParsedData(Element, content),
@@ -111,11 +112,20 @@ export class Option<Element extends TypeArgument> implements StructClass {
     return Option.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <Element extends BcsType<any>>(Element: Element) =>
       bcs.struct(`Option<${Element.name}>`, {
         vec: bcs.vector(Element),
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof Option.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Option.cachedBcs) {
+      Option.cachedBcs = Option.instantiateBcs()
+    }
+    return Option.cachedBcs
   }
 
   static fromFields<Element extends Reified<TypeArgument, any>>(

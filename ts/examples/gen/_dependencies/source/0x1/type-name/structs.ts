@@ -53,6 +53,7 @@ export class TypeName implements StructClass {
   }
 
   static reified(): TypeNameReified {
+    const reifiedBcs = TypeName.bcs
     return {
       typeName: TypeName.$typeName,
       fullTypeName: composeSuiType(TypeName.$typeName, ...[]) as `0x1::type_name::TypeName`,
@@ -61,8 +62,8 @@ export class TypeName implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => TypeName.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TypeName.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => TypeName.fromBcs(data),
-      bcs: TypeName.bcs,
+      fromBcs: (data: Uint8Array) => TypeName.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => TypeName.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => TypeName.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => TypeName.fromSuiParsedData(content),
@@ -86,10 +87,19 @@ export class TypeName implements StructClass {
     return TypeName.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('TypeName', {
       name: String.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof TypeName.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!TypeName.cachedBcs) {
+      TypeName.cachedBcs = TypeName.instantiateBcs()
+    }
+    return TypeName.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): TypeName {

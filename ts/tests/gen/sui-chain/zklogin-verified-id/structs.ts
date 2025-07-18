@@ -69,6 +69,7 @@ export class VerifiedID implements StructClass {
   }
 
   static reified(): VerifiedIDReified {
+    const reifiedBcs = VerifiedID.bcs
     return {
       typeName: VerifiedID.$typeName,
       fullTypeName: composeSuiType(
@@ -80,8 +81,8 @@ export class VerifiedID implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => VerifiedID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VerifiedID.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => VerifiedID.fromBcs(data),
-      bcs: VerifiedID.bcs,
+      fromBcs: (data: Uint8Array) => VerifiedID.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => VerifiedID.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => VerifiedID.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => VerifiedID.fromSuiParsedData(content),
@@ -105,7 +106,7 @@ export class VerifiedID implements StructClass {
     return VerifiedID.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('VerifiedID', {
       id: UID.bcs,
       owner: bcs.bytes(32).transform({
@@ -117,6 +118,15 @@ export class VerifiedID implements StructClass {
       issuer: String.bcs,
       audience: String.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof VerifiedID.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!VerifiedID.cachedBcs) {
+      VerifiedID.cachedBcs = VerifiedID.instantiateBcs()
+    }
+    return VerifiedID.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): VerifiedID {

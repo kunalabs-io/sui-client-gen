@@ -60,6 +60,7 @@ export class ExampleStruct implements StructClass {
   }
 
   static reified(): ExampleStructReified {
+    const reifiedBcs = ExampleStruct.bcs
     return {
       typeName: ExampleStruct.$typeName,
       fullTypeName: composeSuiType(
@@ -71,8 +72,8 @@ export class ExampleStruct implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ExampleStruct.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ExampleStruct.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => ExampleStruct.fromBcs(data),
-      bcs: ExampleStruct.bcs,
+      fromBcs: (data: Uint8Array) => ExampleStruct.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => ExampleStruct.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ExampleStruct.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ExampleStruct.fromSuiParsedData(content),
@@ -96,10 +97,19 @@ export class ExampleStruct implements StructClass {
     return ExampleStruct.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('ExampleStruct', {
       dummy_field: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof ExampleStruct.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!ExampleStruct.cachedBcs) {
+      ExampleStruct.cachedBcs = ExampleStruct.instantiateBcs()
+    }
+    return ExampleStruct.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): ExampleStruct {
@@ -245,6 +255,7 @@ export class SpecialTypesStruct implements StructClass {
   }
 
   static reified(): SpecialTypesStructReified {
+    const reifiedBcs = SpecialTypesStruct.bcs
     return {
       typeName: SpecialTypesStruct.$typeName,
       fullTypeName: composeSuiType(
@@ -256,8 +267,8 @@ export class SpecialTypesStruct implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => SpecialTypesStruct.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => SpecialTypesStruct.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => SpecialTypesStruct.fromBcs(data),
-      bcs: SpecialTypesStruct.bcs,
+      fromBcs: (data: Uint8Array) => SpecialTypesStruct.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => SpecialTypesStruct.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => SpecialTypesStruct.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => SpecialTypesStruct.fromSuiParsedData(content),
@@ -281,7 +292,7 @@ export class SpecialTypesStruct implements StructClass {
     return SpecialTypesStruct.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('SpecialTypesStruct', {
       id: UID.bcs,
       ascii_string: String.bcs,
@@ -296,6 +307,15 @@ export class SpecialTypesStruct implements StructClass {
       option_some: Option.bcs(bcs.u64()),
       option_none: Option.bcs(bcs.u64()),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof SpecialTypesStruct.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!SpecialTypesStruct.cachedBcs) {
+      SpecialTypesStruct.cachedBcs = SpecialTypesStruct.instantiateBcs()
+    }
+    return SpecialTypesStruct.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): SpecialTypesStruct {

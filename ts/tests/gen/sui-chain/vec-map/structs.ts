@@ -72,6 +72,7 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> implements
     T0: T0,
     T1: T1
   ): VecMapReified<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    const reifiedBcs = VecMap.bcs(toBcs(T0), toBcs(T1))
     return {
       typeName: VecMap.$typeName,
       fullTypeName: composeSuiType(
@@ -86,8 +87,8 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> implements
       reifiedTypeArgs: [T0, T1],
       fromFields: (fields: Record<string, any>) => VecMap.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VecMap.fromFieldsWithTypes([T0, T1], item),
-      fromBcs: (data: Uint8Array) => VecMap.fromBcs([T0, T1], data),
-      bcs: VecMap.bcs(toBcs(T0), toBcs(T1)),
+      fromBcs: (data: Uint8Array) => VecMap.fromFields([T0, T1], reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => VecMap.fromJSONField([T0, T1], field),
       fromJSON: (json: Record<string, any>) => VecMap.fromJSON([T0, T1], json),
       fromSuiParsedData: (content: SuiParsedData) => VecMap.fromSuiParsedData([T0, T1], content),
@@ -114,11 +115,20 @@ export class VecMap<T0 extends TypeArgument, T1 extends TypeArgument> implements
     return VecMap.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <T0 extends BcsType<any>, T1 extends BcsType<any>>(T0: T0, T1: T1) =>
       bcs.struct(`VecMap<${T0.name}, ${T1.name}>`, {
         contents: bcs.vector(Entry.bcs(T0, T1)),
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof VecMap.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!VecMap.cachedBcs) {
+      VecMap.cachedBcs = VecMap.instantiateBcs()
+    }
+    return VecMap.cachedBcs
   }
 
   static fromFields<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
@@ -313,6 +323,7 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> implements 
     T0: T0,
     T1: T1
   ): EntryReified<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    const reifiedBcs = Entry.bcs(toBcs(T0), toBcs(T1))
     return {
       typeName: Entry.$typeName,
       fullTypeName: composeSuiType(
@@ -327,8 +338,8 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> implements 
       reifiedTypeArgs: [T0, T1],
       fromFields: (fields: Record<string, any>) => Entry.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Entry.fromFieldsWithTypes([T0, T1], item),
-      fromBcs: (data: Uint8Array) => Entry.fromBcs([T0, T1], data),
-      bcs: Entry.bcs(toBcs(T0), toBcs(T1)),
+      fromBcs: (data: Uint8Array) => Entry.fromFields([T0, T1], reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Entry.fromJSONField([T0, T1], field),
       fromJSON: (json: Record<string, any>) => Entry.fromJSON([T0, T1], json),
       fromSuiParsedData: (content: SuiParsedData) => Entry.fromSuiParsedData([T0, T1], content),
@@ -355,12 +366,21 @@ export class Entry<T0 extends TypeArgument, T1 extends TypeArgument> implements 
     return Entry.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <T0 extends BcsType<any>, T1 extends BcsType<any>>(T0: T0, T1: T1) =>
       bcs.struct(`Entry<${T0.name}, ${T1.name}>`, {
         key: T0,
         value: T1,
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof Entry.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Entry.cachedBcs) {
+      Entry.cachedBcs = Entry.instantiateBcs()
+    }
+    return Entry.cachedBcs
   }
 
   static fromFields<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(

@@ -67,6 +67,7 @@ export class TxContext implements StructClass {
   }
 
   static reified(): TxContextReified {
+    const reifiedBcs = TxContext.bcs
     return {
       typeName: TxContext.$typeName,
       fullTypeName: composeSuiType(TxContext.$typeName, ...[]) as `0x2::tx_context::TxContext`,
@@ -75,8 +76,8 @@ export class TxContext implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => TxContext.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TxContext.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => TxContext.fromBcs(data),
-      bcs: TxContext.bcs,
+      fromBcs: (data: Uint8Array) => TxContext.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => TxContext.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => TxContext.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => TxContext.fromSuiParsedData(content),
@@ -100,7 +101,7 @@ export class TxContext implements StructClass {
     return TxContext.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('TxContext', {
       sender: bcs.bytes(32).transform({
         input: (val: string) => fromHEX(val),
@@ -111,6 +112,15 @@ export class TxContext implements StructClass {
       epoch_timestamp_ms: bcs.u64(),
       ids_created: bcs.u64(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof TxContext.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!TxContext.cachedBcs) {
+      TxContext.cachedBcs = TxContext.instantiateBcs()
+    }
+    return TxContext.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): TxContext {

@@ -53,6 +53,7 @@ export class Clock implements StructClass {
   }
 
   static reified(): ClockReified {
+    const reifiedBcs = Clock.bcs
     return {
       typeName: Clock.$typeName,
       fullTypeName: composeSuiType(Clock.$typeName, ...[]) as `0x2::clock::Clock`,
@@ -61,8 +62,8 @@ export class Clock implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Clock.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Clock.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Clock.fromBcs(data),
-      bcs: Clock.bcs,
+      fromBcs: (data: Uint8Array) => Clock.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Clock.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Clock.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Clock.fromSuiParsedData(content),
@@ -86,11 +87,20 @@ export class Clock implements StructClass {
     return Clock.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Clock', {
       id: UID.bcs,
       timestamp_ms: bcs.u64(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Clock.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Clock.cachedBcs) {
+      Clock.cachedBcs = Clock.instantiateBcs()
+    }
+    return Clock.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Clock {

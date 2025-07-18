@@ -65,6 +65,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): SupplyReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = Supply.bcs
     return {
       typeName: Supply.$typeName,
       fullTypeName: composeSuiType(
@@ -76,8 +77,8 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Supply.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Supply.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => Supply.fromBcs(T, data),
-      bcs: Supply.bcs,
+      fromBcs: (data: Uint8Array) => Supply.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Supply.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Supply.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Supply.fromSuiParsedData(T, content),
@@ -103,10 +104,19 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
     return Supply.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Supply', {
       value: bcs.u64(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Supply.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Supply.cachedBcs) {
+      Supply.cachedBcs = Supply.instantiateBcs()
+    }
+    return Supply.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
@@ -273,6 +283,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): BalanceReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = Balance.bcs
     return {
       typeName: Balance.$typeName,
       fullTypeName: composeSuiType(
@@ -284,8 +295,8 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Balance.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Balance.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => Balance.fromBcs(T, data),
-      bcs: Balance.bcs,
+      fromBcs: (data: Uint8Array) => Balance.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Balance.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Balance.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Balance.fromSuiParsedData(T, content),
@@ -311,10 +322,19 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
     return Balance.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Balance', {
       value: bcs.u64(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Balance.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Balance.cachedBcs) {
+      Balance.cachedBcs = Balance.instantiateBcs()
+    }
+    return Balance.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(

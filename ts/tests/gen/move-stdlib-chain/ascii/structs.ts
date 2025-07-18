@@ -52,6 +52,7 @@ export class String implements StructClass {
   }
 
   static reified(): StringReified {
+    const reifiedBcs = String.bcs
     return {
       typeName: String.$typeName,
       fullTypeName: composeSuiType(String.$typeName, ...[]) as `0x1::ascii::String`,
@@ -60,8 +61,8 @@ export class String implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => String.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => String.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => String.fromBcs(data),
-      bcs: String.bcs,
+      fromBcs: (data: Uint8Array) => String.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => String.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => String.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => String.fromSuiParsedData(content),
@@ -85,10 +86,19 @@ export class String implements StructClass {
     return String.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('String', {
       bytes: bcs.vector(bcs.u8()),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof String.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!String.cachedBcs) {
+      String.cachedBcs = String.instantiateBcs()
+    }
+    return String.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): String {
@@ -205,6 +215,7 @@ export class Char implements StructClass {
   }
 
   static reified(): CharReified {
+    const reifiedBcs = Char.bcs
     return {
       typeName: Char.$typeName,
       fullTypeName: composeSuiType(Char.$typeName, ...[]) as `0x1::ascii::Char`,
@@ -213,8 +224,8 @@ export class Char implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Char.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Char.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Char.fromBcs(data),
-      bcs: Char.bcs,
+      fromBcs: (data: Uint8Array) => Char.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Char.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Char.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Char.fromSuiParsedData(content),
@@ -238,10 +249,19 @@ export class Char implements StructClass {
     return Char.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Char', {
       byte: bcs.u8(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Char.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Char.cachedBcs) {
+      Char.cachedBcs = Char.instantiateBcs()
+    }
+    return Char.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Char {

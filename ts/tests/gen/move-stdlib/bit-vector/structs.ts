@@ -58,6 +58,7 @@ export class BitVector implements StructClass {
   }
 
   static reified(): BitVectorReified {
+    const reifiedBcs = BitVector.bcs
     return {
       typeName: BitVector.$typeName,
       fullTypeName: composeSuiType(BitVector.$typeName, ...[]) as `0x1::bit_vector::BitVector`,
@@ -66,8 +67,8 @@ export class BitVector implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => BitVector.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => BitVector.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => BitVector.fromBcs(data),
-      bcs: BitVector.bcs,
+      fromBcs: (data: Uint8Array) => BitVector.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => BitVector.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => BitVector.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => BitVector.fromSuiParsedData(content),
@@ -91,11 +92,20 @@ export class BitVector implements StructClass {
     return BitVector.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('BitVector', {
       length: bcs.u64(),
       bit_field: bcs.vector(bcs.bool()),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof BitVector.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!BitVector.cachedBcs) {
+      BitVector.cachedBcs = BitVector.instantiateBcs()
+    }
+    return BitVector.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): BitVector {

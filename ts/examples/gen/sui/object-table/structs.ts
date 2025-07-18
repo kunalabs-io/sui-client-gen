@@ -78,6 +78,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     K extends PhantomReified<PhantomTypeArgument>,
     V extends PhantomReified<PhantomTypeArgument>,
   >(K: K, V: V): ObjectTableReified<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
+    const reifiedBcs = ObjectTable.bcs
     return {
       typeName: ObjectTable.$typeName,
       fullTypeName: composeSuiType(
@@ -92,8 +93,8 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
       reifiedTypeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => ObjectTable.fromFields([K, V], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ObjectTable.fromFieldsWithTypes([K, V], item),
-      fromBcs: (data: Uint8Array) => ObjectTable.fromBcs([K, V], data),
-      bcs: ObjectTable.bcs,
+      fromBcs: (data: Uint8Array) => ObjectTable.fromFields([K, V], reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => ObjectTable.fromJSONField([K, V], field),
       fromJSON: (json: Record<string, any>) => ObjectTable.fromJSON([K, V], json),
       fromSuiParsedData: (content: SuiParsedData) => ObjectTable.fromSuiParsedData([K, V], content),
@@ -123,11 +124,20 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     return ObjectTable.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('ObjectTable', {
       id: UID.bcs,
       size: bcs.u64(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof ObjectTable.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!ObjectTable.cachedBcs) {
+      ObjectTable.cachedBcs = ObjectTable.instantiateBcs()
+    }
+    return ObjectTable.cachedBcs
   }
 
   static fromFields<

@@ -77,6 +77,7 @@ export class Kiosk implements StructClass {
   }
 
   static reified(): KioskReified {
+    const reifiedBcs = Kiosk.bcs
     return {
       typeName: Kiosk.$typeName,
       fullTypeName: composeSuiType(Kiosk.$typeName, ...[]) as `0x2::kiosk::Kiosk`,
@@ -85,8 +86,8 @@ export class Kiosk implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Kiosk.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Kiosk.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Kiosk.fromBcs(data),
-      bcs: Kiosk.bcs,
+      fromBcs: (data: Uint8Array) => Kiosk.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Kiosk.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Kiosk.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Kiosk.fromSuiParsedData(content),
@@ -110,7 +111,7 @@ export class Kiosk implements StructClass {
     return Kiosk.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Kiosk', {
       id: UID.bcs,
       profits: Balance.bcs,
@@ -121,6 +122,15 @@ export class Kiosk implements StructClass {
       item_count: bcs.u32(),
       allow_extensions: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Kiosk.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Kiosk.cachedBcs) {
+      Kiosk.cachedBcs = Kiosk.instantiateBcs()
+    }
+    return Kiosk.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Kiosk {
@@ -266,6 +276,7 @@ export class KioskOwnerCap implements StructClass {
   }
 
   static reified(): KioskOwnerCapReified {
+    const reifiedBcs = KioskOwnerCap.bcs
     return {
       typeName: KioskOwnerCap.$typeName,
       fullTypeName: composeSuiType(KioskOwnerCap.$typeName, ...[]) as `0x2::kiosk::KioskOwnerCap`,
@@ -274,8 +285,8 @@ export class KioskOwnerCap implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => KioskOwnerCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => KioskOwnerCap.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => KioskOwnerCap.fromBcs(data),
-      bcs: KioskOwnerCap.bcs,
+      fromBcs: (data: Uint8Array) => KioskOwnerCap.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => KioskOwnerCap.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => KioskOwnerCap.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => KioskOwnerCap.fromSuiParsedData(content),
@@ -299,11 +310,20 @@ export class KioskOwnerCap implements StructClass {
     return KioskOwnerCap.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('KioskOwnerCap', {
       id: UID.bcs,
       for: ID.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof KioskOwnerCap.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!KioskOwnerCap.cachedBcs) {
+      KioskOwnerCap.cachedBcs = KioskOwnerCap.instantiateBcs()
+    }
+    return KioskOwnerCap.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): KioskOwnerCap {
@@ -445,6 +465,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): PurchaseCapReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = PurchaseCap.bcs
     return {
       typeName: PurchaseCap.$typeName,
       fullTypeName: composeSuiType(
@@ -456,8 +477,8 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => PurchaseCap.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PurchaseCap.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => PurchaseCap.fromBcs(T, data),
-      bcs: PurchaseCap.bcs,
+      fromBcs: (data: Uint8Array) => PurchaseCap.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => PurchaseCap.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => PurchaseCap.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => PurchaseCap.fromSuiParsedData(T, content),
@@ -483,13 +504,22 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
     return PurchaseCap.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('PurchaseCap', {
       id: UID.bcs,
       kiosk_id: ID.bcs,
       item_id: ID.bcs,
       min_price: bcs.u64(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof PurchaseCap.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!PurchaseCap.cachedBcs) {
+      PurchaseCap.cachedBcs = PurchaseCap.instantiateBcs()
+    }
+    return PurchaseCap.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
@@ -670,6 +700,7 @@ export class Borrow implements StructClass {
   }
 
   static reified(): BorrowReified {
+    const reifiedBcs = Borrow.bcs
     return {
       typeName: Borrow.$typeName,
       fullTypeName: composeSuiType(Borrow.$typeName, ...[]) as `0x2::kiosk::Borrow`,
@@ -678,8 +709,8 @@ export class Borrow implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Borrow.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Borrow.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Borrow.fromBcs(data),
-      bcs: Borrow.bcs,
+      fromBcs: (data: Uint8Array) => Borrow.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Borrow.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Borrow.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Borrow.fromSuiParsedData(content),
@@ -703,11 +734,20 @@ export class Borrow implements StructClass {
     return Borrow.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Borrow', {
       kiosk_id: ID.bcs,
       item_id: ID.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Borrow.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Borrow.cachedBcs) {
+      Borrow.cachedBcs = Borrow.instantiateBcs()
+    }
+    return Borrow.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Borrow {
@@ -832,6 +872,7 @@ export class Item implements StructClass {
   }
 
   static reified(): ItemReified {
+    const reifiedBcs = Item.bcs
     return {
       typeName: Item.$typeName,
       fullTypeName: composeSuiType(Item.$typeName, ...[]) as `0x2::kiosk::Item`,
@@ -840,8 +881,8 @@ export class Item implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Item.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Item.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Item.fromBcs(data),
-      bcs: Item.bcs,
+      fromBcs: (data: Uint8Array) => Item.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Item.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Item.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Item.fromSuiParsedData(content),
@@ -865,10 +906,19 @@ export class Item implements StructClass {
     return Item.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Item', {
       id: ID.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Item.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Item.cachedBcs) {
+      Item.cachedBcs = Item.instantiateBcs()
+    }
+    return Item.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Item {
@@ -986,6 +1036,7 @@ export class Listing implements StructClass {
   }
 
   static reified(): ListingReified {
+    const reifiedBcs = Listing.bcs
     return {
       typeName: Listing.$typeName,
       fullTypeName: composeSuiType(Listing.$typeName, ...[]) as `0x2::kiosk::Listing`,
@@ -994,8 +1045,8 @@ export class Listing implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Listing.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Listing.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Listing.fromBcs(data),
-      bcs: Listing.bcs,
+      fromBcs: (data: Uint8Array) => Listing.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Listing.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Listing.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Listing.fromSuiParsedData(content),
@@ -1019,11 +1070,20 @@ export class Listing implements StructClass {
     return Listing.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Listing', {
       id: ID.bcs,
       is_exclusive: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Listing.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Listing.cachedBcs) {
+      Listing.cachedBcs = Listing.instantiateBcs()
+    }
+    return Listing.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Listing {
@@ -1148,6 +1208,7 @@ export class Lock implements StructClass {
   }
 
   static reified(): LockReified {
+    const reifiedBcs = Lock.bcs
     return {
       typeName: Lock.$typeName,
       fullTypeName: composeSuiType(Lock.$typeName, ...[]) as `0x2::kiosk::Lock`,
@@ -1156,8 +1217,8 @@ export class Lock implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Lock.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Lock.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Lock.fromBcs(data),
-      bcs: Lock.bcs,
+      fromBcs: (data: Uint8Array) => Lock.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Lock.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Lock.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Lock.fromSuiParsedData(content),
@@ -1181,10 +1242,19 @@ export class Lock implements StructClass {
     return Lock.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Lock', {
       id: ID.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Lock.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Lock.cachedBcs) {
+      Lock.cachedBcs = Lock.instantiateBcs()
+    }
+    return Lock.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Lock {
@@ -1313,6 +1383,7 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): ItemListedReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = ItemListed.bcs
     return {
       typeName: ItemListed.$typeName,
       fullTypeName: composeSuiType(
@@ -1324,8 +1395,8 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => ItemListed.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ItemListed.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => ItemListed.fromBcs(T, data),
-      bcs: ItemListed.bcs,
+      fromBcs: (data: Uint8Array) => ItemListed.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => ItemListed.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => ItemListed.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => ItemListed.fromSuiParsedData(T, content),
@@ -1351,12 +1422,21 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
     return ItemListed.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('ItemListed', {
       kiosk: ID.bcs,
       id: ID.bcs,
       price: bcs.u64(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof ItemListed.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!ItemListed.cachedBcs) {
+      ItemListed.cachedBcs = ItemListed.instantiateBcs()
+    }
+    return ItemListed.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
@@ -1544,6 +1624,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): ItemPurchasedReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = ItemPurchased.bcs
     return {
       typeName: ItemPurchased.$typeName,
       fullTypeName: composeSuiType(
@@ -1555,8 +1636,8 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => ItemPurchased.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ItemPurchased.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => ItemPurchased.fromBcs(T, data),
-      bcs: ItemPurchased.bcs,
+      fromBcs: (data: Uint8Array) => ItemPurchased.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => ItemPurchased.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => ItemPurchased.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => ItemPurchased.fromSuiParsedData(T, content),
@@ -1582,12 +1663,21 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
     return ItemPurchased.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('ItemPurchased', {
       kiosk: ID.bcs,
       id: ID.bcs,
       price: bcs.u64(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof ItemPurchased.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!ItemPurchased.cachedBcs) {
+      ItemPurchased.cachedBcs = ItemPurchased.instantiateBcs()
+    }
+    return ItemPurchased.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
@@ -1772,6 +1862,7 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): ItemDelistedReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = ItemDelisted.bcs
     return {
       typeName: ItemDelisted.$typeName,
       fullTypeName: composeSuiType(
@@ -1783,8 +1874,8 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => ItemDelisted.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ItemDelisted.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => ItemDelisted.fromBcs(T, data),
-      bcs: ItemDelisted.bcs,
+      fromBcs: (data: Uint8Array) => ItemDelisted.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => ItemDelisted.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => ItemDelisted.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => ItemDelisted.fromSuiParsedData(T, content),
@@ -1810,11 +1901,20 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
     return ItemDelisted.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('ItemDelisted', {
       kiosk: ID.bcs,
       id: ID.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof ItemDelisted.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!ItemDelisted.cachedBcs) {
+      ItemDelisted.cachedBcs = ItemDelisted.instantiateBcs()
+    }
+    return ItemDelisted.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(

@@ -77,6 +77,7 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements 
     T0: T0,
     T1: T1
   ): FieldReified<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    const reifiedBcs = Field.bcs(toBcs(T0), toBcs(T1))
     return {
       typeName: Field.$typeName,
       fullTypeName: composeSuiType(
@@ -91,8 +92,8 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements 
       reifiedTypeArgs: [T0, T1],
       fromFields: (fields: Record<string, any>) => Field.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Field.fromFieldsWithTypes([T0, T1], item),
-      fromBcs: (data: Uint8Array) => Field.fromBcs([T0, T1], data),
-      bcs: Field.bcs(toBcs(T0), toBcs(T1)),
+      fromBcs: (data: Uint8Array) => Field.fromFields([T0, T1], reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Field.fromJSONField([T0, T1], field),
       fromJSON: (json: Record<string, any>) => Field.fromJSON([T0, T1], json),
       fromSuiParsedData: (content: SuiParsedData) => Field.fromSuiParsedData([T0, T1], content),
@@ -119,13 +120,22 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements 
     return Field.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <T0 extends BcsType<any>, T1 extends BcsType<any>>(T0: T0, T1: T1) =>
       bcs.struct(`Field<${T0.name}, ${T1.name}>`, {
         id: UID.bcs,
         name: T0,
         value: T1,
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof Field.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Field.cachedBcs) {
+      Field.cachedBcs = Field.instantiateBcs()
+    }
+    return Field.cachedBcs
   }
 
   static fromFields<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(

@@ -50,6 +50,7 @@ export class Url implements StructClass {
   }
 
   static reified(): UrlReified {
+    const reifiedBcs = Url.bcs
     return {
       typeName: Url.$typeName,
       fullTypeName: composeSuiType(Url.$typeName, ...[]) as `0x2::url::Url`,
@@ -58,8 +59,8 @@ export class Url implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Url.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Url.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Url.fromBcs(data),
-      bcs: Url.bcs,
+      fromBcs: (data: Uint8Array) => Url.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Url.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Url.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Url.fromSuiParsedData(content),
@@ -83,10 +84,19 @@ export class Url implements StructClass {
     return Url.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Url', {
       url: String.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Url.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Url.cachedBcs) {
+      Url.cachedBcs = Url.instantiateBcs()
+    }
+    return Url.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Url {

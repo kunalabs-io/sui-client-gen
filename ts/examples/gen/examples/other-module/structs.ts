@@ -56,6 +56,7 @@ export class StructFromOtherModule implements StructClass {
   }
 
   static reified(): StructFromOtherModuleReified {
+    const reifiedBcs = StructFromOtherModule.bcs
     return {
       typeName: StructFromOtherModule.$typeName,
       fullTypeName: composeSuiType(
@@ -68,8 +69,8 @@ export class StructFromOtherModule implements StructClass {
       fromFields: (fields: Record<string, any>) => StructFromOtherModule.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         StructFromOtherModule.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => StructFromOtherModule.fromBcs(data),
-      bcs: StructFromOtherModule.bcs,
+      fromBcs: (data: Uint8Array) => StructFromOtherModule.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => StructFromOtherModule.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => StructFromOtherModule.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) =>
@@ -95,10 +96,19 @@ export class StructFromOtherModule implements StructClass {
     return StructFromOtherModule.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('StructFromOtherModule', {
       dummy_field: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof StructFromOtherModule.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!StructFromOtherModule.cachedBcs) {
+      StructFromOtherModule.cachedBcs = StructFromOtherModule.instantiateBcs()
+    }
+    return StructFromOtherModule.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): StructFromOtherModule {
@@ -224,6 +234,7 @@ export class AddedInAnUpgrade implements StructClass {
   }
 
   static reified(): AddedInAnUpgradeReified {
+    const reifiedBcs = AddedInAnUpgrade.bcs
     return {
       typeName: AddedInAnUpgrade.$typeName,
       fullTypeName: composeSuiType(
@@ -235,8 +246,8 @@ export class AddedInAnUpgrade implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AddedInAnUpgrade.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => AddedInAnUpgrade.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => AddedInAnUpgrade.fromBcs(data),
-      bcs: AddedInAnUpgrade.bcs,
+      fromBcs: (data: Uint8Array) => AddedInAnUpgrade.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => AddedInAnUpgrade.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => AddedInAnUpgrade.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => AddedInAnUpgrade.fromSuiParsedData(content),
@@ -260,10 +271,19 @@ export class AddedInAnUpgrade implements StructClass {
     return AddedInAnUpgrade.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('AddedInAnUpgrade', {
       dummy_field: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof AddedInAnUpgrade.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!AddedInAnUpgrade.cachedBcs) {
+      AddedInAnUpgrade.cachedBcs = AddedInAnUpgrade.instantiateBcs()
+    }
+    return AddedInAnUpgrade.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): AddedInAnUpgrade {

@@ -60,6 +60,7 @@ export class AuthenticatorState implements StructClass {
   }
 
   static reified(): AuthenticatorStateReified {
+    const reifiedBcs = AuthenticatorState.bcs
     return {
       typeName: AuthenticatorState.$typeName,
       fullTypeName: composeSuiType(
@@ -71,8 +72,8 @@ export class AuthenticatorState implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AuthenticatorState.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => AuthenticatorState.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => AuthenticatorState.fromBcs(data),
-      bcs: AuthenticatorState.bcs,
+      fromBcs: (data: Uint8Array) => AuthenticatorState.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => AuthenticatorState.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => AuthenticatorState.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => AuthenticatorState.fromSuiParsedData(content),
@@ -96,11 +97,20 @@ export class AuthenticatorState implements StructClass {
     return AuthenticatorState.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('AuthenticatorState', {
       id: UID.bcs,
       version: bcs.u64(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof AuthenticatorState.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!AuthenticatorState.cachedBcs) {
+      AuthenticatorState.cachedBcs = AuthenticatorState.instantiateBcs()
+    }
+    return AuthenticatorState.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): AuthenticatorState {
@@ -234,6 +244,7 @@ export class AuthenticatorStateInner implements StructClass {
   }
 
   static reified(): AuthenticatorStateInnerReified {
+    const reifiedBcs = AuthenticatorStateInner.bcs
     return {
       typeName: AuthenticatorStateInner.$typeName,
       fullTypeName: composeSuiType(
@@ -246,8 +257,8 @@ export class AuthenticatorStateInner implements StructClass {
       fromFields: (fields: Record<string, any>) => AuthenticatorStateInner.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         AuthenticatorStateInner.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => AuthenticatorStateInner.fromBcs(data),
-      bcs: AuthenticatorStateInner.bcs,
+      fromBcs: (data: Uint8Array) => AuthenticatorStateInner.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => AuthenticatorStateInner.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => AuthenticatorStateInner.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) =>
@@ -273,11 +284,20 @@ export class AuthenticatorStateInner implements StructClass {
     return AuthenticatorStateInner.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('AuthenticatorStateInner', {
       version: bcs.u64(),
       active_jwks: bcs.vector(ActiveJwk.bcs),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof AuthenticatorStateInner.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!AuthenticatorStateInner.cachedBcs) {
+      AuthenticatorStateInner.cachedBcs = AuthenticatorStateInner.instantiateBcs()
+    }
+    return AuthenticatorStateInner.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): AuthenticatorStateInner {
@@ -421,6 +441,7 @@ export class JWK implements StructClass {
   }
 
   static reified(): JWKReified {
+    const reifiedBcs = JWK.bcs
     return {
       typeName: JWK.$typeName,
       fullTypeName: composeSuiType(JWK.$typeName, ...[]) as `0x2::authenticator_state::JWK`,
@@ -429,8 +450,8 @@ export class JWK implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => JWK.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => JWK.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => JWK.fromBcs(data),
-      bcs: JWK.bcs,
+      fromBcs: (data: Uint8Array) => JWK.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => JWK.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => JWK.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => JWK.fromSuiParsedData(content),
@@ -454,13 +475,22 @@ export class JWK implements StructClass {
     return JWK.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('JWK', {
       kty: String.bcs,
       e: String.bcs,
       n: String.bcs,
       alg: String.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof JWK.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!JWK.cachedBcs) {
+      JWK.cachedBcs = JWK.instantiateBcs()
+    }
+    return JWK.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): JWK {
@@ -599,6 +629,7 @@ export class JwkId implements StructClass {
   }
 
   static reified(): JwkIdReified {
+    const reifiedBcs = JwkId.bcs
     return {
       typeName: JwkId.$typeName,
       fullTypeName: composeSuiType(JwkId.$typeName, ...[]) as `0x2::authenticator_state::JwkId`,
@@ -607,8 +638,8 @@ export class JwkId implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => JwkId.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => JwkId.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => JwkId.fromBcs(data),
-      bcs: JwkId.bcs,
+      fromBcs: (data: Uint8Array) => JwkId.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => JwkId.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => JwkId.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => JwkId.fromSuiParsedData(content),
@@ -632,11 +663,20 @@ export class JwkId implements StructClass {
     return JwkId.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('JwkId', {
       iss: String.bcs,
       kid: String.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof JwkId.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!JwkId.cachedBcs) {
+      JwkId.cachedBcs = JwkId.instantiateBcs()
+    }
+    return JwkId.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): JwkId {
@@ -770,6 +810,7 @@ export class ActiveJwk implements StructClass {
   }
 
   static reified(): ActiveJwkReified {
+    const reifiedBcs = ActiveJwk.bcs
     return {
       typeName: ActiveJwk.$typeName,
       fullTypeName: composeSuiType(
@@ -781,8 +822,8 @@ export class ActiveJwk implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ActiveJwk.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ActiveJwk.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => ActiveJwk.fromBcs(data),
-      bcs: ActiveJwk.bcs,
+      fromBcs: (data: Uint8Array) => ActiveJwk.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => ActiveJwk.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ActiveJwk.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ActiveJwk.fromSuiParsedData(content),
@@ -806,12 +847,21 @@ export class ActiveJwk implements StructClass {
     return ActiveJwk.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('ActiveJwk', {
       jwk_id: JwkId.bcs,
       jwk: JWK.bcs,
       epoch: bcs.u64(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof ActiveJwk.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!ActiveJwk.cachedBcs) {
+      ActiveJwk.cachedBcs = ActiveJwk.instantiateBcs()
+    }
+    return ActiveJwk.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): ActiveJwk {

@@ -52,6 +52,7 @@ export class Curve implements StructClass {
   }
 
   static reified(): CurveReified {
+    const reifiedBcs = Curve.bcs
     return {
       typeName: Curve.$typeName,
       fullTypeName: composeSuiType(Curve.$typeName, ...[]) as `0x2::groth16::Curve`,
@@ -60,8 +61,8 @@ export class Curve implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Curve.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Curve.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Curve.fromBcs(data),
-      bcs: Curve.bcs,
+      fromBcs: (data: Uint8Array) => Curve.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Curve.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Curve.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Curve.fromSuiParsedData(content),
@@ -85,10 +86,19 @@ export class Curve implements StructClass {
     return Curve.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Curve', {
       id: bcs.u8(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Curve.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Curve.cachedBcs) {
+      Curve.cachedBcs = Curve.instantiateBcs()
+    }
+    return Curve.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Curve {
@@ -215,6 +225,7 @@ export class PreparedVerifyingKey implements StructClass {
   }
 
   static reified(): PreparedVerifyingKeyReified {
+    const reifiedBcs = PreparedVerifyingKey.bcs
     return {
       typeName: PreparedVerifyingKey.$typeName,
       fullTypeName: composeSuiType(
@@ -227,8 +238,8 @@ export class PreparedVerifyingKey implements StructClass {
       fromFields: (fields: Record<string, any>) => PreparedVerifyingKey.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         PreparedVerifyingKey.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => PreparedVerifyingKey.fromBcs(data),
-      bcs: PreparedVerifyingKey.bcs,
+      fromBcs: (data: Uint8Array) => PreparedVerifyingKey.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => PreparedVerifyingKey.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => PreparedVerifyingKey.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) =>
@@ -254,13 +265,22 @@ export class PreparedVerifyingKey implements StructClass {
     return PreparedVerifyingKey.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('PreparedVerifyingKey', {
       vk_gamma_abc_g1_bytes: bcs.vector(bcs.u8()),
       alpha_g1_beta_g2_bytes: bcs.vector(bcs.u8()),
       gamma_g2_neg_pc_bytes: bcs.vector(bcs.u8()),
       delta_g2_neg_pc_bytes: bcs.vector(bcs.u8()),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof PreparedVerifyingKey.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!PreparedVerifyingKey.cachedBcs) {
+      PreparedVerifyingKey.cachedBcs = PreparedVerifyingKey.instantiateBcs()
+    }
+    return PreparedVerifyingKey.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): PreparedVerifyingKey {
@@ -410,6 +430,7 @@ export class PublicProofInputs implements StructClass {
   }
 
   static reified(): PublicProofInputsReified {
+    const reifiedBcs = PublicProofInputs.bcs
     return {
       typeName: PublicProofInputs.$typeName,
       fullTypeName: composeSuiType(
@@ -421,8 +442,8 @@ export class PublicProofInputs implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PublicProofInputs.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PublicProofInputs.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => PublicProofInputs.fromBcs(data),
-      bcs: PublicProofInputs.bcs,
+      fromBcs: (data: Uint8Array) => PublicProofInputs.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => PublicProofInputs.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => PublicProofInputs.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => PublicProofInputs.fromSuiParsedData(content),
@@ -446,10 +467,19 @@ export class PublicProofInputs implements StructClass {
     return PublicProofInputs.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('PublicProofInputs', {
       bytes: bcs.vector(bcs.u8()),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof PublicProofInputs.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!PublicProofInputs.cachedBcs) {
+      PublicProofInputs.cachedBcs = PublicProofInputs.instantiateBcs()
+    }
+    return PublicProofInputs.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): PublicProofInputs {
@@ -573,6 +603,7 @@ export class ProofPoints implements StructClass {
   }
 
   static reified(): ProofPointsReified {
+    const reifiedBcs = ProofPoints.bcs
     return {
       typeName: ProofPoints.$typeName,
       fullTypeName: composeSuiType(ProofPoints.$typeName, ...[]) as `0x2::groth16::ProofPoints`,
@@ -581,8 +612,8 @@ export class ProofPoints implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ProofPoints.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ProofPoints.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => ProofPoints.fromBcs(data),
-      bcs: ProofPoints.bcs,
+      fromBcs: (data: Uint8Array) => ProofPoints.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => ProofPoints.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ProofPoints.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ProofPoints.fromSuiParsedData(content),
@@ -606,10 +637,19 @@ export class ProofPoints implements StructClass {
     return ProofPoints.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('ProofPoints', {
       bytes: bcs.vector(bcs.u8()),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof ProofPoints.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!ProofPoints.cachedBcs) {
+      ProofPoints.cachedBcs = ProofPoints.instantiateBcs()
+    }
+    return ProofPoints.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): ProofPoints {

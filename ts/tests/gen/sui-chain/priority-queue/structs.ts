@@ -71,6 +71,7 @@ export class PriorityQueue<T0 extends TypeArgument> implements StructClass {
   static reified<T0 extends Reified<TypeArgument, any>>(
     T0: T0
   ): PriorityQueueReified<ToTypeArgument<T0>> {
+    const reifiedBcs = PriorityQueue.bcs(toBcs(T0))
     return {
       typeName: PriorityQueue.$typeName,
       fullTypeName: composeSuiType(
@@ -82,8 +83,8 @@ export class PriorityQueue<T0 extends TypeArgument> implements StructClass {
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => PriorityQueue.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PriorityQueue.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => PriorityQueue.fromBcs(T0, data),
-      bcs: PriorityQueue.bcs(toBcs(T0)),
+      fromBcs: (data: Uint8Array) => PriorityQueue.fromFields(T0, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => PriorityQueue.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => PriorityQueue.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => PriorityQueue.fromSuiParsedData(T0, content),
@@ -109,11 +110,20 @@ export class PriorityQueue<T0 extends TypeArgument> implements StructClass {
     return PriorityQueue.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <T0 extends BcsType<any>>(T0: T0) =>
       bcs.struct(`PriorityQueue<${T0.name}>`, {
         entries: bcs.vector(Entry.bcs(T0)),
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof PriorityQueue.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!PriorityQueue.cachedBcs) {
+      PriorityQueue.cachedBcs = PriorityQueue.instantiateBcs()
+    }
+    return PriorityQueue.cachedBcs
   }
 
   static fromFields<T0 extends Reified<TypeArgument, any>>(
@@ -293,6 +303,7 @@ export class Entry<T0 extends TypeArgument> implements StructClass {
   }
 
   static reified<T0 extends Reified<TypeArgument, any>>(T0: T0): EntryReified<ToTypeArgument<T0>> {
+    const reifiedBcs = Entry.bcs(toBcs(T0))
     return {
       typeName: Entry.$typeName,
       fullTypeName: composeSuiType(
@@ -304,8 +315,8 @@ export class Entry<T0 extends TypeArgument> implements StructClass {
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Entry.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Entry.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => Entry.fromBcs(T0, data),
-      bcs: Entry.bcs(toBcs(T0)),
+      fromBcs: (data: Uint8Array) => Entry.fromFields(T0, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Entry.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => Entry.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => Entry.fromSuiParsedData(T0, content),
@@ -331,12 +342,21 @@ export class Entry<T0 extends TypeArgument> implements StructClass {
     return Entry.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <T0 extends BcsType<any>>(T0: T0) =>
       bcs.struct(`Entry<${T0.name}>`, {
         priority: bcs.u64(),
         value: T0,
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof Entry.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Entry.cachedBcs) {
+      Entry.cachedBcs = Entry.instantiateBcs()
+    }
+    return Entry.cachedBcs
   }
 
   static fromFields<T0 extends Reified<TypeArgument, any>>(

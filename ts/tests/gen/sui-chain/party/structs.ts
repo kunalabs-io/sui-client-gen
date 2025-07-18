@@ -53,6 +53,7 @@ export class Party implements StructClass {
   }
 
   static reified(): PartyReified {
+    const reifiedBcs = Party.bcs
     return {
       typeName: Party.$typeName,
       fullTypeName: composeSuiType(Party.$typeName, ...[]) as `0x2::party::Party`,
@@ -61,8 +62,8 @@ export class Party implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Party.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Party.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Party.fromBcs(data),
-      bcs: Party.bcs,
+      fromBcs: (data: Uint8Array) => Party.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Party.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Party.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Party.fromSuiParsedData(content),
@@ -86,7 +87,7 @@ export class Party implements StructClass {
     return Party.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Party', {
       default: Permissions.bcs,
       members: VecMap.bcs(
@@ -97,6 +98,15 @@ export class Party implements StructClass {
         Permissions.bcs
       ),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Party.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Party.cachedBcs) {
+      Party.cachedBcs = Party.instantiateBcs()
+    }
+    return Party.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Party {
@@ -227,6 +237,7 @@ export class Permissions implements StructClass {
   }
 
   static reified(): PermissionsReified {
+    const reifiedBcs = Permissions.bcs
     return {
       typeName: Permissions.$typeName,
       fullTypeName: composeSuiType(Permissions.$typeName, ...[]) as `0x2::party::Permissions`,
@@ -235,8 +246,8 @@ export class Permissions implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Permissions.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Permissions.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Permissions.fromBcs(data),
-      bcs: Permissions.bcs,
+      fromBcs: (data: Uint8Array) => Permissions.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Permissions.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Permissions.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Permissions.fromSuiParsedData(content),
@@ -260,10 +271,19 @@ export class Permissions implements StructClass {
     return Permissions.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Permissions', {
       pos0: bcs.u64(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Permissions.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Permissions.cachedBcs) {
+      Permissions.cachedBcs = Permissions.instantiateBcs()
+    }
+    return Permissions.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Permissions {

@@ -52,6 +52,7 @@ export class BCS implements StructClass {
   }
 
   static reified(): BCSReified {
+    const reifiedBcs = BCS.bcs
     return {
       typeName: BCS.$typeName,
       fullTypeName: composeSuiType(BCS.$typeName, ...[]) as `0x2::bcs::BCS`,
@@ -60,8 +61,8 @@ export class BCS implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => BCS.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => BCS.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => BCS.fromBcs(data),
-      bcs: BCS.bcs,
+      fromBcs: (data: Uint8Array) => BCS.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => BCS.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => BCS.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => BCS.fromSuiParsedData(content),
@@ -85,10 +86,19 @@ export class BCS implements StructClass {
     return BCS.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('BCS', {
       bytes: bcs.vector(bcs.u8()),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof BCS.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!BCS.cachedBcs) {
+      BCS.cachedBcs = BCS.instantiateBcs()
+    }
+    return BCS.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): BCS {

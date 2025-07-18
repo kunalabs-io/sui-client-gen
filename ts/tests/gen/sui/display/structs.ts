@@ -74,6 +74,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): DisplayReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = Display.bcs
     return {
       typeName: Display.$typeName,
       fullTypeName: composeSuiType(
@@ -85,8 +86,8 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Display.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Display.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => Display.fromBcs(T, data),
-      bcs: Display.bcs,
+      fromBcs: (data: Uint8Array) => Display.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Display.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Display.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Display.fromSuiParsedData(T, content),
@@ -112,12 +113,21 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
     return Display.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Display', {
       id: UID.bcs,
       fields: VecMap.bcs(String.bcs, String.bcs),
       version: bcs.u16(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Display.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Display.cachedBcs) {
+      Display.cachedBcs = Display.instantiateBcs()
+    }
+    return Display.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
@@ -302,6 +312,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): DisplayCreatedReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = DisplayCreated.bcs
     return {
       typeName: DisplayCreated.$typeName,
       fullTypeName: composeSuiType(
@@ -313,8 +324,8 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => DisplayCreated.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => DisplayCreated.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => DisplayCreated.fromBcs(T, data),
-      bcs: DisplayCreated.bcs,
+      fromBcs: (data: Uint8Array) => DisplayCreated.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => DisplayCreated.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => DisplayCreated.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => DisplayCreated.fromSuiParsedData(T, content),
@@ -340,10 +351,19 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
     return DisplayCreated.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('DisplayCreated', {
       id: ID.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof DisplayCreated.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!DisplayCreated.cachedBcs) {
+      DisplayCreated.cachedBcs = DisplayCreated.instantiateBcs()
+    }
+    return DisplayCreated.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
@@ -519,6 +539,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): VersionUpdatedReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = VersionUpdated.bcs
     return {
       typeName: VersionUpdated.$typeName,
       fullTypeName: composeSuiType(
@@ -530,8 +551,8 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => VersionUpdated.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VersionUpdated.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => VersionUpdated.fromBcs(T, data),
-      bcs: VersionUpdated.bcs,
+      fromBcs: (data: Uint8Array) => VersionUpdated.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => VersionUpdated.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => VersionUpdated.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => VersionUpdated.fromSuiParsedData(T, content),
@@ -557,12 +578,21 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
     return VersionUpdated.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('VersionUpdated', {
       id: ID.bcs,
       version: bcs.u16(),
       fields: VecMap.bcs(String.bcs, String.bcs),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof VersionUpdated.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!VersionUpdated.cachedBcs) {
+      VersionUpdated.cachedBcs = VersionUpdated.instantiateBcs()
+    }
+    return VersionUpdated.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(

@@ -59,6 +59,7 @@ export class PCREntry implements StructClass {
   }
 
   static reified(): PCREntryReified {
+    const reifiedBcs = PCREntry.bcs
     return {
       typeName: PCREntry.$typeName,
       fullTypeName: composeSuiType(PCREntry.$typeName, ...[]) as `0x2::nitro_attestation::PCREntry`,
@@ -67,8 +68,8 @@ export class PCREntry implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PCREntry.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PCREntry.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => PCREntry.fromBcs(data),
-      bcs: PCREntry.bcs,
+      fromBcs: (data: Uint8Array) => PCREntry.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => PCREntry.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => PCREntry.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => PCREntry.fromSuiParsedData(content),
@@ -92,11 +93,20 @@ export class PCREntry implements StructClass {
     return PCREntry.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('PCREntry', {
       index: bcs.u8(),
       value: bcs.vector(bcs.u8()),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof PCREntry.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!PCREntry.cachedBcs) {
+      PCREntry.cachedBcs = PCREntry.instantiateBcs()
+    }
+    return PCREntry.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): PCREntry {
@@ -245,6 +255,7 @@ export class NitroAttestationDocument implements StructClass {
   }
 
   static reified(): NitroAttestationDocumentReified {
+    const reifiedBcs = NitroAttestationDocument.bcs
     return {
       typeName: NitroAttestationDocument.$typeName,
       fullTypeName: composeSuiType(
@@ -257,8 +268,8 @@ export class NitroAttestationDocument implements StructClass {
       fromFields: (fields: Record<string, any>) => NitroAttestationDocument.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         NitroAttestationDocument.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => NitroAttestationDocument.fromBcs(data),
-      bcs: NitroAttestationDocument.bcs,
+      fromBcs: (data: Uint8Array) => NitroAttestationDocument.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => NitroAttestationDocument.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => NitroAttestationDocument.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) =>
@@ -284,7 +295,7 @@ export class NitroAttestationDocument implements StructClass {
     return NitroAttestationDocument.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('NitroAttestationDocument', {
       module_id: bcs.vector(bcs.u8()),
       timestamp: bcs.u64(),
@@ -294,6 +305,15 @@ export class NitroAttestationDocument implements StructClass {
       user_data: Option.bcs(bcs.vector(bcs.u8())),
       nonce: Option.bcs(bcs.vector(bcs.u8())),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof NitroAttestationDocument.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!NitroAttestationDocument.cachedBcs) {
+      NitroAttestationDocument.cachedBcs = NitroAttestationDocument.instantiateBcs()
+    }
+    return NitroAttestationDocument.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): NitroAttestationDocument {

@@ -53,6 +53,7 @@ export class AccumulatorRoot implements StructClass {
   }
 
   static reified(): AccumulatorRootReified {
+    const reifiedBcs = AccumulatorRoot.bcs
     return {
       typeName: AccumulatorRoot.$typeName,
       fullTypeName: composeSuiType(
@@ -64,8 +65,8 @@ export class AccumulatorRoot implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AccumulatorRoot.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => AccumulatorRoot.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => AccumulatorRoot.fromBcs(data),
-      bcs: AccumulatorRoot.bcs,
+      fromBcs: (data: Uint8Array) => AccumulatorRoot.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => AccumulatorRoot.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => AccumulatorRoot.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => AccumulatorRoot.fromSuiParsedData(content),
@@ -89,10 +90,19 @@ export class AccumulatorRoot implements StructClass {
     return AccumulatorRoot.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('AccumulatorRoot', {
       id: UID.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof AccumulatorRoot.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!AccumulatorRoot.cachedBcs) {
+      AccumulatorRoot.cachedBcs = AccumulatorRoot.instantiateBcs()
+    }
+    return AccumulatorRoot.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): AccumulatorRoot {

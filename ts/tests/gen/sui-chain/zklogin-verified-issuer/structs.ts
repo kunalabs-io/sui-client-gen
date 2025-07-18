@@ -60,6 +60,7 @@ export class VerifiedIssuer implements StructClass {
   }
 
   static reified(): VerifiedIssuerReified {
+    const reifiedBcs = VerifiedIssuer.bcs
     return {
       typeName: VerifiedIssuer.$typeName,
       fullTypeName: composeSuiType(
@@ -71,8 +72,8 @@ export class VerifiedIssuer implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => VerifiedIssuer.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VerifiedIssuer.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => VerifiedIssuer.fromBcs(data),
-      bcs: VerifiedIssuer.bcs,
+      fromBcs: (data: Uint8Array) => VerifiedIssuer.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => VerifiedIssuer.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => VerifiedIssuer.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => VerifiedIssuer.fromSuiParsedData(content),
@@ -96,7 +97,7 @@ export class VerifiedIssuer implements StructClass {
     return VerifiedIssuer.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('VerifiedIssuer', {
       id: UID.bcs,
       owner: bcs.bytes(32).transform({
@@ -105,6 +106,15 @@ export class VerifiedIssuer implements StructClass {
       }),
       issuer: String.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof VerifiedIssuer.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!VerifiedIssuer.cachedBcs) {
+      VerifiedIssuer.cachedBcs = VerifiedIssuer.instantiateBcs()
+    }
+    return VerifiedIssuer.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): VerifiedIssuer {

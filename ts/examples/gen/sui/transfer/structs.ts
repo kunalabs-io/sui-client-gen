@@ -72,6 +72,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): ReceivingReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = Receiving.bcs
     return {
       typeName: Receiving.$typeName,
       fullTypeName: composeSuiType(
@@ -83,8 +84,8 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Receiving.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Receiving.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => Receiving.fromBcs(T, data),
-      bcs: Receiving.bcs,
+      fromBcs: (data: Uint8Array) => Receiving.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Receiving.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Receiving.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Receiving.fromSuiParsedData(T, content),
@@ -110,11 +111,20 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
     return Receiving.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Receiving', {
       id: ID.bcs,
       version: bcs.u64(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Receiving.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Receiving.cachedBcs) {
+      Receiving.cachedBcs = Receiving.instantiateBcs()
+    }
+    return Receiving.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(

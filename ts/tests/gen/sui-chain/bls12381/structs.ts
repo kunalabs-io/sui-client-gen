@@ -49,6 +49,7 @@ export class Scalar implements StructClass {
   }
 
   static reified(): ScalarReified {
+    const reifiedBcs = Scalar.bcs
     return {
       typeName: Scalar.$typeName,
       fullTypeName: composeSuiType(Scalar.$typeName, ...[]) as `0x2::bls12381::Scalar`,
@@ -57,8 +58,8 @@ export class Scalar implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Scalar.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Scalar.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Scalar.fromBcs(data),
-      bcs: Scalar.bcs,
+      fromBcs: (data: Uint8Array) => Scalar.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Scalar.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Scalar.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Scalar.fromSuiParsedData(content),
@@ -82,10 +83,19 @@ export class Scalar implements StructClass {
     return Scalar.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Scalar', {
       dummy_field: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Scalar.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Scalar.cachedBcs) {
+      Scalar.cachedBcs = Scalar.instantiateBcs()
+    }
+    return Scalar.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Scalar {
@@ -202,6 +212,7 @@ export class G1 implements StructClass {
   }
 
   static reified(): G1Reified {
+    const reifiedBcs = G1.bcs
     return {
       typeName: G1.$typeName,
       fullTypeName: composeSuiType(G1.$typeName, ...[]) as `0x2::bls12381::G1`,
@@ -210,8 +221,8 @@ export class G1 implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => G1.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => G1.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => G1.fromBcs(data),
-      bcs: G1.bcs,
+      fromBcs: (data: Uint8Array) => G1.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => G1.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => G1.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => G1.fromSuiParsedData(content),
@@ -235,10 +246,19 @@ export class G1 implements StructClass {
     return G1.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('G1', {
       dummy_field: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof G1.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!G1.cachedBcs) {
+      G1.cachedBcs = G1.instantiateBcs()
+    }
+    return G1.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): G1 {
@@ -355,6 +375,7 @@ export class G2 implements StructClass {
   }
 
   static reified(): G2Reified {
+    const reifiedBcs = G2.bcs
     return {
       typeName: G2.$typeName,
       fullTypeName: composeSuiType(G2.$typeName, ...[]) as `0x2::bls12381::G2`,
@@ -363,8 +384,8 @@ export class G2 implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => G2.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => G2.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => G2.fromBcs(data),
-      bcs: G2.bcs,
+      fromBcs: (data: Uint8Array) => G2.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => G2.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => G2.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => G2.fromSuiParsedData(content),
@@ -388,10 +409,19 @@ export class G2 implements StructClass {
     return G2.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('G2', {
       dummy_field: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof G2.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!G2.cachedBcs) {
+      G2.cachedBcs = G2.instantiateBcs()
+    }
+    return G2.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): G2 {
@@ -508,6 +538,7 @@ export class GT implements StructClass {
   }
 
   static reified(): GTReified {
+    const reifiedBcs = GT.bcs
     return {
       typeName: GT.$typeName,
       fullTypeName: composeSuiType(GT.$typeName, ...[]) as `0x2::bls12381::GT`,
@@ -516,8 +547,8 @@ export class GT implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => GT.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => GT.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => GT.fromBcs(data),
-      bcs: GT.bcs,
+      fromBcs: (data: Uint8Array) => GT.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => GT.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => GT.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => GT.fromSuiParsedData(content),
@@ -541,10 +572,19 @@ export class GT implements StructClass {
     return GT.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('GT', {
       dummy_field: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof GT.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!GT.cachedBcs) {
+      GT.cachedBcs = GT.instantiateBcs()
+    }
+    return GT.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): GT {
@@ -664,6 +704,7 @@ export class UncompressedG1 implements StructClass {
   }
 
   static reified(): UncompressedG1Reified {
+    const reifiedBcs = UncompressedG1.bcs
     return {
       typeName: UncompressedG1.$typeName,
       fullTypeName: composeSuiType(
@@ -675,8 +716,8 @@ export class UncompressedG1 implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UncompressedG1.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UncompressedG1.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => UncompressedG1.fromBcs(data),
-      bcs: UncompressedG1.bcs,
+      fromBcs: (data: Uint8Array) => UncompressedG1.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => UncompressedG1.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UncompressedG1.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => UncompressedG1.fromSuiParsedData(content),
@@ -700,10 +741,19 @@ export class UncompressedG1 implements StructClass {
     return UncompressedG1.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('UncompressedG1', {
       dummy_field: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof UncompressedG1.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!UncompressedG1.cachedBcs) {
+      UncompressedG1.cachedBcs = UncompressedG1.instantiateBcs()
+    }
+    return UncompressedG1.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): UncompressedG1 {

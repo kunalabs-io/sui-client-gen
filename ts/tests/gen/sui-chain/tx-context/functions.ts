@@ -45,16 +45,24 @@ export function freshId(tx: Transaction) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::tx_context::fresh_id`, arguments: [] })
 }
 
-export function idsCreated(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::tx_context::ids_created`, arguments: [] })
+export function referenceGasPrice(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::tx_context::reference_gas_price`, arguments: [] })
 }
 
-export function nativeIdsCreated(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::tx_context::native_ids_created`, arguments: [] })
+export function nativeRgp(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::tx_context::native_rgp`, arguments: [] })
+}
+
+export function gasPrice(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::tx_context::gas_price`, arguments: [] })
 }
 
 export function nativeGasPrice(tx: Transaction) {
   return tx.moveCall({ target: `${PUBLISHED_AT}::tx_context::native_gas_price`, arguments: [] })
+}
+
+export function nativeIdsCreated(tx: Transaction) {
+  return tx.moveCall({ target: `${PUBLISHED_AT}::tx_context::native_ids_created`, arguments: [] })
 }
 
 export function nativeGasBudget(tx: Transaction) {

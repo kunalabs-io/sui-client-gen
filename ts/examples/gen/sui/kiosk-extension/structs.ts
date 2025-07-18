@@ -70,6 +70,7 @@ export class Extension implements StructClass {
   }
 
   static reified(): ExtensionReified {
+    const reifiedBcs = Extension.bcs
     return {
       typeName: Extension.$typeName,
       fullTypeName: composeSuiType(Extension.$typeName, ...[]) as `0x2::kiosk_extension::Extension`,
@@ -78,8 +79,8 @@ export class Extension implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Extension.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Extension.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Extension.fromBcs(data),
-      bcs: Extension.bcs,
+      fromBcs: (data: Uint8Array) => Extension.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Extension.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Extension.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Extension.fromSuiParsedData(content),
@@ -103,12 +104,21 @@ export class Extension implements StructClass {
     return Extension.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Extension', {
       storage: Bag.bcs,
       permissions: bcs.u128(),
       is_enabled: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Extension.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Extension.cachedBcs) {
+      Extension.cachedBcs = Extension.instantiateBcs()
+    }
+    return Extension.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Extension {
@@ -245,6 +255,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
   static reified<Ext extends PhantomReified<PhantomTypeArgument>>(
     Ext: Ext
   ): ExtensionKeyReified<ToPhantomTypeArgument<Ext>> {
+    const reifiedBcs = ExtensionKey.bcs
     return {
       typeName: ExtensionKey.$typeName,
       fullTypeName: composeSuiType(
@@ -256,8 +267,8 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
       reifiedTypeArgs: [Ext],
       fromFields: (fields: Record<string, any>) => ExtensionKey.fromFields(Ext, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ExtensionKey.fromFieldsWithTypes(Ext, item),
-      fromBcs: (data: Uint8Array) => ExtensionKey.fromBcs(Ext, data),
-      bcs: ExtensionKey.bcs,
+      fromBcs: (data: Uint8Array) => ExtensionKey.fromFields(Ext, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => ExtensionKey.fromJSONField(Ext, field),
       fromJSON: (json: Record<string, any>) => ExtensionKey.fromJSON(Ext, json),
       fromSuiParsedData: (content: SuiParsedData) => ExtensionKey.fromSuiParsedData(Ext, content),
@@ -283,10 +294,19 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
     return ExtensionKey.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('ExtensionKey', {
       dummy_field: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof ExtensionKey.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!ExtensionKey.cachedBcs) {
+      ExtensionKey.cachedBcs = ExtensionKey.instantiateBcs()
+    }
+    return ExtensionKey.cachedBcs
   }
 
   static fromFields<Ext extends PhantomReified<PhantomTypeArgument>>(

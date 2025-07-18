@@ -79,6 +79,7 @@ export class Dummy implements StructClass {
   }
 
   static reified(): DummyReified {
+    const reifiedBcs = Dummy.bcs
     return {
       typeName: Dummy.$typeName,
       fullTypeName: composeSuiType(Dummy.$typeName, ...[]) as `${typeof PKG_V1}::fixture::Dummy`,
@@ -87,8 +88,8 @@ export class Dummy implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Dummy.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Dummy.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Dummy.fromBcs(data),
-      bcs: Dummy.bcs,
+      fromBcs: (data: Uint8Array) => Dummy.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Dummy.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Dummy.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Dummy.fromSuiParsedData(content),
@@ -112,10 +113,19 @@ export class Dummy implements StructClass {
     return Dummy.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Dummy', {
       dummy_field: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Dummy.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Dummy.cachedBcs) {
+      Dummy.cachedBcs = Dummy.instantiateBcs()
+    }
+    return Dummy.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Dummy {
@@ -243,6 +253,7 @@ export class WithGenericField<T0 extends TypeArgument> implements StructClass {
   static reified<T0 extends Reified<TypeArgument, any>>(
     T0: T0
   ): WithGenericFieldReified<ToTypeArgument<T0>> {
+    const reifiedBcs = WithGenericField.bcs(toBcs(T0))
     return {
       typeName: WithGenericField.$typeName,
       fullTypeName: composeSuiType(
@@ -255,8 +266,8 @@ export class WithGenericField<T0 extends TypeArgument> implements StructClass {
       fromFields: (fields: Record<string, any>) => WithGenericField.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         WithGenericField.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => WithGenericField.fromBcs(T0, data),
-      bcs: WithGenericField.bcs(toBcs(T0)),
+      fromBcs: (data: Uint8Array) => WithGenericField.fromFields(T0, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => WithGenericField.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => WithGenericField.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) =>
@@ -284,12 +295,21 @@ export class WithGenericField<T0 extends TypeArgument> implements StructClass {
     return WithGenericField.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <T0 extends BcsType<any>>(T0: T0) =>
       bcs.struct(`WithGenericField<${T0.name}>`, {
         id: UID.bcs,
         generic_field: T0,
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof WithGenericField.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!WithGenericField.cachedBcs) {
+      WithGenericField.cachedBcs = WithGenericField.instantiateBcs()
+    }
+    return WithGenericField.cachedBcs
   }
 
   static fromFields<T0 extends Reified<TypeArgument, any>>(
@@ -467,6 +487,7 @@ export class Bar implements StructClass {
   }
 
   static reified(): BarReified {
+    const reifiedBcs = Bar.bcs
     return {
       typeName: Bar.$typeName,
       fullTypeName: composeSuiType(Bar.$typeName, ...[]) as `${typeof PKG_V1}::fixture::Bar`,
@@ -475,8 +496,8 @@ export class Bar implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => Bar.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Bar.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => Bar.fromBcs(data),
-      bcs: Bar.bcs,
+      fromBcs: (data: Uint8Array) => Bar.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Bar.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Bar.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Bar.fromSuiParsedData(content),
@@ -500,10 +521,19 @@ export class Bar implements StructClass {
     return Bar.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Bar', {
       value: bcs.u64(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Bar.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Bar.cachedBcs) {
+      Bar.cachedBcs = Bar.instantiateBcs()
+    }
+    return Bar.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): Bar {
@@ -635,6 +665,7 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument>
     T0: T0,
     T1: T1
   ): WithTwoGenericsReified<ToTypeArgument<T0>, ToTypeArgument<T1>> {
+    const reifiedBcs = WithTwoGenerics.bcs(toBcs(T0), toBcs(T1))
     return {
       typeName: WithTwoGenerics.$typeName,
       fullTypeName: composeSuiType(
@@ -650,8 +681,8 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument>
       fromFields: (fields: Record<string, any>) => WithTwoGenerics.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         WithTwoGenerics.fromFieldsWithTypes([T0, T1], item),
-      fromBcs: (data: Uint8Array) => WithTwoGenerics.fromBcs([T0, T1], data),
-      bcs: WithTwoGenerics.bcs(toBcs(T0), toBcs(T1)),
+      fromBcs: (data: Uint8Array) => WithTwoGenerics.fromFields([T0, T1], reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => WithTwoGenerics.fromJSONField([T0, T1], field),
       fromJSON: (json: Record<string, any>) => WithTwoGenerics.fromJSON([T0, T1], json),
       fromSuiParsedData: (content: SuiParsedData) =>
@@ -680,12 +711,21 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument>
     return WithTwoGenerics.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <T0 extends BcsType<any>, T1 extends BcsType<any>>(T0: T0, T1: T1) =>
       bcs.struct(`WithTwoGenerics<${T0.name}, ${T1.name}>`, {
         generic_field_1: T0,
         generic_field_2: T1,
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof WithTwoGenerics.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!WithTwoGenerics.cachedBcs) {
+      WithTwoGenerics.cachedBcs = WithTwoGenerics.instantiateBcs()
+    }
+    return WithTwoGenerics.cachedBcs
   }
 
   static fromFields<T0 extends Reified<TypeArgument, any>, T1 extends Reified<TypeArgument, any>>(
@@ -913,6 +953,7 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
   }
 
   static reified<T0 extends Reified<TypeArgument, any>>(T0: T0): FooReified<ToTypeArgument<T0>> {
+    const reifiedBcs = Foo.bcs(toBcs(T0))
     return {
       typeName: Foo.$typeName,
       fullTypeName: composeSuiType(
@@ -924,8 +965,8 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
       reifiedTypeArgs: [T0],
       fromFields: (fields: Record<string, any>) => Foo.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Foo.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => Foo.fromBcs(T0, data),
-      bcs: Foo.bcs(toBcs(T0)),
+      fromBcs: (data: Uint8Array) => Foo.fromFields(T0, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Foo.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => Foo.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) => Foo.fromSuiParsedData(T0, content),
@@ -951,7 +992,7 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
     return Foo.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <T0 extends BcsType<any>>(T0: T0) =>
       bcs.struct(`Foo<${T0.name}>`, {
         id: UID.bcs,
@@ -974,6 +1015,15 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
         dummy: Dummy.bcs,
         other: StructFromOtherModule.bcs,
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof Foo.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Foo.cachedBcs) {
+      Foo.cachedBcs = Foo.instantiateBcs()
+    }
+    return Foo.cachedBcs
   }
 
   static fromFields<T0 extends Reified<TypeArgument, any>>(
@@ -1335,6 +1385,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     T0 extends PhantomReified<PhantomTypeArgument>,
     T1 extends Reified<TypeArgument, any>,
   >(T0: T0, T1: T1): WithSpecialTypesReified<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>> {
+    const reifiedBcs = WithSpecialTypes.bcs(toBcs(T1))
     return {
       typeName: WithSpecialTypes.$typeName,
       fullTypeName: composeSuiType(
@@ -1350,8 +1401,8 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
       fromFields: (fields: Record<string, any>) => WithSpecialTypes.fromFields([T0, T1], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         WithSpecialTypes.fromFieldsWithTypes([T0, T1], item),
-      fromBcs: (data: Uint8Array) => WithSpecialTypes.fromBcs([T0, T1], data),
-      bcs: WithSpecialTypes.bcs(toBcs(T1)),
+      fromBcs: (data: Uint8Array) => WithSpecialTypes.fromFields([T0, T1], reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => WithSpecialTypes.fromJSONField([T0, T1], field),
       fromJSON: (json: Record<string, any>) => WithSpecialTypes.fromJSON([T0, T1], json),
       fromSuiParsedData: (content: SuiParsedData) =>
@@ -1383,7 +1434,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     return WithSpecialTypes.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <T1 extends BcsType<any>>(T1: T1) =>
       bcs.struct(`WithSpecialTypes<${T1.name}>`, {
         id: UID.bcs,
@@ -1400,6 +1451,15 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
         option_generic: Option.bcs(T1),
         option_generic_none: Option.bcs(T1),
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof WithSpecialTypes.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!WithSpecialTypes.cachedBcs) {
+      WithSpecialTypes.cachedBcs = WithSpecialTypes.instantiateBcs()
+    }
+    return WithSpecialTypes.cachedBcs
   }
 
   static fromFields<
@@ -1766,6 +1826,16 @@ export class WithSpecialTypesAsGenerics<
     ToTypeArgument<T6>,
     ToTypeArgument<T7>
   > {
+    const reifiedBcs = WithSpecialTypesAsGenerics.bcs(
+      toBcs(T0),
+      toBcs(T1),
+      toBcs(T2),
+      toBcs(T3),
+      toBcs(T4),
+      toBcs(T5),
+      toBcs(T6),
+      toBcs(T7)
+    )
     return {
       typeName: WithSpecialTypesAsGenerics.$typeName,
       fullTypeName: composeSuiType(
@@ -1807,17 +1877,11 @@ export class WithSpecialTypesAsGenerics<
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         WithSpecialTypesAsGenerics.fromFieldsWithTypes([T0, T1, T2, T3, T4, T5, T6, T7], item),
       fromBcs: (data: Uint8Array) =>
-        WithSpecialTypesAsGenerics.fromBcs([T0, T1, T2, T3, T4, T5, T6, T7], data),
-      bcs: WithSpecialTypesAsGenerics.bcs(
-        toBcs(T0),
-        toBcs(T1),
-        toBcs(T2),
-        toBcs(T3),
-        toBcs(T4),
-        toBcs(T5),
-        toBcs(T6),
-        toBcs(T7)
-      ),
+        WithSpecialTypesAsGenerics.fromFields(
+          [T0, T1, T2, T3, T4, T5, T6, T7],
+          reifiedBcs.parse(data)
+        ),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) =>
         WithSpecialTypesAsGenerics.fromJSONField([T0, T1, T2, T3, T4, T5, T6, T7], field),
       fromJSON: (json: Record<string, any>) =>
@@ -1900,7 +1964,7 @@ export class WithSpecialTypesAsGenerics<
     return WithSpecialTypesAsGenerics.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <
       T0 extends BcsType<any>,
       T1 extends BcsType<any>,
@@ -1934,6 +1998,16 @@ export class WithSpecialTypesAsGenerics<
           option_none: T7,
         }
       )
+  }
+
+  private static cachedBcs: ReturnType<typeof WithSpecialTypesAsGenerics.instantiateBcs> | null =
+    null
+
+  static get bcs() {
+    if (!WithSpecialTypesAsGenerics.cachedBcs) {
+      WithSpecialTypesAsGenerics.cachedBcs = WithSpecialTypesAsGenerics.instantiateBcs()
+    }
+    return WithSpecialTypesAsGenerics.cachedBcs
   }
 
   static fromFields<
@@ -2351,6 +2425,7 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
   static reified<T0 extends Reified<TypeArgument, any>>(
     T0: T0
   ): WithSpecialTypesInVectorsReified<ToTypeArgument<T0>> {
+    const reifiedBcs = WithSpecialTypesInVectors.bcs(toBcs(T0))
     return {
       typeName: WithSpecialTypesInVectors.$typeName,
       fullTypeName: composeSuiType(
@@ -2363,8 +2438,9 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
       fromFields: (fields: Record<string, any>) => WithSpecialTypesInVectors.fromFields(T0, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         WithSpecialTypesInVectors.fromFieldsWithTypes(T0, item),
-      fromBcs: (data: Uint8Array) => WithSpecialTypesInVectors.fromBcs(T0, data),
-      bcs: WithSpecialTypesInVectors.bcs(toBcs(T0)),
+      fromBcs: (data: Uint8Array) =>
+        WithSpecialTypesInVectors.fromFields(T0, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => WithSpecialTypesInVectors.fromJSONField(T0, field),
       fromJSON: (json: Record<string, any>) => WithSpecialTypesInVectors.fromJSON(T0, json),
       fromSuiParsedData: (content: SuiParsedData) =>
@@ -2393,7 +2469,7 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
     return WithSpecialTypesInVectors.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <T0 extends BcsType<any>>(T0: T0) =>
       bcs.struct(`WithSpecialTypesInVectors<${T0.name}>`, {
         id: UID.bcs,
@@ -2404,6 +2480,16 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
         option: bcs.vector(Option.bcs(bcs.u64())),
         option_generic: bcs.vector(Option.bcs(T0)),
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof WithSpecialTypesInVectors.instantiateBcs> | null =
+    null
+
+  static get bcs() {
+    if (!WithSpecialTypesInVectors.cachedBcs) {
+      WithSpecialTypesInVectors.cachedBcs = WithSpecialTypesInVectors.instantiateBcs()
+    }
+    return WithSpecialTypesInVectors.cachedBcs
   }
 
   static fromFields<T0 extends Reified<TypeArgument, any>>(

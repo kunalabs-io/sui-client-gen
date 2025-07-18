@@ -70,6 +70,7 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
   static reified<Element extends PhantomReified<PhantomTypeArgument>>(
     Element: Element
   ): TableVecReified<ToPhantomTypeArgument<Element>> {
+    const reifiedBcs = TableVec.bcs
     return {
       typeName: TableVec.$typeName,
       fullTypeName: composeSuiType(
@@ -81,8 +82,8 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
       reifiedTypeArgs: [Element],
       fromFields: (fields: Record<string, any>) => TableVec.fromFields(Element, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TableVec.fromFieldsWithTypes(Element, item),
-      fromBcs: (data: Uint8Array) => TableVec.fromBcs(Element, data),
-      bcs: TableVec.bcs,
+      fromBcs: (data: Uint8Array) => TableVec.fromFields(Element, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => TableVec.fromJSONField(Element, field),
       fromJSON: (json: Record<string, any>) => TableVec.fromJSON(Element, json),
       fromSuiParsedData: (content: SuiParsedData) => TableVec.fromSuiParsedData(Element, content),
@@ -108,10 +109,19 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
     return TableVec.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('TableVec', {
       contents: Table.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof TableVec.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!TableVec.cachedBcs) {
+      TableVec.cachedBcs = TableVec.instantiateBcs()
+    }
+    return TableVec.cachedBcs
   }
 
   static fromFields<Element extends PhantomReified<PhantomTypeArgument>>(

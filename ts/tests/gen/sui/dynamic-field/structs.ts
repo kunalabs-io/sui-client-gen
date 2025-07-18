@@ -80,6 +80,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     Name: Name,
     Value: Value
   ): FieldReified<ToTypeArgument<Name>, ToTypeArgument<Value>> {
+    const reifiedBcs = Field.bcs(toBcs(Name), toBcs(Value))
     return {
       typeName: Field.$typeName,
       fullTypeName: composeSuiType(
@@ -95,8 +96,8 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
       fromFields: (fields: Record<string, any>) => Field.fromFields([Name, Value], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         Field.fromFieldsWithTypes([Name, Value], item),
-      fromBcs: (data: Uint8Array) => Field.fromBcs([Name, Value], data),
-      bcs: Field.bcs(toBcs(Name), toBcs(Value)),
+      fromBcs: (data: Uint8Array) => Field.fromFields([Name, Value], reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Field.fromJSONField([Name, Value], field),
       fromJSON: (json: Record<string, any>) => Field.fromJSON([Name, Value], json),
       fromSuiParsedData: (content: SuiParsedData) =>
@@ -125,13 +126,22 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     return Field.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <Name extends BcsType<any>, Value extends BcsType<any>>(Name: Name, Value: Value) =>
       bcs.struct(`Field<${Name.name}, ${Value.name}>`, {
         id: UID.bcs,
         name: Name,
         value: Value,
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof Field.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Field.cachedBcs) {
+      Field.cachedBcs = Field.instantiateBcs()
+    }
+    return Field.cachedBcs
   }
 
   static fromFields<

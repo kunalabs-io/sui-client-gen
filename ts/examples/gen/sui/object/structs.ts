@@ -49,6 +49,7 @@ export class ID implements StructClass {
   }
 
   static reified(): IDReified {
+    const reifiedBcs = ID.bcs
     return {
       typeName: ID.$typeName,
       fullTypeName: composeSuiType(ID.$typeName, ...[]) as `0x2::object::ID`,
@@ -57,8 +58,8 @@ export class ID implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ID.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => ID.fromBcs(data),
-      bcs: ID.bcs,
+      fromBcs: (data: Uint8Array) => ID.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => ID.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ID.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ID.fromSuiParsedData(content),
@@ -82,13 +83,22 @@ export class ID implements StructClass {
     return ID.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('ID', {
       bytes: bcs.bytes(32).transform({
         input: (val: string) => fromHEX(val),
         output: (val: Uint8Array) => toHEX(val),
       }),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof ID.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!ID.cachedBcs) {
+      ID.cachedBcs = ID.instantiateBcs()
+    }
+    return ID.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): ID {
@@ -203,6 +213,7 @@ export class UID implements StructClass {
   }
 
   static reified(): UIDReified {
+    const reifiedBcs = UID.bcs
     return {
       typeName: UID.$typeName,
       fullTypeName: composeSuiType(UID.$typeName, ...[]) as `0x2::object::UID`,
@@ -211,8 +222,8 @@ export class UID implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => UID.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => UID.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => UID.fromBcs(data),
-      bcs: UID.bcs,
+      fromBcs: (data: Uint8Array) => UID.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => UID.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UID.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => UID.fromSuiParsedData(content),
@@ -236,10 +247,19 @@ export class UID implements StructClass {
     return UID.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('UID', {
       id: ID.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof UID.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!UID.cachedBcs) {
+      UID.cachedBcs = UID.instantiateBcs()
+    }
+    return UID.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): UID {

@@ -89,6 +89,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
     K extends Reified<TypeArgument, any>,
     V extends PhantomReified<PhantomTypeArgument>,
   >(K: K, V: V): LinkedTableReified<ToTypeArgument<K>, ToPhantomTypeArgument<V>> {
+    const reifiedBcs = LinkedTable.bcs(toBcs(K))
     return {
       typeName: LinkedTable.$typeName,
       fullTypeName: composeSuiType(
@@ -103,8 +104,8 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
       reifiedTypeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => LinkedTable.fromFields([K, V], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => LinkedTable.fromFieldsWithTypes([K, V], item),
-      fromBcs: (data: Uint8Array) => LinkedTable.fromBcs([K, V], data),
-      bcs: LinkedTable.bcs(toBcs(K)),
+      fromBcs: (data: Uint8Array) => LinkedTable.fromFields([K, V], reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => LinkedTable.fromJSONField([K, V], field),
       fromJSON: (json: Record<string, any>) => LinkedTable.fromJSON([K, V], json),
       fromSuiParsedData: (content: SuiParsedData) => LinkedTable.fromSuiParsedData([K, V], content),
@@ -134,7 +135,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
     return LinkedTable.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <K extends BcsType<any>>(K: K) =>
       bcs.struct(`LinkedTable<${K.name}>`, {
         id: UID.bcs,
@@ -142,6 +143,15 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
         head: Option.bcs(K),
         tail: Option.bcs(K),
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof LinkedTable.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!LinkedTable.cachedBcs) {
+      LinkedTable.cachedBcs = LinkedTable.instantiateBcs()
+    }
+    return LinkedTable.cachedBcs
   }
 
   static fromFields<
@@ -354,6 +364,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
     K: K,
     V: V
   ): NodeReified<ToTypeArgument<K>, ToTypeArgument<V>> {
+    const reifiedBcs = Node.bcs(toBcs(K), toBcs(V))
     return {
       typeName: Node.$typeName,
       fullTypeName: composeSuiType(
@@ -368,8 +379,8 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
       reifiedTypeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => Node.fromFields([K, V], fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Node.fromFieldsWithTypes([K, V], item),
-      fromBcs: (data: Uint8Array) => Node.fromBcs([K, V], data),
-      bcs: Node.bcs(toBcs(K), toBcs(V)),
+      fromBcs: (data: Uint8Array) => Node.fromFields([K, V], reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Node.fromJSONField([K, V], field),
       fromJSON: (json: Record<string, any>) => Node.fromJSON([K, V], json),
       fromSuiParsedData: (content: SuiParsedData) => Node.fromSuiParsedData([K, V], content),
@@ -396,13 +407,22 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
     return Node.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <K extends BcsType<any>, V extends BcsType<any>>(K: K, V: V) =>
       bcs.struct(`Node<${K.name}, ${V.name}>`, {
         prev: Option.bcs(K),
         next: Option.bcs(K),
         value: V,
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof Node.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Node.cachedBcs) {
+      Node.cachedBcs = Node.instantiateBcs()
+    }
+    return Node.cachedBcs
   }
 
   static fromFields<K extends Reified<TypeArgument, any>, V extends Reified<TypeArgument, any>>(

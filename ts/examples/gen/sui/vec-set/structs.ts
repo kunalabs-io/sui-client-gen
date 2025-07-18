@@ -66,6 +66,7 @@ export class VecSet<K extends TypeArgument> implements StructClass {
   }
 
   static reified<K extends Reified<TypeArgument, any>>(K: K): VecSetReified<ToTypeArgument<K>> {
+    const reifiedBcs = VecSet.bcs(toBcs(K))
     return {
       typeName: VecSet.$typeName,
       fullTypeName: composeSuiType(
@@ -77,8 +78,8 @@ export class VecSet<K extends TypeArgument> implements StructClass {
       reifiedTypeArgs: [K],
       fromFields: (fields: Record<string, any>) => VecSet.fromFields(K, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => VecSet.fromFieldsWithTypes(K, item),
-      fromBcs: (data: Uint8Array) => VecSet.fromBcs(K, data),
-      bcs: VecSet.bcs(toBcs(K)),
+      fromBcs: (data: Uint8Array) => VecSet.fromFields(K, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => VecSet.fromJSONField(K, field),
       fromJSON: (json: Record<string, any>) => VecSet.fromJSON(K, json),
       fromSuiParsedData: (content: SuiParsedData) => VecSet.fromSuiParsedData(K, content),
@@ -104,11 +105,20 @@ export class VecSet<K extends TypeArgument> implements StructClass {
     return VecSet.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return <K extends BcsType<any>>(K: K) =>
       bcs.struct(`VecSet<${K.name}>`, {
         contents: bcs.vector(K),
       })
+  }
+
+  private static cachedBcs: ReturnType<typeof VecSet.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!VecSet.cachedBcs) {
+      VecSet.cachedBcs = VecSet.instantiateBcs()
+    }
+    return VecSet.cachedBcs
   }
 
   static fromFields<K extends Reified<TypeArgument, any>>(

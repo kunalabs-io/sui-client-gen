@@ -76,6 +76,7 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): TokenReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = Token.bcs
     return {
       typeName: Token.$typeName,
       fullTypeName: composeSuiType(
@@ -87,8 +88,8 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Token.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => Token.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => Token.fromBcs(T, data),
-      bcs: Token.bcs,
+      fromBcs: (data: Uint8Array) => Token.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => Token.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Token.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Token.fromSuiParsedData(T, content),
@@ -114,11 +115,20 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
     return Token.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('Token', {
       id: UID.bcs,
       balance: Balance.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof Token.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!Token.cachedBcs) {
+      Token.cachedBcs = Token.instantiateBcs()
+    }
+    return Token.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
@@ -299,6 +309,7 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): TokenPolicyCapReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = TokenPolicyCap.bcs
     return {
       typeName: TokenPolicyCap.$typeName,
       fullTypeName: composeSuiType(
@@ -310,8 +321,8 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TokenPolicyCap.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TokenPolicyCap.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => TokenPolicyCap.fromBcs(T, data),
-      bcs: TokenPolicyCap.bcs,
+      fromBcs: (data: Uint8Array) => TokenPolicyCap.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => TokenPolicyCap.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => TokenPolicyCap.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => TokenPolicyCap.fromSuiParsedData(T, content),
@@ -337,11 +348,20 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
     return TokenPolicyCap.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('TokenPolicyCap', {
       id: UID.bcs,
       for: ID.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof TokenPolicyCap.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!TokenPolicyCap.cachedBcs) {
+      TokenPolicyCap.cachedBcs = TokenPolicyCap.instantiateBcs()
+    }
+    return TokenPolicyCap.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
@@ -525,6 +545,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): TokenPolicyReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = TokenPolicy.bcs
     return {
       typeName: TokenPolicy.$typeName,
       fullTypeName: composeSuiType(
@@ -536,8 +557,8 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TokenPolicy.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => TokenPolicy.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => TokenPolicy.fromBcs(T, data),
-      bcs: TokenPolicy.bcs,
+      fromBcs: (data: Uint8Array) => TokenPolicy.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => TokenPolicy.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => TokenPolicy.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => TokenPolicy.fromSuiParsedData(T, content),
@@ -563,12 +584,21 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
     return TokenPolicy.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('TokenPolicy', {
       id: UID.bcs,
       spent_balance: Balance.bcs,
       rules: VecMap.bcs(String.bcs, VecSet.bcs(TypeName.bcs)),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof TokenPolicy.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!TokenPolicy.cachedBcs) {
+      TokenPolicy.cachedBcs = TokenPolicy.instantiateBcs()
+    }
+    return TokenPolicy.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
@@ -774,6 +804,7 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): ActionRequestReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = ActionRequest.bcs
     return {
       typeName: ActionRequest.$typeName,
       fullTypeName: composeSuiType(
@@ -785,8 +816,8 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => ActionRequest.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ActionRequest.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => ActionRequest.fromBcs(T, data),
-      bcs: ActionRequest.bcs,
+      fromBcs: (data: Uint8Array) => ActionRequest.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => ActionRequest.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => ActionRequest.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => ActionRequest.fromSuiParsedData(T, content),
@@ -812,7 +843,7 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
     return ActionRequest.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('ActionRequest', {
       name: String.bcs,
       amount: bcs.u64(),
@@ -829,6 +860,15 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
       spent_balance: Option.bcs(Balance.bcs),
       approvals: VecSet.bcs(TypeName.bcs),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof ActionRequest.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!ActionRequest.cachedBcs) {
+      ActionRequest.cachedBcs = ActionRequest.instantiateBcs()
+    }
+    return ActionRequest.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
@@ -1034,6 +1074,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): RuleKeyReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = RuleKey.bcs
     return {
       typeName: RuleKey.$typeName,
       fullTypeName: composeSuiType(
@@ -1045,8 +1086,8 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => RuleKey.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => RuleKey.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => RuleKey.fromBcs(T, data),
-      bcs: RuleKey.bcs,
+      fromBcs: (data: Uint8Array) => RuleKey.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => RuleKey.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => RuleKey.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => RuleKey.fromSuiParsedData(T, content),
@@ -1072,10 +1113,19 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
     return RuleKey.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('RuleKey', {
       is_protected: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof RuleKey.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!RuleKey.cachedBcs) {
+      RuleKey.cachedBcs = RuleKey.instantiateBcs()
+    }
+    return RuleKey.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
@@ -1252,6 +1302,7 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
     T: T
   ): TokenPolicyCreatedReified<ToPhantomTypeArgument<T>> {
+    const reifiedBcs = TokenPolicyCreated.bcs
     return {
       typeName: TokenPolicyCreated.$typeName,
       fullTypeName: composeSuiType(
@@ -1264,8 +1315,8 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
       fromFields: (fields: Record<string, any>) => TokenPolicyCreated.fromFields(T, fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         TokenPolicyCreated.fromFieldsWithTypes(T, item),
-      fromBcs: (data: Uint8Array) => TokenPolicyCreated.fromBcs(T, data),
-      bcs: TokenPolicyCreated.bcs,
+      fromBcs: (data: Uint8Array) => TokenPolicyCreated.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => TokenPolicyCreated.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => TokenPolicyCreated.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) =>
@@ -1293,11 +1344,20 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
     return TokenPolicyCreated.phantom
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('TokenPolicyCreated', {
       id: ID.bcs,
       is_mutable: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof TokenPolicyCreated.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!TokenPolicyCreated.cachedBcs) {
+      TokenPolicyCreated.cachedBcs = TokenPolicyCreated.instantiateBcs()
+    }
+    return TokenPolicyCreated.cachedBcs
   }
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(

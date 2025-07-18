@@ -63,6 +63,7 @@ export class DenyList implements StructClass {
   }
 
   static reified(): DenyListReified {
+    const reifiedBcs = DenyList.bcs
     return {
       typeName: DenyList.$typeName,
       fullTypeName: composeSuiType(DenyList.$typeName, ...[]) as `0x2::deny_list::DenyList`,
@@ -71,8 +72,8 @@ export class DenyList implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => DenyList.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => DenyList.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => DenyList.fromBcs(data),
-      bcs: DenyList.bcs,
+      fromBcs: (data: Uint8Array) => DenyList.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => DenyList.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => DenyList.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => DenyList.fromSuiParsedData(content),
@@ -96,11 +97,20 @@ export class DenyList implements StructClass {
     return DenyList.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('DenyList', {
       id: UID.bcs,
       lists: Bag.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof DenyList.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!DenyList.cachedBcs) {
+      DenyList.cachedBcs = DenyList.instantiateBcs()
+    }
+    return DenyList.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): DenyList {
@@ -228,6 +238,7 @@ export class ConfigWriteCap implements StructClass {
   }
 
   static reified(): ConfigWriteCapReified {
+    const reifiedBcs = ConfigWriteCap.bcs
     return {
       typeName: ConfigWriteCap.$typeName,
       fullTypeName: composeSuiType(
@@ -239,8 +250,8 @@ export class ConfigWriteCap implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ConfigWriteCap.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ConfigWriteCap.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => ConfigWriteCap.fromBcs(data),
-      bcs: ConfigWriteCap.bcs,
+      fromBcs: (data: Uint8Array) => ConfigWriteCap.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => ConfigWriteCap.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ConfigWriteCap.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ConfigWriteCap.fromSuiParsedData(content),
@@ -264,10 +275,19 @@ export class ConfigWriteCap implements StructClass {
     return ConfigWriteCap.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('ConfigWriteCap', {
       dummy_field: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof ConfigWriteCap.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!ConfigWriteCap.cachedBcs) {
+      ConfigWriteCap.cachedBcs = ConfigWriteCap.instantiateBcs()
+    }
+    return ConfigWriteCap.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): ConfigWriteCap {
@@ -394,6 +414,7 @@ export class ConfigKey implements StructClass {
   }
 
   static reified(): ConfigKeyReified {
+    const reifiedBcs = ConfigKey.bcs
     return {
       typeName: ConfigKey.$typeName,
       fullTypeName: composeSuiType(ConfigKey.$typeName, ...[]) as `0x2::deny_list::ConfigKey`,
@@ -402,8 +423,8 @@ export class ConfigKey implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => ConfigKey.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => ConfigKey.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => ConfigKey.fromBcs(data),
-      bcs: ConfigKey.bcs,
+      fromBcs: (data: Uint8Array) => ConfigKey.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => ConfigKey.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ConfigKey.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ConfigKey.fromSuiParsedData(content),
@@ -427,11 +448,20 @@ export class ConfigKey implements StructClass {
     return ConfigKey.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('ConfigKey', {
       per_type_index: bcs.u64(),
       per_type_key: bcs.vector(bcs.u8()),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof ConfigKey.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!ConfigKey.cachedBcs) {
+      ConfigKey.cachedBcs = ConfigKey.instantiateBcs()
+    }
+    return ConfigKey.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): ConfigKey {
@@ -559,6 +589,7 @@ export class AddressKey implements StructClass {
   }
 
   static reified(): AddressKeyReified {
+    const reifiedBcs = AddressKey.bcs
     return {
       typeName: AddressKey.$typeName,
       fullTypeName: composeSuiType(AddressKey.$typeName, ...[]) as `0x2::deny_list::AddressKey`,
@@ -567,8 +598,8 @@ export class AddressKey implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => AddressKey.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => AddressKey.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => AddressKey.fromBcs(data),
-      bcs: AddressKey.bcs,
+      fromBcs: (data: Uint8Array) => AddressKey.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => AddressKey.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => AddressKey.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => AddressKey.fromSuiParsedData(content),
@@ -592,13 +623,22 @@ export class AddressKey implements StructClass {
     return AddressKey.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('AddressKey', {
       pos0: bcs.bytes(32).transform({
         input: (val: string) => fromHEX(val),
         output: (val: Uint8Array) => toHEX(val),
       }),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof AddressKey.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!AddressKey.cachedBcs) {
+      AddressKey.cachedBcs = AddressKey.instantiateBcs()
+    }
+    return AddressKey.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): AddressKey {
@@ -718,6 +758,7 @@ export class GlobalPauseKey implements StructClass {
   }
 
   static reified(): GlobalPauseKeyReified {
+    const reifiedBcs = GlobalPauseKey.bcs
     return {
       typeName: GlobalPauseKey.$typeName,
       fullTypeName: composeSuiType(
@@ -729,8 +770,8 @@ export class GlobalPauseKey implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => GlobalPauseKey.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => GlobalPauseKey.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => GlobalPauseKey.fromBcs(data),
-      bcs: GlobalPauseKey.bcs,
+      fromBcs: (data: Uint8Array) => GlobalPauseKey.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => GlobalPauseKey.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => GlobalPauseKey.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => GlobalPauseKey.fromSuiParsedData(content),
@@ -754,10 +795,19 @@ export class GlobalPauseKey implements StructClass {
     return GlobalPauseKey.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('GlobalPauseKey', {
       dummy_field: bcs.bool(),
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof GlobalPauseKey.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!GlobalPauseKey.cachedBcs) {
+      GlobalPauseKey.cachedBcs = GlobalPauseKey.instantiateBcs()
+    }
+    return GlobalPauseKey.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): GlobalPauseKey {
@@ -884,6 +934,7 @@ export class PerTypeConfigCreated implements StructClass {
   }
 
   static reified(): PerTypeConfigCreatedReified {
+    const reifiedBcs = PerTypeConfigCreated.bcs
     return {
       typeName: PerTypeConfigCreated.$typeName,
       fullTypeName: composeSuiType(
@@ -896,8 +947,8 @@ export class PerTypeConfigCreated implements StructClass {
       fromFields: (fields: Record<string, any>) => PerTypeConfigCreated.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) =>
         PerTypeConfigCreated.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => PerTypeConfigCreated.fromBcs(data),
-      bcs: PerTypeConfigCreated.bcs,
+      fromBcs: (data: Uint8Array) => PerTypeConfigCreated.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => PerTypeConfigCreated.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => PerTypeConfigCreated.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) =>
@@ -923,11 +974,20 @@ export class PerTypeConfigCreated implements StructClass {
     return PerTypeConfigCreated.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('PerTypeConfigCreated', {
       key: ConfigKey.bcs,
       config_id: ID.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof PerTypeConfigCreated.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!PerTypeConfigCreated.cachedBcs) {
+      PerTypeConfigCreated.cachedBcs = PerTypeConfigCreated.instantiateBcs()
+    }
+    return PerTypeConfigCreated.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): PerTypeConfigCreated {
@@ -1063,6 +1123,7 @@ export class PerTypeList implements StructClass {
   }
 
   static reified(): PerTypeListReified {
+    const reifiedBcs = PerTypeList.bcs
     return {
       typeName: PerTypeList.$typeName,
       fullTypeName: composeSuiType(PerTypeList.$typeName, ...[]) as `0x2::deny_list::PerTypeList`,
@@ -1071,8 +1132,8 @@ export class PerTypeList implements StructClass {
       reifiedTypeArgs: [],
       fromFields: (fields: Record<string, any>) => PerTypeList.fromFields(fields),
       fromFieldsWithTypes: (item: FieldsWithTypes) => PerTypeList.fromFieldsWithTypes(item),
-      fromBcs: (data: Uint8Array) => PerTypeList.fromBcs(data),
-      bcs: PerTypeList.bcs,
+      fromBcs: (data: Uint8Array) => PerTypeList.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
       fromJSONField: (field: any) => PerTypeList.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => PerTypeList.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => PerTypeList.fromSuiParsedData(content),
@@ -1096,12 +1157,21 @@ export class PerTypeList implements StructClass {
     return PerTypeList.phantom()
   }
 
-  static get bcs() {
+  private static instantiateBcs() {
     return bcs.struct('PerTypeList', {
       id: UID.bcs,
       denied_count: Table.bcs,
       denied_addresses: Table.bcs,
     })
+  }
+
+  private static cachedBcs: ReturnType<typeof PerTypeList.instantiateBcs> | null = null
+
+  static get bcs() {
+    if (!PerTypeList.cachedBcs) {
+      PerTypeList.cachedBcs = PerTypeList.instantiateBcs()
+    }
+    return PerTypeList.cachedBcs
   }
 
   static fromFields(fields: Record<string, any>): PerTypeList {
