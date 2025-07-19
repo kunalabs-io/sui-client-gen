@@ -13,9 +13,9 @@ use move_symbol_pool::Symbol;
 use std::io::Write;
 use sui_client_gen::framework_sources;
 use sui_client_gen::gen::{
-    gen_init_loader_kt, gen_package_init_kt, module_import_name, package_import_name,
+    gen_init_loader_ts, gen_package_init_ts, module_import_name, package_import_name,
 };
-use sui_client_gen::gen::{FrameworkImportCtx};
+use sui_client_gen::gen::{FrameworkImportCtx, FunctionsGen, StructClassImportCtx, StructsGen};
 use sui_client_gen::manifest::{parse_gen_manifest_from_file, GenManifest, Package};
 use sui_client_gen::model_builder::{
     build_models, OnChainModelResult, SourceModelResult, TypeOriginTable, VersionTable,
@@ -91,7 +91,7 @@ async fn main() -> Result<()> {
 
     // clean output
     if args.clean {
-        //clean_output(&PathBuf::from(&args.out))?;
+        clean_output(&PathBuf::from(&args.out))?;
     }
 
     // separate modules by package
@@ -109,48 +109,8 @@ async fn main() -> Result<()> {
     let (source_top_level_addr_map, on_chain_top_level_addr_map) =
         resolve_top_level_pkg_addr_map(&source_model, &on_chain_model, &manifest);
 
-    // gen _framework
-  /*  writeln!(progress_output, "{}", "GENERATING FRAMEWORK".green().bold())?;
-
     let out_root = PathBuf::from(args.out);
     std::fs::create_dir_all(&out_root)?;
-
-    std::fs::create_dir_all(out_root.join("_framework"))?;
-    write_str_to_file(
-        framework_sources::LOADER,
-        out_root.join("_framework").join("loader.ts").as_ref(),
-    )?;
-    write_str_to_file(
-        framework_sources::UTIL,
-        out_root.join("_framework").join("util.ts").as_ref(),
-    )?;
-    write_str_to_file(
-        framework_sources::REIFIED,
-        out_root.join("_framework").join("reified.ts").as_ref(),
-    )?;
-    write_str_to_file(
-        framework_sources::VECTOR,
-        out_root.join("_framework").join("vector.ts").as_ref(),
-    )?;
-    write_tokens_to_file(
-        &gen_init_loader_kt(
-            match source_pkgs.is_empty() {
-                false => Some((
-                    source_pkgs.keys().copied().collect::<Vec<_>>(),
-                    &source_top_level_addr_map,
-                )),
-                true => None,
-            },
-            match on_chain_pkgs.is_empty() {
-                false => Some((
-                    on_chain_pkgs.keys().copied().collect::<Vec<_>>(),
-                    &on_chain_top_level_addr_map,
-                )),
-                true => None,
-            },
-        ),
-        out_root.join("_framework").join("init-loader.ts").as_ref(),
-    )?;
 
     if let Some(m) = &source_model {
         writeln!(
@@ -185,12 +145,6 @@ async fn main() -> Result<()> {
         )?;
     }
 
-    // gen .eslintrc.json
-    write_str_to_file(
-        framework_sources::ESLINTRC,
-        &out_root.join(".eslintrc.json"),
-    )?;
-
     Ok(())
 }
 
@@ -216,15 +170,15 @@ fn clean_output(out_root: &Path) -> Result<()> {
     Ok(())
 }
 
-fn write_tokens_to_file(tokens: &Tokens<JavaScript>, path: &Path) -> Result<()> {
+fn write_tokens_to_file(tokens: &Tokens<Kotlin>, path: &Path) -> Result<()> {
     if tokens.is_empty() {
         return Ok(());
     }
 
     let file = std::fs::File::create(path)?;
     let mut w = fmt::IoWriter::new(file);
-    let fmt = fmt::Config::from_lang::<JavaScript>();
-    let config = js::Config::default();
+    let fmt = fmt::Config::from_lang::<Kotlin>();
+    let config = kotlin::Config::default().with_package("xyz.mcxross.pakage.generator");
     tokens.format_file(&mut w.as_formatter(&fmt), &config)?;
     Ok(())
 }
@@ -241,6 +195,61 @@ fn write_str_to_file(s: &str, path: &Path) -> Result<()> {
 }
 
 /// Creates a mapping between address and package name for top-level packages.
+fn resolve_top_level_pkg_addr_map(
+    source_model: &Option<SourceModelResult>,
+    on_chain_model: &Option<OnChainModelResult>,
+    manifest: &GenManifest,
+) -> (
+    BTreeMap<AccountAddress, Symbol>,
+    BTreeMap<AccountAddress, Symbol>,
+) {
+    let mut source_top_level_package_names: BTreeSet<PackageName> = BTreeSet::new();
+    let mut on_chain_top_level_package_names: BTreeSet<PackageName> = BTreeSet::new();
+    for (name, pkg) in manifest.packages.iter() {
+        match pkg {
+            Package::Dependency(_) => {
+                source_top_level_package_names.insert(*name);
+            }
+            Package::OnChain(_) => {
+                on_chain_top_level_package_names.insert(*name);
+            }
+        }
+    }
+
+    let source_top_level_id_map: BTreeMap<AccountAddress, Symbol> = if let Some(m) = source_model {
+        m.id_map
+            .iter()
+            .filter_map(|(id, name)| {
+                if source_top_level_package_names.contains(name) {
+                    Some((*id, *name))
+                } else {
+                    None
+                }
+            })
+            .collect()
+    } else {
+        BTreeMap::new()
+    };
+
+    let on_chain_top_level_id_map: BTreeMap<AccountAddress, Symbol> =
+        if let Some(m) = on_chain_model {
+            m.id_map
+                .iter()
+                .filter_map(|(id, name)| {
+                    if on_chain_top_level_package_names.contains(name) {
+                        Some((*id, *name))
+                    } else {
+                        None
+                    }
+                })
+                .collect()
+        } else {
+            BTreeMap::new()
+        };
+
+    (source_top_level_id_map, on_chain_top_level_id_map)
+}
+
 fn gen_packages_for_model<const HAS_SOURCE: usize>(
     pkgs: BTreeMap<AccountAddress, model::Package<HAS_SOURCE>>,
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
@@ -273,18 +282,14 @@ fn gen_packages_for_model<const HAS_SOURCE: usize>(
         // generate index.ts
         let published_at = published_at_map.get(pkg_id).unwrap_or(pkg_id);
         let versions = version_table.get(pkg_id).unwrap();
-        let tokens: js::Tokens = quote!(
-            export const PACKAGE_ID = $[str]($[const](pkg_id.to_hex_literal()));
-            export const PUBLISHED_AT = $[str]($[const](published_at.to_hex_literal()));
+        let tokens: kotlin::Tokens = quote!(
+            const val PACKAGE_ID = $[str]($[const](pkg_id.to_hex_literal()));
+            const val PUBLISHED_AT = $[str]($[const](published_at.to_hex_literal()));
             $(for (published_at, version) in versions {
-                export const PKG_V$(version.value()) = $[str]($[const](published_at.to_hex_literal()));
+                const val PKG_V$(version.value()) = $[str]($[const](published_at.to_hex_literal()));
             })
         );
-        write_tokens_to_file(&tokens, &package_path.join("index.ts"))?;
-
-        // generate init.ts
-        let tokens = gen_package_init_kt(pkg, &FrameworkImportCtx::new(levels_from_root + 1));
-        write_tokens_to_file(&tokens, &package_path.join("init.ts"))?;
+        write_tokens_to_file(&tokens, &package_path.join("index.kt"))?;
 
         // generate modules
         for module in pkg.modules() {
@@ -293,7 +298,7 @@ fn gen_packages_for_model<const HAS_SOURCE: usize>(
 
             // generate <module>/functions.ts
             if is_top_level {
-                let mut tokens = js::Tokens::new();
+                let mut tokens = kotlin::Tokens::new();
                 let mut import_ctx =
                     &mut StructClassImportCtx::for_func_gen(&module, top_level_pkg_names);
                 for func in module.functions() {
@@ -313,11 +318,11 @@ fn gen_packages_for_model<const HAS_SOURCE: usize>(
                     func_gen.gen_fun_binding(&mut tokens)?;
                     import_ctx = func_gen.import_ctx;
                 }
-                write_tokens_to_file(&tokens, &module_path.join("functions.ts"))?;
+                write_tokens_to_file(&tokens, &module_path.join("functions.kt"))?;
             }
 
             // generate <module>/structs.ts
-            let mut tokens = js::Tokens::new();
+            /*let mut tokens = js::Tokens::new();
             let mut import_ctx =
                 &mut StructClassImportCtx::for_struct_gen(&module, top_level_pkg_names);
 
@@ -341,63 +346,8 @@ fn gen_packages_for_model<const HAS_SOURCE: usize>(
                 structs_gen.gen_struct_class(&mut tokens);
                 import_ctx = structs_gen.import_ctx;
             }
-            write_tokens_to_file(&tokens, &module_path.join("structs.ts"))?;
+            write_tokens_to_file(&tokens, &module_path.join("structs.ts"))?;*/
         }
-    }*/
-
-    fn resolve_top_level_pkg_addr_map(
-        source_model: &Option<SourceModelResult>,
-        on_chain_model: &Option<OnChainModelResult>,
-        manifest: &GenManifest,
-    ) -> (
-        BTreeMap<AccountAddress, Symbol>,
-        BTreeMap<AccountAddress, Symbol>,
-    ) {
-        let mut source_top_level_package_names: BTreeSet<PackageName> = BTreeSet::new();
-        let mut on_chain_top_level_package_names: BTreeSet<PackageName> = BTreeSet::new();
-        for (name, pkg) in manifest.packages.iter() {
-            match pkg {
-                Package::Dependency(_) => {
-                    source_top_level_package_names.insert(*name);
-                }
-                Package::OnChain(_) => {
-                    on_chain_top_level_package_names.insert(*name);
-                }
-            }
-        }
-
-        let source_top_level_id_map: BTreeMap<AccountAddress, Symbol> = if let Some(m) = source_model {
-            m.id_map
-                .iter()
-                .filter_map(|(id, name)| {
-                    if source_top_level_package_names.contains(name) {
-                        Some((*id, *name))
-                    } else {
-                        None
-                    }
-                })
-                .collect()
-        } else {
-            BTreeMap::new()
-        };
-
-        let on_chain_top_level_id_map: BTreeMap<AccountAddress, Symbol> =
-            if let Some(m) = on_chain_model {
-                m.id_map
-                    .iter()
-                    .filter_map(|(id, name)| {
-                        if on_chain_top_level_package_names.contains(name) {
-                            Some((*id, *name))
-                        } else {
-                            None
-                        }
-                    })
-                    .collect()
-            } else {
-                BTreeMap::new()
-            };
-
-        (source_top_level_id_map, on_chain_top_level_id_map)
     }
 
     Ok(())
