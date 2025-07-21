@@ -3,6 +3,7 @@ use std::collections::{BTreeMap, HashMap};
 use crate::model_builder::{TypeOriginTable, VersionTable};
 use anyhow::Result;
 use convert_case::{Case, Casing};
+use genco::lang::kotlin;
 use genco::prelude::*;
 use move_core_types::account_address::AccountAddress;
 use move_model_2::compiled::Type;
@@ -612,12 +613,14 @@ impl<'model, const HAS_SOURCE: SourceKind> FunctionsGen<'model, HAS_SOURCE> {
             quote!(typeArgs)
         };
 
+        let target: kotlin::Tokens = quote!($[str]($($published_at)::$[const](func_full_name(&self.func))));
+
         quote_in! { *tokens =>
             fun $fun_name_str(
                 $(for param in fn_params join (, ) => $param)
             ): $argument {
                 return builder.moveCall(
-                    target = "$${$(&published_at)}::$(func_full_name(&self.func))",
+                    target = $target,
                     typeArguments = $type_arguments_toks,
                     arguments = $arguments
                 )

@@ -312,7 +312,7 @@ fn gen_packages_for_model<const HAS_SOURCE: usize>(
                 if !data_toks.is_empty() {
                     let data_path = module_path.join("data");
                     std::fs::create_dir_all(&data_path)?;
-                    write_tokens_to_file(&data_toks, &data_path.join("args.kt"), &data_package)?;
+                    write_tokens_to_file(&data_toks, &data_path.join("Args.kt"), &data_package)?;
                 }
             }
 
@@ -335,7 +335,7 @@ fn gen_packages_for_model<const HAS_SOURCE: usize>(
 
             let data_path = module_path.join("data");
             std::fs::create_dir_all(&data_path)?;
-            write_tokens_to_file(&tokens, &data_path.join("structs.kt"), &data_package)?;
+            write_tokens_to_file(&tokens, &data_path.join("Structs.kt"), &data_package)?;
         }
     }
 
