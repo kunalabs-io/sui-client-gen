@@ -10,21 +10,21 @@ futures = "0.3.28"
 tempfile = "^3.5.0"
 toml = { version = "0.5.8", features = ["preserve_order"] }
 regex = "1.7.1"
-genco = "^0.17.8"
 clap = "4.4"
 codespan-reporting = "0.11.1"
 convert_case = "^0.6.0"
 colored = "2.0.0"
 
-sui-move-build = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3"}
-sui-move = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3"}
-sui-sdk = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3"}
-sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3"}
-move-model-2 = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3"}
-move-core-types = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3"}
-move-binary-format = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3"}
-move-symbol-pool = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3"}
-move-bytecode-utils = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3"}
-move-compiler = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3"}
-move-package = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3"}
-move-command-line-common = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3"}
+sui-move-build = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3" }
+sui-move = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3" }
+sui-sdk = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3" }
+sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3" }
+move-model-2 = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3" }
+move-core-types = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3" }
+move-binary-format = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3" }
+move-symbol-pool = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3" }
+move-bytecode-utils = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3" }
+move-compiler = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3" }
+move-package = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3" }
+move-command-line-common = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.46.3" }
+genco = { path = "../../genco" }
