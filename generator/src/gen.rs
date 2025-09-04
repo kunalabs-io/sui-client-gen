@@ -9,7 +9,8 @@ use move_core_types::account_address::AccountAddress;
 use move_model_2::compiled::Type;
 use move_model_2::model::{self, Datatype, SourceKind, WITH_SOURCE};
 use move_symbol_pool::Symbol;
-
+use once_cell::sync::Lazy;
+use regex::Regex;
 
 #[rustfmt::skip]
 const KOTLIN_RESERVED_WORDS: [&str; 97] = [
@@ -31,15 +32,19 @@ pub fn module_import_name(module: Symbol) -> String {
     module
         .to_string()
         .from_case(Case::Snake)
-        .to_case(Case::Kebab)
+        .to_case(Case::Snake)
 }
 
 /// Returns package name that's used in import paths.
 pub fn package_import_name(pkg_name: Symbol) -> String {
-    pkg_name
+    static VERSION_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"_v_(\d+)").unwrap());
+
+    let snake_case = pkg_name
         .to_string()
         .from_case(Case::Pascal)
-        .to_case(Case::Kebab)
+        .to_case(Case::Snake);
+
+    VERSION_REGEX.replace_all(&snake_case, "_v$1").to_string()
 }
 
 fn struct_full_name<const HAS_SOURCE: SourceKind>(s: &model::Struct<HAS_SOURCE>) -> String {
@@ -90,7 +95,13 @@ impl<'a> StructClassImportCtx<'a> {
     ) -> Self {
         let reserved_names = vec![];
         let is_structs_gen = false;
-        StructClassImportCtx::new(reserved_names, module, top_level_pkg_names, is_structs_gen, current_package)
+        StructClassImportCtx::new(
+            reserved_names,
+            module,
+            top_level_pkg_names,
+            is_structs_gen,
+            current_package,
+        )
     }
 
     pub fn for_struct_gen<const HAS_SOURCE: SourceKind>(
@@ -105,7 +116,13 @@ impl<'a> StructClassImportCtx<'a> {
             .chain(module.enums().map(|e| e.name()))
             .map(|s| s.to_string())
             .collect();
-        StructClassImportCtx::new(reserved_names, module, top_level_pkg_names, is_structs_gen, current_package)
+        StructClassImportCtx::new(
+            reserved_names,
+            module,
+            top_level_pkg_names,
+            is_structs_gen,
+            current_package,
+        )
     }
 
     fn import_path_for_struct<const HAS_SOURCE: SourceKind>(
@@ -216,7 +233,7 @@ fn gen_full_name_with_address<const HAS_SOURCE: SourceKind>(
     });
     let pkg_import = kotlin::import("..", format!("PKG_V{}", version.value()));
 
-    quote!("$${$(&pkg_import)}::$(struct_full_name(strct))")
+    quote!($[str]($($pkg_import)::$[const](struct_full_name(strct))))
 }
 
 fn gen_field_name(field: Symbol) -> impl FormatInto<Kotlin> {
@@ -282,14 +299,18 @@ pub fn gen_module_files<const HAS_SOURCE: usize>(
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
     package_name: &str,
 ) -> Result<(kotlin::Tokens, kotlin::Tokens)> {
-
     let mut functions_toks = kotlin::Tokens::new();
     let mut data_toks = kotlin::Tokens::new();
     let mut functions_body_toks = kotlin::Tokens::new();
 
-    let mut import_ctx = StructClassImportCtx::for_func_gen(module, top_level_pkg_names, package_name);
+    let mut import_ctx =
+        StructClassImportCtx::for_func_gen(module, top_level_pkg_names, package_name);
 
-    let module_name = module.name().to_string().from_case(Case::Snake).to_case(Case::Pascal);
+    let module_name = module
+        .name()
+        .to_string()
+        .from_case(Case::Snake)
+        .to_case(Case::Pascal);
 
     let mut has_data_classes = false;
 
@@ -304,7 +325,7 @@ pub fn gen_module_files<const HAS_SOURCE: usize>(
         }
 
         func_gen.gen_fun_args_if(&mut import_ctx, &mut data_toks)?;
-        func_gen.gen_fun_binding(&mut import_ctx, &mut functions_body_toks)?;
+        func_gen.gen_fun_binding(&mut import_ctx, &mut functions_body_toks, package_name)?;
     }
 
     if has_data_classes {
@@ -316,10 +337,9 @@ pub fn gen_module_files<const HAS_SOURCE: usize>(
 
     quote_in! { functions_toks =>
         object $module_name {
-            $(line!())
             $(functions_body_toks)
         }
-    };
+    }
 
     Ok((functions_toks, data_toks))
 }
@@ -329,15 +349,11 @@ pub struct FunctionsGen<'model, const HAS_SOURCE: SourceKind> {
 }
 
 impl<'model, const HAS_SOURCE: SourceKind> FunctionsGen<'model, HAS_SOURCE> {
-    pub fn new(
-        func: model::Function<'model, HAS_SOURCE>,
-    ) -> Result<Self, ()> {
+    pub fn new(func: model::Function<'model, HAS_SOURCE>) -> Result<Self, ()> {
         if func.maybe_compiled().is_none() {
             Err(())
         } else {
-            Ok(FunctionsGen {
-                func,
-            })
+            Ok(FunctionsGen { func })
         }
     }
 
@@ -359,8 +375,8 @@ impl<'model, const HAS_SOURCE: SourceKind> FunctionsGen<'model, HAS_SOURCE> {
             Type::Vector(ty) => {
                 "vec".to_string()
                     + &self
-                    .field_name_from_type(ty, type_param_names)?
-                    .to_case(Case::Pascal)
+                        .field_name_from_type(ty, type_param_names)?
+                        .to_case(Case::Pascal)
             }
             Type::Datatype(id_tys) => {
                 let (id, _ts) = &**id_tys;
@@ -454,18 +470,21 @@ impl<'model, const HAS_SOURCE: SourceKind> FunctionsGen<'model, HAS_SOURCE> {
         }
 
         let mut current_count = HashMap::<String, usize>::new();
-        fields.into_iter().map(|(name, type_)| {
-            let total_count = name_count.get(&name).unwrap();
-            let final_name = if *total_count > 1 {
-                let i = current_count.entry(name.clone()).or_insert(1);
-                let n = format!("{}{}", name, i);
-                *i += 1;
-                n
-            } else {
-                name
-            };
-            (final_name, type_)
-        }).collect()
+        fields
+            .into_iter()
+            .map(|(name, type_)| {
+                let total_count = name_count.get(&name).unwrap();
+                let final_name = if *total_count > 1 {
+                    let i = current_count.entry(name.clone()).or_insert(1);
+                    let n = format!("{}{}", name, i);
+                    *i += 1;
+                    n
+                } else {
+                    name
+                };
+                (final_name, type_)
+            })
+            .collect()
     }
 
     fn fun_arg_if_name(&self) -> String {
@@ -473,11 +492,11 @@ impl<'model, const HAS_SOURCE: SourceKind> FunctionsGen<'model, HAS_SOURCE> {
         name.from_case(Case::Snake).to_case(Case::Pascal) + "Args"
     }
 
-    fn param_type_to_field_type(&self, _import_ctx: &mut StructClassImportCtx, ty: &Type) -> kotlin::Tokens {
-        let generic_arg = kotlin::import("xyz.mcxross.ksui.model", "GenericArgument");
-        let transaction_object_input =
-            kotlin::import("xyz.mcxross.ksui.model", "TransactionObjectInput");
-
+    fn param_type_to_field_type(
+        &self,
+        _import_ctx: &mut StructClassImportCtx,
+        ty: &Type,
+    ) -> kotlin::Tokens {
         match ty {
             Type::U8 => quote!(UByte),
             Type::U16 => quote!(UShort),
@@ -497,16 +516,22 @@ impl<'model, const HAS_SOURCE: SourceKind> FunctionsGen<'model, HAS_SOURCE> {
                     (AccountAddress::ONE, "string", "String")
                     | (AccountAddress::ONE, "ascii", "String") => quote!(String),
                     (AccountAddress::TWO, "object", "ID") => quote!(String),
-                    (AccountAddress::ONE, "option", "Option") => quote!($(self.param_type_to_field_type(_import_ctx, &ts[0]))?),
-                    _ => quote!($transaction_object_input),
+                    (AccountAddress::ONE, "option", "Option") => {
+                        quote!($(self.param_type_to_field_type(_import_ctx, &ts[0]))?)
+                    }
+                    _ => quote!(String),
                 }
             }
             Type::Reference(_, ty) => self.param_type_to_field_type(_import_ctx, ty),
-            Type::TypeParameter(_) => quote!($generic_arg),
+            Type::TypeParameter(_) => quote!(String),
         }
     }
 
-    pub fn gen_fun_args_if(&self, import_ctx: &mut StructClassImportCtx, tokens: &mut Tokens<Kotlin>) -> Result<()> {
+    pub fn gen_fun_args_if(
+        &self,
+        import_ctx: &mut StructClassImportCtx,
+        tokens: &mut Tokens<Kotlin>,
+    ) -> Result<()> {
         if !self.has_args_struct() {
             return Ok(());
         }
@@ -515,9 +540,18 @@ impl<'model, const HAS_SOURCE: SourceKind> FunctionsGen<'model, HAS_SOURCE> {
 
         quote_in! { *tokens =>
             data class $(self.fun_arg_if_name()) (
-                $(for (field_name, param_type) in param_field_names join (,) =>
-                    val $field_name: $(self.param_type_to_field_type(import_ctx, &param_type))
-                )
+                $(ref toks => {
+                    toks.indent();
+
+                    for (field_name, param_type) in &param_field_names {
+                        quote_in!(*toks =>
+                            val $field_name: $(self.param_type_to_field_type(import_ctx, param_type)),
+                        );
+                    }
+
+                    toks.unindent();
+                    toks.line();
+                })
             )
         };
         tokens.line();
@@ -534,11 +568,7 @@ impl<'model, const HAS_SOURCE: SourceKind> FunctionsGen<'model, HAS_SOURCE> {
         }
     }
 
-    fn param_to_tx_arg(
-        &self,
-        ty: Type,
-        arg_field_name: String,
-    ) -> kotlin::Tokens {
+    fn param_to_tx_arg(&self, ty: Type, arg_field_name: String) -> kotlin::Tokens {
         let ty = self.type_strip_ref(ty);
 
         if type_is_pure(&ty) {
@@ -565,10 +595,19 @@ impl<'model, const HAS_SOURCE: SourceKind> FunctionsGen<'model, HAS_SOURCE> {
         fun_name_str
     }
 
-    pub fn gen_fun_binding(&self, import_ctx: &mut StructClassImportCtx, tokens: &mut kotlin::Tokens) -> Result<()> {
+    pub fn gen_fun_binding(
+        &self,
+        import_ctx: &mut StructClassImportCtx,
+        tokens: &mut kotlin::Tokens,
+        package_name: &str,
+    ) -> Result<()> {
         let builder = kotlin::import("xyz.mcxross.ksui.ptb", "ProgrammableTransactionBuilder");
         let argument = kotlin::import("xyz.mcxross.ksui.ptb", "Argument");
-        let published_at = kotlin::import("..", "PUBLISHED_AT");
+        let parent_package_name = package_name
+            .rsplit_once('.')
+            .map(|(parent, _)| parent)
+            .unwrap_or(package_name);
+        let published_at = kotlin::import(parent_package_name, "PUBLISHED_AT");
 
         let param_field_names = self.params_to_field_names(true);
         let func_type_param_names = self.func_type_param_names();
@@ -587,7 +626,8 @@ impl<'model, const HAS_SOURCE: SourceKind> FunctionsGen<'model, HAS_SOURCE> {
         if !param_field_names.is_empty() {
             if param_field_names.len() == 1 {
                 let (name, type_) = &param_field_names[0];
-                fn_params.push(quote!($(name): $(self.param_type_to_field_type(import_ctx, type_))));
+                fn_params
+                    .push(quote!($(name): $(self.param_type_to_field_type(import_ctx, type_))));
             } else {
                 fn_params.push(quote!(args: $(self.fun_arg_if_name())));
             }
@@ -599,9 +639,9 @@ impl<'model, const HAS_SOURCE: SourceKind> FunctionsGen<'model, HAS_SOURCE> {
             let (name, type_) = &param_field_names[0];
             quote!(listOf($(self.param_to_tx_arg(type_.clone(), name.clone()))))
         } else {
-            let args_list = param_field_names.iter().map(|(name, type_)| {
-                self.param_to_tx_arg(type_.clone(), format!("args.{}", name))
-            });
+            let args_list = param_field_names
+                .iter()
+                .map(|(name, type_)| self.param_to_tx_arg(type_.clone(), format!("args.{}", name)));
             quote!(listOf($(for arg in args_list join (, ) => $arg)))
         };
 
@@ -613,7 +653,8 @@ impl<'model, const HAS_SOURCE: SourceKind> FunctionsGen<'model, HAS_SOURCE> {
             quote!(typeArgs)
         };
 
-        let target: kotlin::Tokens = quote!($[str]($($published_at)::$[const](func_full_name(&self.func))));
+        let target: kotlin::Tokens =
+            quote!($[str]($($published_at)::$[const](func_full_name(&self.func))));
 
         quote_in! { *tokens =>
             fun $fun_name_str(
@@ -655,11 +696,7 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
     }
 
     fn gen_full_name_with_address(&self) -> kotlin::Tokens {
-        gen_full_name_with_address(
-            &self.strct,
-            self.type_origin_table,
-            self.version_table,
-        )
+        gen_full_name_with_address(&self.strct, self.type_origin_table, self.version_table)
     }
 
     fn gen_struct_class_field_type_kt(
@@ -722,9 +759,6 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
 
     pub fn gen_struct_class(&mut self, tokens: &mut kotlin::Tokens) {
         let serializable = kotlin::import("kotlinx.serialization", "Serializable");
-        let serial_name = kotlin::import("kotlinx.serialization", "SerialName");
-        let sui_move_object = kotlin::import("xyz.mcxross.ksui.model", "SuiMoveObject");
-        let sui_move_struct = kotlin::import("xyz.mcxross.ksui.model", "SuiMoveStruct");
 
         let struct_name = self.strct.name().to_string();
         let type_params = self.strct_type_param_names();
@@ -742,14 +776,10 @@ impl<'a, 'model, const HAS_SOURCE: SourceKind> StructsGen<'a, 'model, HAS_SOURCE
             @$serializable
             data class $(&struct_name)$(gen_params) (
                 $(for field in &fields join (,) =>
-                    @$&serial_name($[str]($(field.name.to_string())))
+                    // TODO: handle serial name
                     val $(gen_field_name(field.name)): $(self.gen_struct_class_field_type_kt(&field.type_, &type_params))
                 )
-            ) : $(if has_key {
-                quote!($sui_move_object)
-            } else {
-                quote!($sui_move_struct)
-            }) {
+            ) {
                 companion object {
                     const val typeName = $(self.gen_full_name_with_address());
                 }

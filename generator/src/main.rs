@@ -12,7 +12,6 @@ use move_model_2::{compiled_model, model, source_model};
 use move_package::source_package::parsed_manifest::PackageName;
 use move_symbol_pool::Symbol;
 use std::io::Write;
-use sui_client_gen::framework_sources;
 use sui_client_gen::gen::{self, gen_module_files, StructClassImportCtx, StructsGen};
 use sui_client_gen::manifest::{parse_gen_manifest_from_file, GenManifest, Package};
 use sui_client_gen::model_builder::{
@@ -28,7 +27,7 @@ const DEFAULT_RPC: &str = "https://fullnode.mainnet.sui.io:443";
 #[clap(
     name = "sui-client-gen",
     version,
-    about = "Generate TS SDKs for Sui Move smart contracts."
+    about = "Generate Kotlin SDKs for Sui Move smart contracts."
 )]
 struct Args {
     #[arg(
@@ -52,6 +51,13 @@ struct Args {
         help = "Remove all contents of the output directory before generating, except for gen.toml. Use with caution."
     )]
     clean: bool,
+
+    #[arg(
+        long,
+        help = "The base package name for the generated SDK.",
+        default_value = "sui.client.gen"
+    )]
+    package: String,
 }
 
 #[tokio::main]
@@ -72,7 +78,6 @@ async fn main() -> Result<()> {
 
     let mut progress_output = std::io::stderr();
 
-    // build models
     let mut cache = PackageCache::new(rpc_client.read_api());
     let (source_model, on_chain_model) = build_models(
         &mut cache,
@@ -87,7 +92,6 @@ async fn main() -> Result<()> {
         return Ok(());
     }
 
-    // clean output
     if args.clean {
         clean_output(&PathBuf::from(&args.out))?;
     }
@@ -107,7 +111,7 @@ async fn main() -> Result<()> {
     let (source_top_level_addr_map, on_chain_top_level_addr_map) =
         resolve_top_level_pkg_addr_map(&source_model, &on_chain_model, &manifest);
 
-    let out_root = PathBuf::from(args.out);
+    let out_root = PathBuf::from(&args.out);
     std::fs::create_dir_all(&out_root)?;
 
     if let Some(m) = &source_model {
@@ -123,6 +127,7 @@ async fn main() -> Result<()> {
             &m.type_origin_table,
             &m.version_table,
             true,
+            &args.package,
             &out_root,
         )?;
     }
@@ -139,6 +144,7 @@ async fn main() -> Result<()> {
             &m.type_origin_table,
             &m.version_table,
             false,
+            &args.package,
             &out_root,
         )?;
     }
@@ -168,14 +174,15 @@ fn clean_output(out_root: &Path) -> Result<()> {
     Ok(())
 }
 
-fn write_tokens_to_file(tokens: &Tokens<Kotlin>, path: &Path, package: &str) -> Result<()> {
+fn write_tokens_to_file(tokens: &Tokens<kotlin::Kotlin>, path: &Path, package: &str) -> Result<()> {
     if tokens.is_empty() {
         return Ok(());
     }
 
     let file = std::fs::File::create(path)?;
     let mut w = fmt::IoWriter::new(file);
-    let fmt = fmt::Config::from_lang::<Kotlin>();
+    let fmt = fmt::Config::from_lang::<kotlin::Kotlin>()
+        .with_indentation(fmt::Indentation::Space(2));
     let config = kotlin::Config::default().with_package(package);
     tokens.format_file(&mut w.as_formatter(&fmt), &config)?;
     Ok(())
@@ -255,47 +262,60 @@ fn gen_packages_for_model<const HAS_SOURCE: usize>(
     type_origin_table: &TypeOriginTable,
     version_table: &VersionTable,
     is_source: bool,
+    base_package_name: &str,
     out_root: &Path,
 ) -> Result<()> {
     if pkgs.is_empty() {
         return Ok(());
     }
 
+    let base_path = PathBuf::from(base_package_name.replace('.', std::path::MAIN_SEPARATOR_STR));
+
+
     for (pkg_id, pkg) in pkgs.iter() {
         let is_top_level = top_level_pkg_names.contains_key(pkg_id);
 
-        let package_path = out_root.join(match top_level_pkg_names.get(pkg_id) {
+        let sanitized_pkg_id_str = format!("pkg_{}", pkg_id.to_hex_literal().trim_start_matches("0x"));
+
+        let package_path = out_root.join(&base_path).join(match top_level_pkg_names.get(pkg_id) {
             Some(pkg_name) => PathBuf::from(gen::package_import_name(*pkg_name)),
             None => PathBuf::from("_dependencies")
-                .join(match is_source {
-                    true => "source",
-                    false => "onchain",
-                })
-                .join(pkg_id.to_hex_literal()),
+                .join(if is_source { "source" } else { "onchain" })
+                .join(&sanitized_pkg_id_str),
         });
 
         std::fs::create_dir_all(&package_path)?;
 
-        let base_package_name = "xyz.mcxross.ksui.model";
-
         let published_at = published_at_map.get(pkg_id).unwrap_or(pkg_id);
         let versions = version_table.get(pkg_id).unwrap();
-        let index_tokens: kotlin::Tokens = quote!(
-            const val PACKAGE_ID = $[str]($[const](pkg_id.to_hex_literal()));
-            const val PUBLISHED_AT = $[str]($[const](published_at.to_hex_literal()));
-            $(for (published_at, version) in versions {
-                const val PKG_V$(version.value()) = $[str]($[const](published_at.to_hex_literal()));
-            })
-        );
-        write_tokens_to_file(&index_tokens, &package_path.join("Package.kt"), base_package_name)?;
+        let index_tokens: kotlin::Tokens = quote! {
+           const val PACKAGE_ID = $[str]($[const](pkg_id.to_hex_literal()))
 
-        // generate modules
+           const val PUBLISHED_AT = $[str]($[const](published_at.to_hex_literal()))
+
+           $(for (published_at, version) in versions {
+                const val PKG_V$(version.value()) = $[str]($[const](published_at.to_hex_literal()))
+           })
+        };
+
+        let package_index_name = if let Some(pkg_name) = top_level_pkg_names.get(pkg_id) {
+            format!("{}.{}", base_package_name, gen::package_import_name(*pkg_name))
+        } else {
+            format!("{}.{}.{}.{}",
+                    base_package_name,
+                    "_dependencies",
+                    if is_source { "source" } else { "onchain" },
+                    &sanitized_pkg_id_str
+            )
+        };
+        write_tokens_to_file(&index_tokens, &package_path.join("Package.kt"), &package_index_name)?;
+
         for module in pkg.modules() {
             let module_path = package_path.join(gen::module_import_name(module.name()));
             std::fs::create_dir_all(&module_path)?;
 
-            let functions_package = format!("{}.{}", base_package_name, module.name());
-            let data_package = format!("{}.data", functions_package);
+            let functions_package = format!("{}.{}", &package_index_name, gen::module_import_name(module.name()));
+            let data_package = format!("{}.data", &functions_package);
 
             if is_top_level {
                 let (functions_toks, data_toks) = gen_module_files(
@@ -317,9 +337,8 @@ fn gen_packages_for_model<const HAS_SOURCE: usize>(
             }
 
             let mut tokens = kotlin::Tokens::new();
-            // UPDATE: Pass the current package name to the context
             let mut import_ctx =
-                &mut StructClassImportCtx::for_struct_gen(&module, top_level_pkg_names, true, &functions_package);
+                &mut StructClassImportCtx::for_struct_gen(&module, top_level_pkg_names, true, &data_package);
 
             for strct in module.structs() {
                 let mut structs_gen = StructsGen::new(
