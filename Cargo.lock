@@ -1262,6 +1262,36 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b94f61472cee1439c0b966b47e3aca9ae07e45d070759512cd390ea2bebc6675"
 
 [[package]]
+name = "codegen-kt"
+version = "0.3.2"
+dependencies = [
+ "anyhow",
+ "clap",
+ "codespan-reporting",
+ "colored",
+ "convert_case 0.6.0",
+ "futures",
+ "genco",
+ "move-binary-format",
+ "move-bytecode-utils",
+ "move-command-line-common",
+ "move-compiler",
+ "move-core-types",
+ "move-model-2",
+ "move-package",
+ "move-symbol-pool",
+ "once_cell",
+ "regex",
+ "sui-json-rpc-types",
+ "sui-move",
+ "sui-move-build",
+ "sui-sdk",
+ "tempfile",
+ "tokio",
+ "toml",
+]
+
+[[package]]
 name = "codespan"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6973,36 +7003,6 @@ name = "subtle-ng"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "734676eb262c623cec13c3155096e08d1f8f29adce39ba17948b18dad1e54142"
-
-[[package]]
-name = "sui-client-gen"
-version = "0.3.2"
-dependencies = [
- "anyhow",
- "clap",
- "codespan-reporting",
- "colored",
- "convert_case 0.6.0",
- "futures",
- "genco",
- "move-binary-format",
- "move-bytecode-utils",
- "move-command-line-common",
- "move-compiler",
- "move-core-types",
- "move-model-2",
- "move-package",
- "move-symbol-pool",
- "once_cell",
- "regex",
- "sui-json-rpc-types",
- "sui-move",
- "sui-move-build",
- "sui-sdk",
- "tempfile",
- "tokio",
- "toml",
-]
 
 [[package]]
 name = "sui-config"

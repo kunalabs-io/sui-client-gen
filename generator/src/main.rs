@@ -12,12 +12,12 @@ use move_model_2::{compiled_model, model, source_model};
 use move_package::source_package::parsed_manifest::PackageName;
 use move_symbol_pool::Symbol;
 use std::io::Write;
-use sui_client_gen::gen::{self, gen_module_files, StructClassImportCtx, StructsGen};
-use sui_client_gen::manifest::{parse_gen_manifest_from_file, GenManifest, Package};
-use sui_client_gen::model_builder::{
+use codegen_kt::gen::{self, gen_module_files, StructClassImportCtx, StructsGen};
+use codegen_kt::manifest::{parse_gen_manifest_from_file, GenManifest, Package};
+use codegen_kt::model_builder::{
     build_models, OnChainModelResult, SourceModelResult, TypeOriginTable, VersionTable,
 };
-use sui_client_gen::package_cache::PackageCache;
+use codegen_kt::package_cache::PackageCache;
 use sui_move_build::SuiPackageHooks;
 use sui_sdk::SuiClientBuilder;
 
