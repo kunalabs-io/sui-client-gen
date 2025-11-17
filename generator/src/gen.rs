@@ -1906,7 +1906,7 @@ impl<'a, 'model, HasSource: SourceKind> StructsGen<'a, 'model, HasSource> {
 
                 private static cachedBcs: ReturnType<typeof $(&struct_name).instantiateBcs> | null = null;$['\n']
 
-                static get bcs() {
+                static get bcs(): ReturnType<typeof $(&struct_name).instantiateBcs> {
                     if (!$(&struct_name).cachedBcs) {
                         $(&struct_name).cachedBcs = $(&struct_name).instantiateBcs()
                     }
