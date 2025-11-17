@@ -91,7 +91,7 @@ export class SUI implements StructClass {
 
   private static cachedBcs: ReturnType<typeof SUI.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof SUI.instantiateBcs> {
     if (!SUI.cachedBcs) {
       SUI.cachedBcs = SUI.instantiateBcs()
     }

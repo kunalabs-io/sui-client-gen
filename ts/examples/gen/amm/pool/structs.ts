@@ -115,7 +115,7 @@ export class PoolCreationEvent implements StructClass {
 
   private static cachedBcs: ReturnType<typeof PoolCreationEvent.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof PoolCreationEvent.instantiateBcs> {
     if (!PoolCreationEvent.cachedBcs) {
       PoolCreationEvent.cachedBcs = PoolCreationEvent.instantiateBcs()
     }
@@ -305,7 +305,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 
   private static cachedBcs: ReturnType<typeof LP.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof LP.instantiateBcs> {
     if (!LP.cachedBcs) {
       LP.cachedBcs = LP.instantiateBcs()
     }
@@ -584,7 +584,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 
   private static cachedBcs: ReturnType<typeof Pool.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Pool.instantiateBcs> {
     if (!Pool.cachedBcs) {
       Pool.cachedBcs = Pool.instantiateBcs()
     }
@@ -868,7 +868,7 @@ export class PoolRegistry implements StructClass {
 
   private static cachedBcs: ReturnType<typeof PoolRegistry.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof PoolRegistry.instantiateBcs> {
     if (!PoolRegistry.cachedBcs) {
       PoolRegistry.cachedBcs = PoolRegistry.instantiateBcs()
     }
@@ -1058,7 +1058,7 @@ export class PoolRegistryItem implements StructClass {
 
   private static cachedBcs: ReturnType<typeof PoolRegistryItem.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof PoolRegistryItem.instantiateBcs> {
     if (!PoolRegistryItem.cachedBcs) {
       PoolRegistryItem.cachedBcs = PoolRegistryItem.instantiateBcs()
     }
@@ -1232,7 +1232,7 @@ export class AdminCap implements StructClass {
 
   private static cachedBcs: ReturnType<typeof AdminCap.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof AdminCap.instantiateBcs> {
     if (!AdminCap.cachedBcs) {
       AdminCap.cachedBcs = AdminCap.instantiateBcs()
     }

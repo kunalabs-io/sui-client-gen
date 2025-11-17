@@ -94,7 +94,7 @@ export class ID implements StructClass {
 
   private static cachedBcs: ReturnType<typeof ID.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof ID.instantiateBcs> {
     if (!ID.cachedBcs) {
       ID.cachedBcs = ID.instantiateBcs()
     }
@@ -255,7 +255,7 @@ export class UID implements StructClass {
 
   private static cachedBcs: ReturnType<typeof UID.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof UID.instantiateBcs> {
     if (!UID.cachedBcs) {
       UID.cachedBcs = UID.instantiateBcs()
     }

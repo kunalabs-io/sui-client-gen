@@ -94,7 +94,7 @@ export class BCS implements StructClass {
 
   private static cachedBcs: ReturnType<typeof BCS.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof BCS.instantiateBcs> {
     if (!BCS.cachedBcs) {
       BCS.cachedBcs = BCS.instantiateBcs()
     }

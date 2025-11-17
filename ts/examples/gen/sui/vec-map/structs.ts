@@ -124,7 +124,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
 
   private static cachedBcs: ReturnType<typeof VecMap.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof VecMap.instantiateBcs> {
     if (!VecMap.cachedBcs) {
       VecMap.cachedBcs = VecMap.instantiateBcs()
     }
@@ -376,7 +376,7 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
 
   private static cachedBcs: ReturnType<typeof Entry.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Entry.instantiateBcs> {
     if (!Entry.cachedBcs) {
       Entry.cachedBcs = Entry.instantiateBcs()
     }

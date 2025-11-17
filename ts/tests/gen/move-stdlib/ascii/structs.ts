@@ -94,7 +94,7 @@ export class String implements StructClass {
 
   private static cachedBcs: ReturnType<typeof String.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof String.instantiateBcs> {
     if (!String.cachedBcs) {
       String.cachedBcs = String.instantiateBcs()
     }
@@ -257,7 +257,7 @@ export class Char implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Char.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Char.instantiateBcs> {
     if (!Char.cachedBcs) {
       Char.cachedBcs = Char.instantiateBcs()
     }

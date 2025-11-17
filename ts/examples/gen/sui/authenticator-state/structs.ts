@@ -106,7 +106,7 @@ export class AuthenticatorState implements StructClass {
 
   private static cachedBcs: ReturnType<typeof AuthenticatorState.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof AuthenticatorState.instantiateBcs> {
     if (!AuthenticatorState.cachedBcs) {
       AuthenticatorState.cachedBcs = AuthenticatorState.instantiateBcs()
     }
@@ -293,7 +293,7 @@ export class AuthenticatorStateInner implements StructClass {
 
   private static cachedBcs: ReturnType<typeof AuthenticatorStateInner.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof AuthenticatorStateInner.instantiateBcs> {
     if (!AuthenticatorStateInner.cachedBcs) {
       AuthenticatorStateInner.cachedBcs = AuthenticatorStateInner.instantiateBcs()
     }
@@ -486,7 +486,7 @@ export class JWK implements StructClass {
 
   private static cachedBcs: ReturnType<typeof JWK.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof JWK.instantiateBcs> {
     if (!JWK.cachedBcs) {
       JWK.cachedBcs = JWK.instantiateBcs()
     }
@@ -672,7 +672,7 @@ export class JwkId implements StructClass {
 
   private static cachedBcs: ReturnType<typeof JwkId.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof JwkId.instantiateBcs> {
     if (!JwkId.cachedBcs) {
       JwkId.cachedBcs = JwkId.instantiateBcs()
     }
@@ -857,7 +857,7 @@ export class ActiveJwk implements StructClass {
 
   private static cachedBcs: ReturnType<typeof ActiveJwk.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof ActiveJwk.instantiateBcs> {
     if (!ActiveJwk.cachedBcs) {
       ActiveJwk.cachedBcs = ActiveJwk.instantiateBcs()
     }

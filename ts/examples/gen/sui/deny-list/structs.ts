@@ -105,7 +105,7 @@ export class DenyList implements StructClass {
 
   private static cachedBcs: ReturnType<typeof DenyList.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof DenyList.instantiateBcs> {
     if (!DenyList.cachedBcs) {
       DenyList.cachedBcs = DenyList.instantiateBcs()
     }
@@ -287,7 +287,7 @@ export class PerTypeList implements StructClass {
 
   private static cachedBcs: ReturnType<typeof PerTypeList.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof PerTypeList.instantiateBcs> {
     if (!PerTypeList.cachedBcs) {
       PerTypeList.cachedBcs = PerTypeList.instantiateBcs()
     }

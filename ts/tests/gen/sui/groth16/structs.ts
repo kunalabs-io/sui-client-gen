@@ -94,7 +94,7 @@ export class Curve implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Curve.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Curve.instantiateBcs> {
     if (!Curve.cachedBcs) {
       Curve.cachedBcs = Curve.instantiateBcs()
     }
@@ -276,7 +276,7 @@ export class PreparedVerifyingKey implements StructClass {
 
   private static cachedBcs: ReturnType<typeof PreparedVerifyingKey.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof PreparedVerifyingKey.instantiateBcs> {
     if (!PreparedVerifyingKey.cachedBcs) {
       PreparedVerifyingKey.cachedBcs = PreparedVerifyingKey.instantiateBcs()
     }
@@ -475,7 +475,7 @@ export class PublicProofInputs implements StructClass {
 
   private static cachedBcs: ReturnType<typeof PublicProofInputs.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof PublicProofInputs.instantiateBcs> {
     if (!PublicProofInputs.cachedBcs) {
       PublicProofInputs.cachedBcs = PublicProofInputs.instantiateBcs()
     }
@@ -645,7 +645,7 @@ export class ProofPoints implements StructClass {
 
   private static cachedBcs: ReturnType<typeof ProofPoints.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof ProofPoints.instantiateBcs> {
     if (!ProofPoints.cachedBcs) {
       ProofPoints.cachedBcs = ProofPoints.instantiateBcs()
     }

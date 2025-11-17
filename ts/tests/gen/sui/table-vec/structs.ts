@@ -117,7 +117,7 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
 
   private static cachedBcs: ReturnType<typeof TableVec.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof TableVec.instantiateBcs> {
     if (!TableVec.cachedBcs) {
       TableVec.cachedBcs = TableVec.instantiateBcs()
     }

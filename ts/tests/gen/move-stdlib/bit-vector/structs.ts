@@ -101,7 +101,7 @@ export class BitVector implements StructClass {
 
   private static cachedBcs: ReturnType<typeof BitVector.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof BitVector.instantiateBcs> {
     if (!BitVector.cachedBcs) {
       BitVector.cachedBcs = BitVector.instantiateBcs()
     }

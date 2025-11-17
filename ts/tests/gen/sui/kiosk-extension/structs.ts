@@ -114,7 +114,7 @@ export class Extension implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Extension.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Extension.instantiateBcs> {
     if (!Extension.cachedBcs) {
       Extension.cachedBcs = Extension.instantiateBcs()
     }
@@ -302,7 +302,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
 
   private static cachedBcs: ReturnType<typeof ExtensionKey.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof ExtensionKey.instantiateBcs> {
     if (!ExtensionKey.cachedBcs) {
       ExtensionKey.cachedBcs = ExtensionKey.instantiateBcs()
     }

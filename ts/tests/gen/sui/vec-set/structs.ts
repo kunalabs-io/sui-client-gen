@@ -114,7 +114,7 @@ export class VecSet<K extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof VecSet.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof VecSet.instantiateBcs> {
     if (!VecSet.cachedBcs) {
       VecSet.cachedBcs = VecSet.instantiateBcs()
     }

@@ -97,7 +97,7 @@ export class FixedPoint32 implements StructClass {
 
   private static cachedBcs: ReturnType<typeof FixedPoint32.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof FixedPoint32.instantiateBcs> {
     if (!FixedPoint32.cachedBcs) {
       FixedPoint32.cachedBcs = FixedPoint32.instantiateBcs()
     }

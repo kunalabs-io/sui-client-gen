@@ -120,7 +120,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Receiving.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Receiving.instantiateBcs> {
     if (!Receiving.cachedBcs) {
       Receiving.cachedBcs = Receiving.instantiateBcs()
     }

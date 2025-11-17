@@ -105,7 +105,7 @@ export class ExampleStruct implements StructClass {
 
   private static cachedBcs: ReturnType<typeof ExampleStruct.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof ExampleStruct.instantiateBcs> {
     if (!ExampleStruct.cachedBcs) {
       ExampleStruct.cachedBcs = ExampleStruct.instantiateBcs()
     }
@@ -311,7 +311,7 @@ export class SpecialTypesStruct implements StructClass {
 
   private static cachedBcs: ReturnType<typeof SpecialTypesStruct.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof SpecialTypesStruct.instantiateBcs> {
     if (!SpecialTypesStruct.cachedBcs) {
       SpecialTypesStruct.cachedBcs = SpecialTypesStruct.instantiateBcs()
     }

@@ -116,7 +116,7 @@ export class TxContext implements StructClass {
 
   private static cachedBcs: ReturnType<typeof TxContext.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof TxContext.instantiateBcs> {
     if (!TxContext.cachedBcs) {
       TxContext.cachedBcs = TxContext.instantiateBcs()
     }

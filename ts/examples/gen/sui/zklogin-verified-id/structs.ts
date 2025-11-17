@@ -122,7 +122,7 @@ export class VerifiedID implements StructClass {
 
   private static cachedBcs: ReturnType<typeof VerifiedID.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof VerifiedID.instantiateBcs> {
     if (!VerifiedID.cachedBcs) {
       VerifiedID.cachedBcs = VerifiedID.instantiateBcs()
     }

@@ -95,12 +95,15 @@ export function isTransactionArgument(arg: GenericArg): arg is TransactionArgume
   return 'GasCoin' in arg || 'Input' in arg || 'Result' in arg || 'NestedResult' in arg
 }
 
-export function obj(tx: Transaction, arg: TransactionObjectInput) {
+export function obj(tx: Transaction, arg: TransactionObjectInput): TransactionArgument {
   return isTransactionArgument(arg) ? arg : tx.object(arg)
 }
 
 export function pure(tx: Transaction, arg: PureArg, type: string): TransactionArgument {
   if (isTransactionArgument(arg)) {
+    if (typeof arg === 'function') {
+      throw new Error('Transaction plugins are not supported')
+    }
     return obj(tx, arg)
   }
 
@@ -240,7 +243,7 @@ export function pure(tx: Transaction, arg: PureArg, type: string): TransactionAr
   }
 }
 
-export function option(tx: Transaction, type: string, arg: GenericArg | null) {
+export function option(tx: Transaction, type: string, arg: GenericArg | null): TransactionArgument {
   if (isTransactionArgument(arg)) {
     return arg
   }

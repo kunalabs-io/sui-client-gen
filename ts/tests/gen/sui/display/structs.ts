@@ -123,7 +123,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Display.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Display.instantiateBcs> {
     if (!Display.cachedBcs) {
       Display.cachedBcs = Display.instantiateBcs()
     }
@@ -359,7 +359,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
 
   private static cachedBcs: ReturnType<typeof DisplayCreated.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof DisplayCreated.instantiateBcs> {
     if (!DisplayCreated.cachedBcs) {
       DisplayCreated.cachedBcs = DisplayCreated.instantiateBcs()
     }
@@ -588,7 +588,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
 
   private static cachedBcs: ReturnType<typeof VersionUpdated.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof VersionUpdated.instantiateBcs> {
     if (!VersionUpdated.cachedBcs) {
       VersionUpdated.cachedBcs = VersionUpdated.instantiateBcs()
     }

@@ -107,7 +107,7 @@ export class Publisher implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Publisher.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Publisher.instantiateBcs> {
     if (!Publisher.cachedBcs) {
       Publisher.cachedBcs = Publisher.instantiateBcs()
     }
@@ -297,7 +297,7 @@ export class UpgradeCap implements StructClass {
 
   private static cachedBcs: ReturnType<typeof UpgradeCap.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof UpgradeCap.instantiateBcs> {
     if (!UpgradeCap.cachedBcs) {
       UpgradeCap.cachedBcs = UpgradeCap.instantiateBcs()
     }
@@ -491,7 +491,7 @@ export class UpgradeTicket implements StructClass {
 
   private static cachedBcs: ReturnType<typeof UpgradeTicket.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof UpgradeTicket.instantiateBcs> {
     if (!UpgradeTicket.cachedBcs) {
       UpgradeTicket.cachedBcs = UpgradeTicket.instantiateBcs()
     }
@@ -680,7 +680,7 @@ export class UpgradeReceipt implements StructClass {
 
   private static cachedBcs: ReturnType<typeof UpgradeReceipt.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof UpgradeReceipt.instantiateBcs> {
     if (!UpgradeReceipt.cachedBcs) {
       UpgradeReceipt.cachedBcs = UpgradeReceipt.instantiateBcs()
     }

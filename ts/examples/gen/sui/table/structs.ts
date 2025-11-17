@@ -133,7 +133,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
 
   private static cachedBcs: ReturnType<typeof Table.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Table.instantiateBcs> {
     if (!Table.cachedBcs) {
       Table.cachedBcs = Table.instantiateBcs()
     }

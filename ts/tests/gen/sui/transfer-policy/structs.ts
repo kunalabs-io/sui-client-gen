@@ -134,7 +134,7 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
 
   private static cachedBcs: ReturnType<typeof TransferRequest.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof TransferRequest.instantiateBcs> {
     if (!TransferRequest.cachedBcs) {
       TransferRequest.cachedBcs = TransferRequest.instantiateBcs()
     }
@@ -379,7 +379,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
 
   private static cachedBcs: ReturnType<typeof TransferPolicy.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof TransferPolicy.instantiateBcs> {
     if (!TransferPolicy.cachedBcs) {
       TransferPolicy.cachedBcs = TransferPolicy.instantiateBcs()
     }
@@ -622,7 +622,7 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructC
 
   private static cachedBcs: ReturnType<typeof TransferPolicyCap.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof TransferPolicyCap.instantiateBcs> {
     if (!TransferPolicyCap.cachedBcs) {
       TransferPolicyCap.cachedBcs = TransferPolicyCap.instantiateBcs()
     }
@@ -854,7 +854,7 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> implements Str
 
   private static cachedBcs: ReturnType<typeof TransferPolicyCreated.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof TransferPolicyCreated.instantiateBcs> {
     if (!TransferPolicyCreated.cachedBcs) {
       TransferPolicyCreated.cachedBcs = TransferPolicyCreated.instantiateBcs()
     }
@@ -1084,7 +1084,7 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements S
 
   private static cachedBcs: ReturnType<typeof TransferPolicyDestroyed.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof TransferPolicyDestroyed.instantiateBcs> {
     if (!TransferPolicyDestroyed.cachedBcs) {
       TransferPolicyDestroyed.cachedBcs = TransferPolicyDestroyed.instantiateBcs()
     }
@@ -1310,7 +1310,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof RuleKey.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof RuleKey.instantiateBcs> {
     if (!RuleKey.cachedBcs) {
       RuleKey.cachedBcs = RuleKey.instantiateBcs()
     }

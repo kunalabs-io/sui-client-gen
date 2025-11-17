@@ -68,7 +68,7 @@ export class Vector<T extends TypeArgument> implements VectorClass {
     return Vector.reified
   }
 
-  static get bcs() {
+  static get bcs(): typeof bcs.vector {
     return bcs.vector
   }
 

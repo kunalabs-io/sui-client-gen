@@ -112,7 +112,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Supply.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Supply.instantiateBcs> {
     if (!Supply.cachedBcs) {
       Supply.cachedBcs = Supply.instantiateBcs()
     }
@@ -330,7 +330,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Balance.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Balance.instantiateBcs> {
     if (!Balance.cachedBcs) {
       Balance.cachedBcs = Balance.instantiateBcs()
     }

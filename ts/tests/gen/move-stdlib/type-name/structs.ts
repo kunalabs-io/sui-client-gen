@@ -95,7 +95,7 @@ export class TypeName implements StructClass {
 
   private static cachedBcs: ReturnType<typeof TypeName.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof TypeName.instantiateBcs> {
     if (!TypeName.cachedBcs) {
       TypeName.cachedBcs = TypeName.instantiateBcs()
     }

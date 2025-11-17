@@ -114,7 +114,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Wrapper.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Wrapper.instantiateBcs> {
     if (!Wrapper.cachedBcs) {
       Wrapper.cachedBcs = Wrapper.instantiateBcs()
     }

@@ -147,7 +147,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
 
   private static cachedBcs: ReturnType<typeof LinkedTable.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof LinkedTable.instantiateBcs> {
     if (!LinkedTable.cachedBcs) {
       LinkedTable.cachedBcs = LinkedTable.instantiateBcs()
     }
@@ -418,7 +418,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
 
   private static cachedBcs: ReturnType<typeof Node.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Node.instantiateBcs> {
     if (!Node.cachedBcs) {
       Node.cachedBcs = Node.instantiateBcs()
     }

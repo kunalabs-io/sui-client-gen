@@ -126,7 +126,7 @@ export class Kiosk implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Kiosk.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Kiosk.instantiateBcs> {
     if (!Kiosk.cachedBcs) {
       Kiosk.cachedBcs = Kiosk.instantiateBcs()
     }
@@ -319,7 +319,7 @@ export class KioskOwnerCap implements StructClass {
 
   private static cachedBcs: ReturnType<typeof KioskOwnerCap.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof KioskOwnerCap.instantiateBcs> {
     if (!KioskOwnerCap.cachedBcs) {
       KioskOwnerCap.cachedBcs = KioskOwnerCap.instantiateBcs()
     }
@@ -515,7 +515,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof PurchaseCap.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof PurchaseCap.instantiateBcs> {
     if (!PurchaseCap.cachedBcs) {
       PurchaseCap.cachedBcs = PurchaseCap.instantiateBcs()
     }
@@ -743,7 +743,7 @@ export class Borrow implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Borrow.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Borrow.instantiateBcs> {
     if (!Borrow.cachedBcs) {
       Borrow.cachedBcs = Borrow.instantiateBcs()
     }
@@ -914,7 +914,7 @@ export class Item implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Item.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Item.instantiateBcs> {
     if (!Item.cachedBcs) {
       Item.cachedBcs = Item.instantiateBcs()
     }
@@ -1079,7 +1079,7 @@ export class Listing implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Listing.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Listing.instantiateBcs> {
     if (!Listing.cachedBcs) {
       Listing.cachedBcs = Listing.instantiateBcs()
     }
@@ -1250,7 +1250,7 @@ export class Lock implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Lock.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Lock.instantiateBcs> {
     if (!Lock.cachedBcs) {
       Lock.cachedBcs = Lock.instantiateBcs()
     }
@@ -1432,7 +1432,7 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof ItemListed.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof ItemListed.instantiateBcs> {
     if (!ItemListed.cachedBcs) {
       ItemListed.cachedBcs = ItemListed.instantiateBcs()
     }
@@ -1673,7 +1673,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
 
   private static cachedBcs: ReturnType<typeof ItemPurchased.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof ItemPurchased.instantiateBcs> {
     if (!ItemPurchased.cachedBcs) {
       ItemPurchased.cachedBcs = ItemPurchased.instantiateBcs()
     }
@@ -1910,7 +1910,7 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
 
   private static cachedBcs: ReturnType<typeof ItemDelisted.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof ItemDelisted.instantiateBcs> {
     if (!ItemDelisted.cachedBcs) {
       ItemDelisted.cachedBcs = ItemDelisted.instantiateBcs()
     }

@@ -100,7 +100,7 @@ export class Random implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Random.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Random.instantiateBcs> {
     if (!Random.cachedBcs) {
       Random.cachedBcs = Random.instantiateBcs()
     }
@@ -286,7 +286,7 @@ export class RandomInner implements StructClass {
 
   private static cachedBcs: ReturnType<typeof RandomInner.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof RandomInner.instantiateBcs> {
     if (!RandomInner.cachedBcs) {
       RandomInner.cachedBcs = RandomInner.instantiateBcs()
     }
@@ -479,7 +479,7 @@ export class RandomGenerator implements StructClass {
 
   private static cachedBcs: ReturnType<typeof RandomGenerator.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof RandomGenerator.instantiateBcs> {
     if (!RandomGenerator.cachedBcs) {
       RandomGenerator.cachedBcs = RandomGenerator.instantiateBcs()
     }

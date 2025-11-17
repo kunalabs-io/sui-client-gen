@@ -121,7 +121,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Option.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Option.instantiateBcs> {
     if (!Option.cachedBcs) {
       Option.cachedBcs = Option.instantiateBcs()
     }

@@ -96,7 +96,7 @@ export class Bag implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Bag.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Bag.instantiateBcs> {
     if (!Bag.cachedBcs) {
       Bag.cachedBcs = Bag.instantiateBcs()
     }

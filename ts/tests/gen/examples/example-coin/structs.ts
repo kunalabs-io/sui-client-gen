@@ -102,7 +102,7 @@ export class EXAMPLE_COIN implements StructClass {
 
   private static cachedBcs: ReturnType<typeof EXAMPLE_COIN.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof EXAMPLE_COIN.instantiateBcs> {
     if (!EXAMPLE_COIN.cachedBcs) {
       EXAMPLE_COIN.cachedBcs = EXAMPLE_COIN.instantiateBcs()
     }
@@ -275,7 +275,7 @@ export class Faucet implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Faucet.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Faucet.instantiateBcs> {
     if (!Faucet.cachedBcs) {
       Faucet.cachedBcs = Faucet.instantiateBcs()
     }

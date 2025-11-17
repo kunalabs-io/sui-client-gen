@@ -91,7 +91,7 @@ export class Scalar implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Scalar.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Scalar.instantiateBcs> {
     if (!Scalar.cachedBcs) {
       Scalar.cachedBcs = Scalar.instantiateBcs()
     }
@@ -254,7 +254,7 @@ export class G1 implements StructClass {
 
   private static cachedBcs: ReturnType<typeof G1.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof G1.instantiateBcs> {
     if (!G1.cachedBcs) {
       G1.cachedBcs = G1.instantiateBcs()
     }
@@ -417,7 +417,7 @@ export class G2 implements StructClass {
 
   private static cachedBcs: ReturnType<typeof G2.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof G2.instantiateBcs> {
     if (!G2.cachedBcs) {
       G2.cachedBcs = G2.instantiateBcs()
     }
@@ -580,7 +580,7 @@ export class GT implements StructClass {
 
   private static cachedBcs: ReturnType<typeof GT.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof GT.instantiateBcs> {
     if (!GT.cachedBcs) {
       GT.cachedBcs = GT.instantiateBcs()
     }

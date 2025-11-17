@@ -115,7 +115,7 @@ export class Element<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Element.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Element.instantiateBcs> {
     if (!Element.cachedBcs) {
       Element.cachedBcs = Element.instantiateBcs()
     }

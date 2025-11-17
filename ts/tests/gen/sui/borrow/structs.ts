@@ -121,7 +121,7 @@ export class Referent<T extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Referent.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Referent.instantiateBcs> {
     if (!Referent.cachedBcs) {
       Referent.cachedBcs = Referent.instantiateBcs()
     }
@@ -346,7 +346,7 @@ export class Borrow implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Borrow.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Borrow.instantiateBcs> {
     if (!Borrow.cachedBcs) {
       Borrow.cachedBcs = Borrow.instantiateBcs()
     }

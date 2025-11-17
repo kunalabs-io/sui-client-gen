@@ -124,7 +124,7 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Token.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Token.instantiateBcs> {
     if (!Token.cachedBcs) {
       Token.cachedBcs = Token.instantiateBcs()
     }
@@ -357,7 +357,7 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
 
   private static cachedBcs: ReturnType<typeof TokenPolicyCap.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof TokenPolicyCap.instantiateBcs> {
     if (!TokenPolicyCap.cachedBcs) {
       TokenPolicyCap.cachedBcs = TokenPolicyCap.instantiateBcs()
     }
@@ -594,7 +594,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof TokenPolicy.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof TokenPolicy.instantiateBcs> {
     if (!TokenPolicy.cachedBcs) {
       TokenPolicy.cachedBcs = TokenPolicy.instantiateBcs()
     }
@@ -864,7 +864,7 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
 
   private static cachedBcs: ReturnType<typeof ActionRequest.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof ActionRequest.instantiateBcs> {
     if (!ActionRequest.cachedBcs) {
       ActionRequest.cachedBcs = ActionRequest.instantiateBcs()
     }
@@ -1121,7 +1121,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof RuleKey.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof RuleKey.instantiateBcs> {
     if (!RuleKey.cachedBcs) {
       RuleKey.cachedBcs = RuleKey.instantiateBcs()
     }
@@ -1353,7 +1353,7 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
 
   private static cachedBcs: ReturnType<typeof TokenPolicyCreated.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof TokenPolicyCreated.instantiateBcs> {
     if (!TokenPolicyCreated.cachedBcs) {
       TokenPolicyCreated.cachedBcs = TokenPolicyCreated.instantiateBcs()
     }

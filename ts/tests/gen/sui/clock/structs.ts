@@ -96,7 +96,7 @@ export class Clock implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Clock.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Clock.instantiateBcs> {
     if (!Clock.cachedBcs) {
       Clock.cachedBcs = Clock.instantiateBcs()
     }

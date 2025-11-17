@@ -133,7 +133,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
 
   private static cachedBcs: ReturnType<typeof ObjectTable.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof ObjectTable.instantiateBcs> {
     if (!ObjectTable.cachedBcs) {
       ObjectTable.cachedBcs = ObjectTable.instantiateBcs()
     }

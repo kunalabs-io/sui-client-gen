@@ -137,7 +137,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
 
   private static cachedBcs: ReturnType<typeof Field.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Field.instantiateBcs> {
     if (!Field.cachedBcs) {
       Field.cachedBcs = Field.instantiateBcs()
     }

@@ -92,7 +92,7 @@ export class Url implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Url.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Url.instantiateBcs> {
     if (!Url.cachedBcs) {
       Url.cachedBcs = Url.instantiateBcs()
     }

@@ -110,7 +110,7 @@ export class VerifiedIssuer implements StructClass {
 
   private static cachedBcs: ReturnType<typeof VerifiedIssuer.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof VerifiedIssuer.instantiateBcs> {
     if (!VerifiedIssuer.cachedBcs) {
       VerifiedIssuer.cachedBcs = VerifiedIssuer.instantiateBcs()
     }

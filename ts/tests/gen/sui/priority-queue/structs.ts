@@ -119,7 +119,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof PriorityQueue.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof PriorityQueue.instantiateBcs> {
     if (!PriorityQueue.cachedBcs) {
       PriorityQueue.cachedBcs = PriorityQueue.instantiateBcs()
     }
@@ -352,7 +352,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Entry.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Entry.instantiateBcs> {
     if (!Entry.cachedBcs) {
       Entry.cachedBcs = Entry.instantiateBcs()
     }

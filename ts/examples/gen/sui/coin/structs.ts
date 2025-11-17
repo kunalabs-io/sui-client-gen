@@ -123,7 +123,7 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Coin.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Coin.instantiateBcs> {
     if (!Coin.cachedBcs) {
       Coin.cachedBcs = Coin.instantiateBcs()
     }
@@ -372,7 +372,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
 
   private static cachedBcs: ReturnType<typeof CoinMetadata.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof CoinMetadata.instantiateBcs> {
     if (!CoinMetadata.cachedBcs) {
       CoinMetadata.cachedBcs = CoinMetadata.instantiateBcs()
     }
@@ -628,7 +628,7 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
 
   private static cachedBcs: ReturnType<typeof RegulatedCoinMetadata.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof RegulatedCoinMetadata.instantiateBcs> {
     if (!RegulatedCoinMetadata.cachedBcs) {
       RegulatedCoinMetadata.cachedBcs = RegulatedCoinMetadata.instantiateBcs()
     }
@@ -867,7 +867,7 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof TreasuryCap.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof TreasuryCap.instantiateBcs> {
     if (!TreasuryCap.cachedBcs) {
       TreasuryCap.cachedBcs = TreasuryCap.instantiateBcs()
     }
@@ -1093,7 +1093,7 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof DenyCap.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof DenyCap.instantiateBcs> {
     if (!DenyCap.cachedBcs) {
       DenyCap.cachedBcs = DenyCap.instantiateBcs()
     }
@@ -1314,7 +1314,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
 
   private static cachedBcs: ReturnType<typeof CurrencyCreated.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof CurrencyCreated.instantiateBcs> {
     if (!CurrencyCreated.cachedBcs) {
       CurrencyCreated.cachedBcs = CurrencyCreated.instantiateBcs()
     }

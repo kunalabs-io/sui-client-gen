@@ -121,7 +121,7 @@ export class Dummy implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Dummy.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Dummy.instantiateBcs> {
     if (!Dummy.cachedBcs) {
       Dummy.cachedBcs = Dummy.instantiateBcs()
     }
@@ -302,7 +302,7 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof WithGenericField.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof WithGenericField.instantiateBcs> {
     if (!WithGenericField.cachedBcs) {
       WithGenericField.cachedBcs = WithGenericField.instantiateBcs()
     }
@@ -526,7 +526,7 @@ export class Bar implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Bar.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Bar.instantiateBcs> {
     if (!Bar.cachedBcs) {
       Bar.cachedBcs = Bar.instantiateBcs()
     }
@@ -715,7 +715,7 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
 
   private static cachedBcs: ReturnType<typeof WithTwoGenerics.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof WithTwoGenerics.instantiateBcs> {
     if (!WithTwoGenerics.cachedBcs) {
       WithTwoGenerics.cachedBcs = WithTwoGenerics.instantiateBcs()
     }
@@ -1010,7 +1010,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Foo.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof Foo.instantiateBcs> {
     if (!Foo.cachedBcs) {
       Foo.cachedBcs = Foo.instantiateBcs()
     }
@@ -1446,7 +1446,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
 
   private static cachedBcs: ReturnType<typeof WithSpecialTypes.instantiateBcs> | null = null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof WithSpecialTypes.instantiateBcs> {
     if (!WithSpecialTypes.cachedBcs) {
       WithSpecialTypes.cachedBcs = WithSpecialTypes.instantiateBcs()
     }
@@ -1991,7 +1991,7 @@ export class WithSpecialTypesAsGenerics<
   private static cachedBcs: ReturnType<typeof WithSpecialTypesAsGenerics.instantiateBcs> | null =
     null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof WithSpecialTypesAsGenerics.instantiateBcs> {
     if (!WithSpecialTypesAsGenerics.cachedBcs) {
       WithSpecialTypesAsGenerics.cachedBcs = WithSpecialTypesAsGenerics.instantiateBcs()
     }
@@ -2473,7 +2473,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
   private static cachedBcs: ReturnType<typeof WithSpecialTypesInVectors.instantiateBcs> | null =
     null
 
-  static get bcs() {
+  static get bcs(): ReturnType<typeof WithSpecialTypesInVectors.instantiateBcs> {
     if (!WithSpecialTypesInVectors.cachedBcs) {
       WithSpecialTypesInVectors.cachedBcs = WithSpecialTypesInVectors.instantiateBcs()
     }
