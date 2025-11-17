@@ -19,7 +19,8 @@ use std::fs::{self, File};
 use std::io::{self, Write};
 use std::path::Path;
 use sui_json_rpc_types::SuiRawMovePackage;
-use sui_move_build::gather_published_ids;
+use sui_move_build::{gather_published_ids, implicit_deps};
+use sui_package_management::system_package_versions::latest_system_packages;
 use sui_sdk::types::base_types::SequenceNumber;
 use sui_sdk::types::move_package::UpgradeInfo;
 use tempfile::tempdir;
@@ -139,6 +140,7 @@ async fn build_source_model<Progress: Write>(
     let build_config = MoveBuildConfig {
         skip_fetch_latest_git_deps: true,
         default_flavor: Some(ME::Flavor::Sui),
+        implicit_dependencies: implicit_deps(latest_system_packages()),
         ..Default::default()
     };
     let resolved_graph =
