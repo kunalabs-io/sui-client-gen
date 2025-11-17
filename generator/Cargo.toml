@@ -4,7 +4,7 @@ version = "0.3.2"
 edition = "2021"
 
 [dependencies]
-tokio = "1.44.2"
+tokio = "1.46.1"
 anyhow = "1.0.71"
 futures = "0.3.28"
 tempfile = "^3.20.0"
@@ -16,15 +16,16 @@ codespan-reporting = "0.11.1"
 convert_case = "^0.6.0"
 colored = "2.0.0"
 
-sui-move-build = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.51.5"}
-sui-move = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.51.5"}
-sui-sdk = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.51.5"}
-sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.51.5"}
-move-model-2 = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.51.5"}
-move-core-types = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.51.5"}
-move-binary-format = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.51.5"}
-move-symbol-pool = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.51.5"}
-move-bytecode-utils = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.51.5"}
-move-compiler = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.51.5"}
-move-package = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.51.5"}
-move-command-line-common = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.51.5"}
+sui-move-build = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.60.1"}
+sui-move = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.60.1"}
+sui-package-management = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.60.1"}
+sui-sdk = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.60.1"}
+sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.60.1"}
+move-model-2 = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.60.1"}
+move-core-types = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.60.1"}
+move-binary-format = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.60.1"}
+move-symbol-pool = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.60.1"}
+move-bytecode-utils = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.60.1"}
+move-compiler = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.60.1"}
+move-package = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.60.1"}
+move-command-line-common = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.60.1"}
