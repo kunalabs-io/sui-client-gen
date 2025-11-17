@@ -2,9 +2,9 @@
 rpc = "https://fullnode.testnet.sui.io:443"
 
 [packages]
-ExamplesChain = { id = "0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe" }
-SuiChain = { id = "0x2" }
-MoveStdlibChain = { id = "0x1" }
+# ExamplesChain = { id = "0x75818a1083fface3dec10fc5f7466d3adafe7bcf2485248160ea4bb17b8afabe" }
+# SuiChain = { id = "0x2" }
+# MoveStdlibChain = { id = "0x1" }
 
 Examples = { local = "../../../move/examples" }
 Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet-v1.27.2" }
