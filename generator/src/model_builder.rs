@@ -56,6 +56,7 @@ pub async fn build_models<Progress: Write>(
     cache: &mut PackageCache<'_>,
     packages: &GM::Packages,
     manifest_path: &Path,
+    chain_id: Option<String>,
     progress_output: &mut Progress,
 ) -> Result<(Option<SourceModelResult>, Option<OnChainModelResult>)> {
     // separate source and on-chain packages
@@ -94,7 +95,7 @@ pub async fn build_models<Progress: Write>(
     }
 
     let source_model = if !source_pkgs.is_empty() {
-        Some(build_source_model(source_pkgs, cache, progress_output).await?)
+        Some(build_source_model(source_pkgs, cache, chain_id, progress_output).await?)
     } else {
         None
     };
@@ -113,6 +114,7 @@ pub async fn build_models<Progress: Write>(
 async fn build_source_model<Progress: Write>(
     pkgs: Vec<(PM::PackageName, PM::InternalDependency)>,
     cache: &mut PackageCache<'_>,
+    chain_id: Option<String>,
     progress_output: &mut Progress,
 ) -> Result<SourceModelResult> {
     writeln!(
@@ -143,11 +145,14 @@ async fn build_source_model<Progress: Write>(
         implicit_dependencies: implicit_deps(latest_system_packages()),
         ..Default::default()
     };
-    let resolved_graph =
-        build_config.resolution_graph_for_package(stub_path, None, &mut io::stderr())?;
+    let resolved_graph = build_config.resolution_graph_for_package(
+        stub_path,
+        chain_id.clone(),
+        &mut io::stderr(),
+    )?;
 
     let source_id_map = find_address_origins(&resolved_graph);
-    let source_published_at = resolve_published_at(&resolved_graph, &source_id_map);
+    let source_published_at = resolve_published_at(&resolved_graph, &source_id_map, chain_id);
 
     let mut stderr = StandardStream::stderr(ColorChoice::Always);
     let source_env = model_builder::build(resolved_graph, &mut stderr)?;
@@ -263,8 +268,9 @@ fn find_address_origins(graph: &ResolvedGraph) -> BTreeMap<AccountAddress, PM::P
 fn resolve_published_at(
     graph: &ResolvedGraph,
     id_map: &BTreeMap<AccountAddress, PM::PackageName>,
+    chain_id: Option<String>,
 ) -> BTreeMap<AccountAddress, AccountAddress> {
-    let (_, dependency_ids) = gather_published_ids(graph, None);
+    let (_, dependency_ids) = gather_published_ids(graph, chain_id);
 
     let mut published_at: BTreeMap<AccountAddress, AccountAddress> = BTreeMap::new();
     for (pkg_id, name) in id_map {

@@ -74,6 +74,14 @@ async fn main() -> Result<()> {
     };
     let rpc_client = SuiClientBuilder::default().build(rpc_url).await?;
 
+    let chain_id = {
+        if let Err(e) = rpc_client.check_api_version() {
+            eprintln!("{}", format!("[warning] {e}").yellow().bold());
+        }
+
+        rpc_client.read_api().get_chain_identifier().await.ok()
+    };
+
     let mut progress_output = std::io::stderr();
 
     // build models
@@ -82,6 +90,7 @@ async fn main() -> Result<()> {
         &mut cache,
         &manifest.packages,
         &PathBuf::from(&args.manifest),
+        chain_id,
         &mut progress_output,
     )
     .await?;
