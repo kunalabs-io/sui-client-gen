@@ -1,7 +1,4 @@
 import * as reified from '../../_framework/reified'
-import { String as String1 } from '../../_dependencies/source/0x1/ascii/structs'
-import { Option } from '../../_dependencies/source/0x1/option/structs'
-import { String } from '../../_dependencies/source/0x1/string/structs'
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -31,6 +28,9 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
+import { String as String1 } from '../../move-stdlib/ascii/structs'
+import { Option } from '../../move-stdlib/option/structs'
+import { String } from '../../move-stdlib/string/structs'
 import { Balance } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { SUI } from '../../sui/sui/structs'

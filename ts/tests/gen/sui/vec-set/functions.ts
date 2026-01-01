@@ -57,9 +57,9 @@ export function contains(tx: Transaction, typeArg: string, args: ContainsArgs) {
   })
 }
 
-export function size(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function length(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_set::size`,
+    target: `${PUBLISHED_AT}::vec_set::length`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -101,28 +101,10 @@ export function keys(tx: Transaction, typeArg: string, self: TransactionObjectIn
   })
 }
 
-export interface GetIdxOptArgs {
-  self: TransactionObjectInput
-  key: GenericArg
-}
-
-export function getIdxOpt(tx: Transaction, typeArg: string, args: GetIdxOptArgs) {
+export function size(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_set::get_idx_opt`,
+    target: `${PUBLISHED_AT}::vec_set::size`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), generic(tx, `${typeArg}`, args.key)],
-  })
-}
-
-export interface GetIdxArgs {
-  self: TransactionObjectInput
-  key: GenericArg
-}
-
-export function getIdx(tx: Transaction, typeArg: string, args: GetIdxArgs) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_set::get_idx`,
-    typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), generic(tx, `${typeArg}`, args.key)],
+    arguments: [obj(tx, self)],
   })
 }

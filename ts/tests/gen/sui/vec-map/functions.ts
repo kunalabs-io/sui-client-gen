@@ -101,9 +101,9 @@ export function contains(tx: Transaction, typeArgs: [string, string], args: Cont
   })
 }
 
-export function size(tx: Transaction, typeArgs: [string, string], self: TransactionObjectInput) {
+export function length(tx: Transaction, typeArgs: [string, string], self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::vec_map::size`,
+    target: `${PUBLISHED_AT}::vec_map::length`,
     typeArguments: typeArgs,
     arguments: [obj(tx, self)],
   })
@@ -240,5 +240,13 @@ export function removeEntryByIdx(
     target: `${PUBLISHED_AT}::vec_map::remove_entry_by_idx`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.self), pure(tx, args.idx, `u64`)],
+  })
+}
+
+export function size(tx: Transaction, typeArgs: [string, string], self: TransactionObjectInput) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::vec_map::size`,
+    typeArguments: typeArgs,
+    arguments: [obj(tx, self)],
   })
 }

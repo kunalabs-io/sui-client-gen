@@ -29,6 +29,36 @@ export function publicTransfer(tx: Transaction, typeArg: string, args: PublicTra
   })
 }
 
+export interface PartyTransferArgs {
+  obj: GenericArg
+  party: TransactionObjectInput
+}
+
+export function partyTransfer(tx: Transaction, typeArg: string, args: PartyTransferArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::transfer::party_transfer`,
+    typeArguments: [typeArg],
+    arguments: [generic(tx, `${typeArg}`, args.obj), obj(tx, args.party)],
+  })
+}
+
+export interface PublicPartyTransferArgs {
+  obj: GenericArg
+  party: TransactionObjectInput
+}
+
+export function publicPartyTransfer(
+  tx: Transaction,
+  typeArg: string,
+  args: PublicPartyTransferArgs
+) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::transfer::public_party_transfer`,
+    typeArguments: [typeArg],
+    arguments: [generic(tx, `${typeArg}`, args.obj), obj(tx, args.party)],
+  })
+}
+
 export function freezeObject(tx: Transaction, typeArg: string, obj: GenericArg) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer::freeze_object`,
@@ -112,6 +142,26 @@ export function shareObjectImpl(tx: Transaction, typeArg: string, obj: GenericAr
     target: `${PUBLISHED_AT}::transfer::share_object_impl`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, obj)],
+  })
+}
+
+export interface PartyTransferImplArgs {
+  obj: GenericArg
+  defaultPermissions: bigint | TransactionArgument
+  addresses: Array<string | TransactionArgument> | TransactionArgument
+  permissions: Array<bigint | TransactionArgument> | TransactionArgument
+}
+
+export function partyTransferImpl(tx: Transaction, typeArg: string, args: PartyTransferImplArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::transfer::party_transfer_impl`,
+    typeArguments: [typeArg],
+    arguments: [
+      generic(tx, `${typeArg}`, args.obj),
+      pure(tx, args.defaultPermissions, `u64`),
+      pure(tx, args.addresses, `vector<address>`),
+      pure(tx, args.permissions, `vector<u64>`),
+    ],
   })
 }
 

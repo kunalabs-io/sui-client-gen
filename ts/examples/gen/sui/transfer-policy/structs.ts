@@ -1,5 +1,4 @@
 import * as reified from '../../_framework/reified'
-import { TypeName } from '../../_dependencies/source/0x1/type-name/structs'
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -24,6 +23,7 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
+import { TypeName } from '../../move-stdlib/type-name/structs'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { SUI } from '../sui/structs'

@@ -1,6 +1,3 @@
-import { Option } from '../../_dependencies/source/0x1/option/structs'
-import { String } from '../../_dependencies/source/0x1/string/structs'
-import { TypeName } from '../../_dependencies/source/0x1/type-name/structs'
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -25,6 +22,9 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
+import { Option } from '../../move-stdlib/option/structs'
+import { String } from '../../move-stdlib/string/structs'
+import { TypeName } from '../../move-stdlib/type-name/structs'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'

@@ -1,5 +1,4 @@
 import * as reified from '../../_framework/reified'
-import { Option } from '../../_dependencies/source/0x1/option/structs'
 import {
   EnumVariantClass,
   PhantomReified,
@@ -29,6 +28,7 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
+import { Option } from '../../move-stdlib/option/structs'
 import { Balance } from '../../sui/balance/structs'
 import { UID } from '../../sui/object/structs'
 import { SUI } from '../../sui/sui/structs'

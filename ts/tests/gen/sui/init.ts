@@ -1,3 +1,6 @@
+import * as accumulatorMetadata from './accumulator-metadata/structs'
+import * as accumulatorSettlement from './accumulator-settlement/structs'
+import * as accumulator from './accumulator/structs'
 import * as authenticatorState from './authenticator-state/structs'
 import * as bag from './bag/structs'
 import * as balance from './balance/structs'
@@ -5,20 +8,26 @@ import * as bcs from './bcs/structs'
 import * as bls12381 from './bls12381/structs'
 import * as borrow from './borrow/structs'
 import * as clock from './clock/structs'
+import * as coinRegistry from './coin-registry/structs'
 import * as coin from './coin/structs'
+import * as config from './config/structs'
 import * as denyList from './deny-list/structs'
+import * as derivedObject from './derived-object/structs'
 import * as display from './display/structs'
 import * as dynamicField from './dynamic-field/structs'
 import * as dynamicObjectField from './dynamic-object-field/structs'
+import * as fundsAccumulator from './funds-accumulator/structs'
 import * as groth16 from './groth16/structs'
 import * as groupOps from './group-ops/structs'
 import * as kioskExtension from './kiosk-extension/structs'
 import * as kiosk from './kiosk/structs'
 import * as linkedTable from './linked-table/structs'
+import * as nitroAttestation from './nitro-attestation/structs'
 import * as objectBag from './object-bag/structs'
 import * as objectTable from './object-table/structs'
 import * as object from './object/structs'
 import * as package_ from './package/structs'
+import * as party from './party/structs'
 import * as priorityQueue from './priority-queue/structs'
 import * as random from './random/structs'
 import * as sui from './sui/structs'
@@ -37,6 +46,14 @@ import * as zkloginVerifiedIssuer from './zklogin-verified-issuer/structs'
 import { StructClassLoader } from '../_framework/loader'
 
 export function registerClasses(loader: StructClassLoader) {
+  loader.register(accumulator.AccumulatorRoot)
+  loader.register(accumulator.U128)
+  loader.register(accumulator.Key)
+  loader.register(accumulatorMetadata.OwnerKey)
+  loader.register(accumulatorMetadata.Owner)
+  loader.register(accumulatorMetadata.MetadataKey)
+  loader.register(accumulatorMetadata.Metadata)
+  loader.register(accumulatorSettlement.EventStreamHead)
   loader.register(authenticatorState.AuthenticatorState)
   loader.register(authenticatorState.AuthenticatorStateInner)
   loader.register(authenticatorState.JWK)
@@ -50,6 +67,7 @@ export function registerClasses(loader: StructClassLoader) {
   loader.register(bls12381.G1)
   loader.register(bls12381.G2)
   loader.register(bls12381.GT)
+  loader.register(bls12381.UncompressedG1)
   loader.register(borrow.Referent)
   loader.register(borrow.Borrow)
   loader.register(clock.Clock)
@@ -57,15 +75,35 @@ export function registerClasses(loader: StructClassLoader) {
   loader.register(coin.CoinMetadata)
   loader.register(coin.RegulatedCoinMetadata)
   loader.register(coin.TreasuryCap)
-  loader.register(coin.DenyCap)
+  loader.register(coin.DenyCapV2)
   loader.register(coin.CurrencyCreated)
+  loader.register(coin.DenyCap)
+  loader.register(coinRegistry.CoinRegistry)
+  loader.register(coinRegistry.ExtraField)
+  loader.register(coinRegistry.CurrencyKey)
+  loader.register(coinRegistry.LegacyMetadataKey)
+  loader.register(coinRegistry.MetadataCap)
+  loader.register(coinRegistry.Borrow)
+  loader.register(coinRegistry.Currency)
+  loader.register(coinRegistry.CurrencyInitializer)
+  loader.register(config.Config)
+  loader.register(config.Setting)
+  loader.register(config.SettingData)
   loader.register(denyList.DenyList)
+  loader.register(denyList.ConfigWriteCap)
+  loader.register(denyList.ConfigKey)
+  loader.register(denyList.AddressKey)
+  loader.register(denyList.GlobalPauseKey)
+  loader.register(denyList.PerTypeConfigCreated)
   loader.register(denyList.PerTypeList)
+  loader.register(derivedObject.Claimed)
+  loader.register(derivedObject.DerivedObjectKey)
   loader.register(display.Display)
   loader.register(display.DisplayCreated)
   loader.register(display.VersionUpdated)
   loader.register(dynamicField.Field)
   loader.register(dynamicObjectField.Wrapper)
+  loader.register(fundsAccumulator.Withdrawal)
   loader.register(groth16.Curve)
   loader.register(groth16.PreparedVerifyingKey)
   loader.register(groth16.PublicProofInputs)
@@ -85,6 +123,8 @@ export function registerClasses(loader: StructClassLoader) {
   loader.register(kioskExtension.ExtensionKey)
   loader.register(linkedTable.LinkedTable)
   loader.register(linkedTable.Node)
+  loader.register(nitroAttestation.PCREntry)
+  loader.register(nitroAttestation.NitroAttestationDocument)
   loader.register(object.ID)
   loader.register(object.UID)
   loader.register(objectBag.ObjectBag)
@@ -93,6 +133,8 @@ export function registerClasses(loader: StructClassLoader) {
   loader.register(package_.UpgradeCap)
   loader.register(package_.UpgradeTicket)
   loader.register(package_.UpgradeReceipt)
+  loader.register(party.Party)
+  loader.register(party.Permissions)
   loader.register(priorityQueue.PriorityQueue)
   loader.register(priorityQueue.Entry)
   loader.register(random.Random)
