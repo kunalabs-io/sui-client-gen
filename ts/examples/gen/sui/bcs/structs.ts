@@ -82,6 +82,7 @@ export class BCS implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<BCS>> {
     return phantom(BCS.reified())
   }
+
   static get p() {
     return BCS.phantom()
   }

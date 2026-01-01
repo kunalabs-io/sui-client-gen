@@ -101,6 +101,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<Wrapper<ToTypeArgument<Name>>>> {
     return phantom(Wrapper.reified(Name))
   }
+
   static get p() {
     return Wrapper.phantom
   }

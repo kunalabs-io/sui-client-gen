@@ -100,6 +100,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<Supply<ToPhantomTypeArgument<T>>>> {
     return phantom(Supply.reified(T))
   }
+
   static get p() {
     return Supply.phantom
   }
@@ -318,6 +319,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<Balance<ToPhantomTypeArgument<T>>>> {
     return phantom(Balance.reified(T))
   }
+
   static get p() {
     return Balance.phantom
   }

@@ -87,6 +87,7 @@ export class Random implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Random>> {
     return phantom(Random.reified())
   }
+
   static get p() {
     return Random.phantom()
   }
@@ -271,6 +272,7 @@ export class RandomInner implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<RandomInner>> {
     return phantom(RandomInner.reified())
   }
+
   static get p() {
     return RandomInner.phantom()
   }
@@ -465,6 +467,7 @@ export class RandomGenerator implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<RandomGenerator>> {
     return phantom(RandomGenerator.reified())
   }
+
   static get p() {
     return RandomGenerator.phantom()
   }

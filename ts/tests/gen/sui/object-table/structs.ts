@@ -120,6 +120,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
   ): PhantomReified<ToTypeStr<ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>>> {
     return phantom(ObjectTable.reified(K, V))
   }
+
   static get p() {
     return ObjectTable.phantom
   }

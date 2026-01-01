@@ -82,6 +82,7 @@ export class String implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<String>> {
     return phantom(String.reified())
   }
+
   static get p() {
     return String.phantom()
   }
@@ -245,6 +246,7 @@ export class Char implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Char>> {
     return phantom(Char.reified())
   }
+
   static get p() {
     return Char.phantom()
   }

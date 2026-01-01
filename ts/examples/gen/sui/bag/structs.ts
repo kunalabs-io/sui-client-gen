@@ -83,6 +83,7 @@ export class Bag implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Bag>> {
     return phantom(Bag.reified())
   }
+
   static get p() {
     return Bag.phantom()
   }

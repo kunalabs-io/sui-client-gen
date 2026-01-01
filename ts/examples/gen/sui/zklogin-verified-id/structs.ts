@@ -102,6 +102,7 @@ export class VerifiedID implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<VerifiedID>> {
     return phantom(VerifiedID.reified())
   }
+
   static get p() {
     return VerifiedID.phantom()
   }

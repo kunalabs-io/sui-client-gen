@@ -79,6 +79,7 @@ export class SUI implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<SUI>> {
     return phantom(SUI.reified())
   }
+
   static get p() {
     return SUI.phantom()
   }

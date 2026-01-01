@@ -110,6 +110,7 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<Coin<ToPhantomTypeArgument<T>>>> {
     return phantom(Coin.reified(T))
   }
+
   static get p() {
     return Coin.phantom
   }
@@ -355,6 +356,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
   ): PhantomReified<ToTypeStr<CoinMetadata<ToPhantomTypeArgument<T>>>> {
     return phantom(CoinMetadata.reified(T))
   }
+
   static get p() {
     return CoinMetadata.phantom
   }
@@ -614,6 +616,7 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
   ): PhantomReified<ToTypeStr<RegulatedCoinMetadata<ToPhantomTypeArgument<T>>>> {
     return phantom(RegulatedCoinMetadata.reified(T))
   }
+
   static get p() {
     return RegulatedCoinMetadata.phantom
   }
@@ -854,6 +857,7 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<TreasuryCap<ToPhantomTypeArgument<T>>>> {
     return phantom(TreasuryCap.reified(T))
   }
+
   static get p() {
     return TreasuryCap.phantom
   }
@@ -1081,6 +1085,7 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<DenyCap<ToPhantomTypeArgument<T>>>> {
     return phantom(DenyCap.reified(T))
   }
+
   static get p() {
     return DenyCap.phantom
   }
@@ -1302,6 +1307,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
   ): PhantomReified<ToTypeStr<CurrencyCreated<ToPhantomTypeArgument<T>>>> {
     return phantom(CurrencyCreated.reified(T))
   }
+
   static get p() {
     return CurrencyCreated.phantom
   }

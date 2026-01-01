@@ -92,6 +92,7 @@ export class StructFromOtherModule implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<StructFromOtherModule>> {
     return phantom(StructFromOtherModule.reified())
   }
+
   static get p() {
     return StructFromOtherModule.phantom()
   }
@@ -267,6 +268,7 @@ export class AddedInAnUpgrade implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<AddedInAnUpgrade>> {
     return phantom(AddedInAnUpgrade.reified())
   }
+
   static get p() {
     return AddedInAnUpgrade.phantom()
   }

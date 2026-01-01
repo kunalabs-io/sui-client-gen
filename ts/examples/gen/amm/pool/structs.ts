@@ -103,6 +103,7 @@ export class PoolCreationEvent implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<PoolCreationEvent>> {
     return phantom(PoolCreationEvent.reified())
   }
+
   static get p() {
     return PoolCreationEvent.phantom()
   }
@@ -293,6 +294,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   >(A: A, B: B): PhantomReified<ToTypeStr<LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>>> {
     return phantom(LP.reified(A, B))
   }
+
   static get p() {
     return LP.phantom
   }
@@ -566,6 +568,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   ): PhantomReified<ToTypeStr<Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>>> {
     return phantom(Pool.reified(A, B))
   }
+
   static get p() {
     return Pool.phantom
   }
@@ -855,6 +858,7 @@ export class PoolRegistry implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<PoolRegistry>> {
     return phantom(PoolRegistry.reified())
   }
+
   static get p() {
     return PoolRegistry.phantom()
   }
@@ -1045,6 +1049,7 @@ export class PoolRegistryItem implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<PoolRegistryItem>> {
     return phantom(PoolRegistryItem.reified())
   }
+
   static get p() {
     return PoolRegistryItem.phantom()
   }
@@ -1220,6 +1225,7 @@ export class AdminCap implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<AdminCap>> {
     return phantom(AdminCap.reified())
   }
+
   static get p() {
     return AdminCap.phantom()
   }

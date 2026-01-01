@@ -100,6 +100,7 @@ export class Extension implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Extension>> {
     return phantom(Extension.reified())
   }
+
   static get p() {
     return Extension.phantom()
   }
@@ -290,6 +291,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
   ): PhantomReified<ToTypeStr<ExtensionKey<ToPhantomTypeArgument<Ext>>>> {
     return phantom(ExtensionKey.reified(Ext))
   }
+
   static get p() {
     return ExtensionKey.phantom
   }

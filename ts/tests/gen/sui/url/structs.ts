@@ -80,6 +80,7 @@ export class Url implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Url>> {
     return phantom(Url.reified())
   }
+
   static get p() {
     return Url.phantom()
   }

@@ -83,6 +83,7 @@ export class Clock implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Clock>> {
     return phantom(Clock.reified())
   }
+
   static get p() {
     return Clock.phantom()
   }

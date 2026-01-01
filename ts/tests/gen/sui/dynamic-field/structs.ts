@@ -122,6 +122,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
   ): PhantomReified<ToTypeStr<Field<ToTypeArgument<Name>, ToTypeArgument<Value>>>> {
     return phantom(Field.reified(Name, Value))
   }
+
   static get p() {
     return Field.phantom
   }

@@ -97,6 +97,7 @@ export class TxContext implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<TxContext>> {
     return phantom(TxContext.reified())
   }
+
   static get p() {
     return TxContext.phantom()
   }

@@ -79,6 +79,7 @@ export class Scalar implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Scalar>> {
     return phantom(Scalar.reified())
   }
+
   static get p() {
     return Scalar.phantom()
   }
@@ -242,6 +243,7 @@ export class G1 implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<G1>> {
     return phantom(G1.reified())
   }
+
   static get p() {
     return G1.phantom()
   }
@@ -405,6 +407,7 @@ export class G2 implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<G2>> {
     return phantom(G2.reified())
   }
+
   static get p() {
     return G2.phantom()
   }
@@ -568,6 +571,7 @@ export class GT implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<GT>> {
     return phantom(GT.reified())
   }
+
   static get p() {
     return GT.phantom()
   }

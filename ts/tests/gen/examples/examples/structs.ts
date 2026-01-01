@@ -93,6 +93,7 @@ export class ExampleStruct implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<ExampleStruct>> {
     return phantom(ExampleStruct.reified())
   }
+
   static get p() {
     return ExampleStruct.phantom()
   }
@@ -288,6 +289,7 @@ export class SpecialTypesStruct implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<SpecialTypesStruct>> {
     return phantom(SpecialTypesStruct.reified())
   }
+
   static get p() {
     return SpecialTypesStruct.phantom()
   }

@@ -109,6 +109,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<Display<ToPhantomTypeArgument<T>>>> {
     return phantom(Display.reified(T))
   }
+
   static get p() {
     return Display.phantom
   }
@@ -347,6 +348,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
   ): PhantomReified<ToTypeStr<DisplayCreated<ToPhantomTypeArgument<T>>>> {
     return phantom(DisplayCreated.reified(T))
   }
+
   static get p() {
     return DisplayCreated.phantom
   }
@@ -574,6 +576,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
   ): PhantomReified<ToTypeStr<VersionUpdated<ToPhantomTypeArgument<T>>>> {
     return phantom(VersionUpdated.reified(T))
   }
+
   static get p() {
     return VersionUpdated.phantom
   }

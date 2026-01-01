@@ -85,6 +85,7 @@ export class FixedPoint32 implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<FixedPoint32>> {
     return phantom(FixedPoint32.reified())
   }
+
   static get p() {
     return FixedPoint32.phantom()
   }

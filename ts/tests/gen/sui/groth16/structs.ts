@@ -82,6 +82,7 @@ export class Curve implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Curve>> {
     return phantom(Curve.reified())
   }
+
   static get p() {
     return Curve.phantom()
   }
@@ -261,6 +262,7 @@ export class PreparedVerifyingKey implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<PreparedVerifyingKey>> {
     return phantom(PreparedVerifyingKey.reified())
   }
+
   static get p() {
     return PreparedVerifyingKey.phantom()
   }
@@ -463,6 +465,7 @@ export class PublicProofInputs implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<PublicProofInputs>> {
     return phantom(PublicProofInputs.reified())
   }
+
   static get p() {
     return PublicProofInputs.phantom()
   }
@@ -633,6 +636,7 @@ export class ProofPoints implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<ProofPoints>> {
     return phantom(ProofPoints.reified())
   }
+
   static get p() {
     return ProofPoints.phantom()
   }

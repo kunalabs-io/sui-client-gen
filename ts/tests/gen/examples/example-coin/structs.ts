@@ -90,6 +90,7 @@ export class EXAMPLE_COIN implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<EXAMPLE_COIN>> {
     return phantom(EXAMPLE_COIN.reified())
   }
+
   static get p() {
     return EXAMPLE_COIN.phantom()
   }
@@ -262,6 +263,7 @@ export class Faucet implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Faucet>> {
     return phantom(Faucet.reified())
   }
+
   static get p() {
     return Faucet.phantom()
   }

@@ -131,6 +131,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
   ): PhantomReified<ToTypeStr<LinkedTable<ToTypeArgument<K>, ToPhantomTypeArgument<V>>>> {
     return phantom(LinkedTable.reified(K, V))
   }
+
   static get p() {
     return LinkedTable.phantom
   }
@@ -403,6 +404,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
   ): PhantomReified<ToTypeStr<Node<ToTypeArgument<K>, ToTypeArgument<V>>>> {
     return phantom(Node.reified(K, V))
   }
+
   static get p() {
     return Node.phantom
   }

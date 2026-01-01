@@ -93,6 +93,7 @@ export class VerifiedIssuer implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<VerifiedIssuer>> {
     return phantom(VerifiedIssuer.reified())
   }
+
   static get p() {
     return VerifiedIssuer.phantom()
   }

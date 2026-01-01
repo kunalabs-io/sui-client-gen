@@ -92,6 +92,7 @@ export class DenyList implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<DenyList>> {
     return phantom(DenyList.reified())
   }
+
   static get p() {
     return DenyList.phantom()
   }
@@ -273,6 +274,7 @@ export class PerTypeList implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<PerTypeList>> {
     return phantom(PerTypeList.reified())
   }
+
   static get p() {
     return PerTypeList.phantom()
   }

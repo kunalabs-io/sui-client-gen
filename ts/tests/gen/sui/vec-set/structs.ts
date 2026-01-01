@@ -101,6 +101,7 @@ export class VecSet<K extends TypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<VecSet<ToTypeArgument<K>>>> {
     return phantom(VecSet.reified(K))
   }
+
   static get p() {
     return VecSet.phantom
   }

@@ -88,6 +88,7 @@ export class BitVector implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<BitVector>> {
     return phantom(BitVector.reified())
   }
+
   static get p() {
     return BitVector.phantom()
   }
