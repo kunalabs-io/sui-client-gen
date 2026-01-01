@@ -533,8 +533,20 @@ export interface VectorClass {
   __VectorClass: true
 }
 
+export interface EnumVariantClass {
+  readonly $typeName: string
+  readonly $fullTypeName: string
+  readonly $variantName: string
+  readonly $typeArgs: string[]
+  readonly $isPhantom: readonly boolean[]
+  toJSONField(): Record<string, any>
+  toJSON(): Record<string, any>
+
+  __EnumVariantClass: true
+}
+
 export type Primitive = 'bool' | 'u8' | 'u16' | 'u32' | 'u64' | 'u128' | 'u256' | 'address'
-export type TypeArgument = StructClass | Primitive | VectorClass
+export type TypeArgument = StructClass | Primitive | VectorClass | EnumVariantClass
 
 export interface StructClassReified<T extends StructClass, Fields> {
   typeName: T['$typeName'] // e.g., '0x2::balance::Balance', without type arguments
@@ -571,23 +583,47 @@ export interface VectorClassReified<T extends VectorClass, Elements> {
   kind: 'VectorClassReified'
 }
 
+export interface EnumClassReified<T extends EnumVariantClass, Fields> {
+  typeName: T['$typeName']
+  fullTypeName: T['$fullTypeName']
+  typeArgs: T['$typeArgs']
+  isPhantom: T['$isPhantom']
+  reifiedTypeArgs: Array<Reified<TypeArgument, any> | PhantomReified<PhantomTypeArgument>>
+  bcs: BcsType<any>
+  fromFields(fields: Record<string, any>): T
+  fromFieldsWithTypes(item: FieldsWithTypes): T
+  fromBcs(data: Uint8Array): T
+  fromJSONField: (field: any) => T
+  fromJSON: (json: Record<string, any>) => T
+  new: (variant: string, fields: Fields) => T
+  kind: 'EnumClassReified'
+}
+
 export type Reified<T extends TypeArgument, Fields> = T extends Primitive
   ? Primitive
   : T extends StructClass
-  ? StructClassReified<T, Fields>
-  : T extends VectorClass
-  ? VectorClassReified<T, Fields>
-  : never
+    ? StructClassReified<T, Fields>
+    : T extends VectorClass
+      ? VectorClassReified<T, Fields>
+      : T extends EnumVariantClass
+        ? EnumClassReified<T, Fields>
+        : never
 
 export type ToTypeArgument<
-  T extends Primitive | StructClassReified<StructClass, any> | VectorClassReified<VectorClass, any>,
+  T extends
+    | Primitive
+    | StructClassReified<StructClass, any>
+    | VectorClassReified<VectorClass, any>
+    | EnumClassReified<EnumVariantClass, any>,
 > = T extends Primitive
   ? T
   : T extends StructClassReified<infer U, any>
-  ? U
-  : T extends VectorClassReified<infer U, any>
-  ? U
-  : never
+    ? U
+    : T extends VectorClassReified<infer U, any>
+      ? U
+      : T extends EnumClassReified<infer U, any>
+        ? U
+        : never
 
 export type ToPhantomTypeArgument<T extends PhantomReified<PhantomTypeArgument>> =
   T extends PhantomReified<infer U> ? U : never
@@ -620,10 +656,10 @@ export function phantom(type: string | Reified<TypeArgument, any>): PhantomReifi
 export type ToTypeStr<T extends TypeArgument> = T extends Primitive
   ? T
   : T extends StructClass
-  ? T['$fullTypeName']
-  : T extends VectorClass
-  ? T['$fullTypeName']
-  : never
+    ? T['$fullTypeName']
+    : T extends VectorClass
+      ? T['$fullTypeName']
+      : never
 
 export type PhantomToTypeStr<T extends PhantomTypeArgument> = T extends PhantomTypeArgument
   ? T
@@ -632,76 +668,78 @@ export type PhantomToTypeStr<T extends PhantomTypeArgument> = T extends PhantomT
 export type ToJSON<T extends TypeArgument> = T extends 'bool'
   ? boolean
   : T extends 'u8'
-  ? number
-  : T extends 'u16'
-  ? number
-  : T extends 'u32'
-  ? number
-  : T extends 'u64'
-  ? string
-  : T extends 'u128'
-  ? string
-  : T extends 'u256'
-  ? string
-  : T extends 'address'
-  ? string
-  : T extends { $typeName: '0x1::string::String' }
-  ? string
-  : T extends { $typeName: '0x1::ascii::String' }
-  ? string
-  : T extends { $typeName: '0x2::object::UID' }
-  ? string
-  : T extends { $typeName: '0x2::object::ID' }
-  ? string
-  : T extends { $typeName: '0x2::url::Url' }
-  ? string
-  : T extends {
-      $typeName: '0x1::option::Option'
-      __inner: infer U extends TypeArgument
-    }
-  ? ToJSON<U> | null
-  : T extends VectorClass
-  ? ReturnType<T['toJSONField']>
-  : T extends StructClass
-  ? ReturnType<T['toJSONField']>
-  : never
+    ? number
+    : T extends 'u16'
+      ? number
+      : T extends 'u32'
+        ? number
+        : T extends 'u64'
+          ? string
+          : T extends 'u128'
+            ? string
+            : T extends 'u256'
+              ? string
+              : T extends 'address'
+                ? string
+                : T extends { $typeName: '0x1::string::String' }
+                  ? string
+                  : T extends { $typeName: '0x1::ascii::String' }
+                    ? string
+                    : T extends { $typeName: '0x2::object::UID' }
+                      ? string
+                      : T extends { $typeName: '0x2::object::ID' }
+                        ? string
+                        : T extends { $typeName: '0x2::url::Url' }
+                          ? string
+                          : T extends {
+                                $typeName: '0x1::option::Option'
+                                __inner: infer U extends TypeArgument
+                              }
+                            ? ToJSON<U> | null
+                            : T extends VectorClass
+                              ? ReturnType<T['toJSONField']>
+                              : T extends StructClass
+                                ? ReturnType<T['toJSONField']>
+                                : never
 
 export type ToField<T extends TypeArgument> = T extends 'bool'
   ? boolean
   : T extends 'u8'
-  ? number
-  : T extends 'u16'
-  ? number
-  : T extends 'u32'
-  ? number
-  : T extends 'u64'
-  ? bigint
-  : T extends 'u128'
-  ? bigint
-  : T extends 'u256'
-  ? bigint
-  : T extends 'address'
-  ? string
-  : T extends { $typeName: '0x1::string::String' }
-  ? string
-  : T extends { $typeName: '0x1::ascii::String' }
-  ? string
-  : T extends { $typeName: '0x2::object::UID' }
-  ? string
-  : T extends { $typeName: '0x2::object::ID' }
-  ? string
-  : T extends { $typeName: '0x2::url::Url' }
-  ? string
-  : T extends {
-      $typeName: '0x1::option::Option'
-      __inner: infer U extends TypeArgument
-    }
-  ? ToField<U> | null
-  : T extends VectorClass
-  ? T['elements']
-  : T extends StructClass
-  ? T
-  : never
+    ? number
+    : T extends 'u16'
+      ? number
+      : T extends 'u32'
+        ? number
+        : T extends 'u64'
+          ? bigint
+          : T extends 'u128'
+            ? bigint
+            : T extends 'u256'
+              ? bigint
+              : T extends 'address'
+                ? string
+                : T extends { $typeName: '0x1::string::String' }
+                  ? string
+                  : T extends { $typeName: '0x1::ascii::String' }
+                    ? string
+                    : T extends { $typeName: '0x2::object::UID' }
+                      ? string
+                      : T extends { $typeName: '0x2::object::ID' }
+                        ? string
+                        : T extends { $typeName: '0x2::url::Url' }
+                          ? string
+                          : T extends {
+                                $typeName: '0x1::option::Option'
+                                __inner: infer U extends TypeArgument
+                              }
+                            ? ToField<U> | null
+                            : T extends VectorClass
+                              ? T['elements']
+                              : T extends StructClass
+                                ? T
+                                : T extends EnumVariantClass
+                                  ? T
+                                  : never
 
 const Address = bcs.bytes(32).transform({
   input: (val: string) => fromHEX(val),
@@ -758,6 +796,8 @@ export function extractType(reified: Reified<TypeArgument, any> | PhantomReified
     case 'StructClassReified':
       return reified.fullTypeName
     case 'VectorClassReified':
+      return reified.fullTypeName
+    case 'EnumClassReified':
       return reified.fullTypeName
   }
 

@@ -464,6 +464,11 @@ async fn resolve_type_origin_table<Progress: Write, HasSource: SourceKind>(
             let full_name = format!("{module_name}::{name}");
             origin_map.entry(full_name).or_insert(original_id);
         }
+        for e in module.enums() {
+            let name = e.name();
+            let full_name = format!("{module_name}::{name}");
+            origin_map.entry(full_name).or_insert(original_id);
+        }
     }
 
     Ok(type_origin_table)
