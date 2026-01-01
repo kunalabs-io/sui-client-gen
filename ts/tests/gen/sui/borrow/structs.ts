@@ -104,6 +104,7 @@ export class Referent<T extends TypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<Referent<ToTypeArgument<T>>>> {
     return phantom(Referent.reified(T))
   }
+
   static get p() {
     return Referent.phantom
   }
@@ -330,6 +331,7 @@ export class Borrow implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Borrow>> {
     return phantom(Borrow.reified())
   }
+
   static get p() {
     return Borrow.phantom()
   }

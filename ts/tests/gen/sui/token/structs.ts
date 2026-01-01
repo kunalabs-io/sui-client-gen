@@ -111,6 +111,7 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<Token<ToPhantomTypeArgument<T>>>> {
     return phantom(Token.reified(T))
   }
+
   static get p() {
     return Token.phantom
   }
@@ -344,6 +345,7 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
   ): PhantomReified<ToTypeStr<TokenPolicyCap<ToPhantomTypeArgument<T>>>> {
     return phantom(TokenPolicyCap.reified(T))
   }
+
   static get p() {
     return TokenPolicyCap.phantom
   }
@@ -580,6 +582,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<TokenPolicy<ToPhantomTypeArgument<T>>>> {
     return phantom(TokenPolicy.reified(T))
   }
+
   static get p() {
     return TokenPolicy.phantom
   }
@@ -839,6 +842,7 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
   ): PhantomReified<ToTypeStr<ActionRequest<ToPhantomTypeArgument<T>>>> {
     return phantom(ActionRequest.reified(T))
   }
+
   static get p() {
     return ActionRequest.phantom
   }
@@ -1109,6 +1113,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<RuleKey<ToPhantomTypeArgument<T>>>> {
     return phantom(RuleKey.reified(T))
   }
+
   static get p() {
     return RuleKey.phantom
   }
@@ -1340,6 +1345,7 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
   ): PhantomReified<ToTypeStr<TokenPolicyCreated<ToPhantomTypeArgument<T>>>> {
     return phantom(TokenPolicyCreated.reified(T))
   }
+
   static get p() {
     return TokenPolicyCreated.phantom
   }

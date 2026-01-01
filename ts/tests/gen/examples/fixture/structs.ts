@@ -109,6 +109,7 @@ export class Dummy implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Dummy>> {
     return phantom(Dummy.reified())
   }
+
   static get p() {
     return Dummy.phantom()
   }
@@ -288,6 +289,7 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<WithGenericField<ToTypeArgument<T>>>> {
     return phantom(WithGenericField.reified(T))
   }
+
   static get p() {
     return WithGenericField.phantom
   }
@@ -514,6 +516,7 @@ export class Bar implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Bar>> {
     return phantom(Bar.reified())
   }
+
   static get p() {
     return Bar.phantom()
   }
@@ -701,6 +704,7 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
   ): PhantomReified<ToTypeStr<WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>>>> {
     return phantom(WithTwoGenerics.reified(T, U))
   }
+
   static get p() {
     return WithTwoGenerics.phantom
   }
@@ -979,6 +983,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<Foo<ToTypeArgument<T>>>> {
     return phantom(Foo.reified(T))
   }
+
   static get p() {
     return Foo.phantom
   }
@@ -1421,6 +1426,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
   ): PhantomReified<ToTypeStr<WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>>>> {
     return phantom(WithSpecialTypes.reified(T, U))
   }
+
   static get p() {
     return WithSpecialTypes.phantom
   }
@@ -1948,6 +1954,7 @@ export class WithSpecialTypesAsGenerics<
   > {
     return phantom(WithSpecialTypesAsGenerics.reified(T0, T1, T2, T3, T4, T5, T6, T7))
   }
+
   static get p() {
     return WithSpecialTypesAsGenerics.phantom
   }
@@ -2453,6 +2460,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
   ): PhantomReified<ToTypeStr<WithSpecialTypesInVectors<ToTypeArgument<T>>>> {
     return phantom(WithSpecialTypesInVectors.reified(T))
   }
+
   static get p() {
     return WithSpecialTypesInVectors.phantom
   }

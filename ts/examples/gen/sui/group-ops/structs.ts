@@ -103,6 +103,7 @@ export class Element<T extends PhantomTypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<Element<ToPhantomTypeArgument<T>>>> {
     return phantom(Element.reified(T))
   }
+
   static get p() {
     return Element.phantom
   }

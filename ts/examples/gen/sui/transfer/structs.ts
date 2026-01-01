@@ -107,6 +107,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<Receiving<ToPhantomTypeArgument<T>>>> {
     return phantom(Receiving.reified(T))
   }
+
   static get p() {
     return Receiving.phantom
   }

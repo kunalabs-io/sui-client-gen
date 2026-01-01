@@ -86,6 +86,7 @@ export class Versioned implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Versioned>> {
     return phantom(Versioned.reified())
   }
+
   static get p() {
     return Versioned.phantom()
   }
@@ -267,6 +268,7 @@ export class VersionChangeCap implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<VersionChangeCap>> {
     return phantom(VersionChangeCap.reified())
   }
+
   static get p() {
     return VersionChangeCap.phantom()
   }

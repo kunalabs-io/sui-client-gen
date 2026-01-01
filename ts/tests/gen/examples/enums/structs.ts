@@ -155,6 +155,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
   ): PhantomReified<ToTypeStr<Wrapped<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>>>> {
     return phantom(Wrapped.reified(T, U, V))
   }
+
   static get p() {
     return Wrapped.phantom
   }

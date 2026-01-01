@@ -105,6 +105,7 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
   ): PhantomReified<ToTypeStr<TableVec<ToPhantomTypeArgument<Element>>>> {
     return phantom(TableVec.reified(Element))
   }
+
   static get p() {
     return TableVec.phantom
   }

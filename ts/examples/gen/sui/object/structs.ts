@@ -79,6 +79,7 @@ export class ID implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<ID>> {
     return phantom(ID.reified())
   }
+
   static get p() {
     return ID.phantom()
   }
@@ -243,6 +244,7 @@ export class UID implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<UID>> {
     return phantom(UID.reified())
   }
+
   static get p() {
     return UID.phantom()
   }

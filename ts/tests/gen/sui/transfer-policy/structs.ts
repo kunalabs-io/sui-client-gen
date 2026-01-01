@@ -119,6 +119,7 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
   ): PhantomReified<ToTypeStr<TransferRequest<ToPhantomTypeArgument<T>>>> {
     return phantom(TransferRequest.reified(T))
   }
+
   static get p() {
     return TransferRequest.phantom
   }
@@ -365,6 +366,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
   ): PhantomReified<ToTypeStr<TransferPolicy<ToPhantomTypeArgument<T>>>> {
     return phantom(TransferPolicy.reified(T))
   }
+
   static get p() {
     return TransferPolicy.phantom
   }
@@ -609,6 +611,7 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructC
   ): PhantomReified<ToTypeStr<TransferPolicyCap<ToPhantomTypeArgument<T>>>> {
     return phantom(TransferPolicyCap.reified(T))
   }
+
   static get p() {
     return TransferPolicyCap.phantom
   }
@@ -842,6 +845,7 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> implements Str
   ): PhantomReified<ToTypeStr<TransferPolicyCreated<ToPhantomTypeArgument<T>>>> {
     return phantom(TransferPolicyCreated.reified(T))
   }
+
   static get p() {
     return TransferPolicyCreated.phantom
   }
@@ -1072,6 +1076,7 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements S
   ): PhantomReified<ToTypeStr<TransferPolicyDestroyed<ToPhantomTypeArgument<T>>>> {
     return phantom(TransferPolicyDestroyed.reified(T))
   }
+
   static get p() {
     return TransferPolicyDestroyed.phantom
   }
@@ -1298,6 +1303,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<RuleKey<ToPhantomTypeArgument<T>>>> {
     return phantom(RuleKey.reified(T))
   }
+
   static get p() {
     return RuleKey.phantom
   }

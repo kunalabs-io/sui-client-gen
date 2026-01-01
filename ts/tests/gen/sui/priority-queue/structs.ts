@@ -106,6 +106,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<PriorityQueue<ToTypeArgument<T>>>> {
     return phantom(PriorityQueue.reified(T))
   }
+
   static get p() {
     return PriorityQueue.phantom
   }
@@ -338,6 +339,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<Entry<ToTypeArgument<T>>>> {
     return phantom(Entry.reified(T))
   }
+
   static get p() {
     return Entry.phantom
   }

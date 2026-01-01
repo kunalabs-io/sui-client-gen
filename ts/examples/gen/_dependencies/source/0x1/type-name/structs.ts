@@ -83,6 +83,7 @@ export class TypeName implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<TypeName>> {
     return phantom(TypeName.reified())
   }
+
   static get p() {
     return TypeName.phantom()
   }

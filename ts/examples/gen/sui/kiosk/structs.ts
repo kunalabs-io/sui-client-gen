@@ -107,6 +107,7 @@ export class Kiosk implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Kiosk>> {
     return phantom(Kiosk.reified())
   }
+
   static get p() {
     return Kiosk.phantom()
   }
@@ -306,6 +307,7 @@ export class KioskOwnerCap implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<KioskOwnerCap>> {
     return phantom(KioskOwnerCap.reified())
   }
+
   static get p() {
     return KioskOwnerCap.phantom()
   }
@@ -500,6 +502,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<PurchaseCap<ToPhantomTypeArgument<T>>>> {
     return phantom(PurchaseCap.reified(T))
   }
+
   static get p() {
     return PurchaseCap.phantom
   }
@@ -730,6 +733,7 @@ export class Borrow implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Borrow>> {
     return phantom(Borrow.reified())
   }
+
   static get p() {
     return Borrow.phantom()
   }
@@ -902,6 +906,7 @@ export class Item implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Item>> {
     return phantom(Item.reified())
   }
+
   static get p() {
     return Item.phantom()
   }
@@ -1066,6 +1071,7 @@ export class Listing implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Listing>> {
     return phantom(Listing.reified())
   }
+
   static get p() {
     return Listing.phantom()
   }
@@ -1238,6 +1244,7 @@ export class Lock implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Lock>> {
     return phantom(Lock.reified())
   }
+
   static get p() {
     return Lock.phantom()
   }
@@ -1418,6 +1425,7 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<ItemListed<ToPhantomTypeArgument<T>>>> {
     return phantom(ItemListed.reified(T))
   }
+
   static get p() {
     return ItemListed.phantom
   }
@@ -1659,6 +1667,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
   ): PhantomReified<ToTypeStr<ItemPurchased<ToPhantomTypeArgument<T>>>> {
     return phantom(ItemPurchased.reified(T))
   }
+
   static get p() {
     return ItemPurchased.phantom
   }
@@ -1897,6 +1906,7 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
   ): PhantomReified<ToTypeStr<ItemDelisted<ToPhantomTypeArgument<T>>>> {
     return phantom(ItemDelisted.reified(T))
   }
+
   static get p() {
     return ItemDelisted.phantom
   }

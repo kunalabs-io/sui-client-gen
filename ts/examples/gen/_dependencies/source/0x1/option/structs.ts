@@ -108,6 +108,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
   ): PhantomReified<ToTypeStr<Option<ToTypeArgument<Element>>>> {
     return phantom(Option.reified(Element))
   }
+
   static get p() {
     return Option.phantom
   }

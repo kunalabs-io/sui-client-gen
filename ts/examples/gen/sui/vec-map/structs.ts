@@ -111,6 +111,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
   ): PhantomReified<ToTypeStr<VecMap<ToTypeArgument<K>, ToTypeArgument<V>>>> {
     return phantom(VecMap.reified(K, V))
   }
+
   static get p() {
     return VecMap.phantom
   }
@@ -362,6 +363,7 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
   ): PhantomReified<ToTypeStr<Entry<ToTypeArgument<K>, ToTypeArgument<V>>>> {
     return phantom(Entry.reified(K, V))
   }
+
   static get p() {
     return Entry.phantom
   }

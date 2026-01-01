@@ -93,6 +93,7 @@ export class Publisher implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<Publisher>> {
     return phantom(Publisher.reified())
   }
+
   static get p() {
     return Publisher.phantom()
   }
@@ -282,6 +283,7 @@ export class UpgradeCap implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<UpgradeCap>> {
     return phantom(UpgradeCap.reified())
   }
+
   static get p() {
     return UpgradeCap.phantom()
   }
@@ -476,6 +478,7 @@ export class UpgradeTicket implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<UpgradeTicket>> {
     return phantom(UpgradeTicket.reified())
   }
+
   static get p() {
     return UpgradeTicket.phantom()
   }
@@ -667,6 +670,7 @@ export class UpgradeReceipt implements StructClass {
   static phantom(): PhantomReified<ToTypeStr<UpgradeReceipt>> {
     return phantom(UpgradeReceipt.reified())
   }
+
   static get p() {
     return UpgradeReceipt.phantom()
   }
