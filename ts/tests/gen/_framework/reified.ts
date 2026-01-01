@@ -30,8 +30,20 @@ export interface VectorClass {
   __VectorClass: true
 }
 
+export interface EnumVariantClass {
+  readonly $typeName: string
+  readonly $fullTypeName: string
+  readonly $variantName: string
+  readonly $typeArgs: string[]
+  readonly $isPhantom: readonly boolean[]
+  toJSONField(): Record<string, any>
+  toJSON(): Record<string, any>
+
+  __EnumVariantClass: true
+}
+
 export type Primitive = 'bool' | 'u8' | 'u16' | 'u32' | 'u64' | 'u128' | 'u256' | 'address'
-export type TypeArgument = StructClass | Primitive | VectorClass
+export type TypeArgument = StructClass | Primitive | VectorClass | EnumVariantClass
 
 export interface StructClassReified<T extends StructClass, Fields> {
   typeName: T['$typeName'] // e.g., '0x2::balance::Balance', without type arguments
@@ -68,23 +80,47 @@ export interface VectorClassReified<T extends VectorClass, Elements> {
   kind: 'VectorClassReified'
 }
 
+export interface EnumClassReified<T extends EnumVariantClass, Fields> {
+  typeName: T['$typeName']
+  fullTypeName: T['$fullTypeName']
+  typeArgs: T['$typeArgs']
+  isPhantom: T['$isPhantom']
+  reifiedTypeArgs: Array<Reified<TypeArgument, any> | PhantomReified<PhantomTypeArgument>>
+  bcs: BcsType<any>
+  fromFields(fields: Record<string, any>): T
+  fromFieldsWithTypes(item: FieldsWithTypes): T
+  fromBcs(data: Uint8Array): T
+  fromJSONField: (field: any) => T
+  fromJSON: (json: Record<string, any>) => T
+  new: (variant: string, fields: Fields) => T
+  kind: 'EnumClassReified'
+}
+
 export type Reified<T extends TypeArgument, Fields> = T extends Primitive
   ? Primitive
   : T extends StructClass
     ? StructClassReified<T, Fields>
     : T extends VectorClass
       ? VectorClassReified<T, Fields>
-      : never
+      : T extends EnumVariantClass
+        ? EnumClassReified<T, Fields>
+        : never
 
 export type ToTypeArgument<
-  T extends Primitive | StructClassReified<StructClass, any> | VectorClassReified<VectorClass, any>,
+  T extends
+    | Primitive
+    | StructClassReified<StructClass, any>
+    | VectorClassReified<VectorClass, any>
+    | EnumClassReified<EnumVariantClass, any>,
 > = T extends Primitive
   ? T
   : T extends StructClassReified<infer U, any>
     ? U
     : T extends VectorClassReified<infer U, any>
       ? U
-      : never
+      : T extends EnumClassReified<infer U, any>
+        ? U
+        : never
 
 export type ToPhantomTypeArgument<T extends PhantomReified<PhantomTypeArgument>> =
   T extends PhantomReified<infer U> ? U : never
@@ -198,7 +234,9 @@ export type ToField<T extends TypeArgument> = T extends 'bool'
                               ? T['elements']
                               : T extends StructClass
                                 ? T
-                                : never
+                                : T extends EnumVariantClass
+                                  ? T
+                                  : never
 
 const Address = bcs.bytes(32).transform({
   input: (val: string) => fromHEX(val),
@@ -255,6 +293,8 @@ export function extractType(reified: Reified<TypeArgument, any> | PhantomReified
     case 'StructClassReified':
       return reified.fullTypeName
     case 'VectorClassReified':
+      return reified.fullTypeName
+    case 'EnumClassReified':
       return reified.fullTypeName
   }
 
