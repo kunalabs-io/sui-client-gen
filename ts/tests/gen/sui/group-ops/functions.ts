@@ -147,6 +147,36 @@ export function pairing(tx: Transaction, typeArgs: [string, string, string], arg
   })
 }
 
+export interface ConvertArgs {
+  fromType: number | TransactionArgument
+  toType: number | TransactionArgument
+  e: TransactionObjectInput
+}
+
+export function convert(tx: Transaction, typeArgs: [string, string], args: ConvertArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::group_ops::convert`,
+    typeArguments: typeArgs,
+    arguments: [pure(tx, args.fromType, `u8`), pure(tx, args.toType, `u8`), obj(tx, args.e)],
+  })
+}
+
+export interface SumArgs {
+  type: number | TransactionArgument
+  terms: Array<TransactionObjectInput> | TransactionArgument
+}
+
+export function sum(tx: Transaction, typeArg: string, args: SumArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::group_ops::sum`,
+    typeArguments: [typeArg],
+    arguments: [
+      pure(tx, args.type, `u8`),
+      vector(tx, `${Element.$typeName}<${typeArg}>`, args.terms),
+    ],
+  })
+}
+
 export interface InternalValidateArgs {
   type: number | TransactionArgument
   bytes: Array<number | TransactionArgument> | TransactionArgument
@@ -270,6 +300,35 @@ export function internalPairing(tx: Transaction, args: InternalPairingArgs) {
       pure(tx, args.e1, `vector<u8>`),
       pure(tx, args.e2, `vector<u8>`),
     ],
+  })
+}
+
+export interface InternalConvertArgs {
+  fromType: number | TransactionArgument
+  toType: number | TransactionArgument
+  e: Array<number | TransactionArgument> | TransactionArgument
+}
+
+export function internalConvert(tx: Transaction, args: InternalConvertArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::group_ops::internal_convert`,
+    arguments: [
+      pure(tx, args.fromType, `u8`),
+      pure(tx, args.toType, `u8`),
+      pure(tx, args.e, `vector<u8>`),
+    ],
+  })
+}
+
+export interface InternalSumArgs {
+  type: number | TransactionArgument
+  e: Array<Array<number | TransactionArgument> | TransactionArgument> | TransactionArgument
+}
+
+export function internalSum(tx: Transaction, args: InternalSumArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::group_ops::internal_sum`,
+    arguments: [pure(tx, args.type, `u8`), pure(tx, args.e, `vector<vector<u8>>`)],
   })
 }
 

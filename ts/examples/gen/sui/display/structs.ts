@@ -1,4 +1,3 @@
-import { String } from '../../_dependencies/source/0x1/string/structs'
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -22,6 +21,7 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
+import { String } from '../../move-stdlib/string/structs'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
 import { bcs } from '@mysten/sui/bcs'

@@ -1,7 +1,4 @@
 import * as reified from '../../_framework/reified'
-import { String } from '../../_dependencies/source/0x1/ascii/structs'
-import { Option } from '../../_dependencies/source/0x1/option/structs'
-import { String as String1 } from '../../_dependencies/source/0x1/string/structs'
 import {
   PhantomReified,
   Reified,
@@ -16,6 +13,9 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
+import { String } from '../../move-stdlib/ascii/structs'
+import { Option } from '../../move-stdlib/option/structs'
+import { String as String1 } from '../../move-stdlib/string/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { PKG_V1 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
