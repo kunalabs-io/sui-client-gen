@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       version_tag:
-        description: 'Repo tag to build from'
+        description: "Repo tag to build from"
         type: string
         required: true
 
@@ -37,8 +37,8 @@ jobs:
   release-build:
     timeout-minutes: 45
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
+    permissions:
+      contents: write
     steps:
       - name: Clean up tag name
         shell: bash
@@ -71,5 +71,4 @@ jobs:
           files: |
             ${{ steps.build.outputs.BIN }}
         env:
-          # Have to use a Personal Access Token (PAT), based on https://tinyurl.com/2by2ntdr
-          GITHUB_TOKEN: ${{ secrets.GH_RELEASE_BUILDS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
