@@ -46,7 +46,7 @@ jobs:
           echo "version_tag=$(echo ${{ env.TAG_NAME }} | sed s/'refs\/tags\/'//)" >> $GITHUB_ENV
       - name: Checking out ${{ env.version_tag }}
         if: ${{ env.version_tag != 'main' }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ env.version_tag }}
 
@@ -58,14 +58,14 @@ jobs:
           echo BIN="target/release/sui-client-gen" >> $GITHUB_OUTPUT
       - name: Upload release artifacts
         if: ${{ env.version_tag != 'main' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: binary
           path: |
             ${{ steps.build.outputs.BIN }}
       - name: Publish binaries for ${{ env.version_tag }} release
         if: ${{ env.version_tag != 'main' }}
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.version_tag }}
           files: |
