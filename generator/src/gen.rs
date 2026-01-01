@@ -2042,7 +2042,7 @@ impl<'a, 'model, HasSource: SourceKind> StructsGen<'a, 'model, HasSource> {
                     return $phantom($(&struct_name).reified(
                         $(for param in type_params.iter() join (, ) => $param)
                     ));
-                }
+                }$['\n']
 
                 static get p() {
                     $(if type_params.is_empty() {
