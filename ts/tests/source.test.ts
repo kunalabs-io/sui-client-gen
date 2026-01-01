@@ -1,7 +1,7 @@
 import { Transaction } from '@mysten/sui/transactions'
 import { SuiClient } from '@mysten/sui/client'
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromB64, fromBase64 } from '@mysten/sui/utils'
 import { it, expect, describe } from 'vitest'
 import {
   Bar,
@@ -40,6 +40,7 @@ import { ID, UID } from './gen/sui/object/structs'
 import { loader } from './gen/_framework/loader'
 import { PKG_V1 } from './gen/examples'
 import { sqrt } from './gen/sui/math/functions'
+import { Action, isWrapped, Wrapped } from '../examples/gen/examples/enums/structs'
 
 const keypair = Ed25519Keypair.fromSecretKey(
   fromB64('AMVT58FaLF2tJtg/g8X2z1/vG0FvNn0jvRu9X2Wl8F+u').slice(1)
@@ -1307,4 +1308,90 @@ describe('handles function calls with option arguments correctly', () => {
     const obj = await WithGenericField.r(Option.r(vector(Option.r('u8')))).fetch(client, id)
     expect(obj.genericField).toEqual([3, null, 4])
   })
+})
+
+it('handles enums correctly', async () => {
+  const id = '0x867aff39fede0ba58effd5d9fec74184503391321cf72ff5df5c631824b2c75a'
+
+  // Setup reified types
+  const actionReified = Action.r('u64', SUI.p)
+  const wrappedReified = Wrapped.r(actionReified, actionReified, actionReified)
+  const zeroBalance = Balance.r(SUI.p).new({ value: 0n })
+
+  // Build expected object with all enum variants
+  const exp = wrappedReified.new({
+    id,
+    t: actionReified.new('Stop', {}),
+    u: actionReified.new('Pause', {
+      duration: 100,
+      genericField: 101n,
+      phantomField: zeroBalance,
+      reifiedField: 102n,
+    }),
+    v: actionReified.new('Jump', [103n, 104n, zeroBalance, 105n]),
+    stop: actionReified.new('Stop', {}),
+    pause: actionReified.new('Pause', {
+      duration: 106,
+      genericField: 107n,
+      phantomField: zeroBalance,
+      reifiedField: 108n,
+    }),
+    jump: actionReified.new('Jump', [109n, 110n, zeroBalance, 111n]),
+  })
+
+  // Fetch object from chain
+  const res = await client.getObject({
+    id,
+    options: { showBcs: true, showContent: true },
+  })
+
+  // Decode from BCS
+  if (res.data?.bcs?.dataType !== 'moveObject' || !isWrapped(res.data.bcs.type)) {
+    throw new Error(`object at id ${id} is not a Wrapped object`)
+  }
+  const fromBcs = wrappedReified.fromBcs(fromBase64(res.data.bcs.bcsBytes))
+  expect(fromBcs).toEqual(exp)
+
+  // Decode from parsed data (fields with types)
+  if (res.data?.content?.dataType !== 'moveObject' || !isWrapped(res.data.content.type)) {
+    throw new Error(`object at id ${id} is not a Wrapped object`)
+  }
+  const fromFields = wrappedReified.fromSuiParsedData(res.data.content)
+  expect(fromFields).toEqual(exp)
+
+  // Serialize to JSON
+  const asJSON = exp.toJSON()
+  expect(asJSON).toEqual({
+    $typeName: Wrapped.$typeName,
+    $typeArgs: exp.$typeArgs,
+    id,
+    t: { $kind: 'Stop' },
+    u: {
+      $kind: 'Pause',
+      duration: 100,
+      genericField: '101',
+      phantomField: { value: '0' },
+      reifiedField: '102',
+    },
+    v: {
+      $kind: 'Jump',
+      vec: ['103', '104', { value: '0' }, '105'],
+    },
+    stop: { $kind: 'Stop' },
+    pause: {
+      $kind: 'Pause',
+      duration: 106,
+      genericField: '107',
+      phantomField: { value: '0' },
+      reifiedField: '108',
+    },
+    jump: {
+      $kind: 'Jump',
+      vec: ['109', '110', { value: '0' }, '111'],
+    },
+  })
+
+  // Deserialize from JSON
+  const fromJSON = wrappedReified.fromJSON(asJSON)
+  expect(fromJSON).toEqual(exp)
 })
