@@ -17,9 +17,9 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { PKG_V1 } from '../index'
 import { TreasuryCap } from '../../sui/coin/structs'
 import { UID } from '../../sui/object/structs'
+import { PKG_V1 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
