@@ -5,6 +5,8 @@
 use convert_case::{Case, Casing};
 use indoc::formatdoc;
 
+use super::utils::is_reserved_word;
+
 /// Represents a function parameter's type for transaction arguments.
 #[derive(Debug, Clone)]
 pub enum ParamTypeIR {
@@ -45,29 +47,44 @@ impl ParamTypeIR {
     }
 
     /// Get the TypeScript type for a function parameter.
+    /// Uses a two-phase approach: build base type, then add TransactionArgument once.
     pub fn to_ts_param_type(&self) -> String {
+        // Build the base type
+        let base = self.to_ts_base_type();
+
         match self {
-            ParamTypeIR::Primitive(p) => {
-                let ts_type = match p.as_str() {
-                    "u8" | "u16" | "u32" => "number",
-                    "u64" | "u128" | "u256" => "bigint",
-                    "bool" => "boolean",
-                    "address" => "string",
-                    _ => "unknown",
-                };
-                format!("{} | TransactionArgument", ts_type)
-            }
+            // These types don't get | TransactionArgument suffix
+            ParamTypeIR::Struct { .. } => "TransactionObjectInput".to_string(),
+            ParamTypeIR::TypeParam { .. } => "GenericArg".to_string(),
+            // Option: base already includes | TransactionArgument from inner, just add | null
+            ParamTypeIR::Option(_) => format!("{} | null", base),
+            // Everything else: add | TransactionArgument
+            _ => format!("{} | TransactionArgument", base),
+        }
+    }
+
+    /// Get the base TypeScript type for building compound types.
+    /// For most types, this is the value type without | TransactionArgument.
+    /// For Option, this returns the inner's full param type (so | null is only added once).
+    fn to_ts_base_type(&self) -> String {
+        match self {
+            ParamTypeIR::Primitive(p) => match p.as_str() {
+                "u8" | "u16" | "u32" => "number".to_string(),
+                "u64" | "u128" | "u256" => "bigint".to_string(),
+                "bool" => "boolean".to_string(),
+                "address" => "string".to_string(),
+                _ => "unknown".to_string(),
+            },
+            // Vector elements can each be a value OR a TransactionArgument
             ParamTypeIR::Vector(inner) => {
-                format!("Array<{}> | TransactionArgument", inner.to_ts_param_type())
+                format!("Array<{}>", inner.to_ts_param_type())
             }
             ParamTypeIR::Struct { .. } => "TransactionObjectInput".to_string(),
-            ParamTypeIR::Option(inner) => {
-                format!("{} | TransactionArgument | null", inner.to_ts_param_type())
-            }
+            // Option: return inner's full param type (includes | TransactionArgument)
+            // The | null is added by to_ts_param_type, not here
+            ParamTypeIR::Option(inner) => inner.to_ts_param_type(),
             ParamTypeIR::TypeParam { .. } => "GenericArg".to_string(),
-            ParamTypeIR::StringType { .. } | ParamTypeIR::ID => {
-                "string | TransactionArgument".to_string()
-            }
+            ParamTypeIR::StringType { .. } | ParamTypeIR::ID => "string".to_string(),
         }
     }
 
@@ -231,7 +248,7 @@ impl FunctionIR {
             0 => String::new(),
             1 => {
                 let p = &self.params[0];
-                let name = if is_strictly_reserved(&p.ts_name) {
+                let name = if is_reserved_word(&p.ts_name) {
                     format!("{}_", p.ts_name)
                 } else {
                     p.ts_name.clone()
@@ -322,7 +339,7 @@ impl FunctionIR {
 
         let args: Vec<_> = if self.params.len() == 1 {
             let p = &self.params[0];
-            let name = if is_strictly_reserved(&p.ts_name) {
+            let name = if is_reserved_word(&p.ts_name) {
                 format!("{}_", p.ts_name)
             } else {
                 p.ts_name.clone()
@@ -382,61 +399,6 @@ impl FunctionIR {
             format!("{}\n\n{}", interface, body)
         }
     }
-}
-
-/// Check if a name is strictly reserved in JavaScript.
-fn is_strictly_reserved(name: &str) -> bool {
-    const STRICTLY_RESERVED: &[&str] = &[
-        "break",
-        "case",
-        "catch",
-        "continue",
-        "debugger",
-        "default",
-        "delete",
-        "do",
-        "else",
-        "finally",
-        "for",
-        "function",
-        "if",
-        "in",
-        "instanceof",
-        "new",
-        "return",
-        "switch",
-        "this",
-        "throw",
-        "try",
-        "typeof",
-        "var",
-        "void",
-        "while",
-        "with",
-        "class",
-        "const",
-        "enum",
-        "export",
-        "extends",
-        "import",
-        "super",
-        "implements",
-        "interface",
-        "let",
-        "package",
-        "private",
-        "protected",
-        "public",
-        "static",
-        "yield",
-    ];
-    STRICTLY_RESERVED.contains(&name)
-}
-
-/// Check if a param name needs an alias for the import.
-#[allow(dead_code)]
-fn needs_alias(name: &str) -> bool {
-    matches!(name, "obj" | "pure" | "generic" | "vector" | "option")
 }
 
 /// Generate imports for a module's functions.

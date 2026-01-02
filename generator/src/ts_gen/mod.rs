@@ -21,6 +21,14 @@ pub use builder::{
 pub use enums::{EnumIR, EnumVariantIR};
 pub use functions::{FunctionIR, FunctionParamIR, ParamTypeIR};
 pub use init::{gen_init_loader, gen_package_init};
-pub use structs::{FieldIR, FieldTypeIR, PackageInfo, StructIR, StructImport, TypeParamIR};
-pub use types::{ImportTracker, MoveTypeIR};
-pub use utils::{gen_package_index, module_import_name, package_import_name, JS_RESERVED_WORDS};
+pub use structs::{
+    DatatypeImport, DatatypeKind, FieldIR, FieldTypeIR, PackageInfo, StructIR, StructImport,
+    TypeParamIR,
+};
+// Note: MoveTypeIR and ImportTracker are available in types.rs but not exported
+// as they're currently unused. Consider adopting ImportTracker if a unified
+// imports builder is needed.
+pub use utils::{
+    gen_package_index, is_reserved_word, module_import_name, package_import_name,
+    sanitize_identifier, JS_RESERVED_WORDS,
+};

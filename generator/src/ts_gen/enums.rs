@@ -380,7 +380,7 @@ impl EnumIR {
                     json: Record<string, any>
                   ): {name}Variant{to_type_args} {{
                     if (json.$typeName !== {name}.$typeName) {{
-                      throw new Error('not a {name} json object')
+                      throw new Error(`not a {name} json object: expected '${{{name}.$typeName}}' but got '${{json.$typeName}}'`)
                     }}
                     assertReifiedTypeArgsMatch(
                       composeSuiType({name}.$typeName, ...{type_arg_map_extract}),
@@ -517,7 +517,7 @@ impl EnumIR {
 
               static fromJSON(typeArgs: [], json: Record<string, any>): {name}Variant {{
                 if (json.$typeName !== {name}.$typeName) {{
-                  throw new Error('not a {name} json object')
+                  throw new Error(`not a {name} json object: expected '${{{name}.$typeName}}' but got '${{json.$typeName}}'`)
                 }}
 
                 return {name}.fromJSONField(typeArgs, json)
@@ -793,7 +793,7 @@ impl EnumIR {
                     name, inner_ts, bcs_name, name
                 )
             }
-            FieldTypeIR::Struct { .. } => {
+            FieldTypeIR::Datatype { .. } => {
                 let ts_type = field_type.to_ts_type();
                 let bcs_name = field_type.to_json_bcs_name();
                 format!(
@@ -845,7 +845,7 @@ impl EnumIR {
                     inner_ts, bcs_name, index
                 )
             }
-            FieldTypeIR::Struct {
+            FieldTypeIR::Datatype {
                 class_name,
                 type_args,
                 ..

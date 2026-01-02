@@ -65,6 +65,14 @@ pub struct FieldIR {
     pub field_type: FieldTypeIR,
 }
 
+/// Distinguishes between struct and enum datatypes.
+/// Mirrors Move's Datatype concept to improve IR clarity.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DatatypeKind {
+    Struct,
+    Enum,
+}
+
 /// Field type representation - simpler than full MoveTypeIR, focused on emission.
 #[derive(Debug, Clone)]
 pub enum FieldTypeIR {
@@ -72,16 +80,16 @@ pub enum FieldTypeIR {
     Primitive(String),
     /// Vector<inner>
     Vector(Box<FieldTypeIR>),
-    /// Reference to another struct or enum (e.g., UID, Coin<T>, Action)
-    Struct {
+    /// Reference to a datatype (struct or enum) e.g., UID, Coin<T>, Action
+    Datatype {
         /// Class name to use in code (e.g., "UID", "Coin", "Action")
         class_name: String,
         /// Type arguments
         type_args: Vec<FieldTypeIR>,
-        /// Whether each type arg position is phantom (based on parent struct's declaration)
+        /// Whether each type arg position is phantom (based on parent datatype's declaration)
         type_arg_is_phantom: Vec<bool>,
-        /// Whether this is an enum type (requires Variant suffix in field types)
-        is_enum: bool,
+        /// Whether this is a struct or enum
+        kind: DatatypeKind,
     },
     /// Type parameter reference
     TypeParam {
@@ -92,16 +100,20 @@ pub enum FieldTypeIR {
     },
 }
 
-/// An import for a struct class from another module.
+/// An import for a datatype (struct or enum) class from another module.
 #[derive(Debug, Clone)]
-pub struct StructImport {
+pub struct DatatypeImport {
     /// Import path (e.g., "../object/structs")
     pub path: String,
-    /// Class name (e.g., "UID")
+    /// Class name (e.g., "UID", "Action")
     pub class_name: String,
     /// Optional alias if there's a name conflict
     pub alias: Option<String>,
 }
+
+/// Type alias for backwards compatibility during refactoring.
+/// TODO: Remove this alias once all callers are updated.
+pub type StructImport = DatatypeImport;
 
 // ============================================================================
 // Emission - Template-based code generation
@@ -550,7 +562,7 @@ impl StructIR {
 
               static fromJSON(json: Record<string, any>): {name} {{
                 if (json.$typeName !== {name}.$typeName) {{
-                  throw new Error('not a WithTwoGenerics json object')
+                  throw new Error(`not a {name} json object: expected '${{{name}.$typeName}}' but got '${{json.$typeName}}'`)
                 }}
 
                 return {name}.fromJSONField(json)
@@ -939,7 +951,7 @@ impl StructIR {
                 json: Record<string, any>
               ): {name}{to_phantom_type_args} {{
                 if (json.$typeName !== {name}.$typeName) {{
-                  throw new Error('not a WithTwoGenerics json object')
+                  throw new Error(`not a {name} json object: expected '${{{name}.$typeName}}' but got '${{json.$typeName}}'`)
                 }}
                 assertReifiedTypeArgsMatch(
                   composeSuiType({name}.$typeName, {extract_type_vars}),
@@ -1407,7 +1419,7 @@ impl FieldTypeIR {
     pub fn uses_vector(&self) -> bool {
         match self {
             FieldTypeIR::Vector(_) => true,
-            FieldTypeIR::Struct { type_args, .. } => type_args.iter().any(|a| a.uses_vector()),
+            FieldTypeIR::Datatype { type_args, .. } => type_args.iter().any(|a| a.uses_vector()),
             _ => false,
         }
     }
@@ -1417,7 +1429,7 @@ impl FieldTypeIR {
         match self {
             FieldTypeIR::Primitive(p) => p == "address",
             FieldTypeIR::Vector(inner) => inner.uses_address(),
-            FieldTypeIR::Struct { type_args, .. } => type_args.iter().any(|a| a.uses_address()),
+            FieldTypeIR::Datatype { type_args, .. } => type_args.iter().any(|a| a.uses_address()),
             _ => false,
         }
     }
@@ -1426,17 +1438,17 @@ impl FieldTypeIR {
     pub fn uses_phantom_struct_args(&self) -> bool {
         match self {
             FieldTypeIR::Vector(inner) => inner.uses_phantom_struct_args(),
-            FieldTypeIR::Struct {
+            FieldTypeIR::Datatype {
                 type_args,
                 type_arg_is_phantom,
                 ..
             } => {
-                // Check if any args are phantom and are struct types (not primitives/type params)
+                // Check if any args are phantom and are datatype references (not primitives/type params)
                 type_args
                     .iter()
                     .zip(type_arg_is_phantom.iter())
                     .any(|(arg, is_phantom)| {
-                        *is_phantom && matches!(arg, FieldTypeIR::Struct { .. })
+                        *is_phantom && matches!(arg, FieldTypeIR::Datatype { .. })
                     })
                     || type_args.iter().any(|a| a.uses_phantom_struct_args())
             }
@@ -1448,7 +1460,7 @@ impl FieldTypeIR {
     pub fn needs_field_to_json(&self) -> bool {
         match self {
             FieldTypeIR::Vector(_) => true,
-            FieldTypeIR::Struct { class_name, .. } => class_name == "Option",
+            FieldTypeIR::Datatype { class_name, .. } => class_name == "Option",
             FieldTypeIR::TypeParam { .. } => true,
             _ => false,
         }
@@ -1459,14 +1471,14 @@ impl FieldTypeIR {
         match self {
             FieldTypeIR::Primitive(p) => format!("'{}'", p),
             FieldTypeIR::Vector(inner) => format!("Vector<{}>", inner.to_ts_type()),
-            FieldTypeIR::Struct {
+            FieldTypeIR::Datatype {
                 class_name,
                 type_args,
                 type_arg_is_phantom,
-                is_enum,
+                kind,
             } => {
                 // For enums, use {Name}Variant instead of {Name}
-                let type_name = if *is_enum {
+                let type_name = if *kind == DatatypeKind::Enum {
                     format!("{}Variant", class_name)
                 } else {
                     class_name.clone()
@@ -1481,11 +1493,11 @@ impl FieldTypeIR {
                         .zip(type_arg_is_phantom.iter())
                         .map(|(arg, is_phantom)| {
                             let ts_type = arg.to_ts_type();
-                            // Wrap complex types (struct and vector) with ToPhantom, not primitives/type params
+                            // Wrap complex types (datatype and vector) with ToPhantom, not primitives/type params
                             if *is_phantom
                                 && matches!(
                                     arg,
-                                    FieldTypeIR::Struct { .. } | FieldTypeIR::Vector(_)
+                                    FieldTypeIR::Datatype { .. } | FieldTypeIR::Vector(_)
                                 )
                             {
                                 format!("ToPhantom<{}>", ts_type)
@@ -1511,7 +1523,7 @@ impl FieldTypeIR {
                 _ => format!("bcs.{}()", p),
             },
             FieldTypeIR::Vector(inner) => format!("bcs.vector({})", inner.to_bcs()),
-            FieldTypeIR::Struct {
+            FieldTypeIR::Datatype {
                 class_name,
                 type_args,
                 type_arg_is_phantom,
@@ -1542,7 +1554,7 @@ impl FieldTypeIR {
             FieldTypeIR::Vector(inner) => {
                 format!("reified.vector({})", inner.to_reified())
             }
-            FieldTypeIR::Struct {
+            FieldTypeIR::Datatype {
                 class_name,
                 type_args,
                 type_arg_is_phantom,
@@ -1581,7 +1593,7 @@ impl FieldTypeIR {
                     inner.to_reified_runtime(total_type_params)
                 )
             }
-            FieldTypeIR::Struct {
+            FieldTypeIR::Datatype {
                 class_name,
                 type_args,
                 type_arg_is_phantom,
@@ -1633,7 +1645,7 @@ impl FieldTypeIR {
                     inner.to_reified_runtime_indexed(_total_type_params)
                 )
             }
-            FieldTypeIR::Struct {
+            FieldTypeIR::Datatype {
                 class_name,
                 type_args,
                 type_arg_is_phantom,
@@ -1685,7 +1697,7 @@ impl FieldTypeIR {
                     field_name, inner_ts, bcs_name, field_name
                 )
             }
-            FieldTypeIR::Struct { class_name, .. } => {
+            FieldTypeIR::Datatype { class_name, .. } => {
                 // Special cases for primitive-like types that don't have toJSONField()
                 match class_name.as_str() {
                     "UID" | "ID" | "String" | "Char" | "Url" | "Ascii" | "AsciiString"
@@ -1719,14 +1731,14 @@ impl FieldTypeIR {
         match self {
             FieldTypeIR::Primitive(p) => format!("'{}'", p),
             FieldTypeIR::Vector(inner) => format!("Vector<{}>", inner.to_json_ts_type()),
-            FieldTypeIR::Struct {
+            FieldTypeIR::Datatype {
                 class_name,
                 type_args,
-                is_enum,
+                kind,
                 ..
             } => {
                 // For enums, use {Name}Variant instead of {Name}
-                let type_name = if *is_enum {
+                let type_name = if *kind == DatatypeKind::Enum {
                     format!("{}Variant", class_name)
                 } else {
                     class_name.clone()
@@ -1748,13 +1760,13 @@ impl FieldTypeIR {
         match self {
             FieldTypeIR::Primitive(p) => p.clone(),
             FieldTypeIR::Vector(inner) => format!("vector<{}>", inner.to_json_bcs_name()),
-            FieldTypeIR::Struct {
+            FieldTypeIR::Datatype {
                 class_name,
                 type_args,
                 ..
             } => {
                 if type_args.is_empty() {
-                    // Use $typeName for structs
+                    // Use $typeName for datatypes
                     format!("${{{}.$typeName}}", class_name)
                 } else {
                     let args: Vec<String> =
@@ -1783,11 +1795,11 @@ mod tests {
                 FieldIR {
                     ts_name: "id".to_string(),
                     move_name: "id".to_string(),
-                    field_type: FieldTypeIR::Struct {
+                    field_type: FieldTypeIR::Datatype {
                         class_name: "UID".to_string(),
                         type_args: vec![],
                         type_arg_is_phantom: vec![],
-                        is_enum: false,
+                        kind: DatatypeKind::Struct,
                     },
                 },
                 FieldIR {
