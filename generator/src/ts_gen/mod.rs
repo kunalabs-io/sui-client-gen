@@ -12,7 +12,6 @@ mod functions;
 mod imports;
 mod init;
 mod structs;
-mod types;
 mod utils;
 
 // Re-export public API
@@ -21,7 +20,7 @@ pub use builder::{
 };
 pub use enums::{EnumIR, EnumVariantIR};
 pub use functions::{FunctionIR, FunctionParamIR, ParamTypeIR};
-pub use imports::{GenContext, ImportPathResolver, TsImportsBuilder};
+pub use imports::{ImportPathResolver, TsImportsBuilder};
 pub use init::{gen_init_loader, gen_package_init};
 pub use structs::{
     DatatypeImport, DatatypeKind, FieldIR, FieldTypeIR, PackageInfo, StructIR, StructImport,

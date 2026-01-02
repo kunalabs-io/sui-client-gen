@@ -9,7 +9,7 @@ use move_model_2::model;
 use move_model_2::source_kind::SourceKind;
 use move_symbol_pool::Symbol;
 
-use super::utils::{module_import_name, package_import_name, JS_RESERVED_WORDS};
+use super::utils::{module_import_name, package_import_name, sanitize_identifier};
 
 // ============================================================================
 // Package Init IR (for init.ts files)
@@ -54,10 +54,8 @@ impl PackageInitIR {
 
             // Generate import alias for this module (snake -> camel)
             let module_name = mod_.name().to_string();
-            let mut alias = module_name.from_case(Case::Snake).to_case(Case::Camel);
-            if JS_RESERVED_WORDS.contains(&alias.as_str()) {
-                alias.push('_');
-            }
+            let alias =
+                sanitize_identifier(&module_name.from_case(Case::Snake).to_case(Case::Camel));
 
             for strct in structs {
                 registrations.push(StructRegistration {

@@ -17,7 +17,7 @@ use super::imports::{ImportPathResolver, TsImportsBuilder};
 use super::structs::{
     DatatypeKind, FieldIR, FieldTypeIR, PackageInfo, StructIR, StructImport, TypeParamIR,
 };
-use super::utils::JS_RESERVED_WORDS;
+use super::utils::sanitize_identifier;
 use crate::model_builder::{TypeOriginTable, VersionTable};
 
 /// Get the origin package address for a datatype (struct or enum).
@@ -869,11 +869,7 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
 
     fn gen_field_name(&self, move_name: &str) -> String {
         let ts_name = move_name.to_case(Case::Camel);
-        if JS_RESERVED_WORDS.contains(&ts_name.as_str()) {
-            format!("{}_", ts_name)
-        } else {
-            ts_name
-        }
+        sanitize_identifier(&ts_name)
     }
 
     fn build_field_type(&mut self, ty: &Type, type_params: &[TypeParamIR]) -> FieldTypeIR {
@@ -1207,18 +1203,16 @@ impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource>
 
     fn generate_ts_name(&self, move_name: &str) -> String {
         // Use from_case(Snake) to prevent digit-letter boundaries from being treated as word splits
-        let mut ts_name = move_name.from_case(Case::Snake).to_case(Case::Camel);
+        let ts_name = move_name.from_case(Case::Snake).to_case(Case::Camel);
 
-        if JS_RESERVED_WORDS.contains(&ts_name.as_str()) {
-            ts_name.push('_');
-        }
+        let mut sanitized = sanitize_identifier(&ts_name);
 
         // Handle trailing underscore in Move name
-        if move_name.ends_with('_') && !ts_name.ends_with('_') {
-            ts_name.push('_');
+        if move_name.ends_with('_') && !sanitized.ends_with('_') {
+            sanitized.push('_');
         }
 
-        ts_name
+        sanitized
     }
 
     fn build_type_params(&self) -> Vec<String> {
