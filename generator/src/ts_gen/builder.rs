@@ -2,7 +2,7 @@
 //!
 //! This module bridges the Move model types to our coarse-grained IR.
 
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 
 use anyhow::{Context, Result};
 use convert_case::{Case, Casing};
@@ -13,10 +13,11 @@ use move_model_2::source_kind::SourceKind;
 use move_symbol_pool::Symbol;
 
 use super::enums::{EnumIR, EnumVariantIR};
+use super::imports::{ImportPathResolver, TsImportsBuilder};
 use super::structs::{
     DatatypeKind, FieldIR, FieldTypeIR, PackageInfo, StructIR, StructImport, TypeParamIR,
 };
-use super::utils::{module_import_name, package_import_name, JS_RESERVED_WORDS};
+use super::utils::JS_RESERVED_WORDS;
 use crate::model_builder::{TypeOriginTable, VersionTable};
 
 /// Get the origin package address for a datatype (struct or enum).
@@ -413,56 +414,17 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
         }
     }
 
+    /// Get the import path to a module's structs.ts file.
+    /// Uses `ImportPathResolver` for consistent path computation.
     fn import_path_for_module<S: SourceKind>(&self, module: &model::Module<S>) -> Option<String> {
-        let module_name = module_import_name(module.name());
-        let same_package = module.package().address() == self.package_address;
-
-        if same_package && module.name() == self.module_name {
-            // Same module, no import needed
-            None
-        } else if same_package {
-            // Different module in same package
-            Some(format!("../{}/structs", module_name))
-        } else {
-            let member_is_top_level = self
-                .top_level_pkg_names
-                .contains_key(&module.package().address());
-
-            if self.is_top_level && member_is_top_level {
-                let member_pkg_name = package_import_name(
-                    *self
-                        .top_level_pkg_names
-                        .get(&module.package().address())
-                        .unwrap(),
-                );
-                Some(format!("../../{}/{}/structs", member_pkg_name, module_name))
-            } else if self.is_top_level {
-                let dep_dir = if self.is_source { "source" } else { "onchain" };
-                Some(format!(
-                    "../../_dependencies/{}/{}/{}/structs",
-                    dep_dir,
-                    module.package().address().to_hex_literal(),
-                    module_name
-                ))
-            } else if member_is_top_level {
-                let member_pkg_name = package_import_name(
-                    *self
-                        .top_level_pkg_names
-                        .get(&module.package().address())
-                        .unwrap(),
-                );
-                Some(format!(
-                    "../../../../{}/{}/structs",
-                    member_pkg_name, module_name
-                ))
-            } else {
-                Some(format!(
-                    "../../{}/{}/structs",
-                    module.package().address().to_hex_literal(),
-                    module_name
-                ))
-            }
-        }
+        let resolver = ImportPathResolver::new(
+            self.package_address,
+            self.module_name,
+            self.top_level_pkg_names.clone(),
+            self.is_source,
+            self.is_top_level,
+        );
+        resolver.path_to_structs(module.package().address(), module.name())
     }
 }
 
@@ -562,15 +524,15 @@ pub fn gen_module_structs<HasSource: SourceKind>(
 }
 
 /// Emit combined imports for modules with both structs and enums.
+///
+/// Uses `TsImportsBuilder` to generate well-organized, grouped imports.
 fn emit_combined_imports_with_enums(
     framework_path: &str,
     struct_imports: &HashMap<String, StructImport>,
     structs: &[StructIR],
     enums: &[EnumIR],
 ) -> String {
-    use std::collections::BTreeSet;
-
-    let mut lines = Vec::new();
+    let mut imports = TsImportsBuilder::new();
 
     // Determine what framework imports are needed
     let has_type_params = structs.iter().any(|s| !s.type_params.is_empty())
@@ -593,83 +555,81 @@ fn emit_combined_imports_with_enums(
     let uses_field_to_json = structs.iter().any(|s| s.uses_field_to_json);
     let has_enums = !enums.is_empty();
 
-    // Framework reified import
+    // Wildcard reified import for vector/phantom handling
     if uses_vector || uses_phantom_struct_args || has_phantom_type_params {
-        lines.push(format!(
-            "import * as reified from '{}/reified'",
-            framework_path
-        ));
+        imports.add_wildcard(format!("{}/reified", framework_path), "reified");
     }
 
-    // Build reified imports set - always include base set
-    let mut reified_imports: BTreeSet<&str> = BTreeSet::new();
-    reified_imports.insert("PhantomReified");
-    reified_imports.insert("Reified");
-    reified_imports.insert("StructClass");
-    reified_imports.insert("ToField");
-    reified_imports.insert("ToTypeStr");
-    reified_imports.insert("decodeFromFields");
-    reified_imports.insert("decodeFromFieldsWithTypes");
-    reified_imports.insert("decodeFromJSONField");
-    reified_imports.insert("phantom");
-
-    // Note: ToPhantom is added as "ToTypeStr as ToPhantom" later if needed
+    // Named reified imports - always include base set
+    let reified_path = format!("{}/reified", framework_path);
+    imports.add_named_many(
+        &reified_path,
+        &[
+            "PhantomReified",
+            "Reified",
+            "StructClass",
+            "ToField",
+            "ToTypeStr",
+            "decodeFromFields",
+            "decodeFromFieldsWithTypes",
+            "decodeFromJSONField",
+            "phantom",
+        ],
+    );
 
     if has_type_params {
-        reified_imports.insert("extractType");
-        reified_imports.insert("assertFieldsWithTypesArgsMatch");
-        reified_imports.insert("assertReifiedTypeArgsMatch");
+        imports.add_named_many(
+            &reified_path,
+            &[
+                "extractType",
+                "assertFieldsWithTypesArgsMatch",
+                "assertReifiedTypeArgsMatch",
+            ],
+        );
     }
 
     if has_phantom_type_params {
-        reified_imports.insert("PhantomToTypeStr");
-        reified_imports.insert("PhantomTypeArgument");
-        reified_imports.insert("ToPhantomTypeArgument");
+        imports.add_named_many(
+            &reified_path,
+            &[
+                "PhantomToTypeStr",
+                "PhantomTypeArgument",
+                "ToPhantomTypeArgument",
+            ],
+        );
     }
 
     if has_non_phantom_type_params {
-        reified_imports.insert("TypeArgument");
-        reified_imports.insert("ToTypeArgument");
-        reified_imports.insert("toBcs");
+        imports.add_named_many(&reified_path, &["TypeArgument", "ToTypeArgument", "toBcs"]);
     }
 
     if uses_field_to_json || has_type_params {
-        reified_imports.insert("fieldToJSON");
+        imports.add_named(&reified_path, "fieldToJSON");
     }
 
     if has_enums {
-        reified_imports.insert("EnumVariantClass");
+        imports.add_named(&reified_path, "EnumVariantClass");
     }
 
-    let imports_str = if uses_phantom_struct_args {
-        let mut imports_vec: Vec<&str> = reified_imports.into_iter().collect();
-        imports_vec.push("ToTypeStr as ToPhantom");
-        imports_vec.sort();
-        imports_vec.join(",\n  ")
-    } else {
-        reified_imports
-            .into_iter()
-            .collect::<Vec<_>>()
-            .join(",\n  ")
-    };
-
-    lines.push(format!(
-        "import {{\n  {}\n}} from '{}/reified'",
-        imports_str, framework_path
-    ));
+    if uses_phantom_struct_args {
+        imports.add_named_as(&reified_path, "ToTypeStr", "ToPhantom");
+    }
 
     // Utils import - always include parseTypeName for fetch methods
-    lines.push(format!(
-        "import {{\n  FieldsWithTypes,\n  composeSuiType,\n  compressSuiType,\n  parseTypeName,\n}} from '{}/util'",
-        framework_path
-    ));
+    let util_path = format!("{}/util", framework_path);
+    imports.add_named_many(
+        &util_path,
+        &[
+            "FieldsWithTypes",
+            "composeSuiType",
+            "compressSuiType",
+            "parseTypeName",
+        ],
+    );
 
     // Vector import
     if uses_vector {
-        lines.push(format!(
-            "import {{ Vector }} from '{}/vector'",
-            framework_path
-        ));
+        imports.add_named(format!("{}/vector", framework_path), "Vector");
     }
 
     // PKG version imports
@@ -685,44 +645,40 @@ fn emit_combined_imports_with_enums(
         }
     }
 
-    if !pkg_versions.is_empty() {
-        let versions: Vec<String> = pkg_versions.iter().map(|v| format!("PKG_V{}", v)).collect();
-        lines.push(format!(
-            "import {{ {} }} from '../index'",
-            versions.join(", ")
-        ));
+    for version in pkg_versions {
+        imports.add_named("../index", format!("PKG_V{}", version));
     }
 
-    // Struct imports (from other modules)
-    let mut sorted_imports: Vec<&StructImport> = struct_imports.values().collect();
-    sorted_imports.sort_by(|a, b| (&a.path, &a.class_name).cmp(&(&b.path, &b.class_name)));
-
-    for imp in sorted_imports {
-        let name = match &imp.alias {
-            Some(alias) => format!("{} as {}", imp.class_name, alias),
-            None => imp.class_name.clone(),
-        };
-        lines.push(format!("import {{ {} }} from '{}'", name, imp.path));
+    // Struct/enum imports (from other modules) - group by path
+    for imp in struct_imports.values() {
+        if let Some(alias) = &imp.alias {
+            imports.add_named_as(&imp.path, &imp.class_name, alias);
+        } else {
+            imports.add_named(&imp.path, &imp.class_name);
+        }
     }
 
     // BCS imports
     if has_non_phantom_type_params {
-        lines.push("import { BcsType, bcs } from '@mysten/sui/bcs'".to_string());
+        imports.add_named_many("@mysten/sui/bcs", &["BcsType", "bcs"]);
     } else {
-        lines.push("import { bcs } from '@mysten/sui/bcs'".to_string());
+        imports.add_named("@mysten/sui/bcs", "bcs");
     }
-    lines.push(
-        "import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'".to_string(),
+
+    // Sui client imports
+    imports.add_named_many(
+        "@mysten/sui/client",
+        &["SuiClient", "SuiObjectData", "SuiParsedData"],
     );
 
-    // Utils imports
+    // Sui utils imports
     if uses_address {
-        lines.push("import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'".to_string());
+        imports.add_named_many("@mysten/sui/utils", &["fromB64", "fromHEX", "toHEX"]);
     } else {
-        lines.push("import { fromB64 } from '@mysten/sui/utils'".to_string());
+        imports.add_named("@mysten/sui/utils", "fromB64");
     }
 
-    lines.join("\n")
+    imports.emit()
 }
 
 // ============================================================================
@@ -1120,54 +1076,20 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
         enum_name
     }
 
-    /// Returns the import path for a module, following the same logic as the old gen.rs.
-    /// This handles all cases uniformly without hardcoding system package names.
+    /// Returns the import path for a module's structs.ts file.
+    /// Uses `ImportPathResolver` for consistent path computation.
     fn get_import_path(&self, pkg_addr: AccountAddress, mod_name: Symbol) -> String {
-        let mod_import_name = module_import_name(mod_name);
-
-        if pkg_addr == self.package_address && mod_name == self.module_name {
-            // Same module - no import needed
-            return String::new();
-        }
-
-        if pkg_addr == self.package_address {
-            // Same package, different module
-            return format!("../{}/structs", mod_import_name);
-        }
-
-        // Different package - check if it's a top-level package
-        let member_is_top_level = self.top_level_pkg_names.contains_key(&pkg_addr);
-
-        if self.is_top_level && member_is_top_level {
-            // Both current and target are top-level packages
-            let member_pkg_name =
-                package_import_name(*self.top_level_pkg_names.get(&pkg_addr).unwrap());
-            format!("../../{}/{}/structs", member_pkg_name, mod_import_name)
-        } else if self.is_top_level {
-            // Current is top-level, target is a dependency
-            let dep_dir = if self.is_source { "source" } else { "onchain" };
-            format!(
-                "../../_dependencies/{}/{}/{}/structs",
-                dep_dir,
-                pkg_addr.to_hex_literal(),
-                mod_import_name
-            )
-        } else if member_is_top_level {
-            // Current is a dependency, target is top-level
-            let member_pkg_name =
-                package_import_name(*self.top_level_pkg_names.get(&pkg_addr).unwrap());
-            format!(
-                "../../../../{}/{}/structs",
-                member_pkg_name, mod_import_name
-            )
-        } else {
-            // Both are dependencies
-            format!(
-                "../../{}/{}/structs",
-                pkg_addr.to_hex_literal(),
-                mod_import_name
-            )
-        }
+        let resolver = ImportPathResolver::new(
+            self.package_address,
+            self.module_name,
+            self.top_level_pkg_names.clone(),
+            self.is_source,
+            self.is_top_level,
+        );
+        // For enums, same module means empty path (no import needed)
+        resolver
+            .path_to_structs(pkg_addr, mod_name)
+            .unwrap_or_default()
     }
 
     /// Get the struct imports collected during building
@@ -1582,54 +1504,20 @@ impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource>
         );
     }
 
-    /// Returns the import path for a module, following the same logic as the old gen.rs.
-    /// This handles all cases uniformly without hardcoding system package names.
+    /// Returns the import path for a module's structs.ts file.
+    /// Uses `ImportPathResolver` for consistent path computation.
     fn get_import_path(&self, pkg_addr: AccountAddress, mod_name: Symbol) -> String {
-        let mod_import_name = module_import_name(mod_name);
-
-        if pkg_addr == self.package_address && mod_name == self.module_name {
-            // Same module - for functions.ts, we import from ./structs
-            return "./structs".to_string();
-        }
-
-        if pkg_addr == self.package_address {
-            // Same package, different module
-            return format!("../{}/structs", mod_import_name);
-        }
-
-        // Different package - check if it's a top-level package
-        let member_is_top_level = self.top_level_pkg_names.contains_key(&pkg_addr);
-
-        if self.is_top_level && member_is_top_level {
-            // Both current and target are top-level packages
-            let member_pkg_name =
-                package_import_name(*self.top_level_pkg_names.get(&pkg_addr).unwrap());
-            format!("../../{}/{}/structs", member_pkg_name, mod_import_name)
-        } else if self.is_top_level {
-            // Current is top-level, target is a dependency
-            let dep_dir = if self.is_source { "source" } else { "onchain" };
-            format!(
-                "../../_dependencies/{}/{}/{}/structs",
-                dep_dir,
-                pkg_addr.to_hex_literal(),
-                mod_import_name
-            )
-        } else if member_is_top_level {
-            // Current is a dependency, target is top-level
-            let member_pkg_name =
-                package_import_name(*self.top_level_pkg_names.get(&pkg_addr).unwrap());
-            format!(
-                "../../../../{}/{}/structs",
-                member_pkg_name, mod_import_name
-            )
-        } else {
-            // Both are dependencies
-            format!(
-                "../../{}/{}/structs",
-                pkg_addr.to_hex_literal(),
-                mod_import_name
-            )
-        }
+        let resolver = ImportPathResolver::new(
+            self.package_address,
+            self.module_name,
+            self.top_level_pkg_names.clone(),
+            self.is_source,
+            self.is_top_level,
+        );
+        // For functions.ts, same module imports from ./structs (sibling file)
+        resolver
+            .path_to_structs(pkg_addr, mod_name)
+            .unwrap_or_else(|| "./structs".to_string())
     }
 
     #[allow(clippy::only_used_in_recursion)]
@@ -1701,6 +1589,10 @@ pub fn gen_module_functions<HasSource: SourceKind>(
 ) -> String {
     use super::functions::emit_functions_file;
 
+    // functions.ts is at <package>/<module>/functions.ts, so +2 levels from package root
+    let func_levels = levels_from_root + 2;
+    let framework_path = "../".repeat(func_levels as usize) + "_framework";
+
     let functions: Vec<_> = module
         .functions()
         .filter_map(|func| {
@@ -1709,5 +1601,5 @@ pub fn gen_module_functions<HasSource: SourceKind>(
         .map(|builder| builder.build())
         .collect();
 
-    emit_functions_file(&functions, levels_from_root)
+    emit_functions_file(&functions, &framework_path)
 }

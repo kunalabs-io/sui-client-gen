@@ -402,17 +402,17 @@ impl FunctionIR {
 }
 
 /// Generate imports for a module's functions.
-pub fn emit_function_imports(functions: &[FunctionIR], levels_from_root: u8) -> String {
-    let mut imports = Vec::new();
-    // functions.ts is at <package>/<module>/functions.ts, so we need 2 extra levels
-    let func_levels = levels_from_root + 2;
-    let framework_path = "../".repeat(func_levels as usize) + "_framework";
+///
+/// Uses `TsImportsBuilder` for consistent, grouped imports.
+pub fn emit_function_imports(functions: &[FunctionIR], framework_path: &str) -> String {
+    use super::imports::TsImportsBuilder;
 
-    // Always import PUBLISHED_AT and Transaction
-    imports.push("import { PUBLISHED_AT } from '..'".to_string());
+    let mut imports = TsImportsBuilder::new();
 
-    // Collect util imports - some may need to be aliased
-    let mut util_imports: Vec<String> = Vec::new();
+    // Always import PUBLISHED_AT
+    imports.add_named("..", "PUBLISHED_AT");
+
+    // Collect what util imports we need
     let uses_generic = functions.iter().any(|f| f.uses_generic);
     let uses_option = functions.iter().any(|f| f.uses_option);
     let uses_vector = functions.iter().any(|f| f.uses_vector);
@@ -425,87 +425,62 @@ pub fn emit_function_imports(functions: &[FunctionIR], levels_from_root: u8) -> 
         .flat_map(|f| f.aliased_util_imports.iter().cloned())
         .collect();
 
+    let util_path = format!("{}/util", framework_path);
+
     if uses_generic {
-        util_imports.push("GenericArg".to_string());
+        imports.add_named(&util_path, "GenericArg");
         if aliased.contains("generic") {
-            util_imports.push("generic as generic_".to_string());
+            imports.add_named_as(&util_path, "generic", "generic_");
         } else {
-            util_imports.push("generic".to_string());
+            imports.add_named(&util_path, "generic");
         }
     }
     if uses_obj {
         if aliased.contains("obj") {
-            util_imports.push("obj as obj_".to_string());
+            imports.add_named_as(&util_path, "obj", "obj_");
         } else {
-            util_imports.push("obj".to_string());
+            imports.add_named(&util_path, "obj");
         }
     }
     if uses_option {
         if aliased.contains("option") {
-            util_imports.push("option as option_".to_string());
+            imports.add_named_as(&util_path, "option", "option_");
         } else {
-            util_imports.push("option".to_string());
+            imports.add_named(&util_path, "option");
         }
     }
     if uses_pure {
         if aliased.contains("pure") {
-            util_imports.push("pure as pure_".to_string());
+            imports.add_named_as(&util_path, "pure", "pure_");
         } else {
-            util_imports.push("pure".to_string());
+            imports.add_named(&util_path, "pure");
         }
     }
     if uses_vector {
         if aliased.contains("vector") {
-            util_imports.push("vector as vector_".to_string());
+            imports.add_named_as(&util_path, "vector", "vector_");
         } else {
-            util_imports.push("vector".to_string());
+            imports.add_named(&util_path, "vector");
         }
     }
 
-    if !util_imports.is_empty() {
-        util_imports.sort();
-        imports.push(format!(
-            "import {{ {} }} from '{}/util'",
-            util_imports.join(", "),
-            framework_path
-        ));
-    }
-
-    // Collect struct imports by path
-    let mut struct_imports: std::collections::BTreeMap<String, Vec<(String, Option<String>)>> =
-        std::collections::BTreeMap::new();
+    // Struct imports (from other modules)
     for f in functions {
         for si in &f.struct_imports {
-            struct_imports
-                .entry(si.path.clone())
-                .or_default()
-                .push((si.class_name.clone(), si.alias.clone()));
-        }
-    }
-
-    // Deduplicate and emit struct imports
-    for (path, classes) in struct_imports {
-        let mut seen = std::collections::HashSet::new();
-        let mut class_strs = Vec::new();
-        for (class_name, alias) in classes {
-            if seen.insert((class_name.clone(), alias.clone())) {
-                if let Some(alias) = alias {
-                    class_strs.push(format!("{} as {}", class_name, alias));
-                } else {
-                    class_strs.push(class_name);
-                }
+            if let Some(alias) = &si.alias {
+                imports.add_named_as(&si.path, &si.class_name, alias);
+            } else {
+                imports.add_named(&si.path, &si.class_name);
             }
         }
-        class_strs.sort();
-        imports.push(format!(
-            "import {{ {} }} from '{}'",
-            class_strs.join(", "),
-            path
-        ));
     }
 
-    // Always import Transaction types
-    let mut tx_imports = vec!["Transaction", "TransactionArgument"];
+    // Transaction types
+    imports.add_named_many(
+        "@mysten/sui/transactions",
+        &["Transaction", "TransactionArgument"],
+    );
+
     let needs_object_input = functions.iter().any(|f| {
         f.params.iter().any(|p| {
             matches!(
@@ -515,18 +490,14 @@ pub fn emit_function_imports(functions: &[FunctionIR], levels_from_root: u8) -> 
         })
     });
     if needs_object_input {
-        tx_imports.push("TransactionObjectInput");
+        imports.add_named("@mysten/sui/transactions", "TransactionObjectInput");
     }
-    imports.push(format!(
-        "import {{ {} }} from '@mysten/sui/transactions'",
-        tx_imports.join(", ")
-    ));
 
-    imports.join("\n")
+    imports.emit()
 }
 
 /// Generate the full functions.ts file content.
-pub fn emit_functions_file(functions: &[FunctionIR], levels_from_root: u8) -> String {
+pub fn emit_functions_file(functions: &[FunctionIR], framework_path: &str) -> String {
     if functions.is_empty() {
         return String::new();
     }
@@ -537,7 +508,7 @@ pub fn emit_functions_file(functions: &[FunctionIR], levels_from_root: u8) -> St
         .flat_map(|f| f.aliased_util_imports.iter().cloned())
         .collect();
 
-    let imports = emit_function_imports(functions, levels_from_root);
+    let imports = emit_function_imports(functions, framework_path);
     let bodies: Vec<_> = functions.iter().map(|f| f.emit(&module_aliased)).collect();
 
     format!("{}\n\n{}\n", imports, bodies.join("\n\n"))
