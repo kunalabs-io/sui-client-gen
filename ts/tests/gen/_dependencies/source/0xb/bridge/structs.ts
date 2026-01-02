@@ -5,14 +5,19 @@ import {
   StructClass,
   ToField,
   ToTypeStr,
+  ToTypeStr as ToPhantom,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
   phantom,
-  ToTypeStr as ToPhantom,
 } from '../../../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../../../_framework/util'
 import { Vector } from '../../../../_framework/vector'
 import { Option } from '../../../../move-stdlib/option/structs'
 import { LinkedTable } from '../../../../sui/linked-table/structs'
@@ -21,7 +26,8 @@ import { VecMap } from '../../../../sui/vec-map/structs'
 import { Versioned } from '../../../../sui/versioned/structs'
 import { BridgeCommittee } from '../committee/structs'
 import { TransferLimiter } from '../limiter/structs'
-import { BridgeMessage, BridgeMessageKey } from '../message/structs'
+import { BridgeMessage } from '../message/structs'
+import { BridgeMessageKey } from '../message/structs'
 import { BridgeTreasury } from '../treasury/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -764,7 +770,9 @@ export class EmergencyOpEvent implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): EmergencyOpEvent {
-    return EmergencyOpEvent.reified().new({ frozen: decodeFromFields('bool', fields.frozen) })
+    return EmergencyOpEvent.reified().new({
+      frozen: decodeFromFields('bool', fields.frozen),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): EmergencyOpEvent {
@@ -792,7 +800,9 @@ export class EmergencyOpEvent implements StructClass {
   }
 
   static fromJSONField(field: any): EmergencyOpEvent {
-    return EmergencyOpEvent.reified().new({ frozen: decodeFromJSONField('bool', field.frozen) })
+    return EmergencyOpEvent.reified().new({
+      frozen: decodeFromJSONField('bool', field.frozen),
+    })
   }
 
   static fromJSON(json: Record<string, any>): EmergencyOpEvent {

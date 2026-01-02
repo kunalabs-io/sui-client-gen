@@ -1,8 +1,8 @@
 import { PUBLISHED_AT } from '..'
 import { pure } from '../../_framework/util'
-import { String } from '../ascii/structs'
-import { String as String1 } from './structs'
-import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
+import { String as String1 } from '../ascii/structs'
+import { String } from './structs'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function utf8(
   tx: Transaction,
@@ -17,14 +17,14 @@ export function utf8(
 export function fromAscii(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::from_ascii`,
-    arguments: [pure(tx, string, `${String.$typeName}`)],
+    arguments: [pure(tx, string, `${String1.$typeName}`)],
   })
 }
 
 export function toAscii(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::to_ascii`,
-    arguments: [pure(tx, string, `${String1.$typeName}`)],
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
@@ -41,28 +41,28 @@ export function tryUtf8(
 export function asBytes(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::as_bytes`,
-    arguments: [pure(tx, string, `${String1.$typeName}`)],
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
 export function intoBytes(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::into_bytes`,
-    arguments: [pure(tx, string, `${String1.$typeName}`)],
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
 export function isEmpty(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::is_empty`,
-    arguments: [pure(tx, string, `${String1.$typeName}`)],
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
 export function length(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::length`,
-    arguments: [pure(tx, string, `${String1.$typeName}`)],
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
@@ -75,8 +75,8 @@ export function append(tx: Transaction, args: AppendArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::append`,
     arguments: [
-      pure(tx, args.string1, `${String1.$typeName}`),
-      pure(tx, args.string2, `${String1.$typeName}`),
+      pure(tx, args.string1, `${String.$typeName}`),
+      pure(tx, args.string2, `${String.$typeName}`),
     ],
   })
 }
@@ -89,7 +89,7 @@ export interface AppendUtf8Args {
 export function appendUtf8(tx: Transaction, args: AppendUtf8Args) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::append_utf8`,
-    arguments: [pure(tx, args.string, `${String1.$typeName}`), pure(tx, args.vecU8, `vector<u8>`)],
+    arguments: [pure(tx, args.string, `${String.$typeName}`), pure(tx, args.vecU8, `vector<u8>`)],
   })
 }
 
@@ -103,9 +103,9 @@ export function insert(tx: Transaction, args: InsertArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::insert`,
     arguments: [
-      pure(tx, args.string1, `${String1.$typeName}`),
+      pure(tx, args.string1, `${String.$typeName}`),
       pure(tx, args.u64, `u64`),
-      pure(tx, args.string2, `${String1.$typeName}`),
+      pure(tx, args.string2, `${String.$typeName}`),
     ],
   })
 }
@@ -120,7 +120,7 @@ export function substring(tx: Transaction, args: SubstringArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::substring`,
     arguments: [
-      pure(tx, args.string, `${String1.$typeName}`),
+      pure(tx, args.string, `${String.$typeName}`),
       pure(tx, args.u641, `u64`),
       pure(tx, args.u642, `u64`),
     ],
@@ -136,8 +136,8 @@ export function indexOf(tx: Transaction, args: IndexOfArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::index_of`,
     arguments: [
-      pure(tx, args.string1, `${String1.$typeName}`),
-      pure(tx, args.string2, `${String1.$typeName}`),
+      pure(tx, args.string1, `${String.$typeName}`),
+      pure(tx, args.string2, `${String.$typeName}`),
     ],
   })
 }
@@ -196,7 +196,7 @@ export function internalIndexOf(tx: Transaction, args: InternalIndexOfArgs) {
 export function bytes(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::bytes`,
-    arguments: [pure(tx, string, `${String1.$typeName}`)],
+    arguments: [pure(tx, string, `${String.$typeName}`)],
   })
 }
 
@@ -210,7 +210,7 @@ export function subString(tx: Transaction, args: SubStringArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::string::sub_string`,
     arguments: [
-      pure(tx, args.string, `${String1.$typeName}`),
+      pure(tx, args.string, `${String.$typeName}`),
       pure(tx, args.u641, `u64`),
       pure(tx, args.u642, `u64`),
     ],

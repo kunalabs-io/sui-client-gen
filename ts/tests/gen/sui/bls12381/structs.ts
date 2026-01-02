@@ -9,7 +9,12 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -100,7 +105,9 @@ export class Scalar implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): Scalar {
-    return Scalar.reified().new({ dummyField: decodeFromFields('bool', fields.dummy_field) })
+    return Scalar.reified().new({
+      dummyField: decodeFromFields('bool', fields.dummy_field),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Scalar {
@@ -128,7 +135,9 @@ export class Scalar implements StructClass {
   }
 
   static fromJSONField(field: any): Scalar {
-    return Scalar.reified().new({ dummyField: decodeFromJSONField('bool', field.dummyField) })
+    return Scalar.reified().new({
+      dummyField: decodeFromJSONField('bool', field.dummyField),
+    })
   }
 
   static fromJSON(json: Record<string, any>): Scalar {
@@ -264,7 +273,9 @@ export class G1 implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): G1 {
-    return G1.reified().new({ dummyField: decodeFromFields('bool', fields.dummy_field) })
+    return G1.reified().new({
+      dummyField: decodeFromFields('bool', fields.dummy_field),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): G1 {
@@ -292,7 +303,9 @@ export class G1 implements StructClass {
   }
 
   static fromJSONField(field: any): G1 {
-    return G1.reified().new({ dummyField: decodeFromJSONField('bool', field.dummyField) })
+    return G1.reified().new({
+      dummyField: decodeFromJSONField('bool', field.dummyField),
+    })
   }
 
   static fromJSON(json: Record<string, any>): G1 {
@@ -428,7 +441,9 @@ export class G2 implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): G2 {
-    return G2.reified().new({ dummyField: decodeFromFields('bool', fields.dummy_field) })
+    return G2.reified().new({
+      dummyField: decodeFromFields('bool', fields.dummy_field),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): G2 {
@@ -456,7 +471,9 @@ export class G2 implements StructClass {
   }
 
   static fromJSONField(field: any): G2 {
-    return G2.reified().new({ dummyField: decodeFromJSONField('bool', field.dummyField) })
+    return G2.reified().new({
+      dummyField: decodeFromJSONField('bool', field.dummyField),
+    })
   }
 
   static fromJSON(json: Record<string, any>): G2 {
@@ -592,7 +609,9 @@ export class GT implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): GT {
-    return GT.reified().new({ dummyField: decodeFromFields('bool', fields.dummy_field) })
+    return GT.reified().new({
+      dummyField: decodeFromFields('bool', fields.dummy_field),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): GT {
@@ -620,7 +639,9 @@ export class GT implements StructClass {
   }
 
   static fromJSONField(field: any): GT {
-    return GT.reified().new({ dummyField: decodeFromJSONField('bool', field.dummyField) })
+    return GT.reified().new({
+      dummyField: decodeFromJSONField('bool', field.dummyField),
+    })
   }
 
   static fromJSON(json: Record<string, any>): GT {

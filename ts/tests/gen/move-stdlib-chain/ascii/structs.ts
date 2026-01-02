@@ -11,7 +11,12 @@ import {
   fieldToJSON,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -103,7 +108,9 @@ export class String implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): String {
-    return String.reified().new({ bytes: decodeFromFields(reified.vector('u8'), fields.bytes) })
+    return String.reified().new({
+      bytes: decodeFromFields(reified.vector('u8'), fields.bytes),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): String {
@@ -131,7 +138,9 @@ export class String implements StructClass {
   }
 
   static fromJSONField(field: any): String {
-    return String.reified().new({ bytes: decodeFromJSONField(reified.vector('u8'), field.bytes) })
+    return String.reified().new({
+      bytes: decodeFromJSONField(reified.vector('u8'), field.bytes),
+    })
   }
 
   static fromJSON(json: Record<string, any>): String {
@@ -267,7 +276,9 @@ export class Char implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): Char {
-    return Char.reified().new({ byte: decodeFromFields('u8', fields.byte) })
+    return Char.reified().new({
+      byte: decodeFromFields('u8', fields.byte),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Char {
@@ -275,7 +286,9 @@ export class Char implements StructClass {
       throw new Error('not a Char type')
     }
 
-    return Char.reified().new({ byte: decodeFromFieldsWithTypes('u8', item.fields.byte) })
+    return Char.reified().new({
+      byte: decodeFromFieldsWithTypes('u8', item.fields.byte),
+    })
   }
 
   static fromBcs(data: Uint8Array): Char {
@@ -293,7 +306,9 @@ export class Char implements StructClass {
   }
 
   static fromJSONField(field: any): Char {
-    return Char.reified().new({ byte: decodeFromJSONField('u8', field.byte) })
+    return Char.reified().new({
+      byte: decodeFromJSONField('u8', field.byte),
+    })
   }
 
   static fromJSON(json: Record<string, any>): Char {

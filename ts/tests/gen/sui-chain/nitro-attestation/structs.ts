@@ -11,7 +11,12 @@ import {
   fieldToJSON,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { bcs } from '@mysten/sui/bcs'

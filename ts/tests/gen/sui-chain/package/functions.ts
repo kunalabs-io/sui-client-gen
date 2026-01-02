@@ -112,15 +112,24 @@ export function ticketDigest(tx: Transaction, upgradeTicket: TransactionObjectIn
 }
 
 export function compatiblePolicy(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::package::compatible_policy`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::package::compatible_policy`,
+    arguments: [],
+  })
 }
 
 export function additivePolicy(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::package::additive_policy`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::package::additive_policy`,
+    arguments: [],
+  })
 }
 
 export function depOnlyPolicy(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::package::dep_only_policy`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::package::dep_only_policy`,
+    arguments: [],
+  })
 }
 
 export function onlyAdditiveUpgrades(tx: Transaction, upgradeCap: TransactionObjectInput) {

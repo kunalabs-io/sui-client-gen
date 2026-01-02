@@ -471,19 +471,31 @@ export function value(tx: Transaction, typeArg: string, token: TransactionObject
 }
 
 export function transferAction(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::token::transfer_action`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::transfer_action`,
+    arguments: [],
+  })
 }
 
 export function spendAction(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::token::spend_action`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::spend_action`,
+    arguments: [],
+  })
 }
 
 export function toCoinAction(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::token::to_coin_action`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::to_coin_action`,
+    arguments: [],
+  })
 }
 
 export function fromCoinAction(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::token::from_coin_action`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::token::from_coin_action`,
+    arguments: [],
+  })
 }
 
 export function action(tx: Transaction, typeArg: string, actionRequest: TransactionObjectInput) {

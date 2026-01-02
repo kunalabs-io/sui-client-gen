@@ -10,6 +10,7 @@ import {
   ToPhantomTypeArgument,
   ToTypeArgument,
   ToTypeStr,
+  ToTypeStr as ToPhantom,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -20,7 +21,6 @@ import {
   fieldToJSON,
   phantom,
   toBcs,
-  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
@@ -28,11 +28,11 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
+import { PKG_V3 } from '../index'
 import { Option } from '../../move-stdlib/option/structs'
 import { Balance } from '../../sui/balance/structs'
 import { UID } from '../../sui/object/structs'
 import { SUI } from '../../sui/sui/structs'
-import { PKG_V3 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -255,9 +255,9 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
   toJSONField() {
     return {
       id: this.id,
-      t: fieldToJSON<T>(this.$typeArgs[0], this.t),
-      u: fieldToJSON<U>(this.$typeArgs[1], this.u),
-      v: fieldToJSON<V>(this.$typeArgs[2], this.v),
+      t: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.t),
+      u: fieldToJSON<U>(`${this.$typeArgs[1]}`, this.u),
+      v: fieldToJSON<V>(`${this.$typeArgs[2]}`, this.v),
       stop: this.stop.toJSONField(),
       pause: this.pause.toJSONField(),
       jump: this.jump.toJSONField(),
@@ -343,7 +343,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 3) {
         throw new Error(
-          `type argument mismatch: expected 3 type arguments but got ${gotTypeArgs.length}`
+          `type argument mismatch: expected 3 type arguments but got '${gotTypeArgs.length}'`
         )
       }
       for (let i = 0; i < 3; i++) {
@@ -517,7 +517,7 @@ export class Action {
     const r = Action.reified(typeArgs[0], typeArgs[1])
 
     if (!fields.$kind || !isActionVariantName(fields.$kind)) {
-      throw new Error(`Invalid action variant: ${fields.$$kind}`)
+      throw new Error(`Invalid action variant: ${fields.$kind}`)
     }
     switch (fields.$kind) {
       case 'Stop':
@@ -654,7 +654,7 @@ export class ActionStop<T extends TypeArgument, U extends PhantomTypeArgument>
   static readonly $variantName = 'Stop'
 
   readonly $typeName = ActionStop.$typeName
-  readonly $fullTypeName: `${typeof PKG_V3}::enums::Action<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
+  readonly $fullTypeName: `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
   readonly $typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>]
   readonly $isPhantom = Action.$isPhantom
   readonly $variantName = ActionStop.$variantName
@@ -663,7 +663,7 @@ export class ActionStop<T extends TypeArgument, U extends PhantomTypeArgument>
     this.$fullTypeName = composeSuiType(
       Action.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V3}::enums::Action<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
+    ) as `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
     this.$typeArgs = typeArgs
   }
 
@@ -699,7 +699,7 @@ export class ActionPause<T extends TypeArgument, U extends PhantomTypeArgument>
   static readonly $variantName = 'Pause'
 
   readonly $typeName = ActionPause.$typeName
-  readonly $fullTypeName: `${typeof PKG_V3}::enums::Action<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
+  readonly $fullTypeName: `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
   readonly $typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>]
   readonly $isPhantom = Action.$isPhantom
   readonly $variantName = ActionPause.$variantName
@@ -713,7 +713,7 @@ export class ActionPause<T extends TypeArgument, U extends PhantomTypeArgument>
     this.$fullTypeName = composeSuiType(
       Action.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V3}::enums::Action<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
+    ) as `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
     this.$typeArgs = typeArgs
 
     this.duration = fields.duration
@@ -763,7 +763,7 @@ export class ActionJump<T extends TypeArgument, U extends PhantomTypeArgument>
   static readonly $variantName = 'Jump'
 
   readonly $typeName = ActionJump.$typeName
-  readonly $fullTypeName: `${typeof PKG_V3}::enums::Action<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
+  readonly $fullTypeName: `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
   readonly $typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>]
   readonly $isPhantom = Action.$isPhantom
   readonly $variantName = ActionJump.$variantName
@@ -777,7 +777,7 @@ export class ActionJump<T extends TypeArgument, U extends PhantomTypeArgument>
     this.$fullTypeName = composeSuiType(
       Action.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V3}::enums::Action<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
+    ) as `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
     this.$typeArgs = typeArgs
 
     this[0] = fields[0]

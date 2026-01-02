@@ -188,8 +188,8 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
   toJSONField() {
     return {
       id: this.id,
-      name: fieldToJSON<Name>(this.$typeArgs[0], this.name),
-      value: fieldToJSON<Value>(this.$typeArgs[1], this.value),
+      name: fieldToJSON<Name>(`${this.$typeArgs[0]}`, this.name),
+      value: fieldToJSON<Value>(`${this.$typeArgs[1]}`, this.value),
     }
   }
 
@@ -258,7 +258,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 2) {
         throw new Error(
-          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
         )
       }
       for (let i = 0; i < 2; i++) {

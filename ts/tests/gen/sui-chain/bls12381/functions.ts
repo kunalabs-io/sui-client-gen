@@ -56,11 +56,17 @@ export function scalarFromU64(tx: Transaction, u64: bigint | TransactionArgument
 }
 
 export function scalarZero(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::bls12381::scalar_zero`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bls12381::scalar_zero`,
+    arguments: [],
+  })
 }
 
 export function scalarOne(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::bls12381::scalar_one`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bls12381::scalar_one`,
+    arguments: [],
+  })
 }
 
 export interface ScalarAddArgs {
@@ -136,11 +142,17 @@ export function g1FromBytes(
 }
 
 export function g1Identity(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::bls12381::g1_identity`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bls12381::g1_identity`,
+    arguments: [],
+  })
 }
 
 export function g1Generator(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::bls12381::g1_generator`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bls12381::g1_generator`,
+    arguments: [],
+  })
 }
 
 export interface G1AddArgs {
@@ -192,7 +204,10 @@ export function g1Div(tx: Transaction, args: G1DivArgs) {
 }
 
 export function g1Neg(tx: Transaction, element: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::bls12381::g1_neg`, arguments: [obj(tx, element)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bls12381::g1_neg`,
+    arguments: [obj(tx, element)],
+  })
 }
 
 export function hashToG1(
@@ -241,11 +256,17 @@ export function g2FromBytes(
 }
 
 export function g2Identity(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::bls12381::g2_identity`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bls12381::g2_identity`,
+    arguments: [],
+  })
 }
 
 export function g2Generator(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::bls12381::g2_generator`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bls12381::g2_generator`,
+    arguments: [],
+  })
 }
 
 export interface G2AddArgs {
@@ -297,7 +318,10 @@ export function g2Div(tx: Transaction, args: G2DivArgs) {
 }
 
 export function g2Neg(tx: Transaction, element: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::bls12381::g2_neg`, arguments: [obj(tx, element)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bls12381::g2_neg`,
+    arguments: [obj(tx, element)],
+  })
 }
 
 export function hashToG2(
@@ -329,11 +353,17 @@ export function g2MultiScalarMultiplication(
 }
 
 export function gtIdentity(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::bls12381::gt_identity`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bls12381::gt_identity`,
+    arguments: [],
+  })
 }
 
 export function gtGenerator(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::bls12381::gt_generator`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bls12381::gt_generator`,
+    arguments: [],
+  })
 }
 
 export interface GtAddArgs {
@@ -385,7 +415,10 @@ export function gtDiv(tx: Transaction, args: GtDivArgs) {
 }
 
 export function gtNeg(tx: Transaction, element: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::bls12381::gt_neg`, arguments: [obj(tx, element)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bls12381::gt_neg`,
+    arguments: [obj(tx, element)],
+  })
 }
 
 export interface PairingArgs {

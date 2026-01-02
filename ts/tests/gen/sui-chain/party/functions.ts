@@ -10,7 +10,10 @@ export function singleOwner(tx: Transaction, address: string | TransactionArgume
 }
 
 export function empty(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::party::empty`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::party::empty`,
+    arguments: [],
+  })
 }
 
 export interface SetPermissionsArgs {
@@ -34,5 +37,8 @@ export function isSingleOwner(tx: Transaction, party: TransactionObjectInput) {
 }
 
 export function intoNative(tx: Transaction, party: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::party::into_native`, arguments: [obj(tx, party)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::party::into_native`,
+    arguments: [obj(tx, party)],
+  })
 }

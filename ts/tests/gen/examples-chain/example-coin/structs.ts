@@ -5,16 +5,21 @@ import {
   StructClass,
   ToField,
   ToTypeStr,
+  ToTypeStr as ToPhantom,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   phantom,
-  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
+import { PKG_V1 } from '../index'
 import { TreasuryCap } from '../../sui-chain/coin/structs'
 import { UID } from '../../sui-chain/object/structs'
-import { PKG_V1 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -111,7 +116,9 @@ export class EXAMPLE_COIN implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): EXAMPLE_COIN {
-    return EXAMPLE_COIN.reified().new({ dummyField: decodeFromFields('bool', fields.dummy_field) })
+    return EXAMPLE_COIN.reified().new({
+      dummyField: decodeFromFields('bool', fields.dummy_field),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): EXAMPLE_COIN {
@@ -139,7 +146,9 @@ export class EXAMPLE_COIN implements StructClass {
   }
 
   static fromJSONField(field: any): EXAMPLE_COIN {
-    return EXAMPLE_COIN.reified().new({ dummyField: decodeFromJSONField('bool', field.dummyField) })
+    return EXAMPLE_COIN.reified().new({
+      dummyField: decodeFromJSONField('bool', field.dummyField),
+    })
   }
 
   static fromJSON(json: Record<string, any>): EXAMPLE_COIN {

@@ -70,7 +70,10 @@ export function div(tx: Transaction, args: DivArgs) {
 }
 
 export function toInt(tx: Transaction, uq6464: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::uq64_64::to_int`, arguments: [obj(tx, uq6464)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::uq64_64::to_int`,
+    arguments: [obj(tx, uq6464)],
+  })
 }
 
 export interface IntMulArgs {
@@ -146,7 +149,10 @@ export function gt(tx: Transaction, args: GtArgs) {
 }
 
 export function toRaw(tx: Transaction, uq6464: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::uq64_64::to_raw`, arguments: [obj(tx, uq6464)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::uq64_64::to_raw`,
+    arguments: [obj(tx, uq6464)],
+  })
 }
 
 export function fromRaw(tx: Transaction, u128: bigint | TransactionArgument) {

@@ -39,7 +39,10 @@ export function poolAdminFeeValue(
 }
 
 export function newRegistry(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::pool::new_registry`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::pool::new_registry`,
+    arguments: [],
+  })
 }
 
 export interface CmpTypeNamesArgs {
@@ -130,7 +133,10 @@ export function ceilDivU128(tx: Transaction, args: CeilDivU128Args) {
 }
 
 export function init(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::pool::init`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::pool::init`,
+    arguments: [],
+  })
 }
 
 export interface CreateArgs {

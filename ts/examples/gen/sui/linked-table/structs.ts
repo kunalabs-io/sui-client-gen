@@ -1,3 +1,4 @@
+import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -272,7 +273,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 2) {
         throw new Error(
-          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
         )
       }
       for (let i = 0; i < 2; i++) {
@@ -465,7 +466,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
     return {
       prev: fieldToJSON<Option<K>>(`${Option.$typeName}<${this.$typeArgs[0]}>`, this.prev),
       next: fieldToJSON<Option<K>>(`${Option.$typeName}<${this.$typeArgs[0]}>`, this.next),
-      value: fieldToJSON<V>(this.$typeArgs[1], this.value),
+      value: fieldToJSON<V>(`${this.$typeArgs[1]}`, this.value),
     }
   }
 
@@ -525,7 +526,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 2) {
         throw new Error(
-          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
         )
       }
       for (let i = 0; i < 2; i++) {

@@ -346,9 +346,15 @@ export function v1PerTypeListContains(tx: Transaction, args: V1PerTypeListContai
 }
 
 export function create(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::deny_list::create`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::deny_list::create`,
+    arguments: [],
+  })
 }
 
 export function perTypeList(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::deny_list::per_type_list`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::deny_list::per_type_list`,
+    arguments: [],
+  })
 }

@@ -158,8 +158,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
     data: Uint8Array
   ): PriorityQueue<ToTypeArgument<T>> {
     const typeArgs = [typeArg]
-
-    return PriorityQueue.fromFields(typeArg, PriorityQueue.bcs(toBcs(typeArgs[0])).parse(data))
+    return PriorityQueue.fromFields(typeArg, PriorityQueue.bcs(toBcs(typeArg)).parse(data))
   }
 
   toJSONField() {
@@ -192,7 +191,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(PriorityQueue.$typeName, extractType(typeArg)),
+      composeSuiType(PriorityQueue.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -225,15 +224,17 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return PriorityQueue.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
@@ -391,14 +392,13 @@ export class Entry<T extends TypeArgument> implements StructClass {
     data: Uint8Array
   ): Entry<ToTypeArgument<T>> {
     const typeArgs = [typeArg]
-
-    return Entry.fromFields(typeArg, Entry.bcs(toBcs(typeArgs[0])).parse(data))
+    return Entry.fromFields(typeArg, Entry.bcs(toBcs(typeArg)).parse(data))
   }
 
   toJSONField() {
     return {
       priority: this.priority.toString(),
-      value: fieldToJSON<T>(this.$typeArgs[0], this.value),
+      value: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.value),
     }
   }
 
@@ -424,7 +424,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(Entry.$typeName, extractType(typeArg)),
+      composeSuiType(Entry.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -457,15 +457,17 @@ export class Entry<T extends TypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return Entry.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))

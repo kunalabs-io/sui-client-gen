@@ -237,7 +237,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 2) {
         throw new Error(
-          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
         )
       }
       for (let i = 0; i < 2; i++) {
@@ -419,8 +419,8 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
 
   toJSONField() {
     return {
-      key: fieldToJSON<K>(this.$typeArgs[0], this.key),
-      value: fieldToJSON<V>(this.$typeArgs[1], this.value),
+      key: fieldToJSON<K>(`${this.$typeArgs[0]}`, this.key),
+      value: fieldToJSON<V>(`${this.$typeArgs[1]}`, this.value),
     }
   }
 
@@ -479,7 +479,7 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 2) {
         throw new Error(
-          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
         )
       }
       for (let i = 0; i < 2; i++) {

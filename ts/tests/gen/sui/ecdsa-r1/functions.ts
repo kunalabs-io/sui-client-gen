@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { pure } from '../../_framework/util'
-import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export interface Secp256r1EcrecoverArgs {
   signature: Array<number | TransactionArgument> | TransactionArgument

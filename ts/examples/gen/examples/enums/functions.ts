@@ -28,5 +28,8 @@ export function createStopAction(
 }
 
 export function createActions(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::enums::create_actions`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::enums::create_actions`,
+    arguments: [],
+  })
 }

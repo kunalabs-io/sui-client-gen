@@ -11,7 +11,12 @@ import {
   fieldToJSON,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -103,7 +108,9 @@ export class String implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): String {
-    return String.reified().new({ bytes: decodeFromFields(reified.vector('u8'), fields.bytes) })
+    return String.reified().new({
+      bytes: decodeFromFields(reified.vector('u8'), fields.bytes),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): String {
@@ -131,7 +138,9 @@ export class String implements StructClass {
   }
 
   static fromJSONField(field: any): String {
-    return String.reified().new({ bytes: decodeFromJSONField(reified.vector('u8'), field.bytes) })
+    return String.reified().new({
+      bytes: decodeFromJSONField(reified.vector('u8'), field.bytes),
+    })
   }
 
   static fromJSON(json: Record<string, any>): String {

@@ -16,7 +16,10 @@ export function create(tx: Transaction, typeArg: string, args: CreateArgs) {
 }
 
 export function version(tx: Transaction, self: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::versioned::version`, arguments: [obj(tx, self)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::versioned::version`,
+    arguments: [obj(tx, self)],
+  })
 }
 
 export function loadValue(tx: Transaction, typeArg: string, self: TransactionObjectInput) {

@@ -117,7 +117,9 @@ export class Claimed implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): Claimed {
-    return Claimed.reified().new({ pos0: decodeFromFields(ID.reified(), fields.pos0) })
+    return Claimed.reified().new({
+      pos0: decodeFromFields(ID.reified(), fields.pos0),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Claimed {
@@ -145,7 +147,9 @@ export class Claimed implements StructClass {
   }
 
   static fromJSONField(field: any): Claimed {
-    return Claimed.reified().new({ pos0: decodeFromJSONField(ID.reified(), field.pos0) })
+    return Claimed.reified().new({
+      pos0: decodeFromJSONField(ID.reified(), field.pos0),
+    })
   }
 
   static fromJSON(json: Record<string, any>): Claimed {
@@ -298,7 +302,9 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
     typeArg: K,
     fields: Record<string, any>
   ): DerivedObjectKey<ToTypeArgument<K>> {
-    return DerivedObjectKey.reified(typeArg).new({ pos0: decodeFromFields(typeArg, fields.pos0) })
+    return DerivedObjectKey.reified(typeArg).new({
+      pos0: decodeFromFields(typeArg, fields.pos0),
+    })
   }
 
   static fromFieldsWithTypes<K extends Reified<TypeArgument, any>>(
@@ -320,16 +326,12 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
     data: Uint8Array
   ): DerivedObjectKey<ToTypeArgument<K>> {
     const typeArgs = [typeArg]
-
-    return DerivedObjectKey.fromFields(
-      typeArg,
-      DerivedObjectKey.bcs(toBcs(typeArgs[0])).parse(data)
-    )
+    return DerivedObjectKey.fromFields(typeArg, DerivedObjectKey.bcs(toBcs(typeArg)).parse(data))
   }
 
   toJSONField() {
     return {
-      pos0: fieldToJSON<K>(this.$typeArgs[0], this.pos0),
+      pos0: fieldToJSON<K>(`${this.$typeArgs[0]}`, this.pos0),
     }
   }
 
@@ -341,7 +343,9 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
     typeArg: K,
     field: any
   ): DerivedObjectKey<ToTypeArgument<K>> {
-    return DerivedObjectKey.reified(typeArg).new({ pos0: decodeFromJSONField(typeArg, field.pos0) })
+    return DerivedObjectKey.reified(typeArg).new({
+      pos0: decodeFromJSONField(typeArg, field.pos0),
+    })
   }
 
   static fromJSON<K extends Reified<TypeArgument, any>>(
@@ -352,7 +356,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(DerivedObjectKey.$typeName, extractType(typeArg)),
+      composeSuiType(DerivedObjectKey.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -385,15 +389,17 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return DerivedObjectKey.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
@@ -451,10 +457,7 @@ export class ClaimedStatus {
     const reifiedBcs = ClaimedStatus.bcs
     return {
       typeName: ClaimedStatus.$typeName,
-      fullTypeName: composeSuiType(
-        ClaimedStatus.$typeName,
-        ...[]
-      ) as `0x2::derived_object::ClaimedStatus`,
+      fullTypeName: composeSuiType(ClaimedStatus.$typeName) as `0x2::derived_object::ClaimedStatus`,
       typeArgs: [] as [],
       isPhantom: ClaimedStatus.$isPhantom,
       reifiedTypeArgs: [],
@@ -487,7 +490,9 @@ export class ClaimedStatus {
   }
 
   private static instantiateBcs() {
-    return bcs.enum('ClaimedStatus', { Reserved: null })
+    return bcs.enum('ClaimedStatus', {
+      Reserved: null,
+    })
   }
 
   private static cachedBcs: ReturnType<typeof ClaimedStatus.instantiateBcs> | null = null
@@ -503,7 +508,7 @@ export class ClaimedStatus {
     const r = ClaimedStatus.reified()
 
     if (!fields.$kind || !isClaimedStatusVariantName(fields.$kind)) {
-      throw new Error(`Invalid claimed status variant: ${fields.$$kind}`)
+      throw new Error(`Invalid claimedstatus variant: ${fields.$kind}`)
     }
     switch (fields.$kind) {
       case 'Reserved':
@@ -518,7 +523,7 @@ export class ClaimedStatus {
 
     const variant = (item as FieldsWithTypes & { variant: ClaimedStatusVariantName }).variant
     if (!variant || !isClaimedStatusVariantName(variant)) {
-      throw new Error(`Invalid claimed status variant: ${variant}`)
+      throw new Error(`Invalid claimedstatus variant: ${variant}`)
     }
 
     const r = ClaimedStatus.reified()
@@ -530,7 +535,7 @@ export class ClaimedStatus {
 
   static fromBcs(typeArgs: [], data: Uint8Array): ClaimedStatusVariant {
     const parsed = ClaimedStatus.bcs.parse(data)
-    return ClaimedStatus.fromFields(typeArgs, parsed)
+    return ClaimedStatus.fromFields([], parsed)
   }
 
   static fromJSONField(typeArgs: [], field: any): ClaimedStatusVariant {
@@ -538,7 +543,7 @@ export class ClaimedStatus {
 
     const kind = field.$kind
     if (!kind || !isClaimedStatusVariantName(kind)) {
-      throw new Error(`Invalid claimed status variant: ${kind}`)
+      throw new Error(`Invalid claimedstatus variant: ${kind}`)
     }
     switch (kind) {
       case 'Reserved':
@@ -566,7 +571,7 @@ export class ClaimedStatusReserved implements EnumVariantClass {
   static readonly $variantName = 'Reserved'
 
   readonly $typeName = ClaimedStatusReserved.$typeName
-  readonly $fullTypeName: `0x2::derived_object::ClaimedStatus`
+  readonly $fullTypeName: `${typeof ClaimedStatus.$typeName}`
   readonly $typeArgs: []
   readonly $isPhantom = ClaimedStatus.$isPhantom
   readonly $variantName = ClaimedStatusReserved.$variantName
@@ -575,7 +580,7 @@ export class ClaimedStatusReserved implements EnumVariantClass {
     this.$fullTypeName = composeSuiType(
       ClaimedStatus.$typeName,
       ...typeArgs
-    ) as `0x2::derived_object::ClaimedStatus`
+    ) as `${typeof ClaimedStatus.$typeName}`
     this.$typeArgs = typeArgs
   }
 

@@ -3,7 +3,10 @@ import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function new_(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::sui::new`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::sui::new`,
+    arguments: [],
+  })
 }
 
 export interface TransferArgs {

@@ -9,7 +9,12 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
@@ -103,7 +108,9 @@ export class ID implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): ID {
-    return ID.reified().new({ bytes: decodeFromFields('address', fields.bytes) })
+    return ID.reified().new({
+      bytes: decodeFromFields('address', fields.bytes),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): ID {
@@ -111,7 +118,9 @@ export class ID implements StructClass {
       throw new Error('not a ID type')
     }
 
-    return ID.reified().new({ bytes: decodeFromFieldsWithTypes('address', item.fields.bytes) })
+    return ID.reified().new({
+      bytes: decodeFromFieldsWithTypes('address', item.fields.bytes),
+    })
   }
 
   static fromBcs(data: Uint8Array): ID {
@@ -129,7 +138,9 @@ export class ID implements StructClass {
   }
 
   static fromJSONField(field: any): ID {
-    return ID.reified().new({ bytes: decodeFromJSONField('address', field.bytes) })
+    return ID.reified().new({
+      bytes: decodeFromJSONField('address', field.bytes),
+    })
   }
 
   static fromJSON(json: Record<string, any>): ID {
@@ -265,7 +276,9 @@ export class UID implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): UID {
-    return UID.reified().new({ id: decodeFromFields(ID.reified(), fields.id) })
+    return UID.reified().new({
+      id: decodeFromFields(ID.reified(), fields.id),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): UID {
@@ -273,7 +286,9 @@ export class UID implements StructClass {
       throw new Error('not a UID type')
     }
 
-    return UID.reified().new({ id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id) })
+    return UID.reified().new({
+      id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
+    })
   }
 
   static fromBcs(data: Uint8Array): UID {
@@ -291,7 +306,9 @@ export class UID implements StructClass {
   }
 
   static fromJSONField(field: any): UID {
-    return UID.reified().new({ id: decodeFromJSONField(ID.reified(), field.id) })
+    return UID.reified().new({
+      id: decodeFromJSONField(ID.reified(), field.id),
+    })
   }
 
   static fromJSON(json: Record<string, any>): UID {

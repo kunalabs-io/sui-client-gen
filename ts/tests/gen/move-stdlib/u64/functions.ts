@@ -70,11 +70,17 @@ export function pow(tx: Transaction, args: PowArgs) {
 }
 
 export function sqrt(tx: Transaction, x: bigint | TransactionArgument) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::u64::sqrt`, arguments: [pure(tx, x, `u64`)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u64::sqrt`,
+    arguments: [pure(tx, x, `u64`)],
+  })
 }
 
 export function tryAsU8(tx: Transaction, x: bigint | TransactionArgument) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::u64::try_as_u8`, arguments: [pure(tx, x, `u64`)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u64::try_as_u8`,
+    arguments: [pure(tx, x, `u64`)],
+  })
 }
 
 export function tryAsU16(tx: Transaction, x: bigint | TransactionArgument) {
@@ -92,5 +98,8 @@ export function tryAsU32(tx: Transaction, x: bigint | TransactionArgument) {
 }
 
 export function toString(tx: Transaction, x: bigint | TransactionArgument) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::u64::to_string`, arguments: [pure(tx, x, `u64`)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u64::to_string`,
+    arguments: [pure(tx, x, `u64`)],
+  })
 }

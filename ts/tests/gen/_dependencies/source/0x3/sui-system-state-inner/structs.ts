@@ -5,13 +5,18 @@ import {
   StructClass,
   ToField,
   ToTypeStr,
+  ToTypeStr as ToPhantom,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   phantom,
-  ToTypeStr as ToPhantom,
 } from '../../../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../../../_framework/util'
 import { Bag } from '../../../../sui/bag/structs'
 import { Balance } from '../../../../sui/balance/structs'
 import { SUI } from '../../../../sui/sui/structs'

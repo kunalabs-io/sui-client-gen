@@ -10,7 +10,10 @@ export function timestampMs(tx: Transaction, clock: TransactionObjectInput) {
 }
 
 export function create(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::clock::create`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::clock::create`,
+    arguments: [],
+  })
 }
 
 export interface ConsensusCommitPrologueArgs {

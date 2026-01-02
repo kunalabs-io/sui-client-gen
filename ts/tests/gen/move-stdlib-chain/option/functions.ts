@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, generic, option, option as option_ } from '../../_framework/util'
-import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
+import { GenericArg, generic, option as option_ } from '../../_framework/util'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function none(tx: Transaction, typeArg: string) {
   return tx.moveCall({
@@ -51,7 +51,7 @@ export function contains(tx: Transaction, typeArg: string, args: ContainsArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::option::contains`,
     typeArguments: [typeArg],
-    arguments: [option(tx, `${typeArg}`, args.option), generic(tx, `${typeArg}`, args.t0)],
+    arguments: [option_(tx, `${typeArg}`, args.option), generic(tx, `${typeArg}`, args.t0)],
   })
 }
 
@@ -76,7 +76,7 @@ export function borrowWithDefault(tx: Transaction, typeArg: string, args: Borrow
   return tx.moveCall({
     target: `${PUBLISHED_AT}::option::borrow_with_default`,
     typeArguments: [typeArg],
-    arguments: [option(tx, `${typeArg}`, args.option), generic(tx, `${typeArg}`, args.t0)],
+    arguments: [option_(tx, `${typeArg}`, args.option), generic(tx, `${typeArg}`, args.t0)],
   })
 }
 
@@ -89,7 +89,7 @@ export function getWithDefault(tx: Transaction, typeArg: string, args: GetWithDe
   return tx.moveCall({
     target: `${PUBLISHED_AT}::option::get_with_default`,
     typeArguments: [typeArg],
-    arguments: [option(tx, `${typeArg}`, args.option), generic(tx, `${typeArg}`, args.t0)],
+    arguments: [option_(tx, `${typeArg}`, args.option), generic(tx, `${typeArg}`, args.t0)],
   })
 }
 
@@ -102,7 +102,7 @@ export function fill(tx: Transaction, typeArg: string, args: FillArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::option::fill`,
     typeArguments: [typeArg],
-    arguments: [option(tx, `${typeArg}`, args.option), generic(tx, `${typeArg}`, args.t0)],
+    arguments: [option_(tx, `${typeArg}`, args.option), generic(tx, `${typeArg}`, args.t0)],
   })
 }
 
@@ -139,7 +139,7 @@ export function swap(tx: Transaction, typeArg: string, args: SwapArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::option::swap`,
     typeArguments: [typeArg],
-    arguments: [option(tx, `${typeArg}`, args.option), generic(tx, `${typeArg}`, args.t0)],
+    arguments: [option_(tx, `${typeArg}`, args.option), generic(tx, `${typeArg}`, args.t0)],
   })
 }
 
@@ -152,7 +152,7 @@ export function swapOrFill(tx: Transaction, typeArg: string, args: SwapOrFillArg
   return tx.moveCall({
     target: `${PUBLISHED_AT}::option::swap_or_fill`,
     typeArguments: [typeArg],
-    arguments: [option(tx, `${typeArg}`, args.option), generic(tx, `${typeArg}`, args.t0)],
+    arguments: [option_(tx, `${typeArg}`, args.option), generic(tx, `${typeArg}`, args.t0)],
   })
 }
 
@@ -165,7 +165,7 @@ export function destroyWithDefault(tx: Transaction, typeArg: string, args: Destr
   return tx.moveCall({
     target: `${PUBLISHED_AT}::option::destroy_with_default`,
     typeArguments: [typeArg],
-    arguments: [option(tx, `${typeArg}`, args.option), generic(tx, `${typeArg}`, args.t0)],
+    arguments: [option_(tx, `${typeArg}`, args.option), generic(tx, `${typeArg}`, args.t0)],
   })
 }
 

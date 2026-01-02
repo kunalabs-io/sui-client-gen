@@ -1,9 +1,12 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, obj, pure, vector } from '../../_framework/util'
+import { GenericArg, generic, obj, pure, vector } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function create(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::random::create`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::random::create`,
+    arguments: [],
+  })
 }
 
 export function loadInnerMut(tx: Transaction, self: TransactionObjectInput) {
@@ -14,7 +17,10 @@ export function loadInnerMut(tx: Transaction, self: TransactionObjectInput) {
 }
 
 export function loadInner(tx: Transaction, self: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::random::load_inner`, arguments: [obj(tx, self)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::random::load_inner`,
+    arguments: [obj(tx, self)],
+  })
 }
 
 export interface UpdateRandomnessStateArgs {
@@ -35,7 +41,10 @@ export function updateRandomnessState(tx: Transaction, args: UpdateRandomnessSta
 }
 
 export function newGenerator(tx: Transaction, r: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::random::new_generator`, arguments: [obj(tx, r)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::random::new_generator`,
+    arguments: [obj(tx, r)],
+  })
 }
 
 export function deriveNextBlock(tx: Transaction, g: TransactionObjectInput) {
@@ -58,31 +67,52 @@ export function generateBytes(tx: Transaction, args: GenerateBytesArgs) {
 }
 
 export function generateU256(tx: Transaction, g: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::random::generate_u256`, arguments: [obj(tx, g)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::random::generate_u256`,
+    arguments: [obj(tx, g)],
+  })
 }
 
 export function generateU128(tx: Transaction, g: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::random::generate_u128`, arguments: [obj(tx, g)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::random::generate_u128`,
+    arguments: [obj(tx, g)],
+  })
 }
 
 export function generateU64(tx: Transaction, g: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::random::generate_u64`, arguments: [obj(tx, g)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::random::generate_u64`,
+    arguments: [obj(tx, g)],
+  })
 }
 
 export function generateU32(tx: Transaction, g: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::random::generate_u32`, arguments: [obj(tx, g)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::random::generate_u32`,
+    arguments: [obj(tx, g)],
+  })
 }
 
 export function generateU16(tx: Transaction, g: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::random::generate_u16`, arguments: [obj(tx, g)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::random::generate_u16`,
+    arguments: [obj(tx, g)],
+  })
 }
 
 export function generateU8(tx: Transaction, g: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::random::generate_u8`, arguments: [obj(tx, g)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::random::generate_u8`,
+    arguments: [obj(tx, g)],
+  })
 }
 
 export function generateBool(tx: Transaction, g: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::random::generate_bool`, arguments: [obj(tx, g)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::random::generate_bool`,
+    arguments: [obj(tx, g)],
+  })
 }
 
 export interface GenerateU128InRangeArgs {

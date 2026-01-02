@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { obj } from '../../_framework/util'
-import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function withDefiningIds(tx: Transaction, typeArg: string) {
   return tx.moveCall({

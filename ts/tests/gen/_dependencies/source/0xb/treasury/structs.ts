@@ -9,7 +9,12 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../../../_framework/util'
 import { TypeName } from '../../../../move-stdlib/type-name/structs'
 import { Bag } from '../../../../sui/bag/structs'
 import { ObjectBag } from '../../../../sui/object-bag/structs'
@@ -564,7 +569,7 @@ export class ForeignTokenRegistration implements StructClass {
 
   toJSONField() {
     return {
-      typeName: this.typeName.toJSONField(),
+      typeName: this.typeName,
       uc: this.uc.toJSONField(),
       decimal: this.decimal,
     }
@@ -964,7 +969,7 @@ export class NewTokenEvent implements StructClass {
   toJSONField() {
     return {
       tokenId: this.tokenId,
-      typeName: this.typeName.toJSONField(),
+      typeName: this.typeName,
       nativeToken: this.nativeToken,
       decimalMultiplier: this.decimalMultiplier.toString(),
       notionalValue: this.notionalValue.toString(),
@@ -1163,7 +1168,7 @@ export class TokenRegistrationEvent implements StructClass {
 
   toJSONField() {
     return {
-      typeName: this.typeName.toJSONField(),
+      typeName: this.typeName,
       decimal: this.decimal,
       nativeToken: this.nativeToken,
     }

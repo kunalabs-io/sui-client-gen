@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { pure } from '../../_framework/util'
-import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function toU256(tx: Transaction, a: string | TransactionArgument) {
   return tx.moveCall({
@@ -65,9 +65,15 @@ export function hexCharValue(tx: Transaction, c: number | TransactionArgument) {
 }
 
 export function length(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::address::length`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::address::length`,
+    arguments: [],
+  })
 }
 
 export function max(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::address::max`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::address::max`,
+    arguments: [],
+  })
 }
