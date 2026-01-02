@@ -2772,28 +2772,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "genco"
-version = "0.17.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a35958104272e516c2a5f66a9d82fba4784d2b585fc1e2358b8f96e15d342995"
-dependencies = [
- "genco-macros",
- "relative-path",
- "smallvec",
-]
-
-[[package]]
-name = "genco-macros"
-version = "0.17.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43eaff6bbc0b3a878361aced5ec6a2818ee7c541c5b33b5880dfa9a86c23e9e7"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.112",
-]
-
-[[package]]
 name = "generic-array"
 version = "0.14.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6534,12 +6512,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a2d987857b319362043e95f5353c0535c1f58eec5336fdfcf626430af7def58"
 
 [[package]]
-name = "relative-path"
-version = "1.9.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba39f3699c378cd8970968dcbff9c43159ea4cfbd88d43c00b22f2ef10a435d2"
-
-[[package]]
 name = "reqwest"
 version = "0.12.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7782,7 +7754,7 @@ dependencies = [
  "colored",
  "convert_case 0.6.0",
  "futures",
- "genco",
+ "indoc",
  "move-binary-format",
  "move-bytecode-utils",
  "move-command-line-common",

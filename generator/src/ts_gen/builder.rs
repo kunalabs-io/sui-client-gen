@@ -1,0 +1,1636 @@
+//! Builder for converting Move model → TypeScript IR.
+//!
+//! This module bridges the Move model types to our coarse-grained IR.
+
+use std::collections::{BTreeMap, HashMap};
+
+use convert_case::{Case, Casing};
+use move_core_types::account_address::AccountAddress;
+use move_model_2::model::{self, Datatype};
+use move_model_2::normalized::Type;
+use move_model_2::source_kind::SourceKind;
+use move_symbol_pool::Symbol;
+
+use super::enums::{EnumIR, EnumVariantIR};
+use super::structs::{FieldIR, FieldTypeIR, PackageInfo, StructIR, StructImport, TypeParamIR};
+use super::utils::{module_import_name, package_import_name, JS_RESERVED_WORDS};
+use crate::model_builder::{TypeOriginTable, VersionTable};
+
+/// Get the origin package address for a struct.
+fn get_origin_pkg_addr<HasSource: SourceKind>(
+    strct: &model::Struct<HasSource>,
+    type_origin_table: &TypeOriginTable,
+) -> AccountAddress {
+    let addr = strct.module().package().address();
+    let types = type_origin_table.get(&addr).unwrap_or_else(|| {
+        panic!(
+            "expected origin table to exist for package {}",
+            addr.to_hex_literal()
+        )
+    });
+    let full_name = format!("{}::{}", strct.module().name(), strct.name());
+    let origin_addr = types.get(&full_name).unwrap_or_else(|| {
+        panic!(
+            "unable to find origin address for struct {} in package {}. \
+            check consistency between original id and published at for this package.",
+            full_name,
+            addr.to_hex_literal()
+        )
+    });
+
+    *origin_addr
+}
+
+/// Builds StructIR from a Move model struct.
+pub struct StructIRBuilder<'a, 'model, HasSource: SourceKind> {
+    strct: model::Struct<'model, HasSource>,
+    type_origin_table: &'a TypeOriginTable,
+    version_table: &'a VersionTable,
+    package_address: AccountAddress,
+    module_name: Symbol,
+    is_top_level: bool,
+    top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
+    is_source: bool,
+    framework_path: String,
+    /// Tracks struct imports to avoid name conflicts
+    struct_imports: HashMap<String, StructImport>,
+}
+
+impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
+    pub fn new(
+        strct: model::Struct<'model, HasSource>,
+        type_origin_table: &'a TypeOriginTable,
+        version_table: &'a VersionTable,
+        top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
+        is_source: bool,
+        levels_from_root: u8,
+    ) -> Self {
+        let module = strct.module();
+        let package_address = module.package().address();
+        let module_name = module.name();
+        let is_top_level = top_level_pkg_names.contains_key(&package_address);
+
+        let framework_path = if levels_from_root == 0 {
+            "./_framework".to_string()
+        } else {
+            (0..levels_from_root)
+                .map(|_| "..")
+                .collect::<Vec<_>>()
+                .join("/")
+                + "/_framework"
+        };
+
+        StructIRBuilder {
+            strct,
+            type_origin_table,
+            version_table,
+            package_address,
+            module_name,
+            is_top_level,
+            top_level_pkg_names,
+            is_source,
+            framework_path,
+            struct_imports: HashMap::new(),
+        }
+    }
+
+    /// Build the StructIR from the Move model.
+    pub fn build(mut self) -> (StructIR, String) {
+        let name = self.strct.name().to_string();
+        let module_struct_path = format!("{}::{}", self.strct.module().name(), self.strct.name());
+        let package_info = self.build_package_info();
+        let type_params = self.build_type_params();
+        let fields = self.build_fields();
+
+        // Check what types are used in fields
+        let uses_vector = fields.iter().any(|f| f.field_type.uses_vector());
+        let uses_address = fields.iter().any(|f| f.field_type.uses_address());
+        let uses_phantom_struct_args = fields
+            .iter()
+            .any(|f| f.field_type.uses_phantom_struct_args());
+        let uses_field_to_json = fields.iter().any(|f| f.field_type.needs_field_to_json());
+
+        let struct_imports: Vec<StructImport> = self.struct_imports.into_values().collect();
+
+        // Check if there are non-phantom type parameters
+        let has_non_phantom_type_params = type_params.iter().any(|p| !p.is_phantom);
+
+        let ir = StructIR {
+            name,
+            module_struct_path,
+            package_info,
+            type_params,
+            fields,
+            struct_imports,
+            uses_vector,
+            uses_address,
+            uses_phantom_struct_args,
+            has_non_phantom_type_params,
+            uses_field_to_json,
+        };
+
+        (ir, self.framework_path)
+    }
+
+    fn build_package_info(&self) -> PackageInfo {
+        let addr = self.strct.module().package().address();
+
+        if sui_sdk::types::SYSTEM_PACKAGE_ADDRESSES.contains(&addr) {
+            PackageInfo::System {
+                address: addr.to_hex_literal(),
+            }
+        } else {
+            // Look up the version in the version table
+            let origin_pkg_addr = get_origin_pkg_addr(&self.strct, self.type_origin_table);
+            let versions = self.version_table.get(&addr).unwrap_or_else(|| {
+                panic!(
+                    "expected version table to exist for package {}",
+                    addr.to_hex_literal()
+                )
+            });
+            let version = versions.get(&origin_pkg_addr).unwrap_or_else(|| {
+                panic!(
+                    "expected version to exist for package {} in package {}",
+                    origin_pkg_addr.to_hex_literal(),
+                    addr.to_hex_literal()
+                )
+            });
+
+            PackageInfo::Versioned {
+                version: version.value(),
+            }
+        }
+    }
+
+    fn build_type_params(&self) -> Vec<TypeParamIR> {
+        let type_param_names = self.strct_type_param_names();
+        let compiled = self.strct.compiled();
+
+        compiled
+            .type_parameters
+            .iter()
+            .zip(type_param_names)
+            .map(|(param, name)| TypeParamIR {
+                name,
+                is_phantom: param.is_phantom,
+            })
+            .collect()
+    }
+
+    fn strct_type_param_names(&self) -> Vec<String> {
+        match self.strct.kind() {
+            model::Kind::WithSource(strct) => strct
+                .info()
+                .type_parameters
+                .iter()
+                .map(|param| param.param.user_specified_name.value.to_string())
+                .collect(),
+            model::Kind::WithoutSource(strct) => (0..strct.compiled().type_parameters.len())
+                .map(|idx| format!("T{}", idx))
+                .collect(),
+        }
+    }
+
+    fn build_fields(&mut self) -> Vec<FieldIR> {
+        let compiled = self.strct.compiled();
+        let type_param_names = self.strct_type_param_names();
+
+        compiled
+            .fields
+            .0
+            .iter()
+            .map(|(_, field)| {
+                let move_name = field.name.to_string();
+                // Use to_case directly (infers input) to match genco behavior
+                // This handles edge cases like "p2p_address" -> "p2PAddress" correctly
+                let ts_name = move_name.to_case(Case::Camel);
+                let field_type = self.build_field_type(&field.type_, &type_param_names);
+
+                FieldIR {
+                    ts_name,
+                    move_name,
+                    field_type,
+                }
+            })
+            .collect()
+    }
+
+    fn build_field_type(&mut self, ty: &Type, type_param_names: &[String]) -> FieldTypeIR {
+        match ty {
+            Type::U8 => FieldTypeIR::Primitive("u8".to_string()),
+            Type::U16 => FieldTypeIR::Primitive("u16".to_string()),
+            Type::U32 => FieldTypeIR::Primitive("u32".to_string()),
+            Type::U64 => FieldTypeIR::Primitive("u64".to_string()),
+            Type::U128 => FieldTypeIR::Primitive("u128".to_string()),
+            Type::U256 => FieldTypeIR::Primitive("u256".to_string()),
+            Type::Bool => FieldTypeIR::Primitive("bool".to_string()),
+            Type::Address => FieldTypeIR::Primitive("address".to_string()),
+            Type::Vector(inner) => {
+                FieldTypeIR::Vector(Box::new(self.build_field_type(inner, type_param_names)))
+            }
+            Type::Datatype(dt) => {
+                let field_module = self.strct.model().module(dt.module);
+
+                // Get the struct/enum from the module
+                let (class_name, type_params, is_enum) = match field_module.datatype(dt.name) {
+                    Datatype::Struct(s) => {
+                        let import = self.get_import_for_struct(&s);
+                        (import, s.compiled().type_parameters.clone(), false)
+                    }
+                    Datatype::Enum(e) => {
+                        let import = self.get_import_for_enum(&e);
+                        (import, e.compiled().type_parameters.clone(), true)
+                    }
+                };
+
+                let type_args: Vec<FieldTypeIR> = dt
+                    .type_arguments
+                    .iter()
+                    .map(|arg| self.build_field_type(arg, type_param_names))
+                    .collect();
+
+                // Track which type args are phantom based on the struct's type parameter declarations
+                let type_arg_is_phantom: Vec<bool> =
+                    type_params.iter().map(|param| param.is_phantom).collect();
+
+                FieldTypeIR::Struct {
+                    class_name,
+                    type_args,
+                    type_arg_is_phantom,
+                    is_enum,
+                }
+            }
+            Type::TypeParameter(idx) => {
+                let name = type_param_names[*idx as usize].clone();
+                let is_phantom = self.strct.compiled().type_parameters[*idx as usize].is_phantom;
+                FieldTypeIR::TypeParam {
+                    name,
+                    is_phantom,
+                    index: *idx as usize,
+                }
+            }
+            Type::Reference(_, inner) => self.build_field_type(inner, type_param_names),
+            Type::Signer => panic!("unexpected Signer type in struct field"),
+        }
+    }
+
+    fn get_import_for_struct<S: SourceKind>(&mut self, strct: &model::Struct<S>) -> String {
+        let class_name = strct.name().to_string();
+        let import_path = self.import_path_for_module(&strct.module());
+
+        match import_path {
+            None => class_name, // Same module, no import needed
+            Some(path) => {
+                // Track the import
+                if !self.struct_imports.contains_key(&class_name) {
+                    self.struct_imports.insert(
+                        class_name.clone(),
+                        StructImport {
+                            path,
+                            class_name: class_name.clone(),
+                            alias: None,
+                        },
+                    );
+                }
+                class_name
+            }
+        }
+    }
+
+    fn get_import_for_enum<S: SourceKind>(&mut self, enum_: &model::Enum<S>) -> String {
+        let class_name = enum_.name().to_string();
+        let import_path = self.import_path_for_module(&enum_.module());
+
+        match import_path {
+            None => class_name,
+            Some(path) => {
+                if !self.struct_imports.contains_key(&class_name) {
+                    self.struct_imports.insert(
+                        class_name.clone(),
+                        StructImport {
+                            path,
+                            class_name: class_name.clone(),
+                            alias: None,
+                        },
+                    );
+                }
+                class_name
+            }
+        }
+    }
+
+    fn import_path_for_module<S: SourceKind>(&self, module: &model::Module<S>) -> Option<String> {
+        let module_name = module_import_name(module.name());
+        let same_package = module.package().address() == self.package_address;
+
+        if same_package && module.name() == self.module_name {
+            // Same module, no import needed
+            None
+        } else if same_package {
+            // Different module in same package
+            Some(format!("../{}/structs", module_name))
+        } else {
+            let member_is_top_level = self
+                .top_level_pkg_names
+                .contains_key(&module.package().address());
+
+            if self.is_top_level && member_is_top_level {
+                let member_pkg_name = package_import_name(
+                    *self
+                        .top_level_pkg_names
+                        .get(&module.package().address())
+                        .unwrap(),
+                );
+                Some(format!("../../{}/{}/structs", member_pkg_name, module_name))
+            } else if self.is_top_level {
+                let dep_dir = if self.is_source { "source" } else { "onchain" };
+                Some(format!(
+                    "../../_dependencies/{}/{}/{}/structs",
+                    dep_dir,
+                    module.package().address().to_hex_literal(),
+                    module_name
+                ))
+            } else if member_is_top_level {
+                let member_pkg_name = package_import_name(
+                    *self
+                        .top_level_pkg_names
+                        .get(&module.package().address())
+                        .unwrap(),
+                );
+                Some(format!(
+                    "../../../../{}/{}/structs",
+                    member_pkg_name, module_name
+                ))
+            } else {
+                Some(format!(
+                    "../../{}/{}/structs",
+                    module.package().address().to_hex_literal(),
+                    module_name
+                ))
+            }
+        }
+    }
+}
+
+/// Generate structs.ts for a module (handles both structs and enums).
+pub fn gen_module_structs<HasSource: SourceKind>(
+    module: &model::Module<HasSource>,
+    type_origin_table: &TypeOriginTable,
+    version_table: &VersionTable,
+    top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
+    is_source: bool,
+    levels_from_root: u8,
+) -> String {
+    let mut all_struct_irs = Vec::new();
+    let mut all_enum_irs = Vec::new();
+    let mut all_imports: HashMap<String, StructImport> = HashMap::new();
+    let mut framework_path = String::new();
+
+    // Build IR for all structs
+    for strct in module.structs() {
+        let builder = StructIRBuilder::new(
+            strct,
+            type_origin_table,
+            version_table,
+            top_level_pkg_names,
+            is_source,
+            levels_from_root + 2,
+        );
+        let (ir, fp) = builder.build();
+        framework_path = fp;
+
+        for imp in &ir.struct_imports {
+            if !all_imports.contains_key(&imp.class_name) {
+                all_imports.insert(imp.class_name.clone(), imp.clone());
+            }
+        }
+        all_struct_irs.push(ir);
+    }
+
+    // Build IR for all enums
+    for enum_ in module.enums() {
+        let mut builder = EnumIRBuilder::new(
+            enum_,
+            type_origin_table,
+            version_table,
+            top_level_pkg_names,
+            is_source,
+            levels_from_root + 2,
+        );
+        let ir = builder.build();
+
+        // Collect imports from enum
+        for imp in builder.get_struct_imports() {
+            if !all_imports.contains_key(&imp.class_name) {
+                all_imports.insert(imp.class_name.clone(), imp.clone());
+            }
+        }
+        all_enum_irs.push(ir);
+    }
+
+    if all_struct_irs.is_empty() && all_enum_irs.is_empty() {
+        return String::new();
+    }
+
+    // Set framework path if not set by structs
+    if framework_path.is_empty() && !all_enum_irs.is_empty() {
+        framework_path = (0..levels_from_root + 2)
+            .map(|_| "..")
+            .collect::<Vec<_>>()
+            .join("/")
+            + "/_framework";
+    }
+
+    // Emit combined imports
+    let combined_imports = emit_combined_imports_with_enums(
+        &framework_path,
+        &all_imports,
+        &all_struct_irs,
+        &all_enum_irs,
+    );
+
+    // Emit struct bodies
+    let struct_bodies: Vec<String> = all_struct_irs.iter().map(|ir| ir.emit_body()).collect();
+
+    // Emit enum bodies
+    let enum_bodies: Vec<String> = all_enum_irs.iter().map(|ir| ir.emit_body()).collect();
+
+    let mut parts = vec![combined_imports];
+    if !struct_bodies.is_empty() {
+        parts.push(struct_bodies.join("\n\n"));
+    }
+    if !enum_bodies.is_empty() {
+        parts.push(enum_bodies.join("\n\n"));
+    }
+
+    parts.join("\n\n")
+}
+
+/// Emit combined imports for modules with both structs and enums.
+fn emit_combined_imports_with_enums(
+    framework_path: &str,
+    struct_imports: &HashMap<String, StructImport>,
+    structs: &[StructIR],
+    enums: &[EnumIR],
+) -> String {
+    use std::collections::BTreeSet;
+
+    let mut lines = Vec::new();
+
+    // Determine what framework imports are needed
+    let has_type_params = structs.iter().any(|s| !s.type_params.is_empty())
+        || enums.iter().any(|e| !e.type_params.is_empty());
+    let has_phantom_type_params = structs
+        .iter()
+        .any(|s| s.type_params.iter().any(|p| p.is_phantom))
+        || enums
+            .iter()
+            .any(|e| e.type_params.iter().any(|p| p.is_phantom));
+    let has_non_phantom_type_params = structs.iter().any(|s| s.has_non_phantom_type_params)
+        || enums
+            .iter()
+            .any(|e| e.type_params.iter().any(|p| !p.is_phantom));
+    let uses_vector = structs.iter().any(|s| s.uses_vector) || enums.iter().any(|e| e.uses_vector);
+    let uses_address =
+        structs.iter().any(|s| s.uses_address) || enums.iter().any(|e| e.uses_address);
+    let uses_phantom_struct_args = structs.iter().any(|s| s.uses_phantom_struct_args)
+        || enums.iter().any(|e| e.uses_phantom_struct_args);
+    let uses_field_to_json = structs.iter().any(|s| s.uses_field_to_json);
+    let has_enums = !enums.is_empty();
+
+    // Framework reified import
+    if uses_vector || uses_phantom_struct_args || has_phantom_type_params {
+        lines.push(format!(
+            "import * as reified from '{}/reified'",
+            framework_path
+        ));
+    }
+
+    // Build reified imports set - always include base set
+    let mut reified_imports: BTreeSet<&str> = BTreeSet::new();
+    reified_imports.insert("PhantomReified");
+    reified_imports.insert("Reified");
+    reified_imports.insert("StructClass");
+    reified_imports.insert("ToField");
+    reified_imports.insert("ToTypeStr");
+    reified_imports.insert("decodeFromFields");
+    reified_imports.insert("decodeFromFieldsWithTypes");
+    reified_imports.insert("decodeFromJSONField");
+    reified_imports.insert("phantom");
+
+    // Note: ToPhantom is added as "ToTypeStr as ToPhantom" later if needed
+
+    if has_type_params {
+        reified_imports.insert("extractType");
+        reified_imports.insert("assertFieldsWithTypesArgsMatch");
+        reified_imports.insert("assertReifiedTypeArgsMatch");
+    }
+
+    if has_phantom_type_params {
+        reified_imports.insert("PhantomToTypeStr");
+        reified_imports.insert("PhantomTypeArgument");
+        reified_imports.insert("ToPhantomTypeArgument");
+    }
+
+    if has_non_phantom_type_params {
+        reified_imports.insert("TypeArgument");
+        reified_imports.insert("ToTypeArgument");
+        reified_imports.insert("toBcs");
+    }
+
+    if uses_field_to_json || has_type_params {
+        reified_imports.insert("fieldToJSON");
+    }
+
+    if has_enums {
+        reified_imports.insert("EnumVariantClass");
+    }
+
+    let imports_str = if uses_phantom_struct_args {
+        let mut imports_vec: Vec<&str> = reified_imports.into_iter().collect();
+        imports_vec.push("ToTypeStr as ToPhantom");
+        imports_vec.sort();
+        imports_vec.join(",\n  ")
+    } else {
+        reified_imports
+            .into_iter()
+            .collect::<Vec<_>>()
+            .join(",\n  ")
+    };
+
+    lines.push(format!(
+        "import {{\n  {}\n}} from '{}/reified'",
+        imports_str, framework_path
+    ));
+
+    // Utils import - always include parseTypeName for fetch methods
+    lines.push(format!(
+        "import {{\n  FieldsWithTypes,\n  composeSuiType,\n  compressSuiType,\n  parseTypeName,\n}} from '{}/util'",
+        framework_path
+    ));
+
+    // Vector import
+    if uses_vector {
+        lines.push(format!(
+            "import {{ Vector }} from '{}/vector'",
+            framework_path
+        ));
+    }
+
+    // PKG version imports
+    let mut pkg_versions: BTreeSet<u64> = BTreeSet::new();
+    for s in structs {
+        if let super::structs::PackageInfo::Versioned { version } = &s.package_info {
+            pkg_versions.insert(*version);
+        }
+    }
+    for e in enums {
+        if let super::structs::PackageInfo::Versioned { version } = &e.package_info {
+            pkg_versions.insert(*version);
+        }
+    }
+
+    if !pkg_versions.is_empty() {
+        let versions: Vec<String> = pkg_versions.iter().map(|v| format!("PKG_V{}", v)).collect();
+        lines.push(format!(
+            "import {{ {} }} from '../index'",
+            versions.join(", ")
+        ));
+    }
+
+    // Struct imports (from other modules)
+    let mut sorted_imports: Vec<&StructImport> = struct_imports.values().collect();
+    sorted_imports.sort_by(|a, b| (&a.path, &a.class_name).cmp(&(&b.path, &b.class_name)));
+
+    for imp in sorted_imports {
+        let name = match &imp.alias {
+            Some(alias) => format!("{} as {}", imp.class_name, alias),
+            None => imp.class_name.clone(),
+        };
+        lines.push(format!("import {{ {} }} from '{}'", name, imp.path));
+    }
+
+    // BCS imports
+    if has_non_phantom_type_params {
+        lines.push("import { BcsType, bcs } from '@mysten/sui/bcs'".to_string());
+    } else {
+        lines.push("import { bcs } from '@mysten/sui/bcs'".to_string());
+    }
+    lines.push(
+        "import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'".to_string(),
+    );
+
+    // Utils imports
+    if uses_address {
+        lines.push("import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'".to_string());
+    } else {
+        lines.push("import { fromB64 } from '@mysten/sui/utils'".to_string());
+    }
+
+    lines.join("\n")
+}
+
+// ============================================================================
+// EnumIRBuilder
+// ============================================================================
+
+/// Get the origin package address for an enum.
+fn get_origin_pkg_addr_for_enum<HasSource: SourceKind>(
+    enum_: &model::Enum<HasSource>,
+    type_origin_table: &TypeOriginTable,
+) -> AccountAddress {
+    let addr = enum_.module().package().address();
+    let types = type_origin_table.get(&addr).unwrap_or_else(|| {
+        panic!(
+            "expected origin table to exist for package {}",
+            addr.to_hex_literal()
+        )
+    });
+    let full_name = format!("{}::{}", enum_.module().name(), enum_.name());
+    let origin_addr = types.get(&full_name).unwrap_or_else(|| {
+        panic!(
+            "unable to find origin address for enum {} in package {}. \
+            check consistency between original id and published at for this package.",
+            full_name,
+            addr.to_hex_literal()
+        )
+    });
+
+    *origin_addr
+}
+
+/// Builds EnumIR from a Move model enum.
+pub struct EnumIRBuilder<'a, 'model, HasSource: SourceKind> {
+    enum_: model::Enum<'model, HasSource>,
+    type_origin_table: &'a TypeOriginTable,
+    version_table: &'a VersionTable,
+    package_address: AccountAddress,
+    module_name: Symbol,
+    is_top_level: bool,
+    top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
+    is_source: bool,
+    #[allow(dead_code)]
+    framework_path: String,
+    /// Tracks struct imports to avoid name conflicts
+    struct_imports: HashMap<String, StructImport>,
+}
+
+impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
+    pub fn new(
+        enum_: model::Enum<'model, HasSource>,
+        type_origin_table: &'a TypeOriginTable,
+        version_table: &'a VersionTable,
+        top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
+        is_source: bool,
+        levels_from_root: u8,
+    ) -> Self {
+        let module = enum_.module();
+        let package_address = module.package().address();
+        let module_name = module.name();
+        let is_top_level = top_level_pkg_names.contains_key(&package_address);
+
+        let framework_path = if levels_from_root == 0 {
+            "./_framework".to_string()
+        } else {
+            (0..levels_from_root)
+                .map(|_| "..")
+                .collect::<Vec<_>>()
+                .join("/")
+                + "/_framework"
+        };
+
+        Self {
+            enum_,
+            type_origin_table,
+            version_table,
+            package_address,
+            module_name,
+            is_top_level,
+            top_level_pkg_names,
+            is_source,
+            framework_path,
+            struct_imports: HashMap::new(),
+        }
+    }
+
+    pub fn build(&mut self) -> EnumIR {
+        let name = self.enum_.name().to_string();
+
+        // Determine package info (System vs Versioned)
+        let _origin_addr = get_origin_pkg_addr_for_enum(&self.enum_, self.type_origin_table);
+        let package_info = self.build_package_info();
+
+        // Build type params - use source names if available (T, U, etc.), otherwise T0, T1
+        let type_params: Vec<TypeParamIR> = self
+            .enum_
+            .summary()
+            .type_parameters
+            .iter()
+            .zip(self.enum_.compiled().type_parameters.iter())
+            .enumerate()
+            .map(|(idx, (summary, compiled))| TypeParamIR {
+                name: summary
+                    .tparam
+                    .name
+                    .map(|n| n.to_string())
+                    .unwrap_or_else(|| format!("T{}", idx)),
+                is_phantom: compiled.is_phantom,
+            })
+            .collect();
+
+        // Build module path
+        let module_enum_path = format!("{}::{}", self.module_name, name);
+
+        // Build variants - collect first to avoid borrow issues
+        let model_variants: Vec<_> = self.enum_.variants().collect();
+        let variants: Vec<EnumVariantIR> = model_variants
+            .iter()
+            .map(|v| self.build_variant(v, &type_params))
+            .collect();
+
+        // Detect special flag needs using FieldTypeIR helper methods
+        let uses_vector = variants
+            .iter()
+            .any(|v| v.fields.iter().any(|f| f.field_type.uses_vector()));
+        let uses_address = variants
+            .iter()
+            .any(|v| v.fields.iter().any(|f| f.field_type.uses_address()));
+        let uses_phantom_struct_args = variants.iter().any(|v| {
+            v.fields
+                .iter()
+                .any(|f| f.field_type.uses_phantom_struct_args())
+        });
+
+        EnumIR {
+            name,
+            module_enum_path,
+            package_info,
+            type_params,
+            variants,
+            uses_vector,
+            uses_address,
+            uses_phantom_struct_args,
+        }
+    }
+
+    fn build_variant(
+        &mut self,
+        variant: &model::Variant<'model, HasSource>,
+        type_params: &[TypeParamIR],
+    ) -> EnumVariantIR {
+        let name = variant.name().to_string();
+        let v_fields = &variant.compiled().fields.0;
+        let is_tuple = variant.summary().fields.positional_fields;
+
+        let fields: Vec<FieldIR> = v_fields
+            .iter()
+            .map(|(field_name, field)| {
+                let move_name = field_name.to_string();
+                let ts_name = self.gen_field_name(&move_name);
+                let field_type = self.build_field_type(&field.type_, type_params);
+
+                FieldIR {
+                    move_name,
+                    ts_name,
+                    field_type,
+                }
+            })
+            .collect();
+
+        EnumVariantIR {
+            name,
+            fields,
+            is_tuple,
+        }
+    }
+
+    fn build_package_info(&self) -> PackageInfo {
+        let addr = self.enum_.module().package().address();
+
+        if sui_sdk::types::SYSTEM_PACKAGE_ADDRESSES.contains(&addr) {
+            PackageInfo::System {
+                address: addr.to_hex_literal(),
+            }
+        } else {
+            // Look up the version in the version table
+            let origin_pkg_addr = get_origin_pkg_addr_for_enum(&self.enum_, self.type_origin_table);
+            let versions = self.version_table.get(&addr).unwrap_or_else(|| {
+                panic!(
+                    "expected version table to exist for package {}",
+                    addr.to_hex_literal()
+                )
+            });
+            let version = versions.get(&origin_pkg_addr).unwrap_or_else(|| {
+                panic!(
+                    "expected version to exist for enum {} in package {}",
+                    origin_pkg_addr.to_hex_literal(),
+                    addr.to_hex_literal()
+                )
+            });
+            PackageInfo::Versioned {
+                version: u64::from(*version),
+            }
+        }
+    }
+
+    fn gen_field_name(&self, move_name: &str) -> String {
+        let ts_name = move_name.to_case(Case::Camel);
+        if JS_RESERVED_WORDS.contains(&ts_name.as_str()) {
+            format!("{}_", ts_name)
+        } else {
+            ts_name
+        }
+    }
+
+    fn build_field_type(&mut self, ty: &Type, type_params: &[TypeParamIR]) -> FieldTypeIR {
+        // Get type param names for struct builder compatibility
+        let type_param_names: Vec<String> = type_params.iter().map(|p| p.name.clone()).collect();
+
+        match ty {
+            Type::TypeParameter(idx) => {
+                let idx = *idx as usize;
+                let type_param = type_params.get(idx);
+                let is_phantom = type_param.map(|p| p.is_phantom).unwrap_or(false);
+                let name = type_param
+                    .map(|p| p.name.clone())
+                    .unwrap_or_else(|| format!("T{}", idx));
+                FieldTypeIR::TypeParam {
+                    name,
+                    is_phantom,
+                    index: idx,
+                }
+            }
+            Type::Bool => FieldTypeIR::Primitive("bool".to_string()),
+            Type::U8 => FieldTypeIR::Primitive("u8".to_string()),
+            Type::U16 => FieldTypeIR::Primitive("u16".to_string()),
+            Type::U32 => FieldTypeIR::Primitive("u32".to_string()),
+            Type::U64 => FieldTypeIR::Primitive("u64".to_string()),
+            Type::U128 => FieldTypeIR::Primitive("u128".to_string()),
+            Type::U256 => FieldTypeIR::Primitive("u256".to_string()),
+            Type::Address => FieldTypeIR::Primitive("address".to_string()),
+            Type::Vector(inner) => {
+                FieldTypeIR::Vector(Box::new(self.build_field_type(inner, type_params)))
+            }
+            Type::Datatype(dt) => self.build_struct_type(dt, &type_param_names),
+            Type::Reference(_, inner) => self.build_field_type(inner, type_params),
+            Type::Signer => FieldTypeIR::Primitive("string".to_string()),
+        }
+    }
+
+    fn build_struct_type(
+        &mut self,
+        dt: &move_binary_format::normalized::Datatype<Symbol>,
+        type_param_names: &[String],
+    ) -> FieldTypeIR {
+        let field_module = self.enum_.model().module(dt.module);
+
+        // Get the struct/enum from the module
+        let (class_name, compiled_type_params, is_enum) = match field_module.datatype(dt.name) {
+            Datatype::Struct(s) => {
+                let import = self.get_import_for_struct(&s);
+                (import, s.compiled().type_parameters.clone(), false)
+            }
+            Datatype::Enum(e) => {
+                let import = self.get_import_for_enum(&e);
+                (import, e.compiled().type_parameters.clone(), true)
+            }
+        };
+
+        let type_args: Vec<FieldTypeIR> = dt
+            .type_arguments
+            .iter()
+            .map(|arg| self.build_field_type_from_normalized(arg, type_param_names))
+            .collect();
+
+        // Track which type args are phantom based on the struct's type parameter declarations
+        let type_arg_is_phantom: Vec<bool> = compiled_type_params
+            .iter()
+            .map(|param| param.is_phantom)
+            .collect();
+
+        FieldTypeIR::Struct {
+            class_name,
+            type_args,
+            type_arg_is_phantom,
+            is_enum,
+        }
+    }
+
+    fn build_field_type_from_normalized(
+        &mut self,
+        ty: &move_binary_format::normalized::Type<Symbol>,
+        type_param_names: &[String],
+    ) -> FieldTypeIR {
+        use move_binary_format::normalized::Type as NType;
+
+        match ty {
+            NType::TypeParameter(idx) => {
+                let idx = *idx as usize;
+                let is_phantom = self
+                    .enum_
+                    .compiled()
+                    .type_parameters
+                    .get(idx)
+                    .map(|p| p.is_phantom)
+                    .unwrap_or(false);
+                FieldTypeIR::TypeParam {
+                    name: type_param_names
+                        .get(idx)
+                        .cloned()
+                        .unwrap_or_else(|| format!("T{}", idx)),
+                    is_phantom,
+                    index: idx,
+                }
+            }
+            NType::Bool => FieldTypeIR::Primitive("bool".to_string()),
+            NType::U8 => FieldTypeIR::Primitive("u8".to_string()),
+            NType::U16 => FieldTypeIR::Primitive("u16".to_string()),
+            NType::U32 => FieldTypeIR::Primitive("u32".to_string()),
+            NType::U64 => FieldTypeIR::Primitive("u64".to_string()),
+            NType::U128 => FieldTypeIR::Primitive("u128".to_string()),
+            NType::U256 => FieldTypeIR::Primitive("u256".to_string()),
+            NType::Address => FieldTypeIR::Primitive("address".to_string()),
+            NType::Signer => FieldTypeIR::Primitive("signer".to_string()),
+            NType::Vector(inner) => FieldTypeIR::Vector(Box::new(
+                self.build_field_type_from_normalized(inner, type_param_names),
+            )),
+            NType::Datatype(dt) => self.build_struct_type(dt, type_param_names),
+            NType::Reference(_, inner) => {
+                self.build_field_type_from_normalized(inner, type_param_names)
+            }
+        }
+    }
+
+    fn get_import_for_struct(&mut self, s: &model::Struct<'model, HasSource>) -> String {
+        let struct_name = s.name().to_string();
+        let struct_pkg_addr = s.module().package().address();
+        let struct_mod_name = s.module().name();
+
+        if struct_pkg_addr == self.package_address && struct_mod_name == self.module_name {
+            // Same module
+            return struct_name;
+        }
+
+        // Different module - add import
+        let import_path = self.get_import_path(struct_pkg_addr, struct_mod_name);
+
+        if let Some(existing) = self.struct_imports.get(&struct_name) {
+            if existing.path == import_path {
+                return struct_name;
+            }
+            // Name conflict - need alias
+            let alias = format!("{}{}", struct_name, self.struct_imports.len());
+            self.struct_imports.insert(
+                alias.clone(),
+                StructImport {
+                    class_name: struct_name.clone(),
+                    path: import_path,
+                    alias: Some(alias.clone()),
+                },
+            );
+            return alias;
+        }
+
+        self.struct_imports.insert(
+            struct_name.clone(),
+            StructImport {
+                class_name: struct_name.clone(),
+                path: import_path,
+                alias: None,
+            },
+        );
+        struct_name
+    }
+
+    fn get_import_for_enum(&mut self, e: &model::Enum<'model, HasSource>) -> String {
+        let enum_name = e.name().to_string();
+        let enum_pkg_addr = e.module().package().address();
+        let enum_mod_name = e.module().name();
+
+        if enum_pkg_addr == self.package_address && enum_mod_name == self.module_name {
+            // Same module
+            return enum_name;
+        }
+
+        // Different module - add import
+        let import_path = self.get_import_path(enum_pkg_addr, enum_mod_name);
+
+        if let Some(existing) = self.struct_imports.get(&enum_name) {
+            if existing.path == import_path {
+                return enum_name;
+            }
+            // Name conflict - need alias
+            let alias = format!("{}{}", enum_name, self.struct_imports.len());
+            self.struct_imports.insert(
+                alias.clone(),
+                StructImport {
+                    class_name: enum_name.clone(),
+                    path: import_path,
+                    alias: Some(alias.clone()),
+                },
+            );
+            return alias;
+        }
+
+        self.struct_imports.insert(
+            enum_name.clone(),
+            StructImport {
+                class_name: enum_name.clone(),
+                path: import_path,
+                alias: None,
+            },
+        );
+        enum_name
+    }
+
+    /// Returns the import path for a module, following the same logic as the old gen.rs.
+    /// This handles all cases uniformly without hardcoding system package names.
+    fn get_import_path(&self, pkg_addr: AccountAddress, mod_name: Symbol) -> String {
+        let mod_import_name = module_import_name(mod_name);
+
+        if pkg_addr == self.package_address && mod_name == self.module_name {
+            // Same module - no import needed
+            return String::new();
+        }
+
+        if pkg_addr == self.package_address {
+            // Same package, different module
+            return format!("../{}/structs", mod_import_name);
+        }
+
+        // Different package - check if it's a top-level package
+        let member_is_top_level = self.top_level_pkg_names.contains_key(&pkg_addr);
+
+        if self.is_top_level && member_is_top_level {
+            // Both current and target are top-level packages
+            let member_pkg_name =
+                package_import_name(*self.top_level_pkg_names.get(&pkg_addr).unwrap());
+            format!("../../{}/{}/structs", member_pkg_name, mod_import_name)
+        } else if self.is_top_level {
+            // Current is top-level, target is a dependency
+            let dep_dir = if self.is_source { "source" } else { "onchain" };
+            format!(
+                "../../_dependencies/{}/{}/{}/structs",
+                dep_dir,
+                pkg_addr.to_hex_literal(),
+                mod_import_name
+            )
+        } else if member_is_top_level {
+            // Current is a dependency, target is top-level
+            let member_pkg_name =
+                package_import_name(*self.top_level_pkg_names.get(&pkg_addr).unwrap());
+            format!(
+                "../../../../{}/{}/structs",
+                member_pkg_name, mod_import_name
+            )
+        } else {
+            // Both are dependencies
+            format!(
+                "../../{}/{}/structs",
+                pkg_addr.to_hex_literal(),
+                mod_import_name
+            )
+        }
+    }
+
+    /// Get the struct imports collected during building
+    pub fn get_struct_imports(&self) -> Vec<StructImport> {
+        self.struct_imports.values().cloned().collect()
+    }
+}
+
+// ============================================================================
+// FunctionIRBuilder
+// ============================================================================
+
+use super::functions::{FunctionIR, FunctionParamIR, FunctionStructImport, ParamTypeIR};
+
+/// Builds FunctionIR from a Move model function.
+pub struct FunctionIRBuilder<'a, 'model, HasSource: SourceKind> {
+    func: model::Function<'model, HasSource>,
+    package_address: AccountAddress,
+    module_name: Symbol,
+    is_top_level: bool,
+    top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
+    is_source: bool,
+    #[allow(dead_code)]
+    framework_path: String,
+    struct_imports: HashMap<String, FunctionStructImport>,
+}
+
+impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource> {
+    pub fn new(
+        func: model::Function<'model, HasSource>,
+        top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
+        is_source: bool,
+        levels_from_root: u8,
+    ) -> Option<Self> {
+        // Skip functions without compiled representation (e.g., macros)
+        func.maybe_compiled()?;
+
+        let package_address = func.module().package().address();
+        let module_name = func.module().name();
+        let is_top_level = top_level_pkg_names.contains_key(&package_address);
+        let framework_path = "../".repeat(levels_from_root as usize) + "_framework";
+
+        Some(FunctionIRBuilder {
+            func,
+            package_address,
+            module_name,
+            is_top_level,
+            top_level_pkg_names,
+            is_source,
+            framework_path,
+            struct_imports: HashMap::new(),
+        })
+    }
+
+    /// Build the FunctionIR from the Move function.
+    pub fn build(mut self) -> FunctionIR {
+        let move_name = self.func.name().to_string();
+        let ts_name = self.generate_ts_name(&move_name);
+        let module_name = self.module_name.to_string();
+        let type_params = self.build_type_params();
+        let params = self.build_params();
+
+        // Determine what utilities are used
+        let uses_generic = params.iter().any(|p| self.type_uses_generic(&p.param_type));
+        let uses_option = params.iter().any(|p| self.type_uses_option(&p.param_type));
+        let uses_vector = params.iter().any(|p| self.type_uses_vector(&p.param_type));
+        let uses_pure = params.iter().any(|p| p.param_type.is_pure());
+        let uses_obj = params.iter().any(|p| self.type_uses_obj(&p.param_type));
+
+        // Determine which util imports need aliasing (single-param functions with conflicting names)
+        let aliased_util_imports = if params.len() == 1 {
+            let param_name = &params[0].ts_name;
+            ["obj", "pure", "generic", "vector", "option"]
+                .iter()
+                .filter(|&&util_name| param_name == util_name)
+                .map(|s| s.to_string())
+                .collect()
+        } else {
+            Vec::new()
+        };
+
+        FunctionIR {
+            move_name,
+            ts_name,
+            module_name,
+            type_params,
+            params,
+            struct_imports: self.struct_imports.values().cloned().collect(),
+            uses_generic,
+            uses_option,
+            uses_vector,
+            uses_pure,
+            uses_obj,
+            aliased_util_imports,
+        }
+    }
+
+    fn generate_ts_name(&self, move_name: &str) -> String {
+        // Use from_case(Snake) to prevent digit-letter boundaries from being treated as word splits
+        let mut ts_name = move_name.from_case(Case::Snake).to_case(Case::Camel);
+
+        if JS_RESERVED_WORDS.contains(&ts_name.as_str()) {
+            ts_name.push('_');
+        }
+
+        // Handle trailing underscore in Move name
+        if move_name.ends_with('_') && !ts_name.ends_with('_') {
+            ts_name.push('_');
+        }
+
+        ts_name
+    }
+
+    fn build_type_params(&self) -> Vec<String> {
+        match self.func.kind() {
+            model::Kind::WithSource(func) => func
+                .info()
+                .signature
+                .type_parameters
+                .iter()
+                .map(|tp| tp.user_specified_name.value.to_string())
+                .collect(),
+            model::Kind::WithoutSource(func) => (0..func.compiled().type_parameters.len())
+                .map(|idx| format!("T{}", idx))
+                .collect(),
+        }
+    }
+
+    fn build_params(&mut self) -> Vec<FunctionParamIR> {
+        let compiled = self.func.maybe_compiled().unwrap();
+        let param_types = &compiled.parameters;
+        let type_param_names = self.build_type_params();
+
+        // Get parameter names if available
+        let param_names: Option<Vec<Symbol>> = match self.func.kind() {
+            model::Kind::WithSource(func) => Some(
+                func.info()
+                    .signature
+                    .parameters
+                    .iter()
+                    .map(|(_mut, v, _ty)| v.value.name)
+                    .collect(),
+            ),
+            model::Kind::WithoutSource(_) => None,
+        };
+
+        // Build params, filtering out TxContext
+        let mut name_counts: HashMap<String, usize> = HashMap::new();
+        let mut results = Vec::new();
+
+        // First pass: count name occurrences
+        for (idx, ty) in param_types.iter().enumerate() {
+            if self.type_is_tx_context(ty) {
+                continue;
+            }
+            let name = self.param_to_field_name(
+                param_names.as_ref().map(|v| v[idx]),
+                ty,
+                &type_param_names,
+            );
+            *name_counts.entry(name).or_insert(0) += 1;
+        }
+
+        // Second pass: build params with unique names
+        let mut current_counts: HashMap<String, usize> = HashMap::new();
+        for (idx, ty) in param_types.iter().enumerate() {
+            if self.type_is_tx_context(ty) {
+                continue;
+            }
+
+            let ty = self.strip_ref(ty);
+            let mut name = self.param_to_field_name(
+                param_names.as_ref().map(|v| v[idx]),
+                &ty,
+                &type_param_names,
+            );
+
+            // Handle duplicate names
+            let total = name_counts.get(&name).unwrap_or(&1);
+            if *total > 1 {
+                let count = current_counts.entry(name.clone()).or_insert(0);
+                *count += 1;
+                name = format!("{}{}", name, count);
+            }
+
+            let param_type = self.build_param_type(&ty);
+
+            results.push(FunctionParamIR {
+                ts_name: name,
+                param_type,
+            });
+        }
+
+        results
+    }
+
+    fn param_to_field_name(
+        &self,
+        name: Option<Symbol>,
+        ty: &Type,
+        type_param_names: &[String],
+    ) -> String {
+        if let Some(name) = name {
+            let name_str = name.to_string().to_case(Case::Camel);
+            // When param name is `_`, use type as field name
+            if name_str.is_empty() {
+                self.field_name_from_type(ty, type_param_names)
+            } else {
+                name_str
+            }
+        } else {
+            self.field_name_from_type(ty, type_param_names)
+        }
+    }
+
+    #[allow(clippy::only_used_in_recursion)]
+    fn field_name_from_type(&self, ty: &Type, type_param_names: &[String]) -> String {
+        match ty {
+            Type::U8 => "u8".to_string(),
+            Type::U16 => "u16".to_string(),
+            Type::U32 => "u32".to_string(),
+            Type::U64 => "u64".to_string(),
+            Type::U128 => "u128".to_string(),
+            Type::U256 => "u256".to_string(),
+            Type::Bool => "bool".to_string(),
+            Type::Address => "address".to_string(),
+            Type::Vector(inner) => {
+                "vec".to_string()
+                    + &self
+                        .field_name_from_type(inner, type_param_names)
+                        .to_case(Case::Pascal)
+            }
+            Type::Datatype(dt) => dt.name.to_string().to_case(Case::Camel),
+            Type::Reference(_, inner) => self.field_name_from_type(inner, type_param_names),
+            Type::TypeParameter(idx) => {
+                type_param_names[*idx as usize].clone().to_case(Case::Camel)
+            }
+            Type::Signer => "unknown".to_string(),
+        }
+    }
+
+    /// Build param type. `needs_import` indicates if the type's $typeName will be
+    /// referenced in generated code (true for vector/option element types, false for
+    /// top-level object params that just use obj()).
+    fn build_param_type_inner(&mut self, ty: &Type, needs_import: bool) -> ParamTypeIR {
+        match ty {
+            Type::U8 => ParamTypeIR::Primitive("u8".to_string()),
+            Type::U16 => ParamTypeIR::Primitive("u16".to_string()),
+            Type::U32 => ParamTypeIR::Primitive("u32".to_string()),
+            Type::U64 => ParamTypeIR::Primitive("u64".to_string()),
+            Type::U128 => ParamTypeIR::Primitive("u128".to_string()),
+            Type::U256 => ParamTypeIR::Primitive("u256".to_string()),
+            Type::Bool => ParamTypeIR::Primitive("bool".to_string()),
+            Type::Address => ParamTypeIR::Primitive("address".to_string()),
+            Type::Vector(inner) => {
+                // Vector element types need imports (used in vector(tx, `${Type.$typeName}`, ...))
+                let inner_type = self.build_param_type_inner(inner, true);
+                ParamTypeIR::Vector(Box::new(inner_type))
+            }
+            Type::Datatype(dt) => {
+                // Check for special types
+                match (dt.module.address, dt.module.name.as_str(), dt.name.as_str()) {
+                    (AccountAddress::ONE, "string", "String") => {
+                        // Import String from move-stdlib/string
+                        self.add_special_import("String", dt.module.address, dt.module.name, None);
+                        ParamTypeIR::StringType {
+                            module: "string".to_string(),
+                        }
+                    }
+                    (AccountAddress::ONE, "ascii", "String") => {
+                        // Import String as String1 from move-stdlib/ascii
+                        self.add_special_import(
+                            "String",
+                            dt.module.address,
+                            dt.module.name,
+                            Some("String1"),
+                        );
+                        ParamTypeIR::StringType {
+                            module: "ascii".to_string(),
+                        }
+                    }
+                    (AccountAddress::TWO, "object", "ID") => {
+                        // Import ID from sui/object
+                        self.add_special_import("ID", dt.module.address, dt.module.name, None);
+                        ParamTypeIR::ID
+                    }
+                    (AccountAddress::ONE, "option", "Option") => {
+                        // Build the inner type first to check if it's pure
+                        let inner = self.build_param_type_inner(&dt.type_arguments[0], true);
+
+                        // Import Option if:
+                        // 1. We're in a nested context (needs_import = true)
+                        // 2. The inner type is pure (because pure() uses ${Option.$typeName} in the BCS string)
+                        // For non-pure inner types at top level, option() helper is used which doesn't need the import
+                        if needs_import || inner.is_pure() {
+                            self.add_special_import(
+                                "Option",
+                                dt.module.address,
+                                dt.module.name,
+                                None,
+                            );
+                        }
+                        ParamTypeIR::Option(Box::new(inner))
+                    }
+                    _ => {
+                        // Regular struct/enum - only import if $typeName will be used
+                        let class_name = if needs_import {
+                            self.get_import_for_datatype(dt)
+                        } else {
+                            // Don't need import, just use the type name
+                            dt.name.to_string()
+                        };
+                        let type_args: Vec<_> = dt
+                            .type_arguments
+                            .iter()
+                            .map(|ta| self.build_param_type_inner(ta, needs_import))
+                            .collect();
+                        ParamTypeIR::Struct {
+                            class_name,
+                            type_args,
+                        }
+                    }
+                }
+            }
+            Type::Reference(_, inner) => self.build_param_type_inner(inner, needs_import),
+            Type::TypeParameter(idx) => {
+                let type_params = self.build_type_params();
+                let name = type_params
+                    .get(*idx as usize)
+                    .cloned()
+                    .unwrap_or_else(|| format!("T{}", idx));
+                ParamTypeIR::TypeParam {
+                    name,
+                    index: *idx as usize,
+                }
+            }
+            Type::Signer => ParamTypeIR::Primitive("address".to_string()),
+        }
+    }
+
+    /// Build param type for a top-level function parameter.
+    /// Top-level object params don't need imports (just passed to obj()).
+    fn build_param_type(&mut self, ty: &Type) -> ParamTypeIR {
+        self.build_param_type_inner(ty, false)
+    }
+
+    fn get_import_for_datatype(
+        &mut self,
+        dt: &move_binary_format::normalized::Datatype<Symbol>,
+    ) -> String {
+        let pkg_addr = dt.module.address;
+        let mod_name = dt.module.name;
+        let name = dt.name.to_string();
+
+        // Check for duplicate class names (need alias)
+        let mut alias = None;
+        if let Some(existing) = self.struct_imports.get(&name) {
+            if existing.path != self.get_import_path(pkg_addr, mod_name) {
+                // Need to create an alias
+                let alias_name = format!("{}_{}", name, self.struct_imports.len());
+                alias = Some(alias_name);
+            } else {
+                // Same import, reuse
+                return name;
+            }
+        }
+
+        let path = self.get_import_path(pkg_addr, mod_name);
+        let class_name = if let Some(ref alias_name) = alias {
+            alias_name.clone()
+        } else {
+            name.clone()
+        };
+
+        self.struct_imports.insert(
+            class_name.clone(),
+            FunctionStructImport {
+                class_name: name.clone(),
+                path,
+                alias,
+            },
+        );
+
+        class_name
+    }
+
+    /// Add import for special types like String, Option, ID.
+    /// Uses the unified get_import_path logic - no hardcoding of package names.
+    fn add_special_import(
+        &mut self,
+        class_name: &str,
+        pkg_addr: AccountAddress,
+        mod_name: Symbol,
+        alias: Option<&str>,
+    ) {
+        let import_key = alias.unwrap_or(class_name).to_string();
+
+        // Skip if already imported
+        if self.struct_imports.contains_key(&import_key) {
+            return;
+        }
+
+        let path = self.get_import_path(pkg_addr, mod_name);
+
+        self.struct_imports.insert(
+            import_key,
+            FunctionStructImport {
+                class_name: class_name.to_string(),
+                path,
+                alias: alias.map(|s| s.to_string()),
+            },
+        );
+    }
+
+    /// Returns the import path for a module, following the same logic as the old gen.rs.
+    /// This handles all cases uniformly without hardcoding system package names.
+    fn get_import_path(&self, pkg_addr: AccountAddress, mod_name: Symbol) -> String {
+        let mod_import_name = module_import_name(mod_name);
+
+        if pkg_addr == self.package_address && mod_name == self.module_name {
+            // Same module - for functions.ts, we import from ./structs
+            return "./structs".to_string();
+        }
+
+        if pkg_addr == self.package_address {
+            // Same package, different module
+            return format!("../{}/structs", mod_import_name);
+        }
+
+        // Different package - check if it's a top-level package
+        let member_is_top_level = self.top_level_pkg_names.contains_key(&pkg_addr);
+
+        if self.is_top_level && member_is_top_level {
+            // Both current and target are top-level packages
+            let member_pkg_name =
+                package_import_name(*self.top_level_pkg_names.get(&pkg_addr).unwrap());
+            format!("../../{}/{}/structs", member_pkg_name, mod_import_name)
+        } else if self.is_top_level {
+            // Current is top-level, target is a dependency
+            let dep_dir = if self.is_source { "source" } else { "onchain" };
+            format!(
+                "../../_dependencies/{}/{}/{}/structs",
+                dep_dir,
+                pkg_addr.to_hex_literal(),
+                mod_import_name
+            )
+        } else if member_is_top_level {
+            // Current is a dependency, target is top-level
+            let member_pkg_name =
+                package_import_name(*self.top_level_pkg_names.get(&pkg_addr).unwrap());
+            format!(
+                "../../../../{}/{}/structs",
+                member_pkg_name, mod_import_name
+            )
+        } else {
+            // Both are dependencies
+            format!(
+                "../../{}/{}/structs",
+                pkg_addr.to_hex_literal(),
+                mod_import_name
+            )
+        }
+    }
+
+    #[allow(clippy::only_used_in_recursion)]
+    fn type_is_tx_context(&self, ty: &Type) -> bool {
+        match ty {
+            Type::Datatype(dt) => {
+                dt.module.address == AccountAddress::TWO
+                    && dt.module.name.as_str() == "tx_context"
+                    && dt.name.as_str() == "TxContext"
+            }
+            Type::Reference(_, inner) => self.type_is_tx_context(inner),
+            _ => false,
+        }
+    }
+
+    #[allow(clippy::only_used_in_recursion)]
+    fn strip_ref(&self, ty: &Type) -> Type {
+        match ty {
+            Type::Reference(_, inner) => self.strip_ref(inner),
+            _ => ty.clone(),
+        }
+    }
+
+    #[allow(clippy::only_used_in_recursion)]
+    fn type_uses_generic(&self, ty: &ParamTypeIR) -> bool {
+        match ty {
+            ParamTypeIR::TypeParam { .. } => true,
+            ParamTypeIR::Vector(inner) => self.type_uses_generic(inner),
+            ParamTypeIR::Option(inner) => self.type_uses_generic(inner),
+            _ => false,
+        }
+    }
+
+    #[allow(clippy::only_used_in_recursion)]
+    fn type_uses_option(&self, ty: &ParamTypeIR) -> bool {
+        match ty {
+            ParamTypeIR::Option(inner) => !inner.is_pure(),
+            ParamTypeIR::Vector(inner) => self.type_uses_option(inner),
+            _ => false,
+        }
+    }
+
+    #[allow(clippy::only_used_in_recursion)]
+    fn type_uses_vector(&self, ty: &ParamTypeIR) -> bool {
+        match ty {
+            ParamTypeIR::Vector(inner) => !inner.is_pure(),
+            ParamTypeIR::Option(inner) => self.type_uses_vector(inner),
+            _ => false,
+        }
+    }
+
+    #[allow(clippy::only_used_in_recursion)]
+    fn type_uses_obj(&self, ty: &ParamTypeIR) -> bool {
+        match ty {
+            ParamTypeIR::Struct { .. } => true,
+            ParamTypeIR::Vector(inner) => self.type_uses_obj(inner),
+            ParamTypeIR::Option(inner) => self.type_uses_obj(inner),
+            _ => false,
+        }
+    }
+}
+
+/// Generate functions.ts content for a module.
+pub fn gen_module_functions<HasSource: SourceKind>(
+    module: &model::Module<HasSource>,
+    top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
+    is_source: bool,
+    levels_from_root: u8,
+) -> String {
+    use super::functions::emit_functions_file;
+
+    let functions: Vec<_> = module
+        .functions()
+        .filter_map(|func| {
+            FunctionIRBuilder::new(func, top_level_pkg_names, is_source, levels_from_root)
+        })
+        .map(|builder| builder.build())
+        .collect();
+
+    emit_functions_file(&functions, levels_from_root)
+}
