@@ -268,6 +268,14 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
             Type::Datatype(dt) => {
                 let field_module = self.strct.model().module(dt.module);
 
+                // Build full type name for reliable matching (e.g., "0x1::string::String")
+                let full_type_name = format!(
+                    "{}::{}::{}",
+                    dt.module.address.to_hex_literal(),
+                    dt.module.name,
+                    dt.name
+                );
+
                 // Get the struct/enum from the module
                 let (class_name, type_params, kind) = match field_module.datatype(dt.name) {
                     Datatype::Struct(s) => {
@@ -300,6 +308,7 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
 
                 FieldTypeIR::Datatype {
                     class_name,
+                    full_type_name,
                     type_args,
                     type_arg_is_phantom,
                     kind,
@@ -909,6 +918,14 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
     ) -> FieldTypeIR {
         let field_module = self.enum_.model().module(dt.module);
 
+        // Build full type name for reliable matching (e.g., "0x1::string::String")
+        let full_type_name = format!(
+            "{}::{}::{}",
+            dt.module.address.to_hex_literal(),
+            dt.module.name,
+            dt.name
+        );
+
         // Get the struct/enum from the module
         let (class_name, compiled_type_params, kind) = match field_module.datatype(dt.name) {
             Datatype::Struct(s) => {
@@ -943,6 +960,7 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
 
         FieldTypeIR::Datatype {
             class_name,
+            full_type_name,
             type_args,
             type_arg_is_phantom,
             kind,

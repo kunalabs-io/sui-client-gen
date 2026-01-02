@@ -7,7 +7,9 @@
 
 use indoc::formatdoc;
 
-use super::structs::{FieldIR, PackageInfo, TypeParamIR};
+use super::structs::{
+    is_balance_type, is_option_type, is_primitive_like_type, FieldIR, PackageInfo, TypeParamIR,
+};
 
 /// Represents a Move enum for TypeScript code generation.
 #[derive(Debug, Clone)]
@@ -846,35 +848,30 @@ impl EnumIR {
                 )
             }
             FieldTypeIR::Datatype {
-                class_name,
+                full_type_name,
                 type_args,
                 ..
             } => {
-                // Special cases for primitive-like types
-                match class_name.as_str() {
-                    "UID" | "ID" | "String" | "Char" | "Url" | "Ascii" | "AsciiString"
-                    | "TypeName" => format!("        this[{}],", index),
-                    "Option" | "Balance" => {
-                        let ts_type = field_type.to_ts_type();
-                        let bcs_name = field_type.to_json_bcs_name();
-                        format!(
-                            "        fieldToJSON<{}>(`{}`, this[{}]),",
-                            ts_type, bcs_name, index
-                        )
-                    }
-                    _ => {
-                        if type_args.is_empty() {
-                            format!("        this[{}].toJSONField(),", index)
-                        } else {
-                            // Generic struct - use fieldToJSON
-                            let ts_type = field_type.to_ts_type();
-                            let bcs_name = field_type.to_json_bcs_name();
-                            format!(
-                                "        fieldToJSON<{}>(`{}`, this[{}]),",
-                                ts_type, bcs_name, index
-                            )
-                        }
-                    }
+                // Check if this is a primitive-like type based on full type path
+                if is_primitive_like_type(full_type_name) {
+                    format!("        this[{}],", index)
+                } else if is_option_type(full_type_name) || is_balance_type(full_type_name) {
+                    let ts_type = field_type.to_ts_type();
+                    let bcs_name = field_type.to_json_bcs_name();
+                    format!(
+                        "        fieldToJSON<{}>(`{}`, this[{}]),",
+                        ts_type, bcs_name, index
+                    )
+                } else if type_args.is_empty() {
+                    format!("        this[{}].toJSONField(),", index)
+                } else {
+                    // Generic struct - use fieldToJSON
+                    let ts_type = field_type.to_ts_type();
+                    let bcs_name = field_type.to_json_bcs_name();
+                    format!(
+                        "        fieldToJSON<{}>(`{}`, this[{}]),",
+                        ts_type, bcs_name, index
+                    )
                 }
             }
             FieldTypeIR::TypeParam { name, .. } => {
