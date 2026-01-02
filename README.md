@@ -232,6 +232,7 @@ specialTypes(tx, {
 - Since whitespace detection relies on some Rust nightly features which are currently unstable (https://github.com/udoprog/genco/issues/39#issuecomment-1569076737), the generated code is not formatted nicely. Usage of formatters on the generated code (e.g., `prettier`, `eslint`) is recommended.
 - Because ESLint renames some types (e.g., `String` -> `string`) due to the `@typescript-eslint/ban-types` rule which breaks the generated code, an `.eslintrc.json` file is generated in the root directory to turn off this rule.
 - When re-running the generator, the files generated on previous run will _not_ be automatically deleted in order to avoid accidental data wipes. The old files can either be deleted manually before re-running the tool (it's safe to delete everything aside from `gen.toml`) or by running the generator with `--clean` (use with caution).
+- When running the generator with default rpc `https://fullnode.mainnet.sui.io:443`, you might get an error `Error: Request rejected 429`; in case of such, you should consider switching to private RPC with higher rate-limits than the default one.
 
 ## Docs
 
