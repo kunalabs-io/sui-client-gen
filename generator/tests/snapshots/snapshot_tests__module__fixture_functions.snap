@@ -1,0 +1,38 @@
+---
+source: generator/tests/snapshot_tests.rs
+expression: output
+---
+import { PUBLISHED_AT } from '..'
+import { GenericArg, generic, pure } from '../../_framework/util'
+import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
+
+export function createBar(tx: Transaction, value: bigint | TransactionArgument) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::fixture::create_bar`,
+    arguments: [pure(tx, value, `u64`)],
+  })
+}
+
+export function createWithGenericField(tx: Transaction, typeArg: string, genericField: GenericArg) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::fixture::create_with_generic_field`,
+    typeArguments: [typeArg],
+    arguments: [generic(tx, `${typeArg}`, genericField)],
+  })
+}
+
+export interface CreateWithTwoGenericsArgs {
+  genericField1: GenericArg
+  genericField2: GenericArg
+}
+
+export function createWithTwoGenerics(tx: Transaction, typeArgs: [string, string], args: CreateWithTwoGenericsArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::fixture::create_with_two_generics`,
+    typeArguments: typeArgs,
+    arguments: [
+      generic(tx, `${typeArgs[0]}`, args.genericField1),
+      generic(tx, `${typeArgs[1]}`, args.genericField2),
+    ],
+  })
+}

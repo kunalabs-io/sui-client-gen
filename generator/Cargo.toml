@@ -29,3 +29,6 @@ move-bytecode-utils = { git = "https://github.com/MystenLabs/sui/", rev = "mainn
 move-compiler = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
 move-package = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
 move-command-line-common = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
+
+[dev-dependencies]
+insta = { version = "1.41", features = ["glob"] }

@@ -1,0 +1,23 @@
+---
+source: generator/tests/snapshot_tests.rs
+expression: output
+---
+import { PUBLISHED_AT } from '..'
+import { GenericArg, generic } from '../../_framework/util'
+import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
+
+export interface CreateWithTwoGenericsArgs {
+  genericField1: GenericArg
+  genericField2: GenericArg
+}
+
+export function createWithTwoGenerics(tx: Transaction, typeArgs: [string, string], args: CreateWithTwoGenericsArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::fixture::create_with_two_generics`,
+    typeArguments: typeArgs,
+    arguments: [
+      generic(tx, `${typeArgs[0]}`, args.genericField1),
+      generic(tx, `${typeArgs[1]}`, args.genericField2),
+    ],
+  })
+}

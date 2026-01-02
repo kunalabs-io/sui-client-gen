@@ -1,0 +1,334 @@
+---
+source: generator/tests/snapshot_tests.rs
+expression: output
+---
+/* ============================== Foo =============================== */
+
+export function isFoo(type: string): boolean {
+  type = compressSuiType(type)
+  return type.startsWith(`${PKG_V1}::fixture::Foo` + '<')
+}
+
+export interface FooFields<T extends TypeArgument> {
+  id: ToField<UID>
+  generic: ToField<T>
+  reifiedPrimitiveVec: ToField<Vector<'u64'>>
+  reifiedObjectVec: ToField<Vector<Bar>>
+  genericVec: ToField<Vector<T>>
+  genericVecNested: ToField<Vector<WithTwoGenerics<T, 'u8'>>>
+  twoGenerics: ToField<WithTwoGenerics<T, Bar>>
+  twoGenericsReifiedPrimitive: ToField<WithTwoGenerics<'u16', 'u64'>>
+  twoGenericsReifiedObject: ToField<WithTwoGenerics<Bar, Bar>>
+  twoGenericsNested: ToField<WithTwoGenerics<T, WithTwoGenerics<'u8', 'u8'>>>
+  twoGenericsReifiedNested: ToField<WithTwoGenerics<Bar, WithTwoGenerics<'u8', 'u8'>>>
+  twoGenericsNestedVec: ToField<Vector<WithTwoGenerics<Bar, Vector<WithTwoGenerics<T, 'u8'>>>>>
+  dummy: ToField<Dummy>
+  other: ToField<StructFromOtherModule>
+}
+
+export type FooReified<T extends TypeArgument> = Reified<Foo<T>, FooFields<T>>
+
+export class Foo<T extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
+  static readonly $typeName = `${PKG_V1}::fixture::Foo`
+  static readonly $numTypeParams = 1
+  static readonly $isPhantom = [false] as const
+
+  readonly $typeName = Foo.$typeName
+  readonly $fullTypeName: `${typeof PKG_V1}::fixture::Foo<${ToTypeStr<T>}>`
+  readonly $typeArgs: [ToTypeStr<T>]
+  readonly $isPhantom = Foo.$isPhantom
+
+  readonly id: ToField<UID>
+  readonly generic: ToField<T>
+  readonly reifiedPrimitiveVec: ToField<Vector<'u64'>>
+  readonly reifiedObjectVec: ToField<Vector<Bar>>
+  readonly genericVec: ToField<Vector<T>>
+  readonly genericVecNested: ToField<Vector<WithTwoGenerics<T, 'u8'>>>
+  readonly twoGenerics: ToField<WithTwoGenerics<T, Bar>>
+  readonly twoGenericsReifiedPrimitive: ToField<WithTwoGenerics<'u16', 'u64'>>
+  readonly twoGenericsReifiedObject: ToField<WithTwoGenerics<Bar, Bar>>
+  readonly twoGenericsNested: ToField<WithTwoGenerics<T, WithTwoGenerics<'u8', 'u8'>>>
+  readonly twoGenericsReifiedNested: ToField<WithTwoGenerics<Bar, WithTwoGenerics<'u8', 'u8'>>>
+  readonly twoGenericsNestedVec: ToField<Vector<WithTwoGenerics<Bar, Vector<WithTwoGenerics<T, 'u8'>>>>>
+  readonly dummy: ToField<Dummy>
+  readonly other: ToField<StructFromOtherModule>
+
+  private constructor(typeArgs: [ToTypeStr<T>], fields: FooFields<T>) {
+    this.$fullTypeName = composeSuiType(
+      Foo.$typeName,
+      ...typeArgs
+    ) as `${typeof PKG_V1}::fixture::Foo<${ToTypeStr<T>}>`
+    this.$typeArgs = typeArgs
+
+    this.id = fields.id
+    this.generic = fields.generic
+    this.reifiedPrimitiveVec = fields.reifiedPrimitiveVec
+    this.reifiedObjectVec = fields.reifiedObjectVec
+    this.genericVec = fields.genericVec
+    this.genericVecNested = fields.genericVecNested
+    this.twoGenerics = fields.twoGenerics
+    this.twoGenericsReifiedPrimitive = fields.twoGenericsReifiedPrimitive
+    this.twoGenericsReifiedObject = fields.twoGenericsReifiedObject
+    this.twoGenericsNested = fields.twoGenericsNested
+    this.twoGenericsReifiedNested = fields.twoGenericsReifiedNested
+    this.twoGenericsNestedVec = fields.twoGenericsNestedVec
+    this.dummy = fields.dummy
+    this.other = fields.other
+  }
+
+  static reified<T extends Reified<TypeArgument, any>>(
+    T: T
+  ): FooReified<ToTypeArgument<T>> {
+    const reifiedBcs = Foo.bcs(toBcs(T))
+    return {
+      typeName: Foo.$typeName,
+      fullTypeName: composeSuiType(
+        Foo.$typeName,
+        ...[extractType(T)]
+      ) as `${typeof PKG_V1}::fixture::Foo<${ToTypeStr<ToTypeArgument<T>>}>`,
+      typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      isPhantom: Foo.$isPhantom,
+      reifiedTypeArgs: [T],
+      fromFields: (fields: Record<string, any>) => Foo.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Foo.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => Foo.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
+      fromJSONField: (field: any) => Foo.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => Foo.fromJSON(T, json),
+      fromSuiParsedData: (content: SuiParsedData) => Foo.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => Foo.fromSuiObjectData(T, content),
+      fetch: async (client: SuiClient, id: string) => Foo.fetch(client, T, id),
+      new: (fields: FooFields<ToTypeArgument<T>>) => {
+        return new Foo([extractType(T)], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return Foo.reified
+  }
+
+  static phantom<T extends Reified<TypeArgument, any>>(
+    T: T
+  ): PhantomReified<ToTypeStr<Foo<ToTypeArgument<T>>>> {
+    return phantom(Foo.reified(T))
+  }
+
+  static get p() {
+    return Foo.phantom
+  }
+
+  private static instantiateBcs() {
+    return <T extends BcsType<any>>(T: T) =>
+      bcs.struct(`Foo<${T.name}>`, {
+      id: UID.bcs,
+      generic: T,
+      reified_primitive_vec: bcs.vector(bcs.u64()),
+      reified_object_vec: bcs.vector(Bar.bcs),
+      generic_vec: bcs.vector(T),
+      generic_vec_nested: bcs.vector(WithTwoGenerics.bcs(T, bcs.u8())),
+      two_generics: WithTwoGenerics.bcs(T, Bar.bcs),
+      two_generics_reified_primitive: WithTwoGenerics.bcs(bcs.u16(), bcs.u64()),
+      two_generics_reified_object: WithTwoGenerics.bcs(Bar.bcs, Bar.bcs),
+      two_generics_nested: WithTwoGenerics.bcs(T, WithTwoGenerics.bcs(bcs.u8(), bcs.u8())),
+      two_generics_reified_nested: WithTwoGenerics.bcs(Bar.bcs, WithTwoGenerics.bcs(bcs.u8(), bcs.u8())),
+      two_generics_nested_vec: bcs.vector(WithTwoGenerics.bcs(Bar.bcs, bcs.vector(WithTwoGenerics.bcs(T, bcs.u8())))),
+      dummy: Dummy.bcs,
+      other: StructFromOtherModule.bcs,
+      })
+  }
+
+  private static cachedBcs: ReturnType<typeof Foo.instantiateBcs> | null = null
+
+  static get bcs(): ReturnType<typeof Foo.instantiateBcs> {
+    if (!Foo.cachedBcs) {
+      Foo.cachedBcs = Foo.instantiateBcs()
+    }
+    return Foo.cachedBcs
+  }
+
+  static fromFields<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    fields: Record<string, any>
+  ): Foo<ToTypeArgument<T>> {
+    return Foo.reified(typeArg).new({
+      id: decodeFromFields(UID.reified(), fields.id),
+      generic: decodeFromFields(typeArg, fields.generic),
+      reifiedPrimitiveVec: decodeFromFields(reified.vector('u64'), fields.reified_primitive_vec),
+      reifiedObjectVec: decodeFromFields(reified.vector(Bar.reified()), fields.reified_object_vec),
+      genericVec: decodeFromFields(reified.vector(typeArg), fields.generic_vec),
+      genericVecNested: decodeFromFields(reified.vector(WithTwoGenerics.reified(typeArg, 'u8')), fields.generic_vec_nested),
+      twoGenerics: decodeFromFields(WithTwoGenerics.reified(typeArg, Bar.reified()), fields.two_generics),
+      twoGenericsReifiedPrimitive: decodeFromFields(WithTwoGenerics.reified('u16', 'u64'), fields.two_generics_reified_primitive),
+      twoGenericsReifiedObject: decodeFromFields(WithTwoGenerics.reified(Bar.reified(), Bar.reified()), fields.two_generics_reified_object),
+      twoGenericsNested: decodeFromFields(WithTwoGenerics.reified(typeArg, WithTwoGenerics.reified('u8', 'u8')), fields.two_generics_nested),
+      twoGenericsReifiedNested: decodeFromFields(WithTwoGenerics.reified(Bar.reified(), WithTwoGenerics.reified('u8', 'u8')), fields.two_generics_reified_nested),
+      twoGenericsNestedVec: decodeFromFields(reified.vector(WithTwoGenerics.reified(Bar.reified(), reified.vector(WithTwoGenerics.reified(typeArg, 'u8')))), fields.two_generics_nested_vec),
+      dummy: decodeFromFields(Dummy.reified(), fields.dummy),
+      other: decodeFromFields(StructFromOtherModule.reified(), fields.other),
+    })
+  }
+
+  static fromFieldsWithTypes<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    item: FieldsWithTypes
+  ): Foo<ToTypeArgument<T>> {
+    if (!isFoo(item.type)) {
+      throw new Error('not a Foo type')
+    }
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
+
+    return Foo.reified(typeArg).new({
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      generic: decodeFromFieldsWithTypes(typeArg, item.fields.generic),
+      reifiedPrimitiveVec: decodeFromFieldsWithTypes(reified.vector('u64'), item.fields.reified_primitive_vec),
+      reifiedObjectVec: decodeFromFieldsWithTypes(reified.vector(Bar.reified()), item.fields.reified_object_vec),
+      genericVec: decodeFromFieldsWithTypes(reified.vector(typeArg), item.fields.generic_vec),
+      genericVecNested: decodeFromFieldsWithTypes(reified.vector(WithTwoGenerics.reified(typeArg, 'u8')), item.fields.generic_vec_nested),
+      twoGenerics: decodeFromFieldsWithTypes(WithTwoGenerics.reified(typeArg, Bar.reified()), item.fields.two_generics),
+      twoGenericsReifiedPrimitive: decodeFromFieldsWithTypes(WithTwoGenerics.reified('u16', 'u64'), item.fields.two_generics_reified_primitive),
+      twoGenericsReifiedObject: decodeFromFieldsWithTypes(WithTwoGenerics.reified(Bar.reified(), Bar.reified()), item.fields.two_generics_reified_object),
+      twoGenericsNested: decodeFromFieldsWithTypes(WithTwoGenerics.reified(typeArg, WithTwoGenerics.reified('u8', 'u8')), item.fields.two_generics_nested),
+      twoGenericsReifiedNested: decodeFromFieldsWithTypes(WithTwoGenerics.reified(Bar.reified(), WithTwoGenerics.reified('u8', 'u8')), item.fields.two_generics_reified_nested),
+      twoGenericsNestedVec: decodeFromFieldsWithTypes(reified.vector(WithTwoGenerics.reified(Bar.reified(), reified.vector(WithTwoGenerics.reified(typeArg, 'u8')))), item.fields.two_generics_nested_vec),
+      dummy: decodeFromFieldsWithTypes(Dummy.reified(), item.fields.dummy),
+      other: decodeFromFieldsWithTypes(StructFromOtherModule.reified(), item.fields.other),
+    })
+  }
+
+  static fromBcs<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    data: Uint8Array
+  ): Foo<ToTypeArgument<T>> {
+    const typeArgs = [typeArg]
+                return Foo.fromFields(typeArg, Foo.bcs(toBcs(typeArg)).parse(data))
+  }
+
+  toJSONField() {
+    return {
+      id: this.id,
+      generic: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.generic),
+      reifiedPrimitiveVec: fieldToJSON<Vector<'u64'>>(`vector<u64>`, this.reifiedPrimitiveVec),
+      reifiedObjectVec: fieldToJSON<Vector<Bar>>(`vector<${Bar.$typeName}>`, this.reifiedObjectVec),
+      genericVec: fieldToJSON<Vector<T>>(`vector<${this.$typeArgs[0]}>`, this.genericVec),
+      genericVecNested: fieldToJSON<Vector<WithTwoGenerics<T, 'u8'>>>(`vector<${WithTwoGenerics.$typeName}<${this.$typeArgs[0]}, u8>>`, this.genericVecNested),
+      twoGenerics: this.twoGenerics.toJSONField(),
+      twoGenericsReifiedPrimitive: this.twoGenericsReifiedPrimitive.toJSONField(),
+      twoGenericsReifiedObject: this.twoGenericsReifiedObject.toJSONField(),
+      twoGenericsNested: this.twoGenericsNested.toJSONField(),
+      twoGenericsReifiedNested: this.twoGenericsReifiedNested.toJSONField(),
+      twoGenericsNestedVec: fieldToJSON<Vector<WithTwoGenerics<Bar, Vector<WithTwoGenerics<T, 'u8'>>>>>(`vector<${WithTwoGenerics.$typeName}<${Bar.$typeName}, vector<${WithTwoGenerics.$typeName}<${this.$typeArgs[0]}, u8>>>>`, this.twoGenericsNestedVec),
+      dummy: this.dummy.toJSONField(),
+      other: this.other.toJSONField(),
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    field: any
+  ): Foo<ToTypeArgument<T>> {
+    return Foo.reified(typeArg).new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      generic: decodeFromJSONField(typeArg, field.generic),
+      reifiedPrimitiveVec: decodeFromJSONField(reified.vector('u64'), field.reifiedPrimitiveVec),
+      reifiedObjectVec: decodeFromJSONField(reified.vector(Bar.reified()), field.reifiedObjectVec),
+      genericVec: decodeFromJSONField(reified.vector(typeArg), field.genericVec),
+      genericVecNested: decodeFromJSONField(reified.vector(WithTwoGenerics.reified(typeArg, 'u8')), field.genericVecNested),
+      twoGenerics: decodeFromJSONField(WithTwoGenerics.reified(typeArg, Bar.reified()), field.twoGenerics),
+      twoGenericsReifiedPrimitive: decodeFromJSONField(WithTwoGenerics.reified('u16', 'u64'), field.twoGenericsReifiedPrimitive),
+      twoGenericsReifiedObject: decodeFromJSONField(WithTwoGenerics.reified(Bar.reified(), Bar.reified()), field.twoGenericsReifiedObject),
+      twoGenericsNested: decodeFromJSONField(WithTwoGenerics.reified(typeArg, WithTwoGenerics.reified('u8', 'u8')), field.twoGenericsNested),
+      twoGenericsReifiedNested: decodeFromJSONField(WithTwoGenerics.reified(Bar.reified(), WithTwoGenerics.reified('u8', 'u8')), field.twoGenericsReifiedNested),
+      twoGenericsNestedVec: decodeFromJSONField(reified.vector(WithTwoGenerics.reified(Bar.reified(), reified.vector(WithTwoGenerics.reified(typeArg, 'u8')))), field.twoGenericsNestedVec),
+      dummy: decodeFromJSONField(Dummy.reified(), field.dummy),
+      other: decodeFromJSONField(StructFromOtherModule.reified(), field.other),
+    })
+  }
+
+  static fromJSON<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    json: Record<string, any>
+  ): Foo<ToTypeArgument<T>> {
+    if (json.$typeName !== Foo.$typeName) {
+      throw new Error(`not a Foo json object: expected '${Foo.$typeName}' but got '${json.$typeName}'`)
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Foo.$typeName, ...[extractType(typeArg)]),
+      json.$typeArgs,
+      [typeArg]
+    )
+
+    return Foo.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    content: SuiParsedData
+  ): Foo<ToTypeArgument<T>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isFoo(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a Foo object`)
+    }
+    return Foo.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static fromSuiObjectData<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    data: SuiObjectData
+  ): Foo<ToTypeArgument<T>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isFoo(data.bcs.type)) {
+        throw new Error(`object at is not a Foo object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        )
+      }
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
+      }
+
+      return Foo.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return Foo.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
+  static async fetch<T extends Reified<TypeArgument, any>>(
+    client: SuiClient,
+    typeArg: T,
+    id: string
+  ): Promise<Foo<ToTypeArgument<T>>> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching Foo object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isFoo(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a Foo object`)
+    }
+
+    return Foo.fromSuiObjectData(typeArg, res.data)
+  }
+}
