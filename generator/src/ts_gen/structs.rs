@@ -83,7 +83,10 @@ pub enum FieldTypeIR {
     /// Reference to a datatype (struct or enum) e.g., UID, Coin<T>, Action
     Datatype {
         /// Class name to use in code (e.g., "UID", "Coin", "Action")
+        /// This may be aliased (e.g., "StringString" for 0x1::string::String)
         class_name: String,
+        /// Full Move type name for reliable matching (e.g., "0x1::string::String")
+        full_type_name: String,
         /// Type arguments
         type_args: Vec<FieldTypeIR>,
         /// Whether each type arg position is phantom (based on parent datatype's declaration)
@@ -98,6 +101,35 @@ pub enum FieldTypeIR {
         /// Index of the type parameter (0-based)
         index: usize,
     },
+}
+
+/// Check if a type (by full type path) is "primitive-like" and should be
+/// serialized directly to JSON without calling .toJSONField().
+///
+/// These are types from the Move stdlib that wrap simple values and serialize
+/// as their inner value (string, etc.) rather than as structured objects.
+pub fn is_primitive_like_type(full_type_name: &str) -> bool {
+    matches!(
+        full_type_name,
+        // Object identifiers
+        "0x2::object::UID" | "0x2::object::ID" |
+        // String types
+        "0x1::string::String" | "0x1::ascii::String" | "0x1::ascii::Char" |
+        // URL type
+        "0x2::url::Url" |
+        // Type name
+        "0x1::type_name::TypeName"
+    )
+}
+
+/// Check if a type is the Option type from move-stdlib.
+pub fn is_option_type(full_type_name: &str) -> bool {
+    full_type_name == "0x1::option::Option"
+}
+
+/// Check if a type is the Balance type from sui-framework.
+pub fn is_balance_type(full_type_name: &str) -> bool {
+    full_type_name == "0x2::balance::Balance"
 }
 
 /// An import for a datatype (struct or enum) class from another module.
@@ -1460,7 +1492,7 @@ impl FieldTypeIR {
     pub fn needs_field_to_json(&self) -> bool {
         match self {
             FieldTypeIR::Vector(_) => true,
-            FieldTypeIR::Datatype { class_name, .. } => class_name == "Option",
+            FieldTypeIR::Datatype { full_type_name, .. } => is_option_type(full_type_name),
             FieldTypeIR::TypeParam { .. } => true,
             _ => false,
         }
@@ -1476,6 +1508,7 @@ impl FieldTypeIR {
                 type_args,
                 type_arg_is_phantom,
                 kind,
+                ..
             } => {
                 // For enums, use {Name}Variant instead of {Name}
                 let type_name = if *kind == DatatypeKind::Enum {
@@ -1697,23 +1730,21 @@ impl FieldTypeIR {
                     field_name, inner_ts, bcs_name, field_name
                 )
             }
-            FieldTypeIR::Datatype { class_name, .. } => {
-                // Special cases for primitive-like types that don't have toJSONField()
-                match class_name.as_str() {
-                    "UID" | "ID" | "String" | "Char" | "Url" | "Ascii" | "AsciiString"
-                    | "TypeName" => {
-                        format!("      {}: this.{},", field_name, field_name)
-                    }
+            FieldTypeIR::Datatype { full_type_name, .. } => {
+                // Check if this is a primitive-like type based on full type path
+                // These types serialize directly to JSON without .toJSONField()
+                if is_primitive_like_type(full_type_name) {
+                    format!("      {}: this.{},", field_name, field_name)
+                } else if is_option_type(full_type_name) {
                     // Option needs fieldToJSON with type annotation
-                    "Option" => {
-                        let bcs_name = self.to_json_bcs_name();
-                        let ts_type = self.to_json_ts_type();
-                        format!(
-                            "      {}: fieldToJSON<{}>(`{}`, this.{}),",
-                            field_name, ts_type, bcs_name, field_name
-                        )
-                    }
-                    _ => format!("      {}: this.{}.toJSONField(),", field_name, field_name),
+                    let bcs_name = self.to_json_bcs_name();
+                    let ts_type = self.to_json_ts_type();
+                    format!(
+                        "      {}: fieldToJSON<{}>(`{}`, this.{}),",
+                        field_name, ts_type, bcs_name, field_name
+                    )
+                } else {
+                    format!("      {}: this.{}.toJSONField(),", field_name, field_name)
                 }
             }
             FieldTypeIR::TypeParam { name, index, .. } => {
@@ -1797,6 +1828,7 @@ mod tests {
                     move_name: "id".to_string(),
                     field_type: FieldTypeIR::Datatype {
                         class_name: "UID".to_string(),
+                        full_type_name: "0x2::object::UID".to_string(),
                         type_args: vec![],
                         type_arg_is_phantom: vec![],
                         kind: DatatypeKind::Struct,
