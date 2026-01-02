@@ -179,12 +179,21 @@ impl StructIR {
     }
 
     /// Emit a complete TypeScript file for this struct (with imports).
-    pub fn emit(&self, framework_path: &str) -> String {
+    ///
+    /// NOTE: This is for testing only. In production, use module-level combined
+    /// imports via `emit_combined_imports_with_enums()` from `builder.rs`.
+    #[cfg(test)]
+    fn emit(&self, framework_path: &str) -> String {
         let imports = self.emit_imports(framework_path);
         let body = self.emit_body();
         format!("{}\n\n{}", imports, body)
     }
 
+    /// Emit import statements for this struct.
+    ///
+    /// NOTE: This is for testing only. In production, use module-level combined
+    /// imports via `emit_combined_imports_with_enums()` from `builder.rs`.
+    #[cfg(test)]
     fn emit_imports(&self, framework_path: &str) -> String {
         let mut lines = Vec::new();
 
