@@ -1,0 +1,37 @@
+---
+source: generator/tests/snapshot_tests.rs
+expression: output
+---
+import { PUBLISHED_AT } from '..'
+import {
+  GenericArg,
+  generic,
+  option,
+  vector
+} from '../../_framework/util'
+import { Bar } from './structs'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+
+export interface CreateSpecialInVectorsArgs {
+  string: Array<string | TransactionArgument> | TransactionArgument
+  asciiString: Array<string | TransactionArgument> | TransactionArgument
+  idField: Array<string | TransactionArgument> | TransactionArgument
+  bar: Array<TransactionObjectInput> | TransactionArgument
+  option: Array<bigint | TransactionArgument | null> | TransactionArgument
+  optionGeneric: Array<GenericArg | null> | TransactionArgument
+}
+
+export function createSpecialInVectors(tx: Transaction, typeArg: string, args: CreateSpecialInVectorsArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::fixture::create_special_in_vectors`,
+    typeArguments: [typeArg],
+    arguments: [
+      pure(tx, args.string, `vector<${String.$typeName}>`),
+      pure(tx, args.asciiString, `vector<${String1.$typeName}>`),
+      pure(tx, args.idField, `vector<${ID.$typeName}>`),
+      vector(tx, `${Bar.$typeName}`, args.bar),
+      pure(tx, args.option, `vector<${Option.$typeName}<u64>>`),
+      vector(tx, `${Option.$typeName}<${typeArg}>`, args.optionGeneric),
+    ],
+  })
+}

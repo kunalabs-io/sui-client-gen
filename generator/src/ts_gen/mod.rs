@@ -16,10 +16,11 @@ mod utils;
 
 // Re-export public API
 pub use builder::{
-    gen_module_functions, gen_module_structs, EnumIRBuilder, FunctionIRBuilder, StructIRBuilder,
+    emit_module_structs_from_ir, gen_module_functions, gen_module_structs, EnumIRBuilder,
+    FunctionIRBuilder, StructIRBuilder,
 };
 pub use enums::{EnumIR, EnumVariantIR};
-pub use functions::{FunctionIR, FunctionParamIR, ParamTypeIR};
+pub use functions::{emit_functions_file, FunctionIR, FunctionParamIR, FunctionStructImport, ParamTypeIR};
 pub use imports::{ImportPathResolver, TsImportsBuilder};
 pub use init::{gen_init_loader, gen_package_init};
 pub use structs::{

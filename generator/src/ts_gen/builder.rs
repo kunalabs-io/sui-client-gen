@@ -1615,3 +1615,52 @@ pub fn gen_module_functions<HasSource: SourceKind>(
 
     emit_functions_file(&functions, &framework_path)
 }
+
+// =============================================================================
+// Test-only helpers for module-level snapshot testing
+// =============================================================================
+
+/// Emit a complete structs.ts file from pre-built IR.
+///
+/// This allows snapshot tests to exercise the full file generation pipeline
+/// without needing Move model building.
+pub fn emit_module_structs_from_ir(
+    structs: &[StructIR],
+    enums: &[EnumIR],
+    framework_path: &str,
+) -> String {
+    use std::collections::HashMap;
+
+    if structs.is_empty() && enums.is_empty() {
+        return String::new();
+    }
+
+    // Collect all imports from structs and enums
+    let mut all_imports: HashMap<String, StructImport> = HashMap::new();
+    for s in structs {
+        for imp in &s.struct_imports {
+            let key = imp.alias.as_ref().unwrap_or(&imp.class_name).clone();
+            all_imports.entry(key).or_insert_with(|| imp.clone());
+        }
+    }
+
+    // Emit combined imports
+    let combined_imports =
+        emit_combined_imports_with_enums(framework_path, &all_imports, structs, enums);
+
+    // Emit struct bodies
+    let struct_bodies: Vec<String> = structs.iter().map(|ir| ir.emit_body()).collect();
+
+    // Emit enum bodies
+    let enum_bodies: Vec<String> = enums.iter().map(|ir| ir.emit_body()).collect();
+
+    let mut parts = vec![combined_imports];
+    if !struct_bodies.is_empty() {
+        parts.push(struct_bodies.join("\n\n"));
+    }
+    if !enum_bodies.is_empty() {
+        parts.push(enum_bodies.join("\n\n"));
+    }
+
+    parts.join("\n\n")
+}

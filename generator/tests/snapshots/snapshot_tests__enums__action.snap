@@ -1,0 +1,398 @@
+---
+source: generator/tests/snapshot_tests.rs
+expression: output
+---
+/* ============================== Action =============================== */
+
+export function isAction(type: string): boolean {
+  type = compressSuiType(type)
+  return type.startsWith(`${PKG_V1}::enums::Action` + '<')
+}
+
+export type ActionVariant<T extends TypeArgument, U extends PhantomTypeArgument> =
+  | ActionStop<T, U>
+  | ActionPause<T, U>
+  | ActionJump<T, U>
+
+export type ActionVariantName = 'Stop' | 'Pause' | 'Jump'
+
+export function isActionVariantName(variant: string): variant is ActionVariantName {
+  return variant === 'Stop' || variant === 'Pause' || variant === 'Jump'
+}
+
+export type ActionFields<T extends TypeArgument, U extends PhantomTypeArgument> =
+  | ActionStopFields
+  | ActionPauseFields<T, U>
+  | ActionJumpFields<T, U>
+
+export type ActionReified<T extends TypeArgument, U extends PhantomTypeArgument> = Reified<
+  ActionVariant<T, U>,
+  ActionFields<T, U>
+>
+
+export class Action {
+  static readonly $typeName = `${PKG_V1}::enums::Action`
+  static readonly $numTypeParams = 2
+  static readonly $isPhantom = [false, true] as const
+
+  static reified<T extends Reified<TypeArgument, any>, U extends PhantomReified<PhantomTypeArgument>>(
+    T: T, U: U
+  ): ActionReified<ToTypeArgument<T>, ToPhantomTypeArgument<U>> {
+    const reifiedBcs = Action.bcs(toBcs(T))
+    return {
+      typeName: Action.$typeName,
+      fullTypeName: composeSuiType(
+        Action.$typeName,
+        ...[extractType(T), extractType(U)]
+      ) as `${typeof PKG_V1}::enums::Action<${ToTypeStr<ToTypeArgument<T>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<U>>}>`,
+      typeArgs: [extractType(T), extractType(U)] as [ToTypeStr<ToTypeArgument<T>>, PhantomToTypeStr<ToPhantomTypeArgument<U>>],
+      isPhantom: Action.$isPhantom,
+      reifiedTypeArgs: [T, U],
+      fromFields: (fields: Record<string, any>) => Action.fromFields([T, U], fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Action.fromFieldsWithTypes([T, U], item),
+      fromBcs: (data: Uint8Array) => Action.fromBcs([T, U], data),
+      bcs: reifiedBcs,
+      fromJSONField: (field: any) => Action.fromJSONField([T, U], field),
+      fromJSON: (json: Record<string, any>) => Action.fromJSON([T, U], json),
+      new: (
+        variant: ActionVariantName,
+        fields: ActionFields<ToTypeArgument<T>, ToPhantomTypeArgument<U>>
+      ) => {
+        switch (variant) {
+          case 'Stop':
+            return new ActionStop([extractType(T), extractType(U)], fields as ActionStopFields)
+          case 'Pause':
+            return new ActionPause(
+              [extractType(T), extractType(U)],
+              fields as ActionPauseFields<ToTypeArgument<T>, ToPhantomTypeArgument<U>>
+            )
+          case 'Jump':
+            return new ActionJump(
+              [extractType(T), extractType(U)],
+              fields as ActionJumpFields<ToTypeArgument<T>, ToPhantomTypeArgument<U>>
+            )
+        }
+      },
+      kind: 'EnumClassReified',
+    } as ActionReified<ToTypeArgument<T>, ToPhantomTypeArgument<U>>
+  }
+
+  static get r() {
+    return Action.reified
+  }
+
+  static phantom<T extends Reified<TypeArgument, any>, U extends PhantomReified<PhantomTypeArgument>>(
+    T: T, U: U
+  ): PhantomReified<ToTypeStr<ActionVariant<ToTypeArgument<T>, ToPhantomTypeArgument<U>>>> {
+    return phantom(Action.reified(T, U))
+  }
+
+  static get p() {
+    return Action.phantom
+  }
+
+  private static instantiateBcs() {
+    return <T extends BcsType<any>>(T: T) =>
+      bcs.enum(`Action<${T.name}>`, {
+      Stop: null,
+      Pause: bcs.struct('ActionPause', {
+        duration: bcs.u32(),
+        generic_field: T,
+        phantom_field: Balance.bcs,
+        reified_field: Option.bcs(bcs.u64()),
+      }),
+      Jump: bcs.tuple([bcs.u64(), T, Balance.bcs, Option.bcs(bcs.u64())]),
+      })
+  }
+
+  private static cachedBcs: ReturnType<typeof Action.instantiateBcs> | null = null
+
+  static get bcs(): ReturnType<typeof Action.instantiateBcs> {
+    if (!Action.cachedBcs) {
+      Action.cachedBcs = Action.instantiateBcs()
+    }
+    return Action.cachedBcs
+  }
+
+  static fromFields<T extends Reified<TypeArgument, any>, U extends PhantomReified<PhantomTypeArgument>>(
+    typeArgs: [T, U],
+    fields: Record<string, any>
+  ): ActionVariant<ToTypeArgument<T>, ToPhantomTypeArgument<U>> {
+    const r = Action.reified(typeArgs[0], typeArgs[1])
+
+    if (!fields.$kind || !isActionVariantName(fields.$kind)) {
+      throw new Error(`Invalid action variant: ${fields.$kind}`)
+    }
+    switch (fields.$kind) {
+      case 'Stop':
+        return r.new('Stop', fields.Stop)
+      case 'Pause':
+        return r.new('Pause', {
+          duration: decodeFromFields('u32', fields.Pause.duration),
+          genericField: decodeFromFields(typeArgs[0], fields.Pause.generic_field),
+          phantomField: decodeFromFields(Balance.reified(typeArgs[1]), fields.Pause.phantom_field),
+          reifiedField: decodeFromFields(Option.reified('u64'), fields.Pause.reified_field),
+        })
+      case 'Jump':
+        return r.new('Jump', [
+          decodeFromFields('u64', fields.Jump[0]),
+          decodeFromFields(typeArgs[0], fields.Jump[1]),
+          decodeFromFields(Balance.reified(typeArgs[1]), fields.Jump[2]),
+          decodeFromFields(Option.reified('u64'), fields.Jump[3]),
+        ])
+    }
+  }
+
+  static fromFieldsWithTypes<T extends Reified<TypeArgument, any>, U extends PhantomReified<PhantomTypeArgument>>(
+    typeArgs: [T, U],
+    item: FieldsWithTypes
+  ): ActionVariant<ToTypeArgument<T>, ToPhantomTypeArgument<U>> {
+    if (!isAction(item.type)) {
+      throw new Error('not a Action type')
+    }
+    assertFieldsWithTypesArgsMatch(item, typeArgs)
+
+    const variant = (item as FieldsWithTypes & { variant: ActionVariantName }).variant
+    if (!variant || !isActionVariantName(variant)) {
+      throw new Error(`Invalid action variant: ${variant}`)
+    }
+
+    const r = Action.reified(typeArgs[0], typeArgs[1])
+    switch (variant) {
+      case 'Stop':
+        return r.new('Stop', {})
+      case 'Pause':
+        return r.new('Pause', {
+          duration: decodeFromFieldsWithTypes('u32', item.fields.duration),
+          genericField: decodeFromFieldsWithTypes(typeArgs[0], item.fields.generic_field),
+          phantomField: decodeFromFieldsWithTypes(Balance.reified(typeArgs[1]), item.fields.phantom_field),
+          reifiedField: decodeFromFieldsWithTypes(Option.reified('u64'), item.fields.reified_field),
+        })
+      case 'Jump':
+        return r.new('Jump', [
+          decodeFromFieldsWithTypes('u64', item.fields.pos0),
+          decodeFromFieldsWithTypes(typeArgs[0], item.fields.pos1),
+          decodeFromFieldsWithTypes(Balance.reified(typeArgs[1]), item.fields.pos2),
+          decodeFromFieldsWithTypes(Option.reified('u64'), item.fields.pos3),
+        ])
+    }
+  }
+
+  static fromBcs<T extends Reified<TypeArgument, any>, U extends PhantomReified<PhantomTypeArgument>>(
+    typeArgs: [T, U],
+    data: Uint8Array
+  ): ActionVariant<ToTypeArgument<T>, ToPhantomTypeArgument<U>> {
+    const parsed = Action.bcs(toBcs(typeArgs[0])).parse(data)
+    return Action.fromFields(typeArgs, parsed)
+  }
+
+  static fromJSONField<T extends Reified<TypeArgument, any>, U extends PhantomReified<PhantomTypeArgument>>(
+    typeArgs: [T, U],
+    field: any
+  ): ActionVariant<ToTypeArgument<T>, ToPhantomTypeArgument<U>> {
+    const r = Action.reified(typeArgs[0], typeArgs[1])
+
+    const kind = field.$kind
+    if (!kind || !isActionVariantName(kind)) {
+      throw new Error(`Invalid action variant: ${kind}`)
+    }
+    switch (kind) {
+      case 'Stop':
+        return r.new('Stop', {})
+      case 'Pause':
+        return r.new('Pause', {
+          duration: decodeFromJSONField('u32', field.duration),
+          genericField: decodeFromJSONField(typeArgs[0], field.genericField),
+          phantomField: decodeFromJSONField(Balance.reified(typeArgs[1]), field.phantomField),
+          reifiedField: decodeFromJSONField(Option.reified('u64'), field.reifiedField),
+        })
+      case 'Jump':
+        return r.new('Jump', [
+          decodeFromJSONField('u64', field.vec[0]),
+          decodeFromJSONField(typeArgs[0], field.vec[1]),
+          decodeFromJSONField(Balance.reified(typeArgs[1]), field.vec[2]),
+          decodeFromJSONField(Option.reified('u64'), field.vec[3]),
+        ])
+    }
+  }
+
+  static fromJSON<T extends Reified<TypeArgument, any>, U extends PhantomReified<PhantomTypeArgument>>(
+    typeArgs: [T, U],
+    json: Record<string, any>
+  ): ActionVariant<ToTypeArgument<T>, ToPhantomTypeArgument<U>> {
+    if (json.$typeName !== Action.$typeName) {
+      throw new Error(`not a Action json object: expected '${Action.$typeName}' but got '${json.$typeName}'`)
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Action.$typeName, ...typeArgs.map(extractType)),
+      json.$typeArgs,
+      typeArgs
+    )
+
+    return Action.fromJSONField(typeArgs, json)
+  }
+}
+
+export type ActionStopFields = Record<string, never>
+
+export class ActionStop<T extends TypeArgument, U extends PhantomTypeArgument>
+  implements EnumVariantClass
+{
+  __EnumVariantClass = true as const
+
+  static readonly $typeName = Action.$typeName
+  static readonly $numTypeParams = Action.$numTypeParams
+  static readonly $isPhantom = Action.$isPhantom
+  static readonly $variantName = 'Stop'
+
+  readonly $typeName = ActionStop.$typeName
+  readonly $fullTypeName: `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
+  readonly $typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>]
+  readonly $isPhantom = Action.$isPhantom
+  readonly $variantName = ActionStop.$variantName
+
+  constructor(typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>], fields: ActionStopFields) {
+    this.$fullTypeName = composeSuiType(
+      Action.$typeName,
+      ...typeArgs
+    ) as `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
+    this.$typeArgs = typeArgs
+  }
+
+  toJSONField() {
+    return { $kind: this.$variantName }
+  }
+
+  toJSON() {
+    return {
+      $typeName: this.$typeName,
+      $typeArgs: this.$typeArgs,
+      $variantName: this.$variantName,
+      ...this.toJSONField(),
+    }
+  }
+}
+
+export interface ActionPauseFields<T extends TypeArgument, U extends PhantomTypeArgument> {
+  duration: ToField<'u32'>
+  genericField: ToField<T>
+  phantomField: ToField<Balance<U>>
+  reifiedField: ToField<Option<'u64'>>
+}
+
+export class ActionPause<T extends TypeArgument, U extends PhantomTypeArgument>
+  implements EnumVariantClass
+{
+  __EnumVariantClass = true as const
+
+  static readonly $typeName = Action.$typeName
+  static readonly $numTypeParams = Action.$numTypeParams
+  static readonly $isPhantom = Action.$isPhantom
+  static readonly $variantName = 'Pause'
+
+  readonly $typeName = ActionPause.$typeName
+  readonly $fullTypeName: `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
+  readonly $typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>]
+  readonly $isPhantom = Action.$isPhantom
+  readonly $variantName = ActionPause.$variantName
+
+  readonly duration: ToField<'u32'>
+  readonly genericField: ToField<T>
+  readonly phantomField: ToField<Balance<U>>
+  readonly reifiedField: ToField<Option<'u64'>>
+
+  constructor(typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>], fields: ActionPauseFields<T, U>) {
+    this.$fullTypeName = composeSuiType(
+      Action.$typeName,
+      ...typeArgs
+    ) as `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
+    this.$typeArgs = typeArgs
+
+    this.duration = fields.duration
+    this.genericField = fields.genericField
+    this.phantomField = fields.phantomField
+    this.reifiedField = fields.reifiedField
+  }
+
+  toJSONField() {
+    return {
+      $kind: this.$variantName,
+      duration: fieldToJSON<'u32'>(`u32`, this.duration),
+      genericField: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.genericField),
+      phantomField: fieldToJSON<Balance<U>>(`${Balance.$typeName}<${this.$typeArgs[1]}>`, this.phantomField),
+      reifiedField: fieldToJSON<Option<'u64'>>(`${Option.$typeName}<u64>`, this.reifiedField),
+    }
+  }
+
+  toJSON() {
+    return {
+      $typeName: this.$typeName,
+      $typeArgs: this.$typeArgs,
+      $variantName: this.$variantName,
+      ...this.toJSONField(),
+    }
+  }
+}
+
+export type ActionJumpFields<T extends TypeArgument, U extends PhantomTypeArgument> = [
+ToField<'u64'>,
+ToField<T>,
+ToField<Balance<U>>,
+ToField<Option<'u64'>>,
+]
+
+export class ActionJump<T extends TypeArgument, U extends PhantomTypeArgument>
+  implements EnumVariantClass
+{
+  __EnumVariantClass = true as const
+
+  static readonly $typeName = Action.$typeName
+  static readonly $numTypeParams = Action.$numTypeParams
+  static readonly $isPhantom = Action.$isPhantom
+  static readonly $variantName = 'Jump'
+
+  readonly $typeName = ActionJump.$typeName
+  readonly $fullTypeName: `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
+  readonly $typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>]
+  readonly $isPhantom = Action.$isPhantom
+  readonly $variantName = ActionJump.$variantName
+
+  readonly 0: ToField<'u64'>
+  readonly 1: ToField<T>
+  readonly 2: ToField<Balance<U>>
+  readonly 3: ToField<Option<'u64'>>
+
+  constructor(typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>], fields: ActionJumpFields<T, U>) {
+    this.$fullTypeName = composeSuiType(
+      Action.$typeName,
+      ...typeArgs
+    ) as `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
+    this.$typeArgs = typeArgs
+
+    this[0] = fields[0]
+    this[1] = fields[1]
+    this[2] = fields[2]
+    this[3] = fields[3]
+  }
+
+  toJSONField() {
+    return {
+      $kind: this.$variantName,
+      vec: [
+        fieldToJSON<'u64'>(`u64`, this[0]),
+        fieldToJSON<T>(`${this.$typeArgs[0]}`, this[1]),
+        fieldToJSON<Balance<U>>(`${Balance.$typeName}<${this.$typeArgs[1]}>`, this[2]),
+        fieldToJSON<Option<'u64'>>(`${Option.$typeName}<u64>`, this[3]),
+      ],
+    }
+  }
+
+  toJSON() {
+    return {
+      $typeName: this.$typeName,
+      $typeArgs: this.$typeArgs,
+      $variantName: this.$variantName,
+      ...this.toJSONField(),
+    }
+  }
+}

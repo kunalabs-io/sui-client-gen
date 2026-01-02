@@ -1,0 +1,643 @@
+---
+source: generator/tests/snapshot_tests.rs
+expression: output
+---
+import * as reified from '../../_framework/reified'
+import {
+  PhantomReified,
+  PhantomToTypeStr,
+  PhantomTypeArgument,
+  Reified,
+  StructClass,
+  ToField,
+  ToPhantomTypeArgument,
+  ToTypeArgument,
+  ToTypeStr,
+  ToTypeStr as ToPhantom,
+  TypeArgument,
+  assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  extractType,
+  fieldToJSON,
+  phantom,
+  toBcs
+} from '../../_framework/reified'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName
+} from '../../_framework/util'
+import { Vector } from '../../_framework/vector'
+import { String as StringAscii } from '../../move-stdlib/ascii/structs'
+import { Option } from '../../move-stdlib/option/structs'
+import { String } from '../../move-stdlib/string/structs'
+import { Balance } from '../../sui/balance/structs'
+import { ID, UID } from '../../sui/object/structs'
+import { SUI } from '../../sui/sui/structs'
+import { Url } from '../../sui/url/structs'
+import { PKG_V1 } from '../index'
+import { Bar } from './structs'
+import { BcsType, bcs } from '@mysten/sui/bcs'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromB64 } from '@mysten/sui/utils'
+
+/* ============================== WithSpecialTypes =============================== */
+
+export function isWithSpecialTypes(type: string): boolean {
+  type = compressSuiType(type)
+  return type.startsWith(`${PKG_V1}::fixture::WithSpecialTypes` + '<')
+}
+
+export interface WithSpecialTypesFields<T extends PhantomTypeArgument, U extends TypeArgument> {
+  id: ToField<UID>
+  string: ToField<String>
+  asciiString: ToField<StringAscii>
+  url: ToField<Url>
+  idField: ToField<ID>
+  uid: ToField<UID>
+  balance: ToField<Balance<ToPhantom<SUI>>>
+  option: ToField<Option<'u64'>>
+  optionObj: ToField<Option<Bar>>
+  optionNone: ToField<Option<'u64'>>
+  balanceGeneric: ToField<Balance<T>>
+  optionGeneric: ToField<Option<U>>
+  optionGenericNone: ToField<Option<U>>
+}
+
+export type WithSpecialTypesReified<T extends PhantomTypeArgument, U extends TypeArgument> = Reified<WithSpecialTypes<T, U>, WithSpecialTypesFields<T, U>>
+
+export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
+  static readonly $typeName = `${PKG_V1}::fixture::WithSpecialTypes`
+  static readonly $numTypeParams = 2
+  static readonly $isPhantom = [true, false] as const
+
+  readonly $typeName = WithSpecialTypes.$typeName
+  readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithSpecialTypes<${PhantomToTypeStr<T>}, ${ToTypeStr<U>}>`
+  readonly $typeArgs: [PhantomToTypeStr<T>, ToTypeStr<U>]
+  readonly $isPhantom = WithSpecialTypes.$isPhantom
+
+  readonly id: ToField<UID>
+  readonly string: ToField<String>
+  readonly asciiString: ToField<StringAscii>
+  readonly url: ToField<Url>
+  readonly idField: ToField<ID>
+  readonly uid: ToField<UID>
+  readonly balance: ToField<Balance<ToPhantom<SUI>>>
+  readonly option: ToField<Option<'u64'>>
+  readonly optionObj: ToField<Option<Bar>>
+  readonly optionNone: ToField<Option<'u64'>>
+  readonly balanceGeneric: ToField<Balance<T>>
+  readonly optionGeneric: ToField<Option<U>>
+  readonly optionGenericNone: ToField<Option<U>>
+
+  private constructor(typeArgs: [PhantomToTypeStr<T>, ToTypeStr<U>], fields: WithSpecialTypesFields<T, U>) {
+    this.$fullTypeName = composeSuiType(
+      WithSpecialTypes.$typeName,
+      ...typeArgs
+    ) as `${typeof PKG_V1}::fixture::WithSpecialTypes<${PhantomToTypeStr<T>}, ${ToTypeStr<U>}>`
+    this.$typeArgs = typeArgs
+
+    this.id = fields.id
+    this.string = fields.string
+    this.asciiString = fields.asciiString
+    this.url = fields.url
+    this.idField = fields.idField
+    this.uid = fields.uid
+    this.balance = fields.balance
+    this.option = fields.option
+    this.optionObj = fields.optionObj
+    this.optionNone = fields.optionNone
+    this.balanceGeneric = fields.balanceGeneric
+    this.optionGeneric = fields.optionGeneric
+    this.optionGenericNone = fields.optionGenericNone
+  }
+
+  static reified<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
+    T: T, U: U
+  ): WithSpecialTypesReified<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
+    const reifiedBcs = WithSpecialTypes.bcs(toBcs(U))
+    return {
+      typeName: WithSpecialTypes.$typeName,
+      fullTypeName: composeSuiType(
+        WithSpecialTypes.$typeName,
+        ...[extractType(T), extractType(U)]
+      ) as `${typeof PKG_V1}::fixture::WithSpecialTypes<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}, ${ToTypeStr<ToTypeArgument<U>>}>`,
+      typeArgs: [extractType(T), extractType(U)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>, ToTypeStr<ToTypeArgument<U>>],
+      isPhantom: WithSpecialTypes.$isPhantom,
+      reifiedTypeArgs: [T, U],
+      fromFields: (fields: Record<string, any>) => WithSpecialTypes.fromFields([T, U], fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => WithSpecialTypes.fromFieldsWithTypes([T, U], item),
+      fromBcs: (data: Uint8Array) => WithSpecialTypes.fromFields([T, U], reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
+      fromJSONField: (field: any) => WithSpecialTypes.fromJSONField([T, U], field),
+      fromJSON: (json: Record<string, any>) => WithSpecialTypes.fromJSON([T, U], json),
+      fromSuiParsedData: (content: SuiParsedData) => WithSpecialTypes.fromSuiParsedData([T, U], content),
+      fromSuiObjectData: (content: SuiObjectData) => WithSpecialTypes.fromSuiObjectData([T, U], content),
+      fetch: async (client: SuiClient, id: string) => WithSpecialTypes.fetch(client, [T, U], id),
+      new: (fields: WithSpecialTypesFields<ToPhantomTypeArgument<T>, ToTypeArgument<U>>) => {
+        return new WithSpecialTypes([extractType(T), extractType(U)], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return WithSpecialTypes.reified
+  }
+
+  static phantom<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
+    T: T, U: U
+  ): PhantomReified<ToTypeStr<WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>>>> {
+    return phantom(WithSpecialTypes.reified(T, U))
+  }
+
+  static get p() {
+    return WithSpecialTypes.phantom
+  }
+
+  private static instantiateBcs() {
+    return <U extends BcsType<any>>(U: U) =>
+      bcs.struct(`WithSpecialTypes<${U.name}>`, {
+      id: UID.bcs,
+      string: String.bcs,
+      ascii_string: StringAscii.bcs,
+      url: Url.bcs,
+      id_field: ID.bcs,
+      uid: UID.bcs,
+      balance: Balance.bcs,
+      option: Option.bcs(bcs.u64()),
+      option_obj: Option.bcs(Bar.bcs),
+      option_none: Option.bcs(bcs.u64()),
+      balance_generic: Balance.bcs,
+      option_generic: Option.bcs(U),
+      option_generic_none: Option.bcs(U),
+      })
+  }
+
+  private static cachedBcs: ReturnType<typeof WithSpecialTypes.instantiateBcs> | null = null
+
+  static get bcs(): ReturnType<typeof WithSpecialTypes.instantiateBcs> {
+    if (!WithSpecialTypes.cachedBcs) {
+      WithSpecialTypes.cachedBcs = WithSpecialTypes.instantiateBcs()
+    }
+    return WithSpecialTypes.cachedBcs
+  }
+
+  static fromFields<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
+    typeArgs: [T, U],
+    fields: Record<string, any>
+  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
+    return WithSpecialTypes.reified(typeArgs[0], typeArgs[1]).new({
+      id: decodeFromFields(UID.reified(), fields.id),
+      string: decodeFromFields(String.reified(), fields.string),
+      asciiString: decodeFromFields(StringAscii.reified(), fields.ascii_string),
+      url: decodeFromFields(Url.reified(), fields.url),
+      idField: decodeFromFields(ID.reified(), fields.id_field),
+      uid: decodeFromFields(UID.reified(), fields.uid),
+      balance: decodeFromFields(Balance.reified(reified.phantom(SUI.reified())), fields.balance),
+      option: decodeFromFields(Option.reified('u64'), fields.option),
+      optionObj: decodeFromFields(Option.reified(Bar.reified()), fields.option_obj),
+      optionNone: decodeFromFields(Option.reified('u64'), fields.option_none),
+      balanceGeneric: decodeFromFields(Balance.reified(typeArgs[0]), fields.balance_generic),
+      optionGeneric: decodeFromFields(Option.reified(typeArgs[1]), fields.option_generic),
+      optionGenericNone: decodeFromFields(Option.reified(typeArgs[1]), fields.option_generic_none),
+    })
+  }
+
+  static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
+    typeArgs: [T, U],
+    item: FieldsWithTypes
+  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
+    if (!isWithSpecialTypes(item.type)) {
+      throw new Error('not a WithSpecialTypes type')
+    }
+    assertFieldsWithTypesArgsMatch(item, typeArgs)
+
+    return WithSpecialTypes.reified(typeArgs[0], typeArgs[1]).new({
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      string: decodeFromFieldsWithTypes(String.reified(), item.fields.string),
+      asciiString: decodeFromFieldsWithTypes(StringAscii.reified(), item.fields.ascii_string),
+      url: decodeFromFieldsWithTypes(Url.reified(), item.fields.url),
+      idField: decodeFromFieldsWithTypes(ID.reified(), item.fields.id_field),
+      uid: decodeFromFieldsWithTypes(UID.reified(), item.fields.uid),
+      balance: decodeFromFieldsWithTypes(Balance.reified(reified.phantom(SUI.reified())), item.fields.balance),
+      option: decodeFromFieldsWithTypes(Option.reified('u64'), item.fields.option),
+      optionObj: decodeFromFieldsWithTypes(Option.reified(Bar.reified()), item.fields.option_obj),
+      optionNone: decodeFromFieldsWithTypes(Option.reified('u64'), item.fields.option_none),
+      balanceGeneric: decodeFromFieldsWithTypes(Balance.reified(typeArgs[0]), item.fields.balance_generic),
+      optionGeneric: decodeFromFieldsWithTypes(Option.reified(typeArgs[1]), item.fields.option_generic),
+      optionGenericNone: decodeFromFieldsWithTypes(Option.reified(typeArgs[1]), item.fields.option_generic_none),
+    })
+  }
+
+  static fromBcs<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
+    typeArgs: [T, U],
+    data: Uint8Array
+  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
+    return WithSpecialTypes.fromFields(typeArgs, WithSpecialTypes.bcs(toBcs(typeArgs[1])).parse(data))
+  }
+
+  toJSONField() {
+    return {
+      id: this.id,
+      string: this.string,
+      asciiString: this.asciiString,
+      url: this.url,
+      idField: this.idField,
+      uid: this.uid,
+      balance: this.balance.toJSONField(),
+      option: fieldToJSON<Option<'u64'>>(`${Option.$typeName}<u64>`, this.option),
+      optionObj: fieldToJSON<Option<Bar>>(`${Option.$typeName}<${Bar.$typeName}>`, this.optionObj),
+      optionNone: fieldToJSON<Option<'u64'>>(`${Option.$typeName}<u64>`, this.optionNone),
+      balanceGeneric: this.balanceGeneric.toJSONField(),
+      optionGeneric: fieldToJSON<Option<U>>(`${Option.$typeName}<${this.$typeArgs[1]}>`, this.optionGeneric),
+      optionGenericNone: fieldToJSON<Option<U>>(`${Option.$typeName}<${this.$typeArgs[1]}>`, this.optionGenericNone),
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
+    typeArgs: [T, U],
+    field: any
+  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
+    return WithSpecialTypes.reified(typeArgs[0], typeArgs[1]).new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      string: decodeFromJSONField(String.reified(), field.string),
+      asciiString: decodeFromJSONField(StringAscii.reified(), field.asciiString),
+      url: decodeFromJSONField(Url.reified(), field.url),
+      idField: decodeFromJSONField(ID.reified(), field.idField),
+      uid: decodeFromJSONField(UID.reified(), field.uid),
+      balance: decodeFromJSONField(Balance.reified(reified.phantom(SUI.reified())), field.balance),
+      option: decodeFromJSONField(Option.reified('u64'), field.option),
+      optionObj: decodeFromJSONField(Option.reified(Bar.reified()), field.optionObj),
+      optionNone: decodeFromJSONField(Option.reified('u64'), field.optionNone),
+      balanceGeneric: decodeFromJSONField(Balance.reified(typeArgs[0]), field.balanceGeneric),
+      optionGeneric: decodeFromJSONField(Option.reified(typeArgs[1]), field.optionGeneric),
+      optionGenericNone: decodeFromJSONField(Option.reified(typeArgs[1]), field.optionGenericNone),
+    })
+  }
+
+  static fromJSON<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
+    typeArgs: [T, U],
+    json: Record<string, any>
+  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
+    if (json.$typeName !== WithSpecialTypes.$typeName) {
+      throw new Error(`not a WithSpecialTypes json object: expected '${WithSpecialTypes.$typeName}' but got '${json.$typeName}'`)
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(WithSpecialTypes.$typeName, ...typeArgs.map(extractType)),
+      json.$typeArgs,
+      typeArgs
+    )
+
+    return WithSpecialTypes.fromJSONField(typeArgs, json)
+  }
+
+  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
+    typeArgs: [T, U],
+    content: SuiParsedData
+  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isWithSpecialTypes(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a WithSpecialTypes object`)
+    }
+    return WithSpecialTypes.fromFieldsWithTypes(typeArgs, content)
+  }
+
+  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
+    typeArgs: [T, U],
+    data: SuiObjectData
+  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isWithSpecialTypes(data.bcs.type)) {
+        throw new Error(`object at is not a WithSpecialTypes object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 2) {
+        throw new Error(
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
+        )
+      }
+      for (let i = 0; i < 2; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
+      }
+
+      return WithSpecialTypes.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return WithSpecialTypes.fromSuiParsedData(typeArgs, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
+  static async fetch<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
+    client: SuiClient,
+    typeArgs: [T, U],
+    id: string
+  ): Promise<WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>>> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching WithSpecialTypes object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isWithSpecialTypes(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a WithSpecialTypes object`)
+    }
+
+    return WithSpecialTypes.fromSuiObjectData(typeArgs, res.data)
+  }
+}
+
+/* ============================== WithSpecialTypesInVectors =============================== */
+
+export function isWithSpecialTypesInVectors(type: string): boolean {
+  type = compressSuiType(type)
+  return type.startsWith(`${PKG_V1}::fixture::WithSpecialTypesInVectors` + '<')
+}
+
+export interface WithSpecialTypesInVectorsFields<T extends TypeArgument> {
+  id: ToField<UID>
+  string: ToField<Vector<String>>
+  asciiString: ToField<Vector<StringAscii>>
+  idField: ToField<Vector<ID>>
+  bar: ToField<Vector<Bar>>
+  option: ToField<Vector<Option<'u64'>>>
+  optionGeneric: ToField<Vector<Option<T>>>
+}
+
+export type WithSpecialTypesInVectorsReified<T extends TypeArgument> = Reified<WithSpecialTypesInVectors<T>, WithSpecialTypesInVectorsFields<T>>
+
+export class WithSpecialTypesInVectors<T extends TypeArgument> implements StructClass {
+  __StructClass = true as const
+
+  static readonly $typeName = `${PKG_V1}::fixture::WithSpecialTypesInVectors`
+  static readonly $numTypeParams = 1
+  static readonly $isPhantom = [false] as const
+
+  readonly $typeName = WithSpecialTypesInVectors.$typeName
+  readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithSpecialTypesInVectors<${ToTypeStr<T>}>`
+  readonly $typeArgs: [ToTypeStr<T>]
+  readonly $isPhantom = WithSpecialTypesInVectors.$isPhantom
+
+  readonly id: ToField<UID>
+  readonly string: ToField<Vector<String>>
+  readonly asciiString: ToField<Vector<StringAscii>>
+  readonly idField: ToField<Vector<ID>>
+  readonly bar: ToField<Vector<Bar>>
+  readonly option: ToField<Vector<Option<'u64'>>>
+  readonly optionGeneric: ToField<Vector<Option<T>>>
+
+  private constructor(typeArgs: [ToTypeStr<T>], fields: WithSpecialTypesInVectorsFields<T>) {
+    this.$fullTypeName = composeSuiType(
+      WithSpecialTypesInVectors.$typeName,
+      ...typeArgs
+    ) as `${typeof PKG_V1}::fixture::WithSpecialTypesInVectors<${ToTypeStr<T>}>`
+    this.$typeArgs = typeArgs
+
+    this.id = fields.id
+    this.string = fields.string
+    this.asciiString = fields.asciiString
+    this.idField = fields.idField
+    this.bar = fields.bar
+    this.option = fields.option
+    this.optionGeneric = fields.optionGeneric
+  }
+
+  static reified<T extends Reified<TypeArgument, any>>(
+    T: T
+  ): WithSpecialTypesInVectorsReified<ToTypeArgument<T>> {
+    const reifiedBcs = WithSpecialTypesInVectors.bcs(toBcs(T))
+    return {
+      typeName: WithSpecialTypesInVectors.$typeName,
+      fullTypeName: composeSuiType(
+        WithSpecialTypesInVectors.$typeName,
+        ...[extractType(T)]
+      ) as `${typeof PKG_V1}::fixture::WithSpecialTypesInVectors<${ToTypeStr<ToTypeArgument<T>>}>`,
+      typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      isPhantom: WithSpecialTypesInVectors.$isPhantom,
+      reifiedTypeArgs: [T],
+      fromFields: (fields: Record<string, any>) => WithSpecialTypesInVectors.fromFields(T, fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => WithSpecialTypesInVectors.fromFieldsWithTypes(T, item),
+      fromBcs: (data: Uint8Array) => WithSpecialTypesInVectors.fromFields(T, reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
+      fromJSONField: (field: any) => WithSpecialTypesInVectors.fromJSONField(T, field),
+      fromJSON: (json: Record<string, any>) => WithSpecialTypesInVectors.fromJSON(T, json),
+      fromSuiParsedData: (content: SuiParsedData) => WithSpecialTypesInVectors.fromSuiParsedData(T, content),
+      fromSuiObjectData: (content: SuiObjectData) => WithSpecialTypesInVectors.fromSuiObjectData(T, content),
+      fetch: async (client: SuiClient, id: string) => WithSpecialTypesInVectors.fetch(client, T, id),
+      new: (fields: WithSpecialTypesInVectorsFields<ToTypeArgument<T>>) => {
+        return new WithSpecialTypesInVectors([extractType(T)], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return WithSpecialTypesInVectors.reified
+  }
+
+  static phantom<T extends Reified<TypeArgument, any>>(
+    T: T
+  ): PhantomReified<ToTypeStr<WithSpecialTypesInVectors<ToTypeArgument<T>>>> {
+    return phantom(WithSpecialTypesInVectors.reified(T))
+  }
+
+  static get p() {
+    return WithSpecialTypesInVectors.phantom
+  }
+
+  private static instantiateBcs() {
+    return <T extends BcsType<any>>(T: T) =>
+      bcs.struct(`WithSpecialTypesInVectors<${T.name}>`, {
+      id: UID.bcs,
+      string: bcs.vector(String.bcs),
+      ascii_string: bcs.vector(StringAscii.bcs),
+      id_field: bcs.vector(ID.bcs),
+      bar: bcs.vector(Bar.bcs),
+      option: bcs.vector(Option.bcs(bcs.u64())),
+      option_generic: bcs.vector(Option.bcs(T)),
+      })
+  }
+
+  private static cachedBcs: ReturnType<typeof WithSpecialTypesInVectors.instantiateBcs> | null = null
+
+  static get bcs(): ReturnType<typeof WithSpecialTypesInVectors.instantiateBcs> {
+    if (!WithSpecialTypesInVectors.cachedBcs) {
+      WithSpecialTypesInVectors.cachedBcs = WithSpecialTypesInVectors.instantiateBcs()
+    }
+    return WithSpecialTypesInVectors.cachedBcs
+  }
+
+  static fromFields<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    fields: Record<string, any>
+  ): WithSpecialTypesInVectors<ToTypeArgument<T>> {
+    return WithSpecialTypesInVectors.reified(typeArg).new({
+      id: decodeFromFields(UID.reified(), fields.id),
+      string: decodeFromFields(reified.vector(String.reified()), fields.string),
+      asciiString: decodeFromFields(reified.vector(StringAscii.reified()), fields.ascii_string),
+      idField: decodeFromFields(reified.vector(ID.reified()), fields.id_field),
+      bar: decodeFromFields(reified.vector(Bar.reified()), fields.bar),
+      option: decodeFromFields(reified.vector(Option.reified('u64')), fields.option),
+      optionGeneric: decodeFromFields(reified.vector(Option.reified(typeArg)), fields.option_generic),
+    })
+  }
+
+  static fromFieldsWithTypes<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    item: FieldsWithTypes
+  ): WithSpecialTypesInVectors<ToTypeArgument<T>> {
+    if (!isWithSpecialTypesInVectors(item.type)) {
+      throw new Error('not a WithSpecialTypesInVectors type')
+    }
+    assertFieldsWithTypesArgsMatch(item, [typeArg])
+
+    return WithSpecialTypesInVectors.reified(typeArg).new({
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      string: decodeFromFieldsWithTypes(reified.vector(String.reified()), item.fields.string),
+      asciiString: decodeFromFieldsWithTypes(reified.vector(StringAscii.reified()), item.fields.ascii_string),
+      idField: decodeFromFieldsWithTypes(reified.vector(ID.reified()), item.fields.id_field),
+      bar: decodeFromFieldsWithTypes(reified.vector(Bar.reified()), item.fields.bar),
+      option: decodeFromFieldsWithTypes(reified.vector(Option.reified('u64')), item.fields.option),
+      optionGeneric: decodeFromFieldsWithTypes(reified.vector(Option.reified(typeArg)), item.fields.option_generic),
+    })
+  }
+
+  static fromBcs<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    data: Uint8Array
+  ): WithSpecialTypesInVectors<ToTypeArgument<T>> {
+    const typeArgs = [typeArg]
+                return WithSpecialTypesInVectors.fromFields(typeArg, WithSpecialTypesInVectors.bcs(toBcs(typeArg)).parse(data))
+  }
+
+  toJSONField() {
+    return {
+      id: this.id,
+      string: fieldToJSON<Vector<String>>(`vector<${String.$typeName}>`, this.string),
+      asciiString: fieldToJSON<Vector<StringAscii>>(`vector<${StringAscii.$typeName}>`, this.asciiString),
+      idField: fieldToJSON<Vector<ID>>(`vector<${ID.$typeName}>`, this.idField),
+      bar: fieldToJSON<Vector<Bar>>(`vector<${Bar.$typeName}>`, this.bar),
+      option: fieldToJSON<Vector<Option<'u64'>>>(`vector<${Option.$typeName}<u64>>`, this.option),
+      optionGeneric: fieldToJSON<Vector<Option<T>>>(`vector<${Option.$typeName}<${this.$typeArgs[0]}>>`, this.optionGeneric),
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    field: any
+  ): WithSpecialTypesInVectors<ToTypeArgument<T>> {
+    return WithSpecialTypesInVectors.reified(typeArg).new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      string: decodeFromJSONField(reified.vector(String.reified()), field.string),
+      asciiString: decodeFromJSONField(reified.vector(StringAscii.reified()), field.asciiString),
+      idField: decodeFromJSONField(reified.vector(ID.reified()), field.idField),
+      bar: decodeFromJSONField(reified.vector(Bar.reified()), field.bar),
+      option: decodeFromJSONField(reified.vector(Option.reified('u64')), field.option),
+      optionGeneric: decodeFromJSONField(reified.vector(Option.reified(typeArg)), field.optionGeneric),
+    })
+  }
+
+  static fromJSON<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    json: Record<string, any>
+  ): WithSpecialTypesInVectors<ToTypeArgument<T>> {
+    if (json.$typeName !== WithSpecialTypesInVectors.$typeName) {
+      throw new Error(`not a WithSpecialTypesInVectors json object: expected '${WithSpecialTypesInVectors.$typeName}' but got '${json.$typeName}'`)
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(WithSpecialTypesInVectors.$typeName, ...[extractType(typeArg)]),
+      json.$typeArgs,
+      [typeArg]
+    )
+
+    return WithSpecialTypesInVectors.fromJSONField(typeArg, json)
+  }
+
+  static fromSuiParsedData<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    content: SuiParsedData
+  ): WithSpecialTypesInVectors<ToTypeArgument<T>> {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isWithSpecialTypesInVectors(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a WithSpecialTypesInVectors object`)
+    }
+    return WithSpecialTypesInVectors.fromFieldsWithTypes(typeArg, content)
+  }
+
+  static fromSuiObjectData<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    data: SuiObjectData
+  ): WithSpecialTypesInVectors<ToTypeArgument<T>> {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isWithSpecialTypesInVectors(data.bcs.type)) {
+        throw new Error(`object at is not a WithSpecialTypesInVectors object`)
+      }
+
+      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
+      if (gotTypeArgs.length !== 1) {
+        throw new Error(
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        )
+      }
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
+      }
+
+      return WithSpecialTypesInVectors.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return WithSpecialTypesInVectors.fromSuiParsedData(typeArg, data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
+  static async fetch<T extends Reified<TypeArgument, any>>(
+    client: SuiClient,
+    typeArg: T,
+    id: string
+  ): Promise<WithSpecialTypesInVectors<ToTypeArgument<T>>> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching WithSpecialTypesInVectors object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isWithSpecialTypesInVectors(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a WithSpecialTypesInVectors object`)
+    }
+
+    return WithSpecialTypesInVectors.fromSuiObjectData(typeArg, res.data)
+  }
+}

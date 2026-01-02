@@ -1,0 +1,15 @@
+---
+source: generator/tests/snapshot_tests.rs
+expression: output
+---
+import { PUBLISHED_AT } from '..'
+import { GenericArg, generic } from '../../_framework/util'
+import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
+
+export function createWithGenericField(tx: Transaction, typeArg: string, genericField: GenericArg) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::fixture::create_with_generic_field`,
+    typeArguments: [typeArg],
+    arguments: [generic(tx, `${typeArg}`, genericField)],
+  })
+}

@@ -1,0 +1,215 @@
+---
+source: generator/tests/snapshot_tests.rs
+expression: output
+---
+import * as reified from '../../_framework/reified'
+import {
+  PhantomReified,
+  Reified,
+  StructClass,
+  ToField,
+  ToTypeStr,
+  ToTypeStr as ToPhantom,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom
+} from '../../_framework/reified'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName
+} from '../../_framework/util'
+import { Coin as CoinCustom } from '../../custom-pkg/custom-coin/structs'
+import { Coin } from '../../sui/coin/structs'
+import { UID } from '../../sui/object/structs'
+import { SUI } from '../../sui/sui/structs'
+import { PKG_V1 } from '../index'
+import { bcs } from '@mysten/sui/bcs'
+import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromB64 } from '@mysten/sui/utils'
+
+/* ============================== MultiCoinHolder =============================== */
+
+export function isMultiCoinHolder(type: string): boolean {
+  type = compressSuiType(type)
+  return type === `${PKG_V1}::collision::MultiCoinHolder`
+}
+
+export interface MultiCoinHolderFields {
+  id: ToField<UID>
+  suiCoin: ToField<Coin<ToPhantom<SUI>>>
+  customCoin: ToField<CoinCustom>
+}
+
+export type MultiCoinHolderReified = Reified<MultiCoinHolder, MultiCoinHolderFields>
+
+export class MultiCoinHolder implements StructClass {
+  __StructClass = true as const
+
+  static readonly $typeName = `${PKG_V1}::collision::MultiCoinHolder`
+  static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
+
+  readonly $typeName = MultiCoinHolder.$typeName
+  readonly $fullTypeName: `${typeof PKG_V1}::collision::MultiCoinHolder`
+  readonly $typeArgs: []
+  readonly $isPhantom = MultiCoinHolder.$isPhantom
+
+  readonly id: ToField<UID>
+  readonly suiCoin: ToField<Coin<ToPhantom<SUI>>>
+  readonly customCoin: ToField<CoinCustom>
+
+  private constructor(typeArgs: [], fields: MultiCoinHolderFields) {
+    this.$fullTypeName = composeSuiType(MultiCoinHolder.$typeName, ...typeArgs) as `${typeof PKG_V1}::collision::MultiCoinHolder`
+    this.$typeArgs = typeArgs
+
+    this.id = fields.id
+    this.suiCoin = fields.suiCoin
+    this.customCoin = fields.customCoin
+  }
+
+  static reified(): MultiCoinHolderReified {
+    const reifiedBcs = MultiCoinHolder.bcs
+    return {
+      typeName: MultiCoinHolder.$typeName,
+      fullTypeName: composeSuiType(MultiCoinHolder.$typeName, ...[]) as `${typeof PKG_V1}::collision::MultiCoinHolder`,
+      typeArgs: [] as [],
+      isPhantom: MultiCoinHolder.$isPhantom,
+      reifiedTypeArgs: [],
+      fromFields: (fields: Record<string, any>) => MultiCoinHolder.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => MultiCoinHolder.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => MultiCoinHolder.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
+      fromJSONField: (field: any) => MultiCoinHolder.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => MultiCoinHolder.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => MultiCoinHolder.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => MultiCoinHolder.fromSuiObjectData(content),
+      fetch: async (client: SuiClient, id: string) => MultiCoinHolder.fetch(client, id),
+      new: (fields: MultiCoinHolderFields) => {
+        return new MultiCoinHolder([], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return MultiCoinHolder.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<MultiCoinHolder>> {
+    return phantom(MultiCoinHolder.reified())
+  }
+
+  static get p() {
+    return MultiCoinHolder.phantom()
+  }
+
+  private static instantiateBcs() {
+    return bcs.struct('MultiCoinHolder', {
+      id: UID.bcs,
+      sui_coin: Coin.bcs,
+      custom_coin: CoinCustom.bcs,
+    })
+  }
+
+  private static cachedBcs: ReturnType<typeof MultiCoinHolder.instantiateBcs> | null = null
+
+  static get bcs(): ReturnType<typeof MultiCoinHolder.instantiateBcs> {
+    if (!MultiCoinHolder.cachedBcs) {
+      MultiCoinHolder.cachedBcs = MultiCoinHolder.instantiateBcs()
+    }
+    return MultiCoinHolder.cachedBcs
+  }
+
+  static fromFields(fields: Record<string, any>): MultiCoinHolder {
+    return MultiCoinHolder.reified().new({
+      id: decodeFromFields(UID.reified(), fields.id),
+      suiCoin: decodeFromFields(Coin.reified(reified.phantom(SUI.reified())), fields.sui_coin),
+      customCoin: decodeFromFields(CoinCustom.reified(), fields.custom_coin),
+    })
+  }
+
+  static fromFieldsWithTypes(item: FieldsWithTypes): MultiCoinHolder {
+    if (!isMultiCoinHolder(item.type)) {
+      throw new Error('not a MultiCoinHolder type')
+    }
+
+    return MultiCoinHolder.reified().new({
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+      suiCoin: decodeFromFieldsWithTypes(Coin.reified(reified.phantom(SUI.reified())), item.fields.sui_coin),
+      customCoin: decodeFromFieldsWithTypes(CoinCustom.reified(), item.fields.custom_coin),
+    })
+  }
+
+  static fromBcs(data: Uint8Array): MultiCoinHolder {
+    return MultiCoinHolder.fromFields(MultiCoinHolder.bcs.parse(data))
+  }
+
+  toJSONField() {
+    return {
+      id: this.id,
+      suiCoin: this.suiCoin.toJSONField(),
+      customCoin: this.customCoin.toJSONField(),
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): MultiCoinHolder {
+    return MultiCoinHolder.reified().new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+      suiCoin: decodeFromJSONField(Coin.reified(reified.phantom(SUI.reified())), field.suiCoin),
+      customCoin: decodeFromJSONField(CoinCustom.reified(), field.customCoin),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): MultiCoinHolder {
+    if (json.$typeName !== MultiCoinHolder.$typeName) {
+      throw new Error(`not a MultiCoinHolder json object: expected '${MultiCoinHolder.$typeName}' but got '${json.$typeName}'`)
+    }
+
+    return MultiCoinHolder.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): MultiCoinHolder {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isMultiCoinHolder(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a MultiCoinHolder object`)
+    }
+    return MultiCoinHolder.fromFieldsWithTypes(content)
+  }
+
+  static fromSuiObjectData(data: SuiObjectData): MultiCoinHolder {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isMultiCoinHolder(data.bcs.type)) {
+        throw new Error(`object at is not a MultiCoinHolder object`)
+      }
+
+      return MultiCoinHolder.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return MultiCoinHolder.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<MultiCoinHolder> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching MultiCoinHolder object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isMultiCoinHolder(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a MultiCoinHolder object`)
+    }
+
+    return MultiCoinHolder.fromSuiObjectData(res.data)
+  }
+}
