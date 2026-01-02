@@ -160,7 +160,9 @@ export class Party implements StructClass {
 
   static fromJSON(json: Record<string, any>): Party {
     if (json.$typeName !== Party.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Party json object: expected '${Party.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Party.fromJSONField(json)
@@ -331,7 +333,9 @@ export class Permissions implements StructClass {
 
   static fromJSON(json: Record<string, any>): Permissions {
     if (json.$typeName !== Permissions.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Permissions json object: expected '${Permissions.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Permissions.fromJSONField(json)

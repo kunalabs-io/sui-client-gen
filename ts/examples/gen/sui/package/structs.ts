@@ -167,7 +167,9 @@ export class Publisher implements StructClass {
 
   static fromJSON(json: Record<string, any>): Publisher {
     if (json.$typeName !== Publisher.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Publisher json object: expected '${Publisher.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Publisher.fromJSONField(json)
@@ -362,7 +364,9 @@ export class UpgradeCap implements StructClass {
 
   static fromJSON(json: Record<string, any>): UpgradeCap {
     if (json.$typeName !== UpgradeCap.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a UpgradeCap json object: expected '${UpgradeCap.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return UpgradeCap.fromJSONField(json)
@@ -557,7 +561,9 @@ export class UpgradeTicket implements StructClass {
 
   static fromJSON(json: Record<string, any>): UpgradeTicket {
     if (json.$typeName !== UpgradeTicket.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a UpgradeTicket json object: expected '${UpgradeTicket.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return UpgradeTicket.fromJSONField(json)
@@ -739,7 +745,9 @@ export class UpgradeReceipt implements StructClass {
 
   static fromJSON(json: Record<string, any>): UpgradeReceipt {
     if (json.$typeName !== UpgradeReceipt.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a UpgradeReceipt json object: expected '${UpgradeReceipt.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return UpgradeReceipt.fromJSONField(json)

@@ -176,7 +176,9 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): Supply<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Supply.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Supply json object: expected '${Supply.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Supply.$typeName, ...[extractType(typeArg)]),
@@ -401,7 +403,9 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): Balance<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Balance.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Balance json object: expected '${Balance.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Balance.$typeName, ...[extractType(typeArg)]),

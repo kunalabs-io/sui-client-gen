@@ -436,7 +436,9 @@ export class ValidatorMetadata implements StructClass {
 
   static fromJSON(json: Record<string, any>): ValidatorMetadata {
     if (json.$typeName !== ValidatorMetadata.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ValidatorMetadata json object: expected '${ValidatorMetadata.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ValidatorMetadata.fromJSONField(json)
@@ -682,7 +684,9 @@ export class Validator implements StructClass {
 
   static fromJSON(json: Record<string, any>): Validator {
     if (json.$typeName !== Validator.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Validator json object: expected '${Validator.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Validator.fromJSONField(json)
@@ -894,7 +898,9 @@ export class StakingRequestEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): StakingRequestEvent {
     if (json.$typeName !== StakingRequestEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a StakingRequestEvent json object: expected '${StakingRequestEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return StakingRequestEvent.fromJSONField(json)
@@ -1128,7 +1134,9 @@ export class UnstakingRequestEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): UnstakingRequestEvent {
     if (json.$typeName !== UnstakingRequestEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a UnstakingRequestEvent json object: expected '${UnstakingRequestEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return UnstakingRequestEvent.fromJSONField(json)
@@ -1348,7 +1356,9 @@ export class ConvertingToFungibleStakedSuiEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): ConvertingToFungibleStakedSuiEvent {
     if (json.$typeName !== ConvertingToFungibleStakedSuiEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ConvertingToFungibleStakedSuiEvent json object: expected '${ConvertingToFungibleStakedSuiEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ConvertingToFungibleStakedSuiEvent.fromJSONField(json)
@@ -1564,7 +1574,9 @@ export class RedeemingFungibleStakedSuiEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): RedeemingFungibleStakedSuiEvent {
     if (json.$typeName !== RedeemingFungibleStakedSuiEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a RedeemingFungibleStakedSuiEvent json object: expected '${RedeemingFungibleStakedSuiEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return RedeemingFungibleStakedSuiEvent.fromJSONField(json)

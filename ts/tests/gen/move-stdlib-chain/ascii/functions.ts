@@ -126,10 +126,10 @@ export function intoBytes(tx: Transaction, string: string | TransactionArgument)
   })
 }
 
-export function byte_(tx: Transaction, char: TransactionObjectInput) {
+export function byte_(tx: Transaction, char_: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::ascii::byte`,
-    arguments: [obj(tx, char)],
+    arguments: [obj(tx, char_)],
   })
 }
 

@@ -145,7 +145,9 @@ export class String implements StructClass {
 
   static fromJSON(json: Record<string, any>): String {
     if (json.$typeName !== String.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a String json object: expected '${String.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return String.fromJSONField(json)
@@ -313,7 +315,9 @@ export class Char implements StructClass {
 
   static fromJSON(json: Record<string, any>): Char {
     if (json.$typeName !== Char.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Char json object: expected '${Char.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Char.fromJSONField(json)

@@ -142,7 +142,9 @@ export class Scalar implements StructClass {
 
   static fromJSON(json: Record<string, any>): Scalar {
     if (json.$typeName !== Scalar.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Scalar json object: expected '${Scalar.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Scalar.fromJSONField(json)
@@ -310,7 +312,9 @@ export class G1 implements StructClass {
 
   static fromJSON(json: Record<string, any>): G1 {
     if (json.$typeName !== G1.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a G1 json object: expected '${G1.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return G1.fromJSONField(json)
@@ -478,7 +482,9 @@ export class G2 implements StructClass {
 
   static fromJSON(json: Record<string, any>): G2 {
     if (json.$typeName !== G2.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a G2 json object: expected '${G2.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return G2.fromJSONField(json)
@@ -646,7 +652,9 @@ export class GT implements StructClass {
 
   static fromJSON(json: Record<string, any>): GT {
     if (json.$typeName !== GT.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a GT json object: expected '${GT.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return GT.fromJSONField(json)
@@ -820,7 +828,9 @@ export class UncompressedG1 implements StructClass {
 
   static fromJSON(json: Record<string, any>): UncompressedG1 {
     if (json.$typeName !== UncompressedG1.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a UncompressedG1 json object: expected '${UncompressedG1.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return UncompressedG1.fromJSONField(json)

@@ -169,7 +169,9 @@ export class VerifiedIssuer implements StructClass {
 
   static fromJSON(json: Record<string, any>): VerifiedIssuer {
     if (json.$typeName !== VerifiedIssuer.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a VerifiedIssuer json object: expected '${VerifiedIssuer.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return VerifiedIssuer.fromJSONField(json)

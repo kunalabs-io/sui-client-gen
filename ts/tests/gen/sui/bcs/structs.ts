@@ -145,7 +145,9 @@ export class BCS implements StructClass {
 
   static fromJSON(json: Record<string, any>): BCS {
     if (json.$typeName !== BCS.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a BCS json object: expected '${BCS.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return BCS.fromJSONField(json)

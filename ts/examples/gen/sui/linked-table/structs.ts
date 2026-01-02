@@ -231,7 +231,9 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
     json: Record<string, any>
   ): LinkedTable<ToTypeArgument<K>, ToPhantomTypeArgument<V>> {
     if (json.$typeName !== LinkedTable.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a LinkedTable json object: expected '${LinkedTable.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(LinkedTable.$typeName, ...typeArgs.map(extractType)),
@@ -490,7 +492,9 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
     json: Record<string, any>
   ): Node<ToTypeArgument<K>, ToTypeArgument<V>> {
     if (json.$typeName !== Node.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Node json object: expected '${Node.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Node.$typeName, ...typeArgs.map(extractType)),

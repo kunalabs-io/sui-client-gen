@@ -179,7 +179,9 @@ export class TransferLimiter implements StructClass {
 
   static fromJSON(json: Record<string, any>): TransferLimiter {
     if (json.$typeName !== TransferLimiter.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TransferLimiter json object: expected '${TransferLimiter.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return TransferLimiter.fromJSONField(json)
@@ -380,7 +382,9 @@ export class TransferRecord implements StructClass {
 
   static fromJSON(json: Record<string, any>): TransferRecord {
     if (json.$typeName !== TransferRecord.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TransferRecord json object: expected '${TransferRecord.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return TransferRecord.fromJSONField(json)
@@ -576,7 +580,9 @@ export class UpdateRouteLimitEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): UpdateRouteLimitEvent {
     if (json.$typeName !== UpdateRouteLimitEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a UpdateRouteLimitEvent json object: expected '${UpdateRouteLimitEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return UpdateRouteLimitEvent.fromJSONField(json)

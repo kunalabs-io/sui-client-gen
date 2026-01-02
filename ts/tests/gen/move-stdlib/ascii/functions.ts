@@ -3,10 +3,10 @@ import { obj, pure } from '../../_framework/util'
 import { String as String1 } from './structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function char_(tx: Transaction, byte: number | TransactionArgument) {
+export function char_(tx: Transaction, byte_: number | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::ascii::char`,
-    arguments: [pure(tx, byte, `u8`)],
+    arguments: [pure(tx, byte_, `u8`)],
   })
 }
 
@@ -126,10 +126,10 @@ export function intoBytes(tx: Transaction, string: string | TransactionArgument)
   })
 }
 
-export function byte_(tx: Transaction, char: TransactionObjectInput) {
+export function byte_(tx: Transaction, char_: TransactionObjectInput) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::ascii::byte`,
-    arguments: [obj(tx, char)],
+    arguments: [obj(tx, char_)],
   })
 }
 
@@ -140,10 +140,10 @@ export function isValidChar(tx: Transaction, b: number | TransactionArgument) {
   })
 }
 
-export function isPrintableChar(tx: Transaction, byte: number | TransactionArgument) {
+export function isPrintableChar(tx: Transaction, byte_: number | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::ascii::is_printable_char`,
-    arguments: [pure(tx, byte, `u8`)],
+    arguments: [pure(tx, byte_, `u8`)],
   })
 }
 
@@ -183,16 +183,16 @@ export function indexOf(tx: Transaction, args: IndexOfArgs) {
   })
 }
 
-export function charToUppercase(tx: Transaction, byte: number | TransactionArgument) {
+export function charToUppercase(tx: Transaction, byte_: number | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::ascii::char_to_uppercase`,
-    arguments: [pure(tx, byte, `u8`)],
+    arguments: [pure(tx, byte_, `u8`)],
   })
 }
 
-export function charToLowercase(tx: Transaction, byte: number | TransactionArgument) {
+export function charToLowercase(tx: Transaction, byte_: number | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::ascii::char_to_lowercase`,
-    arguments: [pure(tx, byte, `u8`)],
+    arguments: [pure(tx, byte_, `u8`)],
   })
 }

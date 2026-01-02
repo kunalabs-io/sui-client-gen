@@ -164,7 +164,9 @@ export class PoolCreationEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): PoolCreationEvent {
     if (json.$typeName !== PoolCreationEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a PoolCreationEvent json object: expected '${PoolCreationEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return PoolCreationEvent.fromJSONField(json)
@@ -380,7 +382,9 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     json: Record<string, any>
   ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     if (json.$typeName !== LP.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a LP json object: expected '${LP.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(LP.$typeName, ...typeArgs.map(extractType)),
@@ -702,7 +706,9 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     json: Record<string, any>
   ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     if (json.$typeName !== Pool.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Pool json object: expected '${Pool.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Pool.$typeName, ...typeArgs.map(extractType)),
@@ -933,7 +939,9 @@ export class PoolRegistry implements StructClass {
 
   static fromJSON(json: Record<string, any>): PoolRegistry {
     if (json.$typeName !== PoolRegistry.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a PoolRegistry json object: expected '${PoolRegistry.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return PoolRegistry.fromJSONField(json)
@@ -1115,7 +1123,9 @@ export class PoolRegistryItem implements StructClass {
 
   static fromJSON(json: Record<string, any>): PoolRegistryItem {
     if (json.$typeName !== PoolRegistryItem.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a PoolRegistryItem json object: expected '${PoolRegistryItem.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return PoolRegistryItem.fromJSONField(json)
@@ -1286,7 +1296,9 @@ export class AdminCap implements StructClass {
 
   static fromJSON(json: Record<string, any>): AdminCap {
     if (json.$typeName !== AdminCap.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a AdminCap json object: expected '${AdminCap.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return AdminCap.fromJSONField(json)

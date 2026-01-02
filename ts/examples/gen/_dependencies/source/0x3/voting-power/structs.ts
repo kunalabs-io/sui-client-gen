@@ -156,7 +156,9 @@ export class VotingPowerInfo implements StructClass {
 
   static fromJSON(json: Record<string, any>): VotingPowerInfo {
     if (json.$typeName !== VotingPowerInfo.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a VotingPowerInfo json object: expected '${VotingPowerInfo.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return VotingPowerInfo.fromJSONField(json)
@@ -346,7 +348,9 @@ export class VotingPowerInfoV2 implements StructClass {
 
   static fromJSON(json: Record<string, any>): VotingPowerInfoV2 {
     if (json.$typeName !== VotingPowerInfoV2.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a VotingPowerInfoV2 json object: expected '${VotingPowerInfoV2.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return VotingPowerInfoV2.fromJSONField(json)

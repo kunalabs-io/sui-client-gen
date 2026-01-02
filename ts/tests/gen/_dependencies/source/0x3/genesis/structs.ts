@@ -285,7 +285,9 @@ export class GenesisValidatorMetadata implements StructClass {
 
   static fromJSON(json: Record<string, any>): GenesisValidatorMetadata {
     if (json.$typeName !== GenesisValidatorMetadata.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a GenesisValidatorMetadata json object: expected '${GenesisValidatorMetadata.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return GenesisValidatorMetadata.fromJSONField(json)
@@ -599,7 +601,9 @@ export class GenesisChainParameters implements StructClass {
 
   static fromJSON(json: Record<string, any>): GenesisChainParameters {
     if (json.$typeName !== GenesisChainParameters.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a GenesisChainParameters json object: expected '${GenesisChainParameters.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return GenesisChainParameters.fromJSONField(json)
@@ -799,7 +803,9 @@ export class TokenDistributionSchedule implements StructClass {
 
   static fromJSON(json: Record<string, any>): TokenDistributionSchedule {
     if (json.$typeName !== TokenDistributionSchedule.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TokenDistributionSchedule json object: expected '${TokenDistributionSchedule.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return TokenDistributionSchedule.fromJSONField(json)
@@ -1016,7 +1022,9 @@ export class TokenAllocation implements StructClass {
 
   static fromJSON(json: Record<string, any>): TokenAllocation {
     if (json.$typeName !== TokenAllocation.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TokenAllocation json object: expected '${TokenAllocation.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return TokenAllocation.fromJSONField(json)

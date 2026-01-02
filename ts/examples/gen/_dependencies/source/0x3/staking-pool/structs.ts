@@ -271,7 +271,9 @@ export class StakingPool implements StructClass {
 
   static fromJSON(json: Record<string, any>): StakingPool {
     if (json.$typeName !== StakingPool.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a StakingPool json object: expected '${StakingPool.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return StakingPool.fromJSONField(json)
@@ -459,7 +461,9 @@ export class PoolTokenExchangeRate implements StructClass {
 
   static fromJSON(json: Record<string, any>): PoolTokenExchangeRate {
     if (json.$typeName !== PoolTokenExchangeRate.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a PoolTokenExchangeRate json object: expected '${PoolTokenExchangeRate.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return PoolTokenExchangeRate.fromJSONField(json)
@@ -665,7 +669,9 @@ export class StakedSui implements StructClass {
 
   static fromJSON(json: Record<string, any>): StakedSui {
     if (json.$typeName !== StakedSui.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a StakedSui json object: expected '${StakedSui.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return StakedSui.fromJSONField(json)
@@ -855,7 +861,9 @@ export class FungibleStakedSui implements StructClass {
 
   static fromJSON(json: Record<string, any>): FungibleStakedSui {
     if (json.$typeName !== FungibleStakedSui.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a FungibleStakedSui json object: expected '${FungibleStakedSui.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return FungibleStakedSui.fromJSONField(json)
@@ -1060,7 +1068,9 @@ export class FungibleStakedSuiData implements StructClass {
 
   static fromJSON(json: Record<string, any>): FungibleStakedSuiData {
     if (json.$typeName !== FungibleStakedSuiData.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a FungibleStakedSuiData json object: expected '${FungibleStakedSuiData.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return FungibleStakedSuiData.fromJSONField(json)
@@ -1242,7 +1252,9 @@ export class FungibleStakedSuiDataKey implements StructClass {
 
   static fromJSON(json: Record<string, any>): FungibleStakedSuiDataKey {
     if (json.$typeName !== FungibleStakedSuiDataKey.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a FungibleStakedSuiDataKey json object: expected '${FungibleStakedSuiDataKey.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return FungibleStakedSuiDataKey.fromJSONField(json)
@@ -1423,7 +1435,9 @@ export class UnderflowSuiBalance implements StructClass {
 
   static fromJSON(json: Record<string, any>): UnderflowSuiBalance {
     if (json.$typeName !== UnderflowSuiBalance.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a UnderflowSuiBalance json object: expected '${UnderflowSuiBalance.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return UnderflowSuiBalance.fromJSONField(json)

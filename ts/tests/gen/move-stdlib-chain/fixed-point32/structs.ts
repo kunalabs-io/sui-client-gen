@@ -148,7 +148,9 @@ export class FixedPoint32 implements StructClass {
 
   static fromJSON(json: Record<string, any>): FixedPoint32 {
     if (json.$typeName !== FixedPoint32.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a FixedPoint32 json object: expected '${FixedPoint32.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return FixedPoint32.fromJSONField(json)

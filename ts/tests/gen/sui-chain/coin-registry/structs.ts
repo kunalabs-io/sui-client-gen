@@ -166,7 +166,9 @@ export class CoinRegistry implements StructClass {
 
   static fromJSON(json: Record<string, any>): CoinRegistry {
     if (json.$typeName !== CoinRegistry.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a CoinRegistry json object: expected '${CoinRegistry.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return CoinRegistry.fromJSONField(json)
@@ -345,7 +347,9 @@ export class ExtraField implements StructClass {
 
   static fromJSON(json: Record<string, any>): ExtraField {
     if (json.$typeName !== ExtraField.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ExtraField json object: expected '${ExtraField.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ExtraField.fromJSONField(json)
@@ -542,7 +546,9 @@ export class CurrencyKey<T0 extends PhantomTypeArgument> implements StructClass 
     json: Record<string, any>
   ): CurrencyKey<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== CurrencyKey.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a CurrencyKey json object: expected '${CurrencyKey.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(CurrencyKey.$typeName, ...[extractType(typeArg)]),
@@ -747,7 +753,9 @@ export class LegacyMetadataKey implements StructClass {
 
   static fromJSON(json: Record<string, any>): LegacyMetadataKey {
     if (json.$typeName !== LegacyMetadataKey.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a LegacyMetadataKey json object: expected '${LegacyMetadataKey.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return LegacyMetadataKey.fromJSONField(json)
@@ -944,7 +952,9 @@ export class MetadataCap<T0 extends PhantomTypeArgument> implements StructClass 
     json: Record<string, any>
   ): MetadataCap<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== MetadataCap.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a MetadataCap json object: expected '${MetadataCap.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(MetadataCap.$typeName, ...[extractType(typeArg)]),
@@ -1169,7 +1179,9 @@ export class Borrow<T0 extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): Borrow<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== Borrow.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Borrow json object: expected '${Borrow.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Borrow.$typeName, ...[extractType(typeArg)]),
@@ -1501,7 +1513,9 @@ export class Currency<T0 extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): Currency<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== Currency.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Currency json object: expected '${Currency.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Currency.$typeName, ...[extractType(typeArg)]),
@@ -1748,7 +1762,9 @@ export class CurrencyInitializer<T0 extends PhantomTypeArgument> implements Stru
     json: Record<string, any>
   ): CurrencyInitializer<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== CurrencyInitializer.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a CurrencyInitializer json object: expected '${CurrencyInitializer.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(CurrencyInitializer.$typeName, ...[extractType(typeArg)]),
@@ -2023,7 +2039,9 @@ export class SupplyState {
     json: Record<string, any>
   ): SupplyStateVariant<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== SupplyState.$typeName) {
-      throw new Error('not a SupplyState json object')
+      throw new Error(
+        `not a SupplyState json object: expected '${SupplyState.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(SupplyState.$typeName, ...typeArgs.map(extractType)),
@@ -2339,7 +2357,9 @@ export class RegulatedState {
 
   static fromJSON(typeArgs: [], json: Record<string, any>): RegulatedStateVariant {
     if (json.$typeName !== RegulatedState.$typeName) {
-      throw new Error('not a RegulatedState json object')
+      throw new Error(
+        `not a RegulatedState json object: expected '${RegulatedState.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return RegulatedState.fromJSONField(typeArgs, json)
@@ -2641,7 +2661,9 @@ export class MetadataCapState {
 
   static fromJSON(typeArgs: [], json: Record<string, any>): MetadataCapStateVariant {
     if (json.$typeName !== MetadataCapState.$typeName) {
-      throw new Error('not a MetadataCapState json object')
+      throw new Error(
+        `not a MetadataCapState json object: expected '${MetadataCapState.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return MetadataCapState.fromJSONField(typeArgs, json)

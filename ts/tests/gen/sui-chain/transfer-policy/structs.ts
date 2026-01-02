@@ -210,7 +210,9 @@ export class TransferRequest<T0 extends PhantomTypeArgument> implements StructCl
     json: Record<string, any>
   ): TransferRequest<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== TransferRequest.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TransferRequest json object: expected '${TransferRequest.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(TransferRequest.$typeName, ...[extractType(typeArg)]),
@@ -457,7 +459,9 @@ export class TransferPolicy<T0 extends PhantomTypeArgument> implements StructCla
     json: Record<string, any>
   ): TransferPolicy<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== TransferPolicy.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TransferPolicy json object: expected '${TransferPolicy.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(TransferPolicy.$typeName, ...[extractType(typeArg)]),
@@ -696,7 +700,9 @@ export class TransferPolicyCap<T0 extends PhantomTypeArgument> implements Struct
     json: Record<string, any>
   ): TransferPolicyCap<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== TransferPolicyCap.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TransferPolicyCap json object: expected '${TransferPolicyCap.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(TransferPolicyCap.$typeName, ...[extractType(typeArg)]),
@@ -927,7 +933,9 @@ export class TransferPolicyCreated<T0 extends PhantomTypeArgument> implements St
     json: Record<string, any>
   ): TransferPolicyCreated<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== TransferPolicyCreated.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TransferPolicyCreated json object: expected '${TransferPolicyCreated.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(TransferPolicyCreated.$typeName, ...[extractType(typeArg)]),
@@ -1160,7 +1168,9 @@ export class TransferPolicyDestroyed<T0 extends PhantomTypeArgument> implements 
     json: Record<string, any>
   ): TransferPolicyDestroyed<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== TransferPolicyDestroyed.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TransferPolicyDestroyed json object: expected '${TransferPolicyDestroyed.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(TransferPolicyDestroyed.$typeName, ...[extractType(typeArg)]),
@@ -1389,7 +1399,9 @@ export class RuleKey<T0 extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): RuleKey<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== RuleKey.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a RuleKey json object: expected '${RuleKey.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(RuleKey.$typeName, ...[extractType(typeArg)]),

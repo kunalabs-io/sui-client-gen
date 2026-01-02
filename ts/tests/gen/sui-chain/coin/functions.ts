@@ -189,7 +189,7 @@ export interface CreateCurrencyArgs {
   vecU81: Array<number | TransactionArgument> | TransactionArgument
   vecU82: Array<number | TransactionArgument> | TransactionArgument
   vecU83: Array<number | TransactionArgument> | TransactionArgument
-  option: TransactionObjectInput | TransactionArgument | null
+  option: TransactionObjectInput | null
 }
 
 export function createCurrency(tx: Transaction, typeArg: string, args: CreateCurrencyArgs) {
@@ -213,7 +213,7 @@ export interface CreateRegulatedCurrencyV2Args {
   vecU81: Array<number | TransactionArgument> | TransactionArgument
   vecU82: Array<number | TransactionArgument> | TransactionArgument
   vecU83: Array<number | TransactionArgument> | TransactionArgument
-  option: TransactionObjectInput | TransactionArgument | null
+  option: TransactionObjectInput | null
   bool: boolean | TransactionArgument
 }
 
@@ -666,7 +666,7 @@ export interface CreateRegulatedCurrencyArgs {
   vecU81: Array<number | TransactionArgument> | TransactionArgument
   vecU82: Array<number | TransactionArgument> | TransactionArgument
   vecU83: Array<number | TransactionArgument> | TransactionArgument
-  option: TransactionObjectInput | TransactionArgument | null
+  option: TransactionObjectInput | null
 }
 
 export function createRegulatedCurrency(

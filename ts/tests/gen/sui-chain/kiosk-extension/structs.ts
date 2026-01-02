@@ -170,7 +170,9 @@ export class Extension implements StructClass {
 
   static fromJSON(json: Record<string, any>): Extension {
     if (json.$typeName !== Extension.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Extension json object: expected '${Extension.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Extension.fromJSONField(json)
@@ -367,7 +369,9 @@ export class ExtensionKey<T0 extends PhantomTypeArgument> implements StructClass
     json: Record<string, any>
   ): ExtensionKey<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== ExtensionKey.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ExtensionKey json object: expected '${ExtensionKey.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(ExtensionKey.$typeName, ...[extractType(typeArg)]),

@@ -155,7 +155,9 @@ export class StructFromOtherModule implements StructClass {
 
   static fromJSON(json: Record<string, any>): StructFromOtherModule {
     if (json.$typeName !== StructFromOtherModule.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a StructFromOtherModule json object: expected '${StructFromOtherModule.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return StructFromOtherModule.fromJSONField(json)
@@ -331,7 +333,9 @@ export class AddedInAnUpgrade implements StructClass {
 
   static fromJSON(json: Record<string, any>): AddedInAnUpgrade {
     if (json.$typeName !== AddedInAnUpgrade.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a AddedInAnUpgrade json object: expected '${AddedInAnUpgrade.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return AddedInAnUpgrade.fromJSONField(json)

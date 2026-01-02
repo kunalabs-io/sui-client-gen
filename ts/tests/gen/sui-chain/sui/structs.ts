@@ -142,7 +142,9 @@ export class SUI implements StructClass {
 
   static fromJSON(json: Record<string, any>): SUI {
     if (json.$typeName !== SUI.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a SUI json object: expected '${SUI.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return SUI.fromJSONField(json)

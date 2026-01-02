@@ -18,11 +18,7 @@ export function some(tx: Transaction, typeArg: string, e: GenericArg) {
   })
 }
 
-export function isNone(
-  tx: Transaction,
-  typeArg: string,
-  t: GenericArg | TransactionArgument | null
-) {
+export function isNone(tx: Transaction, typeArg: string, t: GenericArg | null) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::option::is_none`,
     typeArguments: [typeArg],
@@ -30,11 +26,7 @@ export function isNone(
   })
 }
 
-export function isSome(
-  tx: Transaction,
-  typeArg: string,
-  t: GenericArg | TransactionArgument | null
-) {
+export function isSome(tx: Transaction, typeArg: string, t: GenericArg | null) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::option::is_some`,
     typeArguments: [typeArg],
@@ -43,7 +35,7 @@ export function isSome(
 }
 
 export interface ContainsArgs {
-  t: GenericArg | TransactionArgument | null
+  t: GenericArg | null
   eRef: GenericArg
 }
 
@@ -55,11 +47,7 @@ export function contains(tx: Transaction, typeArg: string, args: ContainsArgs) {
   })
 }
 
-export function borrow(
-  tx: Transaction,
-  typeArg: string,
-  t: GenericArg | TransactionArgument | null
-) {
+export function borrow(tx: Transaction, typeArg: string, t: GenericArg | null) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::option::borrow`,
     typeArguments: [typeArg],
@@ -68,7 +56,7 @@ export function borrow(
 }
 
 export interface BorrowWithDefaultArgs {
-  t: GenericArg | TransactionArgument | null
+  t: GenericArg | null
   defaultRef: GenericArg
 }
 
@@ -81,7 +69,7 @@ export function borrowWithDefault(tx: Transaction, typeArg: string, args: Borrow
 }
 
 export interface GetWithDefaultArgs {
-  t: GenericArg | TransactionArgument | null
+  t: GenericArg | null
   default: GenericArg
 }
 
@@ -94,7 +82,7 @@ export function getWithDefault(tx: Transaction, typeArg: string, args: GetWithDe
 }
 
 export interface FillArgs {
-  t: GenericArg | TransactionArgument | null
+  t: GenericArg | null
   e: GenericArg
 }
 
@@ -106,11 +94,7 @@ export function fill(tx: Transaction, typeArg: string, args: FillArgs) {
   })
 }
 
-export function extract(
-  tx: Transaction,
-  typeArg: string,
-  t: GenericArg | TransactionArgument | null
-) {
+export function extract(tx: Transaction, typeArg: string, t: GenericArg | null) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::option::extract`,
     typeArguments: [typeArg],
@@ -118,11 +102,7 @@ export function extract(
   })
 }
 
-export function borrowMut(
-  tx: Transaction,
-  typeArg: string,
-  t: GenericArg | TransactionArgument | null
-) {
+export function borrowMut(tx: Transaction, typeArg: string, t: GenericArg | null) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::option::borrow_mut`,
     typeArguments: [typeArg],
@@ -131,7 +111,7 @@ export function borrowMut(
 }
 
 export interface SwapArgs {
-  t: GenericArg | TransactionArgument | null
+  t: GenericArg | null
   e: GenericArg
 }
 
@@ -144,7 +124,7 @@ export function swap(tx: Transaction, typeArg: string, args: SwapArgs) {
 }
 
 export interface SwapOrFillArgs {
-  t: GenericArg | TransactionArgument | null
+  t: GenericArg | null
   e: GenericArg
 }
 
@@ -157,7 +137,7 @@ export function swapOrFill(tx: Transaction, typeArg: string, args: SwapOrFillArg
 }
 
 export interface DestroyWithDefaultArgs {
-  t: GenericArg | TransactionArgument | null
+  t: GenericArg | null
   default: GenericArg
 }
 
@@ -169,11 +149,7 @@ export function destroyWithDefault(tx: Transaction, typeArg: string, args: Destr
   })
 }
 
-export function destroySome(
-  tx: Transaction,
-  typeArg: string,
-  t: GenericArg | TransactionArgument | null
-) {
+export function destroySome(tx: Transaction, typeArg: string, t: GenericArg | null) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::option::destroy_some`,
     typeArguments: [typeArg],
@@ -181,11 +157,7 @@ export function destroySome(
   })
 }
 
-export function destroyNone(
-  tx: Transaction,
-  typeArg: string,
-  t: GenericArg | TransactionArgument | null
-) {
+export function destroyNone(tx: Transaction, typeArg: string, t: GenericArg | null) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::option::destroy_none`,
     typeArguments: [typeArg],
@@ -193,11 +165,7 @@ export function destroyNone(
   })
 }
 
-export function toVec(
-  tx: Transaction,
-  typeArg: string,
-  t: GenericArg | TransactionArgument | null
-) {
+export function toVec(tx: Transaction, typeArg: string, t: GenericArg | null) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::option::to_vec`,
     typeArguments: [typeArg],

@@ -145,7 +145,9 @@ export class ID implements StructClass {
 
   static fromJSON(json: Record<string, any>): ID {
     if (json.$typeName !== ID.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ID json object: expected '${ID.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ID.fromJSONField(json)
@@ -313,7 +315,9 @@ export class UID implements StructClass {
 
   static fromJSON(json: Record<string, any>): UID {
     if (json.$typeName !== UID.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a UID json object: expected '${UID.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return UID.fromJSONField(json)

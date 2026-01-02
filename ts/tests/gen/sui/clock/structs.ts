@@ -151,7 +151,9 @@ export class Clock implements StructClass {
 
   static fromJSON(json: Record<string, any>): Clock {
     if (json.$typeName !== Clock.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Clock json object: expected '${Clock.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Clock.fromJSONField(json)

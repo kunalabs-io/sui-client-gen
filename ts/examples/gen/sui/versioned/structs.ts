@@ -155,7 +155,9 @@ export class Versioned implements StructClass {
 
   static fromJSON(json: Record<string, any>): Versioned {
     if (json.$typeName !== Versioned.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Versioned json object: expected '${Versioned.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Versioned.fromJSONField(json)
@@ -337,7 +339,9 @@ export class VersionChangeCap implements StructClass {
 
   static fromJSON(json: Record<string, any>): VersionChangeCap {
     if (json.$typeName !== VersionChangeCap.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a VersionChangeCap json object: expected '${VersionChangeCap.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return VersionChangeCap.fromJSONField(json)

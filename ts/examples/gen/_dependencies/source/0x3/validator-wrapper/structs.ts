@@ -149,7 +149,9 @@ export class ValidatorWrapper implements StructClass {
 
   static fromJSON(json: Record<string, any>): ValidatorWrapper {
     if (json.$typeName !== ValidatorWrapper.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ValidatorWrapper json object: expected '${ValidatorWrapper.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ValidatorWrapper.fromJSONField(json)

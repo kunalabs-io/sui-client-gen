@@ -181,7 +181,9 @@ export class BridgeMessage implements StructClass {
 
   static fromJSON(json: Record<string, any>): BridgeMessage {
     if (json.$typeName !== BridgeMessage.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a BridgeMessage json object: expected '${BridgeMessage.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return BridgeMessage.fromJSONField(json)
@@ -371,7 +373,9 @@ export class BridgeMessageKey implements StructClass {
 
   static fromJSON(json: Record<string, any>): BridgeMessageKey {
     if (json.$typeName !== BridgeMessageKey.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a BridgeMessageKey json object: expected '${BridgeMessageKey.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return BridgeMessageKey.fromJSONField(json)
@@ -580,7 +584,9 @@ export class TokenTransferPayload implements StructClass {
 
   static fromJSON(json: Record<string, any>): TokenTransferPayload {
     if (json.$typeName !== TokenTransferPayload.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TokenTransferPayload json object: expected '${TokenTransferPayload.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return TokenTransferPayload.fromJSONField(json)
@@ -753,7 +759,9 @@ export class EmergencyOp implements StructClass {
 
   static fromJSON(json: Record<string, any>): EmergencyOp {
     if (json.$typeName !== EmergencyOp.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a EmergencyOp json object: expected '${EmergencyOp.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return EmergencyOp.fromJSONField(json)
@@ -944,7 +952,9 @@ export class Blocklist implements StructClass {
 
   static fromJSON(json: Record<string, any>): Blocklist {
     if (json.$typeName !== Blocklist.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Blocklist json object: expected '${Blocklist.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Blocklist.fromJSONField(json)
@@ -1134,7 +1144,9 @@ export class UpdateBridgeLimit implements StructClass {
 
   static fromJSON(json: Record<string, any>): UpdateBridgeLimit {
     if (json.$typeName !== UpdateBridgeLimit.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a UpdateBridgeLimit json object: expected '${UpdateBridgeLimit.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return UpdateBridgeLimit.fromJSONField(json)
@@ -1316,7 +1328,9 @@ export class UpdateAssetPrice implements StructClass {
 
   static fromJSON(json: Record<string, any>): UpdateAssetPrice {
     if (json.$typeName !== UpdateAssetPrice.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a UpdateAssetPrice json object: expected '${UpdateAssetPrice.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return UpdateAssetPrice.fromJSONField(json)
@@ -1517,7 +1531,9 @@ export class AddTokenOnSui implements StructClass {
 
   static fromJSON(json: Record<string, any>): AddTokenOnSui {
     if (json.$typeName !== AddTokenOnSui.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a AddTokenOnSui json object: expected '${AddTokenOnSui.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return AddTokenOnSui.fromJSONField(json)
@@ -1733,7 +1749,9 @@ export class ParsedTokenTransferMessage implements StructClass {
 
   static fromJSON(json: Record<string, any>): ParsedTokenTransferMessage {
     if (json.$typeName !== ParsedTokenTransferMessage.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ParsedTokenTransferMessage json object: expected '${ParsedTokenTransferMessage.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ParsedTokenTransferMessage.fromJSONField(json)

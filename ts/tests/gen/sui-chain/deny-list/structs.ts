@@ -162,7 +162,9 @@ export class DenyList implements StructClass {
 
   static fromJSON(json: Record<string, any>): DenyList {
     if (json.$typeName !== DenyList.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a DenyList json object: expected '${DenyList.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return DenyList.fromJSONField(json)
@@ -336,7 +338,9 @@ export class ConfigWriteCap implements StructClass {
 
   static fromJSON(json: Record<string, any>): ConfigWriteCap {
     if (json.$typeName !== ConfigWriteCap.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ConfigWriteCap json object: expected '${ConfigWriteCap.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ConfigWriteCap.fromJSONField(json)
@@ -515,7 +519,9 @@ export class ConfigKey implements StructClass {
 
   static fromJSON(json: Record<string, any>): ConfigKey {
     if (json.$typeName !== ConfigKey.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ConfigKey json object: expected '${ConfigKey.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ConfigKey.fromJSONField(json)
@@ -689,7 +695,9 @@ export class AddressKey implements StructClass {
 
   static fromJSON(json: Record<string, any>): AddressKey {
     if (json.$typeName !== AddressKey.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a AddressKey json object: expected '${AddressKey.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return AddressKey.fromJSONField(json)
@@ -863,7 +871,9 @@ export class GlobalPauseKey implements StructClass {
 
   static fromJSON(json: Record<string, any>): GlobalPauseKey {
     if (json.$typeName !== GlobalPauseKey.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a GlobalPauseKey json object: expected '${GlobalPauseKey.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return GlobalPauseKey.fromJSONField(json)
@@ -1048,7 +1058,9 @@ export class PerTypeConfigCreated implements StructClass {
 
   static fromJSON(json: Record<string, any>): PerTypeConfigCreated {
     if (json.$typeName !== PerTypeConfigCreated.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a PerTypeConfigCreated json object: expected '${PerTypeConfigCreated.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return PerTypeConfigCreated.fromJSONField(json)
@@ -1264,7 +1276,9 @@ export class PerTypeList implements StructClass {
 
   static fromJSON(json: Record<string, any>): PerTypeList {
     if (json.$typeName !== PerTypeList.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a PerTypeList json object: expected '${PerTypeList.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return PerTypeList.fromJSONField(json)

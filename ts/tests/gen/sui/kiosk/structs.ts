@@ -193,7 +193,9 @@ export class Kiosk implements StructClass {
 
   static fromJSON(json: Record<string, any>): Kiosk {
     if (json.$typeName !== Kiosk.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Kiosk json object: expected '${Kiosk.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Kiosk.fromJSONField(json)
@@ -372,7 +374,9 @@ export class KioskOwnerCap implements StructClass {
 
   static fromJSON(json: Record<string, any>): KioskOwnerCap {
     if (json.$typeName !== KioskOwnerCap.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a KioskOwnerCap json object: expected '${KioskOwnerCap.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return KioskOwnerCap.fromJSONField(json)
@@ -593,7 +597,9 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): PurchaseCap<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== PurchaseCap.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a PurchaseCap json object: expected '${PurchaseCap.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(PurchaseCap.$typeName, ...[extractType(typeArg)]),
@@ -800,7 +806,9 @@ export class Borrow implements StructClass {
 
   static fromJSON(json: Record<string, any>): Borrow {
     if (json.$typeName !== Borrow.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Borrow json object: expected '${Borrow.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Borrow.fromJSONField(json)
@@ -968,7 +976,9 @@ export class Item implements StructClass {
 
   static fromJSON(json: Record<string, any>): Item {
     if (json.$typeName !== Item.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Item json object: expected '${Item.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Item.fromJSONField(json)
@@ -1144,7 +1154,9 @@ export class Listing implements StructClass {
 
   static fromJSON(json: Record<string, any>): Listing {
     if (json.$typeName !== Listing.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Listing json object: expected '${Listing.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Listing.fromJSONField(json)
@@ -1312,7 +1324,9 @@ export class Lock implements StructClass {
 
   static fromJSON(json: Record<string, any>): Lock {
     if (json.$typeName !== Lock.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Lock json object: expected '${Lock.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Lock.fromJSONField(json)
@@ -1525,7 +1539,9 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): ItemListed<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== ItemListed.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ItemListed json object: expected '${ItemListed.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(ItemListed.$typeName, ...[extractType(typeArg)]),
@@ -1769,7 +1785,9 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
     json: Record<string, any>
   ): ItemPurchased<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== ItemPurchased.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ItemPurchased json object: expected '${ItemPurchased.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(ItemPurchased.$typeName, ...[extractType(typeArg)]),
@@ -2005,7 +2023,9 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
     json: Record<string, any>
   ): ItemDelisted<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== ItemDelisted.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ItemDelisted json object: expected '${ItemDelisted.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(ItemDelisted.$typeName, ...[extractType(typeArg)]),

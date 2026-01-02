@@ -184,7 +184,9 @@ export class Config<WriteCap extends PhantomTypeArgument> implements StructClass
     json: Record<string, any>
   ): Config<ToPhantomTypeArgument<WriteCap>> {
     if (json.$typeName !== Config.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Config json object: expected '${Config.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Config.$typeName, ...[extractType(typeArg)]),
@@ -420,7 +422,9 @@ export class Setting<Value extends TypeArgument> implements StructClass {
     json: Record<string, any>
   ): Setting<ToTypeArgument<Value>> {
     if (json.$typeName !== Setting.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Setting json object: expected '${Setting.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Setting.$typeName, ...[extractType(typeArg)]),
@@ -675,7 +679,9 @@ export class SettingData<Value extends TypeArgument> implements StructClass {
     json: Record<string, any>
   ): SettingData<ToTypeArgument<Value>> {
     if (json.$typeName !== SettingData.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a SettingData json object: expected '${SettingData.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(SettingData.$typeName, ...[extractType(typeArg)]),

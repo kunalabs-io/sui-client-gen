@@ -89,12 +89,12 @@ export interface CreateSpecialArgs {
   idField: string | TransactionArgument
   uid: TransactionObjectInput
   balance: TransactionObjectInput
-  option: bigint | TransactionArgument | TransactionArgument | null
-  optionObj: TransactionObjectInput | TransactionArgument | null
-  optionNone: bigint | TransactionArgument | TransactionArgument | null
+  option: bigint | TransactionArgument | null
+  optionObj: TransactionObjectInput | null
+  optionNone: bigint | TransactionArgument | null
   balanceGeneric: TransactionObjectInput
-  optionGeneric: GenericArg | TransactionArgument | null
-  optionGenericNone: GenericArg | TransactionArgument | null
+  optionGeneric: GenericArg | null
+  optionGenericNone: GenericArg | null
 }
 
 export function createSpecial(
@@ -159,8 +159,8 @@ export interface CreateSpecialInVectorsArgs {
   asciiString: Array<string | TransactionArgument> | TransactionArgument
   idField: Array<string | TransactionArgument> | TransactionArgument
   bar: Array<TransactionObjectInput> | TransactionArgument
-  option: Array<bigint | TransactionArgument | TransactionArgument | null> | TransactionArgument
-  optionGeneric: Array<GenericArg | TransactionArgument | null> | TransactionArgument
+  option: Array<bigint | TransactionArgument | null> | TransactionArgument
+  optionGeneric: Array<GenericArg | null> | TransactionArgument
 }
 
 export function createSpecialInVectors(

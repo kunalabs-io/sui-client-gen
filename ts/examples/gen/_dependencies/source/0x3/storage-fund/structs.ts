@@ -178,7 +178,9 @@ export class StorageFund implements StructClass {
 
   static fromJSON(json: Record<string, any>): StorageFund {
     if (json.$typeName !== StorageFund.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a StorageFund json object: expected '${StorageFund.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return StorageFund.fromJSONField(json)

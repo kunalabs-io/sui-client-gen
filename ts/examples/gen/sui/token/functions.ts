@@ -111,8 +111,8 @@ export function keep(tx: Transaction, typeArg: string, token: TransactionObjectI
 export interface NewRequestArgs {
   name: string | TransactionArgument
   amount: bigint | TransactionArgument
-  recipient: string | TransactionArgument | TransactionArgument | null
-  spentBalance: TransactionObjectInput | TransactionArgument | null
+  recipient: string | TransactionArgument | null
+  spentBalance: TransactionObjectInput | null
 }
 
 export function newRequest(tx: Transaction, typeArg: string, args: NewRequestArgs) {

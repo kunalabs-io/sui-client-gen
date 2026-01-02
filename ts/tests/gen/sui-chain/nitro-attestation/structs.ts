@@ -157,7 +157,9 @@ export class PCREntry implements StructClass {
 
   static fromJSON(json: Record<string, any>): PCREntry {
     if (json.$typeName !== PCREntry.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a PCREntry json object: expected '${PCREntry.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return PCREntry.fromJSONField(json)
@@ -394,7 +396,9 @@ export class NitroAttestationDocument implements StructClass {
 
   static fromJSON(json: Record<string, any>): NitroAttestationDocument {
     if (json.$typeName !== NitroAttestationDocument.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a NitroAttestationDocument json object: expected '${NitroAttestationDocument.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return NitroAttestationDocument.fromJSONField(json)

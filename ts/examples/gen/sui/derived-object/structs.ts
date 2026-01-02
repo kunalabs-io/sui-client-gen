@@ -154,7 +154,9 @@ export class Claimed implements StructClass {
 
   static fromJSON(json: Record<string, any>): Claimed {
     if (json.$typeName !== Claimed.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Claimed json object: expected '${Claimed.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Claimed.fromJSONField(json)
@@ -353,7 +355,9 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
     json: Record<string, any>
   ): DerivedObjectKey<ToTypeArgument<K>> {
     if (json.$typeName !== DerivedObjectKey.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a DerivedObjectKey json object: expected '${DerivedObjectKey.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(DerivedObjectKey.$typeName, ...[extractType(typeArg)]),
@@ -553,7 +557,9 @@ export class ClaimedStatus {
 
   static fromJSON(typeArgs: [], json: Record<string, any>): ClaimedStatusVariant {
     if (json.$typeName !== ClaimedStatus.$typeName) {
-      throw new Error('not a ClaimedStatus json object')
+      throw new Error(
+        `not a ClaimedStatus json object: expected '${ClaimedStatus.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ClaimedStatus.fromJSONField(typeArgs, json)

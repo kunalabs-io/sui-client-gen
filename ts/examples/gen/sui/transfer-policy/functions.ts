@@ -41,7 +41,7 @@ export function default_(tx: Transaction, typeArg: string, pub: TransactionObjec
 export interface WithdrawArgs {
   self: TransactionObjectInput
   cap: TransactionObjectInput
-  amount: bigint | TransactionArgument | TransactionArgument | null
+  amount: bigint | TransactionArgument | null
 }
 
 export function withdraw(tx: Transaction, typeArg: string, args: WithdrawArgs) {

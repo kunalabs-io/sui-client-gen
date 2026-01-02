@@ -177,7 +177,9 @@ export class Element<T extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): Element<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Element.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Element json object: expected '${Element.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Element.$typeName, ...[extractType(typeArg)]),

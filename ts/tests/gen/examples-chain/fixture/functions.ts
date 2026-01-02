@@ -86,12 +86,12 @@ export interface CreateSpecialArgs {
   id: string | TransactionArgument
   uid: TransactionObjectInput
   balance1: TransactionObjectInput
-  option1: bigint | TransactionArgument | TransactionArgument | null
-  option2: TransactionObjectInput | TransactionArgument | null
-  option3: bigint | TransactionArgument | TransactionArgument | null
+  option1: bigint | TransactionArgument | null
+  option2: TransactionObjectInput | null
+  option3: bigint | TransactionArgument | null
   balance2: TransactionObjectInput
-  option4: GenericArg | TransactionArgument | null
-  option5: GenericArg | TransactionArgument | null
+  option4: GenericArg | null
+  option5: GenericArg | null
 }
 
 export function createSpecial(
@@ -156,8 +156,8 @@ export interface CreateSpecialInVectorsArgs {
   vecString2: Array<string | TransactionArgument> | TransactionArgument
   vecId: Array<string | TransactionArgument> | TransactionArgument
   vecBar: Array<TransactionObjectInput> | TransactionArgument
-  vecOption1: Array<bigint | TransactionArgument | TransactionArgument | null> | TransactionArgument
-  vecOption2: Array<GenericArg | TransactionArgument | null> | TransactionArgument
+  vecOption1: Array<bigint | TransactionArgument | null> | TransactionArgument
+  vecOption2: Array<GenericArg | null> | TransactionArgument
 }
 
 export function createSpecialInVectors(

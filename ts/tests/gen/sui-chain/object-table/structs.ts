@@ -219,7 +219,9 @@ export class ObjectTable<T0 extends PhantomTypeArgument, T1 extends PhantomTypeA
     json: Record<string, any>
   ): ObjectTable<ToPhantomTypeArgument<T0>, ToPhantomTypeArgument<T1>> {
     if (json.$typeName !== ObjectTable.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ObjectTable json object: expected '${ObjectTable.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(ObjectTable.$typeName, ...typeArgs.map(extractType)),

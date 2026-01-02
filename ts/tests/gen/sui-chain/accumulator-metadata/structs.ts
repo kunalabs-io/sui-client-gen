@@ -160,7 +160,9 @@ export class OwnerKey implements StructClass {
 
   static fromJSON(json: Record<string, any>): OwnerKey {
     if (json.$typeName !== OwnerKey.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a OwnerKey json object: expected '${OwnerKey.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return OwnerKey.fromJSONField(json)
@@ -342,7 +344,9 @@ export class Owner implements StructClass {
 
   static fromJSON(json: Record<string, any>): Owner {
     if (json.$typeName !== Owner.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Owner json object: expected '${Owner.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Owner.fromJSONField(json)
@@ -539,7 +543,9 @@ export class MetadataKey<T0 extends PhantomTypeArgument> implements StructClass 
     json: Record<string, any>
   ): MetadataKey<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== MetadataKey.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a MetadataKey json object: expected '${MetadataKey.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(MetadataKey.$typeName, ...[extractType(typeArg)]),
@@ -767,7 +773,9 @@ export class Metadata<T0 extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): Metadata<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== Metadata.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Metadata json object: expected '${Metadata.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Metadata.$typeName, ...[extractType(typeArg)]),

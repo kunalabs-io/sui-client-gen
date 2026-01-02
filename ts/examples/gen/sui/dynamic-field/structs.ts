@@ -216,7 +216,9 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     json: Record<string, any>
   ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
     if (json.$typeName !== Field.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Field json object: expected '${Field.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Field.$typeName, ...typeArgs.map(extractType)),

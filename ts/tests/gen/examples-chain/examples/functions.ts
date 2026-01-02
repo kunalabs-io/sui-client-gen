@@ -21,8 +21,8 @@ export interface SpecialTypesArgs {
   vecExampleStruct: Array<TransactionObjectInput> | TransactionArgument
   id: string | TransactionArgument
   address: string | TransactionArgument
-  option1: bigint | TransactionArgument | TransactionArgument | null
-  option2: bigint | TransactionArgument | TransactionArgument | null
+  option1: bigint | TransactionArgument | null
+  option2: bigint | TransactionArgument | null
 }
 
 export function specialTypes(tx: Transaction, args: SpecialTypesArgs) {

@@ -143,7 +143,9 @@ export class Url implements StructClass {
 
   static fromJSON(json: Record<string, any>): Url {
     if (json.$typeName !== Url.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Url json object: expected '${Url.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Url.fromJSONField(json)

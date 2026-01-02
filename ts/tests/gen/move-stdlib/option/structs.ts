@@ -184,7 +184,9 @@ export class Option<Element extends TypeArgument> implements StructClass {
     json: Record<string, any>
   ): Option<ToTypeArgument<Element>> {
     if (json.$typeName !== Option.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Option json object: expected '${Option.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Option.$typeName, ...[extractType(typeArg)]),
