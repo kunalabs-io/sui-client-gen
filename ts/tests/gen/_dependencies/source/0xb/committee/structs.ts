@@ -169,7 +169,9 @@ export class BlocklistValidatorEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): BlocklistValidatorEvent {
     if (json.$typeName !== BlocklistValidatorEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a BlocklistValidatorEvent json object: expected '${BlocklistValidatorEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return BlocklistValidatorEvent.fromJSONField(json)
@@ -390,7 +392,9 @@ export class BridgeCommittee implements StructClass {
 
   static fromJSON(json: Record<string, any>): BridgeCommittee {
     if (json.$typeName !== BridgeCommittee.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a BridgeCommittee json object: expected '${BridgeCommittee.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return BridgeCommittee.fromJSONField(json)
@@ -587,7 +591,9 @@ export class CommitteeUpdateEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): CommitteeUpdateEvent {
     if (json.$typeName !== CommitteeUpdateEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a CommitteeUpdateEvent json object: expected '${CommitteeUpdateEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return CommitteeUpdateEvent.fromJSONField(json)
@@ -780,7 +786,9 @@ export class CommitteeMemberUrlUpdateEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): CommitteeMemberUrlUpdateEvent {
     if (json.$typeName !== CommitteeMemberUrlUpdateEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a CommitteeMemberUrlUpdateEvent json object: expected '${CommitteeMemberUrlUpdateEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return CommitteeMemberUrlUpdateEvent.fromJSONField(json)
@@ -999,7 +1007,9 @@ export class CommitteeMember implements StructClass {
 
   static fromJSON(json: Record<string, any>): CommitteeMember {
     if (json.$typeName !== CommitteeMember.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a CommitteeMember json object: expected '${CommitteeMember.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return CommitteeMember.fromJSONField(json)
@@ -1202,7 +1212,9 @@ export class CommitteeMemberRegistration implements StructClass {
 
   static fromJSON(json: Record<string, any>): CommitteeMemberRegistration {
     if (json.$typeName !== CommitteeMemberRegistration.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a CommitteeMemberRegistration json object: expected '${CommitteeMemberRegistration.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return CommitteeMemberRegistration.fromJSONField(json)

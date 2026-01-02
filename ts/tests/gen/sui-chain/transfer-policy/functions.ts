@@ -41,7 +41,7 @@ export function default_(tx: Transaction, typeArg: string, publisher: Transactio
 export interface WithdrawArgs {
   transferPolicy: TransactionObjectInput
   transferPolicyCap: TransactionObjectInput
-  option: bigint | TransactionArgument | TransactionArgument | null
+  option: bigint | TransactionArgument | null
 }
 
 export function withdraw(tx: Transaction, typeArg: string, args: WithdrawArgs) {

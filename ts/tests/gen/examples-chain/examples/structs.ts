@@ -21,6 +21,7 @@ import { Vector } from '../../_framework/vector'
 import { PKG_V1 } from '../index'
 import { String } from '../../move-stdlib-chain/ascii/structs'
 import { Option } from '../../move-stdlib-chain/option/structs'
+import { String as StringString } from '../../move-stdlib-chain/string/structs'
 import { ID } from '../../sui-chain/object/structs'
 import { UID } from '../../sui-chain/object/structs'
 import { bcs } from '@mysten/sui/bcs'
@@ -156,7 +157,9 @@ export class ExampleStruct implements StructClass {
 
   static fromJSON(json: Record<string, any>): ExampleStruct {
     if (json.$typeName !== ExampleStruct.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ExampleStruct json object: expected '${ExampleStruct.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ExampleStruct.fromJSONField(json)
@@ -211,7 +214,7 @@ export function isSpecialTypesStruct(type: string): boolean {
 export interface SpecialTypesStructFields {
   id: ToField<UID>
   asciiString: ToField<String>
-  utf8String: ToField<String>
+  utf8String: ToField<StringString>
   vectorOfU64: ToField<Vector<'u64'>>
   vectorOfObjects: ToField<Vector<ExampleStruct>>
   idField: ToField<ID>
@@ -236,7 +239,7 @@ export class SpecialTypesStruct implements StructClass {
 
   readonly id: ToField<UID>
   readonly asciiString: ToField<String>
-  readonly utf8String: ToField<String>
+  readonly utf8String: ToField<StringString>
   readonly vectorOfU64: ToField<Vector<'u64'>>
   readonly vectorOfObjects: ToField<Vector<ExampleStruct>>
   readonly idField: ToField<ID>
@@ -305,7 +308,7 @@ export class SpecialTypesStruct implements StructClass {
     return bcs.struct('SpecialTypesStruct', {
       id: UID.bcs,
       ascii_string: String.bcs,
-      utf8_string: String.bcs,
+      utf8_string: StringString.bcs,
       vector_of_u64: bcs.vector(bcs.u64()),
       vector_of_objects: bcs.vector(ExampleStruct.bcs),
       id_field: ID.bcs,
@@ -331,7 +334,7 @@ export class SpecialTypesStruct implements StructClass {
     return SpecialTypesStruct.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       asciiString: decodeFromFields(String.reified(), fields.ascii_string),
-      utf8String: decodeFromFields(String.reified(), fields.utf8_string),
+      utf8String: decodeFromFields(StringString.reified(), fields.utf8_string),
       vectorOfU64: decodeFromFields(reified.vector('u64'), fields.vector_of_u64),
       vectorOfObjects: decodeFromFields(
         reified.vector(ExampleStruct.reified()),
@@ -352,7 +355,7 @@ export class SpecialTypesStruct implements StructClass {
     return SpecialTypesStruct.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       asciiString: decodeFromFieldsWithTypes(String.reified(), item.fields.ascii_string),
-      utf8String: decodeFromFieldsWithTypes(String.reified(), item.fields.utf8_string),
+      utf8String: decodeFromFieldsWithTypes(StringString.reified(), item.fields.utf8_string),
       vectorOfU64: decodeFromFieldsWithTypes(reified.vector('u64'), item.fields.vector_of_u64),
       vectorOfObjects: decodeFromFieldsWithTypes(
         reified.vector(ExampleStruct.reified()),
@@ -373,7 +376,7 @@ export class SpecialTypesStruct implements StructClass {
     return {
       id: this.id,
       asciiString: this.asciiString,
-      utf8String: this.utf8String,
+      utf8String: this.utf8String.toJSONField(),
       vectorOfU64: fieldToJSON<Vector<'u64'>>(`vector<u64>`, this.vectorOfU64),
       vectorOfObjects: fieldToJSON<Vector<ExampleStruct>>(
         `vector<${ExampleStruct.$typeName}>`,
@@ -394,7 +397,7 @@ export class SpecialTypesStruct implements StructClass {
     return SpecialTypesStruct.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       asciiString: decodeFromJSONField(String.reified(), field.asciiString),
-      utf8String: decodeFromJSONField(String.reified(), field.utf8String),
+      utf8String: decodeFromJSONField(StringString.reified(), field.utf8String),
       vectorOfU64: decodeFromJSONField(reified.vector('u64'), field.vectorOfU64),
       vectorOfObjects: decodeFromJSONField(
         reified.vector(ExampleStruct.reified()),
@@ -409,7 +412,9 @@ export class SpecialTypesStruct implements StructClass {
 
   static fromJSON(json: Record<string, any>): SpecialTypesStruct {
     if (json.$typeName !== SpecialTypesStruct.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a SpecialTypesStruct json object: expected '${SpecialTypesStruct.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return SpecialTypesStruct.fromJSONField(json)

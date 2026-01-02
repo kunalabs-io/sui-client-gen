@@ -241,7 +241,7 @@ export function returnPurchaseCap(tx: Transaction, typeArg: string, args: Return
 export interface WithdrawArgs {
   kiosk: TransactionObjectInput
   kioskOwnerCap: TransactionObjectInput
-  option: bigint | TransactionArgument | TransactionArgument | null
+  option: bigint | TransactionArgument | null
 }
 
 export function withdraw(tx: Transaction, args: WithdrawArgs) {

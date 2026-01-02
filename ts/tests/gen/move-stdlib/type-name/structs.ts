@@ -146,7 +146,9 @@ export class TypeName implements StructClass {
 
   static fromJSON(json: Record<string, any>): TypeName {
     if (json.$typeName !== TypeName.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TypeName json object: expected '${TypeName.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return TypeName.fromJSONField(json)

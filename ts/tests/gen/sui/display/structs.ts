@@ -199,7 +199,9 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): Display<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Display.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Display json object: expected '${Display.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Display.$typeName, ...[extractType(typeArg)]),
@@ -427,7 +429,9 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
     json: Record<string, any>
   ): DisplayCreated<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== DisplayCreated.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a DisplayCreated json object: expected '${DisplayCreated.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(DisplayCreated.$typeName, ...[extractType(typeArg)]),
@@ -674,7 +678,9 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
     json: Record<string, any>
   ): VersionUpdated<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== VersionUpdated.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a VersionUpdated json object: expected '${VersionUpdated.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(VersionUpdated.$typeName, ...[extractType(typeArg)]),

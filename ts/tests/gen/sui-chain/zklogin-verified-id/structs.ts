@@ -193,7 +193,9 @@ export class VerifiedID implements StructClass {
 
   static fromJSON(json: Record<string, any>): VerifiedID {
     if (json.$typeName !== VerifiedID.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a VerifiedID json object: expected '${VerifiedID.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return VerifiedID.fromJSONField(json)

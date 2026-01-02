@@ -157,7 +157,9 @@ export class AccumulatorRoot implements StructClass {
 
   static fromJSON(json: Record<string, any>): AccumulatorRoot {
     if (json.$typeName !== AccumulatorRoot.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a AccumulatorRoot json object: expected '${AccumulatorRoot.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return AccumulatorRoot.fromJSONField(json)
@@ -325,7 +327,9 @@ export class U128 implements StructClass {
 
   static fromJSON(json: Record<string, any>): U128 {
     if (json.$typeName !== U128.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a U128 json object: expected '${U128.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return U128.fromJSONField(json)
@@ -522,7 +526,9 @@ export class Key<T extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): Key<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Key.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Key json object: expected '${Key.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Key.$typeName, ...[extractType(typeArg)]),

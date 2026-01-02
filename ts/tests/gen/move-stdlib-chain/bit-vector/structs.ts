@@ -156,7 +156,9 @@ export class BitVector implements StructClass {
 
   static fromJSON(json: Record<string, any>): BitVector {
     if (json.$typeName !== BitVector.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a BitVector json object: expected '${BitVector.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return BitVector.fromJSONField(json)

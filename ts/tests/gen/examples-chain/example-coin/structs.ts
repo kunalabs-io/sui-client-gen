@@ -153,7 +153,9 @@ export class EXAMPLE_COIN implements StructClass {
 
   static fromJSON(json: Record<string, any>): EXAMPLE_COIN {
     if (json.$typeName !== EXAMPLE_COIN.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a EXAMPLE_COIN json object: expected '${EXAMPLE_COIN.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return EXAMPLE_COIN.fromJSONField(json)
@@ -344,7 +346,9 @@ export class Faucet implements StructClass {
 
   static fromJSON(json: Record<string, any>): Faucet {
     if (json.$typeName !== Faucet.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Faucet json object: expected '${Faucet.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Faucet.fromJSONField(json)

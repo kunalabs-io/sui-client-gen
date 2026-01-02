@@ -183,7 +183,9 @@ export class TableVec<T0 extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): TableVec<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== TableVec.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TableVec json object: expected '${TableVec.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(TableVec.$typeName, ...[extractType(typeArg)]),

@@ -154,7 +154,9 @@ export class ObjectBag implements StructClass {
 
   static fromJSON(json: Record<string, any>): ObjectBag {
     if (json.$typeName !== ObjectBag.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ObjectBag json object: expected '${ObjectBag.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ObjectBag.fromJSONField(json)

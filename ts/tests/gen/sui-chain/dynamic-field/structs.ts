@@ -201,7 +201,9 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements 
     json: Record<string, any>
   ): Field<ToTypeArgument<T0>, ToTypeArgument<T1>> {
     if (json.$typeName !== Field.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Field json object: expected '${Field.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Field.$typeName, ...typeArgs.map(extractType)),

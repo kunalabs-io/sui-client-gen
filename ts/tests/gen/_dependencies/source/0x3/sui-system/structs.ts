@@ -157,7 +157,9 @@ export class SuiSystemState implements StructClass {
 
   static fromJSON(json: Record<string, any>): SuiSystemState {
     if (json.$typeName !== SuiSystemState.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a SuiSystemState json object: expected '${SuiSystemState.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return SuiSystemState.fromJSONField(json)

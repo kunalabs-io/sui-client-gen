@@ -177,7 +177,9 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
     json: Record<string, any>
   ): Wrapper<ToTypeArgument<Name>> {
     if (json.$typeName !== Wrapper.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Wrapper json object: expected '${Wrapper.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Wrapper.$typeName, ...[extractType(typeArg)]),

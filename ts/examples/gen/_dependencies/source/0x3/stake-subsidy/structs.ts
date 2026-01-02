@@ -205,7 +205,9 @@ export class StakeSubsidy implements StructClass {
 
   static fromJSON(json: Record<string, any>): StakeSubsidy {
     if (json.$typeName !== StakeSubsidy.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a StakeSubsidy json object: expected '${StakeSubsidy.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return StakeSubsidy.fromJSONField(json)

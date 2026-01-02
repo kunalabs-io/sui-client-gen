@@ -29,6 +29,7 @@ import {
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { PKG_V1 } from '../index'
+import { String as StringAscii } from '../../move-stdlib-chain/ascii/structs'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { String } from '../../move-stdlib-chain/string/structs'
 import { Balance } from '../../sui-chain/balance/structs'
@@ -167,7 +168,9 @@ export class Dummy implements StructClass {
 
   static fromJSON(json: Record<string, any>): Dummy {
     if (json.$typeName !== Dummy.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Dummy json object: expected '${Dummy.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Dummy.fromJSONField(json)
@@ -377,7 +380,9 @@ export class WithGenericField<T0 extends TypeArgument> implements StructClass {
     json: Record<string, any>
   ): WithGenericField<ToTypeArgument<T0>> {
     if (json.$typeName !== WithGenericField.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a WithGenericField json object: expected '${WithGenericField.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(WithGenericField.$typeName, ...[extractType(typeArg)]),
@@ -579,7 +584,9 @@ export class Bar implements StructClass {
 
   static fromJSON(json: Record<string, any>): Bar {
     if (json.$typeName !== Bar.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Bar json object: expected '${Bar.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Bar.fromJSONField(json)
@@ -804,7 +811,9 @@ export class WithTwoGenerics<T0 extends TypeArgument, T1 extends TypeArgument>
     json: Record<string, any>
   ): WithTwoGenerics<ToTypeArgument<T0>, ToTypeArgument<T1>> {
     if (json.$typeName !== WithTwoGenerics.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a WithTwoGenerics json object: expected '${WithTwoGenerics.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(WithTwoGenerics.$typeName, ...typeArgs.map(extractType)),
@@ -1238,7 +1247,9 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
     json: Record<string, any>
   ): Foo<ToTypeArgument<T0>> {
     if (json.$typeName !== Foo.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Foo json object: expected '${Foo.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Foo.$typeName, ...[extractType(typeArg)]),
@@ -1324,7 +1335,7 @@ export function isWithSpecialTypes(type: string): boolean {
 export interface WithSpecialTypesFields<T0 extends PhantomTypeArgument, T1 extends TypeArgument> {
   id: ToField<UID>
   string: ToField<String>
-  asciiString: ToField<String>
+  asciiString: ToField<StringAscii>
   url: ToField<Url>
   idField: ToField<ID>
   uid: ToField<UID>
@@ -1358,7 +1369,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
 
   readonly id: ToField<UID>
   readonly string: ToField<String>
-  readonly asciiString: ToField<String>
+  readonly asciiString: ToField<StringAscii>
   readonly url: ToField<Url>
   readonly idField: ToField<ID>
   readonly uid: ToField<UID>
@@ -1454,7 +1465,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
       bcs.struct(`WithSpecialTypes<${T1.name}>`, {
         id: UID.bcs,
         string: String.bcs,
-        ascii_string: String.bcs,
+        ascii_string: StringAscii.bcs,
         url: Url.bcs,
         id_field: ID.bcs,
         uid: UID.bcs,
@@ -1487,7 +1498,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     return WithSpecialTypes.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromFields(UID.reified(), fields.id),
       string: decodeFromFields(String.reified(), fields.string),
-      asciiString: decodeFromFields(String.reified(), fields.ascii_string),
+      asciiString: decodeFromFields(StringAscii.reified(), fields.ascii_string),
       url: decodeFromFields(Url.reified(), fields.url),
       idField: decodeFromFields(ID.reified(), fields.id_field),
       uid: decodeFromFields(UID.reified(), fields.uid),
@@ -1516,7 +1527,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     return WithSpecialTypes.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       string: decodeFromFieldsWithTypes(String.reified(), item.fields.string),
-      asciiString: decodeFromFieldsWithTypes(String.reified(), item.fields.ascii_string),
+      asciiString: decodeFromFieldsWithTypes(StringAscii.reified(), item.fields.ascii_string),
       url: decodeFromFieldsWithTypes(Url.reified(), item.fields.url),
       idField: decodeFromFieldsWithTypes(ID.reified(), item.fields.id_field),
       uid: decodeFromFieldsWithTypes(UID.reified(), item.fields.uid),
@@ -1559,7 +1570,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     return {
       id: this.id,
       string: this.string,
-      asciiString: this.asciiString,
+      asciiString: this.asciiString.toJSONField(),
       url: this.url,
       idField: this.idField,
       uid: this.uid,
@@ -1593,7 +1604,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     return WithSpecialTypes.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       string: decodeFromJSONField(String.reified(), field.string),
-      asciiString: decodeFromJSONField(String.reified(), field.asciiString),
+      asciiString: decodeFromJSONField(StringAscii.reified(), field.asciiString),
       url: decodeFromJSONField(Url.reified(), field.url),
       idField: decodeFromJSONField(ID.reified(), field.idField),
       uid: decodeFromJSONField(UID.reified(), field.uid),
@@ -1615,7 +1626,9 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
     json: Record<string, any>
   ): WithSpecialTypes<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>> {
     if (json.$typeName !== WithSpecialTypes.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a WithSpecialTypes json object: expected '${WithSpecialTypes.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(WithSpecialTypes.$typeName, ...typeArgs.map(extractType)),
@@ -2241,7 +2254,9 @@ export class WithSpecialTypesAsGenerics<
     ToTypeArgument<T7>
   > {
     if (json.$typeName !== WithSpecialTypesAsGenerics.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a WithSpecialTypesAsGenerics json object: expected '${WithSpecialTypesAsGenerics.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(WithSpecialTypesAsGenerics.$typeName, ...typeArgs.map(extractType)),
@@ -2390,7 +2405,7 @@ export function isWithSpecialTypesInVectors(type: string): boolean {
 export interface WithSpecialTypesInVectorsFields<T0 extends TypeArgument> {
   id: ToField<UID>
   string: ToField<Vector<String>>
-  asciiString: ToField<Vector<String>>
+  asciiString: ToField<Vector<StringAscii>>
   idField: ToField<Vector<ID>>
   bar: ToField<Vector<Bar>>
   option: ToField<Vector<Option<'u64'>>>
@@ -2416,7 +2431,7 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
 
   readonly id: ToField<UID>
   readonly string: ToField<Vector<String>>
-  readonly asciiString: ToField<Vector<String>>
+  readonly asciiString: ToField<Vector<StringAscii>>
   readonly idField: ToField<Vector<ID>>
   readonly bar: ToField<Vector<Bar>>
   readonly option: ToField<Vector<Option<'u64'>>>
@@ -2491,7 +2506,7 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
       bcs.struct(`WithSpecialTypesInVectors<${T0.name}>`, {
         id: UID.bcs,
         string: bcs.vector(String.bcs),
-        ascii_string: bcs.vector(String.bcs),
+        ascii_string: bcs.vector(StringAscii.bcs),
         id_field: bcs.vector(ID.bcs),
         bar: bcs.vector(Bar.bcs),
         option: bcs.vector(Option.bcs(bcs.u64())),
@@ -2516,7 +2531,7 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
     return WithSpecialTypesInVectors.reified(typeArg).new({
       id: decodeFromFields(UID.reified(), fields.id),
       string: decodeFromFields(reified.vector(String.reified()), fields.string),
-      asciiString: decodeFromFields(reified.vector(String.reified()), fields.ascii_string),
+      asciiString: decodeFromFields(reified.vector(StringAscii.reified()), fields.ascii_string),
       idField: decodeFromFields(reified.vector(ID.reified()), fields.id_field),
       bar: decodeFromFields(reified.vector(Bar.reified()), fields.bar),
       option: decodeFromFields(reified.vector(Option.reified('u64')), fields.option),
@@ -2540,7 +2555,7 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       string: decodeFromFieldsWithTypes(reified.vector(String.reified()), item.fields.string),
       asciiString: decodeFromFieldsWithTypes(
-        reified.vector(String.reified()),
+        reified.vector(StringAscii.reified()),
         item.fields.ascii_string
       ),
       idField: decodeFromFieldsWithTypes(reified.vector(ID.reified()), item.fields.id_field),
@@ -2568,7 +2583,10 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
     return {
       id: this.id,
       string: fieldToJSON<Vector<String>>(`vector<${String.$typeName}>`, this.string),
-      asciiString: fieldToJSON<Vector<String>>(`vector<${String.$typeName}>`, this.asciiString),
+      asciiString: fieldToJSON<Vector<StringAscii>>(
+        `vector<${StringAscii.$typeName}>`,
+        this.asciiString
+      ),
       idField: fieldToJSON<Vector<ID>>(`vector<${ID.$typeName}>`, this.idField),
       bar: fieldToJSON<Vector<Bar>>(`vector<${Bar.$typeName}>`, this.bar),
       option: fieldToJSON<Vector<Option<'u64'>>>(`vector<${Option.$typeName}<u64>>`, this.option),
@@ -2590,7 +2608,7 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
     return WithSpecialTypesInVectors.reified(typeArg).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       string: decodeFromJSONField(reified.vector(String.reified()), field.string),
-      asciiString: decodeFromJSONField(reified.vector(String.reified()), field.asciiString),
+      asciiString: decodeFromJSONField(reified.vector(StringAscii.reified()), field.asciiString),
       idField: decodeFromJSONField(reified.vector(ID.reified()), field.idField),
       bar: decodeFromJSONField(reified.vector(Bar.reified()), field.bar),
       option: decodeFromJSONField(reified.vector(Option.reified('u64')), field.option),
@@ -2606,7 +2624,9 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
     json: Record<string, any>
   ): WithSpecialTypesInVectors<ToTypeArgument<T0>> {
     if (json.$typeName !== WithSpecialTypesInVectors.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a WithSpecialTypesInVectors json object: expected '${WithSpecialTypesInVectors.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(WithSpecialTypesInVectors.$typeName, ...[extractType(typeArg)]),

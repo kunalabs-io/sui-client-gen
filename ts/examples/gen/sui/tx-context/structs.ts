@@ -183,7 +183,9 @@ export class TxContext implements StructClass {
 
   static fromJSON(json: Record<string, any>): TxContext {
     if (json.$typeName !== TxContext.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TxContext json object: expected '${TxContext.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return TxContext.fromJSONField(json)

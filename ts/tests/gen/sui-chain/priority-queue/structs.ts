@@ -188,7 +188,9 @@ export class PriorityQueue<T0 extends TypeArgument> implements StructClass {
     json: Record<string, any>
   ): PriorityQueue<ToTypeArgument<T0>> {
     if (json.$typeName !== PriorityQueue.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a PriorityQueue json object: expected '${PriorityQueue.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(PriorityQueue.$typeName, ...[extractType(typeArg)]),
@@ -421,7 +423,9 @@ export class Entry<T0 extends TypeArgument> implements StructClass {
     json: Record<string, any>
   ): Entry<ToTypeArgument<T0>> {
     if (json.$typeName !== Entry.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Entry json object: expected '${Entry.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Entry.$typeName, ...[extractType(typeArg)]),

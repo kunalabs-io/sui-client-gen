@@ -177,7 +177,9 @@ export class VecSet<K extends TypeArgument> implements StructClass {
     json: Record<string, any>
   ): VecSet<ToTypeArgument<K>> {
     if (json.$typeName !== VecSet.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a VecSet json object: expected '${VecSet.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(VecSet.$typeName, ...[extractType(typeArg)]),

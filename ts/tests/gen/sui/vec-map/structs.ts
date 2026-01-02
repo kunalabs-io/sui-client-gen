@@ -201,7 +201,9 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
     json: Record<string, any>
   ): VecMap<ToTypeArgument<K>, ToTypeArgument<V>> {
     if (json.$typeName !== VecMap.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a VecMap json object: expected '${VecMap.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(VecMap.$typeName, ...typeArgs.map(extractType)),
@@ -443,7 +445,9 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
     json: Record<string, any>
   ): Entry<ToTypeArgument<K>, ToTypeArgument<V>> {
     if (json.$typeName !== Entry.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Entry json object: expected '${Entry.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Entry.$typeName, ...typeArgs.map(extractType)),

@@ -145,7 +145,9 @@ export class Curve implements StructClass {
 
   static fromJSON(json: Record<string, any>): Curve {
     if (json.$typeName !== Curve.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Curve json object: expected '${Curve.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Curve.fromJSONField(json)
@@ -358,7 +360,9 @@ export class PreparedVerifyingKey implements StructClass {
 
   static fromJSON(json: Record<string, any>): PreparedVerifyingKey {
     if (json.$typeName !== PreparedVerifyingKey.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a PreparedVerifyingKey json object: expected '${PreparedVerifyingKey.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return PreparedVerifyingKey.fromJSONField(json)
@@ -534,7 +538,9 @@ export class PublicProofInputs implements StructClass {
 
   static fromJSON(json: Record<string, any>): PublicProofInputs {
     if (json.$typeName !== PublicProofInputs.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a PublicProofInputs json object: expected '${PublicProofInputs.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return PublicProofInputs.fromJSONField(json)
@@ -705,7 +711,9 @@ export class ProofPoints implements StructClass {
 
   static fromJSON(json: Record<string, any>): ProofPoints {
     if (json.$typeName !== ProofPoints.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ProofPoints json object: expected '${ProofPoints.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ProofPoints.fromJSONField(json)

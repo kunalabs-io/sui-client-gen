@@ -290,7 +290,9 @@ export class ValidatorSet implements StructClass {
 
   static fromJSON(json: Record<string, any>): ValidatorSet {
     if (json.$typeName !== ValidatorSet.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ValidatorSet json object: expected '${ValidatorSet.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ValidatorSet.fromJSONField(json)
@@ -580,7 +582,9 @@ export class ValidatorEpochInfoEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): ValidatorEpochInfoEvent {
     if (json.$typeName !== ValidatorEpochInfoEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ValidatorEpochInfoEvent json object: expected '${ValidatorEpochInfoEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ValidatorEpochInfoEvent.fromJSONField(json)
@@ -883,7 +887,9 @@ export class ValidatorEpochInfoEventV2 implements StructClass {
 
   static fromJSON(json: Record<string, any>): ValidatorEpochInfoEventV2 {
     if (json.$typeName !== ValidatorEpochInfoEventV2.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ValidatorEpochInfoEventV2 json object: expected '${ValidatorEpochInfoEventV2.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ValidatorEpochInfoEventV2.fromJSONField(json)
@@ -1083,7 +1089,9 @@ export class ValidatorJoinEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): ValidatorJoinEvent {
     if (json.$typeName !== ValidatorJoinEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ValidatorJoinEvent json object: expected '${ValidatorJoinEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ValidatorJoinEvent.fromJSONField(json)
@@ -1284,7 +1292,9 @@ export class ValidatorLeaveEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): ValidatorLeaveEvent {
     if (json.$typeName !== ValidatorLeaveEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ValidatorLeaveEvent json object: expected '${ValidatorLeaveEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ValidatorLeaveEvent.fromJSONField(json)
@@ -1472,7 +1482,9 @@ export class VotingPowerAdmissionStartEpochKey implements StructClass {
 
   static fromJSON(json: Record<string, any>): VotingPowerAdmissionStartEpochKey {
     if (json.$typeName !== VotingPowerAdmissionStartEpochKey.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a VotingPowerAdmissionStartEpochKey json object: expected '${VotingPowerAdmissionStartEpochKey.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return VotingPowerAdmissionStartEpochKey.fromJSONField(json)

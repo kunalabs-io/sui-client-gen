@@ -190,7 +190,9 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): Withdrawal<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Withdrawal.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Withdrawal json object: expected '${Withdrawal.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Withdrawal.$typeName, ...[extractType(typeArg)]),

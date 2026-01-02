@@ -299,7 +299,9 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     json: Record<string, any>
   ): Wrapped<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>> {
     if (json.$typeName !== Wrapped.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Wrapped json object: expected '${Wrapped.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Wrapped.$typeName, ...typeArgs.map(extractType)),
@@ -629,7 +631,9 @@ export class Action {
     json: Record<string, any>
   ): ActionVariant<ToTypeArgument<T>, ToPhantomTypeArgument<U>> {
     if (json.$typeName !== Action.$typeName) {
-      throw new Error('not a Action json object')
+      throw new Error(
+        `not a Action json object: expected '${Action.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Action.$typeName, ...typeArgs.map(extractType)),

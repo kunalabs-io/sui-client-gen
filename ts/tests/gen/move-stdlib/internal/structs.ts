@@ -176,7 +176,9 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): Permit<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Permit.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Permit json object: expected '${Permit.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Permit.$typeName, ...[extractType(typeArg)]),

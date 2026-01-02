@@ -23,6 +23,7 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
+import { String as StringAscii } from '../../move-stdlib/ascii/structs'
 import { Option } from '../../move-stdlib/option/structs'
 import { String } from '../../move-stdlib/string/structs'
 import { Balance } from '../balance/structs'
@@ -191,7 +192,9 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): Coin<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Coin.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Coin json object: expected '${Coin.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Coin.$typeName, ...[extractType(typeArg)]),
@@ -278,7 +281,7 @@ export interface CoinMetadataFields<T extends PhantomTypeArgument> {
   id: ToField<UID>
   decimals: ToField<'u8'>
   name: ToField<String>
-  symbol: ToField<String>
+  symbol: ToField<StringAscii>
   description: ToField<String>
   iconUrl: ToField<Option<Url>>
 }
@@ -303,7 +306,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
   readonly id: ToField<UID>
   readonly decimals: ToField<'u8'>
   readonly name: ToField<String>
-  readonly symbol: ToField<String>
+  readonly symbol: ToField<StringAscii>
   readonly description: ToField<String>
   readonly iconUrl: ToField<Option<Url>>
 
@@ -370,7 +373,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
       id: UID.bcs,
       decimals: bcs.u8(),
       name: String.bcs,
-      symbol: String.bcs,
+      symbol: StringAscii.bcs,
       description: String.bcs,
       icon_url: Option.bcs(Url.bcs),
     })
@@ -393,7 +396,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
       id: decodeFromFields(UID.reified(), fields.id),
       decimals: decodeFromFields('u8', fields.decimals),
       name: decodeFromFields(String.reified(), fields.name),
-      symbol: decodeFromFields(String.reified(), fields.symbol),
+      symbol: decodeFromFields(StringAscii.reified(), fields.symbol),
       description: decodeFromFields(String.reified(), fields.description),
       iconUrl: decodeFromFields(Option.reified(Url.reified()), fields.icon_url),
     })
@@ -412,7 +415,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       decimals: decodeFromFieldsWithTypes('u8', item.fields.decimals),
       name: decodeFromFieldsWithTypes(String.reified(), item.fields.name),
-      symbol: decodeFromFieldsWithTypes(String.reified(), item.fields.symbol),
+      symbol: decodeFromFieldsWithTypes(StringAscii.reified(), item.fields.symbol),
       description: decodeFromFieldsWithTypes(String.reified(), item.fields.description),
       iconUrl: decodeFromFieldsWithTypes(Option.reified(Url.reified()), item.fields.icon_url),
     })
@@ -430,7 +433,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
       id: this.id,
       decimals: this.decimals,
       name: this.name,
-      symbol: this.symbol,
+      symbol: this.symbol.toJSONField(),
       description: this.description,
       iconUrl: fieldToJSON<Option<Url>>(`${Option.$typeName}<${Url.$typeName}>`, this.iconUrl),
     }
@@ -448,7 +451,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
       id: decodeFromJSONField(UID.reified(), field.id),
       decimals: decodeFromJSONField('u8', field.decimals),
       name: decodeFromJSONField(String.reified(), field.name),
-      symbol: decodeFromJSONField(String.reified(), field.symbol),
+      symbol: decodeFromJSONField(StringAscii.reified(), field.symbol),
       description: decodeFromJSONField(String.reified(), field.description),
       iconUrl: decodeFromJSONField(Option.reified(Url.reified()), field.iconUrl),
     })
@@ -459,7 +462,9 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
     json: Record<string, any>
   ): CoinMetadata<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== CoinMetadata.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a CoinMetadata json object: expected '${CoinMetadata.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(CoinMetadata.$typeName, ...[extractType(typeArg)]),
@@ -706,7 +711,9 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
     json: Record<string, any>
   ): RegulatedCoinMetadata<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== RegulatedCoinMetadata.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a RegulatedCoinMetadata json object: expected '${RegulatedCoinMetadata.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(RegulatedCoinMetadata.$typeName, ...[extractType(typeArg)]),
@@ -944,7 +951,9 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): TreasuryCap<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== TreasuryCap.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TreasuryCap json object: expected '${TreasuryCap.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(TreasuryCap.$typeName, ...[extractType(typeArg)]),
@@ -1180,7 +1189,9 @@ export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): DenyCapV2<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== DenyCapV2.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a DenyCapV2 json object: expected '${DenyCapV2.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(DenyCapV2.$typeName, ...[extractType(typeArg)]),
@@ -1408,7 +1419,9 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
     json: Record<string, any>
   ): CurrencyCreated<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== CurrencyCreated.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a CurrencyCreated json object: expected '${CurrencyCreated.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(CurrencyCreated.$typeName, ...[extractType(typeArg)]),
@@ -1633,7 +1646,9 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): DenyCap<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== DenyCap.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a DenyCap json object: expected '${DenyCap.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(DenyCap.$typeName, ...[extractType(typeArg)]),

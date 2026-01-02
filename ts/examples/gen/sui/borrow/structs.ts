@@ -188,7 +188,9 @@ export class Referent<T extends TypeArgument> implements StructClass {
     json: Record<string, any>
   ): Referent<ToTypeArgument<T>> {
     if (json.$typeName !== Referent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Referent json object: expected '${Referent.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Referent.$typeName, ...[extractType(typeArg)]),
@@ -398,7 +400,9 @@ export class Borrow implements StructClass {
 
   static fromJSON(json: Record<string, any>): Borrow {
     if (json.$typeName !== Borrow.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Borrow json object: expected '${Borrow.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Borrow.fromJSONField(json)

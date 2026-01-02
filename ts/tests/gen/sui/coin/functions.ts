@@ -189,7 +189,7 @@ export interface CreateCurrencyArgs {
   symbol: Array<number | TransactionArgument> | TransactionArgument
   name: Array<number | TransactionArgument> | TransactionArgument
   description: Array<number | TransactionArgument> | TransactionArgument
-  iconUrl: TransactionObjectInput | TransactionArgument | null
+  iconUrl: TransactionObjectInput | null
 }
 
 export function createCurrency(tx: Transaction, typeArg: string, args: CreateCurrencyArgs) {
@@ -213,7 +213,7 @@ export interface CreateRegulatedCurrencyV2Args {
   symbol: Array<number | TransactionArgument> | TransactionArgument
   name: Array<number | TransactionArgument> | TransactionArgument
   description: Array<number | TransactionArgument> | TransactionArgument
-  iconUrl: TransactionObjectInput | TransactionArgument | null
+  iconUrl: TransactionObjectInput | null
   allowGlobalPause: boolean | TransactionArgument
 }
 
@@ -646,7 +646,7 @@ export interface CreateRegulatedCurrencyArgs {
   symbol: Array<number | TransactionArgument> | TransactionArgument
   name: Array<number | TransactionArgument> | TransactionArgument
   description: Array<number | TransactionArgument> | TransactionArgument
-  iconUrl: TransactionObjectInput | TransactionArgument | null
+  iconUrl: TransactionObjectInput | null
 }
 
 export function createRegulatedCurrency(

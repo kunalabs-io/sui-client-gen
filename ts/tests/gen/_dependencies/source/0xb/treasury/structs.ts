@@ -195,7 +195,9 @@ export class BridgeTreasury implements StructClass {
 
   static fromJSON(json: Record<string, any>): BridgeTreasury {
     if (json.$typeName !== BridgeTreasury.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a BridgeTreasury json object: expected '${BridgeTreasury.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return BridgeTreasury.fromJSONField(json)
@@ -393,7 +395,9 @@ export class BridgeTokenMetadata implements StructClass {
 
   static fromJSON(json: Record<string, any>): BridgeTokenMetadata {
     if (json.$typeName !== BridgeTokenMetadata.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a BridgeTokenMetadata json object: expected '${BridgeTokenMetadata.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return BridgeTokenMetadata.fromJSONField(json)
@@ -589,7 +593,9 @@ export class ForeignTokenRegistration implements StructClass {
 
   static fromJSON(json: Record<string, any>): ForeignTokenRegistration {
     if (json.$typeName !== ForeignTokenRegistration.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ForeignTokenRegistration json object: expected '${ForeignTokenRegistration.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ForeignTokenRegistration.fromJSONField(json)
@@ -784,7 +790,9 @@ export class UpdateTokenPriceEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): UpdateTokenPriceEvent {
     if (json.$typeName !== UpdateTokenPriceEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a UpdateTokenPriceEvent json object: expected '${UpdateTokenPriceEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return UpdateTokenPriceEvent.fromJSONField(json)
@@ -992,7 +1000,9 @@ export class NewTokenEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): NewTokenEvent {
     if (json.$typeName !== NewTokenEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a NewTokenEvent json object: expected '${NewTokenEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return NewTokenEvent.fromJSONField(json)
@@ -1188,7 +1198,9 @@ export class TokenRegistrationEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): TokenRegistrationEvent {
     if (json.$typeName !== TokenRegistrationEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TokenRegistrationEvent json object: expected '${TokenRegistrationEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return TokenRegistrationEvent.fromJSONField(json)

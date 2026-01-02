@@ -164,7 +164,9 @@ export class Bridge implements StructClass {
 
   static fromJSON(json: Record<string, any>): Bridge {
     if (json.$typeName !== Bridge.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Bridge json object: expected '${Bridge.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Bridge.fromJSONField(json)
@@ -411,7 +413,9 @@ export class BridgeInner implements StructClass {
 
   static fromJSON(json: Record<string, any>): BridgeInner {
     if (json.$typeName !== BridgeInner.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a BridgeInner json object: expected '${BridgeInner.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return BridgeInner.fromJSONField(json)
@@ -633,7 +637,9 @@ export class TokenDepositedEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): TokenDepositedEvent {
     if (json.$typeName !== TokenDepositedEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TokenDepositedEvent json object: expected '${TokenDepositedEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return TokenDepositedEvent.fromJSONField(json)
@@ -807,7 +813,9 @@ export class EmergencyOpEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): EmergencyOpEvent {
     if (json.$typeName !== EmergencyOpEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a EmergencyOpEvent json object: expected '${EmergencyOpEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return EmergencyOpEvent.fromJSONField(json)
@@ -1006,7 +1014,9 @@ export class BridgeRecord implements StructClass {
 
   static fromJSON(json: Record<string, any>): BridgeRecord {
     if (json.$typeName !== BridgeRecord.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a BridgeRecord json object: expected '${BridgeRecord.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return BridgeRecord.fromJSONField(json)
@@ -1186,7 +1196,9 @@ export class TokenTransferApproved implements StructClass {
 
   static fromJSON(json: Record<string, any>): TokenTransferApproved {
     if (json.$typeName !== TokenTransferApproved.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TokenTransferApproved json object: expected '${TokenTransferApproved.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return TokenTransferApproved.fromJSONField(json)
@@ -1365,7 +1377,9 @@ export class TokenTransferClaimed implements StructClass {
 
   static fromJSON(json: Record<string, any>): TokenTransferClaimed {
     if (json.$typeName !== TokenTransferClaimed.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TokenTransferClaimed json object: expected '${TokenTransferClaimed.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return TokenTransferClaimed.fromJSONField(json)
@@ -1550,7 +1564,9 @@ export class TokenTransferAlreadyApproved implements StructClass {
 
   static fromJSON(json: Record<string, any>): TokenTransferAlreadyApproved {
     if (json.$typeName !== TokenTransferAlreadyApproved.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TokenTransferAlreadyApproved json object: expected '${TokenTransferAlreadyApproved.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return TokenTransferAlreadyApproved.fromJSONField(json)
@@ -1738,7 +1754,9 @@ export class TokenTransferAlreadyClaimed implements StructClass {
 
   static fromJSON(json: Record<string, any>): TokenTransferAlreadyClaimed {
     if (json.$typeName !== TokenTransferAlreadyClaimed.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TokenTransferAlreadyClaimed json object: expected '${TokenTransferAlreadyClaimed.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return TokenTransferAlreadyClaimed.fromJSONField(json)
@@ -1925,7 +1943,9 @@ export class TokenTransferLimitExceed implements StructClass {
 
   static fromJSON(json: Record<string, any>): TokenTransferLimitExceed {
     if (json.$typeName !== TokenTransferLimitExceed.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TokenTransferLimitExceed json object: expected '${TokenTransferLimitExceed.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return TokenTransferLimitExceed.fromJSONField(json)

@@ -225,7 +225,7 @@ export function returnPurchaseCap(tx: Transaction, typeArg: string, args: Return
 export interface WithdrawArgs {
   self: TransactionObjectInput
   cap: TransactionObjectInput
-  amount: bigint | TransactionArgument | TransactionArgument | null
+  amount: bigint | TransactionArgument | null
 }
 
 export function withdraw(tx: Transaction, args: WithdrawArgs) {

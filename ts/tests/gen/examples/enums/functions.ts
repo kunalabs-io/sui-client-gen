@@ -7,7 +7,7 @@ export interface CreateStopActionArgs {
   duration: number | TransactionArgument
   genericField: GenericArg
   phantomField: TransactionObjectInput
-  reifiedField: bigint | TransactionArgument | TransactionArgument | null
+  reifiedField: bigint | TransactionArgument | null
 }
 
 export function createStopAction(

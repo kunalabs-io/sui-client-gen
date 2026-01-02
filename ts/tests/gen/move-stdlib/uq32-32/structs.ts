@@ -142,7 +142,9 @@ export class UQ32_32 implements StructClass {
 
   static fromJSON(json: Record<string, any>): UQ32_32 {
     if (json.$typeName !== UQ32_32.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a UQ32_32 json object: expected '${UQ32_32.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return UQ32_32.fromJSONField(json)

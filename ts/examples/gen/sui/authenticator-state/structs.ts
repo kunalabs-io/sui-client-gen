@@ -161,7 +161,9 @@ export class AuthenticatorState implements StructClass {
 
   static fromJSON(json: Record<string, any>): AuthenticatorState {
     if (json.$typeName !== AuthenticatorState.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a AuthenticatorState json object: expected '${AuthenticatorState.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return AuthenticatorState.fromJSONField(json)
@@ -352,7 +354,9 @@ export class AuthenticatorStateInner implements StructClass {
 
   static fromJSON(json: Record<string, any>): AuthenticatorStateInner {
     if (json.$typeName !== AuthenticatorStateInner.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a AuthenticatorStateInner json object: expected '${AuthenticatorStateInner.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return AuthenticatorStateInner.fromJSONField(json)
@@ -551,7 +555,9 @@ export class JWK implements StructClass {
 
   static fromJSON(json: Record<string, any>): JWK {
     if (json.$typeName !== JWK.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a JWK json object: expected '${JWK.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return JWK.fromJSONField(json)
@@ -730,7 +736,9 @@ export class JwkId implements StructClass {
 
   static fromJSON(json: Record<string, any>): JwkId {
     if (json.$typeName !== JwkId.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a JwkId json object: expected '${JwkId.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return JwkId.fromJSONField(json)
@@ -920,7 +928,9 @@ export class ActiveJwk implements StructClass {
 
   static fromJSON(json: Record<string, any>): ActiveJwk {
     if (json.$typeName !== ActiveJwk.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ActiveJwk json object: expected '${ActiveJwk.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ActiveJwk.fromJSONField(json)

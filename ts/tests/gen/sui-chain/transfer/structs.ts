@@ -188,7 +188,9 @@ export class Receiving<T0 extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): Receiving<ToPhantomTypeArgument<T0>> {
     if (json.$typeName !== Receiving.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Receiving json object: expected '${Receiving.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Receiving.$typeName, ...[extractType(typeArg)]),

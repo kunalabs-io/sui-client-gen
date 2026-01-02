@@ -142,7 +142,9 @@ export class UQ64_64 implements StructClass {
 
   static fromJSON(json: Record<string, any>): UQ64_64 {
     if (json.$typeName !== UQ64_64.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a UQ64_64 json object: expected '${UQ64_64.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return UQ64_64.fromJSONField(json)

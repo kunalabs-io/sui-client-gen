@@ -192,7 +192,9 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): Token<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Token.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Token json object: expected '${Token.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Token.$typeName, ...[extractType(typeArg)]),
@@ -428,7 +430,9 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
     json: Record<string, any>
   ): TokenPolicyCap<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== TokenPolicyCap.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TokenPolicyCap json object: expected '${TokenPolicyCap.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(TokenPolicyCap.$typeName, ...[extractType(typeArg)]),
@@ -681,7 +685,9 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): TokenPolicy<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== TokenPolicy.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TokenPolicy json object: expected '${TokenPolicy.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(TokenPolicy.$typeName, ...[extractType(typeArg)]),
@@ -972,7 +978,9 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
     json: Record<string, any>
   ): ActionRequest<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== ActionRequest.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ActionRequest json object: expected '${ActionRequest.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(ActionRequest.$typeName, ...[extractType(typeArg)]),
@@ -1197,7 +1205,9 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
     json: Record<string, any>
   ): RuleKey<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== RuleKey.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a RuleKey json object: expected '${RuleKey.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(RuleKey.$typeName, ...[extractType(typeArg)]),
@@ -1436,7 +1446,9 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
     json: Record<string, any>
   ): TokenPolicyCreated<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== TokenPolicyCreated.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a TokenPolicyCreated json object: expected '${TokenPolicyCreated.$typeName}' but got '${json.$typeName}'`
+      )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(TokenPolicyCreated.$typeName, ...[extractType(typeArg)]),

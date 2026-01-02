@@ -171,7 +171,9 @@ export class ExecutionTimeObservationChunkKey implements StructClass {
 
   static fromJSON(json: Record<string, any>): ExecutionTimeObservationChunkKey {
     if (json.$typeName !== ExecutionTimeObservationChunkKey.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ExecutionTimeObservationChunkKey json object: expected '${ExecutionTimeObservationChunkKey.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ExecutionTimeObservationChunkKey.fromJSONField(json)
@@ -435,7 +437,9 @@ export class SystemParameters implements StructClass {
 
   static fromJSON(json: Record<string, any>): SystemParameters {
     if (json.$typeName !== SystemParameters.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a SystemParameters json object: expected '${SystemParameters.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return SystemParameters.fromJSONField(json)
@@ -697,7 +701,9 @@ export class SystemParametersV2 implements StructClass {
 
   static fromJSON(json: Record<string, any>): SystemParametersV2 {
     if (json.$typeName !== SystemParametersV2.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a SystemParametersV2 json object: expected '${SystemParametersV2.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return SystemParametersV2.fromJSONField(json)
@@ -1041,7 +1047,9 @@ export class SuiSystemStateInner implements StructClass {
 
   static fromJSON(json: Record<string, any>): SuiSystemStateInner {
     if (json.$typeName !== SuiSystemStateInner.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a SuiSystemStateInner json object: expected '${SuiSystemStateInner.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return SuiSystemStateInner.fromJSONField(json)
@@ -1391,7 +1399,9 @@ export class SuiSystemStateInnerV2 implements StructClass {
 
   static fromJSON(json: Record<string, any>): SuiSystemStateInnerV2 {
     if (json.$typeName !== SuiSystemStateInnerV2.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a SuiSystemStateInnerV2 json object: expected '${SuiSystemStateInnerV2.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return SuiSystemStateInnerV2.fromJSONField(json)
@@ -1667,7 +1677,9 @@ export class SystemEpochInfoEvent implements StructClass {
 
   static fromJSON(json: Record<string, any>): SystemEpochInfoEvent {
     if (json.$typeName !== SystemEpochInfoEvent.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a SystemEpochInfoEvent json object: expected '${SystemEpochInfoEvent.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return SystemEpochInfoEvent.fromJSONField(json)

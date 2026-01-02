@@ -176,7 +176,9 @@ export class UnverifiedValidatorOperationCap implements StructClass {
 
   static fromJSON(json: Record<string, any>): UnverifiedValidatorOperationCap {
     if (json.$typeName !== UnverifiedValidatorOperationCap.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a UnverifiedValidatorOperationCap json object: expected '${UnverifiedValidatorOperationCap.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return UnverifiedValidatorOperationCap.fromJSONField(json)
@@ -369,7 +371,9 @@ export class ValidatorOperationCap implements StructClass {
 
   static fromJSON(json: Record<string, any>): ValidatorOperationCap {
     if (json.$typeName !== ValidatorOperationCap.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a ValidatorOperationCap json object: expected '${ValidatorOperationCap.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return ValidatorOperationCap.fromJSONField(json)

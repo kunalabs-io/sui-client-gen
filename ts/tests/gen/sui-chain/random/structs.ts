@@ -155,7 +155,9 @@ export class Random implements StructClass {
 
   static fromJSON(json: Record<string, any>): Random {
     if (json.$typeName !== Random.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a Random json object: expected '${Random.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return Random.fromJSONField(json)
@@ -350,7 +352,9 @@ export class RandomInner implements StructClass {
 
   static fromJSON(json: Record<string, any>): RandomInner {
     if (json.$typeName !== RandomInner.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a RandomInner json object: expected '${RandomInner.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return RandomInner.fromJSONField(json)
@@ -540,7 +544,9 @@ export class RandomGenerator implements StructClass {
 
   static fromJSON(json: Record<string, any>): RandomGenerator {
     if (json.$typeName !== RandomGenerator.$typeName) {
-      throw new Error('not a WithTwoGenerics json object')
+      throw new Error(
+        `not a RandomGenerator json object: expected '${RandomGenerator.$typeName}' but got '${json.$typeName}'`
+      )
     }
 
     return RandomGenerator.fromJSONField(json)
