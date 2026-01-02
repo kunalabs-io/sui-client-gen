@@ -25,8 +25,7 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Balance } from '../balance/structs'
-import { ID } from '../object/structs'
-import { UID } from '../object/structs'
+import { ID, UID } from '../object/structs'
 import { SUI } from '../sui/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'

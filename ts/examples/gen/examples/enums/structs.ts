@@ -28,11 +28,11 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { PKG_V3 } from '../index'
 import { Option } from '../../move-stdlib/option/structs'
 import { Balance } from '../../sui/balance/structs'
 import { UID } from '../../sui/object/structs'
 import { SUI } from '../../sui/sui/structs'
+import { PKG_V3 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'

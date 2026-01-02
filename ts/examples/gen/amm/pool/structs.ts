@@ -24,13 +24,11 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { PKG_V1 } from '../index'
 import { TypeName } from '../../move-stdlib/type-name/structs'
-import { Balance } from '../../sui/balance/structs'
-import { Supply } from '../../sui/balance/structs'
-import { ID } from '../../sui/object/structs'
-import { UID } from '../../sui/object/structs'
+import { Balance, Supply } from '../../sui/balance/structs'
+import { ID, UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
+import { PKG_V1 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
