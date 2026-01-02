@@ -431,7 +431,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
       id: this.id,
       decimals: this.decimals,
       name: this.name,
-      symbol: this.symbol.toJSONField(),
+      symbol: this.symbol,
       description: this.description,
       iconUrl: fieldToJSON<Option<Url>>(`${Option.$typeName}<${Url.$typeName}>`, this.iconUrl),
     }

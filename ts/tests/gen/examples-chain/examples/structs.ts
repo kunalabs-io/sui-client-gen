@@ -375,7 +375,7 @@ export class SpecialTypesStruct implements StructClass {
     return {
       id: this.id,
       asciiString: this.asciiString,
-      utf8String: this.utf8String.toJSONField(),
+      utf8String: this.utf8String,
       vectorOfU64: fieldToJSON<Vector<'u64'>>(`vector<u64>`, this.vectorOfU64),
       vectorOfObjects: fieldToJSON<Vector<ExampleStruct>>(
         `vector<${ExampleStruct.$typeName}>`,

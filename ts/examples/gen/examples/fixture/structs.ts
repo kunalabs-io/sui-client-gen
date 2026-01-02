@@ -1560,7 +1560,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     return {
       id: this.id,
       string: this.string,
-      asciiString: this.asciiString.toJSONField(),
+      asciiString: this.asciiString,
       url: this.url,
       idField: this.idField,
       uid: this.uid,
