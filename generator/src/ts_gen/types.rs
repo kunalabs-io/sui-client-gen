@@ -7,7 +7,10 @@ use std::collections::BTreeMap;
 // ============================================================================
 
 /// Represents a Move type for TypeScript generation.
+///
+/// NOTE: This is currently unused but kept for potential future use.
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub enum MoveTypeIR {
     /// Primitive types (u8, u16, u32, u64, u128, u256, bool, address)
     Primitive(String),
@@ -30,6 +33,7 @@ pub enum MoveTypeIR {
     },
 }
 
+#[allow(dead_code)]
 impl MoveTypeIR {
     /// Convert to a TypeScript field type string (for use with ToField<>).
     pub fn to_ts_field_type(&self) -> String {
@@ -82,11 +86,15 @@ impl MoveTypeIR {
 }
 
 // ============================================================================
-// Import Tracking
+// Import Tracking (SUPERSEDED by TsImportsBuilder in imports.rs)
 // ============================================================================
 
 /// Tracks imports needed for the generated file.
+///
+/// NOTE: This is superseded by `TsImportsBuilder` in `imports.rs` which provides
+/// better deduplication and grouping. Keeping for reference/tests.
 #[derive(Debug, Default)]
+#[allow(dead_code)]
 pub struct ImportTracker {
     /// Named imports: (module_path, export_name, optional_alias)
     pub named: Vec<(String, String, Option<String>)>,
@@ -94,6 +102,7 @@ pub struct ImportTracker {
     pub wildcard: Vec<(String, String)>,
 }
 
+#[allow(dead_code)]
 impl ImportTracker {
     pub fn new() -> Self {
         Self::default()
@@ -181,4 +190,3 @@ mod tests {
         assert_eq!(vec_ty.to_ts_field_type(), "Vector<'u8'>");
     }
 }
-
