@@ -15,13 +15,24 @@ use super::utils::{module_import_name, package_import_name, JS_RESERVED_WORDS};
 // Package Init IR (for init.ts files)
 // ============================================================================
 
+/// A single struct registration for init.ts.
+#[derive(Debug, Clone)]
+struct StructRegistration {
+    /// Import path for the module (e.g., "./balance/structs")
+    import_path: String,
+    /// Alias used for the module import (e.g., "balance")
+    module_alias: String,
+    /// Name of the struct to register (e.g., "Balance")
+    struct_name: String,
+}
+
 /// Domain-focused IR for a package's init.ts file.
 /// Captures *what* to register, not *how* to write it.
 pub struct PackageInitIR {
     /// Path to the framework loader (e.g., "../_framework")
     framework_path: String,
-    /// List of (module_import_path, module_alias, struct_name) to register
-    registrations: Vec<(String, String, String)>,
+    /// List of structs to register
+    registrations: Vec<StructRegistration>,
 }
 
 impl PackageInitIR {
@@ -49,7 +60,11 @@ impl PackageInitIR {
             }
 
             for strct in structs {
-                registrations.push((import_path.clone(), alias.clone(), strct.name().to_string()));
+                registrations.push(StructRegistration {
+                    import_path: import_path.clone(),
+                    module_alias: alias.clone(),
+                    struct_name: strct.name().to_string(),
+                });
             }
         }
 
@@ -65,9 +80,9 @@ impl PackageInitIR {
         let mut module_imports: Vec<(String, String)> = Vec::new();
         let mut seen_paths = std::collections::HashSet::new();
 
-        for (path, alias, _) in &self.registrations {
-            if seen_paths.insert(path.clone()) {
-                module_imports.push((alias.clone(), path.clone()));
+        for reg in &self.registrations {
+            if seen_paths.insert(reg.import_path.clone()) {
+                module_imports.push((reg.module_alias.clone(), reg.import_path.clone()));
             }
         }
 
@@ -84,7 +99,12 @@ impl PackageInitIR {
         let registration_lines: Vec<String> = self
             .registrations
             .iter()
-            .map(|(_, alias, struct_name)| format!("  loader.register({}.{})", alias, struct_name))
+            .map(|reg| {
+                format!(
+                    "  loader.register({}.{})",
+                    reg.module_alias, reg.struct_name
+                )
+            })
             .collect();
 
         formatdoc! {"
@@ -293,21 +313,21 @@ mod tests {
         let ir = PackageInitIR {
             framework_path: "../_framework".to_string(),
             registrations: vec![
-                (
-                    "./balance/structs".to_string(),
-                    "balance".to_string(),
-                    "Balance".to_string(),
-                ),
-                (
-                    "./balance/structs".to_string(),
-                    "balance".to_string(),
-                    "Supply".to_string(),
-                ),
-                (
-                    "./coin/structs".to_string(),
-                    "coin".to_string(),
-                    "Coin".to_string(),
-                ),
+                StructRegistration {
+                    import_path: "./balance/structs".to_string(),
+                    module_alias: "balance".to_string(),
+                    struct_name: "Balance".to_string(),
+                },
+                StructRegistration {
+                    import_path: "./balance/structs".to_string(),
+                    module_alias: "balance".to_string(),
+                    struct_name: "Supply".to_string(),
+                },
+                StructRegistration {
+                    import_path: "./coin/structs".to_string(),
+                    module_alias: "coin".to_string(),
+                    struct_name: "Coin".to_string(),
+                },
             ],
         };
 

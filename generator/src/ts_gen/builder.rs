@@ -4,6 +4,7 @@
 
 use std::collections::{BTreeMap, HashMap};
 
+use anyhow::{Context, Result};
 use convert_case::{Case, Casing};
 use move_core_types::account_address::AccountAddress;
 use move_model_2::model::{self, Datatype};
@@ -12,33 +13,84 @@ use move_model_2::source_kind::SourceKind;
 use move_symbol_pool::Symbol;
 
 use super::enums::{EnumIR, EnumVariantIR};
-use super::structs::{FieldIR, FieldTypeIR, PackageInfo, StructIR, StructImport, TypeParamIR};
+use super::structs::{
+    DatatypeKind, FieldIR, FieldTypeIR, PackageInfo, StructIR, StructImport, TypeParamIR,
+};
 use super::utils::{module_import_name, package_import_name, JS_RESERVED_WORDS};
 use crate::model_builder::{TypeOriginTable, VersionTable};
+
+/// Get the origin package address for a datatype (struct or enum).
+/// Returns an error with context if the origin address cannot be found.
+fn get_origin_pkg_addr_for_datatype(
+    pkg_addr: AccountAddress,
+    module_name: &str,
+    datatype_name: &str,
+    type_origin_table: &TypeOriginTable,
+) -> Result<AccountAddress> {
+    let types = type_origin_table.get(&pkg_addr).with_context(|| {
+        format!(
+            "origin table not found for package {}",
+            pkg_addr.to_hex_literal()
+        )
+    })?;
+    let full_name = format!("{}::{}", module_name, datatype_name);
+    let origin_addr = types.get(&full_name).with_context(|| {
+        format!(
+            "origin address not found for {} in package {}. \
+            Check consistency between original id and published at for this package.",
+            full_name,
+            pkg_addr.to_hex_literal()
+        )
+    })?;
+
+    Ok(*origin_addr)
+}
+
+/// Build PackageInfo (System vs Versioned) for a datatype.
+/// Consolidates the logic used by both StructIRBuilder and EnumIRBuilder.
+/// Returns an error if version table lookup fails.
+fn build_package_info_for_datatype(
+    pkg_addr: AccountAddress,
+    origin_pkg_addr: AccountAddress,
+    version_table: &VersionTable,
+) -> Result<PackageInfo> {
+    if sui_sdk::types::SYSTEM_PACKAGE_ADDRESSES.contains(&pkg_addr) {
+        return Ok(PackageInfo::System {
+            address: pkg_addr.to_hex_literal(),
+        });
+    }
+
+    let versions = version_table.get(&pkg_addr).with_context(|| {
+        format!(
+            "version table not found for package {}",
+            pkg_addr.to_hex_literal()
+        )
+    })?;
+
+    let version = versions.get(&origin_pkg_addr).with_context(|| {
+        format!(
+            "version not found for package {} in package {}",
+            origin_pkg_addr.to_hex_literal(),
+            pkg_addr.to_hex_literal()
+        )
+    })?;
+
+    Ok(PackageInfo::Versioned {
+        version: version.value(),
+    })
+}
 
 /// Get the origin package address for a struct.
 fn get_origin_pkg_addr<HasSource: SourceKind>(
     strct: &model::Struct<HasSource>,
     type_origin_table: &TypeOriginTable,
-) -> AccountAddress {
-    let addr = strct.module().package().address();
-    let types = type_origin_table.get(&addr).unwrap_or_else(|| {
-        panic!(
-            "expected origin table to exist for package {}",
-            addr.to_hex_literal()
-        )
-    });
-    let full_name = format!("{}::{}", strct.module().name(), strct.name());
-    let origin_addr = types.get(&full_name).unwrap_or_else(|| {
-        panic!(
-            "unable to find origin address for struct {} in package {}. \
-            check consistency between original id and published at for this package.",
-            full_name,
-            addr.to_hex_literal()
-        )
-    });
-
-    *origin_addr
+) -> Result<AccountAddress> {
+    get_origin_pkg_addr_for_datatype(
+        strct.module().package().address(),
+        &strct.module().name().to_string(),
+        &strct.name().to_string(),
+        type_origin_table,
+    )
 }
 
 /// Builds StructIR from a Move model struct.
@@ -133,33 +185,17 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
     }
 
     fn build_package_info(&self) -> PackageInfo {
-        let addr = self.strct.module().package().address();
-
-        if sui_sdk::types::SYSTEM_PACKAGE_ADDRESSES.contains(&addr) {
-            PackageInfo::System {
-                address: addr.to_hex_literal(),
-            }
-        } else {
-            // Look up the version in the version table
-            let origin_pkg_addr = get_origin_pkg_addr(&self.strct, self.type_origin_table);
-            let versions = self.version_table.get(&addr).unwrap_or_else(|| {
-                panic!(
-                    "expected version table to exist for package {}",
-                    addr.to_hex_literal()
-                )
-            });
-            let version = versions.get(&origin_pkg_addr).unwrap_or_else(|| {
-                panic!(
-                    "expected version to exist for package {} in package {}",
-                    origin_pkg_addr.to_hex_literal(),
-                    addr.to_hex_literal()
-                )
-            });
-
-            PackageInfo::Versioned {
-                version: version.value(),
-            }
-        }
+        let pkg_addr = self.strct.module().package().address();
+        let struct_name = format!(
+            "{}::{}::{}",
+            pkg_addr.to_hex_literal(),
+            self.strct.module().name(),
+            self.strct.name()
+        );
+        let origin_pkg_addr = get_origin_pkg_addr(&self.strct, self.type_origin_table)
+            .unwrap_or_else(|e| panic!("failed to get origin for struct {}: {}", struct_name, e));
+        build_package_info_for_datatype(pkg_addr, origin_pkg_addr, self.version_table)
+            .unwrap_or_else(|e| panic!("failed to build package info for {}: {}", struct_name, e))
     }
 
     fn build_type_params(&self) -> Vec<TypeParamIR> {
@@ -232,14 +268,22 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
                 let field_module = self.strct.model().module(dt.module);
 
                 // Get the struct/enum from the module
-                let (class_name, type_params, is_enum) = match field_module.datatype(dt.name) {
+                let (class_name, type_params, kind) = match field_module.datatype(dt.name) {
                     Datatype::Struct(s) => {
                         let import = self.get_import_for_struct(&s);
-                        (import, s.compiled().type_parameters.clone(), false)
+                        (
+                            import,
+                            s.compiled().type_parameters.clone(),
+                            DatatypeKind::Struct,
+                        )
                     }
                     Datatype::Enum(e) => {
                         let import = self.get_import_for_enum(&e);
-                        (import, e.compiled().type_parameters.clone(), true)
+                        (
+                            import,
+                            e.compiled().type_parameters.clone(),
+                            DatatypeKind::Enum,
+                        )
                     }
                 };
 
@@ -249,15 +293,15 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
                     .map(|arg| self.build_field_type(arg, type_param_names))
                     .collect();
 
-                // Track which type args are phantom based on the struct's type parameter declarations
+                // Track which type args are phantom based on the datatype's type parameter declarations
                 let type_arg_is_phantom: Vec<bool> =
                     type_params.iter().map(|param| param.is_phantom).collect();
 
-                FieldTypeIR::Struct {
+                FieldTypeIR::Datatype {
                     class_name,
                     type_args,
                     type_arg_is_phantom,
-                    is_enum,
+                    kind,
                 }
             }
             Type::TypeParameter(idx) => {
@@ -281,17 +325,43 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
         match import_path {
             None => class_name, // Same module, no import needed
             Some(path) => {
-                // Track the import
-                if !self.struct_imports.contains_key(&class_name) {
+                // Check if we already have an import with this class name
+                if let Some(existing) = self.struct_imports.get(&class_name) {
+                    if existing.path == path {
+                        // Same import, reuse
+                        return class_name;
+                    }
+                    // Name conflict - need to create an alias
+                    // Use module name from path to create a descriptive alias
+                    let module_suffix = path
+                        .rsplit('/')
+                        .nth(1)
+                        .unwrap_or("unknown")
+                        .replace('-', "_")
+                        .to_case(Case::Pascal);
+                    let alias = format!("{}{}", class_name, module_suffix);
+
+                    // Store with alias as key to avoid overwriting
                     self.struct_imports.insert(
-                        class_name.clone(),
+                        alias.clone(),
                         StructImport {
                             path,
                             class_name: class_name.clone(),
-                            alias: None,
+                            alias: Some(alias.clone()),
                         },
                     );
+                    return alias;
                 }
+
+                // No conflict, add the import
+                self.struct_imports.insert(
+                    class_name.clone(),
+                    StructImport {
+                        path,
+                        class_name: class_name.clone(),
+                        alias: None,
+                    },
+                );
                 class_name
             }
         }
@@ -304,16 +374,40 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
         match import_path {
             None => class_name,
             Some(path) => {
-                if !self.struct_imports.contains_key(&class_name) {
+                // Check if we already have an import with this class name
+                if let Some(existing) = self.struct_imports.get(&class_name) {
+                    if existing.path == path {
+                        // Same import, reuse
+                        return class_name;
+                    }
+                    // Name conflict - need to create an alias
+                    let module_suffix = path
+                        .rsplit('/')
+                        .nth(1)
+                        .unwrap_or("unknown")
+                        .replace('-', "_")
+                        .to_case(Case::Pascal);
+                    let alias = format!("{}{}", class_name, module_suffix);
+
                     self.struct_imports.insert(
-                        class_name.clone(),
+                        alias.clone(),
                         StructImport {
                             path,
                             class_name: class_name.clone(),
-                            alias: None,
+                            alias: Some(alias.clone()),
                         },
                     );
+                    return alias;
                 }
+
+                self.struct_imports.insert(
+                    class_name.clone(),
+                    StructImport {
+                        path,
+                        class_name: class_name.clone(),
+                        alias: None,
+                    },
+                );
                 class_name
             }
         }
@@ -383,6 +477,7 @@ pub fn gen_module_structs<HasSource: SourceKind>(
 ) -> String {
     let mut all_struct_irs = Vec::new();
     let mut all_enum_irs = Vec::new();
+    // Key by the name used in code (alias if present, otherwise class_name)
     let mut all_imports: HashMap<String, StructImport> = HashMap::new();
     let mut framework_path = String::new();
 
@@ -400,9 +495,9 @@ pub fn gen_module_structs<HasSource: SourceKind>(
         framework_path = fp;
 
         for imp in &ir.struct_imports {
-            if !all_imports.contains_key(&imp.class_name) {
-                all_imports.insert(imp.class_name.clone(), imp.clone());
-            }
+            // Use alias as key if present, otherwise class_name
+            let key = imp.alias.as_ref().unwrap_or(&imp.class_name).clone();
+            all_imports.entry(key).or_insert_with(|| imp.clone());
         }
         all_struct_irs.push(ir);
     }
@@ -421,9 +516,9 @@ pub fn gen_module_structs<HasSource: SourceKind>(
 
         // Collect imports from enum
         for imp in builder.get_struct_imports() {
-            if !all_imports.contains_key(&imp.class_name) {
-                all_imports.insert(imp.class_name.clone(), imp.clone());
-            }
+            // Use alias as key if present, otherwise class_name
+            let key = imp.alias.as_ref().unwrap_or(&imp.class_name).clone();
+            all_imports.entry(key).or_insert(imp.clone());
         }
         all_enum_irs.push(ir);
     }
@@ -635,28 +730,17 @@ fn emit_combined_imports_with_enums(
 // ============================================================================
 
 /// Get the origin package address for an enum.
+/// Get the origin package address for an enum.
 fn get_origin_pkg_addr_for_enum<HasSource: SourceKind>(
     enum_: &model::Enum<HasSource>,
     type_origin_table: &TypeOriginTable,
-) -> AccountAddress {
-    let addr = enum_.module().package().address();
-    let types = type_origin_table.get(&addr).unwrap_or_else(|| {
-        panic!(
-            "expected origin table to exist for package {}",
-            addr.to_hex_literal()
-        )
-    });
-    let full_name = format!("{}::{}", enum_.module().name(), enum_.name());
-    let origin_addr = types.get(&full_name).unwrap_or_else(|| {
-        panic!(
-            "unable to find origin address for enum {} in package {}. \
-            check consistency between original id and published at for this package.",
-            full_name,
-            addr.to_hex_literal()
-        )
-    });
-
-    *origin_addr
+) -> Result<AccountAddress> {
+    get_origin_pkg_addr_for_datatype(
+        enum_.module().package().address(),
+        &enum_.module().name().to_string(),
+        &enum_.name().to_string(),
+        type_origin_table,
+    )
 }
 
 /// Builds EnumIR from a Move model enum.
@@ -805,32 +889,17 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
     }
 
     fn build_package_info(&self) -> PackageInfo {
-        let addr = self.enum_.module().package().address();
-
-        if sui_sdk::types::SYSTEM_PACKAGE_ADDRESSES.contains(&addr) {
-            PackageInfo::System {
-                address: addr.to_hex_literal(),
-            }
-        } else {
-            // Look up the version in the version table
-            let origin_pkg_addr = get_origin_pkg_addr_for_enum(&self.enum_, self.type_origin_table);
-            let versions = self.version_table.get(&addr).unwrap_or_else(|| {
-                panic!(
-                    "expected version table to exist for package {}",
-                    addr.to_hex_literal()
-                )
-            });
-            let version = versions.get(&origin_pkg_addr).unwrap_or_else(|| {
-                panic!(
-                    "expected version to exist for enum {} in package {}",
-                    origin_pkg_addr.to_hex_literal(),
-                    addr.to_hex_literal()
-                )
-            });
-            PackageInfo::Versioned {
-                version: u64::from(*version),
-            }
-        }
+        let pkg_addr = self.enum_.module().package().address();
+        let enum_name = format!(
+            "{}::{}::{}",
+            pkg_addr.to_hex_literal(),
+            self.enum_.module().name(),
+            self.enum_.name()
+        );
+        let origin_pkg_addr = get_origin_pkg_addr_for_enum(&self.enum_, self.type_origin_table)
+            .unwrap_or_else(|e| panic!("failed to get origin for enum {}: {}", enum_name, e));
+        build_package_info_for_datatype(pkg_addr, origin_pkg_addr, self.version_table)
+            .unwrap_or_else(|e| panic!("failed to build package info for {}: {}", enum_name, e))
     }
 
     fn gen_field_name(&self, move_name: &str) -> String {
@@ -885,14 +954,22 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
         let field_module = self.enum_.model().module(dt.module);
 
         // Get the struct/enum from the module
-        let (class_name, compiled_type_params, is_enum) = match field_module.datatype(dt.name) {
+        let (class_name, compiled_type_params, kind) = match field_module.datatype(dt.name) {
             Datatype::Struct(s) => {
                 let import = self.get_import_for_struct(&s);
-                (import, s.compiled().type_parameters.clone(), false)
+                (
+                    import,
+                    s.compiled().type_parameters.clone(),
+                    DatatypeKind::Struct,
+                )
             }
             Datatype::Enum(e) => {
                 let import = self.get_import_for_enum(&e);
-                (import, e.compiled().type_parameters.clone(), true)
+                (
+                    import,
+                    e.compiled().type_parameters.clone(),
+                    DatatypeKind::Enum,
+                )
             }
         };
 
@@ -902,17 +979,17 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
             .map(|arg| self.build_field_type_from_normalized(arg, type_param_names))
             .collect();
 
-        // Track which type args are phantom based on the struct's type parameter declarations
+        // Track which type args are phantom based on the datatype's type parameter declarations
         let type_arg_is_phantom: Vec<bool> = compiled_type_params
             .iter()
             .map(|param| param.is_phantom)
             .collect();
 
-        FieldTypeIR::Struct {
+        FieldTypeIR::Datatype {
             class_name,
             type_args,
             type_arg_is_phantom,
-            is_enum,
+            kind,
         }
     }
 

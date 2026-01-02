@@ -25,6 +25,85 @@ use sui_sdk::SuiClientBuilder;
 
 const DEFAULT_RPC: &str = "https://fullnode.mainnet.sui.io:443";
 
+// ============================================================================
+// Output Layout - Structured representation of the output directory structure
+// ============================================================================
+
+/// Represents the overall output directory structure.
+/// This makes path calculations explicit and centralized.
+struct OutputLayout {
+    /// Root output directory (e.g., "./generated")
+    root: PathBuf,
+    /// Path to _framework directory
+    framework_dir: PathBuf,
+}
+
+impl OutputLayout {
+    fn new(out_root: PathBuf) -> Self {
+        let framework_dir = out_root.join("_framework");
+        Self {
+            root: out_root,
+            framework_dir,
+        }
+    }
+
+    /// Get the path for a package within the output.
+    fn package_path(
+        &self,
+        pkg_id: &AccountAddress,
+        top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
+        is_source: bool,
+    ) -> PackageLayout {
+        let is_top_level = top_level_pkg_names.contains_key(pkg_id);
+
+        let path = match top_level_pkg_names.get(pkg_id) {
+            Some(pkg_name) => self.root.join(package_import_name(*pkg_name)),
+            None => {
+                let dep_dir = if is_source { "source" } else { "onchain" };
+                self.root
+                    .join("_dependencies")
+                    .join(dep_dir)
+                    .join(pkg_id.to_hex_literal())
+            }
+        };
+
+        PackageLayout::new(path, is_top_level)
+    }
+}
+
+/// Represents the layout of a single package directory.
+/// Encapsulates the "levels from root" logic for relative paths.
+struct PackageLayout {
+    /// Path to this package's directory
+    path: PathBuf,
+    /// Whether this is a top-level package (affects path depths)
+    is_top_level: bool,
+    /// Levels from root: 0 for top-level, 2 for dependencies
+    levels_from_root: u8,
+}
+
+impl PackageLayout {
+    fn new(path: PathBuf, is_top_level: bool) -> Self {
+        let levels_from_root = if is_top_level { 0 } else { 2 };
+        Self {
+            path,
+            is_top_level,
+            levels_from_root,
+        }
+    }
+
+    /// Get the framework import path relative to init.ts (at package root)
+    fn framework_rel_path_for_init(&self) -> String {
+        let init_levels = self.levels_from_root + 1;
+        (0..init_levels).map(|_| "..").collect::<Vec<_>>().join("/") + "/_framework"
+    }
+
+    /// Get the path for a module directory within this package.
+    fn module_path(&self, module_name: Symbol) -> PathBuf {
+        self.path.join(module_import_name(module_name))
+    }
+}
+
 #[derive(Parser)]
 #[clap(
     name = "sui-client-gen",
@@ -117,28 +196,29 @@ async fn main() -> Result<()> {
     let (source_top_level_addr_map, on_chain_top_level_addr_map) =
         resolve_top_level_pkg_addr_map(&source_model, &on_chain_model, &manifest);
 
+    // Setup output layout
+    let output = OutputLayout::new(PathBuf::from(args.out));
+    std::fs::create_dir_all(&output.root)?;
+
     // gen _framework
     writeln!(progress_output, "{}", "GENERATING FRAMEWORK".green().bold())?;
 
-    let out_root = PathBuf::from(args.out);
-    std::fs::create_dir_all(&out_root)?;
-
-    std::fs::create_dir_all(out_root.join("_framework"))?;
+    std::fs::create_dir_all(&output.framework_dir)?;
     write_str_to_file(
         framework_sources::LOADER,
-        out_root.join("_framework").join("loader.ts").as_ref(),
+        &output.framework_dir.join("loader.ts"),
     )?;
     write_str_to_file(
         framework_sources::UTIL,
-        out_root.join("_framework").join("util.ts").as_ref(),
+        &output.framework_dir.join("util.ts"),
     )?;
     write_str_to_file(
         framework_sources::REIFIED,
-        out_root.join("_framework").join("reified.ts").as_ref(),
+        &output.framework_dir.join("reified.ts"),
     )?;
     write_str_to_file(
         framework_sources::VECTOR,
-        out_root.join("_framework").join("vector.ts").as_ref(),
+        &output.framework_dir.join("vector.ts"),
     )?;
     write_str_to_file(
         &ts_gen::gen_init_loader(
@@ -157,7 +237,7 @@ async fn main() -> Result<()> {
                 true => None,
             },
         ),
-        out_root.join("_framework").join("init-loader.ts").as_ref(),
+        &output.framework_dir.join("init-loader.ts"),
     )?;
 
     if let Some(m) = &source_model {
@@ -173,7 +253,7 @@ async fn main() -> Result<()> {
             &m.type_origin_table,
             &m.version_table,
             true,
-            &out_root,
+            &output,
         )?;
     }
     if let Some(m) = &on_chain_model {
@@ -189,14 +269,14 @@ async fn main() -> Result<()> {
             &m.type_origin_table,
             &m.version_table,
             false,
-            &out_root,
+            &output,
         )?;
     }
 
     // gen .eslintrc.json
     write_str_to_file(
         framework_sources::ESLINTRC,
-        &out_root.join(".eslintrc.json"),
+        &output.root.join(".eslintrc.json"),
     )?;
 
     Ok(())
@@ -296,27 +376,15 @@ fn gen_packages_for_model<HasSource: SourceKind>(
     type_origin_table: &TypeOriginTable,
     version_table: &VersionTable,
     is_source: bool,
-    out_root: &Path,
+    output: &OutputLayout,
 ) -> Result<()> {
     if pkgs.is_empty() {
         return Ok(());
     }
 
     for (pkg_id, pkg) in pkgs.iter() {
-        let is_top_level = top_level_pkg_names.contains_key(pkg_id);
-        let levels_from_root = if is_top_level { 0 } else { 2 };
-
-        let package_path = out_root.join(match top_level_pkg_names.get(pkg_id) {
-            Some(pkg_name) => PathBuf::from(package_import_name(*pkg_name)),
-            None => PathBuf::from("_dependencies")
-                .join(match is_source {
-                    true => "source",
-                    false => "onchain",
-                })
-                .join(pkg_id.to_hex_literal()),
-        });
-
-        std::fs::create_dir_all(&package_path)?;
+        let pkg_layout = output.package_path(pkg_id, top_level_pkg_names, is_source);
+        std::fs::create_dir_all(&pkg_layout.path)?;
 
         // generate index.ts
         let published_at = published_at_map.get(pkg_id).unwrap_or(pkg_id);
@@ -331,29 +399,26 @@ fn gen_packages_for_model<HasSource: SourceKind>(
             &version_list,
             SYSTEM_PACKAGE_ADDRESSES.contains(pkg_id),
         );
-        write_str_to_file(&index_content, &package_path.join("index.ts"))?;
+        write_str_to_file(&index_content, &pkg_layout.path.join("index.ts"))?;
 
         // generate init.ts
-        let init_levels = levels_from_root + 1;
-        let framework_rel_path =
-            (0..init_levels).map(|_| "..").collect::<Vec<_>>().join("/") + "/_framework";
         write_str_to_file(
-            &ts_gen::gen_package_init(pkg, &framework_rel_path),
-            &package_path.join("init.ts"),
+            &ts_gen::gen_package_init(pkg, &pkg_layout.framework_rel_path_for_init()),
+            &pkg_layout.path.join("init.ts"),
         )?;
 
         // generate modules
         for module in pkg.modules() {
-            let module_path = package_path.join(module_import_name(module.name()));
+            let module_path = pkg_layout.module_path(module.name());
             std::fs::create_dir_all(&module_path)?;
 
-            // generate <module>/functions.ts
-            if is_top_level {
+            // generate <module>/functions.ts (only for top-level packages)
+            if pkg_layout.is_top_level {
                 let content = ts_gen::gen_module_functions(
                     &module,
                     top_level_pkg_names,
                     is_source,
-                    levels_from_root,
+                    pkg_layout.levels_from_root,
                 );
                 if !content.is_empty() {
                     write_str_to_file(&content, &module_path.join("functions.ts"))?;
@@ -367,7 +432,7 @@ fn gen_packages_for_model<HasSource: SourceKind>(
                 version_table,
                 top_level_pkg_names,
                 is_source,
-                levels_from_root,
+                pkg_layout.levels_from_root,
             );
             write_str_to_file(&content, &module_path.join("structs.ts"))?;
         }
