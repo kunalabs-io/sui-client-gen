@@ -88,8 +88,8 @@ fn get_origin_pkg_addr<HasSource: SourceKind>(
 ) -> Result<AccountAddress> {
     get_origin_pkg_addr_for_datatype(
         strct.module().package().address(),
-        &strct.module().name().to_string(),
-        &strct.name().to_string(),
+        strct.module().name().as_ref(),
+        strct.name().as_ref(),
         type_origin_table,
     )
 }
@@ -702,8 +702,8 @@ fn get_origin_pkg_addr_for_enum<HasSource: SourceKind>(
 ) -> Result<AccountAddress> {
     get_origin_pkg_addr_for_datatype(
         enum_.module().package().address(),
-        &enum_.module().name().to_string(),
-        &enum_.name().to_string(),
+        enum_.module().name().as_ref(),
+        enum_.name().as_ref(),
         type_origin_table,
     )
 }
