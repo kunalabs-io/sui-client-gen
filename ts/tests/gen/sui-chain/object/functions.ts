@@ -35,23 +35,38 @@ export function idFromAddress(tx: Transaction, address: string | TransactionArgu
 }
 
 export function suiSystemState(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::object::sui_system_state`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object::sui_system_state`,
+    arguments: [],
+  })
 }
 
 export function clock(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::object::clock`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object::clock`,
+    arguments: [],
+  })
 }
 
 export function authenticatorState(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::object::authenticator_state`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object::authenticator_state`,
+    arguments: [],
+  })
 }
 
 export function randomnessState(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::object::randomness_state`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object::randomness_state`,
+    arguments: [],
+  })
 }
 
 export function suiDenyListObjectId(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::object::sui_deny_list_object_id`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object::sui_deny_list_object_id`,
+    arguments: [],
+  })
 }
 
 export function suiAccumulatorRootObjectId(tx: Transaction) {
@@ -83,19 +98,31 @@ export function suiCoinRegistryAddress(tx: Transaction) {
 }
 
 export function bridge(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::object::bridge`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object::bridge`,
+    arguments: [],
+  })
 }
 
 export function uidAsInner(tx: Transaction, uid: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::object::uid_as_inner`, arguments: [obj(tx, uid)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object::uid_as_inner`,
+    arguments: [obj(tx, uid)],
+  })
 }
 
 export function uidToInner(tx: Transaction, uid: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::object::uid_to_inner`, arguments: [obj(tx, uid)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object::uid_to_inner`,
+    arguments: [obj(tx, uid)],
+  })
 }
 
 export function uidToBytes(tx: Transaction, uid: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::object::uid_to_bytes`, arguments: [obj(tx, uid)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object::uid_to_bytes`,
+    arguments: [obj(tx, uid)],
+  })
 }
 
 export function uidToAddress(tx: Transaction, uid: TransactionObjectInput) {
@@ -106,11 +133,17 @@ export function uidToAddress(tx: Transaction, uid: TransactionObjectInput) {
 }
 
 export function new_(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::object::new`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object::new`,
+    arguments: [],
+  })
 }
 
 export function delete_(tx: Transaction, uid: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::object::delete`, arguments: [obj(tx, uid)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object::delete`,
+    arguments: [obj(tx, uid)],
+  })
 }
 
 export function id(tx: Transaction, typeArg: string, t0: GenericArg) {

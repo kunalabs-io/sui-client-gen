@@ -1,9 +1,12 @@
 import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj } from '../../_framework/util'
-import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function new_(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::bag::new`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bag::new`,
+    arguments: [],
+  })
 }
 
 export interface AddArgs {
@@ -94,13 +97,22 @@ export function containsWithType(
 }
 
 export function length(tx: Transaction, bag: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::bag::length`, arguments: [obj(tx, bag)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bag::length`,
+    arguments: [obj(tx, bag)],
+  })
 }
 
 export function isEmpty(tx: Transaction, bag: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::bag::is_empty`, arguments: [obj(tx, bag)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bag::is_empty`,
+    arguments: [obj(tx, bag)],
+  })
 }
 
 export function destroyEmpty(tx: Transaction, bag: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::bag::destroy_empty`, arguments: [obj(tx, bag)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::bag::destroy_empty`,
+    arguments: [obj(tx, bag)],
+  })
 }

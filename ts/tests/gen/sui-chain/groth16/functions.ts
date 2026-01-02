@@ -3,11 +3,17 @@ import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function bls12381(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::groth16::bls12381`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::groth16::bls12381`,
+    arguments: [],
+  })
 }
 
 export function bn254(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::groth16::bn254`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::groth16::bn254`,
+    arguments: [],
+  })
 }
 
 export interface PvkFromBytesArgs {

@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { pure } from '../../_framework/util'
-import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export interface HmacSha3256Args {
   key: Array<number | TransactionArgument> | TransactionArgument

@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { GenericArg, generic, obj, pure } from '../../_framework/util'
+import { GenericArg, generic, obj as obj_, pure } from '../../_framework/util'
 import { ID } from '../object/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
@@ -38,7 +38,7 @@ export function partyTransfer(tx: Transaction, typeArg: string, args: PartyTrans
   return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer::party_transfer`,
     typeArguments: [typeArg],
-    arguments: [generic(tx, `${typeArg}`, args.obj), obj(tx, args.party)],
+    arguments: [generic(tx, `${typeArg}`, args.obj), obj_(tx, args.party)],
   })
 }
 
@@ -55,7 +55,7 @@ export function publicPartyTransfer(
   return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer::public_party_transfer`,
     typeArguments: [typeArg],
-    arguments: [generic(tx, `${typeArg}`, args.obj), obj(tx, args.party)],
+    arguments: [generic(tx, `${typeArg}`, args.obj), obj_(tx, args.party)],
   })
 }
 
@@ -100,7 +100,7 @@ export function receive(tx: Transaction, typeArg: string, args: ReceiveArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer::receive`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.parent), obj(tx, args.toReceive)],
+    arguments: [obj_(tx, args.parent), obj_(tx, args.toReceive)],
   })
 }
 
@@ -113,7 +113,7 @@ export function publicReceive(tx: Transaction, typeArg: string, args: PublicRece
   return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer::public_receive`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.parent), obj(tx, args.toReceive)],
+    arguments: [obj_(tx, args.parent), obj_(tx, args.toReceive)],
   })
 }
 
@@ -125,7 +125,7 @@ export function receivingObjectId(
   return tx.moveCall({
     target: `${PUBLISHED_AT}::transfer::receiving_object_id`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, receiving)],
+    arguments: [obj_(tx, receiving)],
   })
 }
 

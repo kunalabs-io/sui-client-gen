@@ -65,7 +65,10 @@ export function jwkLt(tx: Transaction, args: JwkLtArgs) {
 }
 
 export function create(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::authenticator_state::create`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::authenticator_state::create`,
+    arguments: [],
+  })
 }
 
 export function loadInnerMut(tx: Transaction, self: TransactionObjectInput) {

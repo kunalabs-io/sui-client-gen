@@ -1,3 +1,4 @@
+import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -26,7 +27,8 @@ import { Option } from '../../move-stdlib/option/structs'
 import { String } from '../../move-stdlib/string/structs'
 import { TypeName } from '../../move-stdlib/type-name/structs'
 import { Balance } from '../balance/structs'
-import { ID, UID } from '../object/structs'
+import { ID } from '../object/structs'
+import { UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
 import { VecSet } from '../vec-set/structs'
 import { bcs } from '@mysten/sui/bcs'
@@ -193,7 +195,7 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(Token.$typeName, extractType(typeArg)),
+      composeSuiType(Token.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -226,15 +228,17 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return Token.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
@@ -427,7 +431,7 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(TokenPolicyCap.$typeName, extractType(typeArg)),
+      composeSuiType(TokenPolicyCap.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -460,15 +464,17 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return TokenPolicyCap.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
@@ -678,7 +684,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(TokenPolicy.$typeName, extractType(typeArg)),
+      composeSuiType(TokenPolicy.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -711,15 +717,17 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return TokenPolicy.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
@@ -967,7 +975,7 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(ActionRequest.$typeName, extractType(typeArg)),
+      composeSuiType(ActionRequest.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -1000,15 +1008,17 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return ActionRequest.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
@@ -1190,7 +1200,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(RuleKey.$typeName, extractType(typeArg)),
+      composeSuiType(RuleKey.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -1223,15 +1233,17 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return RuleKey.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
@@ -1427,7 +1439,7 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(TokenPolicyCreated.$typeName, extractType(typeArg)),
+      composeSuiType(TokenPolicyCreated.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -1460,15 +1472,17 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return TokenPolicyCreated.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))

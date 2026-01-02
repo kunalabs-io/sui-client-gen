@@ -1,3 +1,4 @@
+import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -13,6 +14,7 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
+  fieldToJSON,
   phantom,
 } from '../../_framework/reified'
 import {
@@ -250,7 +252,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 2) {
         throw new Error(
-          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
         )
       }
       for (let i = 0; i < 2; i++) {

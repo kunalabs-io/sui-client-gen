@@ -3,7 +3,10 @@ import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function create(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::accumulator::create`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::accumulator::create`,
+    arguments: [],
+  })
 }
 
 export function rootId(tx: Transaction, accumulatorRoot: TransactionObjectInput) {

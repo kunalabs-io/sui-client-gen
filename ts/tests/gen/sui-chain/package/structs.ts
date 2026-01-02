@@ -11,10 +11,16 @@ import {
   fieldToJSON,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { String } from '../../move-stdlib-chain/ascii/structs'
-import { ID, UID } from '../object/structs'
+import { ID } from '../object/structs'
+import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'

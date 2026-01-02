@@ -1,9 +1,12 @@
 import { PUBLISHED_AT } from '..'
 import { GenericArg, generic, obj } from '../../_framework/util'
-import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function new_(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::object_bag::new`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::object_bag::new`,
+    arguments: [],
+  })
 }
 
 export interface AddArgs {

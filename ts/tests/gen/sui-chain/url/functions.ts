@@ -1,12 +1,12 @@
 import { PUBLISHED_AT } from '..'
 import { obj, pure } from '../../_framework/util'
-import { String } from '../../move-stdlib-chain/ascii/structs'
+import { String as String1 } from '../../move-stdlib-chain/ascii/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function newUnsafe(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::url::new_unsafe`,
-    arguments: [pure(tx, string, `${String.$typeName}`)],
+    arguments: [pure(tx, string, `${String1.$typeName}`)],
   })
 }
 
@@ -21,7 +21,10 @@ export function newUnsafeFromBytes(
 }
 
 export function innerUrl(tx: Transaction, url: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::url::inner_url`, arguments: [obj(tx, url)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::url::inner_url`,
+    arguments: [obj(tx, url)],
+  })
 }
 
 export interface UpdateArgs {
@@ -32,6 +35,6 @@ export interface UpdateArgs {
 export function update(tx: Transaction, args: UpdateArgs) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::url::update`,
-    arguments: [obj(tx, args.url), pure(tx, args.string, `${String.$typeName}`)],
+    arguments: [obj(tx, args.url), pure(tx, args.string, `${String1.$typeName}`)],
   })
 }

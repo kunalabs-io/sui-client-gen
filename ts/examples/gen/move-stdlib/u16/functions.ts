@@ -70,13 +70,22 @@ export function pow(tx: Transaction, args: PowArgs) {
 }
 
 export function sqrt(tx: Transaction, x: number | TransactionArgument) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::u16::sqrt`, arguments: [pure(tx, x, `u16`)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u16::sqrt`,
+    arguments: [pure(tx, x, `u16`)],
+  })
 }
 
 export function tryAsU8(tx: Transaction, x: number | TransactionArgument) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::u16::try_as_u8`, arguments: [pure(tx, x, `u16`)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u16::try_as_u8`,
+    arguments: [pure(tx, x, `u16`)],
+  })
 }
 
 export function toString(tx: Transaction, x: number | TransactionArgument) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::u16::to_string`, arguments: [pure(tx, x, `u16`)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u16::to_string`,
+    arguments: [pure(tx, x, `u16`)],
+  })
 }

@@ -14,6 +14,7 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
+  fieldToJSON,
   phantom,
 } from '../../_framework/reified'
 import {
@@ -185,7 +186,7 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(TableVec.$typeName, extractType(typeArg)),
+      composeSuiType(TableVec.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -218,15 +219,17 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return TableVec.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))

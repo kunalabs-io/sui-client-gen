@@ -5,14 +5,19 @@ import {
   StructClass,
   ToField,
   ToTypeStr,
+  ToTypeStr as ToPhantom,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
   phantom,
-  ToTypeStr as ToPhantom,
 } from '../../../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../../../_framework/util'
 import { Vector } from '../../../../_framework/vector'
 import { Bag } from '../../../../sui/bag/structs'
 import { ID } from '../../../../sui/object/structs'

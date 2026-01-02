@@ -9,7 +9,12 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { VecMap } from '../vec-map/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -289,7 +294,9 @@ export class Permissions implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): Permissions {
-    return Permissions.reified().new({ pos0: decodeFromFields('u64', fields.pos0) })
+    return Permissions.reified().new({
+      pos0: decodeFromFields('u64', fields.pos0),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Permissions {
@@ -297,7 +304,9 @@ export class Permissions implements StructClass {
       throw new Error('not a Permissions type')
     }
 
-    return Permissions.reified().new({ pos0: decodeFromFieldsWithTypes('u64', item.fields.pos0) })
+    return Permissions.reified().new({
+      pos0: decodeFromFieldsWithTypes('u64', item.fields.pos0),
+    })
   }
 
   static fromBcs(data: Uint8Array): Permissions {
@@ -315,7 +324,9 @@ export class Permissions implements StructClass {
   }
 
   static fromJSONField(field: any): Permissions {
-    return Permissions.reified().new({ pos0: decodeFromJSONField('u64', field.pos0) })
+    return Permissions.reified().new({
+      pos0: decodeFromJSONField('u64', field.pos0),
+    })
   }
 
   static fromJSON(json: Record<string, any>): Permissions {

@@ -5,11 +5,17 @@ import { ID } from '../object/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function default_(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::default`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk::default`,
+    arguments: [],
+  })
 }
 
 export function new_(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::new`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk::new`,
+    arguments: [],
+  })
 }
 
 export interface CloseAndWithdrawArgs {
@@ -381,19 +387,31 @@ export function setAllowExtensions(tx: Transaction, args: SetAllowExtensionsArgs
 }
 
 export function uid(tx: Transaction, kiosk: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::uid`, arguments: [obj(tx, kiosk)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk::uid`,
+    arguments: [obj(tx, kiosk)],
+  })
 }
 
 export function uidMut(tx: Transaction, kiosk: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::uid_mut`, arguments: [obj(tx, kiosk)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk::uid_mut`,
+    arguments: [obj(tx, kiosk)],
+  })
 }
 
 export function owner(tx: Transaction, kiosk: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::owner`, arguments: [obj(tx, kiosk)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk::owner`,
+    arguments: [obj(tx, kiosk)],
+  })
 }
 
 export function itemCount(tx: Transaction, kiosk: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::kiosk::item_count`, arguments: [obj(tx, kiosk)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::kiosk::item_count`,
+    arguments: [obj(tx, kiosk)],
+  })
 }
 
 export function profitsAmount(tx: Transaction, kiosk: TransactionObjectInput) {

@@ -9,6 +9,7 @@ import {
   ToPhantomTypeArgument,
   ToTypeArgument,
   ToTypeStr,
+  ToTypeStr as ToPhantom,
   TypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -19,7 +20,6 @@ import {
   fieldToJSON,
   phantom,
   toBcs,
-  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
@@ -28,14 +28,14 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { String as String1 } from '../../move-stdlib/ascii/structs'
+import { PKG_V1 } from '../index'
 import { Option } from '../../move-stdlib/option/structs'
 import { String } from '../../move-stdlib/string/structs'
 import { Balance } from '../../sui/balance/structs'
-import { ID, UID } from '../../sui/object/structs'
+import { ID } from '../../sui/object/structs'
+import { UID } from '../../sui/object/structs'
 import { SUI } from '../../sui/sui/structs'
 import { Url } from '../../sui/url/structs'
-import { PKG_V1 } from '../index'
 import { StructFromOtherModule } from '../other-module/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -130,7 +130,9 @@ export class Dummy implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): Dummy {
-    return Dummy.reified().new({ dummyField: decodeFromFields('bool', fields.dummy_field) })
+    return Dummy.reified().new({
+      dummyField: decodeFromFields('bool', fields.dummy_field),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Dummy {
@@ -158,7 +160,9 @@ export class Dummy implements StructClass {
   }
 
   static fromJSONField(field: any): Dummy {
-    return Dummy.reified().new({ dummyField: decodeFromJSONField('bool', field.dummyField) })
+    return Dummy.reified().new({
+      dummyField: decodeFromJSONField('bool', field.dummyField),
+    })
   }
 
   static fromJSON(json: Record<string, any>): Dummy {
@@ -341,17 +345,13 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
     data: Uint8Array
   ): WithGenericField<ToTypeArgument<T>> {
     const typeArgs = [typeArg]
-
-    return WithGenericField.fromFields(
-      typeArg,
-      WithGenericField.bcs(toBcs(typeArgs[0])).parse(data)
-    )
+    return WithGenericField.fromFields(typeArg, WithGenericField.bcs(toBcs(typeArg)).parse(data))
   }
 
   toJSONField() {
     return {
       id: this.id,
-      genericField: fieldToJSON<T>(this.$typeArgs[0], this.genericField),
+      genericField: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.genericField),
     }
   }
 
@@ -377,7 +377,7 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(WithGenericField.$typeName, extractType(typeArg)),
+      composeSuiType(WithGenericField.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -410,15 +410,17 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return WithGenericField.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
@@ -537,7 +539,9 @@ export class Bar implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): Bar {
-    return Bar.reified().new({ value: decodeFromFields('u64', fields.value) })
+    return Bar.reified().new({
+      value: decodeFromFields('u64', fields.value),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Bar {
@@ -545,7 +549,9 @@ export class Bar implements StructClass {
       throw new Error('not a Bar type')
     }
 
-    return Bar.reified().new({ value: decodeFromFieldsWithTypes('u64', item.fields.value) })
+    return Bar.reified().new({
+      value: decodeFromFieldsWithTypes('u64', item.fields.value),
+    })
   }
 
   static fromBcs(data: Uint8Array): Bar {
@@ -563,7 +569,9 @@ export class Bar implements StructClass {
   }
 
   static fromJSONField(field: any): Bar {
-    return Bar.reified().new({ value: decodeFromJSONField('u64', field.value) })
+    return Bar.reified().new({
+      value: decodeFromJSONField('u64', field.value),
+    })
   }
 
   static fromJSON(json: Record<string, any>): Bar {
@@ -766,8 +774,8 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
 
   toJSONField() {
     return {
-      genericField1: fieldToJSON<T>(this.$typeArgs[0], this.genericField1),
-      genericField2: fieldToJSON<U>(this.$typeArgs[1], this.genericField2),
+      genericField1: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.genericField1),
+      genericField2: fieldToJSON<U>(`${this.$typeArgs[1]}`, this.genericField2),
     }
   }
 
@@ -829,7 +837,7 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 2) {
         throw new Error(
-          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
         )
       }
       for (let i = 0; i < 2; i++) {
@@ -1134,14 +1142,13 @@ export class Foo<T extends TypeArgument> implements StructClass {
     data: Uint8Array
   ): Foo<ToTypeArgument<T>> {
     const typeArgs = [typeArg]
-
-    return Foo.fromFields(typeArg, Foo.bcs(toBcs(typeArgs[0])).parse(data))
+    return Foo.fromFields(typeArg, Foo.bcs(toBcs(typeArg)).parse(data))
   }
 
   toJSONField() {
     return {
       id: this.id,
-      generic: fieldToJSON<T>(this.$typeArgs[0], this.generic),
+      generic: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.generic),
       reifiedPrimitiveVec: fieldToJSON<Vector<'u64'>>(`vector<u64>`, this.reifiedPrimitiveVec),
       reifiedObjectVec: fieldToJSON<Vector<Bar>>(`vector<${Bar.$typeName}>`, this.reifiedObjectVec),
       genericVec: fieldToJSON<Vector<T>>(`vector<${this.$typeArgs[0]}>`, this.genericVec),
@@ -1225,7 +1232,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(Foo.$typeName, extractType(typeArg)),
+      composeSuiType(Foo.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -1258,15 +1265,17 @@ export class Foo<T extends TypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return Foo.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
@@ -1306,7 +1315,7 @@ export function isWithSpecialTypes(type: string): boolean {
 export interface WithSpecialTypesFields<T extends PhantomTypeArgument, U extends TypeArgument> {
   id: ToField<UID>
   string: ToField<String>
-  asciiString: ToField<String1>
+  asciiString: ToField<String>
   url: ToField<Url>
   idField: ToField<ID>
   uid: ToField<UID>
@@ -1340,7 +1349,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
 
   readonly id: ToField<UID>
   readonly string: ToField<String>
-  readonly asciiString: ToField<String1>
+  readonly asciiString: ToField<String>
   readonly url: ToField<Url>
   readonly idField: ToField<ID>
   readonly uid: ToField<UID>
@@ -1436,7 +1445,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
       bcs.struct(`WithSpecialTypes<${U.name}>`, {
         id: UID.bcs,
         string: String.bcs,
-        ascii_string: String1.bcs,
+        ascii_string: String.bcs,
         url: Url.bcs,
         id_field: ID.bcs,
         uid: UID.bcs,
@@ -1469,7 +1478,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     return WithSpecialTypes.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromFields(UID.reified(), fields.id),
       string: decodeFromFields(String.reified(), fields.string),
-      asciiString: decodeFromFields(String1.reified(), fields.ascii_string),
+      asciiString: decodeFromFields(String.reified(), fields.ascii_string),
       url: decodeFromFields(Url.reified(), fields.url),
       idField: decodeFromFields(ID.reified(), fields.id_field),
       uid: decodeFromFields(UID.reified(), fields.uid),
@@ -1498,7 +1507,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     return WithSpecialTypes.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       string: decodeFromFieldsWithTypes(String.reified(), item.fields.string),
-      asciiString: decodeFromFieldsWithTypes(String1.reified(), item.fields.ascii_string),
+      asciiString: decodeFromFieldsWithTypes(String.reified(), item.fields.ascii_string),
       url: decodeFromFieldsWithTypes(Url.reified(), item.fields.url),
       idField: decodeFromFieldsWithTypes(ID.reified(), item.fields.id_field),
       uid: decodeFromFieldsWithTypes(UID.reified(), item.fields.uid),
@@ -1572,7 +1581,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     return WithSpecialTypes.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       string: decodeFromJSONField(String.reified(), field.string),
-      asciiString: decodeFromJSONField(String1.reified(), field.asciiString),
+      asciiString: decodeFromJSONField(String.reified(), field.asciiString),
       url: decodeFromJSONField(Url.reified(), field.url),
       idField: decodeFromJSONField(ID.reified(), field.idField),
       uid: decodeFromJSONField(UID.reified(), field.uid),
@@ -1636,7 +1645,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 2) {
         throw new Error(
-          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
         )
       }
       for (let i = 0; i < 2; i++) {
@@ -2138,14 +2147,14 @@ export class WithSpecialTypesAsGenerics<
   toJSONField() {
     return {
       id: this.id,
-      string: fieldToJSON<T0>(this.$typeArgs[0], this.string),
-      asciiString: fieldToJSON<T1>(this.$typeArgs[1], this.asciiString),
-      url: fieldToJSON<T2>(this.$typeArgs[2], this.url),
-      idField: fieldToJSON<T3>(this.$typeArgs[3], this.idField),
-      uid: fieldToJSON<T4>(this.$typeArgs[4], this.uid),
-      balance: fieldToJSON<T5>(this.$typeArgs[5], this.balance),
-      option: fieldToJSON<T6>(this.$typeArgs[6], this.option),
-      optionNone: fieldToJSON<T7>(this.$typeArgs[7], this.optionNone),
+      string: fieldToJSON<T0>(`${this.$typeArgs[0]}`, this.string),
+      asciiString: fieldToJSON<T1>(`${this.$typeArgs[1]}`, this.asciiString),
+      url: fieldToJSON<T2>(`${this.$typeArgs[2]}`, this.url),
+      idField: fieldToJSON<T3>(`${this.$typeArgs[3]}`, this.idField),
+      uid: fieldToJSON<T4>(`${this.$typeArgs[4]}`, this.uid),
+      balance: fieldToJSON<T5>(`${this.$typeArgs[5]}`, this.balance),
+      option: fieldToJSON<T6>(`${this.$typeArgs[6]}`, this.option),
+      optionNone: fieldToJSON<T7>(`${this.$typeArgs[7]}`, this.optionNone),
     }
   }
 
@@ -2294,7 +2303,7 @@ export class WithSpecialTypesAsGenerics<
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 8) {
         throw new Error(
-          `type argument mismatch: expected 8 type arguments but got ${gotTypeArgs.length}`
+          `type argument mismatch: expected 8 type arguments but got '${gotTypeArgs.length}'`
         )
       }
       for (let i = 0; i < 8; i++) {
@@ -2369,7 +2378,7 @@ export function isWithSpecialTypesInVectors(type: string): boolean {
 export interface WithSpecialTypesInVectorsFields<T extends TypeArgument> {
   id: ToField<UID>
   string: ToField<Vector<String>>
-  asciiString: ToField<Vector<String1>>
+  asciiString: ToField<Vector<String>>
   idField: ToField<Vector<ID>>
   bar: ToField<Vector<Bar>>
   option: ToField<Vector<Option<'u64'>>>
@@ -2395,7 +2404,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
 
   readonly id: ToField<UID>
   readonly string: ToField<Vector<String>>
-  readonly asciiString: ToField<Vector<String1>>
+  readonly asciiString: ToField<Vector<String>>
   readonly idField: ToField<Vector<ID>>
   readonly bar: ToField<Vector<Bar>>
   readonly option: ToField<Vector<Option<'u64'>>>
@@ -2470,7 +2479,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
       bcs.struct(`WithSpecialTypesInVectors<${T.name}>`, {
         id: UID.bcs,
         string: bcs.vector(String.bcs),
-        ascii_string: bcs.vector(String1.bcs),
+        ascii_string: bcs.vector(String.bcs),
         id_field: bcs.vector(ID.bcs),
         bar: bcs.vector(Bar.bcs),
         option: bcs.vector(Option.bcs(bcs.u64())),
@@ -2495,7 +2504,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     return WithSpecialTypesInVectors.reified(typeArg).new({
       id: decodeFromFields(UID.reified(), fields.id),
       string: decodeFromFields(reified.vector(String.reified()), fields.string),
-      asciiString: decodeFromFields(reified.vector(String1.reified()), fields.ascii_string),
+      asciiString: decodeFromFields(reified.vector(String.reified()), fields.ascii_string),
       idField: decodeFromFields(reified.vector(ID.reified()), fields.id_field),
       bar: decodeFromFields(reified.vector(Bar.reified()), fields.bar),
       option: decodeFromFields(reified.vector(Option.reified('u64')), fields.option),
@@ -2519,7 +2528,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       string: decodeFromFieldsWithTypes(reified.vector(String.reified()), item.fields.string),
       asciiString: decodeFromFieldsWithTypes(
-        reified.vector(String1.reified()),
+        reified.vector(String.reified()),
         item.fields.ascii_string
       ),
       idField: decodeFromFieldsWithTypes(reified.vector(ID.reified()), item.fields.id_field),
@@ -2537,10 +2546,9 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     data: Uint8Array
   ): WithSpecialTypesInVectors<ToTypeArgument<T>> {
     const typeArgs = [typeArg]
-
     return WithSpecialTypesInVectors.fromFields(
       typeArg,
-      WithSpecialTypesInVectors.bcs(toBcs(typeArgs[0])).parse(data)
+      WithSpecialTypesInVectors.bcs(toBcs(typeArg)).parse(data)
     )
   }
 
@@ -2548,7 +2556,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     return {
       id: this.id,
       string: fieldToJSON<Vector<String>>(`vector<${String.$typeName}>`, this.string),
-      asciiString: fieldToJSON<Vector<String1>>(`vector<${String1.$typeName}>`, this.asciiString),
+      asciiString: fieldToJSON<Vector<String>>(`vector<${String.$typeName}>`, this.asciiString),
       idField: fieldToJSON<Vector<ID>>(`vector<${ID.$typeName}>`, this.idField),
       bar: fieldToJSON<Vector<Bar>>(`vector<${Bar.$typeName}>`, this.bar),
       option: fieldToJSON<Vector<Option<'u64'>>>(`vector<${Option.$typeName}<u64>>`, this.option),
@@ -2570,7 +2578,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     return WithSpecialTypesInVectors.reified(typeArg).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       string: decodeFromJSONField(reified.vector(String.reified()), field.string),
-      asciiString: decodeFromJSONField(reified.vector(String1.reified()), field.asciiString),
+      asciiString: decodeFromJSONField(reified.vector(String.reified()), field.asciiString),
       idField: decodeFromJSONField(reified.vector(ID.reified()), field.idField),
       bar: decodeFromJSONField(reified.vector(Bar.reified()), field.bar),
       option: decodeFromJSONField(reified.vector(Option.reified('u64')), field.option),
@@ -2589,7 +2597,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(WithSpecialTypesInVectors.$typeName, extractType(typeArg)),
+      composeSuiType(WithSpecialTypesInVectors.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -2624,15 +2632,17 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return WithSpecialTypesInVectors.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))

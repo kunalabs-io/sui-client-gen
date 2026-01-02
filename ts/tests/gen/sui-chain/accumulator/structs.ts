@@ -1,3 +1,4 @@
+import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -13,6 +14,7 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
+  fieldToJSON,
   phantom,
 } from '../../_framework/reified'
 import {
@@ -118,7 +120,9 @@ export class AccumulatorRoot implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): AccumulatorRoot {
-    return AccumulatorRoot.reified().new({ id: decodeFromFields(UID.reified(), fields.id) })
+    return AccumulatorRoot.reified().new({
+      id: decodeFromFields(UID.reified(), fields.id),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): AccumulatorRoot {
@@ -146,7 +150,9 @@ export class AccumulatorRoot implements StructClass {
   }
 
   static fromJSONField(field: any): AccumulatorRoot {
-    return AccumulatorRoot.reified().new({ id: decodeFromJSONField(UID.reified(), field.id) })
+    return AccumulatorRoot.reified().new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+    })
   }
 
   static fromJSON(json: Record<string, any>): AccumulatorRoot {
@@ -282,7 +288,9 @@ export class U128 implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): U128 {
-    return U128.reified().new({ value: decodeFromFields('u128', fields.value) })
+    return U128.reified().new({
+      value: decodeFromFields('u128', fields.value),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): U128 {
@@ -290,7 +298,9 @@ export class U128 implements StructClass {
       throw new Error('not a U128 type')
     }
 
-    return U128.reified().new({ value: decodeFromFieldsWithTypes('u128', item.fields.value) })
+    return U128.reified().new({
+      value: decodeFromFieldsWithTypes('u128', item.fields.value),
+    })
   }
 
   static fromBcs(data: Uint8Array): U128 {
@@ -308,7 +318,9 @@ export class U128 implements StructClass {
   }
 
   static fromJSONField(field: any): U128 {
-    return U128.reified().new({ value: decodeFromJSONField('u128', field.value) })
+    return U128.reified().new({
+      value: decodeFromJSONField('u128', field.value),
+    })
   }
 
   static fromJSON(json: Record<string, any>): U128 {
@@ -460,7 +472,9 @@ export class Key<T0 extends PhantomTypeArgument> implements StructClass {
     typeArg: T0,
     fields: Record<string, any>
   ): Key<ToPhantomTypeArgument<T0>> {
-    return Key.reified(typeArg).new({ address: decodeFromFields('address', fields.address) })
+    return Key.reified(typeArg).new({
+      address: decodeFromFields('address', fields.address),
+    })
   }
 
   static fromFieldsWithTypes<T0 extends PhantomReified<PhantomTypeArgument>>(
@@ -498,7 +512,9 @@ export class Key<T0 extends PhantomTypeArgument> implements StructClass {
     typeArg: T0,
     field: any
   ): Key<ToPhantomTypeArgument<T0>> {
-    return Key.reified(typeArg).new({ address: decodeFromJSONField('address', field.address) })
+    return Key.reified(typeArg).new({
+      address: decodeFromJSONField('address', field.address),
+    })
   }
 
   static fromJSON<T0 extends PhantomReified<PhantomTypeArgument>>(
@@ -509,7 +525,7 @@ export class Key<T0 extends PhantomTypeArgument> implements StructClass {
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(Key.$typeName, extractType(typeArg)),
+      composeSuiType(Key.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -542,15 +558,17 @@ export class Key<T0 extends PhantomTypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return Key.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))

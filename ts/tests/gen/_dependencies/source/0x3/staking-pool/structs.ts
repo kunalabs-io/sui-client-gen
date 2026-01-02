@@ -5,18 +5,24 @@ import {
   StructClass,
   ToField,
   ToTypeStr,
+  ToTypeStr as ToPhantom,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
   phantom,
-  ToTypeStr as ToPhantom,
 } from '../../../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../../../_framework/util'
 import { Option } from '../../../../move-stdlib/option/structs'
 import { Bag } from '../../../../sui/bag/structs'
 import { Balance } from '../../../../sui/balance/structs'
-import { ID, UID } from '../../../../sui/object/structs'
+import { ID } from '../../../../sui/object/structs'
+import { UID } from '../../../../sui/object/structs'
 import { SUI } from '../../../../sui/sui/structs'
 import { Table } from '../../../../sui/table/structs'
 import { bcs } from '@mysten/sui/bcs'

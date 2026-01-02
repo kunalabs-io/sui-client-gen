@@ -70,9 +70,15 @@ export function pow(tx: Transaction, args: PowArgs) {
 }
 
 export function sqrt(tx: Transaction, u8: number | TransactionArgument) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::u8::sqrt`, arguments: [pure(tx, u8, `u8`)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u8::sqrt`,
+    arguments: [pure(tx, u8, `u8`)],
+  })
 }
 
 export function toString(tx: Transaction, u8: number | TransactionArgument) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::u8::to_string`, arguments: [pure(tx, u8, `u8`)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u8::to_string`,
+    arguments: [pure(tx, u8, `u8`)],
+  })
 }

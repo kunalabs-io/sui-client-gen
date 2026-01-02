@@ -70,7 +70,10 @@ export function pow(tx: Transaction, args: PowArgs) {
 }
 
 export function sqrt(tx: Transaction, u16: number | TransactionArgument) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::u16::sqrt`, arguments: [pure(tx, u16, `u16`)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u16::sqrt`,
+    arguments: [pure(tx, u16, `u16`)],
+  })
 }
 
 export function tryAsU8(tx: Transaction, u16: number | TransactionArgument) {

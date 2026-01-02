@@ -176,8 +176,8 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements 
   toJSONField() {
     return {
       id: this.id,
-      name: fieldToJSON<T0>(this.$typeArgs[0], this.name),
-      value: fieldToJSON<T1>(this.$typeArgs[1], this.value),
+      name: fieldToJSON<T0>(`${this.$typeArgs[0]}`, this.name),
+      value: fieldToJSON<T1>(`${this.$typeArgs[1]}`, this.value),
     }
   }
 
@@ -237,7 +237,7 @@ export class Field<T0 extends TypeArgument, T1 extends TypeArgument> implements 
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 2) {
         throw new Error(
-          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
         )
       }
       for (let i = 0; i < 2; i++) {

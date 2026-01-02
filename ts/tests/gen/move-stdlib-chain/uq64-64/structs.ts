@@ -9,7 +9,12 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -100,7 +105,9 @@ export class UQ64_64 implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): UQ64_64 {
-    return UQ64_64.reified().new({ pos0: decodeFromFields('u128', fields.pos0) })
+    return UQ64_64.reified().new({
+      pos0: decodeFromFields('u128', fields.pos0),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): UQ64_64 {
@@ -108,7 +115,9 @@ export class UQ64_64 implements StructClass {
       throw new Error('not a UQ64_64 type')
     }
 
-    return UQ64_64.reified().new({ pos0: decodeFromFieldsWithTypes('u128', item.fields.pos0) })
+    return UQ64_64.reified().new({
+      pos0: decodeFromFieldsWithTypes('u128', item.fields.pos0),
+    })
   }
 
   static fromBcs(data: Uint8Array): UQ64_64 {
@@ -126,7 +135,9 @@ export class UQ64_64 implements StructClass {
   }
 
   static fromJSONField(field: any): UQ64_64 {
-    return UQ64_64.reified().new({ pos0: decodeFromJSONField('u128', field.pos0) })
+    return UQ64_64.reified().new({
+      pos0: decodeFromJSONField('u128', field.pos0),
+    })
   }
 
   static fromJSON(json: Record<string, any>): UQ64_64 {

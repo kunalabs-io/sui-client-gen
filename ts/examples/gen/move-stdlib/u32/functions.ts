@@ -70,11 +70,17 @@ export function pow(tx: Transaction, args: PowArgs) {
 }
 
 export function sqrt(tx: Transaction, x: number | TransactionArgument) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::u32::sqrt`, arguments: [pure(tx, x, `u32`)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u32::sqrt`,
+    arguments: [pure(tx, x, `u32`)],
+  })
 }
 
 export function tryAsU8(tx: Transaction, x: number | TransactionArgument) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::u32::try_as_u8`, arguments: [pure(tx, x, `u32`)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u32::try_as_u8`,
+    arguments: [pure(tx, x, `u32`)],
+  })
 }
 
 export function tryAsU16(tx: Transaction, x: number | TransactionArgument) {
@@ -85,5 +91,8 @@ export function tryAsU16(tx: Transaction, x: number | TransactionArgument) {
 }
 
 export function toString(tx: Transaction, x: number | TransactionArgument) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::u32::to_string`, arguments: [pure(tx, x, `u32`)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u32::to_string`,
+    arguments: [pure(tx, x, `u32`)],
+  })
 }

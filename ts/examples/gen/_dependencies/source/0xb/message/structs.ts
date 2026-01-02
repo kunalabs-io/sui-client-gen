@@ -11,7 +11,12 @@ import {
   fieldToJSON,
   phantom,
 } from '../../../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../../../_framework/util'
 import { Vector } from '../../../../_framework/vector'
 import { String } from '../../../../move-stdlib/ascii/structs'
 import { bcs } from '@mysten/sui/bcs'
@@ -711,7 +716,9 @@ export class EmergencyOp implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): EmergencyOp {
-    return EmergencyOp.reified().new({ opType: decodeFromFields('u8', fields.op_type) })
+    return EmergencyOp.reified().new({
+      opType: decodeFromFields('u8', fields.op_type),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): EmergencyOp {
@@ -739,7 +746,9 @@ export class EmergencyOp implements StructClass {
   }
 
   static fromJSONField(field: any): EmergencyOp {
-    return EmergencyOp.reified().new({ opType: decodeFromJSONField('u8', field.opType) })
+    return EmergencyOp.reified().new({
+      opType: decodeFromJSONField('u8', field.opType),
+    })
   }
 
   static fromJSON(json: Record<string, any>): EmergencyOp {

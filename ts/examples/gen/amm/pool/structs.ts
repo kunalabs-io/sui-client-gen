@@ -8,14 +8,15 @@ import {
   ToField,
   ToPhantomTypeArgument,
   ToTypeStr,
+  ToTypeStr as ToPhantom,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
+  fieldToJSON,
   phantom,
-  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
@@ -23,11 +24,13 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { TypeName } from '../../move-stdlib/type-name/structs'
-import { Balance, Supply } from '../../sui/balance/structs'
-import { ID, UID } from '../../sui/object/structs'
-import { Table } from '../../sui/table/structs'
 import { PKG_V1 } from '../index'
+import { TypeName } from '../../move-stdlib/type-name/structs'
+import { Balance } from '../../sui/balance/structs'
+import { Supply } from '../../sui/balance/structs'
+import { ID } from '../../sui/object/structs'
+import { UID } from '../../sui/object/structs'
+import { Table } from '../../sui/table/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -416,7 +419,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 2) {
         throw new Error(
-          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
         )
       }
       for (let i = 0; i < 2; i++) {
@@ -741,7 +744,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 2) {
         throw new Error(
-          `type argument mismatch: expected 2 type arguments but got ${gotTypeArgs.length}`
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
         )
       }
       for (let i = 0; i < 2; i++) {
@@ -1094,8 +1097,8 @@ export class PoolRegistryItem implements StructClass {
 
   toJSONField() {
     return {
-      a: this.a.toJSONField(),
-      b: this.b.toJSONField(),
+      a: this.a,
+      b: this.b,
     }
   }
 
@@ -1246,7 +1249,9 @@ export class AdminCap implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): AdminCap {
-    return AdminCap.reified().new({ id: decodeFromFields(UID.reified(), fields.id) })
+    return AdminCap.reified().new({
+      id: decodeFromFields(UID.reified(), fields.id),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): AdminCap {
@@ -1254,7 +1259,9 @@ export class AdminCap implements StructClass {
       throw new Error('not a AdminCap type')
     }
 
-    return AdminCap.reified().new({ id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id) })
+    return AdminCap.reified().new({
+      id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
+    })
   }
 
   static fromBcs(data: Uint8Array): AdminCap {
@@ -1272,7 +1279,9 @@ export class AdminCap implements StructClass {
   }
 
   static fromJSONField(field: any): AdminCap {
-    return AdminCap.reified().new({ id: decodeFromJSONField(UID.reified(), field.id) })
+    return AdminCap.reified().new({
+      id: decodeFromJSONField(UID.reified(), field.id),
+    })
   }
 
   static fromJSON(json: Record<string, any>): AdminCap {

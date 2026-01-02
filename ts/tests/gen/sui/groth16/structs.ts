@@ -11,7 +11,12 @@ import {
   fieldToJSON,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -103,7 +108,9 @@ export class Curve implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): Curve {
-    return Curve.reified().new({ id: decodeFromFields('u8', fields.id) })
+    return Curve.reified().new({
+      id: decodeFromFields('u8', fields.id),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Curve {
@@ -111,7 +118,9 @@ export class Curve implements StructClass {
       throw new Error('not a Curve type')
     }
 
-    return Curve.reified().new({ id: decodeFromFieldsWithTypes('u8', item.fields.id) })
+    return Curve.reified().new({
+      id: decodeFromFieldsWithTypes('u8', item.fields.id),
+    })
   }
 
   static fromBcs(data: Uint8Array): Curve {
@@ -129,7 +138,9 @@ export class Curve implements StructClass {
   }
 
   static fromJSONField(field: any): Curve {
-    return Curve.reified().new({ id: decodeFromJSONField('u8', field.id) })
+    return Curve.reified().new({
+      id: decodeFromJSONField('u8', field.id),
+    })
   }
 
   static fromJSON(json: Record<string, any>): Curve {

@@ -157,8 +157,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
     data: Uint8Array
   ): Option<ToTypeArgument<Element>> {
     const typeArgs = [typeArg]
-
-    return Option.fromFields(typeArg, Option.bcs(toBcs(typeArgs[0])).parse(data))
+    return Option.fromFields(typeArg, Option.bcs(toBcs(typeArg)).parse(data))
   }
 
   toJSONField() {
@@ -188,7 +187,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(Option.$typeName, extractType(typeArg)),
+      composeSuiType(Option.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -221,15 +220,17 @@ export class Option<Element extends TypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return Option.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))

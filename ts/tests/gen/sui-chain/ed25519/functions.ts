@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { pure } from '../../_framework/util'
-import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
+import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export interface Ed25519VerifyArgs {
   vecU81: Array<number | TransactionArgument> | TransactionArgument

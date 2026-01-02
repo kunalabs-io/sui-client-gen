@@ -9,7 +9,12 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -100,7 +105,9 @@ export class SUI implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): SUI {
-    return SUI.reified().new({ dummyField: decodeFromFields('bool', fields.dummy_field) })
+    return SUI.reified().new({
+      dummyField: decodeFromFields('bool', fields.dummy_field),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): SUI {
@@ -128,7 +135,9 @@ export class SUI implements StructClass {
   }
 
   static fromJSONField(field: any): SUI {
-    return SUI.reified().new({ dummyField: decodeFromJSONField('bool', field.dummyField) })
+    return SUI.reified().new({
+      dummyField: decodeFromJSONField('bool', field.dummyField),
+    })
   }
 
   static fromJSON(json: Record<string, any>): SUI {

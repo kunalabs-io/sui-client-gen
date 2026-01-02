@@ -70,7 +70,10 @@ export function pow(tx: Transaction, args: PowArgs) {
 }
 
 export function sqrt(tx: Transaction, u64: bigint | TransactionArgument) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::u64::sqrt`, arguments: [pure(tx, u64, `u64`)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::u64::sqrt`,
+    arguments: [pure(tx, u64, `u64`)],
+  })
 }
 
 export function tryAsU8(tx: Transaction, u64: bigint | TransactionArgument) {

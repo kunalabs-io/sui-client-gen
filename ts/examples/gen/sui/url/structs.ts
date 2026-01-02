@@ -9,7 +9,12 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { String } from '../../move-stdlib/ascii/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -101,7 +106,9 @@ export class Url implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): Url {
-    return Url.reified().new({ url: decodeFromFields(String.reified(), fields.url) })
+    return Url.reified().new({
+      url: decodeFromFields(String.reified(), fields.url),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Url {
@@ -109,7 +116,9 @@ export class Url implements StructClass {
       throw new Error('not a Url type')
     }
 
-    return Url.reified().new({ url: decodeFromFieldsWithTypes(String.reified(), item.fields.url) })
+    return Url.reified().new({
+      url: decodeFromFieldsWithTypes(String.reified(), item.fields.url),
+    })
   }
 
   static fromBcs(data: Uint8Array): Url {
@@ -127,7 +136,9 @@ export class Url implements StructClass {
   }
 
   static fromJSONField(field: any): Url {
-    return Url.reified().new({ url: decodeFromJSONField(String.reified(), field.url) })
+    return Url.reified().new({
+      url: decodeFromJSONField(String.reified(), field.url),
+    })
   }
 
   static fromJSON(json: Record<string, any>): Url {

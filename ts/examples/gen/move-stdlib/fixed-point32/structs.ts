@@ -9,7 +9,12 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64 } from '@mysten/sui/utils'
@@ -106,7 +111,9 @@ export class FixedPoint32 implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): FixedPoint32 {
-    return FixedPoint32.reified().new({ value: decodeFromFields('u64', fields.value) })
+    return FixedPoint32.reified().new({
+      value: decodeFromFields('u64', fields.value),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): FixedPoint32 {
@@ -134,7 +141,9 @@ export class FixedPoint32 implements StructClass {
   }
 
   static fromJSONField(field: any): FixedPoint32 {
-    return FixedPoint32.reified().new({ value: decodeFromJSONField('u64', field.value) })
+    return FixedPoint32.reified().new({
+      value: decodeFromJSONField('u64', field.value),
+    })
   }
 
   static fromJSON(json: Record<string, any>): FixedPoint32 {

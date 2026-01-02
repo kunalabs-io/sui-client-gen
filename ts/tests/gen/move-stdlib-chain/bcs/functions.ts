@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { GenericArg, generic } from '../../_framework/util'
-import { Transaction } from '@mysten/sui/transactions'
+import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
 export function toBytes(tx: Transaction, typeArg: string, t0: GenericArg) {
   return tx.moveCall({

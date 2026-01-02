@@ -556,5 +556,8 @@ export function toLegacyMetadata(
 }
 
 export function create(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::coin_registry::create`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::coin_registry::create`,
+    arguments: [],
+  })
 }

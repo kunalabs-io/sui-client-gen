@@ -63,7 +63,10 @@ export function upgradePackage(tx: Transaction, cap: TransactionObjectInput) {
 }
 
 export function version(tx: Transaction, cap: TransactionObjectInput) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::package::version`, arguments: [obj(tx, cap)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::package::version`,
+    arguments: [obj(tx, cap)],
+  })
 }
 
 export function upgradePolicy(tx: Transaction, cap: TransactionObjectInput) {
@@ -109,15 +112,24 @@ export function ticketDigest(tx: Transaction, ticket: TransactionObjectInput) {
 }
 
 export function compatiblePolicy(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::package::compatible_policy`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::package::compatible_policy`,
+    arguments: [],
+  })
 }
 
 export function additivePolicy(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::package::additive_policy`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::package::additive_policy`,
+    arguments: [],
+  })
 }
 
 export function depOnlyPolicy(tx: Transaction) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::package::dep_only_policy`, arguments: [] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::package::dep_only_policy`,
+    arguments: [],
+  })
 }
 
 export function onlyAdditiveUpgrades(tx: Transaction, cap: TransactionObjectInput) {

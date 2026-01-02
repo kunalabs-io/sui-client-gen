@@ -11,13 +11,18 @@ import {
   fieldToJSON,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
+import { PKG_V1 } from '../index'
 import { String } from '../../move-stdlib/ascii/structs'
 import { Option } from '../../move-stdlib/option/structs'
-import { String as String1 } from '../../move-stdlib/string/structs'
-import { ID, UID } from '../../sui/object/structs'
-import { PKG_V1 } from '../index'
+import { ID } from '../../sui/object/structs'
+import { UID } from '../../sui/object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
@@ -114,7 +119,9 @@ export class ExampleStruct implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): ExampleStruct {
-    return ExampleStruct.reified().new({ dummyField: decodeFromFields('bool', fields.dummy_field) })
+    return ExampleStruct.reified().new({
+      dummyField: decodeFromFields('bool', fields.dummy_field),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): ExampleStruct {
@@ -204,7 +211,7 @@ export function isSpecialTypesStruct(type: string): boolean {
 export interface SpecialTypesStructFields {
   id: ToField<UID>
   asciiString: ToField<String>
-  utf8String: ToField<String1>
+  utf8String: ToField<String>
   vectorOfU64: ToField<Vector<'u64'>>
   vectorOfObjects: ToField<Vector<ExampleStruct>>
   idField: ToField<ID>
@@ -229,7 +236,7 @@ export class SpecialTypesStruct implements StructClass {
 
   readonly id: ToField<UID>
   readonly asciiString: ToField<String>
-  readonly utf8String: ToField<String1>
+  readonly utf8String: ToField<String>
   readonly vectorOfU64: ToField<Vector<'u64'>>
   readonly vectorOfObjects: ToField<Vector<ExampleStruct>>
   readonly idField: ToField<ID>
@@ -298,7 +305,7 @@ export class SpecialTypesStruct implements StructClass {
     return bcs.struct('SpecialTypesStruct', {
       id: UID.bcs,
       ascii_string: String.bcs,
-      utf8_string: String1.bcs,
+      utf8_string: String.bcs,
       vector_of_u64: bcs.vector(bcs.u64()),
       vector_of_objects: bcs.vector(ExampleStruct.bcs),
       id_field: ID.bcs,
@@ -324,7 +331,7 @@ export class SpecialTypesStruct implements StructClass {
     return SpecialTypesStruct.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       asciiString: decodeFromFields(String.reified(), fields.ascii_string),
-      utf8String: decodeFromFields(String1.reified(), fields.utf8_string),
+      utf8String: decodeFromFields(String.reified(), fields.utf8_string),
       vectorOfU64: decodeFromFields(reified.vector('u64'), fields.vector_of_u64),
       vectorOfObjects: decodeFromFields(
         reified.vector(ExampleStruct.reified()),
@@ -345,7 +352,7 @@ export class SpecialTypesStruct implements StructClass {
     return SpecialTypesStruct.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       asciiString: decodeFromFieldsWithTypes(String.reified(), item.fields.ascii_string),
-      utf8String: decodeFromFieldsWithTypes(String1.reified(), item.fields.utf8_string),
+      utf8String: decodeFromFieldsWithTypes(String.reified(), item.fields.utf8_string),
       vectorOfU64: decodeFromFieldsWithTypes(reified.vector('u64'), item.fields.vector_of_u64),
       vectorOfObjects: decodeFromFieldsWithTypes(
         reified.vector(ExampleStruct.reified()),
@@ -387,7 +394,7 @@ export class SpecialTypesStruct implements StructClass {
     return SpecialTypesStruct.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       asciiString: decodeFromJSONField(String.reified(), field.asciiString),
-      utf8String: decodeFromJSONField(String1.reified(), field.utf8String),
+      utf8String: decodeFromJSONField(String.reified(), field.utf8String),
       vectorOfU64: decodeFromJSONField(reified.vector('u64'), field.vectorOfU64),
       vectorOfObjects: decodeFromJSONField(
         reified.vector(ExampleStruct.reified()),

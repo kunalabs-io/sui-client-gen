@@ -8,14 +8,15 @@ import {
   ToField,
   ToPhantomTypeArgument,
   ToTypeStr,
+  ToTypeStr as ToPhantom,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
+  fieldToJSON,
   phantom,
-  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
@@ -24,7 +25,8 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Balance } from '../balance/structs'
-import { ID, UID } from '../object/structs'
+import { ID } from '../object/structs'
+import { UID } from '../object/structs'
 import { SUI } from '../sui/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -594,7 +596,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(PurchaseCap.$typeName, extractType(typeArg)),
+      composeSuiType(PurchaseCap.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -627,15 +629,17 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return PurchaseCap.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
@@ -927,7 +931,9 @@ export class Item implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): Item {
-    return Item.reified().new({ id: decodeFromFields(ID.reified(), fields.id) })
+    return Item.reified().new({
+      id: decodeFromFields(ID.reified(), fields.id),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Item {
@@ -935,7 +941,9 @@ export class Item implements StructClass {
       throw new Error('not a Item type')
     }
 
-    return Item.reified().new({ id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id) })
+    return Item.reified().new({
+      id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
+    })
   }
 
   static fromBcs(data: Uint8Array): Item {
@@ -953,7 +961,9 @@ export class Item implements StructClass {
   }
 
   static fromJSONField(field: any): Item {
-    return Item.reified().new({ id: decodeFromJSONField(ID.reified(), field.id) })
+    return Item.reified().new({
+      id: decodeFromJSONField(ID.reified(), field.id),
+    })
   }
 
   static fromJSON(json: Record<string, any>): Item {
@@ -1265,7 +1275,9 @@ export class Lock implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): Lock {
-    return Lock.reified().new({ id: decodeFromFields(ID.reified(), fields.id) })
+    return Lock.reified().new({
+      id: decodeFromFields(ID.reified(), fields.id),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): Lock {
@@ -1273,7 +1285,9 @@ export class Lock implements StructClass {
       throw new Error('not a Lock type')
     }
 
-    return Lock.reified().new({ id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id) })
+    return Lock.reified().new({
+      id: decodeFromFieldsWithTypes(ID.reified(), item.fields.id),
+    })
   }
 
   static fromBcs(data: Uint8Array): Lock {
@@ -1291,7 +1305,9 @@ export class Lock implements StructClass {
   }
 
   static fromJSONField(field: any): Lock {
-    return Lock.reified().new({ id: decodeFromJSONField(ID.reified(), field.id) })
+    return Lock.reified().new({
+      id: decodeFromJSONField(ID.reified(), field.id),
+    })
   }
 
   static fromJSON(json: Record<string, any>): Lock {
@@ -1512,7 +1528,7 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(ItemListed.$typeName, extractType(typeArg)),
+      composeSuiType(ItemListed.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -1545,15 +1561,17 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return ItemListed.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
@@ -1754,7 +1772,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(ItemPurchased.$typeName, extractType(typeArg)),
+      composeSuiType(ItemPurchased.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -1787,15 +1805,17 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return ItemPurchased.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
@@ -1988,7 +2008,7 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
       throw new Error('not a WithTwoGenerics json object')
     }
     assertReifiedTypeArgsMatch(
-      composeSuiType(ItemDelisted.$typeName, extractType(typeArg)),
+      composeSuiType(ItemDelisted.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
       [typeArg]
     )
@@ -2021,15 +2041,17 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type argument but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
         )
       }
-      const gotTypeArg = compressSuiType(gotTypeArgs[0])
-      const expectedTypeArg = compressSuiType(extractType(typeArg))
-      if (gotTypeArg !== compressSuiType(extractType(typeArg))) {
-        throw new Error(
-          `type argument mismatch: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-        )
+      for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
       }
 
       return ItemDelisted.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))

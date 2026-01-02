@@ -51,7 +51,10 @@ export function pow(tx: Transaction, args: PowArgs) {
 }
 
 export function sqrt(tx: Transaction, u64: bigint | TransactionArgument) {
-  return tx.moveCall({ target: `${PUBLISHED_AT}::math::sqrt`, arguments: [pure(tx, u64, `u64`)] })
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::math::sqrt`,
+    arguments: [pure(tx, u64, `u64`)],
+  })
 }
 
 export function sqrtU128(tx: Transaction, u128: bigint | TransactionArgument) {

@@ -5,17 +5,23 @@ import {
   StructClass,
   ToField,
   ToTypeStr,
+  ToTypeStr as ToPhantom,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   fieldToJSON,
   phantom,
-  ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  composeSuiType,
+  compressSuiType,
+  parseTypeName,
+} from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { Bag } from '../bag/structs'
-import { ID, UID } from '../object/structs'
+import { ID } from '../object/structs'
+import { UID } from '../object/structs'
 import { Table } from '../table/structs'
 import { VecSet } from '../vec-set/structs'
 import { bcs } from '@mysten/sui/bcs'
@@ -646,7 +652,9 @@ export class AddressKey implements StructClass {
   }
 
   static fromFields(fields: Record<string, any>): AddressKey {
-    return AddressKey.reified().new({ pos0: decodeFromFields('address', fields.pos0) })
+    return AddressKey.reified().new({
+      pos0: decodeFromFields('address', fields.pos0),
+    })
   }
 
   static fromFieldsWithTypes(item: FieldsWithTypes): AddressKey {
@@ -674,7 +682,9 @@ export class AddressKey implements StructClass {
   }
 
   static fromJSONField(field: any): AddressKey {
-    return AddressKey.reified().new({ pos0: decodeFromJSONField('address', field.pos0) })
+    return AddressKey.reified().new({
+      pos0: decodeFromJSONField('address', field.pos0),
+    })
   }
 
   static fromJSON(json: Record<string, any>): AddressKey {
