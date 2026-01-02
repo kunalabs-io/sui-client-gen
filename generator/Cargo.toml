@@ -10,11 +10,11 @@ futures = "0.3.28"
 tempfile = "^3.20.0"
 toml = { version = "0.5.8", features = ["preserve_order"] }
 regex = "1.7.1"
-genco = "^0.17.8"
 clap = "4.4"
 codespan-reporting = "0.11.1"
 convert_case = "^0.6.0"
 colored = "2.0.0"
+indoc = "2"
 
 sui-move-build = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
 sui-move = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}

@@ -4,8 +4,6 @@ use std::path::{Path, PathBuf};
 use anyhow::Result;
 use clap::*;
 use colored::*;
-use genco::fmt;
-use genco::prelude::*;
 use move_core_types::account_address::AccountAddress;
 use move_model_2::source_kind::SourceKind;
 use move_model_2::{compiled_model, model, source_model};
@@ -13,17 +11,14 @@ use move_package::source_package::parsed_manifest::PackageName;
 use move_symbol_pool::Symbol;
 use std::io::Write;
 use sui_client_gen::framework_sources;
-use sui_client_gen::gen::{
-    gen_init_loader_ts, gen_package_init_ts, module_import_name, package_import_name,
-};
-use sui_client_gen::gen::{
-    EnumsGen, FrameworkImportCtx, FunctionsGen, StructClassImportCtx, StructsGen,
-};
 use sui_client_gen::manifest::{parse_gen_manifest_from_file, GenManifest, Package};
 use sui_client_gen::model_builder::{
     build_models, OnChainModelResult, SourceModelResult, TypeOriginTable, VersionTable,
 };
 use sui_client_gen::package_cache::PackageCache;
+use sui_client_gen::ts_gen::{
+    self, gen_module_structs, gen_package_index, module_import_name, package_import_name,
+};
 use sui_move_build::SuiPackageHooks;
 use sui_sdk::types::SYSTEM_PACKAGE_ADDRESSES;
 use sui_sdk::SuiClientBuilder;
@@ -145,8 +140,8 @@ async fn main() -> Result<()> {
         framework_sources::VECTOR,
         out_root.join("_framework").join("vector.ts").as_ref(),
     )?;
-    write_tokens_to_file(
-        &gen_init_loader_ts(
+    write_str_to_file(
+        &ts_gen::gen_init_loader(
             match source_pkgs.is_empty() {
                 false => Some((
                     source_pkgs.keys().copied().collect::<Vec<_>>(),
@@ -229,27 +224,12 @@ fn clean_output(out_root: &Path) -> Result<()> {
     Ok(())
 }
 
-fn write_tokens_to_file(tokens: &Tokens<JavaScript>, path: &Path) -> Result<()> {
-    if tokens.is_empty() {
-        return Ok(());
-    }
-
-    let file = std::fs::File::create(path)?;
-    let mut w = fmt::IoWriter::new(file);
-    let fmt = fmt::Config::from_lang::<JavaScript>();
-    let config = js::Config::default();
-    tokens.format_file(&mut w.as_formatter(&fmt), &config)?;
-    Ok(())
-}
-
 fn write_str_to_file(s: &str, path: &Path) -> Result<()> {
     if s.is_empty() {
         return Ok(());
     }
 
-    let file = std::fs::File::create(path)?;
-    let mut w = fmt::IoWriter::new(file);
-    std::fmt::Write::write_str(&mut w, s)?;
+    std::fs::write(path, s)?;
     Ok(())
 }
 
@@ -341,22 +321,26 @@ fn gen_packages_for_model<HasSource: SourceKind>(
         // generate index.ts
         let published_at = published_at_map.get(pkg_id).unwrap_or(pkg_id);
         let versions = version_table.get(pkg_id).unwrap();
-        let mut tokens: js::Tokens = quote!(
-            export const PACKAGE_ID = $[str]($[const](pkg_id.to_hex_literal()));
-            export const PUBLISHED_AT = $[str]($[const](published_at.to_hex_literal()));
+        let version_list: Vec<(String, u64)> = versions
+            .iter()
+            .map(|(addr, seq)| (addr.to_hex_literal(), seq.value()))
+            .collect();
+        let index_content = gen_package_index(
+            &pkg_id.to_hex_literal(),
+            &published_at.to_hex_literal(),
+            &version_list,
+            SYSTEM_PACKAGE_ADDRESSES.contains(pkg_id),
         );
-        if !SYSTEM_PACKAGE_ADDRESSES.contains(pkg_id) {
-            for (ver_published_at, version) in versions {
-                quote_in! { tokens =>
-                    export const PKG_V$(version.value()) = $[str]($[const](ver_published_at.to_hex_literal()));
-                }
-            }
-        }
-        write_tokens_to_file(&tokens, &package_path.join("index.ts"))?;
+        write_str_to_file(&index_content, &package_path.join("index.ts"))?;
 
         // generate init.ts
-        let tokens = gen_package_init_ts(pkg, &FrameworkImportCtx::new(levels_from_root + 1));
-        write_tokens_to_file(&tokens, &package_path.join("init.ts"))?;
+        let init_levels = levels_from_root + 1;
+        let framework_rel_path =
+            (0..init_levels).map(|_| "..").collect::<Vec<_>>().join("/") + "/_framework";
+        write_str_to_file(
+            &ts_gen::gen_package_init(pkg, &framework_rel_path),
+            &package_path.join("init.ts"),
+        )?;
 
         // generate modules
         for module in pkg.modules() {
@@ -365,72 +349,27 @@ fn gen_packages_for_model<HasSource: SourceKind>(
 
             // generate <module>/functions.ts
             if is_top_level {
-                let mut tokens = js::Tokens::new();
-                let mut import_ctx = &mut StructClassImportCtx::for_func_gen(
+                let content = ts_gen::gen_module_functions(
                     &module,
                     top_level_pkg_names,
                     is_source,
+                    levels_from_root,
                 );
-                for func in module.functions() {
-                    let func_gen_res = FunctionsGen::new(
-                        import_ctx,
-                        FrameworkImportCtx::new(levels_from_root + 2),
-                        func,
-                    );
-                    let mut func_gen = match func_gen_res {
-                        Ok(func_gen) => func_gen,
-                        Err(ic) => {
-                            import_ctx = ic;
-                            continue;
-                        }
-                    };
-                    func_gen.gen_fun_args_if(&mut tokens)?;
-                    func_gen.gen_fun_binding(&mut tokens)?;
-                    import_ctx = func_gen.import_ctx;
+                if !content.is_empty() {
+                    write_str_to_file(&content, &module_path.join("functions.ts"))?;
                 }
-                write_tokens_to_file(&tokens, &module_path.join("functions.ts"))?;
             }
 
             // generate <module>/structs.ts
-            let mut tokens = js::Tokens::new();
-            let mut import_ctx =
-                &mut StructClassImportCtx::for_struct_gen(&module, top_level_pkg_names, is_source);
-
-            for strct in module.structs() {
-                let mut structs_gen = StructsGen::new(
-                    import_ctx,
-                    FrameworkImportCtx::new(levels_from_root + 2),
-                    type_origin_table,
-                    version_table,
-                    strct,
-                );
-                structs_gen.gen_struct_sep_comment(&mut tokens);
-
-                // type check function
-                structs_gen.gen_is_type_func(&mut tokens);
-
-                // fields interface
-                structs_gen.gen_fields_if(&mut tokens);
-
-                // struct class
-                structs_gen.gen_struct_class(&mut tokens);
-                import_ctx = structs_gen.import_ctx;
-            }
-
-            for enum_ in module.enums() {
-                let mut enums_gen = EnumsGen::new(
-                    import_ctx,
-                    FrameworkImportCtx::new(levels_from_root + 2),
-                    type_origin_table,
-                    version_table,
-                    enum_,
-                );
-                enums_gen.gen_enum_sep_comment(&mut tokens);
-                enums_gen.gen_is_type_func(&mut tokens);
-                enums_gen.gen_enum(&mut tokens);
-                import_ctx = enums_gen.import_ctx;
-            }
-            write_tokens_to_file(&tokens, &module_path.join("structs.ts"))?;
+            let content = gen_module_structs(
+                &module,
+                type_origin_table,
+                version_table,
+                top_level_pkg_names,
+                is_source,
+                levels_from_root,
+            );
+            write_str_to_file(&content, &module_path.join("structs.ts"))?;
         }
     }
 
