@@ -1,0 +1,282 @@
+---
+source: generator/tests/snapshot_tests.rs
+expression: output
+---
+/* ============================== Container =============================== */
+
+export function isContainer(type: string): boolean {
+  type = compressSuiType(type)
+  return type.startsWith(`${PKG_V1}::test::Container` + '<')
+}
+
+export type ContainerVariant<T1 extends TypeArgument, T2 extends PhantomTypeArgument> =
+  | ContainerEmpty<T1, T2>
+  | ContainerWithTable<T1, T2>
+
+export type ContainerVariantName = 'Empty' | 'WithTable'
+
+export function isContainerVariantName(variant: string): variant is ContainerVariantName {
+  return variant === 'Empty' || variant === 'WithTable'
+}
+
+export type ContainerFields<T1 extends TypeArgument, T2 extends PhantomTypeArgument> =
+  | ContainerEmptyFields
+  | ContainerWithTableFields<T1, T2>
+
+export type ContainerReified<T1 extends TypeArgument, T2 extends PhantomTypeArgument> = Reified<
+  ContainerVariant<T1, T2>,
+  ContainerFields<T1, T2>
+>
+
+export class Container {
+  static readonly $typeName = `${PKG_V1}::test::Container`
+  static readonly $numTypeParams = 2
+  static readonly $isPhantom = [false, true] as const
+
+  static reified<T1 extends Reified<TypeArgument, any>, T2 extends PhantomReified<PhantomTypeArgument>>(
+    T1: T1, T2: T2
+  ): ContainerReified<ToTypeArgument<T1>, ToPhantomTypeArgument<T2>> {
+    const reifiedBcs = Container.bcs(toBcs(T1))
+    return {
+      typeName: Container.$typeName,
+      fullTypeName: composeSuiType(
+        Container.$typeName,
+        ...[extractType(T1), extractType(T2)]
+      ) as `${typeof PKG_V1}::test::Container<${ToTypeStr<ToTypeArgument<T1>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<T2>>}>`,
+      typeArgs: [extractType(T1), extractType(T2)] as [ToTypeStr<ToTypeArgument<T1>>, PhantomToTypeStr<ToPhantomTypeArgument<T2>>],
+      isPhantom: Container.$isPhantom,
+      reifiedTypeArgs: [T1, T2],
+      fromFields: (fields: Record<string, any>) => Container.fromFields([T1, T2], fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Container.fromFieldsWithTypes([T1, T2], item),
+      fromBcs: (data: Uint8Array) => Container.fromBcs([T1, T2], data),
+      bcs: reifiedBcs,
+      fromJSONField: (field: any) => Container.fromJSONField([T1, T2], field),
+      fromJSON: (json: Record<string, any>) => Container.fromJSON([T1, T2], json),
+      new: (
+        variant: ContainerVariantName,
+        fields: ContainerFields<ToTypeArgument<T1>, ToPhantomTypeArgument<T2>>
+      ) => {
+        switch (variant) {
+          case 'Empty':
+            return new ContainerEmpty([extractType(T1), extractType(T2)], fields as ContainerEmptyFields)
+          case 'WithTable':
+            return new ContainerWithTable(
+              [extractType(T1), extractType(T2)],
+              fields as ContainerWithTableFields<ToTypeArgument<T1>, ToPhantomTypeArgument<T2>>
+            )
+        }
+      },
+      kind: 'EnumClassReified',
+    } as ContainerReified<ToTypeArgument<T1>, ToPhantomTypeArgument<T2>>
+  }
+
+  static get r() {
+    return Container.reified
+  }
+
+  static phantom<T1 extends Reified<TypeArgument, any>, T2 extends PhantomReified<PhantomTypeArgument>>(
+    T1: T1, T2: T2
+  ): PhantomReified<ToTypeStr<ContainerVariant<ToTypeArgument<T1>, ToPhantomTypeArgument<T2>>>> {
+    return phantom(Container.reified(T1, T2))
+  }
+
+  static get p() {
+    return Container.phantom
+  }
+
+  private static instantiateBcs() {
+    return <T1 extends BcsType<any>>(T1: T1) =>
+      bcs.enum(`Container<${T1.name}>`, {
+      Empty: null,
+      WithTable: bcs.struct('ContainerWithTable', {
+        table: Table.bcs(T2),
+      }),
+      })
+  }
+
+  private static cachedBcs: ReturnType<typeof Container.instantiateBcs> | null = null
+
+  static get bcs(): ReturnType<typeof Container.instantiateBcs> {
+    if (!Container.cachedBcs) {
+      Container.cachedBcs = Container.instantiateBcs()
+    }
+    return Container.cachedBcs
+  }
+
+  static fromFields<T1 extends Reified<TypeArgument, any>, T2 extends PhantomReified<PhantomTypeArgument>>(
+    typeArgs: [T1, T2],
+    fields: Record<string, any>
+  ): ContainerVariant<ToTypeArgument<T1>, ToPhantomTypeArgument<T2>> {
+    const r = Container.reified(typeArgs[0], typeArgs[1])
+
+    if (!fields.$kind || !isContainerVariantName(fields.$kind)) {
+      throw new Error(`Invalid container variant: ${fields.$kind}`)
+    }
+    switch (fields.$kind) {
+      case 'Empty':
+        return r.new('Empty', fields.Empty)
+      case 'WithTable':
+        return r.new('WithTable', {
+          table: decodeFromFields(Table.reified(phantom(typeArgs[0]), typeArgs[1]), fields.WithTable.table),
+        })
+    }
+  }
+
+  static fromFieldsWithTypes<T1 extends Reified<TypeArgument, any>, T2 extends PhantomReified<PhantomTypeArgument>>(
+    typeArgs: [T1, T2],
+    item: FieldsWithTypes
+  ): ContainerVariant<ToTypeArgument<T1>, ToPhantomTypeArgument<T2>> {
+    if (!isContainer(item.type)) {
+      throw new Error('not a Container type')
+    }
+    assertFieldsWithTypesArgsMatch(item, typeArgs)
+
+    const variant = (item as FieldsWithTypes & { variant: ContainerVariantName }).variant
+    if (!variant || !isContainerVariantName(variant)) {
+      throw new Error(`Invalid container variant: ${variant}`)
+    }
+
+    const r = Container.reified(typeArgs[0], typeArgs[1])
+    switch (variant) {
+      case 'Empty':
+        return r.new('Empty', {})
+      case 'WithTable':
+        return r.new('WithTable', {
+          table: decodeFromFieldsWithTypes(Table.reified(phantom(typeArgs[0]), typeArgs[1]), item.fields.table),
+        })
+    }
+  }
+
+  static fromBcs<T1 extends Reified<TypeArgument, any>, T2 extends PhantomReified<PhantomTypeArgument>>(
+    typeArgs: [T1, T2],
+    data: Uint8Array
+  ): ContainerVariant<ToTypeArgument<T1>, ToPhantomTypeArgument<T2>> {
+    const parsed = Container.bcs(toBcs(typeArgs[0])).parse(data)
+    return Container.fromFields(typeArgs, parsed)
+  }
+
+  static fromJSONField<T1 extends Reified<TypeArgument, any>, T2 extends PhantomReified<PhantomTypeArgument>>(
+    typeArgs: [T1, T2],
+    field: any
+  ): ContainerVariant<ToTypeArgument<T1>, ToPhantomTypeArgument<T2>> {
+    const r = Container.reified(typeArgs[0], typeArgs[1])
+
+    const kind = field.$kind
+    if (!kind || !isContainerVariantName(kind)) {
+      throw new Error(`Invalid container variant: ${kind}`)
+    }
+    switch (kind) {
+      case 'Empty':
+        return r.new('Empty', {})
+      case 'WithTable':
+        return r.new('WithTable', {
+          table: decodeFromJSONField(Table.reified(phantom(typeArgs[0]), typeArgs[1]), field.table),
+        })
+    }
+  }
+
+  static fromJSON<T1 extends Reified<TypeArgument, any>, T2 extends PhantomReified<PhantomTypeArgument>>(
+    typeArgs: [T1, T2],
+    json: Record<string, any>
+  ): ContainerVariant<ToTypeArgument<T1>, ToPhantomTypeArgument<T2>> {
+    if (json.$typeName !== Container.$typeName) {
+      throw new Error(`not a Container json object: expected '${Container.$typeName}' but got '${json.$typeName}'`)
+    }
+    assertReifiedTypeArgsMatch(
+      composeSuiType(Container.$typeName, ...typeArgs.map(extractType)),
+      json.$typeArgs,
+      typeArgs
+    )
+
+    return Container.fromJSONField(typeArgs, json)
+  }
+}
+
+export type ContainerEmptyFields = Record<string, never>
+
+export class ContainerEmpty<T1 extends TypeArgument, T2 extends PhantomTypeArgument>
+  implements EnumVariantClass
+{
+  __EnumVariantClass = true as const
+
+  static readonly $typeName = Container.$typeName
+  static readonly $numTypeParams = Container.$numTypeParams
+  static readonly $isPhantom = Container.$isPhantom
+  static readonly $variantName = 'Empty'
+
+  readonly $typeName = ContainerEmpty.$typeName
+  readonly $fullTypeName: `${typeof Container.$typeName}<${ToTypeStr<T1>}, ${PhantomToTypeStr<T2>}>`
+  readonly $typeArgs: [ToTypeStr<T1>, PhantomToTypeStr<T2>]
+  readonly $isPhantom = Container.$isPhantom
+  readonly $variantName = ContainerEmpty.$variantName
+
+  constructor(typeArgs: [ToTypeStr<T1>, PhantomToTypeStr<T2>], fields: ContainerEmptyFields) {
+    this.$fullTypeName = composeSuiType(
+      Container.$typeName,
+      ...typeArgs
+    ) as `${typeof Container.$typeName}<${ToTypeStr<T1>}, ${PhantomToTypeStr<T2>}>`
+    this.$typeArgs = typeArgs
+  }
+
+  toJSONField() {
+    return { $kind: this.$variantName }
+  }
+
+  toJSON() {
+    return {
+      $typeName: this.$typeName,
+      $typeArgs: this.$typeArgs,
+      $variantName: this.$variantName,
+      ...this.toJSONField(),
+    }
+  }
+}
+
+export interface ContainerWithTableFields<T1 extends TypeArgument, T2 extends PhantomTypeArgument> {
+  table: ToField<Table<ToPhantom<T1>, T2>>
+}
+
+export class ContainerWithTable<T1 extends TypeArgument, T2 extends PhantomTypeArgument>
+  implements EnumVariantClass
+{
+  __EnumVariantClass = true as const
+
+  static readonly $typeName = Container.$typeName
+  static readonly $numTypeParams = Container.$numTypeParams
+  static readonly $isPhantom = Container.$isPhantom
+  static readonly $variantName = 'WithTable'
+
+  readonly $typeName = ContainerWithTable.$typeName
+  readonly $fullTypeName: `${typeof Container.$typeName}<${ToTypeStr<T1>}, ${PhantomToTypeStr<T2>}>`
+  readonly $typeArgs: [ToTypeStr<T1>, PhantomToTypeStr<T2>]
+  readonly $isPhantom = Container.$isPhantom
+  readonly $variantName = ContainerWithTable.$variantName
+
+  readonly table: ToField<Table<ToPhantom<T1>, T2>>
+
+  constructor(typeArgs: [ToTypeStr<T1>, PhantomToTypeStr<T2>], fields: ContainerWithTableFields<T1, T2>) {
+    this.$fullTypeName = composeSuiType(
+      Container.$typeName,
+      ...typeArgs
+    ) as `${typeof Container.$typeName}<${ToTypeStr<T1>}, ${PhantomToTypeStr<T2>}>`
+    this.$typeArgs = typeArgs
+
+    this.table = fields.table
+  }
+
+  toJSONField() {
+    return {
+      $kind: this.$variantName,
+      table: fieldToJSON<Table<ToPhantom<T1>, T2>>(`${Table.$typeName}<${this.$typeArgs[0]}, ${this.$typeArgs[1]}>`, this.table),
+    }
+  }
+
+  toJSON() {
+    return {
+      $typeName: this.$typeName,
+      $typeArgs: this.$typeArgs,
+      $variantName: this.$variantName,
+      ...this.toJSONField(),
+    }
+  }
+}

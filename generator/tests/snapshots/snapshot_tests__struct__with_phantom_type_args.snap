@@ -1,0 +1,171 @@
+---
+source: generator/tests/snapshot_tests.rs
+expression: output
+---
+/* ============================== ACL =============================== */
+
+export function isACL(type: string): boolean {
+  type = compressSuiType(type)
+  return type === `${PKG_V1}::acl::ACL`
+}
+
+export interface ACLFields {
+  permissions: ToField<LinkedTable<'address', 'u128'>>
+}
+
+export type ACLReified = Reified<ACL, ACLFields>
+
+export class ACL implements StructClass {
+  __StructClass = true as const
+
+  static readonly $typeName = `${PKG_V1}::acl::ACL`
+  static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
+
+  readonly $typeName = ACL.$typeName
+  readonly $fullTypeName: `${typeof PKG_V1}::acl::ACL`
+  readonly $typeArgs: []
+  readonly $isPhantom = ACL.$isPhantom
+
+  readonly permissions: ToField<LinkedTable<'address', 'u128'>>
+
+  private constructor(typeArgs: [], fields: ACLFields) {
+    this.$fullTypeName = composeSuiType(ACL.$typeName, ...typeArgs) as `${typeof PKG_V1}::acl::ACL`
+    this.$typeArgs = typeArgs
+
+    this.permissions = fields.permissions
+  }
+
+  static reified(): ACLReified {
+    const reifiedBcs = ACL.bcs
+    return {
+      typeName: ACL.$typeName,
+      fullTypeName: composeSuiType(ACL.$typeName, ...[]) as `${typeof PKG_V1}::acl::ACL`,
+      typeArgs: [] as [],
+      isPhantom: ACL.$isPhantom,
+      reifiedTypeArgs: [],
+      fromFields: (fields: Record<string, any>) => ACL.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => ACL.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => ACL.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
+      fromJSONField: (field: any) => ACL.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => ACL.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => ACL.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => ACL.fromSuiObjectData(content),
+      fetch: async (client: SuiClient, id: string) => ACL.fetch(client, id),
+      new: (fields: ACLFields) => {
+        return new ACL([], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return ACL.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<ACL>> {
+    return phantom(ACL.reified())
+  }
+
+  static get p() {
+    return ACL.phantom()
+  }
+
+  private static instantiateBcs() {
+    return bcs.struct('ACL', {
+      permissions: LinkedTable.bcs(bcs.bytes(32).transform({ input: (val: string) => fromHEX(val), output: (val: Uint8Array) => toHEX(val) })),
+    })
+  }
+
+  private static cachedBcs: ReturnType<typeof ACL.instantiateBcs> | null = null
+
+  static get bcs(): ReturnType<typeof ACL.instantiateBcs> {
+    if (!ACL.cachedBcs) {
+      ACL.cachedBcs = ACL.instantiateBcs()
+    }
+    return ACL.cachedBcs
+  }
+
+  static fromFields(fields: Record<string, any>): ACL {
+    return ACL.reified().new({
+      permissions: decodeFromFields(LinkedTable.reified('address', phantom('u128')), fields.permissions),
+    })
+  }
+
+  static fromFieldsWithTypes(item: FieldsWithTypes): ACL {
+    if (!isACL(item.type)) {
+      throw new Error('not a ACL type')
+    }
+
+    return ACL.reified().new({
+      permissions: decodeFromFieldsWithTypes(LinkedTable.reified('address', phantom('u128')), item.fields.permissions),
+    })
+  }
+
+  static fromBcs(data: Uint8Array): ACL {
+    return ACL.fromFields(ACL.bcs.parse(data))
+  }
+
+  toJSONField() {
+    return {
+      permissions: this.permissions.toJSONField(),
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): ACL {
+    return ACL.reified().new({
+      permissions: decodeFromJSONField(LinkedTable.reified('address', phantom('u128')), field.permissions),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): ACL {
+    if (json.$typeName !== ACL.$typeName) {
+      throw new Error(`not a ACL json object: expected '${ACL.$typeName}' but got '${json.$typeName}'`)
+    }
+
+    return ACL.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): ACL {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isACL(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a ACL object`)
+    }
+    return ACL.fromFieldsWithTypes(content)
+  }
+
+  static fromSuiObjectData(data: SuiObjectData): ACL {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isACL(data.bcs.type)) {
+        throw new Error(`object at is not a ACL object`)
+      }
+
+      return ACL.fromBcs(fromB64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return ACL.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<ACL> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching ACL object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isACL(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a ACL object`)
+    }
+
+    return ACL.fromSuiObjectData(res.data)
+  }
+}
