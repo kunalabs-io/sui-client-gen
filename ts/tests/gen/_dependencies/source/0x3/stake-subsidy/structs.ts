@@ -16,7 +16,7 @@ import { Balance } from '../../../../sui/balance/structs'
 import { SUI } from '../../../../sui/sui/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== StakeSubsidy =============================== */
 
@@ -223,7 +223,7 @@ export class StakeSubsidy implements StructClass {
         throw new Error(`object at is not a StakeSubsidy object`)
       }
 
-      return StakeSubsidy.fromBcs(fromB64(data.bcs.bcsBytes))
+      return StakeSubsidy.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return StakeSubsidy.fromSuiParsedData(data.content)

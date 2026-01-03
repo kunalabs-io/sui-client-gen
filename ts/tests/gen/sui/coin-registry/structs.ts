@@ -34,7 +34,7 @@ import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== CoinRegistry =============================== */
 
@@ -189,7 +189,7 @@ export class CoinRegistry implements StructClass {
         throw new Error(`object at is not a CoinRegistry object`)
       }
 
-      return CoinRegistry.fromBcs(fromB64(data.bcs.bcsBytes))
+      return CoinRegistry.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return CoinRegistry.fromSuiParsedData(data.content)
@@ -370,7 +370,7 @@ export class ExtraField implements StructClass {
         throw new Error(`object at is not a ExtraField object`)
       }
 
-      return ExtraField.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ExtraField.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ExtraField.fromSuiParsedData(data.content)
@@ -596,7 +596,7 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
         }
       }
 
-      return CurrencyKey.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return CurrencyKey.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return CurrencyKey.fromSuiParsedData(typeArg, data.content)
@@ -776,7 +776,7 @@ export class LegacyMetadataKey implements StructClass {
         throw new Error(`object at is not a LegacyMetadataKey object`)
       }
 
-      return LegacyMetadataKey.fromBcs(fromB64(data.bcs.bcsBytes))
+      return LegacyMetadataKey.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return LegacyMetadataKey.fromSuiParsedData(data.content)
@@ -1002,7 +1002,7 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
         }
       }
 
-      return MetadataCap.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return MetadataCap.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return MetadataCap.fromSuiParsedData(typeArg, data.content)
@@ -1229,7 +1229,7 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
         }
       }
 
-      return Borrow.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return Borrow.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Borrow.fromSuiParsedData(typeArg, data.content)
@@ -1560,7 +1560,7 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
         }
       }
 
-      return Currency.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return Currency.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Currency.fromSuiParsedData(typeArg, data.content)
@@ -1809,7 +1809,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
         }
       }
 
-      return CurrencyInitializer.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return CurrencyInitializer.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return CurrencyInitializer.fromSuiParsedData(typeArg, data.content)

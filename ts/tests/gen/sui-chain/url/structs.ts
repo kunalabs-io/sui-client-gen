@@ -13,7 +13,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framewo
 import { String } from '../../move-stdlib-chain/ascii/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Url =============================== */
 
@@ -162,7 +162,7 @@ export class Url implements StructClass {
         throw new Error(`object at is not a Url object`)
       }
 
-      return Url.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Url.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Url.fromSuiParsedData(data.content)

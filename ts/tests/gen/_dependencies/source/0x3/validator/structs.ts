@@ -21,7 +21,7 @@ import { Url } from '../../../../sui/url/structs'
 import { StakingPool } from '../staking-pool/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== ValidatorMetadata =============================== */
 
@@ -165,8 +165,8 @@ export class ValidatorMetadata implements StructClass {
   private static instantiateBcs() {
     return bcs.struct('ValidatorMetadata', {
       sui_address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       protocol_pubkey_bytes: bcs.vector(bcs.u8()),
       network_pubkey_bytes: bcs.vector(bcs.u8()),
@@ -446,7 +446,7 @@ export class ValidatorMetadata implements StructClass {
         throw new Error(`object at is not a ValidatorMetadata object`)
       }
 
-      return ValidatorMetadata.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ValidatorMetadata.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ValidatorMetadata.fromSuiParsedData(data.content)
@@ -694,7 +694,7 @@ export class Validator implements StructClass {
         throw new Error(`object at is not a Validator object`)
       }
 
-      return Validator.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Validator.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Validator.fromSuiParsedData(data.content)
@@ -809,12 +809,12 @@ export class StakingRequestEvent implements StructClass {
     return bcs.struct('StakingRequestEvent', {
       pool_id: ID.bcs,
       validator_address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       staker_address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       epoch: bcs.u64(),
       amount: bcs.u64(),
@@ -908,7 +908,7 @@ export class StakingRequestEvent implements StructClass {
         throw new Error(`object at is not a StakingRequestEvent object`)
       }
 
-      return StakingRequestEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return StakingRequestEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return StakingRequestEvent.fromSuiParsedData(data.content)
@@ -1035,12 +1035,12 @@ export class UnstakingRequestEvent implements StructClass {
     return bcs.struct('UnstakingRequestEvent', {
       pool_id: ID.bcs,
       validator_address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       staker_address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       stake_activation_epoch: bcs.u64(),
       unstaking_epoch: bcs.u64(),
@@ -1146,7 +1146,7 @@ export class UnstakingRequestEvent implements StructClass {
         throw new Error(`object at is not a UnstakingRequestEvent object`)
       }
 
-      return UnstakingRequestEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return UnstakingRequestEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return UnstakingRequestEvent.fromSuiParsedData(data.content)
@@ -1371,7 +1371,7 @@ export class ConvertingToFungibleStakedSuiEvent implements StructClass {
         throw new Error(`object at is not a ConvertingToFungibleStakedSuiEvent object`)
       }
 
-      return ConvertingToFungibleStakedSuiEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ConvertingToFungibleStakedSuiEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ConvertingToFungibleStakedSuiEvent.fromSuiParsedData(data.content)
@@ -1586,7 +1586,7 @@ export class RedeemingFungibleStakedSuiEvent implements StructClass {
         throw new Error(`object at is not a RedeemingFungibleStakedSuiEvent object`)
       }
 
-      return RedeemingFungibleStakedSuiEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return RedeemingFungibleStakedSuiEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return RedeemingFungibleStakedSuiEvent.fromSuiParsedData(data.content)

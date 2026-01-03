@@ -14,7 +14,7 @@ import { String } from '../../move-stdlib/string/structs'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== VerifiedID =============================== */
 
@@ -111,8 +111,8 @@ export class VerifiedID implements StructClass {
     return bcs.struct('VerifiedID', {
       id: UID.bcs,
       owner: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       key_claim_name: String.bcs,
       key_claim_value: String.bcs,
@@ -212,7 +212,7 @@ export class VerifiedID implements StructClass {
         throw new Error(`object at is not a VerifiedID object`)
       }
 
-      return VerifiedID.fromBcs(fromB64(data.bcs.bcsBytes))
+      return VerifiedID.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return VerifiedID.fromSuiParsedData(data.content)

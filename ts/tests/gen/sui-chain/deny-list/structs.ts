@@ -20,7 +20,7 @@ import { Table } from '../table/structs'
 import { VecSet } from '../vec-set/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== DenyList =============================== */
 
@@ -180,7 +180,7 @@ export class DenyList implements StructClass {
         throw new Error(`object at is not a DenyList object`)
       }
 
-      return DenyList.fromBcs(fromB64(data.bcs.bcsBytes))
+      return DenyList.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return DenyList.fromSuiParsedData(data.content)
@@ -356,7 +356,7 @@ export class ConfigWriteCap implements StructClass {
         throw new Error(`object at is not a ConfigWriteCap object`)
       }
 
-      return ConfigWriteCap.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ConfigWriteCap.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ConfigWriteCap.fromSuiParsedData(data.content)
@@ -537,7 +537,7 @@ export class ConfigKey implements StructClass {
         throw new Error(`object at is not a ConfigKey object`)
       }
 
-      return ConfigKey.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ConfigKey.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ConfigKey.fromSuiParsedData(data.content)
@@ -636,8 +636,8 @@ export class AddressKey implements StructClass {
   private static instantiateBcs() {
     return bcs.struct('AddressKey', {
       pos0: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
     })
   }
@@ -713,7 +713,7 @@ export class AddressKey implements StructClass {
         throw new Error(`object at is not a AddressKey object`)
       }
 
-      return AddressKey.fromBcs(fromB64(data.bcs.bcsBytes))
+      return AddressKey.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return AddressKey.fromSuiParsedData(data.content)
@@ -889,7 +889,7 @@ export class GlobalPauseKey implements StructClass {
         throw new Error(`object at is not a GlobalPauseKey object`)
       }
 
-      return GlobalPauseKey.fromBcs(fromB64(data.bcs.bcsBytes))
+      return GlobalPauseKey.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return GlobalPauseKey.fromSuiParsedData(data.content)
@@ -1078,7 +1078,7 @@ export class PerTypeConfigCreated implements StructClass {
         throw new Error(`object at is not a PerTypeConfigCreated object`)
       }
 
-      return PerTypeConfigCreated.fromBcs(fromB64(data.bcs.bcsBytes))
+      return PerTypeConfigCreated.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return PerTypeConfigCreated.fromSuiParsedData(data.content)
@@ -1285,7 +1285,7 @@ export class PerTypeList implements StructClass {
         throw new Error(`object at is not a PerTypeList object`)
       }
 
-      return PerTypeList.fromBcs(fromB64(data.bcs.bcsBytes))
+      return PerTypeList.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return PerTypeList.fromSuiParsedData(data.content)

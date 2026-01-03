@@ -25,7 +25,7 @@ import {
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Field =============================== */
 
@@ -273,7 +273,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
         }
       }
 
-      return Field.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+      return Field.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Field.fromSuiParsedData(typeArgs, data.content)

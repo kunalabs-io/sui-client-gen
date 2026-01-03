@@ -17,7 +17,7 @@ import { UpgradeCap } from '../../../../sui/package/structs'
 import { VecMap } from '../../../../sui/vec-map/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== BridgeTreasury =============================== */
 
@@ -214,7 +214,7 @@ export class BridgeTreasury implements StructClass {
         throw new Error(`object at is not a BridgeTreasury object`)
       }
 
-      return BridgeTreasury.fromBcs(fromB64(data.bcs.bcsBytes))
+      return BridgeTreasury.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return BridgeTreasury.fromSuiParsedData(data.content)
@@ -414,7 +414,7 @@ export class BridgeTokenMetadata implements StructClass {
         throw new Error(`object at is not a BridgeTokenMetadata object`)
       }
 
-      return BridgeTokenMetadata.fromBcs(fromB64(data.bcs.bcsBytes))
+      return BridgeTokenMetadata.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return BridgeTokenMetadata.fromSuiParsedData(data.content)
@@ -614,7 +614,7 @@ export class ForeignTokenRegistration implements StructClass {
         throw new Error(`object at is not a ForeignTokenRegistration object`)
       }
 
-      return ForeignTokenRegistration.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ForeignTokenRegistration.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ForeignTokenRegistration.fromSuiParsedData(data.content)
@@ -811,7 +811,7 @@ export class UpdateTokenPriceEvent implements StructClass {
         throw new Error(`object at is not a UpdateTokenPriceEvent object`)
       }
 
-      return UpdateTokenPriceEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return UpdateTokenPriceEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return UpdateTokenPriceEvent.fromSuiParsedData(data.content)
@@ -1019,7 +1019,7 @@ export class NewTokenEvent implements StructClass {
         throw new Error(`object at is not a NewTokenEvent object`)
       }
 
-      return NewTokenEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return NewTokenEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return NewTokenEvent.fromSuiParsedData(data.content)
@@ -1219,7 +1219,7 @@ export class TokenRegistrationEvent implements StructClass {
         throw new Error(`object at is not a TokenRegistrationEvent object`)
       }
 
-      return TokenRegistrationEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return TokenRegistrationEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return TokenRegistrationEvent.fromSuiParsedData(data.content)

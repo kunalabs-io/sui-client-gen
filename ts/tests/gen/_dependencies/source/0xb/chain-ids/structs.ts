@@ -12,7 +12,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== BridgeRoute =============================== */
 
@@ -172,7 +172,7 @@ export class BridgeRoute implements StructClass {
         throw new Error(`object at is not a BridgeRoute object`)
       }
 
-      return BridgeRoute.fromBcs(fromB64(data.bcs.bcsBytes))
+      return BridgeRoute.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return BridgeRoute.fromSuiParsedData(data.content)

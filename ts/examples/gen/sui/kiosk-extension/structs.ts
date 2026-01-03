@@ -24,7 +24,7 @@ import {
 import { Bag } from '../bag/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Extension =============================== */
 
@@ -192,7 +192,7 @@ export class Extension implements StructClass {
         throw new Error(`object at is not a Extension object`)
       }
 
-      return Extension.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Extension.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Extension.fromSuiParsedData(data.content)
@@ -418,7 +418,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
         }
       }
 
-      return ExtensionKey.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return ExtensionKey.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ExtensionKey.fromSuiParsedData(typeArg, data.content)

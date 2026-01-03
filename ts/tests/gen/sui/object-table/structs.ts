@@ -24,7 +24,7 @@ import {
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== ObjectTable =============================== */
 
@@ -268,7 +268,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
         }
       }
 
-      return ObjectTable.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+      return ObjectTable.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ObjectTable.fromSuiParsedData(typeArgs, data.content)

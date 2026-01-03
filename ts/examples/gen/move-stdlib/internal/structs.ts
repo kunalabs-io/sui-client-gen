@@ -23,7 +23,7 @@ import {
 } from '../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Permit =============================== */
 
@@ -225,7 +225,7 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
         }
       }
 
-      return Permit.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return Permit.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Permit.fromSuiParsedData(typeArg, data.content)

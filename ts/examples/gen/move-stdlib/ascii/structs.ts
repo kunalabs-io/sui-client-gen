@@ -15,7 +15,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framewo
 import { Vector } from '../../_framework/vector'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== String =============================== */
 
@@ -164,7 +164,7 @@ export class String implements StructClass {
         throw new Error(`object at is not a String object`)
       }
 
-      return String.fromBcs(fromB64(data.bcs.bcsBytes))
+      return String.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return String.fromSuiParsedData(data.content)
@@ -334,7 +334,7 @@ export class Char implements StructClass {
         throw new Error(`object at is not a Char object`)
       }
 
-      return Char.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Char.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Char.fromSuiParsedData(data.content)

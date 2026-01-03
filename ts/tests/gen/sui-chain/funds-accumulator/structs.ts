@@ -23,7 +23,7 @@ import {
 } from '../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== Withdrawal =============================== */
 
@@ -114,8 +114,8 @@ export class Withdrawal<T0 extends PhantomTypeArgument> implements StructClass {
   private static instantiateBcs() {
     return bcs.struct('Withdrawal', {
       owner: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       limit: bcs.u256(),
     })
@@ -239,7 +239,7 @@ export class Withdrawal<T0 extends PhantomTypeArgument> implements StructClass {
         }
       }
 
-      return Withdrawal.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return Withdrawal.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Withdrawal.fromSuiParsedData(typeArg, data.content)

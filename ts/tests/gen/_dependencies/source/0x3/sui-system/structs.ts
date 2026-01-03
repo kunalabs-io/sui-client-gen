@@ -13,7 +13,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_f
 import { UID } from '../../../../sui/object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== SuiSystemState =============================== */
 
@@ -176,7 +176,7 @@ export class SuiSystemState implements StructClass {
         throw new Error(`object at is not a SuiSystemState object`)
       }
 
-      return SuiSystemState.fromBcs(fromB64(data.bcs.bcsBytes))
+      return SuiSystemState.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return SuiSystemState.fromSuiParsedData(data.content)

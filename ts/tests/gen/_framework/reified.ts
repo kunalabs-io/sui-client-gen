@@ -1,5 +1,5 @@
 import { bcs, BcsType } from '@mysten/sui/bcs'
-import { fromHEX, toHEX } from '@mysten/sui/utils'
+import { fromHex, toHex } from '@mysten/sui/utils'
 import { FieldsWithTypes, compressSuiType, parseTypeName } from './util'
 import { SuiClient, SuiParsedData, SuiObjectData } from '@mysten/sui/client'
 
@@ -239,8 +239,8 @@ export type ToField<T extends TypeArgument> = T extends 'bool'
                                   : never
 
 const Address = bcs.bytes(32).transform({
-  input: (val: string) => fromHEX(val),
-  output: val => toHEX(val),
+  input: (val: string) => fromHex(val),
+  output: val => toHex(val),
 })
 
 export function toBcs<T extends Reified<TypeArgument, any>>(arg: T): BcsType<any> {

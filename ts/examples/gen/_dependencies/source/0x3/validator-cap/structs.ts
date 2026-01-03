@@ -13,7 +13,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_f
 import { UID } from '../../../../sui/object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== UnverifiedValidatorOperationCap =============================== */
 
@@ -107,8 +107,8 @@ export class UnverifiedValidatorOperationCap implements StructClass {
     return bcs.struct('UnverifiedValidatorOperationCap', {
       id: UID.bcs,
       authorizer_validator_address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
     })
   }
@@ -197,7 +197,7 @@ export class UnverifiedValidatorOperationCap implements StructClass {
         throw new Error(`object at is not a UnverifiedValidatorOperationCap object`)
       }
 
-      return UnverifiedValidatorOperationCap.fromBcs(fromB64(data.bcs.bcsBytes))
+      return UnverifiedValidatorOperationCap.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return UnverifiedValidatorOperationCap.fromSuiParsedData(data.content)
@@ -310,8 +310,8 @@ export class ValidatorOperationCap implements StructClass {
   private static instantiateBcs() {
     return bcs.struct('ValidatorOperationCap', {
       authorizer_validator_address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
     })
   }
@@ -392,7 +392,7 @@ export class ValidatorOperationCap implements StructClass {
         throw new Error(`object at is not a ValidatorOperationCap object`)
       }
 
-      return ValidatorOperationCap.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ValidatorOperationCap.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ValidatorOperationCap.fromSuiParsedData(data.content)

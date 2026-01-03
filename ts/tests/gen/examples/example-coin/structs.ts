@@ -16,7 +16,7 @@ import { UID } from '../../sui/object/structs'
 import { PKG_V1 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== EXAMPLE_COIN =============================== */
 
@@ -171,7 +171,7 @@ export class EXAMPLE_COIN implements StructClass {
         throw new Error(`object at is not a EXAMPLE_COIN object`)
       }
 
-      return EXAMPLE_COIN.fromBcs(fromB64(data.bcs.bcsBytes))
+      return EXAMPLE_COIN.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return EXAMPLE_COIN.fromSuiParsedData(data.content)
@@ -358,7 +358,7 @@ export class Faucet implements StructClass {
         throw new Error(`object at is not a Faucet object`)
       }
 
-      return Faucet.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Faucet.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Faucet.fromSuiParsedData(data.content)

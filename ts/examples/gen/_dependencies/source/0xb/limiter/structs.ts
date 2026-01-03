@@ -17,7 +17,7 @@ import { VecMap } from '../../../../sui/vec-map/structs'
 import { BridgeRoute } from '../chain-ids/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== TransferLimiter =============================== */
 
@@ -198,7 +198,7 @@ export class TransferLimiter implements StructClass {
         throw new Error(`object at is not a TransferLimiter object`)
       }
 
-      return TransferLimiter.fromBcs(fromB64(data.bcs.bcsBytes))
+      return TransferLimiter.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return TransferLimiter.fromSuiParsedData(data.content)
@@ -398,7 +398,7 @@ export class TransferRecord implements StructClass {
         throw new Error(`object at is not a TransferRecord object`)
       }
 
-      return TransferRecord.fromBcs(fromB64(data.bcs.bcsBytes))
+      return TransferRecord.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return TransferRecord.fromSuiParsedData(data.content)
@@ -598,7 +598,7 @@ export class UpdateRouteLimitEvent implements StructClass {
         throw new Error(`object at is not a UpdateRouteLimitEvent object`)
       }
 
-      return UpdateRouteLimitEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return UpdateRouteLimitEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return UpdateRouteLimitEvent.fromSuiParsedData(data.content)

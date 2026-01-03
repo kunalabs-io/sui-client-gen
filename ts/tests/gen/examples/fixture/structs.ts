@@ -39,7 +39,7 @@ import { PKG_V1 } from '../index'
 import { StructFromOtherModule } from '../other-module/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Dummy =============================== */
 
@@ -191,7 +191,7 @@ export class Dummy implements StructClass {
         throw new Error(`object at is not a Dummy object`)
       }
 
-      return Dummy.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Dummy.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Dummy.fromSuiParsedData(data.content)
@@ -427,7 +427,7 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
         }
       }
 
-      return WithGenericField.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return WithGenericField.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return WithGenericField.fromSuiParsedData(typeArg, data.content)
@@ -604,7 +604,7 @@ export class Bar implements StructClass {
         throw new Error(`object at is not a Bar object`)
       }
 
-      return Bar.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Bar.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Bar.fromSuiParsedData(data.content)
@@ -858,7 +858,7 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
         }
       }
 
-      return WithTwoGenerics.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+      return WithTwoGenerics.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return WithTwoGenerics.fromSuiParsedData(typeArgs, data.content)
@@ -1279,7 +1279,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
         }
       }
 
-      return Foo.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return Foo.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Foo.fromSuiParsedData(typeArg, data.content)
@@ -1661,7 +1661,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
         }
       }
 
-      return WithSpecialTypes.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+      return WithSpecialTypes.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return WithSpecialTypes.fromSuiParsedData(typeArgs, data.content)
@@ -2321,7 +2321,7 @@ export class WithSpecialTypesAsGenerics<
         }
       }
 
-      return WithSpecialTypesAsGenerics.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+      return WithSpecialTypesAsGenerics.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return WithSpecialTypesAsGenerics.fromSuiParsedData(typeArgs, data.content)
@@ -2649,7 +2649,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
         }
       }
 
-      return WithSpecialTypesInVectors.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return WithSpecialTypesInVectors.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return WithSpecialTypesInVectors.fromSuiParsedData(typeArg, data.content)

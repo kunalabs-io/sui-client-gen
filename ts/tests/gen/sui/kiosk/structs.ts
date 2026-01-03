@@ -27,7 +27,7 @@ import { ID, UID } from '../object/structs'
 import { SUI } from '../sui/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== Kiosk =============================== */
 
@@ -116,8 +116,8 @@ export class Kiosk implements StructClass {
       id: UID.bcs,
       profits: Balance.bcs,
       owner: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       item_count: bcs.u32(),
       allow_extensions: bcs.bool(),
@@ -214,7 +214,7 @@ export class Kiosk implements StructClass {
         throw new Error(`object at is not a Kiosk object`)
       }
 
-      return Kiosk.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Kiosk.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Kiosk.fromSuiParsedData(data.content)
@@ -395,7 +395,7 @@ export class KioskOwnerCap implements StructClass {
         throw new Error(`object at is not a KioskOwnerCap object`)
       }
 
-      return KioskOwnerCap.fromBcs(fromB64(data.bcs.bcsBytes))
+      return KioskOwnerCap.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return KioskOwnerCap.fromSuiParsedData(data.content)
@@ -645,7 +645,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
         }
       }
 
-      return PurchaseCap.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return PurchaseCap.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return PurchaseCap.fromSuiParsedData(typeArg, data.content)
@@ -827,7 +827,7 @@ export class Borrow implements StructClass {
         throw new Error(`object at is not a Borrow object`)
       }
 
-      return Borrow.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Borrow.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Borrow.fromSuiParsedData(data.content)
@@ -997,7 +997,7 @@ export class Item implements StructClass {
         throw new Error(`object at is not a Item object`)
       }
 
-      return Item.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Item.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Item.fromSuiParsedData(data.content)
@@ -1175,7 +1175,7 @@ export class Listing implements StructClass {
         throw new Error(`object at is not a Listing object`)
       }
 
-      return Listing.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Listing.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Listing.fromSuiParsedData(data.content)
@@ -1345,7 +1345,7 @@ export class Lock implements StructClass {
         throw new Error(`object at is not a Lock object`)
       }
 
-      return Lock.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Lock.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Lock.fromSuiParsedData(data.content)
@@ -1587,7 +1587,7 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
         }
       }
 
-      return ItemListed.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return ItemListed.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ItemListed.fromSuiParsedData(typeArg, data.content)
@@ -1833,7 +1833,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
         }
       }
 
-      return ItemPurchased.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return ItemPurchased.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ItemPurchased.fromSuiParsedData(typeArg, data.content)
@@ -2071,7 +2071,7 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
         }
       }
 
-      return ItemDelisted.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return ItemDelisted.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ItemDelisted.fromSuiParsedData(typeArg, data.content)

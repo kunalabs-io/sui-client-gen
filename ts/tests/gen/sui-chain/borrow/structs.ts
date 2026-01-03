@@ -26,7 +26,7 @@ import { Option } from '../../move-stdlib-chain/option/structs'
 import { ID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== Referent =============================== */
 
@@ -115,8 +115,8 @@ export class Referent<T0 extends TypeArgument> implements StructClass {
     return <T0 extends BcsType<any>>(T0: T0) =>
       bcs.struct(`Referent<${T0.name}>`, {
         id: bcs.bytes(32).transform({
-          input: (val: string) => fromHEX(val),
-          output: (val: Uint8Array) => toHEX(val),
+          input: (val: string) => fromHex(val),
+          output: (val: Uint8Array) => toHex(val),
         }),
         value: Option.bcs(T0),
       })
@@ -241,7 +241,7 @@ export class Referent<T0 extends TypeArgument> implements StructClass {
         }
       }
 
-      return Referent.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return Referent.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Referent.fromSuiParsedData(typeArg, data.content)
@@ -344,8 +344,8 @@ export class Borrow implements StructClass {
   private static instantiateBcs() {
     return bcs.struct('Borrow', {
       ref: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       obj: ID.bcs,
     })
@@ -426,7 +426,7 @@ export class Borrow implements StructClass {
         throw new Error(`object at is not a Borrow object`)
       }
 
-      return Borrow.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Borrow.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Borrow.fromSuiParsedData(data.content)

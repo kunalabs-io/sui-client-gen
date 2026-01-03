@@ -24,7 +24,7 @@ import {
 import { Bag } from '../bag/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== OwnerKey =============================== */
 
@@ -105,8 +105,8 @@ export class OwnerKey implements StructClass {
   private static instantiateBcs() {
     return bcs.struct('OwnerKey', {
       owner: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
     })
   }
@@ -182,7 +182,7 @@ export class OwnerKey implements StructClass {
         throw new Error(`object at is not a OwnerKey object`)
       }
 
-      return OwnerKey.fromBcs(fromB64(data.bcs.bcsBytes))
+      return OwnerKey.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return OwnerKey.fromSuiParsedData(data.content)
@@ -285,8 +285,8 @@ export class Owner implements StructClass {
     return bcs.struct('Owner', {
       balances: Bag.bcs,
       owner: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
     })
   }
@@ -366,7 +366,7 @@ export class Owner implements StructClass {
         throw new Error(`object at is not a Owner object`)
       }
 
-      return Owner.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Owner.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Owner.fromSuiParsedData(data.content)
@@ -592,7 +592,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
         }
       }
 
-      return MetadataKey.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return MetadataKey.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return MetadataKey.fromSuiParsedData(typeArg, data.content)
@@ -819,7 +819,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
         }
       }
 
-      return Metadata.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return Metadata.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Metadata.fromSuiParsedData(typeArg, data.content)

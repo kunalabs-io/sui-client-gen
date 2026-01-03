@@ -12,7 +12,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== UQ64_64 =============================== */
 
@@ -161,7 +161,7 @@ export class UQ64_64 implements StructClass {
         throw new Error(`object at is not a UQ64_64 object`)
       }
 
-      return UQ64_64.fromBcs(fromB64(data.bcs.bcsBytes))
+      return UQ64_64.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return UQ64_64.fromSuiParsedData(data.content)
