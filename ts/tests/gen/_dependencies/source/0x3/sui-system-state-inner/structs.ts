@@ -21,7 +21,7 @@ import { StorageFund } from '../storage-fund/structs'
 import { ValidatorSet } from '../validator-set/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== ExecutionTimeObservationChunkKey =============================== */
 
@@ -194,7 +194,7 @@ export class ExecutionTimeObservationChunkKey implements StructClass {
         throw new Error(`object at is not a ExecutionTimeObservationChunkKey object`)
       }
 
-      return ExecutionTimeObservationChunkKey.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ExecutionTimeObservationChunkKey.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ExecutionTimeObservationChunkKey.fromSuiParsedData(data.content)
@@ -455,7 +455,7 @@ export class SystemParameters implements StructClass {
         throw new Error(`object at is not a SystemParameters object`)
       }
 
-      return SystemParameters.fromBcs(fromB64(data.bcs.bcsBytes))
+      return SystemParameters.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return SystemParameters.fromSuiParsedData(data.content)
@@ -719,7 +719,7 @@ export class SystemParametersV2 implements StructClass {
         throw new Error(`object at is not a SystemParametersV2 object`)
       }
 
-      return SystemParametersV2.fromBcs(fromB64(data.bcs.bcsBytes))
+      return SystemParametersV2.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return SystemParametersV2.fromSuiParsedData(data.content)
@@ -874,13 +874,13 @@ export class SuiSystemStateInner implements StructClass {
       reference_gas_price: bcs.u64(),
       validator_report_records: VecMap.bcs(
         bcs.bytes(32).transform({
-          input: (val: string) => fromHEX(val),
-          output: (val: Uint8Array) => toHEX(val),
+          input: (val: string) => fromHex(val),
+          output: (val: Uint8Array) => toHex(val),
         }),
         VecSet.bcs(
           bcs.bytes(32).transform({
-            input: (val: string) => fromHEX(val),
-            output: (val: Uint8Array) => toHEX(val),
+            input: (val: string) => fromHex(val),
+            output: (val: Uint8Array) => toHex(val),
           })
         )
       ),
@@ -1065,7 +1065,7 @@ export class SuiSystemStateInner implements StructClass {
         throw new Error(`object at is not a SuiSystemStateInner object`)
       }
 
-      return SuiSystemStateInner.fromBcs(fromB64(data.bcs.bcsBytes))
+      return SuiSystemStateInner.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return SuiSystemStateInner.fromSuiParsedData(data.content)
@@ -1226,13 +1226,13 @@ export class SuiSystemStateInnerV2 implements StructClass {
       reference_gas_price: bcs.u64(),
       validator_report_records: VecMap.bcs(
         bcs.bytes(32).transform({
-          input: (val: string) => fromHEX(val),
-          output: (val: Uint8Array) => toHEX(val),
+          input: (val: string) => fromHex(val),
+          output: (val: Uint8Array) => toHex(val),
         }),
         VecSet.bcs(
           bcs.bytes(32).transform({
-            input: (val: string) => fromHEX(val),
-            output: (val: Uint8Array) => toHEX(val),
+            input: (val: string) => fromHex(val),
+            output: (val: Uint8Array) => toHex(val),
           })
         )
       ),
@@ -1419,7 +1419,7 @@ export class SuiSystemStateInnerV2 implements StructClass {
         throw new Error(`object at is not a SuiSystemStateInnerV2 object`)
       }
 
-      return SuiSystemStateInnerV2.fromBcs(fromB64(data.bcs.bcsBytes))
+      return SuiSystemStateInnerV2.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return SuiSystemStateInnerV2.fromSuiParsedData(data.content)
@@ -1697,7 +1697,7 @@ export class SystemEpochInfoEvent implements StructClass {
         throw new Error(`object at is not a SystemEpochInfoEvent object`)
       }
 
-      return SystemEpochInfoEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return SystemEpochInfoEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return SystemEpochInfoEvent.fromSuiParsedData(data.content)

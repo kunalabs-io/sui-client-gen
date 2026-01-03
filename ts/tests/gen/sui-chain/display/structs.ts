@@ -26,7 +26,7 @@ import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Display =============================== */
 
@@ -247,7 +247,7 @@ export class Display<T0 extends PhantomTypeArgument> implements StructClass {
         }
       }
 
-      return Display.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return Display.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Display.fromSuiParsedData(typeArg, data.content)
@@ -477,7 +477,7 @@ export class DisplayCreated<T0 extends PhantomTypeArgument> implements StructCla
         }
       }
 
-      return DisplayCreated.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return DisplayCreated.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return DisplayCreated.fromSuiParsedData(typeArg, data.content)
@@ -726,7 +726,7 @@ export class VersionUpdated<T0 extends PhantomTypeArgument> implements StructCla
         }
       }
 
-      return VersionUpdated.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return VersionUpdated.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return VersionUpdated.fromSuiParsedData(typeArg, data.content)

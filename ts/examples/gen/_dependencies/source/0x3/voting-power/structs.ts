@@ -12,7 +12,7 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== VotingPowerInfo =============================== */
 
@@ -175,7 +175,7 @@ export class VotingPowerInfo implements StructClass {
         throw new Error(`object at is not a VotingPowerInfo object`)
       }
 
-      return VotingPowerInfo.fromBcs(fromB64(data.bcs.bcsBytes))
+      return VotingPowerInfo.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return VotingPowerInfo.fromSuiParsedData(data.content)
@@ -367,7 +367,7 @@ export class VotingPowerInfoV2 implements StructClass {
         throw new Error(`object at is not a VotingPowerInfoV2 object`)
       }
 
-      return VotingPowerInfoV2.fromBcs(fromB64(data.bcs.bcsBytes))
+      return VotingPowerInfoV2.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return VotingPowerInfoV2.fromSuiParsedData(data.content)

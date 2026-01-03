@@ -26,7 +26,7 @@ import {
 import { Vector } from '../../_framework/vector'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== VecMap =============================== */
 
@@ -249,7 +249,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
         }
       }
 
-      return VecMap.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+      return VecMap.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return VecMap.fromSuiParsedData(typeArgs, data.content)
@@ -493,7 +493,7 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
         }
       }
 
-      return Entry.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+      return Entry.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Entry.fromSuiParsedData(typeArgs, data.content)

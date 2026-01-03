@@ -15,7 +15,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framewo
 import { Vector } from '../../_framework/vector'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== EventStreamHead =============================== */
 
@@ -186,7 +186,7 @@ export class EventStreamHead implements StructClass {
         throw new Error(`object at is not a EventStreamHead object`)
       }
 
-      return EventStreamHead.fromBcs(fromB64(data.bcs.bcsBytes))
+      return EventStreamHead.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return EventStreamHead.fromSuiParsedData(data.content)

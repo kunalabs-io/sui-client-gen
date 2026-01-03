@@ -26,7 +26,7 @@ import {
 import { ID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Claimed =============================== */
 
@@ -178,7 +178,7 @@ export class Claimed implements StructClass {
         throw new Error(`object at is not a Claimed object`)
       }
 
-      return Claimed.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Claimed.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Claimed.fromSuiParsedData(data.content)
@@ -409,7 +409,7 @@ export class DerivedObjectKey<T0 extends TypeArgument> implements StructClass {
         }
       }
 
-      return DerivedObjectKey.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return DerivedObjectKey.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return DerivedObjectKey.fromSuiParsedData(typeArg, data.content)

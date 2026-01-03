@@ -24,7 +24,7 @@ import {
 } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Wrapper =============================== */
 
@@ -228,7 +228,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
         }
       }
 
-      return Wrapper.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return Wrapper.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Wrapper.fromSuiParsedData(typeArg, data.content)

@@ -16,7 +16,7 @@ import { Vector } from '../../../../_framework/vector'
 import { VecMap } from '../../../../sui/vec-map/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== BlocklistValidatorEvent =============================== */
 
@@ -187,7 +187,7 @@ export class BlocklistValidatorEvent implements StructClass {
         throw new Error(`object at is not a BlocklistValidatorEvent object`)
       }
 
-      return BlocklistValidatorEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return BlocklistValidatorEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return BlocklistValidatorEvent.fromSuiParsedData(data.content)
@@ -299,8 +299,8 @@ export class BridgeCommittee implements StructClass {
       members: VecMap.bcs(bcs.vector(bcs.u8()), CommitteeMember.bcs),
       member_registrations: VecMap.bcs(
         bcs.bytes(32).transform({
-          input: (val: string) => fromHEX(val),
-          output: (val: Uint8Array) => toHEX(val),
+          input: (val: string) => fromHex(val),
+          output: (val: Uint8Array) => toHex(val),
         }),
         CommitteeMemberRegistration.bcs
       ),
@@ -408,7 +408,7 @@ export class BridgeCommittee implements StructClass {
         throw new Error(`object at is not a BridgeCommittee object`)
       }
 
-      return BridgeCommittee.fromBcs(fromB64(data.bcs.bcsBytes))
+      return BridgeCommittee.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return BridgeCommittee.fromSuiParsedData(data.content)
@@ -609,7 +609,7 @@ export class CommitteeUpdateEvent implements StructClass {
         throw new Error(`object at is not a CommitteeUpdateEvent object`)
       }
 
-      return CommitteeUpdateEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return CommitteeUpdateEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return CommitteeUpdateEvent.fromSuiParsedData(data.content)
@@ -804,7 +804,7 @@ export class CommitteeMemberUrlUpdateEvent implements StructClass {
         throw new Error(`object at is not a CommitteeMemberUrlUpdateEvent object`)
       }
 
-      return CommitteeMemberUrlUpdateEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return CommitteeMemberUrlUpdateEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return CommitteeMemberUrlUpdateEvent.fromSuiParsedData(data.content)
@@ -923,8 +923,8 @@ export class CommitteeMember implements StructClass {
   private static instantiateBcs() {
     return bcs.struct('CommitteeMember', {
       sui_address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       bridge_pubkey_bytes: bcs.vector(bcs.u8()),
       voting_power: bcs.u64(),
@@ -1020,7 +1020,7 @@ export class CommitteeMember implements StructClass {
         throw new Error(`object at is not a CommitteeMember object`)
       }
 
-      return CommitteeMember.fromBcs(fromB64(data.bcs.bcsBytes))
+      return CommitteeMember.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return CommitteeMember.fromSuiParsedData(data.content)
@@ -1134,8 +1134,8 @@ export class CommitteeMemberRegistration implements StructClass {
   private static instantiateBcs() {
     return bcs.struct('CommitteeMemberRegistration', {
       sui_address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       bridge_pubkey_bytes: bcs.vector(bcs.u8()),
       http_rest_url: bcs.vector(bcs.u8()),
@@ -1224,7 +1224,7 @@ export class CommitteeMemberRegistration implements StructClass {
         throw new Error(`object at is not a CommitteeMemberRegistration object`)
       }
 
-      return CommitteeMemberRegistration.fromBcs(fromB64(data.bcs.bcsBytes))
+      return CommitteeMemberRegistration.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return CommitteeMemberRegistration.fromSuiParsedData(data.content)

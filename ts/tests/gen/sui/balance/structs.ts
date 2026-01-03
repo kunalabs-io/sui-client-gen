@@ -23,7 +23,7 @@ import {
 } from '../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Supply =============================== */
 
@@ -225,7 +225,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
         }
       }
 
-      return Supply.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return Supply.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Supply.fromSuiParsedData(typeArg, data.content)
@@ -452,7 +452,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
         }
       }
 
-      return Balance.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return Balance.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Balance.fromSuiParsedData(typeArg, data.content)

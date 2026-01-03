@@ -20,7 +20,7 @@ import { ID, UID } from '../../sui-chain/object/structs'
 import { PKG_V1 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== ExampleStruct =============================== */
 
@@ -175,7 +175,7 @@ export class ExampleStruct implements StructClass {
         throw new Error(`object at is not a ExampleStruct object`)
       }
 
-      return ExampleStruct.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ExampleStruct.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ExampleStruct.fromSuiParsedData(data.content)
@@ -307,8 +307,8 @@ export class SpecialTypesStruct implements StructClass {
       vector_of_objects: bcs.vector(ExampleStruct.bcs),
       id_field: ID.bcs,
       address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       option_some: Option.bcs(bcs.u64()),
       option_none: Option.bcs(bcs.u64()),
@@ -424,7 +424,7 @@ export class SpecialTypesStruct implements StructClass {
         throw new Error(`object at is not a SpecialTypesStruct object`)
       }
 
-      return SpecialTypesStruct.fromBcs(fromB64(data.bcs.bcsBytes))
+      return SpecialTypesStruct.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return SpecialTypesStruct.fromSuiParsedData(data.content)

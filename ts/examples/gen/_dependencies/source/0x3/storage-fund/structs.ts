@@ -15,7 +15,7 @@ import { Balance } from '../../../../sui/balance/structs'
 import { SUI } from '../../../../sui/sui/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== StorageFund =============================== */
 
@@ -196,7 +196,7 @@ export class StorageFund implements StructClass {
         throw new Error(`object at is not a StorageFund object`)
       }
 
-      return StorageFund.fromBcs(fromB64(data.bcs.bcsBytes))
+      return StorageFund.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return StorageFund.fromSuiParsedData(data.content)

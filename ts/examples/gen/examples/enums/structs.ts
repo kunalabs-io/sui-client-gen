@@ -34,7 +34,7 @@ import { SUI } from '../../sui/sui/structs'
 import { PKG_V3 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Wrapped =============================== */
 
@@ -354,7 +354,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
         }
       }
 
-      return Wrapped.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+      return Wrapped.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Wrapped.fromSuiParsedData(typeArgs, data.content)

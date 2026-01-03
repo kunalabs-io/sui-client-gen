@@ -25,7 +25,7 @@ import { BridgeMessage, BridgeMessageKey } from '../message/structs'
 import { BridgeTreasury } from '../treasury/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Bridge =============================== */
 
@@ -182,7 +182,7 @@ export class Bridge implements StructClass {
         throw new Error(`object at is not a Bridge object`)
       }
 
-      return Bridge.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Bridge.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Bridge.fromSuiParsedData(data.content)
@@ -431,7 +431,7 @@ export class BridgeInner implements StructClass {
         throw new Error(`object at is not a BridgeInner object`)
       }
 
-      return BridgeInner.fromBcs(fromB64(data.bcs.bcsBytes))
+      return BridgeInner.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return BridgeInner.fromSuiParsedData(data.content)
@@ -655,7 +655,7 @@ export class TokenDepositedEvent implements StructClass {
         throw new Error(`object at is not a TokenDepositedEvent object`)
       }
 
-      return TokenDepositedEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return TokenDepositedEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return TokenDepositedEvent.fromSuiParsedData(data.content)
@@ -831,7 +831,7 @@ export class EmergencyOpEvent implements StructClass {
         throw new Error(`object at is not a EmergencyOpEvent object`)
       }
 
-      return EmergencyOpEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return EmergencyOpEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return EmergencyOpEvent.fromSuiParsedData(data.content)
@@ -1032,7 +1032,7 @@ export class BridgeRecord implements StructClass {
         throw new Error(`object at is not a BridgeRecord object`)
       }
 
-      return BridgeRecord.fromBcs(fromB64(data.bcs.bcsBytes))
+      return BridgeRecord.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return BridgeRecord.fromSuiParsedData(data.content)
@@ -1216,7 +1216,7 @@ export class TokenTransferApproved implements StructClass {
         throw new Error(`object at is not a TokenTransferApproved object`)
       }
 
-      return TokenTransferApproved.fromBcs(fromB64(data.bcs.bcsBytes))
+      return TokenTransferApproved.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return TokenTransferApproved.fromSuiParsedData(data.content)
@@ -1397,7 +1397,7 @@ export class TokenTransferClaimed implements StructClass {
         throw new Error(`object at is not a TokenTransferClaimed object`)
       }
 
-      return TokenTransferClaimed.fromBcs(fromB64(data.bcs.bcsBytes))
+      return TokenTransferClaimed.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return TokenTransferClaimed.fromSuiParsedData(data.content)
@@ -1584,7 +1584,7 @@ export class TokenTransferAlreadyApproved implements StructClass {
         throw new Error(`object at is not a TokenTransferAlreadyApproved object`)
       }
 
-      return TokenTransferAlreadyApproved.fromBcs(fromB64(data.bcs.bcsBytes))
+      return TokenTransferAlreadyApproved.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return TokenTransferAlreadyApproved.fromSuiParsedData(data.content)
@@ -1774,7 +1774,7 @@ export class TokenTransferAlreadyClaimed implements StructClass {
         throw new Error(`object at is not a TokenTransferAlreadyClaimed object`)
       }
 
-      return TokenTransferAlreadyClaimed.fromBcs(fromB64(data.bcs.bcsBytes))
+      return TokenTransferAlreadyClaimed.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return TokenTransferAlreadyClaimed.fromSuiParsedData(data.content)
@@ -1963,7 +1963,7 @@ export class TokenTransferLimitExceed implements StructClass {
         throw new Error(`object at is not a TokenTransferLimitExceed object`)
       }
 
-      return TokenTransferLimitExceed.fromBcs(fromB64(data.bcs.bcsBytes))
+      return TokenTransferLimitExceed.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return TokenTransferLimitExceed.fromSuiParsedData(data.content)

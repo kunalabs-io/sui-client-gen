@@ -24,7 +24,7 @@ import {
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== AccumulatorRoot =============================== */
 
@@ -179,7 +179,7 @@ export class AccumulatorRoot implements StructClass {
         throw new Error(`object at is not a AccumulatorRoot object`)
       }
 
-      return AccumulatorRoot.fromBcs(fromB64(data.bcs.bcsBytes))
+      return AccumulatorRoot.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return AccumulatorRoot.fromSuiParsedData(data.content)
@@ -349,7 +349,7 @@ export class U128 implements StructClass {
         throw new Error(`object at is not a U128 object`)
       }
 
-      return U128.fromBcs(fromB64(data.bcs.bcsBytes))
+      return U128.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return U128.fromSuiParsedData(data.content)
@@ -455,8 +455,8 @@ export class Key<T0 extends PhantomTypeArgument> implements StructClass {
   private static instantiateBcs() {
     return bcs.struct('Key', {
       address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
     })
   }
@@ -575,7 +575,7 @@ export class Key<T0 extends PhantomTypeArgument> implements StructClass {
         }
       }
 
-      return Key.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return Key.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Key.fromSuiParsedData(typeArg, data.content)

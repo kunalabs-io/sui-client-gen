@@ -29,7 +29,7 @@ import { Option } from '../../move-stdlib/option/structs'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== LinkedTable =============================== */
 
@@ -287,7 +287,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
         }
       }
 
-      return LinkedTable.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+      return LinkedTable.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return LinkedTable.fromSuiParsedData(typeArgs, data.content)
@@ -542,7 +542,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
         }
       }
 
-      return Node.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+      return Node.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Node.fromSuiParsedData(typeArgs, data.content)

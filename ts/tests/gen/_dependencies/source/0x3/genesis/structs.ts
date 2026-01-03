@@ -16,7 +16,7 @@ import { Vector } from '../../../../_framework/vector'
 import { Option } from '../../../../move-stdlib/option/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== GenesisValidatorMetadata =============================== */
 
@@ -149,8 +149,8 @@ export class GenesisValidatorMetadata implements StructClass {
       image_url: bcs.vector(bcs.u8()),
       project_url: bcs.vector(bcs.u8()),
       sui_address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       gas_price: bcs.u64(),
       commission_rate: bcs.u64(),
@@ -294,7 +294,7 @@ export class GenesisValidatorMetadata implements StructClass {
         throw new Error(`object at is not a GenesisValidatorMetadata object`)
       }
 
-      return GenesisValidatorMetadata.fromBcs(fromB64(data.bcs.bcsBytes))
+      return GenesisValidatorMetadata.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return GenesisValidatorMetadata.fromSuiParsedData(data.content)
@@ -610,7 +610,7 @@ export class GenesisChainParameters implements StructClass {
         throw new Error(`object at is not a GenesisChainParameters object`)
       }
 
-      return GenesisChainParameters.fromBcs(fromB64(data.bcs.bcsBytes))
+      return GenesisChainParameters.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return GenesisChainParameters.fromSuiParsedData(data.content)
@@ -809,7 +809,7 @@ export class TokenDistributionSchedule implements StructClass {
         throw new Error(`object at is not a TokenDistributionSchedule object`)
       }
 
-      return TokenDistributionSchedule.fromBcs(fromB64(data.bcs.bcsBytes))
+      return TokenDistributionSchedule.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return TokenDistributionSchedule.fromSuiParsedData(data.content)
@@ -922,14 +922,14 @@ export class TokenAllocation implements StructClass {
   private static instantiateBcs() {
     return bcs.struct('TokenAllocation', {
       recipient_address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       amount_mist: bcs.u64(),
       staked_with_validator: Option.bcs(
         bcs.bytes(32).transform({
-          input: (val: string) => fromHEX(val),
-          output: (val: Uint8Array) => toHEX(val),
+          input: (val: string) => fromHex(val),
+          output: (val: Uint8Array) => toHex(val),
         })
       ),
     })
@@ -1026,7 +1026,7 @@ export class TokenAllocation implements StructClass {
         throw new Error(`object at is not a TokenAllocation object`)
       }
 
-      return TokenAllocation.fromBcs(fromB64(data.bcs.bcsBytes))
+      return TokenAllocation.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return TokenAllocation.fromSuiParsedData(data.content)

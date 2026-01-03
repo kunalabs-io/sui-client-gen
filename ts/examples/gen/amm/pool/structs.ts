@@ -29,7 +29,7 @@ import { Table } from '../../sui/table/structs'
 import { PKG_V1 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== PoolCreationEvent =============================== */
 
@@ -184,7 +184,7 @@ export class PoolCreationEvent implements StructClass {
         throw new Error(`object at is not a PoolCreationEvent object`)
       }
 
-      return PoolCreationEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return PoolCreationEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return PoolCreationEvent.fromSuiParsedData(data.content)
@@ -432,7 +432,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
         }
       }
 
-      return LP.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+      return LP.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return LP.fromSuiParsedData(typeArgs, data.content)
@@ -759,7 +759,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
         }
       }
 
-      return Pool.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+      return Pool.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Pool.fromSuiParsedData(typeArgs, data.content)
@@ -959,7 +959,7 @@ export class PoolRegistry implements StructClass {
         throw new Error(`object at is not a PoolRegistry object`)
       }
 
-      return PoolRegistry.fromBcs(fromB64(data.bcs.bcsBytes))
+      return PoolRegistry.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return PoolRegistry.fromSuiParsedData(data.content)
@@ -1143,7 +1143,7 @@ export class PoolRegistryItem implements StructClass {
         throw new Error(`object at is not a PoolRegistryItem object`)
       }
 
-      return PoolRegistryItem.fromBcs(fromB64(data.bcs.bcsBytes))
+      return PoolRegistryItem.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return PoolRegistryItem.fromSuiParsedData(data.content)
@@ -1316,7 +1316,7 @@ export class AdminCap implements StructClass {
         throw new Error(`object at is not a AdminCap object`)
       }
 
-      return AdminCap.fromBcs(fromB64(data.bcs.bcsBytes))
+      return AdminCap.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return AdminCap.fromSuiParsedData(data.content)

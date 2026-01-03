@@ -24,7 +24,7 @@ import { ValidatorWrapper } from '../validator-wrapper/structs'
 import { Validator } from '../validator/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== ValidatorSet =============================== */
 
@@ -137,8 +137,8 @@ export class ValidatorSet implements StructClass {
       validator_candidates: Table.bcs,
       at_risk_validators: VecMap.bcs(
         bcs.bytes(32).transform({
-          input: (val: string) => fromHEX(val),
-          output: (val: Uint8Array) => toHEX(val),
+          input: (val: string) => fromHex(val),
+          output: (val: Uint8Array) => toHex(val),
         }),
         bcs.u64()
       ),
@@ -300,7 +300,7 @@ export class ValidatorSet implements StructClass {
         throw new Error(`object at is not a ValidatorSet object`)
       }
 
-      return ValidatorSet.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ValidatorSet.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ValidatorSet.fromSuiParsedData(data.content)
@@ -436,8 +436,8 @@ export class ValidatorEpochInfoEvent implements StructClass {
     return bcs.struct('ValidatorEpochInfoEvent', {
       epoch: bcs.u64(),
       validator_address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       reference_gas_survey_quote: bcs.u64(),
       stake: bcs.u64(),
@@ -447,8 +447,8 @@ export class ValidatorEpochInfoEvent implements StructClass {
       pool_token_exchange_rate: PoolTokenExchangeRate.bcs,
       tallying_rule_reporters: bcs.vector(
         bcs.bytes(32).transform({
-          input: (val: string) => fromHEX(val),
-          output: (val: Uint8Array) => toHEX(val),
+          input: (val: string) => fromHex(val),
+          output: (val: Uint8Array) => toHex(val),
         })
       ),
       tallying_rule_global_score: bcs.u64(),
@@ -588,7 +588,7 @@ export class ValidatorEpochInfoEvent implements StructClass {
         throw new Error(`object at is not a ValidatorEpochInfoEvent object`)
       }
 
-      return ValidatorEpochInfoEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ValidatorEpochInfoEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ValidatorEpochInfoEvent.fromSuiParsedData(data.content)
@@ -729,8 +729,8 @@ export class ValidatorEpochInfoEventV2 implements StructClass {
     return bcs.struct('ValidatorEpochInfoEventV2', {
       epoch: bcs.u64(),
       validator_address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       reference_gas_survey_quote: bcs.u64(),
       stake: bcs.u64(),
@@ -741,8 +741,8 @@ export class ValidatorEpochInfoEventV2 implements StructClass {
       pool_token_exchange_rate: PoolTokenExchangeRate.bcs,
       tallying_rule_reporters: bcs.vector(
         bcs.bytes(32).transform({
-          input: (val: string) => fromHEX(val),
-          output: (val: Uint8Array) => toHEX(val),
+          input: (val: string) => fromHex(val),
+          output: (val: Uint8Array) => toHex(val),
         })
       ),
       tallying_rule_global_score: bcs.u64(),
@@ -887,7 +887,7 @@ export class ValidatorEpochInfoEventV2 implements StructClass {
         throw new Error(`object at is not a ValidatorEpochInfoEventV2 object`)
       }
 
-      return ValidatorEpochInfoEventV2.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ValidatorEpochInfoEventV2.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ValidatorEpochInfoEventV2.fromSuiParsedData(data.content)
@@ -1001,8 +1001,8 @@ export class ValidatorJoinEvent implements StructClass {
     return bcs.struct('ValidatorJoinEvent', {
       epoch: bcs.u64(),
       validator_address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       staking_pool_id: ID.bcs,
     })
@@ -1087,7 +1087,7 @@ export class ValidatorJoinEvent implements StructClass {
         throw new Error(`object at is not a ValidatorJoinEvent object`)
       }
 
-      return ValidatorJoinEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ValidatorJoinEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ValidatorJoinEvent.fromSuiParsedData(data.content)
@@ -1199,8 +1199,8 @@ export class ValidatorLeaveEvent implements StructClass {
     return bcs.struct('ValidatorLeaveEvent', {
       epoch: bcs.u64(),
       validator_address: bcs.bytes(32).transform({
-        input: (val: string) => fromHEX(val),
-        output: (val: Uint8Array) => toHEX(val),
+        input: (val: string) => fromHex(val),
+        output: (val: Uint8Array) => toHex(val),
       }),
       staking_pool_id: ID.bcs,
       is_voluntary: bcs.bool(),
@@ -1290,7 +1290,7 @@ export class ValidatorLeaveEvent implements StructClass {
         throw new Error(`object at is not a ValidatorLeaveEvent object`)
       }
 
-      return ValidatorLeaveEvent.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ValidatorLeaveEvent.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ValidatorLeaveEvent.fromSuiParsedData(data.content)
@@ -1485,7 +1485,7 @@ export class VotingPowerAdmissionStartEpochKey implements StructClass {
         throw new Error(`object at is not a VotingPowerAdmissionStartEpochKey object`)
       }
 
-      return VotingPowerAdmissionStartEpochKey.fromBcs(fromB64(data.bcs.bcsBytes))
+      return VotingPowerAdmissionStartEpochKey.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return VotingPowerAdmissionStartEpochKey.fromSuiParsedData(data.content)

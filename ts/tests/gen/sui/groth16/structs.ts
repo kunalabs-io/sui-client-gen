@@ -15,7 +15,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framewo
 import { Vector } from '../../_framework/vector'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Curve =============================== */
 
@@ -164,7 +164,7 @@ export class Curve implements StructClass {
         throw new Error(`object at is not a Curve object`)
       }
 
-      return Curve.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Curve.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Curve.fromSuiParsedData(data.content)
@@ -372,7 +372,7 @@ export class PreparedVerifyingKey implements StructClass {
         throw new Error(`object at is not a PreparedVerifyingKey object`)
       }
 
-      return PreparedVerifyingKey.fromBcs(fromB64(data.bcs.bcsBytes))
+      return PreparedVerifyingKey.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return PreparedVerifyingKey.fromSuiParsedData(data.content)
@@ -548,7 +548,7 @@ export class PublicProofInputs implements StructClass {
         throw new Error(`object at is not a PublicProofInputs object`)
       }
 
-      return PublicProofInputs.fromBcs(fromB64(data.bcs.bcsBytes))
+      return PublicProofInputs.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return PublicProofInputs.fromSuiParsedData(data.content)
@@ -721,7 +721,7 @@ export class ProofPoints implements StructClass {
         throw new Error(`object at is not a ProofPoints object`)
       }
 
-      return ProofPoints.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ProofPoints.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ProofPoints.fromSuiParsedData(data.content)

@@ -13,7 +13,7 @@ import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_f
 import { Versioned } from '../../../../sui/versioned/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== ValidatorWrapper =============================== */
 
@@ -168,7 +168,7 @@ export class ValidatorWrapper implements StructClass {
         throw new Error(`object at is not a ValidatorWrapper object`)
       }
 
-      return ValidatorWrapper.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ValidatorWrapper.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ValidatorWrapper.fromSuiParsedData(data.content)

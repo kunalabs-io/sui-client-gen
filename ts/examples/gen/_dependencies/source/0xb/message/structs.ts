@@ -16,7 +16,7 @@ import { Vector } from '../../../../_framework/vector'
 import { String } from '../../../../move-stdlib/ascii/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== BridgeMessage =============================== */
 
@@ -200,7 +200,7 @@ export class BridgeMessage implements StructClass {
         throw new Error(`object at is not a BridgeMessage object`)
       }
 
-      return BridgeMessage.fromBcs(fromB64(data.bcs.bcsBytes))
+      return BridgeMessage.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return BridgeMessage.fromSuiParsedData(data.content)
@@ -392,7 +392,7 @@ export class BridgeMessageKey implements StructClass {
         throw new Error(`object at is not a BridgeMessageKey object`)
       }
 
-      return BridgeMessageKey.fromBcs(fromB64(data.bcs.bcsBytes))
+      return BridgeMessageKey.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return BridgeMessageKey.fromSuiParsedData(data.content)
@@ -605,7 +605,7 @@ export class TokenTransferPayload implements StructClass {
         throw new Error(`object at is not a TokenTransferPayload object`)
       }
 
-      return TokenTransferPayload.fromBcs(fromB64(data.bcs.bcsBytes))
+      return TokenTransferPayload.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return TokenTransferPayload.fromSuiParsedData(data.content)
@@ -778,7 +778,7 @@ export class EmergencyOp implements StructClass {
         throw new Error(`object at is not a EmergencyOp object`)
       }
 
-      return EmergencyOp.fromBcs(fromB64(data.bcs.bcsBytes))
+      return EmergencyOp.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return EmergencyOp.fromSuiParsedData(data.content)
@@ -965,7 +965,7 @@ export class Blocklist implements StructClass {
         throw new Error(`object at is not a Blocklist object`)
       }
 
-      return Blocklist.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Blocklist.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Blocklist.fromSuiParsedData(data.content)
@@ -1157,7 +1157,7 @@ export class UpdateBridgeLimit implements StructClass {
         throw new Error(`object at is not a UpdateBridgeLimit object`)
       }
 
-      return UpdateBridgeLimit.fromBcs(fromB64(data.bcs.bcsBytes))
+      return UpdateBridgeLimit.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return UpdateBridgeLimit.fromSuiParsedData(data.content)
@@ -1341,7 +1341,7 @@ export class UpdateAssetPrice implements StructClass {
         throw new Error(`object at is not a UpdateAssetPrice object`)
       }
 
-      return UpdateAssetPrice.fromBcs(fromB64(data.bcs.bcsBytes))
+      return UpdateAssetPrice.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return UpdateAssetPrice.fromSuiParsedData(data.content)
@@ -1544,7 +1544,7 @@ export class AddTokenOnSui implements StructClass {
         throw new Error(`object at is not a AddTokenOnSui object`)
       }
 
-      return AddTokenOnSui.fromBcs(fromB64(data.bcs.bcsBytes))
+      return AddTokenOnSui.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return AddTokenOnSui.fromSuiParsedData(data.content)
@@ -1764,7 +1764,7 @@ export class ParsedTokenTransferMessage implements StructClass {
         throw new Error(`object at is not a ParsedTokenTransferMessage object`)
       }
 
-      return ParsedTokenTransferMessage.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ParsedTokenTransferMessage.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ParsedTokenTransferMessage.fromSuiParsedData(data.content)

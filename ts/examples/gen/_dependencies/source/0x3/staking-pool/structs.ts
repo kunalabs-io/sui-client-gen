@@ -20,7 +20,7 @@ import { SUI } from '../../../../sui/sui/structs'
 import { Table } from '../../../../sui/table/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== StakingPool =============================== */
 
@@ -282,7 +282,7 @@ export class StakingPool implements StructClass {
         throw new Error(`object at is not a StakingPool object`)
       }
 
-      return StakingPool.fromBcs(fromB64(data.bcs.bcsBytes))
+      return StakingPool.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return StakingPool.fromSuiParsedData(data.content)
@@ -474,7 +474,7 @@ export class PoolTokenExchangeRate implements StructClass {
         throw new Error(`object at is not a PoolTokenExchangeRate object`)
       }
 
-      return PoolTokenExchangeRate.fromBcs(fromB64(data.bcs.bcsBytes))
+      return PoolTokenExchangeRate.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return PoolTokenExchangeRate.fromSuiParsedData(data.content)
@@ -674,7 +674,7 @@ export class StakedSui implements StructClass {
         throw new Error(`object at is not a StakedSui object`)
       }
 
-      return StakedSui.fromBcs(fromB64(data.bcs.bcsBytes))
+      return StakedSui.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return StakedSui.fromSuiParsedData(data.content)
@@ -866,7 +866,7 @@ export class FungibleStakedSui implements StructClass {
         throw new Error(`object at is not a FungibleStakedSui object`)
       }
 
-      return FungibleStakedSui.fromBcs(fromB64(data.bcs.bcsBytes))
+      return FungibleStakedSui.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return FungibleStakedSui.fromSuiParsedData(data.content)
@@ -1069,7 +1069,7 @@ export class FungibleStakedSuiData implements StructClass {
         throw new Error(`object at is not a FungibleStakedSuiData object`)
       }
 
-      return FungibleStakedSuiData.fromBcs(fromB64(data.bcs.bcsBytes))
+      return FungibleStakedSuiData.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return FungibleStakedSuiData.fromSuiParsedData(data.content)
@@ -1253,7 +1253,7 @@ export class FungibleStakedSuiDataKey implements StructClass {
         throw new Error(`object at is not a FungibleStakedSuiDataKey object`)
       }
 
-      return FungibleStakedSuiDataKey.fromBcs(fromB64(data.bcs.bcsBytes))
+      return FungibleStakedSuiDataKey.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return FungibleStakedSuiDataKey.fromSuiParsedData(data.content)
@@ -1434,7 +1434,7 @@ export class UnderflowSuiBalance implements StructClass {
         throw new Error(`object at is not a UnderflowSuiBalance object`)
       }
 
-      return UnderflowSuiBalance.fromBcs(fromB64(data.bcs.bcsBytes))
+      return UnderflowSuiBalance.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return UnderflowSuiBalance.fromSuiParsedData(data.content)
