@@ -448,3 +448,124 @@ cargo insta accept
 - Prefer `BTreeMap/BTreeSet` (or explicit sorting) for anything that affects emitted ordering.
 - Avoid iterating `HashMap` when output order matters.
 - When adding imports, ensure they go through `TsImportsBuilder`.
+
+---
+
+## Testing workflow for code generation changes
+
+When making changes to the TypeScript code generator, follow this test-driven workflow to ensure correctness and prevent regressions:
+
+### 1. Create a test fixture (IR)
+
+Build an IR fixture that reproduces the issue. For example:
+
+```rust
+fn make_struct_with_issue_ir() -> StructIR {
+    StructIR {
+        name: "MyStruct".to_string(),
+        // ... field setup that demonstrates the bug
+        uses_phantom_struct_args: true,
+        // ...
+    }
+}
+```
+
+### 2. Add snapshot tests
+
+Create both body and module-level snapshots:
+
+```rust
+#[test]
+fn test_my_issue_snapshot() {
+    let ir = make_struct_with_issue_ir();
+    let output = ir.emit_body();
+    insta::assert_snapshot!("my_issue", output);
+}
+
+#[test]
+fn test_my_issue_module_snapshot() {
+    let structs = vec![make_struct_with_issue_ir()];
+    let output = emit_module_structs_from_ir(&structs, &[], "../../_framework");
+    insta::assert_snapshot!("module__my_issue", output);
+}
+```
+
+### 3. Add invariant tests (optional but recommended)
+
+Catch specific bugs with assertions:
+
+```rust
+#[test]
+fn test_no_unused_imports() {
+    let output = emit_module_structs_from_ir(&structs, &[], "../../_framework");
+    
+    // Check that imports are actually used
+    if output.contains("import { foo }") {
+        assert!(output.contains("foo("), "foo is imported but never used");
+    }
+}
+```
+
+### 4. Run the failing test
+
+```bash
+cargo test --test snapshot_tests test_my_issue_snapshot
+```
+
+This will create a `.snap.new` file showing the current (broken) output.
+
+### 5. Apply your fix
+
+Make targeted changes to the generator code:
+- `generator/src/ts_gen/builder.rs` - for import logic
+- `generator/src/ts_gen/structs.rs` - for struct generation
+- `generator/src/ts_gen/enums.rs` - for enum generation
+- etc.
+
+### 6. Review and accept snapshots
+
+```bash
+# See the diff
+cargo insta review
+
+# Or just accept all changes
+cargo insta accept
+```
+
+### 7. Verify no regressions
+
+```bash
+# Run all snapshot tests
+cargo test --test snapshot_tests
+
+# Run full test suite
+cargo test
+```
+
+### 8. (Optional) Regenerate examples to verify
+
+Only after all tests pass:
+
+```bash
+cargo run -p sui-client-gen -- --manifest ts/examples/gen/gen.toml --out ts/examples/gen --clean
+```
+
+### Best Practices
+
+- **Don't regenerate examples during iteration** - Use IR fixtures and snapshots instead
+- **Add both snapshot and invariant tests** - Snapshots show the full output, invariants catch specific bugs
+- **Fix one issue at a time** - Small iterations are easier to debug
+- **Update all test fixtures** - When adding fields to IR structs, update all fixtures in `snapshot_tests.rs`
+- **Review snapshot diffs carefully** - `cargo insta review` shows exactly what changed
+- **Run the full test suite** - Catch any unexpected side effects
+
+### Example: Fixing Unused Imports
+
+1. Created `test_parse_type_name_not_imported_when_unused()` - fails if imported but unused
+2. Updated `emit_combined_imports_with_enums()` to only import when `has_type_params`
+3. Ran `cargo test --test snapshot_tests` - 15 snapshots updated
+4. Reviewed with `cargo insta review` - confirmed parseTypeName removed from non-generic structs
+5. Accepted with `cargo insta accept`
+6. Verified with `cargo test` - all tests pass
+
+This workflow ensures every fix is protected by regression tests and doesn't break existing functionality.
