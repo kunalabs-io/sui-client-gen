@@ -2,37 +2,29 @@ import { PUBLISHED_AT } from '..'
 import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
-export function poolValues(
-  tx: Transaction,
-  typeArgs: [string, string],
-  pool: TransactionObjectInput
-) {
+export function values(tx: Transaction, typeArgs: [string, string], pool: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::pool_values`,
+    target: `${PUBLISHED_AT}::pool::values`,
     typeArguments: typeArgs,
     arguments: [obj(tx, pool)],
   })
 }
 
-export function poolFees(
-  tx: Transaction,
-  typeArgs: [string, string],
-  pool: TransactionObjectInput
-) {
+export function fees(tx: Transaction, typeArgs: [string, string], pool: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::pool_fees`,
+    target: `${PUBLISHED_AT}::pool::fees`,
     typeArguments: typeArgs,
     arguments: [obj(tx, pool)],
   })
 }
 
-export function poolAdminFeeValue(
+export function adminFeeValue(
   tx: Transaction,
   typeArgs: [string, string],
   pool: TransactionObjectInput
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::pool_admin_fee_value`,
+    target: `${PUBLISHED_AT}::pool::admin_fee_value`,
     typeArguments: typeArgs,
     arguments: [obj(tx, pool)],
   })
@@ -117,18 +109,6 @@ export function muldivU128(tx: Transaction, args: MuldivU128Args) {
   return tx.moveCall({
     target: `${PUBLISHED_AT}::pool::muldiv_u128`,
     arguments: [pure(tx, args.a, `u128`), pure(tx, args.b, `u128`), pure(tx, args.c, `u128`)],
-  })
-}
-
-export interface CeilDivU128Args {
-  a: bigint | TransactionArgument
-  b: bigint | TransactionArgument
-}
-
-export function ceilDivU128(tx: Transaction, args: CeilDivU128Args) {
-  return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::ceil_div_u128`,
-    arguments: [pure(tx, args.a, `u128`), pure(tx, args.b, `u128`)],
   })
 }
 
@@ -267,5 +247,25 @@ export function adminWithdrawFees(
     target: `${PUBLISHED_AT}::pool::admin_withdraw_fees`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.pool), obj(tx, args.adminCap), pure(tx, args.amount, `u64`)],
+  })
+}
+
+export interface AdminSetFeesArgs {
+  pool: TransactionObjectInput
+  adminCap: TransactionObjectInput
+  lpFeeBps: bigint | TransactionArgument
+  adminFeePct: bigint | TransactionArgument
+}
+
+export function adminSetFees(tx: Transaction, typeArgs: [string, string], args: AdminSetFeesArgs) {
+  return tx.moveCall({
+    target: `${PUBLISHED_AT}::pool::admin_set_fees`,
+    typeArguments: typeArgs,
+    arguments: [
+      obj(tx, args.pool),
+      obj(tx, args.adminCap),
+      pure(tx, args.lpFeeBps, `u64`),
+      pure(tx, args.adminFeePct, `u64`),
+    ],
   })
 }

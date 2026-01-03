@@ -9,7 +9,10 @@
     "check": "tsc --noEmit",
     "lint": "eslint examples/ tests/",
     "lint:fix": "eslint examples/ tests/ --fix",
-    "test": "vitest --test-timeout=15000"
+    "test": "vitest --test-timeout=15000",
+    "gen:example": "cd examples/gen && cargo run -- --clean",
+    "gen:tests": "cd tests/gen && cargo run -- --clean",
+    "gen:all": "pnpm run -r gen:example & pnpm run -r gen:tests & wait && pnpm run lint:fix"
   },
   "type": "module",
   "keywords": [],
