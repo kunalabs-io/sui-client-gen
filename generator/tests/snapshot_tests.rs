@@ -1615,3 +1615,427 @@ fn test_alias_determinism() {
 
     assert_eq!(output1, output2, "Aliased output should be deterministic");
 }
+
+// =============================================================================
+// Import Correctness Tests (reified namespace, parseTypeName)
+// =============================================================================
+
+/// Struct with a field containing phantom type arguments (like LinkedTable<K, phantom V>)
+/// This tests that `reified` namespace import is included when needed
+fn make_struct_with_phantom_type_args_ir() -> StructIR {
+    // LinkedTable<'address', 'u128'> where second param is phantom
+    let linked_table_field = FieldTypeIR::Datatype {
+        class_name: "LinkedTable".to_string(),
+        full_type_name: "0xbe21a06129308e0495431d12286127897aff07a8ade3970495a4404d97f9eaaa::linked_table::LinkedTable".to_string(),
+        type_args: vec![
+            FieldTypeIR::Primitive("address".to_string()),
+            FieldTypeIR::Primitive("u128".to_string()),
+        ],
+        type_arg_is_phantom: vec![false, true], // Second arg is phantom
+        kind: DatatypeKind::Struct,
+    };
+
+    StructIR {
+        name: "ACL".to_string(),
+        module_struct_path: "acl::ACL".to_string(),
+        package_info: examples_pkg(),
+        type_params: vec![],
+        fields: vec![FieldIR {
+            ts_name: "permissions".to_string(),
+            move_name: "permissions".to_string(),
+            field_type: linked_table_field,
+        }],
+        struct_imports: vec![DatatypeImport {
+            class_name: "LinkedTable".to_string(),
+            path: "../../some-pkg/linked-table/structs".to_string(),
+            alias: None,
+        }],
+        uses_vector: false,
+        uses_address: false,
+        uses_phantom_struct_args: true, // This is set to true because field has phantom type args
+        has_non_phantom_type_params: false,
+        uses_field_to_json: false,
+    }
+}
+
+/// Test snapshot for struct with phantom type args in field
+#[test]
+fn test_struct_with_phantom_type_args_snapshot() {
+    let ir = make_struct_with_phantom_type_args_ir();
+    let output = ir.emit_body();
+    insta::assert_snapshot!("struct__with_phantom_type_args", output);
+}
+
+/// Module-level snapshot for struct with phantom type args (tests imports)
+#[test]
+fn test_module_with_phantom_type_args_snapshot() {
+    let structs = vec![make_struct_with_phantom_type_args_ir()];
+    let output = emit_module_structs_from_ir(&structs, &[], "../../_framework");
+    insta::assert_snapshot!("module__with_phantom_type_args", output);
+}
+
+/// Verify that phantom is always imported (used in static phantom() method)
+#[test]
+fn test_phantom_always_imported() {
+    let structs = vec![make_fixture_dummy_ir()]; // Simple struct with no phantom args
+    let output = emit_module_structs_from_ir(&structs, &[], "../../_framework");
+
+    // Should have named import for phantom (always, for static phantom() method)
+    assert!(
+        output.contains("import") && output.contains("phantom"),
+        "phantom should always be imported (used in static phantom() method)"
+    );
+
+    // Should NOT have namespace import
+    assert!(
+        !output.contains("import * as reified"),
+        "Should not use namespace import"
+    );
+
+    // Should use phantom() in the static phantom() method
+    assert!(
+        output.contains("return phantom("),
+        "static phantom() method should call phantom() function"
+    );
+
+    // Should NOT use reified.phantom()
+    assert!(
+        !output.contains("reified.phantom("),
+        "Should use phantom() directly, not reified.phantom()"
+    );
+}
+
+/// Verify that fieldToJSON is NOT imported when not used (even with type params)
+#[test]
+fn test_field_to_json_not_imported_when_unused() {
+    // Pool struct has phantom type params but no Vector/Option/TypeParam fields
+    // So it shouldn't import fieldToJSON
+    let pool_ir = StructIR {
+        name: "Pool".to_string(),
+        module_struct_path: "pool::Pool".to_string(),
+        package_info: examples_pkg(),
+        type_params: vec![
+            TypeParamIR {
+                name: "A".to_string(),
+                is_phantom: true,
+            },
+            TypeParamIR {
+                name: "B".to_string(),
+                is_phantom: true,
+            },
+        ],
+        fields: vec![
+            FieldIR {
+                ts_name: "id".to_string(),
+                move_name: "id".to_string(),
+                field_type: uid_field_type(),
+            },
+            FieldIR {
+                ts_name: "balanceA".to_string(),
+                move_name: "balance_a".to_string(),
+                field_type: FieldTypeIR::Datatype {
+                    class_name: "Balance".to_string(),
+                    full_type_name: "0x2::balance::Balance".to_string(),
+                    type_args: vec![FieldTypeIR::TypeParam {
+                        name: "A".to_string(),
+                        is_phantom: true,
+                        index: 0,
+                    }],
+                    type_arg_is_phantom: vec![true],
+                    kind: DatatypeKind::Struct,
+                },
+            },
+        ],
+        struct_imports: vec![uid_import(), balance_import()],
+        uses_vector: false,
+        uses_address: false,
+        uses_phantom_struct_args: false,
+        has_non_phantom_type_params: false,
+        uses_field_to_json: false, // No Vector/Option/TypeParam fields
+    };
+
+    let output = emit_module_structs_from_ir(&[pool_ir], &[], "../../_framework");
+
+    // Should NOT import fieldToJSON
+    assert!(
+        !output.contains("fieldToJSON"),
+        "fieldToJSON should not be imported when there are no Vector/Option/TypeParam fields"
+    );
+}
+
+/// Verify that phantom() is used for primitives in phantom positions
+#[test]
+fn test_phantom_used_for_primitives_in_phantom_positions() {
+    let structs = vec![make_struct_with_phantom_type_args_ir()];
+    let output = emit_module_structs_from_ir(&structs, &[], "../../_framework");
+
+    // Should use phantom('u128') for primitive types in phantom positions
+    assert!(
+        output.contains("phantom('u128')") || output.contains("phantom(\"u128\")"),
+        "phantom() should be called for primitives in phantom positions"
+    );
+
+    // Should NOT use reified.phantom()
+    assert!(
+        !output.contains("reified.phantom("),
+        "Should use phantom() directly, not reified.phantom()"
+    );
+
+    // Should NOT have namespace import
+    assert!(
+        !output.contains("import * as reified"),
+        "Should not use namespace import"
+    );
+}
+
+/// Verify that parseTypeName is NOT imported if not used
+#[test]
+fn test_parse_type_name_not_imported_when_unused() {
+    let structs = vec![make_struct_with_phantom_type_args_ir()];
+    let output = emit_module_structs_from_ir(&structs, &[], "../../_framework");
+
+    // parseTypeName should not be imported if it's not actually used
+    // Note: Current implementation always imports it, but this test documents the bug
+    if output.contains("parseTypeName") {
+        // Check if it's actually used in the code (not just imported)
+        let lines: Vec<&str> = output.lines().collect();
+        let import_section_end = lines
+            .iter()
+            .position(|l| l.starts_with("export"))
+            .unwrap_or(lines.len());
+        let code_section = lines[import_section_end..].join("\n");
+
+        if !code_section.contains("parseTypeName(") {
+            panic!("parseTypeName is imported but never used in the code");
+        }
+    }
+}
+
+// =============================================================================
+// Non-phantom Type Param in Phantom Position Tests
+// =============================================================================
+
+/// Struct with a non-phantom type param used in a phantom position of a nested type
+/// This tests the case: WitTable<phantom T0, T1, phantom T2> with field table: Table<phantom K, V>
+/// where T1 (non-phantom) is used in K (phantom) position
+fn make_struct_with_non_phantom_in_phantom_position_ir() -> StructIR {
+    // Table<phantom K, V> field type using T1 and T2
+    let table_field = FieldTypeIR::Datatype {
+        class_name: "Table".to_string(),
+        full_type_name: "0x2::table::Table".to_string(),
+        type_args: vec![
+            FieldTypeIR::TypeParam {
+                name: "T1".to_string(),
+                is_phantom: false, // T1 is non-phantom in WitTable
+                index: 1,
+            },
+            FieldTypeIR::TypeParam {
+                name: "T2".to_string(),
+                is_phantom: true, // T2 is phantom in WitTable
+                index: 2,
+            },
+        ],
+        type_arg_is_phantom: vec![true, false], // K is phantom, V is non-phantom in Table
+        kind: DatatypeKind::Struct,
+    };
+
+    StructIR {
+        name: "WitTable".to_string(),
+        module_struct_path: "wit_table::WitTable".to_string(),
+        package_info: examples_pkg(),
+        type_params: vec![
+            TypeParamIR {
+                name: "T0".to_string(),
+                is_phantom: true,
+            },
+            TypeParamIR {
+                name: "T1".to_string(),
+                is_phantom: false, // Non-phantom type param
+            },
+            TypeParamIR {
+                name: "T2".to_string(),
+                is_phantom: true,
+            },
+        ],
+        fields: vec![
+            FieldIR {
+                ts_name: "id".to_string(),
+                move_name: "id".to_string(),
+                field_type: uid_field_type(),
+            },
+            FieldIR {
+                ts_name: "table".to_string(),
+                move_name: "table".to_string(),
+                field_type: table_field,
+            },
+        ],
+        struct_imports: vec![
+            uid_import(),
+            DatatypeImport {
+                class_name: "Table".to_string(),
+                path: "../../sui/table/structs".to_string(),
+                alias: None,
+            },
+        ],
+        uses_vector: false,
+        uses_address: false,
+        uses_phantom_struct_args: true, // True because T1 (non-phantom) is used in phantom position
+        has_non_phantom_type_params: true,
+        uses_field_to_json: false,
+    }
+}
+
+/// Test snapshot for struct with non-phantom type param in phantom position
+#[test]
+fn test_struct_non_phantom_in_phantom_position_snapshot() {
+    let ir = make_struct_with_non_phantom_in_phantom_position_ir();
+    let output = ir.emit_body();
+    insta::assert_snapshot!("struct__non_phantom_in_phantom_position", output);
+}
+
+/// Module-level snapshot for struct with non-phantom type param in phantom position
+#[test]
+fn test_module_non_phantom_in_phantom_position_snapshot() {
+    let structs = vec![make_struct_with_non_phantom_in_phantom_position_ir()];
+    let output = emit_module_structs_from_ir(&structs, &[], "../../_framework");
+    insta::assert_snapshot!("module__non_phantom_in_phantom_position", output);
+}
+
+/// Verify ToPhantom is used when non-phantom type param goes to phantom position
+#[test]
+fn test_to_phantom_for_non_phantom_type_param() {
+    let structs = vec![make_struct_with_non_phantom_in_phantom_position_ir()];
+    let output = emit_module_structs_from_ir(&structs, &[], "../../_framework");
+
+    // Should have ToTypeStr as ToPhantom import
+    assert!(
+        output.contains("ToTypeStr as ToPhantom"),
+        "Should import 'ToTypeStr as ToPhantom' when non-phantom type param is used in phantom position"
+    );
+
+    // Should use ToPhantom<T1> in field type (T1 is non-phantom but goes into phantom position)
+    assert!(
+        output.contains("ToPhantom<T1>") || output.contains("Table<ToPhantom<T1>, T2>"),
+        "Should use ToPhantom<T1> when T1 (non-phantom) is used in phantom position of Table"
+    );
+
+    // Should use phantom(typeArgs[1]) in fromFields
+    assert!(
+        output.contains("phantom(typeArgs[1])"),
+        "Should use phantom() when non-phantom type param is used in phantom position"
+    );
+
+    // Should NOT use reified.phantom()
+    assert!(
+        !output.contains("reified.phantom("),
+        "Should use phantom() directly, not reified.phantom()"
+    );
+}
+
+// =============================================================================
+// Enum with Non-phantom Type Param in Phantom Position Tests
+// =============================================================================
+
+/// Enum with a non-phantom type param used in a phantom position of a nested type
+/// This tests that enums also get the same fix as structs
+fn make_enum_with_non_phantom_in_phantom_position_ir() -> EnumIR {
+    // Variant with Table<T1, T2> where T1 (non-phantom) goes into phantom position
+    EnumIR {
+        name: "Container".to_string(),
+        module_enum_path: "test::Container".to_string(),
+        package_info: examples_pkg(),
+        type_params: vec![
+            TypeParamIR {
+                name: "T1".to_string(),
+                is_phantom: false, // Non-phantom
+            },
+            TypeParamIR {
+                name: "T2".to_string(),
+                is_phantom: true,
+            },
+        ],
+        variants: vec![
+            EnumVariantIR {
+                name: "Empty".to_string(),
+                fields: vec![],
+                is_tuple: false,
+            },
+            EnumVariantIR {
+                name: "WithTable".to_string(),
+                fields: vec![FieldIR {
+                    ts_name: "table".to_string(),
+                    move_name: "table".to_string(),
+                    field_type: FieldTypeIR::Datatype {
+                        class_name: "Table".to_string(),
+                        full_type_name: "0x2::table::Table".to_string(),
+                        type_args: vec![
+                            FieldTypeIR::TypeParam {
+                                name: "T1".to_string(),
+                                is_phantom: false,
+                                index: 0,
+                            },
+                            FieldTypeIR::TypeParam {
+                                name: "T2".to_string(),
+                                is_phantom: true,
+                                index: 1,
+                            },
+                        ],
+                        type_arg_is_phantom: vec![true, false], // K is phantom in Table
+                        kind: DatatypeKind::Struct,
+                    },
+                }],
+                is_tuple: false,
+            },
+        ],
+        uses_vector: false,
+        uses_address: false,
+        uses_phantom_struct_args: true, // True because T1 is used in phantom position
+    }
+}
+
+/// Test snapshot for enum with non-phantom type param in phantom position
+#[test]
+fn test_enum_non_phantom_in_phantom_position_snapshot() {
+    let ir = make_enum_with_non_phantom_in_phantom_position_ir();
+    let output = ir.emit_body();
+    insta::assert_snapshot!("enum__non_phantom_in_phantom_position", output);
+}
+
+/// Module-level snapshot for enum with non-phantom type param in phantom position
+#[test]
+fn test_module_enum_non_phantom_in_phantom_position_snapshot() {
+    let enums = vec![make_enum_with_non_phantom_in_phantom_position_ir()];
+    let output = emit_module_structs_from_ir(&[], &enums, "../../_framework");
+    insta::assert_snapshot!("module__enum_non_phantom_in_phantom_position", output);
+}
+
+/// Verify ToPhantom is used in enums when non-phantom type param goes to phantom position
+#[test]
+fn test_enum_to_phantom_for_non_phantom_type_param() {
+    let enums = vec![make_enum_with_non_phantom_in_phantom_position_ir()];
+    let output = emit_module_structs_from_ir(&[], &enums, "../../_framework");
+
+    // Should have ToTypeStr as ToPhantom import
+    assert!(
+        output.contains("ToTypeStr as ToPhantom"),
+        "Enums should import 'ToTypeStr as ToPhantom' when non-phantom type param is used in phantom position"
+    );
+
+    // Should use ToPhantom<T1> in variant field type
+    assert!(
+        output.contains("ToPhantom<T1>") || output.contains("Table<ToPhantom<T1>, T2>"),
+        "Enums should use ToPhantom<T1> when T1 (non-phantom) is used in phantom position"
+    );
+
+    // Should use phantom(typeArgs[0]) in decode methods
+    assert!(
+        output.contains("phantom(typeArgs[0])"),
+        "Enums should use phantom() when non-phantom type param is used in phantom position"
+    );
+
+    // Should NOT use reified.phantom()
+    assert!(
+        !output.contains("reified.phantom("),
+        "Enums should use phantom() directly, not reified.phantom()"
+    );
+}

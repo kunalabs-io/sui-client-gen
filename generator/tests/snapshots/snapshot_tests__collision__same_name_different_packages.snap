@@ -98,7 +98,7 @@ export class MultiCoinHolder implements StructClass {
   static fromFields(fields: Record<string, any>): MultiCoinHolder {
     return MultiCoinHolder.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
-      suiCoin: decodeFromFields(Coin.reified(reified.phantom(SUI.reified())), fields.sui_coin),
+      suiCoin: decodeFromFields(Coin.reified(phantom(SUI.reified())), fields.sui_coin),
       customCoin: decodeFromFields(CoinCustom.reified(), fields.custom_coin),
     })
   }
@@ -110,7 +110,7 @@ export class MultiCoinHolder implements StructClass {
 
     return MultiCoinHolder.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
-      suiCoin: decodeFromFieldsWithTypes(Coin.reified(reified.phantom(SUI.reified())), item.fields.sui_coin),
+      suiCoin: decodeFromFieldsWithTypes(Coin.reified(phantom(SUI.reified())), item.fields.sui_coin),
       customCoin: decodeFromFieldsWithTypes(CoinCustom.reified(), item.fields.custom_coin),
     })
   }
@@ -134,7 +134,7 @@ export class MultiCoinHolder implements StructClass {
   static fromJSONField(field: any): MultiCoinHolder {
     return MultiCoinHolder.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
-      suiCoin: decodeFromJSONField(Coin.reified(reified.phantom(SUI.reified())), field.suiCoin),
+      suiCoin: decodeFromJSONField(Coin.reified(phantom(SUI.reified())), field.suiCoin),
       customCoin: decodeFromJSONField(CoinCustom.reified(), field.customCoin),
     })
   }

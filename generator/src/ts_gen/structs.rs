@@ -28,7 +28,7 @@ pub struct StructIR {
     pub uses_vector: bool,
     /// Whether any field uses address type (requires fromHEX/toHEX imports)
     pub uses_address: bool,
-    /// Whether any field has phantom struct type args (requires reified namespace + ToPhantom alias)
+    /// Whether any field has phantom struct type args (requires ToPhantom alias)
     pub uses_phantom_struct_args: bool,
     /// Whether there are non-phantom type params (requires TypeArgument, ToTypeArgument, toBcs, BcsType)
     pub has_non_phantom_type_params: bool,
@@ -1484,12 +1484,29 @@ impl FieldTypeIR {
                 type_arg_is_phantom,
                 ..
             } => {
-                // Check if any args are phantom and are datatype references (not primitives/type params)
+                // Check if any args are phantom and need ToPhantom wrapping:
+                // 1. Phantom position with Datatype argument
+                // 2. Phantom position with Vector argument
+                // 3. Phantom position with non-phantom TypeParam argument
                 type_args
                     .iter()
                     .zip(type_arg_is_phantom.iter())
                     .any(|(arg, is_phantom)| {
-                        *is_phantom && matches!(arg, FieldTypeIR::Datatype { .. })
+                        if *is_phantom {
+                            match arg {
+                                FieldTypeIR::Datatype { .. } | FieldTypeIR::Vector(_) => true,
+                                FieldTypeIR::TypeParam {
+                                    is_phantom: param_is_phantom,
+                                    ..
+                                } => {
+                                    // Non-phantom type param in phantom position needs ToPhantom
+                                    !param_is_phantom
+                                }
+                                _ => false,
+                            }
+                        } else {
+                            false
+                        }
                     })
                     || type_args.iter().any(|a| a.uses_phantom_struct_args())
             }
@@ -1535,14 +1552,28 @@ impl FieldTypeIR {
                         .zip(type_arg_is_phantom.iter())
                         .map(|(arg, is_phantom)| {
                             let ts_type = arg.to_ts_type();
-                            // Wrap complex types (datatype and vector) with ToPhantom, not primitives/type params
-                            if *is_phantom
-                                && matches!(
-                                    arg,
-                                    FieldTypeIR::Datatype { .. } | FieldTypeIR::Vector(_)
-                                )
-                            {
-                                format!("ToPhantom<{}>", ts_type)
+                            if *is_phantom {
+                                match arg {
+                                    // Wrap complex types (datatype and vector) with ToPhantom
+                                    FieldTypeIR::Datatype { .. } | FieldTypeIR::Vector(_) => {
+                                        format!("ToPhantom<{}>", ts_type)
+                                    }
+                                    // Also wrap non-phantom type params when they go into phantom positions
+                                    FieldTypeIR::TypeParam {
+                                        is_phantom: param_is_phantom,
+                                        ..
+                                    } => {
+                                        if !param_is_phantom {
+                                            // Non-phantom type param in phantom position needs ToPhantom
+                                            format!("ToPhantom<{}>", ts_type)
+                                        } else {
+                                            // Phantom type param in phantom position - already phantom
+                                            ts_type
+                                        }
+                                    }
+                                    // Primitives don't need wrapping
+                                    _ => ts_type,
+                                }
                             } else {
                                 ts_type
                             }
@@ -1594,7 +1625,7 @@ impl FieldTypeIR {
         match self {
             FieldTypeIR::Primitive(p) => format!("'{}'", p),
             FieldTypeIR::Vector(inner) => {
-                format!("reified.vector({})", inner.to_reified())
+                format!("vector({})", inner.to_reified())
             }
             FieldTypeIR::Datatype {
                 class_name,
@@ -1605,13 +1636,13 @@ impl FieldTypeIR {
                 if type_args.is_empty() {
                     format!("{}.reified()", class_name)
                 } else {
-                    // Wrap phantom type args with reified.phantom()
+                    // Wrap phantom type args with phantom()
                     let args: Vec<String> = type_args
                         .iter()
                         .zip(type_arg_is_phantom.iter())
                         .map(|(arg, is_phantom)| {
                             if *is_phantom {
-                                format!("reified.phantom({})", arg.to_reified())
+                                format!("phantom({})", arg.to_reified())
                             } else {
                                 arg.to_reified()
                             }
@@ -1630,10 +1661,7 @@ impl FieldTypeIR {
         match self {
             FieldTypeIR::Primitive(p) => format!("'{}'", p),
             FieldTypeIR::Vector(inner) => {
-                format!(
-                    "reified.vector({})",
-                    inner.to_reified_runtime(total_type_params)
-                )
+                format!("vector({})", inner.to_reified_runtime(total_type_params))
             }
             FieldTypeIR::Datatype {
                 class_name,
@@ -1644,18 +1672,36 @@ impl FieldTypeIR {
                 if type_args.is_empty() {
                     format!("{}.reified()", class_name)
                 } else {
-                    // Wrap phantom type args with reified.phantom(), but NOT if they're type params
-                    // (type params are already passed as PhantomReified)
+                    // Wrap phantom type args with phantom()
                     let args: Vec<String> = type_args
                         .iter()
                         .zip(type_arg_is_phantom.iter())
                         .map(|(arg, is_phantom)| {
-                            let is_type_param = matches!(arg, FieldTypeIR::TypeParam { .. });
-                            if *is_phantom && !is_type_param {
-                                format!(
-                                    "reified.phantom({})",
-                                    arg.to_reified_runtime(total_type_params)
-                                )
+                            if *is_phantom {
+                                match arg {
+                                    FieldTypeIR::TypeParam {
+                                        is_phantom: param_is_phantom,
+                                        ..
+                                    } => {
+                                        if *param_is_phantom {
+                                            // Phantom type param in phantom position - already PhantomReified
+                                            arg.to_reified_runtime(total_type_params)
+                                        } else {
+                                            // Non-phantom type param in phantom position - wrap with phantom()
+                                            format!(
+                                                "phantom({})",
+                                                arg.to_reified_runtime(total_type_params)
+                                            )
+                                        }
+                                    }
+                                    // Wrap other types (datatype, vector, primitive) with phantom()
+                                    _ => {
+                                        format!(
+                                            "phantom({})",
+                                            arg.to_reified_runtime(total_type_params)
+                                        )
+                                    }
+                                }
                             } else {
                                 arg.to_reified_runtime(total_type_params)
                             }
@@ -1683,7 +1729,7 @@ impl FieldTypeIR {
             FieldTypeIR::Primitive(p) => format!("'{}'", p),
             FieldTypeIR::Vector(inner) => {
                 format!(
-                    "reified.vector({})",
+                    "vector({})",
                     inner.to_reified_runtime_indexed(_total_type_params)
                 )
             }
@@ -1700,12 +1746,31 @@ impl FieldTypeIR {
                         .iter()
                         .zip(type_arg_is_phantom.iter())
                         .map(|(arg, is_phantom)| {
-                            let is_type_param = matches!(arg, FieldTypeIR::TypeParam { .. });
-                            if *is_phantom && !is_type_param {
-                                format!(
-                                    "reified.phantom({})",
-                                    arg.to_reified_runtime_indexed(_total_type_params)
-                                )
+                            if *is_phantom {
+                                match arg {
+                                    FieldTypeIR::TypeParam {
+                                        is_phantom: param_is_phantom,
+                                        ..
+                                    } => {
+                                        if *param_is_phantom {
+                                            // Phantom type param in phantom position - already PhantomReified
+                                            arg.to_reified_runtime_indexed(_total_type_params)
+                                        } else {
+                                            // Non-phantom type param in phantom position - wrap with phantom()
+                                            format!(
+                                                "phantom({})",
+                                                arg.to_reified_runtime_indexed(_total_type_params)
+                                            )
+                                        }
+                                    }
+                                    // Wrap other types (datatype, vector, primitive) with phantom()
+                                    _ => {
+                                        format!(
+                                            "phantom({})",
+                                            arg.to_reified_runtime_indexed(_total_type_params)
+                                        )
+                                    }
+                                }
                             } else {
                                 arg.to_reified_runtime_indexed(_total_type_params)
                             }

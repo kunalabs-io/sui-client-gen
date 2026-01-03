@@ -564,27 +564,26 @@ fn emit_combined_imports_with_enums(
     let uses_field_to_json = structs.iter().any(|s| s.uses_field_to_json);
     let has_enums = !enums.is_empty();
 
-    // Wildcard reified import for vector/phantom handling
-    if uses_vector || uses_phantom_struct_args || has_phantom_type_params {
-        imports.add_wildcard(format!("{}/reified", framework_path), "reified");
+    // Named reified imports - always include base set (including phantom, used in every struct's .phantom() method)
+    let reified_path = format!("{}/reified", framework_path);
+    let mut reified_imports = vec![
+        "PhantomReified",
+        "Reified",
+        "StructClass",
+        "ToField",
+        "ToTypeStr",
+        "decodeFromFields",
+        "decodeFromFieldsWithTypes",
+        "decodeFromJSONField",
+        "phantom", // Always needed - every struct has a static phantom() method
+    ];
+
+    // Add vector import when needed (for vector() calls in decode methods)
+    if uses_vector {
+        reified_imports.push("vector");
     }
 
-    // Named reified imports - always include base set
-    let reified_path = format!("{}/reified", framework_path);
-    imports.add_named_many(
-        &reified_path,
-        &[
-            "PhantomReified",
-            "Reified",
-            "StructClass",
-            "ToField",
-            "ToTypeStr",
-            "decodeFromFields",
-            "decodeFromFieldsWithTypes",
-            "decodeFromJSONField",
-            "phantom",
-        ],
-    );
+    imports.add_named_many(&reified_path, &reified_imports);
 
     if has_type_params {
         imports.add_named_many(
@@ -612,7 +611,8 @@ fn emit_combined_imports_with_enums(
         imports.add_named_many(&reified_path, &["TypeArgument", "ToTypeArgument", "toBcs"]);
     }
 
-    if uses_field_to_json || has_type_params {
+    // fieldToJSON is only needed when fields actually use it (Vector, Option, TypeParam fields)
+    if uses_field_to_json {
         imports.add_named(&reified_path, "fieldToJSON");
     }
 
@@ -624,17 +624,17 @@ fn emit_combined_imports_with_enums(
         imports.add_named_as(&reified_path, "ToTypeStr", "ToPhantom");
     }
 
-    // Utils import - always include parseTypeName for fetch methods
+    // Utils import
     let util_path = format!("{}/util", framework_path);
     imports.add_named_many(
         &util_path,
-        &[
-            "FieldsWithTypes",
-            "composeSuiType",
-            "compressSuiType",
-            "parseTypeName",
-        ],
+        &["FieldsWithTypes", "composeSuiType", "compressSuiType"],
     );
+
+    // parseTypeName is only needed for structs/enums with type params (used in fromSuiObjectData)
+    if has_type_params {
+        imports.add_named(&util_path, "parseTypeName");
+    }
 
     // Vector import
     if uses_vector {
