@@ -209,7 +209,7 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> imp
         }
       }
 
-      return WithTwoGenerics.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+      return WithTwoGenerics.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return WithTwoGenerics.fromSuiParsedData(typeArgs, data.content)

@@ -250,7 +250,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
         }
       }
 
-      return WithSpecialTypesInVectors.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return WithSpecialTypesInVectors.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return WithSpecialTypesInVectors.fromSuiParsedData(typeArg, data.content)

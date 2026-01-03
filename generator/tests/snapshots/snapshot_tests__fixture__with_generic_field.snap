@@ -210,7 +210,7 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
         }
       }
 
-      return WithGenericField.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return WithGenericField.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return WithGenericField.fromSuiParsedData(typeArg, data.content)

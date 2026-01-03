@@ -249,7 +249,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
         }
       }
 
-      return Wrapped.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+      return Wrapped.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Wrapped.fromSuiParsedData(typeArgs, data.content)

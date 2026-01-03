@@ -26,7 +26,7 @@ pub struct StructIR {
     pub struct_imports: Vec<StructImport>,
     /// Whether any field uses Vector type (requires reified namespace import)
     pub uses_vector: bool,
-    /// Whether any field uses address type (requires fromHEX/toHEX imports)
+    /// Whether any field uses address type (requires fromHex/toHex imports)
     pub uses_address: bool,
     /// Whether any field has phantom struct type args (requires ToPhantom alias)
     pub uses_phantom_struct_args: bool,
@@ -310,11 +310,12 @@ impl StructIR {
                 .to_string(),
         );
 
-        // Utils imports - add fromHEX/toHEX if addresses are used
+        // Utils imports - add fromHex/toHex if addresses are used
         if self.uses_address {
-            lines.push("import { fromB64, fromHEX, toHEX } from '@mysten/sui/utils'".to_string());
+            lines
+                .push("import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'".to_string());
         } else {
-            lines.push("import { fromB64 } from '@mysten/sui/utils'".to_string());
+            lines.push("import { fromBase64 } from '@mysten/sui/utils'".to_string());
         }
 
         lines.join("\n")
@@ -625,7 +626,7 @@ impl StructIR {
                     throw new Error(`object at is not a {name} object`)
                   }}
 
-                  return {name}.fromBcs(fromB64(data.bcs.bcsBytes))
+                  return {name}.fromBcs(fromBase64(data.bcs.bcsBytes))
                 }}
                 if (data.content) {{
                   return {name}.fromSuiParsedData(data.content)
@@ -1033,7 +1034,7 @@ impl StructIR {
                   }}
                   {type_arg_checks}
 
-                  return {name}.fromBcs({type_args_for_call}, fromB64(data.bcs.bcsBytes))
+                  return {name}.fromBcs({type_args_for_call}, fromBase64(data.bcs.bcsBytes))
                 }}
                 if (data.content) {{
                   return {name}.fromSuiParsedData({type_args_for_call}, data.content)
@@ -1592,7 +1593,7 @@ impl FieldTypeIR {
             FieldTypeIR::Primitive(p) => match p.as_str() {
                 "u8" | "u16" | "u32" | "u64" | "u128" | "u256" => format!("bcs.{}()", p),
                 "bool" => "bcs.bool()".to_string(),
-                "address" => "bcs.bytes(32).transform({ input: (val: string) => fromHEX(val), output: (val: Uint8Array) => toHEX(val) })".to_string(),
+                "address" => "bcs.bytes(32).transform({ input: (val: string) => fromHex(val), output: (val: Uint8Array) => toHex(val) })".to_string(),
                 _ => format!("bcs.{}()", p),
             },
             FieldTypeIR::Vector(inner) => format!("bcs.vector({})", inner.to_bcs()),

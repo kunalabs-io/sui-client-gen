@@ -147,7 +147,7 @@ export class Bar implements StructClass {
         throw new Error(`object at is not a Bar object`)
       }
 
-      return Bar.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Bar.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Bar.fromSuiParsedData(data.content)
