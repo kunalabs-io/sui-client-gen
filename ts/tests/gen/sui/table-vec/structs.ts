@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -14,7 +13,6 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
-  fieldToJSON,
   phantom,
 } from '../../_framework/reified'
 import {
@@ -131,7 +129,7 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
     fields: Record<string, any>
   ): TableVec<ToPhantomTypeArgument<Element>> {
     return TableVec.reified(typeArg).new({
-      contents: decodeFromFields(Table.reified(reified.phantom('u64'), typeArg), fields.contents),
+      contents: decodeFromFields(Table.reified(phantom('u64'), typeArg), fields.contents),
     })
   }
 
@@ -146,7 +144,7 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
 
     return TableVec.reified(typeArg).new({
       contents: decodeFromFieldsWithTypes(
-        Table.reified(reified.phantom('u64'), typeArg),
+        Table.reified(phantom('u64'), typeArg),
         item.fields.contents
       ),
     })
@@ -174,7 +172,7 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
     field: any
   ): TableVec<ToPhantomTypeArgument<Element>> {
     return TableVec.reified(typeArg).new({
-      contents: decodeFromJSONField(Table.reified(reified.phantom('u64'), typeArg), field.contents),
+      contents: decodeFromJSONField(Table.reified(phantom('u64'), typeArg), field.contents),
     })
   }
 

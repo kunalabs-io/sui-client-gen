@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -14,7 +13,6 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
-  fieldToJSON,
   phantom,
 } from '../../_framework/reified'
 import {

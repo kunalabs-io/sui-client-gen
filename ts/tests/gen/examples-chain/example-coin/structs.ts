@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -11,12 +10,7 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { TreasuryCap } from '../../sui-chain/coin/structs'
 import { UID } from '../../sui-chain/object/structs'
 import { PKG_V1 } from '../index'
@@ -298,10 +292,7 @@ export class Faucet implements StructClass {
   static fromFields(fields: Record<string, any>): Faucet {
     return Faucet.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
-      cap: decodeFromFields(
-        TreasuryCap.reified(reified.phantom(EXAMPLE_COIN.reified())),
-        fields.cap
-      ),
+      cap: decodeFromFields(TreasuryCap.reified(phantom(EXAMPLE_COIN.reified())), fields.cap),
     })
   }
 
@@ -313,7 +304,7 @@ export class Faucet implements StructClass {
     return Faucet.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       cap: decodeFromFieldsWithTypes(
-        TreasuryCap.reified(reified.phantom(EXAMPLE_COIN.reified())),
+        TreasuryCap.reified(phantom(EXAMPLE_COIN.reified())),
         item.fields.cap
       ),
     })
@@ -337,10 +328,7 @@ export class Faucet implements StructClass {
   static fromJSONField(field: any): Faucet {
     return Faucet.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
-      cap: decodeFromJSONField(
-        TreasuryCap.reified(reified.phantom(EXAMPLE_COIN.reified())),
-        field.cap
-      ),
+      cap: decodeFromJSONField(TreasuryCap.reified(phantom(EXAMPLE_COIN.reified())), field.cap),
     })
   }
 

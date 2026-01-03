@@ -1,4 +1,3 @@
-import * as reified from '../../../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -11,12 +10,7 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { Bag } from '../../../../sui/bag/structs'
 import { Balance } from '../../../../sui/balance/structs'
 import { SUI } from '../../../../sui/sui/structs'
@@ -137,7 +131,7 @@ export class StakeSubsidy implements StructClass {
 
   static fromFields(fields: Record<string, any>): StakeSubsidy {
     return StakeSubsidy.reified().new({
-      balance: decodeFromFields(Balance.reified(reified.phantom(SUI.reified())), fields.balance),
+      balance: decodeFromFields(Balance.reified(phantom(SUI.reified())), fields.balance),
       distributionCounter: decodeFromFields('u64', fields.distribution_counter),
       currentDistributionAmount: decodeFromFields('u64', fields.current_distribution_amount),
       stakeSubsidyPeriodLength: decodeFromFields('u64', fields.stake_subsidy_period_length),
@@ -153,7 +147,7 @@ export class StakeSubsidy implements StructClass {
 
     return StakeSubsidy.reified().new({
       balance: decodeFromFieldsWithTypes(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         item.fields.balance
       ),
       distributionCounter: decodeFromFieldsWithTypes('u64', item.fields.distribution_counter),
@@ -194,7 +188,7 @@ export class StakeSubsidy implements StructClass {
 
   static fromJSONField(field: any): StakeSubsidy {
     return StakeSubsidy.reified().new({
-      balance: decodeFromJSONField(Balance.reified(reified.phantom(SUI.reified())), field.balance),
+      balance: decodeFromJSONField(Balance.reified(phantom(SUI.reified())), field.balance),
       distributionCounter: decodeFromJSONField('u64', field.distributionCounter),
       currentDistributionAmount: decodeFromJSONField('u64', field.currentDistributionAmount),
       stakeSubsidyPeriodLength: decodeFromJSONField('u64', field.stakeSubsidyPeriodLength),

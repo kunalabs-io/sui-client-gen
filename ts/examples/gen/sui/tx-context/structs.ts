@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -10,13 +9,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -132,7 +127,7 @@ export class TxContext implements StructClass {
   static fromFields(fields: Record<string, any>): TxContext {
     return TxContext.reified().new({
       sender: decodeFromFields('address', fields.sender),
-      txHash: decodeFromFields(reified.vector('u8'), fields.tx_hash),
+      txHash: decodeFromFields(vector('u8'), fields.tx_hash),
       epoch: decodeFromFields('u64', fields.epoch),
       epochTimestampMs: decodeFromFields('u64', fields.epoch_timestamp_ms),
       idsCreated: decodeFromFields('u64', fields.ids_created),
@@ -146,7 +141,7 @@ export class TxContext implements StructClass {
 
     return TxContext.reified().new({
       sender: decodeFromFieldsWithTypes('address', item.fields.sender),
-      txHash: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.tx_hash),
+      txHash: decodeFromFieldsWithTypes(vector('u8'), item.fields.tx_hash),
       epoch: decodeFromFieldsWithTypes('u64', item.fields.epoch),
       epochTimestampMs: decodeFromFieldsWithTypes('u64', item.fields.epoch_timestamp_ms),
       idsCreated: decodeFromFieldsWithTypes('u64', item.fields.ids_created),
@@ -174,7 +169,7 @@ export class TxContext implements StructClass {
   static fromJSONField(field: any): TxContext {
     return TxContext.reified().new({
       sender: decodeFromJSONField('address', field.sender),
-      txHash: decodeFromJSONField(reified.vector('u8'), field.txHash),
+      txHash: decodeFromJSONField(vector('u8'), field.txHash),
       epoch: decodeFromJSONField('u64', field.epoch),
       epochTimestampMs: decodeFromJSONField('u64', field.epochTimestampMs),
       idsCreated: decodeFromJSONField('u64', field.idsCreated),

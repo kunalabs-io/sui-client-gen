@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -16,6 +15,7 @@ import {
   fieldToJSON,
   phantom,
   toBcs,
+  vector,
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
@@ -137,10 +137,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
     fields: Record<string, any>
   ): VecMap<ToTypeArgument<K>, ToTypeArgument<V>> {
     return VecMap.reified(typeArgs[0], typeArgs[1]).new({
-      contents: decodeFromFields(
-        reified.vector(Entry.reified(typeArgs[0], typeArgs[1])),
-        fields.contents
-      ),
+      contents: decodeFromFields(vector(Entry.reified(typeArgs[0], typeArgs[1])), fields.contents),
     })
   }
 
@@ -155,7 +152,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
 
     return VecMap.reified(typeArgs[0], typeArgs[1]).new({
       contents: decodeFromFieldsWithTypes(
-        reified.vector(Entry.reified(typeArgs[0], typeArgs[1])),
+        vector(Entry.reified(typeArgs[0], typeArgs[1])),
         item.fields.contents
       ),
     })
@@ -190,7 +187,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
   ): VecMap<ToTypeArgument<K>, ToTypeArgument<V>> {
     return VecMap.reified(typeArgs[0], typeArgs[1]).new({
       contents: decodeFromJSONField(
-        reified.vector(Entry.reified(typeArgs[0], typeArgs[1])),
+        vector(Entry.reified(typeArgs[0], typeArgs[1])),
         field.contents
       ),
     })

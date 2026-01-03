@@ -1,4 +1,3 @@
-import * as reified from '../../../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -11,13 +10,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { Vector } from '../../../../_framework/vector'
 import { Option } from '../../../../move-stdlib/option/structs'
 import { LinkedTable } from '../../../../sui/linked-table/structs'
@@ -339,7 +334,7 @@ export class BridgeInner implements StructClass {
       committee: decodeFromFields(BridgeCommittee.reified(), fields.committee),
       treasury: decodeFromFields(BridgeTreasury.reified(), fields.treasury),
       tokenTransferRecords: decodeFromFields(
-        LinkedTable.reified(BridgeMessageKey.reified(), reified.phantom(BridgeRecord.reified())),
+        LinkedTable.reified(BridgeMessageKey.reified(), phantom(BridgeRecord.reified())),
         fields.token_transfer_records
       ),
       limiter: decodeFromFields(TransferLimiter.reified(), fields.limiter),
@@ -363,7 +358,7 @@ export class BridgeInner implements StructClass {
       committee: decodeFromFieldsWithTypes(BridgeCommittee.reified(), item.fields.committee),
       treasury: decodeFromFieldsWithTypes(BridgeTreasury.reified(), item.fields.treasury),
       tokenTransferRecords: decodeFromFieldsWithTypes(
-        LinkedTable.reified(BridgeMessageKey.reified(), reified.phantom(BridgeRecord.reified())),
+        LinkedTable.reified(BridgeMessageKey.reified(), phantom(BridgeRecord.reified())),
         item.fields.token_transfer_records
       ),
       limiter: decodeFromFieldsWithTypes(TransferLimiter.reified(), item.fields.limiter),
@@ -402,7 +397,7 @@ export class BridgeInner implements StructClass {
       committee: decodeFromJSONField(BridgeCommittee.reified(), field.committee),
       treasury: decodeFromJSONField(BridgeTreasury.reified(), field.treasury),
       tokenTransferRecords: decodeFromJSONField(
-        LinkedTable.reified(BridgeMessageKey.reified(), reified.phantom(BridgeRecord.reified())),
+        LinkedTable.reified(BridgeMessageKey.reified(), phantom(BridgeRecord.reified())),
         field.tokenTransferRecords
       ),
       limiter: decodeFromJSONField(TransferLimiter.reified(), field.limiter),
@@ -578,9 +573,9 @@ export class TokenDepositedEvent implements StructClass {
     return TokenDepositedEvent.reified().new({
       seqNum: decodeFromFields('u64', fields.seq_num),
       sourceChain: decodeFromFields('u8', fields.source_chain),
-      senderAddress: decodeFromFields(reified.vector('u8'), fields.sender_address),
+      senderAddress: decodeFromFields(vector('u8'), fields.sender_address),
       targetChain: decodeFromFields('u8', fields.target_chain),
-      targetAddress: decodeFromFields(reified.vector('u8'), fields.target_address),
+      targetAddress: decodeFromFields(vector('u8'), fields.target_address),
       tokenType: decodeFromFields('u8', fields.token_type),
       amount: decodeFromFields('u64', fields.amount),
     })
@@ -594,9 +589,9 @@ export class TokenDepositedEvent implements StructClass {
     return TokenDepositedEvent.reified().new({
       seqNum: decodeFromFieldsWithTypes('u64', item.fields.seq_num),
       sourceChain: decodeFromFieldsWithTypes('u8', item.fields.source_chain),
-      senderAddress: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.sender_address),
+      senderAddress: decodeFromFieldsWithTypes(vector('u8'), item.fields.sender_address),
       targetChain: decodeFromFieldsWithTypes('u8', item.fields.target_chain),
-      targetAddress: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.target_address),
+      targetAddress: decodeFromFieldsWithTypes(vector('u8'), item.fields.target_address),
       tokenType: decodeFromFieldsWithTypes('u8', item.fields.token_type),
       amount: decodeFromFieldsWithTypes('u64', item.fields.amount),
     })
@@ -626,9 +621,9 @@ export class TokenDepositedEvent implements StructClass {
     return TokenDepositedEvent.reified().new({
       seqNum: decodeFromJSONField('u64', field.seqNum),
       sourceChain: decodeFromJSONField('u8', field.sourceChain),
-      senderAddress: decodeFromJSONField(reified.vector('u8'), field.senderAddress),
+      senderAddress: decodeFromJSONField(vector('u8'), field.senderAddress),
       targetChain: decodeFromJSONField('u8', field.targetChain),
-      targetAddress: decodeFromJSONField(reified.vector('u8'), field.targetAddress),
+      targetAddress: decodeFromJSONField(vector('u8'), field.targetAddress),
       tokenType: decodeFromJSONField('u8', field.tokenType),
       amount: decodeFromJSONField('u64', field.amount),
     })
@@ -959,7 +954,7 @@ export class BridgeRecord implements StructClass {
     return BridgeRecord.reified().new({
       message: decodeFromFields(BridgeMessage.reified(), fields.message),
       verifiedSignatures: decodeFromFields(
-        Option.reified(reified.vector(reified.vector('u8'))),
+        Option.reified(vector(vector('u8'))),
         fields.verified_signatures
       ),
       claimed: decodeFromFields('bool', fields.claimed),
@@ -974,7 +969,7 @@ export class BridgeRecord implements StructClass {
     return BridgeRecord.reified().new({
       message: decodeFromFieldsWithTypes(BridgeMessage.reified(), item.fields.message),
       verifiedSignatures: decodeFromFieldsWithTypes(
-        Option.reified(reified.vector(reified.vector('u8'))),
+        Option.reified(vector(vector('u8'))),
         item.fields.verified_signatures
       ),
       claimed: decodeFromFieldsWithTypes('bool', item.fields.claimed),
@@ -1004,7 +999,7 @@ export class BridgeRecord implements StructClass {
     return BridgeRecord.reified().new({
       message: decodeFromJSONField(BridgeMessage.reified(), field.message),
       verifiedSignatures: decodeFromJSONField(
-        Option.reified(reified.vector(reified.vector('u8'))),
+        Option.reified(vector(vector('u8'))),
         field.verifiedSignatures
       ),
       claimed: decodeFromJSONField('bool', field.claimed),

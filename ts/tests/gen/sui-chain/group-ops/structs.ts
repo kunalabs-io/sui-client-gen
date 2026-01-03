@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -16,6 +15,7 @@ import {
   extractType,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
@@ -128,7 +128,7 @@ export class Element<T0 extends PhantomTypeArgument> implements StructClass {
     fields: Record<string, any>
   ): Element<ToPhantomTypeArgument<T0>> {
     return Element.reified(typeArg).new({
-      bytes: decodeFromFields(reified.vector('u8'), fields.bytes),
+      bytes: decodeFromFields(vector('u8'), fields.bytes),
     })
   }
 
@@ -142,7 +142,7 @@ export class Element<T0 extends PhantomTypeArgument> implements StructClass {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return Element.reified(typeArg).new({
-      bytes: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.bytes),
+      bytes: decodeFromFieldsWithTypes(vector('u8'), item.fields.bytes),
     })
   }
 
@@ -168,7 +168,7 @@ export class Element<T0 extends PhantomTypeArgument> implements StructClass {
     field: any
   ): Element<ToPhantomTypeArgument<T0>> {
     return Element.reified(typeArg).new({
-      bytes: decodeFromJSONField(reified.vector('u8'), field.bytes),
+      bytes: decodeFromJSONField(vector('u8'), field.bytes),
     })
   }
 

@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -10,13 +9,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -117,7 +112,7 @@ export class BitVector implements StructClass {
   static fromFields(fields: Record<string, any>): BitVector {
     return BitVector.reified().new({
       length: decodeFromFields('u64', fields.length),
-      bitField: decodeFromFields(reified.vector('bool'), fields.bit_field),
+      bitField: decodeFromFields(vector('bool'), fields.bit_field),
     })
   }
 
@@ -128,7 +123,7 @@ export class BitVector implements StructClass {
 
     return BitVector.reified().new({
       length: decodeFromFieldsWithTypes('u64', item.fields.length),
-      bitField: decodeFromFieldsWithTypes(reified.vector('bool'), item.fields.bit_field),
+      bitField: decodeFromFieldsWithTypes(vector('bool'), item.fields.bit_field),
     })
   }
 
@@ -150,7 +145,7 @@ export class BitVector implements StructClass {
   static fromJSONField(field: any): BitVector {
     return BitVector.reified().new({
       length: decodeFromJSONField('u64', field.length),
-      bitField: decodeFromJSONField(reified.vector('bool'), field.bitField),
+      bitField: decodeFromJSONField(vector('bool'), field.bitField),
     })
   }
 

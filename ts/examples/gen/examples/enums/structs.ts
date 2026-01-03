@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   EnumVariantClass,
   PhantomReified,
@@ -199,9 +198,9 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
       t: decodeFromFields(typeArgs[0], fields.t),
       u: decodeFromFields(typeArgs[1], fields.u),
       v: decodeFromFields(typeArgs[2], fields.v),
-      stop: decodeFromFields(Action.reified('u64', reified.phantom(SUI.reified())), fields.stop),
-      pause: decodeFromFields(Action.reified('u64', reified.phantom(SUI.reified())), fields.pause),
-      jump: decodeFromFields(Action.reified('u64', reified.phantom(SUI.reified())), fields.jump),
+      stop: decodeFromFields(Action.reified('u64', phantom(SUI.reified())), fields.stop),
+      pause: decodeFromFields(Action.reified('u64', phantom(SUI.reified())), fields.pause),
+      jump: decodeFromFields(Action.reified('u64', phantom(SUI.reified())), fields.jump),
     })
   }
 
@@ -224,15 +223,15 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
       u: decodeFromFieldsWithTypes(typeArgs[1], item.fields.u),
       v: decodeFromFieldsWithTypes(typeArgs[2], item.fields.v),
       stop: decodeFromFieldsWithTypes(
-        Action.reified('u64', reified.phantom(SUI.reified())),
+        Action.reified('u64', phantom(SUI.reified())),
         item.fields.stop
       ),
       pause: decodeFromFieldsWithTypes(
-        Action.reified('u64', reified.phantom(SUI.reified())),
+        Action.reified('u64', phantom(SUI.reified())),
         item.fields.pause
       ),
       jump: decodeFromFieldsWithTypes(
-        Action.reified('u64', reified.phantom(SUI.reified())),
+        Action.reified('u64', phantom(SUI.reified())),
         item.fields.jump
       ),
     })
@@ -281,12 +280,9 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
       t: decodeFromJSONField(typeArgs[0], field.t),
       u: decodeFromJSONField(typeArgs[1], field.u),
       v: decodeFromJSONField(typeArgs[2], field.v),
-      stop: decodeFromJSONField(Action.reified('u64', reified.phantom(SUI.reified())), field.stop),
-      pause: decodeFromJSONField(
-        Action.reified('u64', reified.phantom(SUI.reified())),
-        field.pause
-      ),
-      jump: decodeFromJSONField(Action.reified('u64', reified.phantom(SUI.reified())), field.jump),
+      stop: decodeFromJSONField(Action.reified('u64', phantom(SUI.reified())), field.stop),
+      pause: decodeFromJSONField(Action.reified('u64', phantom(SUI.reified())), field.pause),
+      jump: decodeFromJSONField(Action.reified('u64', phantom(SUI.reified())), field.jump),
     })
   }
 

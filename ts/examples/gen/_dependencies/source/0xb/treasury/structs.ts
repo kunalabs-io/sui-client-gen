@@ -9,12 +9,7 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { TypeName } from '../../../../move-stdlib/type-name/structs'
 import { Bag } from '../../../../sui/bag/structs'
 import { ObjectBag } from '../../../../sui/object-bag/structs'

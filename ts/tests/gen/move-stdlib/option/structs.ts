@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -16,6 +15,7 @@ import {
   fieldToJSON,
   phantom,
   toBcs,
+  vector,
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
@@ -134,7 +134,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
     fields: Record<string, any>
   ): Option<ToTypeArgument<Element>> {
     return Option.reified(typeArg).new({
-      vec: decodeFromFields(reified.vector(typeArg), fields.vec),
+      vec: decodeFromFields(vector(typeArg), fields.vec),
     })
   }
 
@@ -148,7 +148,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return Option.reified(typeArg).new({
-      vec: decodeFromFieldsWithTypes(reified.vector(typeArg), item.fields.vec),
+      vec: decodeFromFieldsWithTypes(vector(typeArg), item.fields.vec),
     })
   }
 
@@ -175,7 +175,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
     field: any
   ): Option<ToTypeArgument<Element>> {
     return Option.reified(typeArg).new({
-      vec: decodeFromJSONField(reified.vector(typeArg), field.vec),
+      vec: decodeFromJSONField(vector(typeArg), field.vec),
     })
   }
 

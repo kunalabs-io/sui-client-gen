@@ -1,4 +1,3 @@
-import * as reified from '../../../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -12,12 +11,7 @@ import {
   fieldToJSON,
   phantom,
 } from '../../../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { Option } from '../../../../move-stdlib/option/structs'
 import { Bag } from '../../../../sui/bag/structs'
 import { Balance } from '../../../../sui/balance/structs'
@@ -165,13 +159,10 @@ export class StakingPool implements StructClass {
       activationEpoch: decodeFromFields(Option.reified('u64'), fields.activation_epoch),
       deactivationEpoch: decodeFromFields(Option.reified('u64'), fields.deactivation_epoch),
       suiBalance: decodeFromFields('u64', fields.sui_balance),
-      rewardsPool: decodeFromFields(
-        Balance.reified(reified.phantom(SUI.reified())),
-        fields.rewards_pool
-      ),
+      rewardsPool: decodeFromFields(Balance.reified(phantom(SUI.reified())), fields.rewards_pool),
       poolTokenBalance: decodeFromFields('u64', fields.pool_token_balance),
       exchangeRates: decodeFromFields(
-        Table.reified(reified.phantom('u64'), reified.phantom(PoolTokenExchangeRate.reified())),
+        Table.reified(phantom('u64'), phantom(PoolTokenExchangeRate.reified())),
         fields.exchange_rates
       ),
       pendingStake: decodeFromFields('u64', fields.pending_stake),
@@ -198,12 +189,12 @@ export class StakingPool implements StructClass {
       ),
       suiBalance: decodeFromFieldsWithTypes('u64', item.fields.sui_balance),
       rewardsPool: decodeFromFieldsWithTypes(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         item.fields.rewards_pool
       ),
       poolTokenBalance: decodeFromFieldsWithTypes('u64', item.fields.pool_token_balance),
       exchangeRates: decodeFromFieldsWithTypes(
-        Table.reified(reified.phantom('u64'), reified.phantom(PoolTokenExchangeRate.reified())),
+        Table.reified(phantom('u64'), phantom(PoolTokenExchangeRate.reified())),
         item.fields.exchange_rates
       ),
       pendingStake: decodeFromFieldsWithTypes('u64', item.fields.pending_stake),
@@ -252,13 +243,10 @@ export class StakingPool implements StructClass {
       activationEpoch: decodeFromJSONField(Option.reified('u64'), field.activationEpoch),
       deactivationEpoch: decodeFromJSONField(Option.reified('u64'), field.deactivationEpoch),
       suiBalance: decodeFromJSONField('u64', field.suiBalance),
-      rewardsPool: decodeFromJSONField(
-        Balance.reified(reified.phantom(SUI.reified())),
-        field.rewardsPool
-      ),
+      rewardsPool: decodeFromJSONField(Balance.reified(phantom(SUI.reified())), field.rewardsPool),
       poolTokenBalance: decodeFromJSONField('u64', field.poolTokenBalance),
       exchangeRates: decodeFromJSONField(
-        Table.reified(reified.phantom('u64'), reified.phantom(PoolTokenExchangeRate.reified())),
+        Table.reified(phantom('u64'), phantom(PoolTokenExchangeRate.reified())),
         field.exchangeRates
       ),
       pendingStake: decodeFromJSONField('u64', field.pendingStake),
@@ -614,10 +602,7 @@ export class StakedSui implements StructClass {
       id: decodeFromFields(UID.reified(), fields.id),
       poolId: decodeFromFields(ID.reified(), fields.pool_id),
       stakeActivationEpoch: decodeFromFields('u64', fields.stake_activation_epoch),
-      principal: decodeFromFields(
-        Balance.reified(reified.phantom(SUI.reified())),
-        fields.principal
-      ),
+      principal: decodeFromFields(Balance.reified(phantom(SUI.reified())), fields.principal),
     })
   }
 
@@ -631,7 +616,7 @@ export class StakedSui implements StructClass {
       poolId: decodeFromFieldsWithTypes(ID.reified(), item.fields.pool_id),
       stakeActivationEpoch: decodeFromFieldsWithTypes('u64', item.fields.stake_activation_epoch),
       principal: decodeFromFieldsWithTypes(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         item.fields.principal
       ),
     })
@@ -659,10 +644,7 @@ export class StakedSui implements StructClass {
       id: decodeFromJSONField(UID.reified(), field.id),
       poolId: decodeFromJSONField(ID.reified(), field.poolId),
       stakeActivationEpoch: decodeFromJSONField('u64', field.stakeActivationEpoch),
-      principal: decodeFromJSONField(
-        Balance.reified(reified.phantom(SUI.reified())),
-        field.principal
-      ),
+      principal: decodeFromJSONField(Balance.reified(phantom(SUI.reified())), field.principal),
     })
   }
 
@@ -1016,10 +998,7 @@ export class FungibleStakedSuiData implements StructClass {
     return FungibleStakedSuiData.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       totalSupply: decodeFromFields('u64', fields.total_supply),
-      principal: decodeFromFields(
-        Balance.reified(reified.phantom(SUI.reified())),
-        fields.principal
-      ),
+      principal: decodeFromFields(Balance.reified(phantom(SUI.reified())), fields.principal),
     })
   }
 
@@ -1032,7 +1011,7 @@ export class FungibleStakedSuiData implements StructClass {
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       totalSupply: decodeFromFieldsWithTypes('u64', item.fields.total_supply),
       principal: decodeFromFieldsWithTypes(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         item.fields.principal
       ),
     })
@@ -1058,10 +1037,7 @@ export class FungibleStakedSuiData implements StructClass {
     return FungibleStakedSuiData.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       totalSupply: decodeFromJSONField('u64', field.totalSupply),
-      principal: decodeFromJSONField(
-        Balance.reified(reified.phantom(SUI.reified())),
-        field.principal
-      ),
+      principal: decodeFromJSONField(Balance.reified(phantom(SUI.reified())), field.principal),
     })
   }
 

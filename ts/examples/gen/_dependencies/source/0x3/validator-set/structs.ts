@@ -1,4 +1,3 @@
-import * as reified from '../../../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -11,13 +10,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { Vector } from '../../../../_framework/vector'
 import { Bag } from '../../../../sui/bag/structs'
 import { ID } from '../../../../sui/object/structs'
@@ -163,25 +158,22 @@ export class ValidatorSet implements StructClass {
   static fromFields(fields: Record<string, any>): ValidatorSet {
     return ValidatorSet.reified().new({
       totalStake: decodeFromFields('u64', fields.total_stake),
-      activeValidators: decodeFromFields(
-        reified.vector(Validator.reified()),
-        fields.active_validators
-      ),
+      activeValidators: decodeFromFields(vector(Validator.reified()), fields.active_validators),
       pendingActiveValidators: decodeFromFields(
-        TableVec.reified(reified.phantom(Validator.reified())),
+        TableVec.reified(phantom(Validator.reified())),
         fields.pending_active_validators
       ),
-      pendingRemovals: decodeFromFields(reified.vector('u64'), fields.pending_removals),
+      pendingRemovals: decodeFromFields(vector('u64'), fields.pending_removals),
       stakingPoolMappings: decodeFromFields(
-        Table.reified(reified.phantom(ID.reified()), reified.phantom('address')),
+        Table.reified(phantom(ID.reified()), phantom('address')),
         fields.staking_pool_mappings
       ),
       inactiveValidators: decodeFromFields(
-        Table.reified(reified.phantom(ID.reified()), reified.phantom(ValidatorWrapper.reified())),
+        Table.reified(phantom(ID.reified()), phantom(ValidatorWrapper.reified())),
         fields.inactive_validators
       ),
       validatorCandidates: decodeFromFields(
-        Table.reified(reified.phantom('address'), reified.phantom(ValidatorWrapper.reified())),
+        Table.reified(phantom('address'), phantom(ValidatorWrapper.reified())),
         fields.validator_candidates
       ),
       atRiskValidators: decodeFromFields(
@@ -200,27 +192,24 @@ export class ValidatorSet implements StructClass {
     return ValidatorSet.reified().new({
       totalStake: decodeFromFieldsWithTypes('u64', item.fields.total_stake),
       activeValidators: decodeFromFieldsWithTypes(
-        reified.vector(Validator.reified()),
+        vector(Validator.reified()),
         item.fields.active_validators
       ),
       pendingActiveValidators: decodeFromFieldsWithTypes(
-        TableVec.reified(reified.phantom(Validator.reified())),
+        TableVec.reified(phantom(Validator.reified())),
         item.fields.pending_active_validators
       ),
-      pendingRemovals: decodeFromFieldsWithTypes(
-        reified.vector('u64'),
-        item.fields.pending_removals
-      ),
+      pendingRemovals: decodeFromFieldsWithTypes(vector('u64'), item.fields.pending_removals),
       stakingPoolMappings: decodeFromFieldsWithTypes(
-        Table.reified(reified.phantom(ID.reified()), reified.phantom('address')),
+        Table.reified(phantom(ID.reified()), phantom('address')),
         item.fields.staking_pool_mappings
       ),
       inactiveValidators: decodeFromFieldsWithTypes(
-        Table.reified(reified.phantom(ID.reified()), reified.phantom(ValidatorWrapper.reified())),
+        Table.reified(phantom(ID.reified()), phantom(ValidatorWrapper.reified())),
         item.fields.inactive_validators
       ),
       validatorCandidates: decodeFromFieldsWithTypes(
-        Table.reified(reified.phantom('address'), reified.phantom(ValidatorWrapper.reified())),
+        Table.reified(phantom('address'), phantom(ValidatorWrapper.reified())),
         item.fields.validator_candidates
       ),
       atRiskValidators: decodeFromFieldsWithTypes(
@@ -259,25 +248,22 @@ export class ValidatorSet implements StructClass {
   static fromJSONField(field: any): ValidatorSet {
     return ValidatorSet.reified().new({
       totalStake: decodeFromJSONField('u64', field.totalStake),
-      activeValidators: decodeFromJSONField(
-        reified.vector(Validator.reified()),
-        field.activeValidators
-      ),
+      activeValidators: decodeFromJSONField(vector(Validator.reified()), field.activeValidators),
       pendingActiveValidators: decodeFromJSONField(
-        TableVec.reified(reified.phantom(Validator.reified())),
+        TableVec.reified(phantom(Validator.reified())),
         field.pendingActiveValidators
       ),
-      pendingRemovals: decodeFromJSONField(reified.vector('u64'), field.pendingRemovals),
+      pendingRemovals: decodeFromJSONField(vector('u64'), field.pendingRemovals),
       stakingPoolMappings: decodeFromJSONField(
-        Table.reified(reified.phantom(ID.reified()), reified.phantom('address')),
+        Table.reified(phantom(ID.reified()), phantom('address')),
         field.stakingPoolMappings
       ),
       inactiveValidators: decodeFromJSONField(
-        Table.reified(reified.phantom(ID.reified()), reified.phantom(ValidatorWrapper.reified())),
+        Table.reified(phantom(ID.reified()), phantom(ValidatorWrapper.reified())),
         field.inactiveValidators
       ),
       validatorCandidates: decodeFromJSONField(
-        Table.reified(reified.phantom('address'), reified.phantom(ValidatorWrapper.reified())),
+        Table.reified(phantom('address'), phantom(ValidatorWrapper.reified())),
         field.validatorCandidates
       ),
       atRiskValidators: decodeFromJSONField(
@@ -491,10 +477,7 @@ export class ValidatorEpochInfoEvent implements StructClass {
         PoolTokenExchangeRate.reified(),
         fields.pool_token_exchange_rate
       ),
-      tallyingRuleReporters: decodeFromFields(
-        reified.vector('address'),
-        fields.tallying_rule_reporters
-      ),
+      tallyingRuleReporters: decodeFromFields(vector('address'), fields.tallying_rule_reporters),
       tallyingRuleGlobalScore: decodeFromFields('u64', fields.tallying_rule_global_score),
     })
   }
@@ -523,7 +506,7 @@ export class ValidatorEpochInfoEvent implements StructClass {
         item.fields.pool_token_exchange_rate
       ),
       tallyingRuleReporters: decodeFromFieldsWithTypes(
-        reified.vector('address'),
+        vector('address'),
         item.fields.tallying_rule_reporters
       ),
       tallyingRuleGlobalScore: decodeFromFieldsWithTypes(
@@ -572,10 +555,7 @@ export class ValidatorEpochInfoEvent implements StructClass {
         PoolTokenExchangeRate.reified(),
         field.poolTokenExchangeRate
       ),
-      tallyingRuleReporters: decodeFromJSONField(
-        reified.vector('address'),
-        field.tallyingRuleReporters
-      ),
+      tallyingRuleReporters: decodeFromJSONField(vector('address'), field.tallyingRuleReporters),
       tallyingRuleGlobalScore: decodeFromJSONField('u64', field.tallyingRuleGlobalScore),
     })
   }
@@ -793,10 +773,7 @@ export class ValidatorEpochInfoEventV2 implements StructClass {
         PoolTokenExchangeRate.reified(),
         fields.pool_token_exchange_rate
       ),
-      tallyingRuleReporters: decodeFromFields(
-        reified.vector('address'),
-        fields.tallying_rule_reporters
-      ),
+      tallyingRuleReporters: decodeFromFields(vector('address'), fields.tallying_rule_reporters),
       tallyingRuleGlobalScore: decodeFromFields('u64', fields.tallying_rule_global_score),
     })
   }
@@ -826,7 +803,7 @@ export class ValidatorEpochInfoEventV2 implements StructClass {
         item.fields.pool_token_exchange_rate
       ),
       tallyingRuleReporters: decodeFromFieldsWithTypes(
-        reified.vector('address'),
+        vector('address'),
         item.fields.tallying_rule_reporters
       ),
       tallyingRuleGlobalScore: decodeFromFieldsWithTypes(
@@ -877,10 +854,7 @@ export class ValidatorEpochInfoEventV2 implements StructClass {
         PoolTokenExchangeRate.reified(),
         field.poolTokenExchangeRate
       ),
-      tallyingRuleReporters: decodeFromJSONField(
-        reified.vector('address'),
-        field.tallyingRuleReporters
-      ),
+      tallyingRuleReporters: decodeFromJSONField(vector('address'), field.tallyingRuleReporters),
       tallyingRuleGlobalScore: decodeFromJSONField('u64', field.tallyingRuleGlobalScore),
     })
   }

@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -10,13 +9,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { String } from '../../move-stdlib/string/structs'
 import { UID } from '../object/structs'
@@ -312,7 +307,7 @@ export class AuthenticatorStateInner implements StructClass {
   static fromFields(fields: Record<string, any>): AuthenticatorStateInner {
     return AuthenticatorStateInner.reified().new({
       version: decodeFromFields('u64', fields.version),
-      activeJwks: decodeFromFields(reified.vector(ActiveJwk.reified()), fields.active_jwks),
+      activeJwks: decodeFromFields(vector(ActiveJwk.reified()), fields.active_jwks),
     })
   }
 
@@ -323,10 +318,7 @@ export class AuthenticatorStateInner implements StructClass {
 
     return AuthenticatorStateInner.reified().new({
       version: decodeFromFieldsWithTypes('u64', item.fields.version),
-      activeJwks: decodeFromFieldsWithTypes(
-        reified.vector(ActiveJwk.reified()),
-        item.fields.active_jwks
-      ),
+      activeJwks: decodeFromFieldsWithTypes(vector(ActiveJwk.reified()), item.fields.active_jwks),
     })
   }
 
@@ -348,7 +340,7 @@ export class AuthenticatorStateInner implements StructClass {
   static fromJSONField(field: any): AuthenticatorStateInner {
     return AuthenticatorStateInner.reified().new({
       version: decodeFromJSONField('u64', field.version),
-      activeJwks: decodeFromJSONField(reified.vector(ActiveJwk.reified()), field.activeJwks),
+      activeJwks: decodeFromJSONField(vector(ActiveJwk.reified()), field.activeJwks),
     })
   }
 

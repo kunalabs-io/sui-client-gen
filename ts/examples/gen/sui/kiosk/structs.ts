@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -15,7 +14,6 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
-  fieldToJSON,
   phantom,
 } from '../../_framework/reified'
 import {
@@ -138,7 +136,7 @@ export class Kiosk implements StructClass {
   static fromFields(fields: Record<string, any>): Kiosk {
     return Kiosk.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
-      profits: decodeFromFields(Balance.reified(reified.phantom(SUI.reified())), fields.profits),
+      profits: decodeFromFields(Balance.reified(phantom(SUI.reified())), fields.profits),
       owner: decodeFromFields('address', fields.owner),
       itemCount: decodeFromFields('u32', fields.item_count),
       allowExtensions: decodeFromFields('bool', fields.allow_extensions),
@@ -153,7 +151,7 @@ export class Kiosk implements StructClass {
     return Kiosk.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       profits: decodeFromFieldsWithTypes(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         item.fields.profits
       ),
       owner: decodeFromFieldsWithTypes('address', item.fields.owner),
@@ -183,7 +181,7 @@ export class Kiosk implements StructClass {
   static fromJSONField(field: any): Kiosk {
     return Kiosk.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
-      profits: decodeFromJSONField(Balance.reified(reified.phantom(SUI.reified())), field.profits),
+      profits: decodeFromJSONField(Balance.reified(phantom(SUI.reified())), field.profits),
       owner: decodeFromJSONField('address', field.owner),
       itemCount: decodeFromJSONField('u32', field.itemCount),
       allowExtensions: decodeFromJSONField('bool', field.allowExtensions),

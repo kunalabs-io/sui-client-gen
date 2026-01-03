@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   EnumVariantClass,
   PhantomReified,
@@ -17,6 +16,7 @@ import {
   extractType,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
@@ -307,7 +307,7 @@ export class ExtraField implements StructClass {
   static fromFields(fields: Record<string, any>): ExtraField {
     return ExtraField.reified().new({
       pos0: decodeFromFields(TypeName.reified(), fields.pos0),
-      pos1: decodeFromFields(reified.vector('u8'), fields.pos1),
+      pos1: decodeFromFields(vector('u8'), fields.pos1),
     })
   }
 
@@ -318,7 +318,7 @@ export class ExtraField implements StructClass {
 
     return ExtraField.reified().new({
       pos0: decodeFromFieldsWithTypes(TypeName.reified(), item.fields.pos0),
-      pos1: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.pos1),
+      pos1: decodeFromFieldsWithTypes(vector('u8'), item.fields.pos1),
     })
   }
 
@@ -340,7 +340,7 @@ export class ExtraField implements StructClass {
   static fromJSONField(field: any): ExtraField {
     return ExtraField.reified().new({
       pos0: decodeFromJSONField(TypeName.reified(), field.pos0),
-      pos1: decodeFromJSONField(reified.vector('u8'), field.pos1),
+      pos1: decodeFromJSONField(vector('u8'), field.pos1),
     })
   }
 

@@ -1,4 +1,3 @@
-import * as reified from '../../../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -11,12 +10,7 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { Bag } from '../../../../sui/bag/structs'
 import { Balance } from '../../../../sui/balance/structs'
 import { SUI } from '../../../../sui/sui/structs'
@@ -926,11 +920,11 @@ export class SuiSystemStateInner implements StructClass {
       stakeSubsidy: decodeFromFields(StakeSubsidy.reified(), fields.stake_subsidy),
       safeMode: decodeFromFields('bool', fields.safe_mode),
       safeModeStorageRewards: decodeFromFields(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         fields.safe_mode_storage_rewards
       ),
       safeModeComputationRewards: decodeFromFields(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         fields.safe_mode_computation_rewards
       ),
       safeModeStorageRebates: decodeFromFields('u64', fields.safe_mode_storage_rebates),
@@ -963,11 +957,11 @@ export class SuiSystemStateInner implements StructClass {
       stakeSubsidy: decodeFromFieldsWithTypes(StakeSubsidy.reified(), item.fields.stake_subsidy),
       safeMode: decodeFromFieldsWithTypes('bool', item.fields.safe_mode),
       safeModeStorageRewards: decodeFromFieldsWithTypes(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         item.fields.safe_mode_storage_rewards
       ),
       safeModeComputationRewards: decodeFromFieldsWithTypes(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         item.fields.safe_mode_computation_rewards
       ),
       safeModeStorageRebates: decodeFromFieldsWithTypes(
@@ -1028,11 +1022,11 @@ export class SuiSystemStateInner implements StructClass {
       stakeSubsidy: decodeFromJSONField(StakeSubsidy.reified(), field.stakeSubsidy),
       safeMode: decodeFromJSONField('bool', field.safeMode),
       safeModeStorageRewards: decodeFromJSONField(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         field.safeModeStorageRewards
       ),
       safeModeComputationRewards: decodeFromJSONField(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         field.safeModeComputationRewards
       ),
       safeModeStorageRebates: decodeFromJSONField('u64', field.safeModeStorageRebates),
@@ -1278,11 +1272,11 @@ export class SuiSystemStateInnerV2 implements StructClass {
       stakeSubsidy: decodeFromFields(StakeSubsidy.reified(), fields.stake_subsidy),
       safeMode: decodeFromFields('bool', fields.safe_mode),
       safeModeStorageRewards: decodeFromFields(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         fields.safe_mode_storage_rewards
       ),
       safeModeComputationRewards: decodeFromFields(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         fields.safe_mode_computation_rewards
       ),
       safeModeStorageRebates: decodeFromFields('u64', fields.safe_mode_storage_rebates),
@@ -1315,11 +1309,11 @@ export class SuiSystemStateInnerV2 implements StructClass {
       stakeSubsidy: decodeFromFieldsWithTypes(StakeSubsidy.reified(), item.fields.stake_subsidy),
       safeMode: decodeFromFieldsWithTypes('bool', item.fields.safe_mode),
       safeModeStorageRewards: decodeFromFieldsWithTypes(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         item.fields.safe_mode_storage_rewards
       ),
       safeModeComputationRewards: decodeFromFieldsWithTypes(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         item.fields.safe_mode_computation_rewards
       ),
       safeModeStorageRebates: decodeFromFieldsWithTypes(
@@ -1380,11 +1374,11 @@ export class SuiSystemStateInnerV2 implements StructClass {
       stakeSubsidy: decodeFromJSONField(StakeSubsidy.reified(), field.stakeSubsidy),
       safeMode: decodeFromJSONField('bool', field.safeMode),
       safeModeStorageRewards: decodeFromJSONField(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         field.safeModeStorageRewards
       ),
       safeModeComputationRewards: decodeFromJSONField(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         field.safeModeComputationRewards
       ),
       safeModeStorageRebates: decodeFromJSONField('u64', field.safeModeStorageRebates),

@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -10,13 +9,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { String } from '../../move-stdlib-chain/ascii/structs'
 import { ID, UID } from '../object/structs'
@@ -515,7 +510,7 @@ export class UpgradeTicket implements StructClass {
       cap: decodeFromFields(ID.reified(), fields.cap),
       package: decodeFromFields(ID.reified(), fields.package),
       policy: decodeFromFields('u8', fields.policy),
-      digest: decodeFromFields(reified.vector('u8'), fields.digest),
+      digest: decodeFromFields(vector('u8'), fields.digest),
     })
   }
 
@@ -528,7 +523,7 @@ export class UpgradeTicket implements StructClass {
       cap: decodeFromFieldsWithTypes(ID.reified(), item.fields.cap),
       package: decodeFromFieldsWithTypes(ID.reified(), item.fields.package),
       policy: decodeFromFieldsWithTypes('u8', item.fields.policy),
-      digest: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.digest),
+      digest: decodeFromFieldsWithTypes(vector('u8'), item.fields.digest),
     })
   }
 
@@ -554,7 +549,7 @@ export class UpgradeTicket implements StructClass {
       cap: decodeFromJSONField(ID.reified(), field.cap),
       package: decodeFromJSONField(ID.reified(), field.package),
       policy: decodeFromJSONField('u8', field.policy),
-      digest: decodeFromJSONField(reified.vector('u8'), field.digest),
+      digest: decodeFromJSONField(vector('u8'), field.digest),
     })
   }
 

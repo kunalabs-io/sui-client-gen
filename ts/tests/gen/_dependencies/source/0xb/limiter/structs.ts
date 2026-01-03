@@ -1,4 +1,3 @@
-import * as reified from '../../../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -10,13 +9,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { Vector } from '../../../../_framework/vector'
 import { VecMap } from '../../../../sui/vec-map/structs'
 import { BridgeRoute } from '../chain-ids/structs'
@@ -333,7 +328,7 @@ export class TransferRecord implements StructClass {
     return TransferRecord.reified().new({
       hourHead: decodeFromFields('u64', fields.hour_head),
       hourTail: decodeFromFields('u64', fields.hour_tail),
-      perHourAmounts: decodeFromFields(reified.vector('u64'), fields.per_hour_amounts),
+      perHourAmounts: decodeFromFields(vector('u64'), fields.per_hour_amounts),
       totalAmount: decodeFromFields('u64', fields.total_amount),
     })
   }
@@ -346,10 +341,7 @@ export class TransferRecord implements StructClass {
     return TransferRecord.reified().new({
       hourHead: decodeFromFieldsWithTypes('u64', item.fields.hour_head),
       hourTail: decodeFromFieldsWithTypes('u64', item.fields.hour_tail),
-      perHourAmounts: decodeFromFieldsWithTypes(
-        reified.vector('u64'),
-        item.fields.per_hour_amounts
-      ),
+      perHourAmounts: decodeFromFieldsWithTypes(vector('u64'), item.fields.per_hour_amounts),
       totalAmount: decodeFromFieldsWithTypes('u64', item.fields.total_amount),
     })
   }
@@ -375,7 +367,7 @@ export class TransferRecord implements StructClass {
     return TransferRecord.reified().new({
       hourHead: decodeFromJSONField('u64', field.hourHead),
       hourTail: decodeFromJSONField('u64', field.hourTail),
-      perHourAmounts: decodeFromJSONField(reified.vector('u64'), field.perHourAmounts),
+      perHourAmounts: decodeFromJSONField(vector('u64'), field.perHourAmounts),
       totalAmount: decodeFromJSONField('u64', field.totalAmount),
     })
   }
