@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -20,6 +19,7 @@ import {
   fieldToJSON,
   phantom,
   toBcs,
+  vector,
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
@@ -1054,11 +1054,11 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
     return Foo.reified(typeArg).new({
       id: decodeFromFields(UID.reified(), fields.id),
       generic: decodeFromFields(typeArg, fields.generic),
-      reifiedPrimitiveVec: decodeFromFields(reified.vector('u64'), fields.reified_primitive_vec),
-      reifiedObjectVec: decodeFromFields(reified.vector(Bar.reified()), fields.reified_object_vec),
-      genericVec: decodeFromFields(reified.vector(typeArg), fields.generic_vec),
+      reifiedPrimitiveVec: decodeFromFields(vector('u64'), fields.reified_primitive_vec),
+      reifiedObjectVec: decodeFromFields(vector(Bar.reified()), fields.reified_object_vec),
+      genericVec: decodeFromFields(vector(typeArg), fields.generic_vec),
       genericVecNested: decodeFromFields(
-        reified.vector(WithTwoGenerics.reified(typeArg, 'u8')),
+        vector(WithTwoGenerics.reified(typeArg, 'u8')),
         fields.generic_vec_nested
       ),
       twoGenerics: decodeFromFields(
@@ -1082,11 +1082,8 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
         fields.two_generics_reified_nested
       ),
       twoGenericsNestedVec: decodeFromFields(
-        reified.vector(
-          WithTwoGenerics.reified(
-            Bar.reified(),
-            reified.vector(WithTwoGenerics.reified(typeArg, 'u8'))
-          )
+        vector(
+          WithTwoGenerics.reified(Bar.reified(), vector(WithTwoGenerics.reified(typeArg, 'u8')))
         ),
         fields.two_generics_nested_vec
       ),
@@ -1108,16 +1105,16 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       generic: decodeFromFieldsWithTypes(typeArg, item.fields.generic),
       reifiedPrimitiveVec: decodeFromFieldsWithTypes(
-        reified.vector('u64'),
+        vector('u64'),
         item.fields.reified_primitive_vec
       ),
       reifiedObjectVec: decodeFromFieldsWithTypes(
-        reified.vector(Bar.reified()),
+        vector(Bar.reified()),
         item.fields.reified_object_vec
       ),
-      genericVec: decodeFromFieldsWithTypes(reified.vector(typeArg), item.fields.generic_vec),
+      genericVec: decodeFromFieldsWithTypes(vector(typeArg), item.fields.generic_vec),
       genericVecNested: decodeFromFieldsWithTypes(
-        reified.vector(WithTwoGenerics.reified(typeArg, 'u8')),
+        vector(WithTwoGenerics.reified(typeArg, 'u8')),
         item.fields.generic_vec_nested
       ),
       twoGenerics: decodeFromFieldsWithTypes(
@@ -1141,11 +1138,8 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
         item.fields.two_generics_reified_nested
       ),
       twoGenericsNestedVec: decodeFromFieldsWithTypes(
-        reified.vector(
-          WithTwoGenerics.reified(
-            Bar.reified(),
-            reified.vector(WithTwoGenerics.reified(typeArg, 'u8'))
-          )
+        vector(
+          WithTwoGenerics.reified(Bar.reified(), vector(WithTwoGenerics.reified(typeArg, 'u8')))
         ),
         item.fields.two_generics_nested_vec
       ),
@@ -1200,11 +1194,11 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
     return Foo.reified(typeArg).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       generic: decodeFromJSONField(typeArg, field.generic),
-      reifiedPrimitiveVec: decodeFromJSONField(reified.vector('u64'), field.reifiedPrimitiveVec),
-      reifiedObjectVec: decodeFromJSONField(reified.vector(Bar.reified()), field.reifiedObjectVec),
-      genericVec: decodeFromJSONField(reified.vector(typeArg), field.genericVec),
+      reifiedPrimitiveVec: decodeFromJSONField(vector('u64'), field.reifiedPrimitiveVec),
+      reifiedObjectVec: decodeFromJSONField(vector(Bar.reified()), field.reifiedObjectVec),
+      genericVec: decodeFromJSONField(vector(typeArg), field.genericVec),
       genericVecNested: decodeFromJSONField(
-        reified.vector(WithTwoGenerics.reified(typeArg, 'u8')),
+        vector(WithTwoGenerics.reified(typeArg, 'u8')),
         field.genericVecNested
       ),
       twoGenerics: decodeFromJSONField(
@@ -1228,11 +1222,8 @@ export class Foo<T0 extends TypeArgument> implements StructClass {
         field.twoGenericsReifiedNested
       ),
       twoGenericsNestedVec: decodeFromJSONField(
-        reified.vector(
-          WithTwoGenerics.reified(
-            Bar.reified(),
-            reified.vector(WithTwoGenerics.reified(typeArg, 'u8'))
-          )
+        vector(
+          WithTwoGenerics.reified(Bar.reified(), vector(WithTwoGenerics.reified(typeArg, 'u8')))
         ),
         field.twoGenericsNestedVec
       ),
@@ -1501,7 +1492,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
       url: decodeFromFields(Url.reified(), fields.url),
       idField: decodeFromFields(ID.reified(), fields.id_field),
       uid: decodeFromFields(UID.reified(), fields.uid),
-      balance: decodeFromFields(Balance.reified(reified.phantom(SUI.reified())), fields.balance),
+      balance: decodeFromFields(Balance.reified(phantom(SUI.reified())), fields.balance),
       option: decodeFromFields(Option.reified('u64'), fields.option),
       optionObj: decodeFromFields(Option.reified(Bar.reified()), fields.option_obj),
       optionNone: decodeFromFields(Option.reified('u64'), fields.option_none),
@@ -1531,7 +1522,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
       idField: decodeFromFieldsWithTypes(ID.reified(), item.fields.id_field),
       uid: decodeFromFieldsWithTypes(UID.reified(), item.fields.uid),
       balance: decodeFromFieldsWithTypes(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         item.fields.balance
       ),
       option: decodeFromFieldsWithTypes(Option.reified('u64'), item.fields.option),
@@ -1607,7 +1598,7 @@ export class WithSpecialTypes<T0 extends PhantomTypeArgument, T1 extends TypeArg
       url: decodeFromJSONField(Url.reified(), field.url),
       idField: decodeFromJSONField(ID.reified(), field.idField),
       uid: decodeFromJSONField(UID.reified(), field.uid),
-      balance: decodeFromJSONField(Balance.reified(reified.phantom(SUI.reified())), field.balance),
+      balance: decodeFromJSONField(Balance.reified(phantom(SUI.reified())), field.balance),
       option: decodeFromJSONField(Option.reified('u64'), field.option),
       optionObj: decodeFromJSONField(Option.reified(Bar.reified()), field.optionObj),
       optionNone: decodeFromJSONField(Option.reified('u64'), field.optionNone),
@@ -2529,15 +2520,12 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
   ): WithSpecialTypesInVectors<ToTypeArgument<T0>> {
     return WithSpecialTypesInVectors.reified(typeArg).new({
       id: decodeFromFields(UID.reified(), fields.id),
-      string: decodeFromFields(reified.vector(String.reified()), fields.string),
-      asciiString: decodeFromFields(reified.vector(StringAscii.reified()), fields.ascii_string),
-      idField: decodeFromFields(reified.vector(ID.reified()), fields.id_field),
-      bar: decodeFromFields(reified.vector(Bar.reified()), fields.bar),
-      option: decodeFromFields(reified.vector(Option.reified('u64')), fields.option),
-      optionGeneric: decodeFromFields(
-        reified.vector(Option.reified(typeArg)),
-        fields.option_generic
-      ),
+      string: decodeFromFields(vector(String.reified()), fields.string),
+      asciiString: decodeFromFields(vector(StringAscii.reified()), fields.ascii_string),
+      idField: decodeFromFields(vector(ID.reified()), fields.id_field),
+      bar: decodeFromFields(vector(Bar.reified()), fields.bar),
+      option: decodeFromFields(vector(Option.reified('u64')), fields.option),
+      optionGeneric: decodeFromFields(vector(Option.reified(typeArg)), fields.option_generic),
     })
   }
 
@@ -2552,16 +2540,16 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
 
     return WithSpecialTypesInVectors.reified(typeArg).new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
-      string: decodeFromFieldsWithTypes(reified.vector(String.reified()), item.fields.string),
+      string: decodeFromFieldsWithTypes(vector(String.reified()), item.fields.string),
       asciiString: decodeFromFieldsWithTypes(
-        reified.vector(StringAscii.reified()),
+        vector(StringAscii.reified()),
         item.fields.ascii_string
       ),
-      idField: decodeFromFieldsWithTypes(reified.vector(ID.reified()), item.fields.id_field),
-      bar: decodeFromFieldsWithTypes(reified.vector(Bar.reified()), item.fields.bar),
-      option: decodeFromFieldsWithTypes(reified.vector(Option.reified('u64')), item.fields.option),
+      idField: decodeFromFieldsWithTypes(vector(ID.reified()), item.fields.id_field),
+      bar: decodeFromFieldsWithTypes(vector(Bar.reified()), item.fields.bar),
+      option: decodeFromFieldsWithTypes(vector(Option.reified('u64')), item.fields.option),
       optionGeneric: decodeFromFieldsWithTypes(
-        reified.vector(Option.reified(typeArg)),
+        vector(Option.reified(typeArg)),
         item.fields.option_generic
       ),
     })
@@ -2606,15 +2594,12 @@ export class WithSpecialTypesInVectors<T0 extends TypeArgument> implements Struc
   ): WithSpecialTypesInVectors<ToTypeArgument<T0>> {
     return WithSpecialTypesInVectors.reified(typeArg).new({
       id: decodeFromJSONField(UID.reified(), field.id),
-      string: decodeFromJSONField(reified.vector(String.reified()), field.string),
-      asciiString: decodeFromJSONField(reified.vector(StringAscii.reified()), field.asciiString),
-      idField: decodeFromJSONField(reified.vector(ID.reified()), field.idField),
-      bar: decodeFromJSONField(reified.vector(Bar.reified()), field.bar),
-      option: decodeFromJSONField(reified.vector(Option.reified('u64')), field.option),
-      optionGeneric: decodeFromJSONField(
-        reified.vector(Option.reified(typeArg)),
-        field.optionGeneric
-      ),
+      string: decodeFromJSONField(vector(String.reified()), field.string),
+      asciiString: decodeFromJSONField(vector(StringAscii.reified()), field.asciiString),
+      idField: decodeFromJSONField(vector(ID.reified()), field.idField),
+      bar: decodeFromJSONField(vector(Bar.reified()), field.bar),
+      option: decodeFromJSONField(vector(Option.reified('u64')), field.option),
+      optionGeneric: decodeFromJSONField(vector(Option.reified(typeArg)), field.optionGeneric),
     })
   }
 

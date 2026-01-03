@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -10,13 +9,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { Option } from '../../move-stdlib-chain/option/structs'
 import { bcs } from '@mysten/sui/bcs'
@@ -118,7 +113,7 @@ export class PCREntry implements StructClass {
   static fromFields(fields: Record<string, any>): PCREntry {
     return PCREntry.reified().new({
       index: decodeFromFields('u8', fields.index),
-      value: decodeFromFields(reified.vector('u8'), fields.value),
+      value: decodeFromFields(vector('u8'), fields.value),
     })
   }
 
@@ -129,7 +124,7 @@ export class PCREntry implements StructClass {
 
     return PCREntry.reified().new({
       index: decodeFromFieldsWithTypes('u8', item.fields.index),
-      value: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.value),
+      value: decodeFromFieldsWithTypes(vector('u8'), item.fields.value),
     })
   }
 
@@ -151,7 +146,7 @@ export class PCREntry implements StructClass {
   static fromJSONField(field: any): PCREntry {
     return PCREntry.reified().new({
       index: decodeFromJSONField('u8', field.index),
-      value: decodeFromJSONField(reified.vector('u8'), field.value),
+      value: decodeFromJSONField(vector('u8'), field.value),
     })
   }
 
@@ -327,13 +322,13 @@ export class NitroAttestationDocument implements StructClass {
 
   static fromFields(fields: Record<string, any>): NitroAttestationDocument {
     return NitroAttestationDocument.reified().new({
-      moduleId: decodeFromFields(reified.vector('u8'), fields.module_id),
+      moduleId: decodeFromFields(vector('u8'), fields.module_id),
       timestamp: decodeFromFields('u64', fields.timestamp),
-      digest: decodeFromFields(reified.vector('u8'), fields.digest),
-      pcrs: decodeFromFields(reified.vector(PCREntry.reified()), fields.pcrs),
-      publicKey: decodeFromFields(Option.reified(reified.vector('u8')), fields.public_key),
-      userData: decodeFromFields(Option.reified(reified.vector('u8')), fields.user_data),
-      nonce: decodeFromFields(Option.reified(reified.vector('u8')), fields.nonce),
+      digest: decodeFromFields(vector('u8'), fields.digest),
+      pcrs: decodeFromFields(vector(PCREntry.reified()), fields.pcrs),
+      publicKey: decodeFromFields(Option.reified(vector('u8')), fields.public_key),
+      userData: decodeFromFields(Option.reified(vector('u8')), fields.user_data),
+      nonce: decodeFromFields(Option.reified(vector('u8')), fields.nonce),
     })
   }
 
@@ -343,19 +338,13 @@ export class NitroAttestationDocument implements StructClass {
     }
 
     return NitroAttestationDocument.reified().new({
-      moduleId: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.module_id),
+      moduleId: decodeFromFieldsWithTypes(vector('u8'), item.fields.module_id),
       timestamp: decodeFromFieldsWithTypes('u64', item.fields.timestamp),
-      digest: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.digest),
-      pcrs: decodeFromFieldsWithTypes(reified.vector(PCREntry.reified()), item.fields.pcrs),
-      publicKey: decodeFromFieldsWithTypes(
-        Option.reified(reified.vector('u8')),
-        item.fields.public_key
-      ),
-      userData: decodeFromFieldsWithTypes(
-        Option.reified(reified.vector('u8')),
-        item.fields.user_data
-      ),
-      nonce: decodeFromFieldsWithTypes(Option.reified(reified.vector('u8')), item.fields.nonce),
+      digest: decodeFromFieldsWithTypes(vector('u8'), item.fields.digest),
+      pcrs: decodeFromFieldsWithTypes(vector(PCREntry.reified()), item.fields.pcrs),
+      publicKey: decodeFromFieldsWithTypes(Option.reified(vector('u8')), item.fields.public_key),
+      userData: decodeFromFieldsWithTypes(Option.reified(vector('u8')), item.fields.user_data),
+      nonce: decodeFromFieldsWithTypes(Option.reified(vector('u8')), item.fields.nonce),
     })
   }
 
@@ -384,13 +373,13 @@ export class NitroAttestationDocument implements StructClass {
 
   static fromJSONField(field: any): NitroAttestationDocument {
     return NitroAttestationDocument.reified().new({
-      moduleId: decodeFromJSONField(reified.vector('u8'), field.moduleId),
+      moduleId: decodeFromJSONField(vector('u8'), field.moduleId),
       timestamp: decodeFromJSONField('u64', field.timestamp),
-      digest: decodeFromJSONField(reified.vector('u8'), field.digest),
-      pcrs: decodeFromJSONField(reified.vector(PCREntry.reified()), field.pcrs),
-      publicKey: decodeFromJSONField(Option.reified(reified.vector('u8')), field.publicKey),
-      userData: decodeFromJSONField(Option.reified(reified.vector('u8')), field.userData),
-      nonce: decodeFromJSONField(Option.reified(reified.vector('u8')), field.nonce),
+      digest: decodeFromJSONField(vector('u8'), field.digest),
+      pcrs: decodeFromJSONField(vector(PCREntry.reified()), field.pcrs),
+      publicKey: decodeFromJSONField(Option.reified(vector('u8')), field.publicKey),
+      userData: decodeFromJSONField(Option.reified(vector('u8')), field.userData),
+      nonce: decodeFromJSONField(Option.reified(vector('u8')), field.nonce),
     })
   }
 

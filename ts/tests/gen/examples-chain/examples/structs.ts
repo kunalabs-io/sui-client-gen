@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -10,13 +9,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { String } from '../../move-stdlib-chain/ascii/structs'
 import { Option } from '../../move-stdlib-chain/option/structs'
@@ -334,11 +329,8 @@ export class SpecialTypesStruct implements StructClass {
       id: decodeFromFields(UID.reified(), fields.id),
       asciiString: decodeFromFields(String.reified(), fields.ascii_string),
       utf8String: decodeFromFields(StringString.reified(), fields.utf8_string),
-      vectorOfU64: decodeFromFields(reified.vector('u64'), fields.vector_of_u64),
-      vectorOfObjects: decodeFromFields(
-        reified.vector(ExampleStruct.reified()),
-        fields.vector_of_objects
-      ),
+      vectorOfU64: decodeFromFields(vector('u64'), fields.vector_of_u64),
+      vectorOfObjects: decodeFromFields(vector(ExampleStruct.reified()), fields.vector_of_objects),
       idField: decodeFromFields(ID.reified(), fields.id_field),
       address: decodeFromFields('address', fields.address),
       optionSome: decodeFromFields(Option.reified('u64'), fields.option_some),
@@ -355,9 +347,9 @@ export class SpecialTypesStruct implements StructClass {
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       asciiString: decodeFromFieldsWithTypes(String.reified(), item.fields.ascii_string),
       utf8String: decodeFromFieldsWithTypes(StringString.reified(), item.fields.utf8_string),
-      vectorOfU64: decodeFromFieldsWithTypes(reified.vector('u64'), item.fields.vector_of_u64),
+      vectorOfU64: decodeFromFieldsWithTypes(vector('u64'), item.fields.vector_of_u64),
       vectorOfObjects: decodeFromFieldsWithTypes(
-        reified.vector(ExampleStruct.reified()),
+        vector(ExampleStruct.reified()),
         item.fields.vector_of_objects
       ),
       idField: decodeFromFieldsWithTypes(ID.reified(), item.fields.id_field),
@@ -397,11 +389,8 @@ export class SpecialTypesStruct implements StructClass {
       id: decodeFromJSONField(UID.reified(), field.id),
       asciiString: decodeFromJSONField(String.reified(), field.asciiString),
       utf8String: decodeFromJSONField(StringString.reified(), field.utf8String),
-      vectorOfU64: decodeFromJSONField(reified.vector('u64'), field.vectorOfU64),
-      vectorOfObjects: decodeFromJSONField(
-        reified.vector(ExampleStruct.reified()),
-        field.vectorOfObjects
-      ),
+      vectorOfU64: decodeFromJSONField(vector('u64'), field.vectorOfU64),
+      vectorOfObjects: decodeFromJSONField(vector(ExampleStruct.reified()), field.vectorOfObjects),
       idField: decodeFromJSONField(ID.reified(), field.idField),
       address: decodeFromJSONField('address', field.address),
       optionSome: decodeFromJSONField(Option.reified('u64'), field.optionSome),

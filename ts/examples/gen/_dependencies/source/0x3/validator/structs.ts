@@ -1,4 +1,3 @@
-import * as reified from '../../../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -10,13 +9,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { Vector } from '../../../../_framework/vector'
 import { Option } from '../../../../move-stdlib/option/structs'
 import { String } from '../../../../move-stdlib/string/structs'
@@ -209,10 +204,10 @@ export class ValidatorMetadata implements StructClass {
   static fromFields(fields: Record<string, any>): ValidatorMetadata {
     return ValidatorMetadata.reified().new({
       suiAddress: decodeFromFields('address', fields.sui_address),
-      protocolPubkeyBytes: decodeFromFields(reified.vector('u8'), fields.protocol_pubkey_bytes),
-      networkPubkeyBytes: decodeFromFields(reified.vector('u8'), fields.network_pubkey_bytes),
-      workerPubkeyBytes: decodeFromFields(reified.vector('u8'), fields.worker_pubkey_bytes),
-      proofOfPossession: decodeFromFields(reified.vector('u8'), fields.proof_of_possession),
+      protocolPubkeyBytes: decodeFromFields(vector('u8'), fields.protocol_pubkey_bytes),
+      networkPubkeyBytes: decodeFromFields(vector('u8'), fields.network_pubkey_bytes),
+      workerPubkeyBytes: decodeFromFields(vector('u8'), fields.worker_pubkey_bytes),
+      proofOfPossession: decodeFromFields(vector('u8'), fields.proof_of_possession),
       name: decodeFromFields(String.reified(), fields.name),
       description: decodeFromFields(String.reified(), fields.description),
       imageUrl: decodeFromFields(Url.reified(), fields.image_url),
@@ -222,19 +217,19 @@ export class ValidatorMetadata implements StructClass {
       primaryAddress: decodeFromFields(String.reified(), fields.primary_address),
       workerAddress: decodeFromFields(String.reified(), fields.worker_address),
       nextEpochProtocolPubkeyBytes: decodeFromFields(
-        Option.reified(reified.vector('u8')),
+        Option.reified(vector('u8')),
         fields.next_epoch_protocol_pubkey_bytes
       ),
       nextEpochProofOfPossession: decodeFromFields(
-        Option.reified(reified.vector('u8')),
+        Option.reified(vector('u8')),
         fields.next_epoch_proof_of_possession
       ),
       nextEpochNetworkPubkeyBytes: decodeFromFields(
-        Option.reified(reified.vector('u8')),
+        Option.reified(vector('u8')),
         fields.next_epoch_network_pubkey_bytes
       ),
       nextEpochWorkerPubkeyBytes: decodeFromFields(
-        Option.reified(reified.vector('u8')),
+        Option.reified(vector('u8')),
         fields.next_epoch_worker_pubkey_bytes
       ),
       nextEpochNetAddress: decodeFromFields(
@@ -265,21 +260,12 @@ export class ValidatorMetadata implements StructClass {
     return ValidatorMetadata.reified().new({
       suiAddress: decodeFromFieldsWithTypes('address', item.fields.sui_address),
       protocolPubkeyBytes: decodeFromFieldsWithTypes(
-        reified.vector('u8'),
+        vector('u8'),
         item.fields.protocol_pubkey_bytes
       ),
-      networkPubkeyBytes: decodeFromFieldsWithTypes(
-        reified.vector('u8'),
-        item.fields.network_pubkey_bytes
-      ),
-      workerPubkeyBytes: decodeFromFieldsWithTypes(
-        reified.vector('u8'),
-        item.fields.worker_pubkey_bytes
-      ),
-      proofOfPossession: decodeFromFieldsWithTypes(
-        reified.vector('u8'),
-        item.fields.proof_of_possession
-      ),
+      networkPubkeyBytes: decodeFromFieldsWithTypes(vector('u8'), item.fields.network_pubkey_bytes),
+      workerPubkeyBytes: decodeFromFieldsWithTypes(vector('u8'), item.fields.worker_pubkey_bytes),
+      proofOfPossession: decodeFromFieldsWithTypes(vector('u8'), item.fields.proof_of_possession),
       name: decodeFromFieldsWithTypes(String.reified(), item.fields.name),
       description: decodeFromFieldsWithTypes(String.reified(), item.fields.description),
       imageUrl: decodeFromFieldsWithTypes(Url.reified(), item.fields.image_url),
@@ -289,19 +275,19 @@ export class ValidatorMetadata implements StructClass {
       primaryAddress: decodeFromFieldsWithTypes(String.reified(), item.fields.primary_address),
       workerAddress: decodeFromFieldsWithTypes(String.reified(), item.fields.worker_address),
       nextEpochProtocolPubkeyBytes: decodeFromFieldsWithTypes(
-        Option.reified(reified.vector('u8')),
+        Option.reified(vector('u8')),
         item.fields.next_epoch_protocol_pubkey_bytes
       ),
       nextEpochProofOfPossession: decodeFromFieldsWithTypes(
-        Option.reified(reified.vector('u8')),
+        Option.reified(vector('u8')),
         item.fields.next_epoch_proof_of_possession
       ),
       nextEpochNetworkPubkeyBytes: decodeFromFieldsWithTypes(
-        Option.reified(reified.vector('u8')),
+        Option.reified(vector('u8')),
         item.fields.next_epoch_network_pubkey_bytes
       ),
       nextEpochWorkerPubkeyBytes: decodeFromFieldsWithTypes(
-        Option.reified(reified.vector('u8')),
+        Option.reified(vector('u8')),
         item.fields.next_epoch_worker_pubkey_bytes
       ),
       nextEpochNetAddress: decodeFromFieldsWithTypes(
@@ -386,10 +372,10 @@ export class ValidatorMetadata implements StructClass {
   static fromJSONField(field: any): ValidatorMetadata {
     return ValidatorMetadata.reified().new({
       suiAddress: decodeFromJSONField('address', field.suiAddress),
-      protocolPubkeyBytes: decodeFromJSONField(reified.vector('u8'), field.protocolPubkeyBytes),
-      networkPubkeyBytes: decodeFromJSONField(reified.vector('u8'), field.networkPubkeyBytes),
-      workerPubkeyBytes: decodeFromJSONField(reified.vector('u8'), field.workerPubkeyBytes),
-      proofOfPossession: decodeFromJSONField(reified.vector('u8'), field.proofOfPossession),
+      protocolPubkeyBytes: decodeFromJSONField(vector('u8'), field.protocolPubkeyBytes),
+      networkPubkeyBytes: decodeFromJSONField(vector('u8'), field.networkPubkeyBytes),
+      workerPubkeyBytes: decodeFromJSONField(vector('u8'), field.workerPubkeyBytes),
+      proofOfPossession: decodeFromJSONField(vector('u8'), field.proofOfPossession),
       name: decodeFromJSONField(String.reified(), field.name),
       description: decodeFromJSONField(String.reified(), field.description),
       imageUrl: decodeFromJSONField(Url.reified(), field.imageUrl),
@@ -399,19 +385,19 @@ export class ValidatorMetadata implements StructClass {
       primaryAddress: decodeFromJSONField(String.reified(), field.primaryAddress),
       workerAddress: decodeFromJSONField(String.reified(), field.workerAddress),
       nextEpochProtocolPubkeyBytes: decodeFromJSONField(
-        Option.reified(reified.vector('u8')),
+        Option.reified(vector('u8')),
         field.nextEpochProtocolPubkeyBytes
       ),
       nextEpochProofOfPossession: decodeFromJSONField(
-        Option.reified(reified.vector('u8')),
+        Option.reified(vector('u8')),
         field.nextEpochProofOfPossession
       ),
       nextEpochNetworkPubkeyBytes: decodeFromJSONField(
-        Option.reified(reified.vector('u8')),
+        Option.reified(vector('u8')),
         field.nextEpochNetworkPubkeyBytes
       ),
       nextEpochWorkerPubkeyBytes: decodeFromJSONField(
-        Option.reified(reified.vector('u8')),
+        Option.reified(vector('u8')),
         field.nextEpochWorkerPubkeyBytes
       ),
       nextEpochNetAddress: decodeFromJSONField(

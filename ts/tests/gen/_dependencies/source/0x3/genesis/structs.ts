@@ -1,4 +1,3 @@
-import * as reified from '../../../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -10,13 +9,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { Vector } from '../../../../_framework/vector'
 import { Option } from '../../../../move-stdlib/option/structs'
 import { bcs } from '@mysten/sui/bcs'
@@ -181,21 +176,21 @@ export class GenesisValidatorMetadata implements StructClass {
 
   static fromFields(fields: Record<string, any>): GenesisValidatorMetadata {
     return GenesisValidatorMetadata.reified().new({
-      name: decodeFromFields(reified.vector('u8'), fields.name),
-      description: decodeFromFields(reified.vector('u8'), fields.description),
-      imageUrl: decodeFromFields(reified.vector('u8'), fields.image_url),
-      projectUrl: decodeFromFields(reified.vector('u8'), fields.project_url),
+      name: decodeFromFields(vector('u8'), fields.name),
+      description: decodeFromFields(vector('u8'), fields.description),
+      imageUrl: decodeFromFields(vector('u8'), fields.image_url),
+      projectUrl: decodeFromFields(vector('u8'), fields.project_url),
       suiAddress: decodeFromFields('address', fields.sui_address),
       gasPrice: decodeFromFields('u64', fields.gas_price),
       commissionRate: decodeFromFields('u64', fields.commission_rate),
-      protocolPublicKey: decodeFromFields(reified.vector('u8'), fields.protocol_public_key),
-      proofOfPossession: decodeFromFields(reified.vector('u8'), fields.proof_of_possession),
-      networkPublicKey: decodeFromFields(reified.vector('u8'), fields.network_public_key),
-      workerPublicKey: decodeFromFields(reified.vector('u8'), fields.worker_public_key),
-      networkAddress: decodeFromFields(reified.vector('u8'), fields.network_address),
-      p2PAddress: decodeFromFields(reified.vector('u8'), fields.p2p_address),
-      primaryAddress: decodeFromFields(reified.vector('u8'), fields.primary_address),
-      workerAddress: decodeFromFields(reified.vector('u8'), fields.worker_address),
+      protocolPublicKey: decodeFromFields(vector('u8'), fields.protocol_public_key),
+      proofOfPossession: decodeFromFields(vector('u8'), fields.proof_of_possession),
+      networkPublicKey: decodeFromFields(vector('u8'), fields.network_public_key),
+      workerPublicKey: decodeFromFields(vector('u8'), fields.worker_public_key),
+      networkAddress: decodeFromFields(vector('u8'), fields.network_address),
+      p2PAddress: decodeFromFields(vector('u8'), fields.p2p_address),
+      primaryAddress: decodeFromFields(vector('u8'), fields.primary_address),
+      workerAddress: decodeFromFields(vector('u8'), fields.worker_address),
     })
   }
 
@@ -205,33 +200,21 @@ export class GenesisValidatorMetadata implements StructClass {
     }
 
     return GenesisValidatorMetadata.reified().new({
-      name: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.name),
-      description: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.description),
-      imageUrl: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.image_url),
-      projectUrl: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.project_url),
+      name: decodeFromFieldsWithTypes(vector('u8'), item.fields.name),
+      description: decodeFromFieldsWithTypes(vector('u8'), item.fields.description),
+      imageUrl: decodeFromFieldsWithTypes(vector('u8'), item.fields.image_url),
+      projectUrl: decodeFromFieldsWithTypes(vector('u8'), item.fields.project_url),
       suiAddress: decodeFromFieldsWithTypes('address', item.fields.sui_address),
       gasPrice: decodeFromFieldsWithTypes('u64', item.fields.gas_price),
       commissionRate: decodeFromFieldsWithTypes('u64', item.fields.commission_rate),
-      protocolPublicKey: decodeFromFieldsWithTypes(
-        reified.vector('u8'),
-        item.fields.protocol_public_key
-      ),
-      proofOfPossession: decodeFromFieldsWithTypes(
-        reified.vector('u8'),
-        item.fields.proof_of_possession
-      ),
-      networkPublicKey: decodeFromFieldsWithTypes(
-        reified.vector('u8'),
-        item.fields.network_public_key
-      ),
-      workerPublicKey: decodeFromFieldsWithTypes(
-        reified.vector('u8'),
-        item.fields.worker_public_key
-      ),
-      networkAddress: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.network_address),
-      p2PAddress: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.p2p_address),
-      primaryAddress: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.primary_address),
-      workerAddress: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.worker_address),
+      protocolPublicKey: decodeFromFieldsWithTypes(vector('u8'), item.fields.protocol_public_key),
+      proofOfPossession: decodeFromFieldsWithTypes(vector('u8'), item.fields.proof_of_possession),
+      networkPublicKey: decodeFromFieldsWithTypes(vector('u8'), item.fields.network_public_key),
+      workerPublicKey: decodeFromFieldsWithTypes(vector('u8'), item.fields.worker_public_key),
+      networkAddress: decodeFromFieldsWithTypes(vector('u8'), item.fields.network_address),
+      p2PAddress: decodeFromFieldsWithTypes(vector('u8'), item.fields.p2p_address),
+      primaryAddress: decodeFromFieldsWithTypes(vector('u8'), item.fields.primary_address),
+      workerAddress: decodeFromFieldsWithTypes(vector('u8'), item.fields.worker_address),
     })
   }
 
@@ -265,21 +248,21 @@ export class GenesisValidatorMetadata implements StructClass {
 
   static fromJSONField(field: any): GenesisValidatorMetadata {
     return GenesisValidatorMetadata.reified().new({
-      name: decodeFromJSONField(reified.vector('u8'), field.name),
-      description: decodeFromJSONField(reified.vector('u8'), field.description),
-      imageUrl: decodeFromJSONField(reified.vector('u8'), field.imageUrl),
-      projectUrl: decodeFromJSONField(reified.vector('u8'), field.projectUrl),
+      name: decodeFromJSONField(vector('u8'), field.name),
+      description: decodeFromJSONField(vector('u8'), field.description),
+      imageUrl: decodeFromJSONField(vector('u8'), field.imageUrl),
+      projectUrl: decodeFromJSONField(vector('u8'), field.projectUrl),
       suiAddress: decodeFromJSONField('address', field.suiAddress),
       gasPrice: decodeFromJSONField('u64', field.gasPrice),
       commissionRate: decodeFromJSONField('u64', field.commissionRate),
-      protocolPublicKey: decodeFromJSONField(reified.vector('u8'), field.protocolPublicKey),
-      proofOfPossession: decodeFromJSONField(reified.vector('u8'), field.proofOfPossession),
-      networkPublicKey: decodeFromJSONField(reified.vector('u8'), field.networkPublicKey),
-      workerPublicKey: decodeFromJSONField(reified.vector('u8'), field.workerPublicKey),
-      networkAddress: decodeFromJSONField(reified.vector('u8'), field.networkAddress),
-      p2PAddress: decodeFromJSONField(reified.vector('u8'), field.p2PAddress),
-      primaryAddress: decodeFromJSONField(reified.vector('u8'), field.primaryAddress),
-      workerAddress: decodeFromJSONField(reified.vector('u8'), field.workerAddress),
+      protocolPublicKey: decodeFromJSONField(vector('u8'), field.protocolPublicKey),
+      proofOfPossession: decodeFromJSONField(vector('u8'), field.proofOfPossession),
+      networkPublicKey: decodeFromJSONField(vector('u8'), field.networkPublicKey),
+      workerPublicKey: decodeFromJSONField(vector('u8'), field.workerPublicKey),
+      networkAddress: decodeFromJSONField(vector('u8'), field.networkAddress),
+      p2PAddress: decodeFromJSONField(vector('u8'), field.p2PAddress),
+      primaryAddress: decodeFromJSONField(vector('u8'), field.primaryAddress),
+      workerAddress: decodeFromJSONField(vector('u8'), field.workerAddress),
     })
   }
 
@@ -755,7 +738,7 @@ export class TokenDistributionSchedule implements StructClass {
   static fromFields(fields: Record<string, any>): TokenDistributionSchedule {
     return TokenDistributionSchedule.reified().new({
       stakeSubsidyFundMist: decodeFromFields('u64', fields.stake_subsidy_fund_mist),
-      allocations: decodeFromFields(reified.vector(TokenAllocation.reified()), fields.allocations),
+      allocations: decodeFromFields(vector(TokenAllocation.reified()), fields.allocations),
     })
   }
 
@@ -767,7 +750,7 @@ export class TokenDistributionSchedule implements StructClass {
     return TokenDistributionSchedule.reified().new({
       stakeSubsidyFundMist: decodeFromFieldsWithTypes('u64', item.fields.stake_subsidy_fund_mist),
       allocations: decodeFromFieldsWithTypes(
-        reified.vector(TokenAllocation.reified()),
+        vector(TokenAllocation.reified()),
         item.fields.allocations
       ),
     })
@@ -794,10 +777,7 @@ export class TokenDistributionSchedule implements StructClass {
   static fromJSONField(field: any): TokenDistributionSchedule {
     return TokenDistributionSchedule.reified().new({
       stakeSubsidyFundMist: decodeFromJSONField('u64', field.stakeSubsidyFundMist),
-      allocations: decodeFromJSONField(
-        reified.vector(TokenAllocation.reified()),
-        field.allocations
-      ),
+      allocations: decodeFromJSONField(vector(TokenAllocation.reified()), field.allocations),
     })
   }
 

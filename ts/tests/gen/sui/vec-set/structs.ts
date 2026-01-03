@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -16,6 +15,7 @@ import {
   fieldToJSON,
   phantom,
   toBcs,
+  vector,
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
@@ -127,7 +127,7 @@ export class VecSet<K extends TypeArgument> implements StructClass {
     fields: Record<string, any>
   ): VecSet<ToTypeArgument<K>> {
     return VecSet.reified(typeArg).new({
-      contents: decodeFromFields(reified.vector(typeArg), fields.contents),
+      contents: decodeFromFields(vector(typeArg), fields.contents),
     })
   }
 
@@ -141,7 +141,7 @@ export class VecSet<K extends TypeArgument> implements StructClass {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return VecSet.reified(typeArg).new({
-      contents: decodeFromFieldsWithTypes(reified.vector(typeArg), item.fields.contents),
+      contents: decodeFromFieldsWithTypes(vector(typeArg), item.fields.contents),
     })
   }
 
@@ -168,7 +168,7 @@ export class VecSet<K extends TypeArgument> implements StructClass {
     field: any
   ): VecSet<ToTypeArgument<K>> {
     return VecSet.reified(typeArg).new({
-      contents: decodeFromJSONField(reified.vector(typeArg), field.contents),
+      contents: decodeFromJSONField(vector(typeArg), field.contents),
     })
   }
 

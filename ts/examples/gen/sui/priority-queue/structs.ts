@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -16,6 +15,7 @@ import {
   fieldToJSON,
   phantom,
   toBcs,
+  vector,
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
@@ -132,7 +132,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
     fields: Record<string, any>
   ): PriorityQueue<ToTypeArgument<T>> {
     return PriorityQueue.reified(typeArg).new({
-      entries: decodeFromFields(reified.vector(Entry.reified(typeArg)), fields.entries),
+      entries: decodeFromFields(vector(Entry.reified(typeArg)), fields.entries),
     })
   }
 
@@ -146,10 +146,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
     assertFieldsWithTypesArgsMatch(item, [typeArg])
 
     return PriorityQueue.reified(typeArg).new({
-      entries: decodeFromFieldsWithTypes(
-        reified.vector(Entry.reified(typeArg)),
-        item.fields.entries
-      ),
+      entries: decodeFromFieldsWithTypes(vector(Entry.reified(typeArg)), item.fields.entries),
     })
   }
 
@@ -179,7 +176,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
     field: any
   ): PriorityQueue<ToTypeArgument<T>> {
     return PriorityQueue.reified(typeArg).new({
-      entries: decodeFromJSONField(reified.vector(Entry.reified(typeArg)), field.entries),
+      entries: decodeFromJSONField(vector(Entry.reified(typeArg)), field.entries),
     })
   }
 

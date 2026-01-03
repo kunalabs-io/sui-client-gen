@@ -1,4 +1,3 @@
-import * as reified from '../../../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -10,13 +9,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { Vector } from '../../../../_framework/vector'
 import { String } from '../../../../move-stdlib/ascii/structs'
 import { bcs } from '@mysten/sui/bcs'
@@ -133,7 +128,7 @@ export class BridgeMessage implements StructClass {
       messageVersion: decodeFromFields('u8', fields.message_version),
       seqNum: decodeFromFields('u64', fields.seq_num),
       sourceChain: decodeFromFields('u8', fields.source_chain),
-      payload: decodeFromFields(reified.vector('u8'), fields.payload),
+      payload: decodeFromFields(vector('u8'), fields.payload),
     })
   }
 
@@ -147,7 +142,7 @@ export class BridgeMessage implements StructClass {
       messageVersion: decodeFromFieldsWithTypes('u8', item.fields.message_version),
       seqNum: decodeFromFieldsWithTypes('u64', item.fields.seq_num),
       sourceChain: decodeFromFieldsWithTypes('u8', item.fields.source_chain),
-      payload: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.payload),
+      payload: decodeFromFieldsWithTypes(vector('u8'), item.fields.payload),
     })
   }
 
@@ -175,7 +170,7 @@ export class BridgeMessage implements StructClass {
       messageVersion: decodeFromJSONField('u8', field.messageVersion),
       seqNum: decodeFromJSONField('u64', field.seqNum),
       sourceChain: decodeFromJSONField('u8', field.sourceChain),
-      payload: decodeFromJSONField(reified.vector('u8'), field.payload),
+      payload: decodeFromJSONField(vector('u8'), field.payload),
     })
   }
 
@@ -532,9 +527,9 @@ export class TokenTransferPayload implements StructClass {
 
   static fromFields(fields: Record<string, any>): TokenTransferPayload {
     return TokenTransferPayload.reified().new({
-      senderAddress: decodeFromFields(reified.vector('u8'), fields.sender_address),
+      senderAddress: decodeFromFields(vector('u8'), fields.sender_address),
       targetChain: decodeFromFields('u8', fields.target_chain),
-      targetAddress: decodeFromFields(reified.vector('u8'), fields.target_address),
+      targetAddress: decodeFromFields(vector('u8'), fields.target_address),
       tokenType: decodeFromFields('u8', fields.token_type),
       amount: decodeFromFields('u64', fields.amount),
     })
@@ -546,9 +541,9 @@ export class TokenTransferPayload implements StructClass {
     }
 
     return TokenTransferPayload.reified().new({
-      senderAddress: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.sender_address),
+      senderAddress: decodeFromFieldsWithTypes(vector('u8'), item.fields.sender_address),
       targetChain: decodeFromFieldsWithTypes('u8', item.fields.target_chain),
-      targetAddress: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.target_address),
+      targetAddress: decodeFromFieldsWithTypes(vector('u8'), item.fields.target_address),
       tokenType: decodeFromFieldsWithTypes('u8', item.fields.token_type),
       amount: decodeFromFieldsWithTypes('u64', item.fields.amount),
     })
@@ -574,9 +569,9 @@ export class TokenTransferPayload implements StructClass {
 
   static fromJSONField(field: any): TokenTransferPayload {
     return TokenTransferPayload.reified().new({
-      senderAddress: decodeFromJSONField(reified.vector('u8'), field.senderAddress),
+      senderAddress: decodeFromJSONField(vector('u8'), field.senderAddress),
       targetChain: decodeFromJSONField('u8', field.targetChain),
-      targetAddress: decodeFromJSONField(reified.vector('u8'), field.targetAddress),
+      targetAddress: decodeFromJSONField(vector('u8'), field.targetAddress),
       tokenType: decodeFromJSONField('u8', field.tokenType),
       amount: decodeFromJSONField('u64', field.amount),
     })
@@ -901,10 +896,7 @@ export class Blocklist implements StructClass {
   static fromFields(fields: Record<string, any>): Blocklist {
     return Blocklist.reified().new({
       blocklistType: decodeFromFields('u8', fields.blocklist_type),
-      validatorEthAddresses: decodeFromFields(
-        reified.vector(reified.vector('u8')),
-        fields.validator_eth_addresses
-      ),
+      validatorEthAddresses: decodeFromFields(vector(vector('u8')), fields.validator_eth_addresses),
     })
   }
 
@@ -916,7 +908,7 @@ export class Blocklist implements StructClass {
     return Blocklist.reified().new({
       blocklistType: decodeFromFieldsWithTypes('u8', item.fields.blocklist_type),
       validatorEthAddresses: decodeFromFieldsWithTypes(
-        reified.vector(reified.vector('u8')),
+        vector(vector('u8')),
         item.fields.validator_eth_addresses
       ),
     })
@@ -943,10 +935,7 @@ export class Blocklist implements StructClass {
   static fromJSONField(field: any): Blocklist {
     return Blocklist.reified().new({
       blocklistType: decodeFromJSONField('u8', field.blocklistType),
-      validatorEthAddresses: decodeFromJSONField(
-        reified.vector(reified.vector('u8')),
-        field.validatorEthAddresses
-      ),
+      validatorEthAddresses: decodeFromJSONField(vector(vector('u8')), field.validatorEthAddresses),
     })
   }
 
@@ -1478,9 +1467,9 @@ export class AddTokenOnSui implements StructClass {
   static fromFields(fields: Record<string, any>): AddTokenOnSui {
     return AddTokenOnSui.reified().new({
       nativeToken: decodeFromFields('bool', fields.native_token),
-      tokenIds: decodeFromFields(reified.vector('u8'), fields.token_ids),
-      tokenTypeNames: decodeFromFields(reified.vector(String.reified()), fields.token_type_names),
-      tokenPrices: decodeFromFields(reified.vector('u64'), fields.token_prices),
+      tokenIds: decodeFromFields(vector('u8'), fields.token_ids),
+      tokenTypeNames: decodeFromFields(vector(String.reified()), fields.token_type_names),
+      tokenPrices: decodeFromFields(vector('u64'), fields.token_prices),
     })
   }
 
@@ -1491,12 +1480,12 @@ export class AddTokenOnSui implements StructClass {
 
     return AddTokenOnSui.reified().new({
       nativeToken: decodeFromFieldsWithTypes('bool', item.fields.native_token),
-      tokenIds: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.token_ids),
+      tokenIds: decodeFromFieldsWithTypes(vector('u8'), item.fields.token_ids),
       tokenTypeNames: decodeFromFieldsWithTypes(
-        reified.vector(String.reified()),
+        vector(String.reified()),
         item.fields.token_type_names
       ),
-      tokenPrices: decodeFromFieldsWithTypes(reified.vector('u64'), item.fields.token_prices),
+      tokenPrices: decodeFromFieldsWithTypes(vector('u64'), item.fields.token_prices),
     })
   }
 
@@ -1523,9 +1512,9 @@ export class AddTokenOnSui implements StructClass {
   static fromJSONField(field: any): AddTokenOnSui {
     return AddTokenOnSui.reified().new({
       nativeToken: decodeFromJSONField('bool', field.nativeToken),
-      tokenIds: decodeFromJSONField(reified.vector('u8'), field.tokenIds),
-      tokenTypeNames: decodeFromJSONField(reified.vector(String.reified()), field.tokenTypeNames),
-      tokenPrices: decodeFromJSONField(reified.vector('u64'), field.tokenPrices),
+      tokenIds: decodeFromJSONField(vector('u8'), field.tokenIds),
+      tokenTypeNames: decodeFromJSONField(vector(String.reified()), field.tokenTypeNames),
+      tokenPrices: decodeFromJSONField(vector('u64'), field.tokenPrices),
     })
   }
 
@@ -1697,7 +1686,7 @@ export class ParsedTokenTransferMessage implements StructClass {
       messageVersion: decodeFromFields('u8', fields.message_version),
       seqNum: decodeFromFields('u64', fields.seq_num),
       sourceChain: decodeFromFields('u8', fields.source_chain),
-      payload: decodeFromFields(reified.vector('u8'), fields.payload),
+      payload: decodeFromFields(vector('u8'), fields.payload),
       parsedPayload: decodeFromFields(TokenTransferPayload.reified(), fields.parsed_payload),
     })
   }
@@ -1711,7 +1700,7 @@ export class ParsedTokenTransferMessage implements StructClass {
       messageVersion: decodeFromFieldsWithTypes('u8', item.fields.message_version),
       seqNum: decodeFromFieldsWithTypes('u64', item.fields.seq_num),
       sourceChain: decodeFromFieldsWithTypes('u8', item.fields.source_chain),
-      payload: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.payload),
+      payload: decodeFromFieldsWithTypes(vector('u8'), item.fields.payload),
       parsedPayload: decodeFromFieldsWithTypes(
         TokenTransferPayload.reified(),
         item.fields.parsed_payload
@@ -1742,7 +1731,7 @@ export class ParsedTokenTransferMessage implements StructClass {
       messageVersion: decodeFromJSONField('u8', field.messageVersion),
       seqNum: decodeFromJSONField('u64', field.seqNum),
       sourceChain: decodeFromJSONField('u8', field.sourceChain),
-      payload: decodeFromJSONField(reified.vector('u8'), field.payload),
+      payload: decodeFromJSONField(vector('u8'), field.payload),
       parsedPayload: decodeFromJSONField(TokenTransferPayload.reified(), field.parsedPayload),
     })
   }

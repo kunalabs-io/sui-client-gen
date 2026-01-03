@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -10,13 +9,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { UID } from '../object/structs'
 import { Versioned } from '../versioned/structs'
@@ -307,7 +302,7 @@ export class RandomInner implements StructClass {
       version: decodeFromFields('u64', fields.version),
       epoch: decodeFromFields('u64', fields.epoch),
       randomnessRound: decodeFromFields('u64', fields.randomness_round),
-      randomBytes: decodeFromFields(reified.vector('u8'), fields.random_bytes),
+      randomBytes: decodeFromFields(vector('u8'), fields.random_bytes),
     })
   }
 
@@ -320,7 +315,7 @@ export class RandomInner implements StructClass {
       version: decodeFromFieldsWithTypes('u64', item.fields.version),
       epoch: decodeFromFieldsWithTypes('u64', item.fields.epoch),
       randomnessRound: decodeFromFieldsWithTypes('u64', item.fields.randomness_round),
-      randomBytes: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.random_bytes),
+      randomBytes: decodeFromFieldsWithTypes(vector('u8'), item.fields.random_bytes),
     })
   }
 
@@ -346,7 +341,7 @@ export class RandomInner implements StructClass {
       version: decodeFromJSONField('u64', field.version),
       epoch: decodeFromJSONField('u64', field.epoch),
       randomnessRound: decodeFromJSONField('u64', field.randomnessRound),
-      randomBytes: decodeFromJSONField(reified.vector('u8'), field.randomBytes),
+      randomBytes: decodeFromJSONField(vector('u8'), field.randomBytes),
     })
   }
 
@@ -500,9 +495,9 @@ export class RandomGenerator implements StructClass {
 
   static fromFields(fields: Record<string, any>): RandomGenerator {
     return RandomGenerator.reified().new({
-      seed: decodeFromFields(reified.vector('u8'), fields.seed),
+      seed: decodeFromFields(vector('u8'), fields.seed),
       counter: decodeFromFields('u16', fields.counter),
-      buffer: decodeFromFields(reified.vector('u8'), fields.buffer),
+      buffer: decodeFromFields(vector('u8'), fields.buffer),
     })
   }
 
@@ -512,9 +507,9 @@ export class RandomGenerator implements StructClass {
     }
 
     return RandomGenerator.reified().new({
-      seed: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.seed),
+      seed: decodeFromFieldsWithTypes(vector('u8'), item.fields.seed),
       counter: decodeFromFieldsWithTypes('u16', item.fields.counter),
-      buffer: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.buffer),
+      buffer: decodeFromFieldsWithTypes(vector('u8'), item.fields.buffer),
     })
   }
 
@@ -536,9 +531,9 @@ export class RandomGenerator implements StructClass {
 
   static fromJSONField(field: any): RandomGenerator {
     return RandomGenerator.reified().new({
-      seed: decodeFromJSONField(reified.vector('u8'), field.seed),
+      seed: decodeFromJSONField(vector('u8'), field.seed),
       counter: decodeFromJSONField('u16', field.counter),
-      buffer: decodeFromJSONField(reified.vector('u8'), field.buffer),
+      buffer: decodeFromJSONField(vector('u8'), field.buffer),
     })
   }
 

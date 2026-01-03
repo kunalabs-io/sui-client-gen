@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -10,13 +9,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -300,10 +295,10 @@ export class PreparedVerifyingKey implements StructClass {
 
   static fromFields(fields: Record<string, any>): PreparedVerifyingKey {
     return PreparedVerifyingKey.reified().new({
-      vkGammaAbcG1Bytes: decodeFromFields(reified.vector('u8'), fields.vk_gamma_abc_g1_bytes),
-      alphaG1BetaG2Bytes: decodeFromFields(reified.vector('u8'), fields.alpha_g1_beta_g2_bytes),
-      gammaG2NegPcBytes: decodeFromFields(reified.vector('u8'), fields.gamma_g2_neg_pc_bytes),
-      deltaG2NegPcBytes: decodeFromFields(reified.vector('u8'), fields.delta_g2_neg_pc_bytes),
+      vkGammaAbcG1Bytes: decodeFromFields(vector('u8'), fields.vk_gamma_abc_g1_bytes),
+      alphaG1BetaG2Bytes: decodeFromFields(vector('u8'), fields.alpha_g1_beta_g2_bytes),
+      gammaG2NegPcBytes: decodeFromFields(vector('u8'), fields.gamma_g2_neg_pc_bytes),
+      deltaG2NegPcBytes: decodeFromFields(vector('u8'), fields.delta_g2_neg_pc_bytes),
     })
   }
 
@@ -313,22 +308,13 @@ export class PreparedVerifyingKey implements StructClass {
     }
 
     return PreparedVerifyingKey.reified().new({
-      vkGammaAbcG1Bytes: decodeFromFieldsWithTypes(
-        reified.vector('u8'),
-        item.fields.vk_gamma_abc_g1_bytes
-      ),
+      vkGammaAbcG1Bytes: decodeFromFieldsWithTypes(vector('u8'), item.fields.vk_gamma_abc_g1_bytes),
       alphaG1BetaG2Bytes: decodeFromFieldsWithTypes(
-        reified.vector('u8'),
+        vector('u8'),
         item.fields.alpha_g1_beta_g2_bytes
       ),
-      gammaG2NegPcBytes: decodeFromFieldsWithTypes(
-        reified.vector('u8'),
-        item.fields.gamma_g2_neg_pc_bytes
-      ),
-      deltaG2NegPcBytes: decodeFromFieldsWithTypes(
-        reified.vector('u8'),
-        item.fields.delta_g2_neg_pc_bytes
-      ),
+      gammaG2NegPcBytes: decodeFromFieldsWithTypes(vector('u8'), item.fields.gamma_g2_neg_pc_bytes),
+      deltaG2NegPcBytes: decodeFromFieldsWithTypes(vector('u8'), item.fields.delta_g2_neg_pc_bytes),
     })
   }
 
@@ -351,10 +337,10 @@ export class PreparedVerifyingKey implements StructClass {
 
   static fromJSONField(field: any): PreparedVerifyingKey {
     return PreparedVerifyingKey.reified().new({
-      vkGammaAbcG1Bytes: decodeFromJSONField(reified.vector('u8'), field.vkGammaAbcG1Bytes),
-      alphaG1BetaG2Bytes: decodeFromJSONField(reified.vector('u8'), field.alphaG1BetaG2Bytes),
-      gammaG2NegPcBytes: decodeFromJSONField(reified.vector('u8'), field.gammaG2NegPcBytes),
-      deltaG2NegPcBytes: decodeFromJSONField(reified.vector('u8'), field.deltaG2NegPcBytes),
+      vkGammaAbcG1Bytes: decodeFromJSONField(vector('u8'), field.vkGammaAbcG1Bytes),
+      alphaG1BetaG2Bytes: decodeFromJSONField(vector('u8'), field.alphaG1BetaG2Bytes),
+      gammaG2NegPcBytes: decodeFromJSONField(vector('u8'), field.gammaG2NegPcBytes),
+      deltaG2NegPcBytes: decodeFromJSONField(vector('u8'), field.deltaG2NegPcBytes),
     })
   }
 
@@ -502,7 +488,7 @@ export class PublicProofInputs implements StructClass {
 
   static fromFields(fields: Record<string, any>): PublicProofInputs {
     return PublicProofInputs.reified().new({
-      bytes: decodeFromFields(reified.vector('u8'), fields.bytes),
+      bytes: decodeFromFields(vector('u8'), fields.bytes),
     })
   }
 
@@ -512,7 +498,7 @@ export class PublicProofInputs implements StructClass {
     }
 
     return PublicProofInputs.reified().new({
-      bytes: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.bytes),
+      bytes: decodeFromFieldsWithTypes(vector('u8'), item.fields.bytes),
     })
   }
 
@@ -532,7 +518,7 @@ export class PublicProofInputs implements StructClass {
 
   static fromJSONField(field: any): PublicProofInputs {
     return PublicProofInputs.reified().new({
-      bytes: decodeFromJSONField(reified.vector('u8'), field.bytes),
+      bytes: decodeFromJSONField(vector('u8'), field.bytes),
     })
   }
 
@@ -675,7 +661,7 @@ export class ProofPoints implements StructClass {
 
   static fromFields(fields: Record<string, any>): ProofPoints {
     return ProofPoints.reified().new({
-      bytes: decodeFromFields(reified.vector('u8'), fields.bytes),
+      bytes: decodeFromFields(vector('u8'), fields.bytes),
     })
   }
 
@@ -685,7 +671,7 @@ export class ProofPoints implements StructClass {
     }
 
     return ProofPoints.reified().new({
-      bytes: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.bytes),
+      bytes: decodeFromFieldsWithTypes(vector('u8'), item.fields.bytes),
     })
   }
 
@@ -705,7 +691,7 @@ export class ProofPoints implements StructClass {
 
   static fromJSONField(field: any): ProofPoints {
     return ProofPoints.reified().new({
-      bytes: decodeFromJSONField(reified.vector('u8'), field.bytes),
+      bytes: decodeFromJSONField(vector('u8'), field.bytes),
     })
   }
 

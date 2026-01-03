@@ -1,4 +1,3 @@
-import * as reified from '../../../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -11,12 +10,7 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { Balance } from '../../../../sui/balance/structs'
 import { SUI } from '../../../../sui/sui/structs'
 import { bcs } from '@mysten/sui/bcs'
@@ -121,11 +115,11 @@ export class StorageFund implements StructClass {
   static fromFields(fields: Record<string, any>): StorageFund {
     return StorageFund.reified().new({
       totalObjectStorageRebates: decodeFromFields(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         fields.total_object_storage_rebates
       ),
       nonRefundableBalance: decodeFromFields(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         fields.non_refundable_balance
       ),
     })
@@ -138,11 +132,11 @@ export class StorageFund implements StructClass {
 
     return StorageFund.reified().new({
       totalObjectStorageRebates: decodeFromFieldsWithTypes(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         item.fields.total_object_storage_rebates
       ),
       nonRefundableBalance: decodeFromFieldsWithTypes(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         item.fields.non_refundable_balance
       ),
     })
@@ -166,11 +160,11 @@ export class StorageFund implements StructClass {
   static fromJSONField(field: any): StorageFund {
     return StorageFund.reified().new({
       totalObjectStorageRebates: decodeFromJSONField(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         field.totalObjectStorageRebates
       ),
       nonRefundableBalance: decodeFromJSONField(
-        Balance.reified(reified.phantom(SUI.reified())),
+        Balance.reified(phantom(SUI.reified())),
         field.nonRefundableBalance
       ),
     })

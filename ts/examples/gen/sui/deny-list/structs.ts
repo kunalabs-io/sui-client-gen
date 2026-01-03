@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -11,13 +10,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { Bag } from '../bag/structs'
 import { ID, UID } from '../object/structs'
@@ -479,7 +474,7 @@ export class ConfigKey implements StructClass {
   static fromFields(fields: Record<string, any>): ConfigKey {
     return ConfigKey.reified().new({
       perTypeIndex: decodeFromFields('u64', fields.per_type_index),
-      perTypeKey: decodeFromFields(reified.vector('u8'), fields.per_type_key),
+      perTypeKey: decodeFromFields(vector('u8'), fields.per_type_key),
     })
   }
 
@@ -490,7 +485,7 @@ export class ConfigKey implements StructClass {
 
     return ConfigKey.reified().new({
       perTypeIndex: decodeFromFieldsWithTypes('u64', item.fields.per_type_index),
-      perTypeKey: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.per_type_key),
+      perTypeKey: decodeFromFieldsWithTypes(vector('u8'), item.fields.per_type_key),
     })
   }
 
@@ -512,7 +507,7 @@ export class ConfigKey implements StructClass {
   static fromJSONField(field: any): ConfigKey {
     return ConfigKey.reified().new({
       perTypeIndex: decodeFromJSONField('u64', field.perTypeIndex),
-      perTypeKey: decodeFromJSONField(reified.vector('u8'), field.perTypeKey),
+      perTypeKey: decodeFromJSONField(vector('u8'), field.perTypeKey),
     })
   }
 
@@ -1206,14 +1201,11 @@ export class PerTypeList implements StructClass {
     return PerTypeList.reified().new({
       id: decodeFromFields(UID.reified(), fields.id),
       deniedCount: decodeFromFields(
-        Table.reified(reified.phantom('address'), reified.phantom('u64')),
+        Table.reified(phantom('address'), phantom('u64')),
         fields.denied_count
       ),
       deniedAddresses: decodeFromFields(
-        Table.reified(
-          reified.phantom(reified.vector('u8')),
-          reified.phantom(VecSet.reified('address'))
-        ),
+        Table.reified(phantom(vector('u8')), phantom(VecSet.reified('address'))),
         fields.denied_addresses
       ),
     })
@@ -1227,14 +1219,11 @@ export class PerTypeList implements StructClass {
     return PerTypeList.reified().new({
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       deniedCount: decodeFromFieldsWithTypes(
-        Table.reified(reified.phantom('address'), reified.phantom('u64')),
+        Table.reified(phantom('address'), phantom('u64')),
         item.fields.denied_count
       ),
       deniedAddresses: decodeFromFieldsWithTypes(
-        Table.reified(
-          reified.phantom(reified.vector('u8')),
-          reified.phantom(VecSet.reified('address'))
-        ),
+        Table.reified(phantom(vector('u8')), phantom(VecSet.reified('address'))),
         item.fields.denied_addresses
       ),
     })
@@ -1260,14 +1249,11 @@ export class PerTypeList implements StructClass {
     return PerTypeList.reified().new({
       id: decodeFromJSONField(UID.reified(), field.id),
       deniedCount: decodeFromJSONField(
-        Table.reified(reified.phantom('address'), reified.phantom('u64')),
+        Table.reified(phantom('address'), phantom('u64')),
         field.deniedCount
       ),
       deniedAddresses: decodeFromJSONField(
-        Table.reified(
-          reified.phantom(reified.vector('u8')),
-          reified.phantom(VecSet.reified('address'))
-        ),
+        Table.reified(phantom(vector('u8')), phantom(VecSet.reified('address'))),
         field.deniedAddresses
       ),
     })

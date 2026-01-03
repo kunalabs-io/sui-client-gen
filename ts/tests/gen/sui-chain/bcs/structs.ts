@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -10,13 +9,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -109,7 +104,7 @@ export class BCS implements StructClass {
 
   static fromFields(fields: Record<string, any>): BCS {
     return BCS.reified().new({
-      bytes: decodeFromFields(reified.vector('u8'), fields.bytes),
+      bytes: decodeFromFields(vector('u8'), fields.bytes),
     })
   }
 
@@ -119,7 +114,7 @@ export class BCS implements StructClass {
     }
 
     return BCS.reified().new({
-      bytes: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.bytes),
+      bytes: decodeFromFieldsWithTypes(vector('u8'), item.fields.bytes),
     })
   }
 
@@ -139,7 +134,7 @@ export class BCS implements StructClass {
 
   static fromJSONField(field: any): BCS {
     return BCS.reified().new({
-      bytes: decodeFromJSONField(reified.vector('u8'), field.bytes),
+      bytes: decodeFromJSONField(vector('u8'), field.bytes),
     })
   }
 

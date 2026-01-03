@@ -1,4 +1,3 @@
-import * as reified from '../../../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -10,13 +9,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../../_framework/util'
 import { Vector } from '../../../../_framework/vector'
 import { VecMap } from '../../../../sui/vec-map/structs'
 import { bcs } from '@mysten/sui/bcs'
@@ -127,7 +122,7 @@ export class BlocklistValidatorEvent implements StructClass {
   static fromFields(fields: Record<string, any>): BlocklistValidatorEvent {
     return BlocklistValidatorEvent.reified().new({
       blocklisted: decodeFromFields('bool', fields.blocklisted),
-      publicKeys: decodeFromFields(reified.vector(reified.vector('u8')), fields.public_keys),
+      publicKeys: decodeFromFields(vector(vector('u8')), fields.public_keys),
     })
   }
 
@@ -138,10 +133,7 @@ export class BlocklistValidatorEvent implements StructClass {
 
     return BlocklistValidatorEvent.reified().new({
       blocklisted: decodeFromFieldsWithTypes('bool', item.fields.blocklisted),
-      publicKeys: decodeFromFieldsWithTypes(
-        reified.vector(reified.vector('u8')),
-        item.fields.public_keys
-      ),
+      publicKeys: decodeFromFieldsWithTypes(vector(vector('u8')), item.fields.public_keys),
     })
   }
 
@@ -163,7 +155,7 @@ export class BlocklistValidatorEvent implements StructClass {
   static fromJSONField(field: any): BlocklistValidatorEvent {
     return BlocklistValidatorEvent.reified().new({
       blocklisted: decodeFromJSONField('bool', field.blocklisted),
-      publicKeys: decodeFromJSONField(reified.vector(reified.vector('u8')), field.publicKeys),
+      publicKeys: decodeFromJSONField(vector(vector('u8')), field.publicKeys),
     })
   }
 
@@ -328,7 +320,7 @@ export class BridgeCommittee implements StructClass {
   static fromFields(fields: Record<string, any>): BridgeCommittee {
     return BridgeCommittee.reified().new({
       members: decodeFromFields(
-        VecMap.reified(reified.vector('u8'), CommitteeMember.reified()),
+        VecMap.reified(vector('u8'), CommitteeMember.reified()),
         fields.members
       ),
       memberRegistrations: decodeFromFields(
@@ -346,7 +338,7 @@ export class BridgeCommittee implements StructClass {
 
     return BridgeCommittee.reified().new({
       members: decodeFromFieldsWithTypes(
-        VecMap.reified(reified.vector('u8'), CommitteeMember.reified()),
+        VecMap.reified(vector('u8'), CommitteeMember.reified()),
         item.fields.members
       ),
       memberRegistrations: decodeFromFieldsWithTypes(
@@ -379,7 +371,7 @@ export class BridgeCommittee implements StructClass {
   static fromJSONField(field: any): BridgeCommittee {
     return BridgeCommittee.reified().new({
       members: decodeFromJSONField(
-        VecMap.reified(reified.vector('u8'), CommitteeMember.reified()),
+        VecMap.reified(vector('u8'), CommitteeMember.reified()),
         field.members
       ),
       memberRegistrations: decodeFromJSONField(
@@ -540,7 +532,7 @@ export class CommitteeUpdateEvent implements StructClass {
   static fromFields(fields: Record<string, any>): CommitteeUpdateEvent {
     return CommitteeUpdateEvent.reified().new({
       members: decodeFromFields(
-        VecMap.reified(reified.vector('u8'), CommitteeMember.reified()),
+        VecMap.reified(vector('u8'), CommitteeMember.reified()),
         fields.members
       ),
       stakeParticipationPercentage: decodeFromFields('u64', fields.stake_participation_percentage),
@@ -554,7 +546,7 @@ export class CommitteeUpdateEvent implements StructClass {
 
     return CommitteeUpdateEvent.reified().new({
       members: decodeFromFieldsWithTypes(
-        VecMap.reified(reified.vector('u8'), CommitteeMember.reified()),
+        VecMap.reified(vector('u8'), CommitteeMember.reified()),
         item.fields.members
       ),
       stakeParticipationPercentage: decodeFromFieldsWithTypes(
@@ -582,7 +574,7 @@ export class CommitteeUpdateEvent implements StructClass {
   static fromJSONField(field: any): CommitteeUpdateEvent {
     return CommitteeUpdateEvent.reified().new({
       members: decodeFromJSONField(
-        VecMap.reified(reified.vector('u8'), CommitteeMember.reified()),
+        VecMap.reified(vector('u8'), CommitteeMember.reified()),
         field.members
       ),
       stakeParticipationPercentage: decodeFromJSONField('u64', field.stakeParticipationPercentage),
@@ -746,8 +738,8 @@ export class CommitteeMemberUrlUpdateEvent implements StructClass {
 
   static fromFields(fields: Record<string, any>): CommitteeMemberUrlUpdateEvent {
     return CommitteeMemberUrlUpdateEvent.reified().new({
-      member: decodeFromFields(reified.vector('u8'), fields.member),
-      newUrl: decodeFromFields(reified.vector('u8'), fields.new_url),
+      member: decodeFromFields(vector('u8'), fields.member),
+      newUrl: decodeFromFields(vector('u8'), fields.new_url),
     })
   }
 
@@ -757,8 +749,8 @@ export class CommitteeMemberUrlUpdateEvent implements StructClass {
     }
 
     return CommitteeMemberUrlUpdateEvent.reified().new({
-      member: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.member),
-      newUrl: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.new_url),
+      member: decodeFromFieldsWithTypes(vector('u8'), item.fields.member),
+      newUrl: decodeFromFieldsWithTypes(vector('u8'), item.fields.new_url),
     })
   }
 
@@ -779,8 +771,8 @@ export class CommitteeMemberUrlUpdateEvent implements StructClass {
 
   static fromJSONField(field: any): CommitteeMemberUrlUpdateEvent {
     return CommitteeMemberUrlUpdateEvent.reified().new({
-      member: decodeFromJSONField(reified.vector('u8'), field.member),
-      newUrl: decodeFromJSONField(reified.vector('u8'), field.newUrl),
+      member: decodeFromJSONField(vector('u8'), field.member),
+      newUrl: decodeFromJSONField(vector('u8'), field.newUrl),
     })
   }
 
@@ -953,9 +945,9 @@ export class CommitteeMember implements StructClass {
   static fromFields(fields: Record<string, any>): CommitteeMember {
     return CommitteeMember.reified().new({
       suiAddress: decodeFromFields('address', fields.sui_address),
-      bridgePubkeyBytes: decodeFromFields(reified.vector('u8'), fields.bridge_pubkey_bytes),
+      bridgePubkeyBytes: decodeFromFields(vector('u8'), fields.bridge_pubkey_bytes),
       votingPower: decodeFromFields('u64', fields.voting_power),
-      httpRestUrl: decodeFromFields(reified.vector('u8'), fields.http_rest_url),
+      httpRestUrl: decodeFromFields(vector('u8'), fields.http_rest_url),
       blocklisted: decodeFromFields('bool', fields.blocklisted),
     })
   }
@@ -967,12 +959,9 @@ export class CommitteeMember implements StructClass {
 
     return CommitteeMember.reified().new({
       suiAddress: decodeFromFieldsWithTypes('address', item.fields.sui_address),
-      bridgePubkeyBytes: decodeFromFieldsWithTypes(
-        reified.vector('u8'),
-        item.fields.bridge_pubkey_bytes
-      ),
+      bridgePubkeyBytes: decodeFromFieldsWithTypes(vector('u8'), item.fields.bridge_pubkey_bytes),
       votingPower: decodeFromFieldsWithTypes('u64', item.fields.voting_power),
-      httpRestUrl: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.http_rest_url),
+      httpRestUrl: decodeFromFieldsWithTypes(vector('u8'), item.fields.http_rest_url),
       blocklisted: decodeFromFieldsWithTypes('bool', item.fields.blocklisted),
     })
   }
@@ -998,9 +987,9 @@ export class CommitteeMember implements StructClass {
   static fromJSONField(field: any): CommitteeMember {
     return CommitteeMember.reified().new({
       suiAddress: decodeFromJSONField('address', field.suiAddress),
-      bridgePubkeyBytes: decodeFromJSONField(reified.vector('u8'), field.bridgePubkeyBytes),
+      bridgePubkeyBytes: decodeFromJSONField(vector('u8'), field.bridgePubkeyBytes),
       votingPower: decodeFromJSONField('u64', field.votingPower),
-      httpRestUrl: decodeFromJSONField(reified.vector('u8'), field.httpRestUrl),
+      httpRestUrl: decodeFromJSONField(vector('u8'), field.httpRestUrl),
       blocklisted: decodeFromJSONField('bool', field.blocklisted),
     })
   }
@@ -1166,8 +1155,8 @@ export class CommitteeMemberRegistration implements StructClass {
   static fromFields(fields: Record<string, any>): CommitteeMemberRegistration {
     return CommitteeMemberRegistration.reified().new({
       suiAddress: decodeFromFields('address', fields.sui_address),
-      bridgePubkeyBytes: decodeFromFields(reified.vector('u8'), fields.bridge_pubkey_bytes),
-      httpRestUrl: decodeFromFields(reified.vector('u8'), fields.http_rest_url),
+      bridgePubkeyBytes: decodeFromFields(vector('u8'), fields.bridge_pubkey_bytes),
+      httpRestUrl: decodeFromFields(vector('u8'), fields.http_rest_url),
     })
   }
 
@@ -1178,11 +1167,8 @@ export class CommitteeMemberRegistration implements StructClass {
 
     return CommitteeMemberRegistration.reified().new({
       suiAddress: decodeFromFieldsWithTypes('address', item.fields.sui_address),
-      bridgePubkeyBytes: decodeFromFieldsWithTypes(
-        reified.vector('u8'),
-        item.fields.bridge_pubkey_bytes
-      ),
-      httpRestUrl: decodeFromFieldsWithTypes(reified.vector('u8'), item.fields.http_rest_url),
+      bridgePubkeyBytes: decodeFromFieldsWithTypes(vector('u8'), item.fields.bridge_pubkey_bytes),
+      httpRestUrl: decodeFromFieldsWithTypes(vector('u8'), item.fields.http_rest_url),
     })
   }
 
@@ -1205,8 +1191,8 @@ export class CommitteeMemberRegistration implements StructClass {
   static fromJSONField(field: any): CommitteeMemberRegistration {
     return CommitteeMemberRegistration.reified().new({
       suiAddress: decodeFromJSONField('address', field.suiAddress),
-      bridgePubkeyBytes: decodeFromJSONField(reified.vector('u8'), field.bridgePubkeyBytes),
-      httpRestUrl: decodeFromJSONField(reified.vector('u8'), field.httpRestUrl),
+      bridgePubkeyBytes: decodeFromJSONField(vector('u8'), field.bridgePubkeyBytes),
+      httpRestUrl: decodeFromJSONField(vector('u8'), field.httpRestUrl),
     })
   }
 

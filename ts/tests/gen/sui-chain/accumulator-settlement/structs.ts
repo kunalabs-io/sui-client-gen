@@ -1,4 +1,3 @@
-import * as reified from '../../_framework/reified'
 import {
   PhantomReified,
   Reified,
@@ -10,13 +9,9 @@ import {
   decodeFromJSONField,
   fieldToJSON,
   phantom,
+  vector,
 } from '../../_framework/reified'
-import {
-  FieldsWithTypes,
-  composeSuiType,
-  compressSuiType,
-  parseTypeName,
-} from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
@@ -123,7 +118,7 @@ export class EventStreamHead implements StructClass {
 
   static fromFields(fields: Record<string, any>): EventStreamHead {
     return EventStreamHead.reified().new({
-      mmr: decodeFromFields(reified.vector('u256'), fields.mmr),
+      mmr: decodeFromFields(vector('u256'), fields.mmr),
       checkpointSeq: decodeFromFields('u64', fields.checkpoint_seq),
       numEvents: decodeFromFields('u64', fields.num_events),
     })
@@ -135,7 +130,7 @@ export class EventStreamHead implements StructClass {
     }
 
     return EventStreamHead.reified().new({
-      mmr: decodeFromFieldsWithTypes(reified.vector('u256'), item.fields.mmr),
+      mmr: decodeFromFieldsWithTypes(vector('u256'), item.fields.mmr),
       checkpointSeq: decodeFromFieldsWithTypes('u64', item.fields.checkpoint_seq),
       numEvents: decodeFromFieldsWithTypes('u64', item.fields.num_events),
     })
@@ -159,7 +154,7 @@ export class EventStreamHead implements StructClass {
 
   static fromJSONField(field: any): EventStreamHead {
     return EventStreamHead.reified().new({
-      mmr: decodeFromJSONField(reified.vector('u256'), field.mmr),
+      mmr: decodeFromJSONField(vector('u256'), field.mmr),
       checkpointSeq: decodeFromJSONField('u64', field.checkpointSeq),
       numEvents: decodeFromJSONField('u64', field.numEvents),
     })
