@@ -209,7 +209,7 @@ export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T
         }
       }
 
-      return WitTable.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+      return WitTable.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return WitTable.fromSuiParsedData(typeArgs, data.content)

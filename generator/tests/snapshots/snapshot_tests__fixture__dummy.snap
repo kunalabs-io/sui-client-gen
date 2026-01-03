@@ -147,7 +147,7 @@ export class Dummy implements StructClass {
         throw new Error(`object at is not a Dummy object`)
       }
 
-      return Dummy.fromBcs(fromB64(data.bcs.bcsBytes))
+      return Dummy.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Dummy.fromSuiParsedData(data.content)

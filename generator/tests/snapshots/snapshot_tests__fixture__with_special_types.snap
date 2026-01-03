@@ -297,7 +297,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
         }
       }
 
-      return WithSpecialTypes.fromBcs(typeArgs, fromB64(data.bcs.bcsBytes))
+      return WithSpecialTypes.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return WithSpecialTypes.fromSuiParsedData(typeArgs, data.content)

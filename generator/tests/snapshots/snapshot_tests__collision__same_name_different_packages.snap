@@ -163,7 +163,7 @@ export class MultiCoinHolder implements StructClass {
         throw new Error(`object at is not a MultiCoinHolder object`)
       }
 
-      return MultiCoinHolder.fromBcs(fromB64(data.bcs.bcsBytes))
+      return MultiCoinHolder.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return MultiCoinHolder.fromSuiParsedData(data.content)

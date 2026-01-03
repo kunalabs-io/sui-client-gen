@@ -19,7 +19,7 @@ import { LinkedTable } from '../../some-pkg/linked-table/structs'
 import { PKG_V1 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromB64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== ACL =============================== */
 
@@ -93,7 +93,7 @@ export class ACL implements StructClass {
 
   private static instantiateBcs() {
     return bcs.struct('ACL', {
-      permissions: LinkedTable.bcs(bcs.bytes(32).transform({ input: (val: string) => fromHEX(val), output: (val: Uint8Array) => toHEX(val) })),
+      permissions: LinkedTable.bcs(bcs.bytes(32).transform({ input: (val: string) => fromHex(val), output: (val: Uint8Array) => toHex(val) })),
     })
   }
 
@@ -166,7 +166,7 @@ export class ACL implements StructClass {
         throw new Error(`object at is not a ACL object`)
       }
 
-      return ACL.fromBcs(fromB64(data.bcs.bcsBytes))
+      return ACL.fromBcs(fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return ACL.fromSuiParsedData(data.content)

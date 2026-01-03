@@ -306,7 +306,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
         }
       }
 
-      return Foo.fromBcs(typeArg, fromB64(data.bcs.bcsBytes))
+      return Foo.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
     }
     if (data.content) {
       return Foo.fromSuiParsedData(typeArg, data.content)

@@ -682,9 +682,9 @@ fn emit_combined_imports_with_enums(
 
     // Sui utils imports
     if uses_address {
-        imports.add_named_many("@mysten/sui/utils", &["fromB64", "fromHEX", "toHEX"]);
+        imports.add_named_many("@mysten/sui/utils", &["fromBase64", "fromHex", "toHex"]);
     } else {
-        imports.add_named("@mysten/sui/utils", "fromB64");
+        imports.add_named("@mysten/sui/utils", "fromBase64");
     }
 
     imports.emit()
