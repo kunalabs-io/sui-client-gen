@@ -1,0 +1,3 @@
+[package]
+name = "pkg_unpublished_transitive"
+edition = "2024"

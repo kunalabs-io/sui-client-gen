@@ -1,0 +1,6 @@
+[package]
+name = "pkg_published_toplevel"
+edition = "2024"
+
+[dependencies]
+pkg_published_transitive = { local = "../pkg_published_transitive" }
