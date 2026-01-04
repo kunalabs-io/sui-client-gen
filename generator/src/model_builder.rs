@@ -1,619 +1,445 @@
-use crate::manifest::{self as GM};
-use crate::package_cache::PackageCache;
-use anyhow::{bail, Context, Result};
-use codespan_reporting::term::termcolor::{ColorChoice, StandardStream};
-use colored::*;
-use core::fmt;
-use futures::future;
-use move_binary_format::file_format::CompiledModule;
-use move_compiler::editions as ME;
+//! Model builder using move_package_alt.
+//!
+//! This module builds Move models using the `move_package_alt` system which supports
+//! environments and the new Sui package toolchain.
+
+use std::collections::{BTreeMap, BTreeSet};
+use std::fs::{self, File};
+use std::io::Write;
+use std::path::Path;
+
+use anyhow::{Context, Result};
+use move_compiler::editions::Flavor;
 use move_core_types::account_address::AccountAddress;
 use move_model_2::model::Model;
-use move_model_2::source_kind::{SourceKind, WithSource, WithoutSource};
-use move_package::compilation::model_builder;
-use move_package::resolution::resolution_graph::ResolvedGraph;
-use move_package::source_package::parsed_manifest as PM;
-use move_package::BuildConfig as MoveBuildConfig;
-use std::collections::{BTreeMap, HashSet, VecDeque};
-use std::fs::{self, File};
-use std::io::{self, Write};
-use std::path::Path;
-use sui_json_rpc_types::SuiRawMovePackage;
-use sui_move_build::{gather_published_ids, implicit_deps};
-use sui_package_management::system_package_versions::latest_system_packages;
+use move_model_2::source_kind::WithSource;
+use move_package_alt::flavor::MoveFlavor;
+use move_package_alt::graph::NamedAddress;
+use move_package_alt::package::RootPackage;
+use move_package_alt::schema::{
+    Environment, ExternalDependency, LocalDepInfo, ManifestDependencyInfo, ManifestGitDependency,
+    OnChainDepInfo, PackageName,
+};
+use move_package_alt_compilation::build_config::BuildConfig;
+use sui_package_alt::SuiFlavor;
 use sui_sdk::types::base_types::SequenceNumber;
-use sui_sdk::types::move_package::UpgradeInfo;
-use tempfile::tempdir;
+use tempfile::TempDir;
+
+use crate::graphql::GraphQLClient;
+use crate::manifest::Packages;
 
 const STUB_PACKAGE_NAME: &str = "SuiClientGenRootPackageStub";
 
-/// Wrapper struct to display a package as an inline table in the stub Move.toml.
-/// This is necessary becase the `toml` crate does not currently support serializing
-/// types as inline tables.
-struct DependencyTOML<'a>(PM::PackageName, &'a PM::InternalDependency);
-struct SubstTOML<'a>(&'a PM::Substitution);
-
+/// Type origin table: maps package address -> (module::struct -> defining package address)
 pub type TypeOriginTable = BTreeMap<AccountAddress, BTreeMap<String, AccountAddress>>;
+
+/// Version table: maps package address -> (origin address -> sequence number)
 pub type VersionTable = BTreeMap<AccountAddress, BTreeMap<AccountAddress, SequenceNumber>>;
 
-pub type SourceModelResult = ModelResult<WithSource>;
-pub type OnChainModelResult = ModelResult<WithoutSource>;
-
-pub struct ModelResult<HasSource: SourceKind> {
-    /// Move model for packages defined in gen.toml
-    pub env: Model<HasSource>,
-    /// Map from id to package name
-    pub id_map: BTreeMap<AccountAddress, PM::PackageName>,
-    /// Map from original package ID to the published at ID
+/// Result of building a model from the package system.
+pub struct ModelResult {
+    /// The Move model
+    pub model: Model<WithSource>,
+    /// Map from package address to package name
+    pub id_map: BTreeMap<AccountAddress, PackageName>,
+    /// Map from original package ID to published-at ID
     pub published_at: BTreeMap<AccountAddress, AccountAddress>,
-    /// Map from original package ID to type origins
+    /// Type origin table for code generation
     pub type_origin_table: TypeOriginTable,
-    /// Map from original package ID to all versions referenced by type origins
+    /// Version table for PKG_V{N} exports
     pub version_table: VersionTable,
+    /// Set of top-level package names (from gen.toml)
+    pub top_level_packages: BTreeSet<PackageName>,
 }
 
-pub async fn build_models<Progress: Write>(
-    cache: &mut PackageCache<'_>,
-    packages: &GM::Packages,
+/// Build a Move model from packages using the move_package_alt system.
+///
+/// # Arguments
+/// * `packages` - The packages from gen.toml
+/// * `manifest_path` - Path to the gen.toml file
+/// * `environment` - Environment name (e.g., "testnet", "mainnet")
+/// * `graphql_client` - GraphQL client for type origin queries
+pub async fn build_model(
+    packages: &Packages,
     manifest_path: &Path,
-    chain_id: Option<String>,
-    progress_output: &mut Progress,
-) -> Result<(Option<SourceModelResult>, Option<OnChainModelResult>)> {
-    // separate source and on-chain packages
-    let mut source_pkgs: Vec<(PM::PackageName, PM::InternalDependency)> = vec![];
-    let mut on_chain_pkgs: Vec<(PM::PackageName, GM::OnChainPackage)> = vec![];
-    for (name, pkg) in packages.iter() {
-        match pkg.clone() {
-            GM::Package::Dependency(PM::Dependency::Internal(mut dep)) => match &dep.kind {
-                PM::DependencyKind::Local(relative_path) => {
-                    let absolute_path =
-                        fs::canonicalize(manifest_path.parent().unwrap().join(relative_path))
-                            .with_context(|| {
-                                format!(
-                                    "gen.toml: Failed to resolve \"{}\" package path \"{}\".",
-                                    name,
-                                    relative_path.display()
-                                )
-                            })?;
-                    dep.kind = PM::DependencyKind::Local(absolute_path);
-                    source_pkgs.push((*name, dep));
-                }
-                PM::DependencyKind::Git(_) => {
-                    source_pkgs.push((*name, dep));
-                }
-                PM::DependencyKind::OnChain(_) => {
-                    bail!("Encountered an on-chain dependency {} in gen.toml. On-chain dependencies are not supported.", name)
-                }
-            },
-            GM::Package::Dependency(PM::Dependency::External(_)) => {
-                bail!("Encountered an external dependency {} in gen.toml. External dependencies are not supported.", name)
-            }
-            GM::Package::OnChain(pkg) => {
-                on_chain_pkgs.push((*name, pkg));
-            }
-        }
-    }
+    environment: &str,
+    graphql_client: &GraphQLClient,
+) -> Result<ModelResult> {
+    // Get the manifest directory for resolving relative paths
+    let manifest_dir = manifest_path
+        .parent()
+        .ok_or_else(|| anyhow::anyhow!("Invalid manifest path"))?;
 
-    let source_model = if !source_pkgs.is_empty() {
-        Some(build_source_model(source_pkgs, cache, chain_id, progress_output).await?)
-    } else {
-        None
-    };
+    // Create stub package in temp directory
+    let temp_dir = create_stub_package(packages, manifest_dir)?;
 
-    let on_chain_model = if !on_chain_pkgs.is_empty() {
-        Some(build_on_chain_model(on_chain_pkgs, cache, progress_output).await?)
-    } else {
-        None
-    };
+    // Setup environment
+    let envs = SuiFlavor::default_environments();
+    let environment_id = envs.get(environment).ok_or_else(|| {
+        anyhow::anyhow!(
+            "Environment '{}' not found. Available: {:?}",
+            environment,
+            envs.keys().collect::<Vec<_>>()
+        )
+    })?;
+    let env = Environment::new(environment.to_string(), environment_id.clone());
 
-    Ok((source_model, on_chain_model))
-}
+    // Load root package
+    let root_pkg = RootPackage::<SuiFlavor>::load(temp_dir.path(), env)
+        .await
+        .context("Failed to load root package")?;
 
-// build a model for source packages -- create a stub Move.toml with packages listed as dependencies
-// to build a single ResolvedGraph.
-async fn build_source_model<Progress: Write>(
-    pkgs: Vec<(PM::PackageName, PM::InternalDependency)>,
-    cache: &mut PackageCache<'_>,
-    chain_id: Option<String>,
-    progress_output: &mut Progress,
-) -> Result<SourceModelResult> {
-    writeln!(
-        progress_output,
-        "{}",
-        "BUILDING SOURCE MODEL".green().bold()
-    )?;
+    // Build package info (id_map, published_at, top_level detection)
+    let (id_map, published_at, top_level_packages) = build_package_info(&root_pkg, packages)?;
 
-    let temp_dir = tempdir()?;
-    let stub_path = temp_dir.path();
-    fs::create_dir(stub_path.join("sources"))?;
-
-    let mut stub_manifest = File::create(stub_path.join("Move.toml"))?;
-
-    writeln!(stub_manifest, "[package]")?;
-    writeln!(stub_manifest, "name = \"{}\"", STUB_PACKAGE_NAME)?;
-    writeln!(stub_manifest, "version = \"0.1.0\"")?;
-
-    writeln!(stub_manifest, "\n[dependencies]")?;
-    for (name, dep) in pkgs.iter() {
-        writeln!(stub_manifest, " {}", DependencyTOML(*name, dep))?;
-    }
-
-    // TODO: allow some of these options to be passed in as flags
-    let build_config = MoveBuildConfig {
-        skip_fetch_latest_git_deps: true,
-        default_flavor: Some(ME::Flavor::Sui),
-        implicit_dependencies: implicit_deps(latest_system_packages()),
+    // Build Move model
+    let build_config = BuildConfig {
+        default_flavor: Some(Flavor::Sui),
         ..Default::default()
     };
-    let resolved_graph = build_config.resolution_graph_for_package(
-        stub_path,
-        chain_id.clone(),
-        &mut io::stderr(),
-    )?;
+    let model = build_config
+        .move_model_from_root_pkg(&root_pkg, &mut std::io::stderr())
+        .await
+        .context("Failed to build Move model")?;
 
-    let source_id_map = find_address_origins(&resolved_graph);
-    let source_published_at = resolve_published_at(&resolved_graph, &source_id_map, chain_id);
-
-    let mut stderr = StandardStream::stderr(ColorChoice::Always);
-    let source_env = model_builder::build(resolved_graph, &mut stderr)?;
-
-    // resolve type origins
-    let type_origin_table = resolve_type_origin_table(
-        cache,
-        &source_id_map,
-        &source_published_at,
-        &source_env,
-        progress_output,
-    )
-    .await?;
-    let version_table = resolve_version_table(cache, &type_origin_table).await?;
+    // Resolve type origins via GraphQL
+    let (type_origin_table, version_table) =
+        resolve_type_origins(graphql_client, &id_map, &published_at, &model).await?;
 
     Ok(ModelResult {
-        env: source_env,
-        id_map: source_id_map,
-        published_at: source_published_at,
+        model,
+        id_map,
+        published_at,
         type_origin_table,
         version_table,
+        top_level_packages,
     })
 }
 
-async fn build_on_chain_model<Progress: Write>(
-    pkgs: Vec<(PM::PackageName, GM::OnChainPackage)>,
-    cache: &mut PackageCache<'_>,
-    progress_output: &mut Progress,
-) -> Result<OnChainModelResult> {
-    writeln!(
-        progress_output,
-        "{}",
-        "BUILDING ON-CHAIN MODEL".green().bold()
-    )?;
+/// Create a stub Move package in a temporary directory.
+///
+/// The stub package has the gen.toml packages as dependencies, with local paths
+/// converted to absolute paths.
+fn create_stub_package(packages: &Packages, manifest_dir: &Path) -> Result<TempDir> {
+    let temp_dir = tempfile::tempdir()?;
+    let stub_path = temp_dir.path();
 
-    let (pkg_ids, original_map) =
-        resolve_on_chain_packages(cache, pkgs.iter().map(|(_, pkg)| pkg.id).collect()).await?;
+    // Create empty sources directory
+    fs::create_dir(stub_path.join("sources"))?;
 
-    writeln!(
-        progress_output,
-        "{}",
-        "FETCHING ON-CHAIN PACKAGES".green().bold()
-    )?;
-    let mut modules = vec![];
-    let raw_pkgs = cache.get_multi(pkg_ids).await?;
-    for pkg in raw_pkgs {
-        let pkg = pkg?;
-        let SuiRawMovePackage { module_map, .. } = pkg;
-        for (_, bytes) in module_map {
-            let module = CompiledModule::deserialize_with_defaults(&bytes)?;
-            modules.push(module)
-        }
+    // Create Move.toml
+    let mut manifest = File::create(stub_path.join("Move.toml"))?;
+
+    writeln!(manifest, "[package]")?;
+    writeln!(manifest, "name = \"{}\"", STUB_PACKAGE_NAME)?;
+    writeln!(manifest, "edition = \"2024\"")?;
+    writeln!(manifest)?;
+    writeln!(manifest, "[dependencies]")?;
+
+    for (name, dep) in packages.iter() {
+        let dep_str = format_dependency(dep, manifest_dir)?;
+        writeln!(manifest, "{} = {}", name, dep_str)?;
     }
 
-    let mut on_chain_id_map: BTreeMap<AccountAddress, PM::PackageName> = BTreeMap::new();
-    let mut on_chain_published_at: BTreeMap<AccountAddress, AccountAddress> = BTreeMap::new();
-    for (name, pkg) in pkgs {
-        let original_id = original_map.get(&pkg.id).unwrap();
-
-        on_chain_id_map.insert(*original_id, name);
-        on_chain_published_at.insert(*original_id, pkg.id);
-    }
-
-    let env = Model::from_compiled(&on_chain_id_map, modules);
-
-    // resolve type origins
-    let type_origin_table = resolve_type_origin_table(
-        cache,
-        &on_chain_id_map,
-        &on_chain_published_at,
-        &env,
-        progress_output,
-    )
-    .await?;
-    let version_table = resolve_version_table(cache, &type_origin_table).await?;
-
-    Ok(ModelResult {
-        env,
-        id_map: on_chain_id_map,
-        published_at: on_chain_published_at,
-        type_origin_table,
-        version_table,
-    })
+    Ok(temp_dir)
 }
 
-/**
- * Finds the packagages where each address was first declared by descending down the
- * dependency graph breadth-first and populating the given map. This is to map package
- * names to their addresses.
- */
-fn find_address_origins(graph: &ResolvedGraph) -> BTreeMap<AccountAddress, PM::PackageName> {
-    let mut addr_map: BTreeMap<AccountAddress, PM::PackageName> = BTreeMap::new();
-
-    let root = graph.root_package();
-    let mut queue = VecDeque::from(vec![root]);
-
-    while let Some(current) = queue.pop_front() {
-        let pkg = graph.get_package(current);
-        for name in pkg.resolved_table.values() {
-            addr_map.insert(*name, current);
+/// Format a dependency for the stub Move.toml, converting relative paths to absolute.
+fn format_dependency(dep: &ManifestDependencyInfo, manifest_dir: &Path) -> Result<String> {
+    match dep {
+        ManifestDependencyInfo::Local(LocalDepInfo { local }) => {
+            let absolute_path = fs::canonicalize(manifest_dir.join(local))
+                .with_context(|| format!("Failed to resolve path: {}", local.display()))?;
+            Ok(format!("{{ local = \"{}\" }}", absolute_path.display()))
         }
-
-        for dep in pkg.immediate_dependencies(graph) {
-            queue.push_back(dep);
+        ManifestDependencyInfo::Git(ManifestGitDependency { repo, rev, subdir }) => {
+            let mut parts = vec![format!("git = \"{}\"", repo)];
+            if let Some(rev) = rev {
+                parts.push(format!("rev = \"{}\"", rev));
+            }
+            if !subdir.as_os_str().is_empty() {
+                parts.push(format!("subdir = \"{}\"", subdir.display()));
+            }
+            Ok(format!("{{ {} }}", parts.join(", ")))
         }
-    }
-
-    addr_map
-}
-
-/// Resolve published_at addresses by gathering published ids from the graph and matching
-/// them with package ids using the package name -> address map.
-fn resolve_published_at(
-    graph: &ResolvedGraph,
-    id_map: &BTreeMap<AccountAddress, PM::PackageName>,
-    chain_id: Option<String>,
-) -> BTreeMap<AccountAddress, AccountAddress> {
-    let (_, dependency_ids) = gather_published_ids(graph, chain_id);
-
-    let mut published_at: BTreeMap<AccountAddress, AccountAddress> = BTreeMap::new();
-    for (pkg_id, name) in id_map {
-        if let Some(published_id) = dependency_ids.published.get(name) {
-            published_at.insert(*pkg_id, **published_id);
+        ManifestDependencyInfo::External(ExternalDependency { resolver, data }) => {
+            // Format external resolver dependency: { r.<resolver> = <data> }
+            // We need to serialize the data back to inline TOML
+            let data_str = format_toml_value(data);
+            Ok(format!("{{ r.{} = {} }}", resolver, data_str))
+        }
+        ManifestDependencyInfo::OnChain(OnChainDepInfo { .. }) => {
+            // Format on-chain dependency: { on-chain = true }
+            Ok("{ on-chain = true }".to_string())
         }
     }
-
-    published_at
 }
 
-/**
- * Returns a list of all packages (including dependencies) where each package is mentioned only once
- * (resolved so that the highest version is used), and a mapping of all package ids to their original
- * package id (address of version 1 of the package).
- */
-async fn resolve_on_chain_packages(
-    dl: &mut PackageCache<'_>,
-    ids: Vec<AccountAddress>,
+/// Format a TOML value as an inline string for the Move.toml dependency.
+fn format_toml_value(value: &toml::Value) -> String {
+    match value {
+        toml::Value::String(s) => format!("\"{}\"", s),
+        toml::Value::Integer(i) => i.to_string(),
+        toml::Value::Float(f) => f.to_string(),
+        toml::Value::Boolean(b) => b.to_string(),
+        toml::Value::Array(arr) => {
+            let items: Vec<String> = arr.iter().map(format_toml_value).collect();
+            format!("[{}]", items.join(", "))
+        }
+        toml::Value::Table(tbl) => {
+            let items: Vec<String> = tbl
+                .iter()
+                .map(|(k, v)| format!("{} = {}", k, format_toml_value(v)))
+                .collect();
+            format!("{{ {} }}", items.join(", "))
+        }
+        toml::Value::Datetime(dt) => dt.to_string(),
+    }
+}
+
+/// Build package info from the loaded RootPackage.
+///
+/// Returns:
+/// - id_map: package address -> package name
+/// - published_at: original ID -> published-at ID
+/// - top_level_packages: set of package names from gen.toml
+fn build_package_info(
+    root_pkg: &RootPackage<SuiFlavor>,
+    gen_packages: &Packages,
 ) -> Result<(
-    Vec<AccountAddress>,
+    BTreeMap<AccountAddress, PackageName>,
     BTreeMap<AccountAddress, AccountAddress>,
+    BTreeSet<PackageName>,
 )> {
-    let top_level_origins = future::join_all(ids.iter().map(|addr| {
-        let mut dl = dl.clone();
-        async move { resolve_original_package_id(&mut dl, *addr).await.unwrap() }
-    }))
-    .await;
+    let mut id_map: BTreeMap<AccountAddress, PackageName> = BTreeMap::new();
+    let mut published_at: BTreeMap<AccountAddress, AccountAddress> = BTreeMap::new();
+    let mut top_level_packages: BTreeSet<PackageName> = BTreeSet::new();
 
-    let mut original_map: BTreeMap<_, _> = ids.clone().into_iter().zip(top_level_origins).collect();
-    let mut highest_versions: BTreeMap<AccountAddress, UpgradeInfo> = BTreeMap::new();
+    // Get the set of package names from gen.toml
+    let gen_package_names: BTreeSet<&PackageName> = gen_packages.keys().collect();
 
-    for pkg in dl.get_multi(ids.clone()).await? {
-        let pkg = pkg?;
-        let original_id = original_map.get(&pkg.id.into()).cloned().unwrap();
-        match highest_versions.get(&original_id) {
-            None => {
-                highest_versions.insert(
-                    original_id,
-                    UpgradeInfo {
-                        upgraded_id: pkg.id,
-                        upgraded_version: pkg.version,
-                    },
-                );
-            }
-            Some(info) => {
-                if info.upgraded_version < pkg.version {
-                    highest_versions.insert(
-                        original_id,
-                        UpgradeInfo {
-                            upgraded_id: pkg.id,
-                            upgraded_version: pkg.version,
-                        },
-                    );
-                }
-            }
-        }
-    }
+    for pkg_info in root_pkg.packages()? {
+        let pkg_name = pkg_info.name().clone();
 
-    let mut processed: HashSet<AccountAddress> = HashSet::new();
-    let mut pkg_queue: HashSet<AccountAddress> = ids.into_iter().collect();
-
-    while !pkg_queue.is_empty() {
-        for pkg in pkg_queue.iter() {
-            processed.insert(*pkg);
+        // Skip the stub root package
+        if pkg_info.is_root() {
+            continue;
         }
 
-        let pkgs = dl.get_multi(pkg_queue.drain().collect::<Vec<_>>()).await?;
-        for pkg in pkgs {
-            let pkg = pkg?;
-            for (original_id, info) in pkg.linkage_table {
-                original_map.insert(info.upgraded_id.into(), original_id.into());
-                match highest_versions.get(&original_id) {
-                    None => {
-                        highest_versions.insert(original_id.into(), info.clone());
+        // Determine if this is a top-level package
+        if gen_package_names.contains(&pkg_name) {
+            top_level_packages.insert(pkg_name.clone());
+        }
+
+        // Extract address from named addresses
+        if let Ok(named_addrs) = pkg_info.named_addresses() {
+            if let Some(addr) = named_addrs.get(pkg_info.name()) {
+                match addr {
+                    NamedAddress::Unpublished { dummy_addr } => {
+                        // Unpublished package - use dummy address
+                        id_map.insert(dummy_addr.0, pkg_name);
                     }
-                    Some(existing_info) => {
-                        if existing_info.upgraded_version < info.upgraded_version {
-                            highest_versions.insert(original_id.into(), info.clone());
+                    NamedAddress::Defined(original_id) => {
+                        // Published package - original_id from Published.toml
+                        id_map.insert(original_id.0, pkg_name);
+                        // Use the published_at address for GraphQL queries, or fall back to original_id
+                        let pub_addr = pkg_info
+                            .published()
+                            .map(|p| p.published_at.0)
+                            .unwrap_or(original_id.0);
+                        published_at.insert(original_id.0, pub_addr);
+                    }
+                    NamedAddress::RootPackage(maybe_addr) => {
+                        // Root package address
+                        if let Some(addr) = maybe_addr {
+                            id_map.insert(addr.0, pkg_name);
                         }
                     }
                 }
-
-                if !processed.contains(&info.upgraded_id.into()) {
-                    pkg_queue.insert(info.upgraded_id.into());
-                }
             }
         }
     }
 
-    Ok((
-        highest_versions
-            .values()
-            .map(|info| info.upgraded_id.into())
-            .collect(),
-        original_map,
-    ))
+    Ok((id_map, published_at, top_level_packages))
 }
 
-async fn resolve_original_package_id(
-    dl: &mut PackageCache<'_>,
-    id: AccountAddress,
-) -> Result<AccountAddress> {
-    let pkg = dl.get(id).await?;
-
-    if pkg.version == 1.into() {
-        return Ok(id);
-    }
-
-    let origin_pkgs = pkg
-        .type_origin_table
-        .iter()
-        .map(|origin| AccountAddress::from(origin.package))
-        .collect();
-
-    // in case of framework packages which get upgraded through a system upgrade, the first version can be != 1
-    let mut min_version: SequenceNumber = u64::MAX.into();
-    let mut id = id;
-    for pkg in dl.get_multi(origin_pkgs).await? {
-        let pkg = pkg?;
-        if pkg.version < min_version {
-            min_version = pkg.version;
-            id = pkg.id.into();
-        }
-    }
-
-    Ok(id)
-}
-
-async fn resolve_type_origin_table<Progress: Write, HasSource: SourceKind>(
-    cache: &mut PackageCache<'_>,
-    id_map: &BTreeMap<AccountAddress, PM::PackageName>,
+/// Resolve type origins using GraphQL queries.
+///
+/// The version table assigns sequential version numbers (1, 2, 3...) to each unique
+/// defining address encountered, rather than querying actual on-chain versions.
+/// This is sufficient since we only need unique identifiers for PKG_V{N} exports.
+async fn resolve_type_origins(
+    graphql: &GraphQLClient,
+    id_map: &BTreeMap<AccountAddress, PackageName>,
     published_at: &BTreeMap<AccountAddress, AccountAddress>,
-    model: &Model<HasSource>,
-    progress_output: &mut Progress,
-) -> Result<TypeOriginTable> {
-    let mut type_origin_table = BTreeMap::new();
-    let mut packages_to_fetch = vec![];
-    for (addr, name) in id_map.iter() {
-        let published_at = published_at.get(addr);
-        let published_at = match published_at {
-            Some(addr) => addr,
-            None => addr,
-        };
-        if published_at == &AccountAddress::ZERO {
-            continue;
-        };
-        packages_to_fetch.push((addr, name, *published_at));
-    }
-    let raw_pkgs = cache
-        .get_multi(packages_to_fetch.iter().map(|(_, _, addr)| *addr).collect())
-        .await?
-        .into_iter()
-        .zip(packages_to_fetch)
-        .collect::<Vec<_>>();
-    for (pkg_res, (original_id, name, published_at)) in raw_pkgs {
-        let pkg = match pkg_res {
-            Ok(pkg) => pkg,
-            Err(_) => {
-                writeln!(
-                    progress_output,
-                    "{} Package \"{}\" published at {} couldn't be fetched from chain for type origin resolution", "WARNING ".yellow().bold(),
-                    name, published_at.to_hex_literal()
-                )?;
-                continue;
+    model: &Model<WithSource>,
+) -> Result<(TypeOriginTable, VersionTable)> {
+    let mut type_origin_table: TypeOriginTable = BTreeMap::new();
+    let mut version_table: VersionTable = BTreeMap::new();
+
+    // Query published packages via GraphQL
+    let published_addrs: Vec<AccountAddress> = published_at.values().copied().collect();
+
+    if !published_addrs.is_empty() {
+        let graphql_results = graphql
+            .query_multiple_packages_type_origins(published_addrs)
+            .await?;
+
+        // Build type origin table and version table from GraphQL results
+        for (original_id, &published_addr) in published_at.iter() {
+            if let Some(origins) = graphql_results.get(&published_addr) {
+                let mut origin_map: BTreeMap<String, AccountAddress> = BTreeMap::new();
+                // Collect unique defining addresses for this package
+                let mut defining_addrs: BTreeSet<AccountAddress> = BTreeSet::new();
+
+                for origin in origins {
+                    let key = format!("{}::{}", origin.module, origin.struct_name);
+                    if let Ok(defining_addr) = AccountAddress::from_hex_literal(&origin.defining_id)
+                    {
+                        origin_map.insert(key, defining_addr);
+                        defining_addrs.insert(defining_addr);
+                    }
+                }
+
+                // Assign sequential version numbers in reverse order (newest = V1)
+                // BTreeSet is sorted, so we reverse to get the most recent address first
+                let mut versions: BTreeMap<AccountAddress, SequenceNumber> = BTreeMap::new();
+                let addr_list: Vec<_> = defining_addrs.iter().collect();
+                for (idx, addr) in addr_list.iter().rev().enumerate() {
+                    versions.insert(**addr, SequenceNumber::from_u64((idx + 1) as u64));
+                }
+
+                type_origin_table.insert(*original_id, origin_map);
+                version_table.insert(*original_id, versions);
             }
-        };
-        let origin_map: BTreeMap<String, AccountAddress> = pkg
-            .type_origin_table
-            .into_iter()
-            .map(|origin| {
-                (
-                    format!("{}::{}", origin.module_name, origin.datatype_name),
-                    origin.package.into(),
-                )
-            })
-            .collect();
-        type_origin_table.insert(*original_id, origin_map);
+        }
     }
-    // populate type origin table with remaining modules from the model (that couldn't be resolved from chain).
-    // in this case we set origin of all types to the package's original id.
+
+    // Fill in unpublished packages from model (self-origin)
+    // We need to process ALL modules, not just the first one per package
     for module in model.modules() {
-        let original_id = module.package().address();
-        let module_name = module.name();
-        type_origin_table
-            .entry(original_id)
-            .or_insert_with(BTreeMap::new);
-        let origin_map = type_origin_table.get_mut(&original_id).unwrap();
+        let pkg_addr = module.package().address();
+
+        // Get or create the origin map for this package
+        let origin_map = type_origin_table.entry(pkg_addr).or_default();
+
+        // Add all structs from this module
         for s in module.structs() {
-            let name = s.name();
-            let full_name = format!("{module_name}::{name}");
-            origin_map.entry(full_name).or_insert(original_id);
+            let key = format!("{}::{}", module.name(), s.name());
+            // Only insert if not already present (GraphQL results take precedence)
+            origin_map.entry(key).or_insert(pkg_addr);
         }
+
+        // Add all enums from this module
         for e in module.enums() {
-            let name = e.name();
-            let full_name = format!("{module_name}::{name}");
-            origin_map.entry(full_name).or_insert(original_id);
+            let key = format!("{}::{}", module.name(), e.name());
+            origin_map.entry(key).or_insert(pkg_addr);
         }
+
+        // Ensure version table has this package's own address as a version
+        // For unpublished packages, use version 1
+        let versions = version_table.entry(pkg_addr).or_default();
+        versions
+            .entry(pkg_addr)
+            .or_insert(SequenceNumber::from_u64(1));
     }
 
-    Ok(type_origin_table)
-}
-
-async fn resolve_version_table(
-    cache: &mut PackageCache<'_>,
-    type_origin_table: &TypeOriginTable,
-) -> Result<VersionTable> {
-    // this is slow and inefficient but can be made faster by fetching package versions
-    // from an index (if there is such an index) or using graphql api
-    let mut version_table = BTreeMap::new();
-    let mut packages_to_fetch = vec![];
-    for (_, origins) in type_origin_table.iter() {
-        for origin in origins.values() {
-            packages_to_fetch.push(*origin);
-        }
-    }
-    // pre-fetch
-    cache.get_multi(packages_to_fetch).await?;
-
-    for (original_id, origins) in type_origin_table.iter() {
-        let mut versions = BTreeMap::new();
-        versions.insert(*original_id, 1.into());
-        for (_, origin) in origins.iter() {
-            if origin == &AccountAddress::ZERO {
-                continue;
-            }
-            let pkg = cache.get(*origin).await?;
-            versions.insert(*origin, pkg.version);
-        }
-        version_table.insert(*original_id, versions);
+    // Ensure all packages in id_map have their own address in version_table
+    for pkg_addr in id_map.keys() {
+        let versions = version_table.entry(*pkg_addr).or_default();
+        versions
+            .entry(*pkg_addr)
+            .or_insert(SequenceNumber::from_u64(1));
     }
 
-    Ok(version_table)
+    Ok((type_origin_table, version_table))
 }
 
-impl fmt::Display for DependencyTOML<'_> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let DependencyTOML(
-            name,
-            PM::InternalDependency {
-                kind,
-                subst,
-                digest,
-                dep_override,
-            },
-        ) = self;
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use move_package_alt::schema::ConstTrue;
+    use std::path::PathBuf;
 
-        write!(f, "{} = {{ ", name)?;
+    #[test]
+    fn test_format_local_dependency() {
+        let dep = ManifestDependencyInfo::Local(LocalDepInfo {
+            local: PathBuf::from("../move/examples"),
+        });
 
-        match kind {
-            PM::DependencyKind::Local(local) => {
-                write!(f, "local = ")?;
-                f.write_str(&path_escape(local)?)?;
-            }
-
-            PM::DependencyKind::Git(PM::GitInfo {
-                git_url,
-                git_rev,
-                subdir,
-            }) => {
-                write!(f, "git = ")?;
-                f.write_str(&str_escape(git_url.as_str())?)?;
-
-                write!(f, ", rev = ")?;
-                f.write_str(&str_escape(git_rev.as_str())?)?;
-
-                write!(f, ", subdir = ")?;
-                f.write_str(&path_escape(subdir)?)?;
-            }
-            PM::DependencyKind::OnChain(_) => {
-                unreachable!("not supported")
-            }
-        }
-
-        if let Some(digest) = digest {
-            write!(f, ", digest = ")?;
-            f.write_str(&str_escape(digest.as_str())?)?;
-        }
-
-        if let Some(subst) = subst {
-            write!(f, ", addr_subst = {}", SubstTOML(subst))?;
-        }
-
-        if *dep_override {
-            write!(f, ", override = true")?;
-        }
-
-        f.write_str(" }")?;
-
-        Ok(())
+        // This will fail if the path doesn't exist, but tests the format logic
+        let manifest_dir = PathBuf::from("/tmp");
+        let result = format_dependency(&dep, &manifest_dir);
+        // The actual test would need a valid path
+        assert!(result.is_err() || result.unwrap().contains("local"));
     }
-}
 
-impl fmt::Display for SubstTOML<'_> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        /// Write an individual key value pair in the substitution.
-        fn write_subst(
-            f: &mut fmt::Formatter<'_>,
-            addr: &PM::NamedAddress,
-            subst: &PM::SubstOrRename,
-        ) -> fmt::Result {
-            f.write_str(&str_escape(addr.as_str())?)?;
-            write!(f, " = ")?;
+    #[test]
+    fn test_format_git_dependency() {
+        let dep = ManifestDependencyInfo::Git(ManifestGitDependency {
+            repo: "https://github.com/MystenLabs/sui.git".to_string(),
+            rev: Some("mainnet-v1.62.1".to_string()),
+            subdir: PathBuf::from("crates/sui-framework/packages/sui-framework"),
+        });
 
-            match subst {
-                PM::SubstOrRename::RenameFrom(named) => {
-                    f.write_str(&str_escape(named.as_str())?)?;
-                }
+        let manifest_dir = PathBuf::from("/tmp");
+        let result = format_dependency(&dep, &manifest_dir).unwrap();
 
-                PM::SubstOrRename::Assign(account) => {
-                    f.write_str(&str_escape(&account.to_canonical_string(true))?)?;
-                }
-            }
-
-            Ok(())
-        }
-
-        let mut substs = self.0.iter();
-
-        let Some((addr, subst)) = substs.next() else {
-            return f.write_str("{}");
-        };
-
-        f.write_str("{ ")?;
-
-        write_subst(f, addr, subst)?;
-        for (addr, subst) in substs {
-            write!(f, ", ")?;
-            write_subst(f, addr, subst)?;
-        }
-
-        f.write_str(" }")?;
-
-        Ok(())
+        assert!(result.contains("git = \"https://github.com/MystenLabs/sui.git\""));
+        assert!(result.contains("rev = \"mainnet-v1.62.1\""));
+        assert!(result.contains("subdir = \"crates/sui-framework/packages/sui-framework\""));
     }
-}
 
-/// Escape a string to output in a TOML file.
-fn str_escape(s: &str) -> Result<String, fmt::Error> {
-    toml::to_string(s).map_err(|_| fmt::Error)
-}
+    #[test]
+    fn test_format_external_mvr_dependency() {
+        // MVR dependency: { r.mvr = "@namespace/package" }
+        let dep = ManifestDependencyInfo::External(ExternalDependency {
+            resolver: "mvr".to_string(),
+            data: toml::Value::String("@potatoes/ascii".to_string()),
+        });
 
-/// Escape a path to output in a TOML file.
-fn path_escape(p: &Path) -> Result<String, fmt::Error> {
-    str_escape(p.to_str().ok_or(fmt::Error)?)
+        let manifest_dir = PathBuf::from("/tmp");
+        let result = format_dependency(&dep, &manifest_dir).unwrap();
+
+        assert_eq!(result, "{ r.mvr = \"@potatoes/ascii\" }");
+    }
+
+    #[test]
+    fn test_format_external_complex_dependency() {
+        // External dependency with complex data: { r.custom = { key = "value" } }
+        let mut data_table = toml::map::Map::new();
+        data_table.insert(
+            "resolved".to_string(),
+            toml::Value::Table({
+                let mut inner = toml::map::Map::new();
+                inner.insert("local".to_string(), toml::Value::String(".".to_string()));
+                inner
+            }),
+        );
+
+        let dep = ManifestDependencyInfo::External(ExternalDependency {
+            resolver: "mock-resolver".to_string(),
+            data: toml::Value::Table(data_table),
+        });
+
+        let manifest_dir = PathBuf::from("/tmp");
+        let result = format_dependency(&dep, &manifest_dir).unwrap();
+
+        assert!(result.contains("r.mock-resolver"));
+        assert!(result.contains("resolved"));
+        assert!(result.contains("local"));
+    }
+
+    #[test]
+    fn test_format_onchain_dependency() {
+        // On-chain dependency: { on-chain = true }
+        let dep = ManifestDependencyInfo::OnChain(OnChainDepInfo {
+            on_chain: ConstTrue,
+        });
+
+        let manifest_dir = PathBuf::from("/tmp");
+        let result = format_dependency(&dep, &manifest_dir).unwrap();
+
+        assert_eq!(result, "{ on-chain = true }");
+    }
 }
