@@ -20,6 +20,9 @@ cargo test
 # Run snapshot tests only
 cargo test --test snapshot_tests
 
+# Run model_builder integration tests
+cargo test --test model_builder_integration
+
 # Review snapshot diffs
 cargo insta review
 
@@ -52,10 +55,11 @@ pnpm run gen:all          # Regenerate all + lint fix
 ### Pipeline Overview
 
 ```
-gen.toml + RPC access
+gen.toml + RPC/GraphQL access
     ↓
-Model Building (move_model_2)
-  ├─ Source packages (local/git) → Move ResolvedGraph
+Model Building (move_package_alt + move_model_2)
+  ├─ Source packages (local/git) → move_package_alt resolution
+  ├─ Published packages → Published.toml metadata + GraphQL type origins
   └─ On-chain packages (RPC IDs) → Fetch + parse bytecode
     ↓
 Coarse-grained IR (StructIR, EnumIR, FunctionIR)
@@ -70,8 +74,9 @@ Output: _framework/, <package>/, _dependencies/
 | Module | Purpose |
 |--------|---------|
 | `driver.rs` | Main orchestrator |
-| `model_builder.rs` | Builds Move models from source + on-chain packages |
+| `model_builder.rs` | Builds Move models using move_package_alt + move_model_2 |
 | `manifest.rs` | Parses `gen.toml` configuration |
+| `graphql/` | GraphQL client for type origin queries |
 | `ts_gen/builder.rs` | IR construction (Move → StructIR/EnumIR/FunctionIR) |
 | `ts_gen/structs.rs` | Struct/field type emission |
 | `ts_gen/enums.rs` | Enum emission |
