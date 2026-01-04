@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { obj, pure } from '../../_framework/util'
-import { String } from '../../move-stdlib/string/structs'
+import { String } from '../../std/string/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function owner(tx: Transaction, verifiedIssuer: TransactionObjectInput) {

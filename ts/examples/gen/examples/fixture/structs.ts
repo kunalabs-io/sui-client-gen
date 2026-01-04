@@ -28,9 +28,9 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { String as StringAscii } from '../../move-stdlib/ascii/structs'
-import { Option } from '../../move-stdlib/option/structs'
-import { String } from '../../move-stdlib/string/structs'
+import { String as StringAscii } from '../../std/ascii/structs'
+import { Option } from '../../std/option/structs'
+import { String } from '../../std/string/structs'
 import { Balance } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { SUI } from '../../sui/sui/structs'

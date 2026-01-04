@@ -22,9 +22,9 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { String as StringAscii } from '../../move-stdlib/ascii/structs'
-import { Option } from '../../move-stdlib/option/structs'
-import { String } from '../../move-stdlib/string/structs'
+import { String as StringAscii } from '../../std/ascii/structs'
+import { Option } from '../../std/option/structs'
+import { String } from '../../std/string/structs'
 import { Balance, Supply } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { Url } from '../url/structs'

@@ -25,9 +25,9 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { Option } from '../../move-stdlib/option/structs'
-import { String } from '../../move-stdlib/string/structs'
-import { TypeName } from '../../move-stdlib/type-name/structs'
+import { Option } from '../../std/option/structs'
+import { String } from '../../std/string/structs'
+import { TypeName } from '../../std/type-name/structs'
 import { Bag } from '../bag/structs'
 import { Supply } from '../balance/structs'
 import { ID, UID } from '../object/structs'

@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { obj, pure, vector } from '../../_framework/util'
-import { String } from '../../move-stdlib/string/structs'
+import { String } from '../../std/string/structs'
 import { ActiveJwk } from './structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 

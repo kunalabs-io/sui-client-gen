@@ -22,7 +22,7 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { TypeName } from '../../move-stdlib/type-name/structs'
+import { TypeName } from '../../std/type-name/structs'
 import { Balance, Supply } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
