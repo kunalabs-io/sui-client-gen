@@ -27,7 +27,7 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { Option } from '../../move-stdlib/option/structs'
+import { Option } from '../../std/option/structs'
 import { Balance } from '../../sui/balance/structs'
 import { UID } from '../../sui/object/structs'
 import { SUI } from '../../sui/sui/structs'

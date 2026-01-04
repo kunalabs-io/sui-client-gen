@@ -22,9 +22,9 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { Option } from '../../move-stdlib/option/structs'
-import { String } from '../../move-stdlib/string/structs'
-import { TypeName } from '../../move-stdlib/type-name/structs'
+import { Option } from '../../std/option/structs'
+import { String } from '../../std/string/structs'
+import { TypeName } from '../../std/type-name/structs'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'

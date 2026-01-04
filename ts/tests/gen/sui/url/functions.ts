@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
 import { obj, pure } from '../../_framework/util'
-import { String as String1 } from '../../move-stdlib/ascii/structs'
+import { String as String1 } from '../../std/ascii/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function newUnsafe(tx: Transaction, url: string | TransactionArgument) {
