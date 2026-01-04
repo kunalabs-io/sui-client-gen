@@ -7,7 +7,6 @@ use std::path::PathBuf;
 use anyhow::Result;
 use clap::*;
 use move_package::package_hooks;
-use sui_client_gen::driver::{run, RunOptions};
 use sui_move_build::SuiPackageHooks;
 
 #[derive(Parser)]
@@ -28,10 +27,9 @@ struct Args {
     #[arg(
         short,
         long,
-        help = "Path to the output directory. If omitted, the current directory will be used.",
-        default_value = "."
+        help = "Path to the output directory. Overrides output in gen.toml if specified."
     )]
-    out: String,
+    out: Option<String>,
 
     #[arg(
         long,
@@ -46,9 +44,9 @@ async fn main() -> Result<()> {
 
     package_hooks::register_package_hooks(Box::new(SuiPackageHooks));
 
-    run(RunOptions {
-        manifest_path: PathBuf::from(args.manifest),
-        out_dir: PathBuf::from(args.out),
+    sui_client_gen::driver::run(sui_client_gen::driver::RunOptions {
+        manifest_path: PathBuf::from(&args.manifest),
+        out_dir: args.out.map(PathBuf::from),
         clean: args.clean,
     })
     .await
