@@ -34,13 +34,15 @@ The manifest is parsed by `generator/src/manifest.rs`.
 
 - **`[config]`**
 
-  - **`rpc`**: optional RPC URL. If omitted, the generator uses `DEFAULT_RPC` (`generator/src/lib.rs`).
+  - **`environment`**: target environment (e.g., `mainnet`, `testnet`). Used for resolving `Published.toml` metadata.
+  - **`graphql`**: optional GraphQL URL for fetching type origins. If omitted, defaults to `https://graphql.mainnet.sui.io/graphql`.
+  - **`rpc`**: optional RPC URL (deprecated, use `graphql` instead).
 
 - **`[packages]`**
   - Each entry can be:
-    - **Move dependency** (same schema as `Move.toml` dependencies via `move_package`):
+    - **Move dependency** (same schema as `Move.toml` dependencies via `move_package_alt`):
       - `{ local = "..." }`
-      - `{ git = "...", subdir = "...", rev = "...", override = true }` (and related Move fields)
+      - `{ git = "...", subdir = "...", rev = "..." }` (and related Move fields)
     - **On-chain package**:
       - `{ id = "0x..." }`
 
@@ -48,17 +50,19 @@ Example (`ts/examples/gen/gen.toml`):
 
 ```toml
 [config]
-rpc = "https://fullnode.testnet.sui.io:443"
+environment = "mainnet"
+graphql = "https://graphql.mainnet.sui.io/graphql"
+output = "./gen"
 
 [packages]
 Examples = { local = "../../../move/examples" }
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet-v1.62.1", override = true }
-MoveStdlib = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "mainnet-v1.62.1", override = true }
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet-v1.62.1" }
+MoveStdlib = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "mainnet-v1.62.1" }
 ```
 
 Current limitations (enforced in `model_builder.rs`):
 
-- **No external deps** (Move “external” dependency kind) in `gen.toml`
+- **No external deps** (Move "external" dependency kind) in `gen.toml`
 - **No on-chain deps** specified via Move dependency kind (only `{ id = ... }` is supported)
 
 ---
@@ -101,26 +105,41 @@ The driver can build **two independent models**:
 - **Source model**: packages from local paths or git deps
 - **On-chain model**: packages fetched from RPC by ID
 
+### Package System: `move_package_alt`
+
+The generator uses Sui's new `move_package_alt` package system which provides:
+
+- **Environment support**: Packages can have different published metadata per environment (mainnet, testnet, etc.)
+- **`Published.toml`**: Contains published package metadata for each environment:
+  ```toml
+  [published.testnet]
+  chain-id = "4c78adac"
+  published-at = "0xe782..."
+  original-id = "0x60af..."
+  version = 2
+  ```
+- **GraphQL-based type origin resolution**: Uses Sui's GraphQL API to fetch type origin tables for published packages
+
 ### Source model (local/git)
 
 Implemented in `build_source_model(...)`:
 
-- Creates a temporary “stub” Move package (a minimal `Move.toml`) whose dependencies are the packages from `gen.toml`.
-  - Local dependency paths are canonicalized relative to `gen.toml`.
-- Uses Move build tooling to build a single `ResolvedGraph` for all requested packages.
-  - Uses Sui flavor + implicit deps (`sui_move_build::implicit_deps(latest_system_packages())`)
-  - Sets `skip_fetch_latest_git_deps = true` (so pin `rev` for git deps)
-- Builds a Move model environment: `move_package::compilation::model_builder::build(...)`
+- Uses `move_package_alt` to resolve and compile all packages from `gen.toml`
+  - Local dependency paths are canonicalized relative to `gen.toml`
+  - Git dependencies are fetched and cached
+- Compiles to `move_model_2::Model` with full source information
+- Reads `Published.toml` metadata for each package to determine published addresses
 
 Additional metadata computed for codegen:
 
-- **`id_map`**: address → package name mapping derived by BFS over the `ResolvedGraph`
-  - Used to determine which packages are “top-level” vs “dependencies” in output layout.
-- **`published_at`**: original package ID → published-at ID (if available) via `gather_published_ids`
-- **`type_origin_table`**: for each package, maps `module::Datatype` → origin package address
-  - Prefer reading `type_origin_table` from the on-chain package object when possible
-  - Falls back to “self-origin” if the on-chain package can’t be fetched
-- **`version_table`**: maps each origin package address to its on-chain `SequenceNumber` (used for `PKG_V{N}` exports)
+- **`id_map`**: address → package name mapping derived from the resolved package graph
+  - Used to determine which packages are "top-level" vs "dependencies" in output layout.
+- **`published_at`**: original package ID → published-at ID from `Published.toml` metadata
+- **`type_origin_table`**: for each published package, maps `module::Datatype` → origin package address
+  - Fetched via GraphQL from the Sui network using `graphql/` module
+  - Falls back to "self-origin" for unpublished packages
+- **`version_table`**: maps each origin package address to its version (used for `PKG_V{N}` exports)
+  - Ordering: newest version = V1, older versions = V2, V3, etc.
 
 ### On-chain model (RPC package IDs)
 
@@ -369,7 +388,36 @@ If you add a new special-cased type, update these helpers and add/extend snapsho
 
 ---
 
-## Testing and snapshots
+## Testing
+
+### Integration tests
+
+Integration tests for `model_builder` are in:
+
+- `generator/tests/model_builder_integration.rs`
+
+These tests verify the model building pipeline using fixture packages in `generator/tests/fixtures/`:
+
+- **Published packages**: Have `Published.toml` with testnet metadata
+- **Unpublished packages**: No `Published.toml`
+- **Legacy packages**: Use old `Move.toml` format with `[addresses]` section
+
+The tests verify:
+- `id_map`: package address → name mapping
+- `published_at`: original ID → published-at ID mapping
+- `type_origin_table`: type → defining package resolution
+- `version_table`: package version ordering
+- `top_level_packages`: packages specified in gen.toml
+
+**Performance optimization**: Tests use `OnceLock`-based caching to avoid rebuilding the model for each test. The cached data is extracted once and shared across 17 tests. Only 2 tests that need the full `Model` rebuild it.
+
+Run integration tests:
+
+```bash
+cargo test --test model_builder_integration
+```
+
+### Snapshot tests
 
 Snapshot tests are in:
 
