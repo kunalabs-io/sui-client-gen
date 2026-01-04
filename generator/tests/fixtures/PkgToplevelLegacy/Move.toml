@@ -1,0 +1,6 @@
+[package]
+name = "PkgToplevelLegacy"
+edition = "2024"
+
+[addresses]
+pkg_toplevel_legacy = "0x0"

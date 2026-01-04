@@ -1,0 +1,6 @@
+[package]
+name = "PkgTransitiveLegacy"
+edition = "2024"
+
+[addresses]
+pkg_transitive_legacy = "0x0"

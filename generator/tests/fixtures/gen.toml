@@ -1,0 +1,9 @@
+[config]
+environment = "testnet"
+graphql = "https://graphql.testnet.sui.io/graphql"
+output = "./out"
+
+[packages]
+pkg_published_toplevel = { local = "./pkg_published_toplevel" }
+pkg_unpublished_toplevel = { local = "./pkg_unpublished_toplevel" }
+pkg_toplevel_legacy = { local = "./PkgToplevelLegacy" }
