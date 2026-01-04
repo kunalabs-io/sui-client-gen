@@ -1,8 +1,9 @@
 [config]
-rpc = "https://fullnode.testnet.sui.io:443"
+graphql = "https://graphql.testnet.sui.io/graphql"
+environment = "testnet"
 
 [packages]
-AMM = { local = "../../../move/amm" }
-Examples = { local = "../../../move/examples" }
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet-v1.62.1", override = true }
-MoveStdlib = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "mainnet-v1.62.1", override = true }
+amm = { local = "../../../move/amm" }
+examples = { local = "../../../move/examples" }
+sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet-v1.62.1", override = true }
+std = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "mainnet-v1.62.1", override = true }
