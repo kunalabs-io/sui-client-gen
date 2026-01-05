@@ -6,6 +6,7 @@ use std::collections::BTreeMap;
 #[derive(Debug, Deserialize)]
 pub(super) struct GraphQLResponse {
     pub data: Option<GraphQLData>,
+    #[allow(dead_code)]
     pub errors: Option<Vec<GraphQLError>>,
 }
 

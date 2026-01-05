@@ -137,8 +137,8 @@ impl GraphQLClient {
                 Err(e) => {
                     // Log warning but continue - package will use self-origin
                     eprintln!(
-                        "Warning: Failed to fetch type origins for {}: {}",
-                        format!("0x{:x}", addr),
+                        "Warning: Failed to fetch type origins for 0x{:x}: {}",
+                        addr,
                         e
                     );
                 }
