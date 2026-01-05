@@ -3,10 +3,16 @@ use move_core_types::account_address::AccountAddress;
 use serde::de::DeserializeOwned;
 use serde_json::json;
 
-use super::types::{GraphQLResponse, TypeOrigin, TypeOriginMap};
+use super::types::{ChainIdentifierResponse, GraphQLResponse, TypeOrigin, TypeOriginMap};
 
 /// GraphQL query strings
 mod queries {
+    pub const CHAIN_IDENTIFIER: &str = r#"
+        query {
+            chainIdentifier
+        }
+    "#;
+
     pub const PACKAGE_TYPE_ORIGINS: &str = r#"
         query GetPackageTypeOrigins($packageAddr: SuiAddress!) {
             package(address: $packageAddr) {
@@ -81,6 +87,20 @@ impl GraphQLClient {
         let json_response = self.execute_raw_query(query, variables).await?;
         let typed: T = serde_json::from_value(json_response)?;
         Ok(typed)
+    }
+
+    /// Query the chain identifier from the GraphQL endpoint.
+    ///
+    /// Returns the first 4 bytes of the genesis checkpoint digest as hex (8 characters).
+    pub async fn query_chain_identifier(&self) -> Result<String> {
+        let response: ChainIdentifierResponse = self
+            .execute_query(queries::CHAIN_IDENTIFIER, json!({}))
+            .await?;
+
+        match response.data {
+            Some(data) => Ok(data.chain_identifier),
+            None => Err(anyhow::anyhow!("No chain identifier returned from GraphQL endpoint")),
+        }
     }
 
     /// Query a single package's type origins

@@ -52,3 +52,18 @@ pub struct TypeOrigin {
 
 /// Map of package addresses to their type origins
 pub type TypeOriginMap = BTreeMap<AccountAddress, Vec<TypeOrigin>>;
+
+/// GraphQL response for chain identifier query
+#[derive(Debug, Deserialize)]
+pub(super) struct ChainIdentifierResponse {
+    pub data: Option<ChainIdentifierData>,
+    #[allow(dead_code)]
+    pub errors: Option<Vec<GraphQLError>>,
+}
+
+/// Chain identifier data from GraphQL
+#[derive(Debug, Deserialize)]
+pub(super) struct ChainIdentifierData {
+    #[serde(rename = "chainIdentifier")]
+    pub chain_identifier: String,
+}
