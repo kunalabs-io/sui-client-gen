@@ -36,6 +36,13 @@ pub type TypeOriginTable = BTreeMap<AccountAddress, BTreeMap<String, AccountAddr
 /// Version table: maps package address -> (origin address -> sequence number)
 pub type VersionTable = BTreeMap<AccountAddress, BTreeMap<AccountAddress, SequenceNumber>>;
 
+/// Package info result: (id_map, published_at, top_level_packages)
+type PackageInfo = (
+    BTreeMap<AccountAddress, PackageName>,
+    BTreeMap<AccountAddress, AccountAddress>,
+    BTreeSet<PackageName>,
+);
+
 /// Result of building a model from the package system.
 pub struct ModelResult {
     /// The Move model
@@ -206,11 +213,7 @@ fn format_toml_value(value: &toml::Value) -> String {
 fn build_package_info(
     root_pkg: &RootPackage<SuiFlavor>,
     gen_packages: &Packages,
-) -> Result<(
-    BTreeMap<AccountAddress, PackageName>,
-    BTreeMap<AccountAddress, AccountAddress>,
-    BTreeSet<PackageName>,
-)> {
+) -> Result<PackageInfo> {
     let mut id_map: BTreeMap<AccountAddress, PackageName> = BTreeMap::new();
     let mut published_at: BTreeMap<AccountAddress, AccountAddress> = BTreeMap::new();
     let mut top_level_packages: BTreeSet<PackageName> = BTreeSet::new();

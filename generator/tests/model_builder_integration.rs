@@ -60,6 +60,7 @@ fn get_cached_data() -> &'static CachedTestData {
 }
 
 /// Known addresses from Published.toml files
+#[allow(dead_code)]
 mod known_addresses {
     /// pkg_published_transitive: original-id = published-at (never upgraded)
     pub const PKG_PUBLISHED_TRANSITIVE: &str =
@@ -140,11 +141,8 @@ fn test_top_level_packages_count() {
 fn test_top_level_packages_contains_expected() {
     let data = get_cached_data();
 
-    let top_level_names: BTreeSet<&str> = data
-        .top_level_packages
-        .iter()
-        .map(|n| n.as_str())
-        .collect();
+    let top_level_names: BTreeSet<&str> =
+        data.top_level_packages.iter().map(|n| n.as_str()).collect();
 
     assert!(
         top_level_names.contains("pkg_published_toplevel"),
@@ -165,11 +163,8 @@ fn test_top_level_packages_contains_expected() {
 fn test_transitive_packages_not_in_top_level() {
     let data = get_cached_data();
 
-    let top_level_names: BTreeSet<&str> = data
-        .top_level_packages
-        .iter()
-        .map(|n| n.as_str())
-        .collect();
+    let top_level_names: BTreeSet<&str> =
+        data.top_level_packages.iter().map(|n| n.as_str()).collect();
 
     // Transitive dependencies should NOT be in top_level_packages
     assert!(
@@ -237,8 +232,7 @@ fn test_published_package_uses_original_id() {
 
     // pkg_published_toplevel should use original-id from Published.toml
     let expected_addr =
-        AccountAddress::from_hex_literal(known_addresses::PKG_PUBLISHED_TOPLEVEL_ORIGINAL)
-            .unwrap();
+        AccountAddress::from_hex_literal(known_addresses::PKG_PUBLISHED_TOPLEVEL_ORIGINAL).unwrap();
 
     let actual_addr = get_package_addr_cached(data, "pkg_published_toplevel")
         .expect("pkg_published_toplevel should be in id_map");
@@ -268,7 +262,8 @@ fn test_published_at_contains_published_packages() {
         "published_at should contain pkg_published_toplevel"
     );
     assert!(
-        data.published_at.contains_key(&pkg_published_transitive_addr),
+        data.published_at
+            .contains_key(&pkg_published_transitive_addr),
         "published_at should contain pkg_published_transitive"
     );
 }
@@ -304,8 +299,7 @@ fn test_published_at_correct_mapping() {
 
     // pkg_published_toplevel: original-id -> published-at
     let original_id =
-        AccountAddress::from_hex_literal(known_addresses::PKG_PUBLISHED_TOPLEVEL_ORIGINAL)
-            .unwrap();
+        AccountAddress::from_hex_literal(known_addresses::PKG_PUBLISHED_TOPLEVEL_ORIGINAL).unwrap();
     let expected_published_at =
         AccountAddress::from_hex_literal(known_addresses::PKG_PUBLISHED_TOPLEVEL_PUBLISHED_AT)
             .unwrap();
@@ -367,8 +361,7 @@ fn test_type_origin_different_versions() {
     // OriginalStruct was defined in v1 (original-id)
     // AddedInV2 was defined in v2 (published-at)
     let v1_addr =
-        AccountAddress::from_hex_literal(known_addresses::PKG_PUBLISHED_TOPLEVEL_ORIGINAL)
-            .unwrap();
+        AccountAddress::from_hex_literal(known_addresses::PKG_PUBLISHED_TOPLEVEL_ORIGINAL).unwrap();
     let v2_addr =
         AccountAddress::from_hex_literal(known_addresses::PKG_PUBLISHED_TOPLEVEL_PUBLISHED_AT)
             .unwrap();
@@ -390,8 +383,8 @@ fn test_unpublished_packages_have_self_origin() {
     let unpublished_packages = ["pkg_unpublished_toplevel", "pkg_unpublished_transitive"];
 
     for pkg_name in unpublished_packages {
-        let pkg_addr =
-            get_package_addr_cached(data, pkg_name).expect(&format!("{} should exist", pkg_name));
+        let pkg_addr = get_package_addr_cached(data, pkg_name)
+            .unwrap_or_else(|| panic!("{} should exist", pkg_name));
 
         if let Some(origins) = data.type_origin_table.get(&pkg_addr) {
             for (type_key, defining_addr) in origins {
@@ -470,8 +463,7 @@ fn test_version_table_original_is_v2() {
 
     // The original version should be V2 (older)
     let original_addr =
-        AccountAddress::from_hex_literal(known_addresses::PKG_PUBLISHED_TOPLEVEL_ORIGINAL)
-            .unwrap();
+        AccountAddress::from_hex_literal(known_addresses::PKG_PUBLISHED_TOPLEVEL_ORIGINAL).unwrap();
 
     let v2_version = versions
         .get(&original_addr)
