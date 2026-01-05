@@ -20,7 +20,7 @@ use crate::layout::OutputLayout;
 use crate::manifest::parse_gen_manifest_from_file;
 use crate::model_builder::{self, TypeOriginTable, VersionTable};
 use crate::ts_gen::{self, gen_module_structs, gen_package_index};
-use crate::{framework_sources, DEFAULT_GRAPHQL};
+use crate::{expected_chain_id, framework_sources, DEFAULT_GRAPHQL};
 
 /// Options for running the new generator.
 pub struct RunOptions {
@@ -53,6 +53,27 @@ pub async fn run(opts: RunOptions) -> Result<()> {
         .as_deref()
         .unwrap_or(DEFAULT_GRAPHQL);
     let graphql_client = GraphQLClient::new(graphql_url);
+
+    // Validate chain ID matches environment
+    if let Some(expected) = expected_chain_id(&manifest.config.environment) {
+        writeln!(progress_output, "{}", "VALIDATING CHAIN ID".green().bold())?;
+        let actual = graphql_client
+            .query_chain_identifier()
+            .await
+            .map_err(|e| anyhow::anyhow!("Failed to query chain identifier from {}: {}", graphql_url, e))?;
+
+        if actual != expected {
+            return Err(anyhow::anyhow!(
+                "Chain ID mismatch: GraphQL endpoint '{}' returned chain ID '{}', \
+                 but environment '{}' expects chain ID '{}'. \
+                 Please ensure your GraphQL endpoint matches your environment.",
+                graphql_url,
+                actual,
+                manifest.config.environment,
+                expected
+            ));
+        }
+    }
 
     // Build model using new package system
     writeln!(
