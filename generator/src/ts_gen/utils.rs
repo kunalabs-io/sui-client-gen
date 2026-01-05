@@ -49,7 +49,7 @@ pub fn module_import_name(module: Symbol) -> String {
 pub fn package_import_name(pkg_name: Symbol) -> String {
     pkg_name
         .to_string()
-        .from_case(Case::Pascal)
+        .from_case(Case::Snake)
         .to_case(Case::Kebab)
 }
 
