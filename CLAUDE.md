@@ -69,7 +69,7 @@ TypeScript Emission
 Output: _framework/, <package>/, _dependencies/
 ```
 
-### Key Modules
+### Key Modules (in generator/src/)
 
 | Module | Purpose |
 |--------|---------|
@@ -106,10 +106,10 @@ Output: _framework/, <package>/, _dependencies/
 
 **Use snapshot tests for fast iteration, not full regeneration.**
 
-1. **Create IR fixture** that reproduces the issue in `tests/snapshot_tests.rs`
+1. **Create IR fixture** that reproduces the issue in `generator/tests/snapshot_tests.rs`
 2. **Add snapshot test** using `insta::assert_snapshot!()`
 3. **Run failing test**: `cargo test --test snapshot_tests test_name`
-4. **Apply fix** in the relevant `ts_gen/` module
+4. **Apply fix** in the relevant `generator/src/ts_gen/` module
 5. **Review snapshots**: `cargo insta review`
 6. **Accept**: `cargo insta accept`
 7. **Verify**: `cargo test`
