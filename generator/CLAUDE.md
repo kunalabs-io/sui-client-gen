@@ -133,3 +133,16 @@ Output: _framework/, <package>/, _dependencies/
 ## Sui Framework Pinning
 
 All Sui dependencies are pinned to `mainnet-v1.62.1` revision for stability.
+
+## Investigating Upstream Dependencies
+
+When you need to understand how upstream Rust dependencies work (e.g., `move_package_alt`, `move_model_2`), look into their source code:
+
+- **Cargo cached sources**: `~/.cargo/registry/src/` for crates.io packages
+- **Git checkouts**: `~/.cargo/git/checkouts/` for git dependencies
+
+Key upstream crates to investigate for this project:
+- `move-package-alt`: Package resolution, Published.toml handling, environment support
+- `move-model-2`: Move type system, struct/function definitions
+
+Use this to clarify behavior, debug issues, or understand APIs that aren't well documented.
