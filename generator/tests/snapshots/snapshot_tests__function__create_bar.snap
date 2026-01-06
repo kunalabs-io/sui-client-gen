@@ -2,13 +2,13 @@
 source: generator/tests/snapshot_tests.rs
 expression: output
 ---
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
 export function createBar(tx: Transaction, value: bigint | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::fixture::create_bar`,
+    target: `${getPublishedAt('examples')}::fixture::create_bar`,
     arguments: [pure(tx, value, `u64`)],
   })
 }

@@ -2,7 +2,7 @@
 source: generator/tests/snapshot_tests.rs
 expression: output
 ---
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic } from '../../_framework/util'
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
@@ -13,7 +13,7 @@ export interface CreateWithTwoGenericsArgs {
 
 export function createWithTwoGenerics(tx: Transaction, typeArgs: [string, string], args: CreateWithTwoGenericsArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::fixture::create_with_two_generics`,
+    target: `${getPublishedAt('examples')}::fixture::create_with_two_generics`,
     typeArguments: typeArgs,
     arguments: [
       generic(tx, `${typeArgs[0]}`, args.genericField1),

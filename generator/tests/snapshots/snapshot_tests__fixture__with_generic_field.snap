@@ -6,7 +6,7 @@ expression: output
 
 export function isWithGenericField(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V1}::fixture::WithGenericField` + '<')
+  return type.startsWith(`${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithGenericField` + '<')
 }
 
 export interface WithGenericFieldFields<T extends TypeArgument> {
@@ -19,12 +19,12 @@ export type WithGenericFieldReified<T extends TypeArgument> = Reified<WithGeneri
 export class WithGenericField<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V1}::fixture::WithGenericField`
+  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithGenericField` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
   readonly $typeName = WithGenericField.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithGenericField<${ToTypeStr<T>}>`
+  readonly $fullTypeName: `${string}::fixture::WithGenericField<${ToTypeStr<T>}>`
   readonly $typeArgs: [ToTypeStr<T>]
   readonly $isPhantom = WithGenericField.$isPhantom
 
@@ -35,7 +35,7 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       WithGenericField.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V1}::fixture::WithGenericField<${ToTypeStr<T>}>`
+    ) as `${string}::fixture::WithGenericField<${ToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -51,7 +51,7 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         WithGenericField.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V1}::fixture::WithGenericField<${ToTypeStr<ToTypeArgument<T>>}>`,
+      ) as `${string}::fixture::WithGenericField<${ToTypeStr<ToTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
       isPhantom: WithGenericField.$isPhantom,
       reifiedTypeArgs: [T],

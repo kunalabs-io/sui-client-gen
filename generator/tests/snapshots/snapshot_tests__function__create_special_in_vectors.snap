@@ -2,7 +2,7 @@
 source: generator/tests/snapshot_tests.rs
 expression: output
 ---
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import {
   GenericArg,
   generic,
@@ -23,7 +23,7 @@ export interface CreateSpecialInVectorsArgs {
 
 export function createSpecialInVectors(tx: Transaction, typeArg: string, args: CreateSpecialInVectorsArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::fixture::create_special_in_vectors`,
+    target: `${getPublishedAt('examples')}::fixture::create_special_in_vectors`,
     typeArguments: [typeArg],
     arguments: [
       pure(tx, args.string, `vector<${String.$typeName}>`),

@@ -6,7 +6,7 @@ expression: output
 
 export function isBar(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V1}::fixture::Bar`
+  return type === `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Bar`
 }
 
 export interface BarFields {
@@ -18,19 +18,22 @@ export type BarReified = Reified<Bar, BarFields>
 export class Bar implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V1}::fixture::Bar`
+  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Bar` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = Bar.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::fixture::Bar`
+  readonly $fullTypeName: `${string}::fixture::Bar`
   readonly $typeArgs: []
   readonly $isPhantom = Bar.$isPhantom
 
   readonly value: ToField<'u64'>
 
   private constructor(typeArgs: [], fields: BarFields) {
-    this.$fullTypeName = composeSuiType(Bar.$typeName, ...typeArgs) as `${typeof PKG_V1}::fixture::Bar`
+    this.$fullTypeName = composeSuiType(
+      Bar.$typeName,
+      ...typeArgs
+    ) as `${string}::fixture::Bar`
     this.$typeArgs = typeArgs
 
     this.value = fields.value
@@ -40,7 +43,10 @@ export class Bar implements StructClass {
     const reifiedBcs = Bar.bcs
     return {
       typeName: Bar.$typeName,
-      fullTypeName: composeSuiType(Bar.$typeName, ...[]) as `${typeof PKG_V1}::fixture::Bar`,
+      fullTypeName: composeSuiType(
+        Bar.$typeName,
+        ...[]
+      ) as `${string}::fixture::Bar`,
       typeArgs: [] as [],
       isPhantom: Bar.$isPhantom,
       reifiedTypeArgs: [],

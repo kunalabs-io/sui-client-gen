@@ -17,3 +17,7 @@ pub static REIFIED: &str = include_str!("../framework/reified.ts");
 
 /// Vector class implementation with full reification support.
 pub static VECTOR: &str = include_str!("../framework/vector.ts");
+
+/// Environment management runtime - provides setActiveEnv, getPublishedAt, getTypeOrigin, etc.
+/// Also contains the EnvConfig and PackageConfig type definitions.
+pub static ENV: &str = include_str!("../framework/env.ts");

@@ -99,10 +99,21 @@ impl EnumIR {
             PackageInfo::System { address } => {
                 format!("{}::{}", address, self.module_enum_path)
             }
-            PackageInfo::Versioned { version } => {
-                format!("${{PKG_V{}}}::{}", version, self.module_enum_path)
+            PackageInfo::Dynamic {
+                pkg_name,
+                module_type_path,
+            } => {
+                format!(
+                    "${{getTypeOrigin('{}', '{}')}}::{}",
+                    pkg_name, module_type_path, self.module_enum_path
+                )
             }
         }
+    }
+
+    /// Returns true if this enum uses dynamic environment lookups (non-system package)
+    pub fn uses_env(&self) -> bool {
+        matches!(&self.package_info, PackageInfo::Dynamic { .. })
     }
 
     fn emit_type_guard(&self) -> String {
@@ -269,7 +280,7 @@ impl EnumIR {
 
             formatdoc! {r#"
                 export class {name} {{
-                  static readonly $typeName = `{full_type_template}`
+                  static readonly $typeName = `{full_type_template}` as const
                   static readonly $numTypeParams = {num_type_params}
                   static readonly $isPhantom = {is_phantom_array} as const
 
@@ -432,7 +443,7 @@ impl EnumIR {
 
         formatdoc! {r#"
             export class {name} {{
-              static readonly $typeName = `{full_type_template}`
+              static readonly $typeName = `{full_type_template}` as const
               static readonly $numTypeParams = 0
               static readonly $isPhantom = [] as const
 
@@ -1028,28 +1039,25 @@ impl EnumIR {
     }
 
     fn emit_full_type_as_type(&self) -> String {
-        // For type context, need to use "typeof PKG_V" instead of just "PKG_V"
-        let base_type = match &self.package_info {
+        // For dynamic packages, the type is just `string` since it depends on runtime env
+        match &self.package_info {
             PackageInfo::System { address } => {
-                format!("`{}::{}", address, self.module_enum_path)
+                let base_type = format!("`{}::{}", address, self.module_enum_path);
+                let type_strs: Vec<String> = self
+                    .type_params
+                    .iter()
+                    .map(|p| {
+                        if p.is_phantom {
+                            format!("${{PhantomToTypeStr<ToPhantomTypeArgument<{}>>}}", p.name)
+                        } else {
+                            format!("${{ToTypeStr<ToTypeArgument<{}>>}}", p.name)
+                        }
+                    })
+                    .collect();
+                format!("{}<{}>`", base_type, type_strs.join(", "))
             }
-            PackageInfo::Versioned { version } => {
-                format!("`${{typeof PKG_V{}}}::{}", version, self.module_enum_path)
-            }
-        };
-
-        let type_strs: Vec<String> = self
-            .type_params
-            .iter()
-            .map(|p| {
-                if p.is_phantom {
-                    format!("${{PhantomToTypeStr<ToPhantomTypeArgument<{}>>}}", p.name)
-                } else {
-                    format!("${{ToTypeStr<ToTypeArgument<{}>>}}", p.name)
-                }
-            })
-            .collect();
-        format!("{}<{}>`", base_type, type_strs.join(", "))
+            PackageInfo::Dynamic { .. } => "string".to_string(),
+        }
     }
 
     fn emit_type_args_as_type(&self) -> String {

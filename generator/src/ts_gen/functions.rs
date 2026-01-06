@@ -178,8 +178,10 @@ pub struct FunctionIR {
     pub move_name: String,
     /// The TypeScript function name (camelCase).
     pub ts_name: String,
-    /// The full target: `${PUBLISHED_AT}::module::function_name`
+    /// The module name within the package.
     pub module_name: String,
+    /// Kebab-case package name for environment lookups.
+    pub env_pkg_name: String,
     /// Type parameter names (T, U, etc.).
     pub type_params: Vec<String>,
     /// Function parameters.
@@ -366,8 +368,8 @@ impl FunctionIR {
     pub fn emit_body(&self, module_aliased: &std::collections::HashSet<String>) -> String {
         let sig = self.emit_function_signature();
         let target = format!(
-            "`${{PUBLISHED_AT}}::{}::{}`",
-            self.module_name, self.move_name
+            "`${{getPublishedAt('{}')}}::{}::{}`",
+            self.env_pkg_name, self.module_name, self.move_name
         );
 
         let type_arguments_line = match self.type_params.len() {
@@ -409,8 +411,9 @@ pub fn emit_function_imports(functions: &[FunctionIR], framework_path: &str) -> 
 
     let mut imports = TsImportsBuilder::new();
 
-    // Always import PUBLISHED_AT
-    imports.add_named("..", "PUBLISHED_AT");
+    // Import getPublishedAt from _envs (sibling to _framework) to ensure auto-initialization
+    let envs_path = framework_path.replace("_framework", "_envs");
+    imports.add_named(envs_path, "getPublishedAt");
 
     // Collect what util imports we need
     let uses_generic = functions.iter().any(|f| f.uses_generic);

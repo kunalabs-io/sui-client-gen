@@ -2,7 +2,7 @@
 //!
 //! This module bridges the Move model types to our coarse-grained IR.
 
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::collections::{BTreeMap, HashMap};
 
 use anyhow::{Context, Result};
 use convert_case::{Case, Casing};
@@ -47,57 +47,42 @@ fn get_origin_pkg_addr_for_datatype(
     Ok(*origin_addr)
 }
 
-/// Build PackageInfo (System vs Versioned) for a datatype.
+/// Build PackageInfo (System vs Dynamic) for a datatype.
 /// Consolidates the logic used by both StructIRBuilder and EnumIRBuilder.
-/// Returns an error if version table lookup fails.
 fn build_package_info_for_datatype(
     pkg_addr: AccountAddress,
-    origin_pkg_addr: AccountAddress,
-    version_table: &VersionTable,
-) -> Result<PackageInfo> {
+    module_name: &str,
+    datatype_name: &str,
+    folder_names: &BTreeMap<AccountAddress, String>,
+) -> PackageInfo {
     if sui_sdk::types::SYSTEM_PACKAGE_ADDRESSES.contains(&pkg_addr) {
-        return Ok(PackageInfo::System {
+        return PackageInfo::System {
             address: pkg_addr.to_hex_literal(),
-        });
+        };
     }
 
-    let versions = version_table.get(&pkg_addr).with_context(|| {
-        format!(
-            "version table not found for package {}",
-            pkg_addr.to_hex_literal()
-        )
-    })?;
+    // Get the kebab-case package name from folder_names
+    let pkg_name = folder_names
+        .get(&pkg_addr)
+        .cloned()
+        .unwrap_or_else(|| pkg_addr.to_hex_literal());
 
-    let version = versions.get(&origin_pkg_addr).with_context(|| {
-        format!(
-            "version not found for package {} in package {}",
-            origin_pkg_addr.to_hex_literal(),
-            pkg_addr.to_hex_literal()
-        )
-    })?;
+    // Build the module::TypeName path for type origin lookup
+    let module_type_path = format!("{}::{}", module_name, datatype_name);
 
-    Ok(PackageInfo::Versioned {
-        version: version.value(),
-    })
+    PackageInfo::Dynamic {
+        pkg_name,
+        module_type_path,
+    }
 }
 
-/// Get the origin package address for a struct.
-fn get_origin_pkg_addr<HasSource: SourceKind>(
-    strct: &model::Struct<HasSource>,
-    type_origin_table: &TypeOriginTable,
-) -> Result<AccountAddress> {
-    get_origin_pkg_addr_for_datatype(
-        strct.module().package().address(),
-        strct.module().name().as_ref(),
-        strct.name().as_ref(),
-        type_origin_table,
-    )
-}
 
 /// Builds StructIR from a Move model struct.
 pub struct StructIRBuilder<'a, 'model, HasSource: SourceKind> {
     strct: model::Struct<'model, HasSource>,
+    #[allow(dead_code)]
     type_origin_table: &'a TypeOriginTable,
+    #[allow(dead_code)]
     version_table: &'a VersionTable,
     package_address: AccountAddress,
     module_name: Symbol,
@@ -187,16 +172,14 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
 
     fn build_package_info(&self) -> PackageInfo {
         let pkg_addr = self.strct.module().package().address();
-        let struct_name = format!(
-            "{}::{}::{}",
-            pkg_addr.to_hex_literal(),
-            self.strct.module().name(),
-            self.strct.name()
-        );
-        let origin_pkg_addr = get_origin_pkg_addr(&self.strct, self.type_origin_table)
-            .unwrap_or_else(|e| panic!("failed to get origin for struct {}: {}", struct_name, e));
-        build_package_info_for_datatype(pkg_addr, origin_pkg_addr, self.version_table)
-            .unwrap_or_else(|e| panic!("failed to build package info for {}: {}", struct_name, e))
+        let module_name_sym = self.strct.module().name();
+        let datatype_name_sym = self.strct.name();
+        build_package_info_for_datatype(
+            pkg_addr,
+            module_name_sym.as_ref(),
+            datatype_name_sym.as_ref(),
+            self.folder_names,
+        )
     }
 
     fn build_type_params(&self) -> Vec<TypeParamIR> {
@@ -641,21 +624,13 @@ fn emit_combined_imports_with_enums(
         imports.add_named(format!("{}/vector", framework_path), "Vector");
     }
 
-    // PKG version imports
-    let mut pkg_versions: BTreeSet<u64> = BTreeSet::new();
-    for s in structs {
-        if let super::structs::PackageInfo::Versioned { version } = &s.package_info {
-            pkg_versions.insert(*version);
-        }
-    }
-    for e in enums {
-        if let super::structs::PackageInfo::Versioned { version } = &e.package_info {
-            pkg_versions.insert(*version);
-        }
-    }
-
-    for version in pkg_versions {
-        imports.add_named("../index", format!("PKG_V{}", version));
+    // Environment imports (getTypeOrigin) if any struct/enum uses dynamic package info
+    // Import from _envs (sibling to _framework) to ensure auto-initialization
+    let uses_env = structs.iter().any(|s| s.uses_env()) || enums.iter().any(|e| e.uses_env());
+    if uses_env {
+        // Replace "_framework" with "_envs" in the path
+        let envs_path = framework_path.replace("_framework", "_envs");
+        imports.add_named(envs_path, "getTypeOrigin");
     }
 
     // Struct/enum imports (from other modules) - group by path
@@ -711,7 +686,9 @@ fn get_origin_pkg_addr_for_enum<HasSource: SourceKind>(
 /// Builds EnumIR from a Move model enum.
 pub struct EnumIRBuilder<'a, 'model, HasSource: SourceKind> {
     enum_: model::Enum<'model, HasSource>,
+    #[allow(dead_code)]
     type_origin_table: &'a TypeOriginTable,
+    #[allow(dead_code)]
     version_table: &'a VersionTable,
     package_address: AccountAddress,
     module_name: Symbol,
@@ -855,16 +832,14 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
 
     fn build_package_info(&self) -> PackageInfo {
         let pkg_addr = self.enum_.module().package().address();
-        let enum_name = format!(
-            "{}::{}::{}",
-            pkg_addr.to_hex_literal(),
-            self.enum_.module().name(),
-            self.enum_.name()
-        );
-        let origin_pkg_addr = get_origin_pkg_addr_for_enum(&self.enum_, self.type_origin_table)
-            .unwrap_or_else(|e| panic!("failed to get origin for enum {}: {}", enum_name, e));
-        build_package_info_for_datatype(pkg_addr, origin_pkg_addr, self.version_table)
-            .unwrap_or_else(|e| panic!("failed to build package info for {}: {}", enum_name, e))
+        let module_name_sym = self.enum_.module().name();
+        let datatype_name_sym = self.enum_.name();
+        build_package_info_for_datatype(
+            pkg_addr,
+            module_name_sym.as_ref(),
+            datatype_name_sym.as_ref(),
+            self.folder_names,
+        )
     }
 
     fn gen_field_name(&self, move_name: &str) -> String {
@@ -1185,10 +1160,18 @@ impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource>
             Vec::new()
         };
 
+        // Get the kebab-case package name for environment lookups
+        let env_pkg_name = self
+            .folder_names
+            .get(&self.package_address)
+            .cloned()
+            .unwrap_or_else(|| self.package_address.to_hex_literal());
+
         FunctionIR {
             move_name,
             ts_name,
             module_name,
+            env_pkg_name,
             type_params,
             params,
             struct_imports: self.struct_imports.values().cloned().collect(),

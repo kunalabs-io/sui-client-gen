@@ -6,7 +6,7 @@ expression: output
 
 export function isFoo(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V1}::fixture::Foo` + '<')
+  return type.startsWith(`${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Foo` + '<')
 }
 
 export interface FooFields<T extends TypeArgument> {
@@ -31,12 +31,12 @@ export type FooReified<T extends TypeArgument> = Reified<Foo<T>, FooFields<T>>
 export class Foo<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V1}::fixture::Foo`
+  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Foo` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
   readonly $typeName = Foo.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::fixture::Foo<${ToTypeStr<T>}>`
+  readonly $fullTypeName: `${string}::fixture::Foo<${ToTypeStr<T>}>`
   readonly $typeArgs: [ToTypeStr<T>]
   readonly $isPhantom = Foo.$isPhantom
 
@@ -59,7 +59,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
     this.$fullTypeName = composeSuiType(
       Foo.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V1}::fixture::Foo<${ToTypeStr<T>}>`
+    ) as `${string}::fixture::Foo<${ToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -87,7 +87,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
       fullTypeName: composeSuiType(
         Foo.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V1}::fixture::Foo<${ToTypeStr<ToTypeArgument<T>>}>`,
+      ) as `${string}::fixture::Foo<${ToTypeStr<ToTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
       isPhantom: Foo.$isPhantom,
       reifiedTypeArgs: [T],
