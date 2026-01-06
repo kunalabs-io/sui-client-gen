@@ -217,15 +217,10 @@ fn generate_framework(
     )?;
 
     // Generate init-loader.ts
-    // All packages are source packages in the new system (no on-chain distinction)
     write_str_to_file(
         &ts_gen::gen_init_loader(
-            if pkgs.is_empty() {
-                None
-            } else {
-                Some((pkgs.keys().copied().collect::<Vec<_>>(), top_level_addr_map))
-            },
-            None, // No on-chain packages
+            &pkgs.keys().copied().collect::<Vec<_>>(),
+            top_level_addr_map,
         ),
         &output.framework_dir.join("init-loader.ts"),
     )?;
@@ -247,8 +242,7 @@ fn gen_packages(
     }
 
     for (pkg_id, pkg) in pkgs.iter() {
-        // All packages are treated as source packages (is_source = true)
-        let pkg_layout = output.package_path(pkg_id, top_level_pkg_names, true);
+        let pkg_layout = output.package_path(pkg_id, top_level_pkg_names);
         std::fs::create_dir_all(&pkg_layout.path)?;
 
         // Generate index.ts
@@ -283,7 +277,6 @@ fn gen_packages(
                 let content = ts_gen::gen_module_functions(
                     &module,
                     top_level_pkg_names,
-                    true, // is_source
                     pkg_layout.levels_from_root,
                 );
                 if !content.is_empty() {
@@ -297,7 +290,6 @@ fn gen_packages(
                 type_origin_table,
                 version_table,
                 top_level_pkg_names,
-                true, // is_source
                 pkg_layout.levels_from_root,
             );
             write_str_to_file(&content, &module_path.join("structs.ts"))?;

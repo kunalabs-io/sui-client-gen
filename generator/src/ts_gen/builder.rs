@@ -103,7 +103,6 @@ pub struct StructIRBuilder<'a, 'model, HasSource: SourceKind> {
     module_name: Symbol,
     is_top_level: bool,
     top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
-    is_source: bool,
     framework_path: String,
     /// Tracks struct imports to avoid name conflicts
     struct_imports: HashMap<String, StructImport>,
@@ -115,7 +114,6 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
         type_origin_table: &'a TypeOriginTable,
         version_table: &'a VersionTable,
         top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
-        is_source: bool,
         levels_from_root: u8,
     ) -> Self {
         let module = strct.module();
@@ -141,7 +139,6 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
             module_name,
             is_top_level,
             top_level_pkg_names,
-            is_source,
             framework_path,
             struct_imports: HashMap::new(),
         }
@@ -430,7 +427,6 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
             self.package_address,
             self.module_name,
             self.top_level_pkg_names.clone(),
-            self.is_source,
             self.is_top_level,
         );
         resolver.path_to_structs(module.package().address(), module.name())
@@ -443,7 +439,6 @@ pub fn gen_module_structs<HasSource: SourceKind>(
     type_origin_table: &TypeOriginTable,
     version_table: &VersionTable,
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
-    is_source: bool,
     levels_from_root: u8,
 ) -> String {
     let mut all_struct_irs = Vec::new();
@@ -459,7 +454,6 @@ pub fn gen_module_structs<HasSource: SourceKind>(
             type_origin_table,
             version_table,
             top_level_pkg_names,
-            is_source,
             levels_from_root + 2,
         );
         let (ir, fp) = builder.build();
@@ -480,7 +474,6 @@ pub fn gen_module_structs<HasSource: SourceKind>(
             type_origin_table,
             version_table,
             top_level_pkg_names,
-            is_source,
             levels_from_root + 2,
         );
         let ir = builder.build();
@@ -717,7 +710,6 @@ pub struct EnumIRBuilder<'a, 'model, HasSource: SourceKind> {
     module_name: Symbol,
     is_top_level: bool,
     top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
-    is_source: bool,
     #[allow(dead_code)]
     framework_path: String,
     /// Tracks struct imports to avoid name conflicts
@@ -730,7 +722,6 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
         type_origin_table: &'a TypeOriginTable,
         version_table: &'a VersionTable,
         top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
-        is_source: bool,
         levels_from_root: u8,
     ) -> Self {
         let module = enum_.module();
@@ -756,7 +747,6 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
             module_name,
             is_top_level,
             top_level_pkg_names,
-            is_source,
             framework_path,
             struct_imports: HashMap::new(),
         }
@@ -1097,7 +1087,6 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
             self.package_address,
             self.module_name,
             self.top_level_pkg_names.clone(),
-            self.is_source,
             self.is_top_level,
         );
         // For enums, same module means empty path (no import needed)
@@ -1125,7 +1114,6 @@ pub struct FunctionIRBuilder<'a, 'model, HasSource: SourceKind> {
     module_name: Symbol,
     is_top_level: bool,
     top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
-    is_source: bool,
     #[allow(dead_code)]
     framework_path: String,
     struct_imports: HashMap<String, FunctionStructImport>,
@@ -1135,7 +1123,6 @@ impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource>
     pub fn new(
         func: model::Function<'model, HasSource>,
         top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
-        is_source: bool,
         levels_from_root: u8,
     ) -> Option<Self> {
         // Skip functions without compiled representation (e.g., macros)
@@ -1152,7 +1139,6 @@ impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource>
             module_name,
             is_top_level,
             top_level_pkg_names,
-            is_source,
             framework_path,
             struct_imports: HashMap::new(),
         })
@@ -1523,7 +1509,6 @@ impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource>
             self.package_address,
             self.module_name,
             self.top_level_pkg_names.clone(),
-            self.is_source,
             self.is_top_level,
         );
         // For functions.ts, same module imports from ./structs (sibling file)
@@ -1596,7 +1581,6 @@ impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource>
 pub fn gen_module_functions<HasSource: SourceKind>(
     module: &model::Module<HasSource>,
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
-    is_source: bool,
     levels_from_root: u8,
 ) -> String {
     use super::functions::emit_functions_file;
@@ -1607,9 +1591,7 @@ pub fn gen_module_functions<HasSource: SourceKind>(
 
     let functions: Vec<_> = module
         .functions()
-        .filter_map(|func| {
-            FunctionIRBuilder::new(func, top_level_pkg_names, is_source, levels_from_root)
-        })
+        .filter_map(|func| FunctionIRBuilder::new(func, top_level_pkg_names, levels_from_root))
         .map(|builder| builder.build())
         .collect();
 

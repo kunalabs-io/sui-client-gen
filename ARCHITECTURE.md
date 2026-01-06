@@ -178,8 +178,7 @@ Packages listed directly in `gen.toml` are considered **top-level** and are writ
 
 Transitive dependencies are written under:
 
-- `<out>/_dependencies/source/<0xaddr>/...` for source deps
-- `<out>/_dependencies/onchain/<0xaddr>/...` for on-chain deps
+- `<out>/_dependencies/<0xaddr>/...`
 
 ### Generated tree (typical)
 
@@ -200,8 +199,7 @@ Transitive dependencies are written under:
       structs.ts
       functions.ts              (top-level packages only)
   _dependencies/
-    source/<0xaddr>/<module>/structs.ts
-    onchain/<0xaddr>/<module>/structs.ts
+    <0xaddr>/<module>/structs.ts
 ```
 
 ### Cleaning output
@@ -220,9 +218,9 @@ The driver writes these to `<out>/_framework/`:
 
 - **`reified.ts`**: core reified type runtime (decode/encode/type checking)
 - **`util.ts`**: TS utilities for parsing/compressing types and tx argument helpers
-- **`loader.ts`**: runtime registry to load “reified classes” by type string
+- **`loader.ts`**: runtime registry to load "reified classes" by type string
 - **`vector.ts`**: `Vector<T>` implementation
-- **`init-loader.ts`**: generated list of package init registrars (source + onchain)
+- **`init-loader.ts`**: generated list of package init registrars
 
 ---
 
@@ -348,7 +346,7 @@ Responsible for computing the relative import path to:
 
 - another module in the same package (`../<module>/structs`)
 - a top-level package from a top-level package (`../../<pkg>/<module>/structs`)
-- a dependency package (`../../_dependencies/<source|onchain>/<addr>/<module>/structs`)
+- a dependency package (`../../_dependencies/<addr>/<module>/structs`)
 - and the inverse direction when the current package is itself a dependency
 
 ### Alias / collision handling

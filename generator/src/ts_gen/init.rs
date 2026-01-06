@@ -126,65 +126,39 @@ impl PackageInitIR {
 
 /// Domain-focused IR for the init-loader.ts file.
 pub struct InitLoaderIR {
-    /// Packages to register from source builds
-    source_packages: Vec<PackageRef>,
-    /// Packages to register from on-chain builds
-    onchain_packages: Vec<PackageRef>,
+    /// Packages to register
+    packages: Vec<PackageRef>,
 }
 
 /// Reference to a package for registration.
 struct PackageRef {
     /// Import path to the package's init.ts
     import_path: String,
-    /// Import alias (e.g., "package_source_1")
+    /// Import alias (e.g., "package_1")
     alias: String,
 }
 
 impl InitLoaderIR {
     /// Build the IR from package information.
     pub fn new(
-        source_pkgs_info: Option<(Vec<AccountAddress>, &BTreeMap<AccountAddress, Symbol>)>,
-        onchain_pkgs_info: Option<(Vec<AccountAddress>, &BTreeMap<AccountAddress, Symbol>)>,
+        pkg_ids: &[AccountAddress],
+        top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
     ) -> Self {
-        let build_refs = |pkg_ids: &[AccountAddress],
-                          top_level: &BTreeMap<AccountAddress, Symbol>,
-                          is_source: bool|
-         -> Vec<PackageRef> {
-            pkg_ids
-                .iter()
-                .map(|pkg_id| {
-                    let import_path = match top_level.get(pkg_id) {
-                        Some(pkg_name) => format!("../{}/init", package_import_name(*pkg_name)),
-                        None => {
-                            let dep_dir = if is_source { "source" } else { "onchain" };
-                            format!(
-                                "../_dependencies/{}/{}/init",
-                                dep_dir,
-                                pkg_id.to_hex_literal()
-                            )
-                        }
-                    };
+        let packages = pkg_ids
+            .iter()
+            .map(|pkg_id| {
+                let import_path = match top_level_pkg_names.get(pkg_id) {
+                    Some(pkg_name) => format!("../{}/init", package_import_name(*pkg_name)),
+                    None => format!("../_dependencies/{}/init", pkg_id.to_hex_literal()),
+                };
 
-                    let prefix = if is_source {
-                        "package_source"
-                    } else {
-                        "package_onchain"
-                    };
-                    let alias = format!("{}_{}", prefix, pkg_id.short_str_lossless());
+                let alias = format!("package_{}", pkg_id.short_str_lossless());
 
-                    PackageRef { import_path, alias }
-                })
-                .collect()
-        };
+                PackageRef { import_path, alias }
+            })
+            .collect();
 
-        InitLoaderIR {
-            source_packages: source_pkgs_info
-                .map(|(ids, top_level)| build_refs(&ids, top_level, true))
-                .unwrap_or_default(),
-            onchain_packages: onchain_pkgs_info
-                .map(|(ids, top_level)| build_refs(&ids, top_level, false))
-                .unwrap_or_default(),
-        }
+        InitLoaderIR { packages }
     }
 
     /// Emit as TypeScript code.
@@ -192,14 +166,10 @@ impl InitLoaderIR {
         let mut sections = Vec::new();
 
         // Build imports - sorted alphabetically by import path
-        let mut all_refs: Vec<&PackageRef> = self
-            .source_packages
-            .iter()
-            .chain(self.onchain_packages.iter())
-            .collect();
-        all_refs.sort_by(|a, b| a.import_path.cmp(&b.import_path));
+        let mut sorted_refs: Vec<&PackageRef> = self.packages.iter().collect();
+        sorted_refs.sort_by(|a, b| a.import_path.cmp(&b.import_path));
 
-        let mut import_lines: Vec<String> = all_refs
+        let mut import_lines: Vec<String> = sorted_refs
             .iter()
             .map(|r| format!("import * as {} from '{}'", r.alias, r.import_path))
             .collect();
@@ -209,69 +179,28 @@ impl InitLoaderIR {
 
         sections.push(import_lines.join("\n"));
 
-        // Generate registerClassesSource if we have source packages
-        if !self.source_packages.is_empty() {
-            let calls: Vec<String> = self
-                .source_packages
-                .iter()
-                .map(|r| format!("  {}.registerClasses(loader)", r.alias))
-                .collect();
-
-            sections.push(formatdoc! {"
-                function registerClassesSource(loader: StructClassLoader) {{
-                {calls}
-                }}",
-                calls = calls.join("\n"),
-            });
-        }
-
-        // Generate registerClassesOnchain if we have onchain packages
-        if !self.onchain_packages.is_empty() {
-            let calls: Vec<String> = self
-                .onchain_packages
-                .iter()
-                .map(|r| format!("  {}.registerClasses(loader)", r.alias))
-                .collect();
-
-            sections.push(formatdoc! {"
-                function registerClassesOnchain(loader: StructClassLoader) {{
-                {calls}
-                }}",
-                calls = calls.join("\n"),
-            });
-        }
-
         // Generate main registerClasses function
-        let main_body = self.emit_main_body();
-        let param_name = if self.source_packages.is_empty() && self.onchain_packages.is_empty() {
+        let param_name = if self.packages.is_empty() {
             "_"
         } else {
             "loader"
         };
+
+        let calls: Vec<String> = self
+            .packages
+            .iter()
+            .map(|r| format!("  {}.registerClasses(loader)", r.alias))
+            .collect();
 
         sections.push(formatdoc! {"
             export function registerClasses({param}: StructClassLoader) {{
             {body}
             }}",
             param = param_name,
-            body = main_body,
+            body = calls.join("\n"),
         });
 
         sections.join("\n\n") + "\n"
-    }
-
-    fn emit_main_body(&self) -> String {
-        let mut lines = Vec::new();
-
-        // Onchain first, then source (matches original behavior)
-        if !self.onchain_packages.is_empty() {
-            lines.push("  registerClassesOnchain(loader)");
-        }
-        if !self.source_packages.is_empty() {
-            lines.push("  registerClassesSource(loader)");
-        }
-
-        lines.join("\n")
     }
 }
 
@@ -289,10 +218,10 @@ pub fn gen_package_init<HasSource: SourceKind>(
 
 /// Generate _framework/init-loader.ts.
 pub fn gen_init_loader(
-    source_pkgs_info: Option<(Vec<AccountAddress>, &BTreeMap<AccountAddress, Symbol>)>,
-    onchain_pkgs_info: Option<(Vec<AccountAddress>, &BTreeMap<AccountAddress, Symbol>)>,
+    pkg_ids: &[AccountAddress],
+    top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
 ) -> String {
-    InitLoaderIR::new(source_pkgs_info, onchain_pkgs_info).emit()
+    InitLoaderIR::new(pkg_ids, top_level_pkg_names).emit()
 }
 
 #[cfg(test)]
@@ -301,7 +230,8 @@ mod tests {
 
     #[test]
     fn test_init_loader_empty() {
-        let output = gen_init_loader(None, None);
+        let top_level = BTreeMap::new();
+        let output = gen_init_loader(&[], &top_level);
         assert!(output.contains("export function registerClasses"));
         assert!(output.contains("_: StructClassLoader"));
     }

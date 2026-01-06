@@ -98,8 +98,7 @@ Output: _framework/, <package>/, _dependencies/
       structs.ts        # Struct/enum classes
       functions.ts      # Function bindings (top-level only)
   _dependencies/
-    source/<0xaddr>/    # Source dependency structs
-    onchain/<0xaddr>/   # On-chain dependency structs
+    <0xaddr>/           # Dependency structs by package address
 ```
 
 ## Testing Workflow for Code Generation Changes
