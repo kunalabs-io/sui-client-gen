@@ -1,8 +1,9 @@
 import { Transaction } from '@mysten/sui/transactions'
 import { SuiClient } from '@mysten/sui/client'
+import { SerialTransactionExecutor } from '@mysten/sui/transactions'
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519'
 import { fromB64, fromBase64 } from '@mysten/sui/utils'
-import { it, expect, describe } from 'vitest'
+import { it, expect, describe, afterAll } from 'vitest'
 import {
   Bar,
   Dummy,
@@ -50,7 +51,24 @@ const client = new SuiClient({
   url: 'https://fullnode.testnet.sui.io:443/',
 })
 
-it('creates and decodes an object with object as type param', async () => {
+// SerialTransactionExecutor handles gas coin management to avoid conflicts in parallel tests
+const executor = new SerialTransactionExecutor({
+  client,
+  signer: keypair,
+})
+
+afterAll(() => executor.resetCache())
+
+// Helper to execute transaction and wait for object to be indexed
+async function execTx(tx: Transaction) {
+  const res = await executor.executeTransaction(tx, { showEffects: true })
+  const id = res.data.effects!.created![0].reference.objectId
+  // Wait briefly for object to be indexed on full node
+  await client.waitForTransaction({ digest: res.digest, pollInterval: 200 })
+  return { id, res }
+}
+
+it.concurrent('creates and decodes an object with object as type param', async () => {
   const tx = new Transaction()
 
   const T = Bar.$typeName
@@ -118,18 +136,7 @@ it('creates and decodes an object with object as type param', async () => {
     objRef: createBar(tx, 100n),
   })
 
-  const res = await client.signAndExecuteTransaction({
-    signer: keypair,
-    transaction: tx,
-    options: {
-      showEffects: true,
-    },
-  })
-  await client.waitForTransaction({
-    digest: res.digest,
-  })
-
-  const id = res.effects!.created![0].reference.objectId
+  const { id } = await execTx(tx)
 
   const foo = await client.getObject({
     id,
@@ -208,7 +215,7 @@ it('creates and decodes an object with object as type param', async () => {
   expect(Foo.fromJSON(Bar.reified(), de.toJSON())).toEqual(exp)
 })
 
-it('creates and decodes Foo with vector of objects as type param', async () => {
+it.concurrent('creates and decodes Foo with vector of objects as type param', async () => {
   const tx = new Transaction()
 
   const T = `vector<${Bar.$typeName}>`
@@ -284,18 +291,7 @@ it('creates and decodes Foo with vector of objects as type param', async () => {
     objRef: createBar(tx, 100n),
   })
 
-  const res = await client.signAndExecuteTransaction({
-    signer: keypair,
-    transaction: tx,
-    options: {
-      showEffects: true,
-    },
-  })
-  await client.waitForTransaction({
-    digest: res.digest,
-  })
-
-  const id = res.effects!.created![0].reference.objectId
+  const { id } = await execTx(tx)
 
   const foo = await client.getObject({
     id,
@@ -373,7 +369,7 @@ it('creates and decodes Foo with vector of objects as type param', async () => {
   expect(Foo.fromJSON(reifiedT, de.toJSON())).toEqual(exp)
 })
 
-it('decodes special-cased types correctly', async () => {
+it.concurrent('decodes special-cased types correctly', async () => {
   const tx = new Transaction()
 
   const encoder = new TextEncoder()
@@ -396,18 +392,7 @@ it('decodes special-cased types correctly', async () => {
     optionGenericNone: none(tx, 'u64'),
   })
 
-  const res = await client.signAndExecuteTransaction({
-    signer: keypair,
-    transaction: tx,
-    options: {
-      showEffects: true,
-    },
-  })
-  await client.waitForTransaction({
-    digest: res.digest,
-  })
-
-  const id = res.effects!.created![0].reference.objectId
+  const { id } = await execTx(tx)
 
   const obj = await client.getObject({
     id,
@@ -449,7 +434,7 @@ it('decodes special-cased types correctly', async () => {
   expect(WithSpecialTypes.r(...reifiedArgs).fromJSON(exp.toJSON())).toEqual(exp)
 })
 
-it('decodes special-cased types as generics correctly', async () => {
+it.concurrent('decodes special-cased types as generics correctly', async () => {
   const tx = new Transaction()
 
   const encoder = new TextEncoder()
@@ -486,18 +471,7 @@ it('decodes special-cased types as generics correctly', async () => {
     optionNone: none(tx, 'u64'),
   })
 
-  const res = await client.signAndExecuteTransaction({
-    signer: keypair,
-    transaction: tx,
-    options: {
-      showEffects: true,
-    },
-  })
-  await client.waitForTransaction({
-    digest: res.digest,
-  })
-
-  const id = res.effects!.created![0].reference.objectId
+  const { id } = await execTx(tx)
 
   const obj = await client.getObject({
     id,
@@ -537,7 +511,7 @@ it('decodes special-cased types as generics correctly', async () => {
   expect(WithSpecialTypesAsGenerics.r(...reifiedArgs).fromJSON(exp.toJSON())).toEqual(exp)
 })
 
-it('calls function correctly when special types are used', async () => {
+it.concurrent('calls function correctly when special types are used', async () => {
   const tx = new Transaction()
 
   const encoder = new TextEncoder()
@@ -569,18 +543,7 @@ it('calls function correctly when special types are used', async () => {
     }
   )
 
-  const res = await client.signAndExecuteTransaction({
-    signer: keypair,
-    transaction: tx,
-    options: {
-      showEffects: true,
-    },
-  })
-  await client.waitForTransaction({
-    digest: res.digest,
-  })
-
-  const id = res.effects!.created![0].reference.objectId
+  const { id } = await execTx(tx)
 
   const obj = await client.getObject({
     id,
@@ -613,7 +576,7 @@ it('calls function correctly when special types are used', async () => {
   )
 })
 
-it('calls function correctly when special types are used as generics', async () => {
+it.concurrent('calls function correctly when special types are used as generics', async () => {
   const tx = new Transaction()
 
   const encoder = new TextEncoder()
@@ -656,18 +619,7 @@ it('calls function correctly when special types are used as generics', async () 
     }
   )
 
-  const res = await client.signAndExecuteTransaction({
-    signer: keypair,
-    transaction: tx,
-    options: {
-      showEffects: true,
-    },
-  })
-  await client.waitForTransaction({
-    digest: res.digest,
-  })
-
-  const id = res.effects!.created![0].reference.objectId
+  const { id } = await execTx(tx)
 
   const obj = await client.getObject({
     id,
@@ -698,7 +650,7 @@ it('calls function correctly when special types are used as generics', async () 
   )
 })
 
-it('calls function correctly when special types are used as as vectors', async () => {
+it.concurrent('calls function correctly when special types are used as as vectors', async () => {
   const tx = new Transaction()
 
   createSpecialInVectors(tx, 'vector<u64>', {
@@ -710,18 +662,7 @@ it('calls function correctly when special types are used as as vectors', async (
     optionGeneric: [[5n], null],
   })
 
-  const res = await client.signAndExecuteTransaction({
-    signer: keypair,
-    transaction: tx,
-    options: {
-      showEffects: true,
-    },
-  })
-  await client.waitForTransaction({
-    digest: res.digest,
-  })
-
-  const id = res.effects!.created![0].reference.objectId
+  const { id } = await execTx(tx)
 
   const obj = await client.getObject({
     id,
@@ -751,7 +692,7 @@ it('calls function correctly when special types are used as as vectors', async (
   )
 })
 
-it('loads with loader correctly', async () => {
+it.concurrent('loads with loader correctly', async () => {
   const tx = new Transaction()
 
   const T = `${WithTwoGenerics.$typeName}<${Bar.$typeName}, vector<${WithTwoGenerics.$typeName}<${Bar.$typeName}, u8>>>`
@@ -775,18 +716,7 @@ it('loads with loader correctly', async () => {
   )
   createWithGenericField(tx, T, withTwoGenerics)
 
-  const res = await client.signAndExecuteTransaction({
-    signer: keypair,
-    transaction: tx,
-    options: {
-      showEffects: true,
-    },
-  })
-  await client.waitForTransaction({
-    digest: res.digest,
-  })
-
-  const id = res.effects!.created![0].reference.objectId
+  const { id } = await execTx(tx)
 
   const obj = await client.getObject({
     id,
@@ -895,7 +825,7 @@ it('converts to json correctly', () => {
   expect(fromJSON).toEqual(obj)
 })
 
-it('decodes address field correctly', async () => {
+it.concurrent('decodes address field correctly', async () => {
   const tx = new Transaction()
 
   const T = 'address'
@@ -963,18 +893,7 @@ it('decodes address field correctly', async () => {
     objRef: createBar(tx, 100n),
   })
 
-  const res = await client.signAndExecuteTransaction({
-    signer: keypair,
-    transaction: tx,
-    options: {
-      showEffects: true,
-    },
-  })
-  await client.waitForTransaction({
-    digest: res.digest,
-  })
-
-  const id = res.effects!.created![0].reference.objectId
+  const { id } = await execTx(tx)
 
   const foo = await client.getObject({
     id,
@@ -1053,7 +972,7 @@ it('decodes address field correctly', async () => {
   expect(Foo.fromJSON('address', de.toJSON())).toEqual(exp)
 })
 
-it('fails when fetching mismatch reified type', async () => {
+it.concurrent('fails when fetching mismatch reified type', async () => {
   const tx = new Transaction()
 
   const encoder = new TextEncoder()
@@ -1074,17 +993,7 @@ it('fails when fetching mismatch reified type', async () => {
     optionGenericNone: none(tx, 'u64'),
   })
 
-  const res = await client.signAndExecuteTransaction({
-    signer: keypair,
-    transaction: tx,
-    options: {
-      showEffects: true,
-    },
-  })
-  await client.waitForTransaction({
-    digest: res.digest,
-  })
-  const id = res.effects!.created![0].reference.objectId
+  const { id } = await execTx(tx)
 
   await expect(() => {
     return WithSpecialTypes.r(phantom('u8'), 'u8').fetch(client, id)
@@ -1096,22 +1005,12 @@ it('fails when fetching mismatch reified type', async () => {
   }).rejects.toThrowError(`type argument mismatch at position 1: expected 'u8' but got 'u64'`)
 })
 
-describe('handles function calls with vector arguments correctly', () => {
+describe.concurrent('handles function calls with vector arguments correctly', () => {
   it('can pass in tx.pure values', async () => {
     const tx = new Transaction()
 
     createWithGenericField(tx, 'vector<u8>', [tx.pure.u8(3), tx.pure.u8(4)])
-    const txRes = await client.signAndExecuteTransaction({
-      signer: keypair,
-      transaction: tx,
-      options: {
-        showEffects: true,
-      },
-    })
-    await client.waitForTransaction({
-      digest: txRes.digest,
-    })
-    const id = txRes.effects!.created![0].reference.objectId
+    const { id } = await execTx(tx)
     const obj = await WithGenericField.r(vector('u8')).fetch(client, id)
     expect(obj.genericField).toEqual([3, 4])
   })
@@ -1120,17 +1019,7 @@ describe('handles function calls with vector arguments correctly', () => {
     const tx = new Transaction()
 
     createWithGenericField(tx, 'vector<u8>', [3, 4])
-    const txRes = await client.signAndExecuteTransaction({
-      signer: keypair,
-      transaction: tx,
-      options: {
-        showEffects: true,
-      },
-    })
-    await client.waitForTransaction({
-      digest: txRes.digest,
-    })
-    const id = txRes.effects!.created![0].reference.objectId
+    const { id } = await execTx(tx)
     const obj = await WithGenericField.r(vector('u8')).fetch(client, id)
     expect(obj.genericField).toEqual([3, 4])
   })
@@ -1149,17 +1038,7 @@ describe('handles function calls with vector arguments correctly', () => {
     const val = sqrt(tx, 36n)
     createWithGenericField(tx, 'vector<u64>', [tx.pure.u64(3), val])
 
-    const txRes = await client.signAndExecuteTransaction({
-      signer: keypair,
-      transaction: tx,
-      options: {
-        showEffects: true,
-      },
-    })
-    await client.waitForTransaction({
-      digest: txRes.digest,
-    })
-    const id = txRes.effects!.created![0].reference.objectId
+    const { id } = await execTx(tx)
     const obj = await WithGenericField.r(vector('u64')).fetch(client, id)
     expect(obj.genericField).toEqual([3n, 6n])
   })
@@ -1180,17 +1059,7 @@ describe('handles function calls with vector arguments correctly', () => {
 
     createWithGenericField(tx, 'vector<u8>', [intent1(tx), intent2(tx), tx.pure.u8(7)])
 
-    const txRes = await client.signAndExecuteTransaction({
-      signer: keypair,
-      transaction: tx,
-      options: {
-        showEffects: true,
-      },
-    })
-    await client.waitForTransaction({
-      digest: txRes.digest,
-    })
-    const id = txRes.effects!.created![0].reference.objectId
+    const { id } = await execTx(tx)
     const obj = await WithGenericField.r(vector('u8')).fetch(client, id)
     expect(obj.genericField).toEqual([3, 4, 7])
   })
@@ -1205,22 +1074,12 @@ describe('handles function calls with vector arguments correctly', () => {
   })
 })
 
-describe('handles function calls with option arguments correctly', () => {
+describe.concurrent('handles function calls with option arguments correctly', () => {
   it('can use primitive value as option directly', async () => {
     const tx = new Transaction()
 
     createWithGenericField(tx, `${Option.$typeName}<u8>`, 3)
-    const txRes = await client.signAndExecuteTransaction({
-      signer: keypair,
-      transaction: tx,
-      options: {
-        showEffects: true,
-      },
-    })
-    await client.waitForTransaction({
-      digest: txRes.digest,
-    })
-    const id = txRes.effects!.created![0].reference.objectId
+    const { id } = await execTx(tx)
     const obj = await WithGenericField.r(Option.r('u8')).fetch(client, id)
     expect(obj.genericField).toEqual(3)
   })
@@ -1229,17 +1088,7 @@ describe('handles function calls with option arguments correctly', () => {
     const tx = new Transaction()
 
     createWithGenericField(tx, `${Option.$typeName}<vector<u8>>`, [tx.pure.u8(3), tx.pure.u8(4)])
-    const txRes = await client.signAndExecuteTransaction({
-      signer: keypair,
-      transaction: tx,
-      options: {
-        showEffects: true,
-      },
-    })
-    await client.waitForTransaction({
-      digest: txRes.digest,
-    })
-    const id = txRes.effects!.created![0].reference.objectId
+    const { id } = await execTx(tx)
     const obj = await WithGenericField.r(Option.r(vector('u8'))).fetch(client, id)
     expect(obj.genericField).toEqual([3, 4])
   })
@@ -1256,17 +1105,7 @@ describe('handles function calls with option arguments correctly', () => {
     const tx = new Transaction()
 
     createWithGenericField(tx, `${Option.$typeName}<u8>`, none(tx, 'u8'))
-    const txRes = await client.signAndExecuteTransaction({
-      signer: keypair,
-      transaction: tx,
-      options: {
-        showEffects: true,
-      },
-    })
-    await client.waitForTransaction({
-      digest: txRes.digest,
-    })
-    const id = txRes.effects!.created![0].reference.objectId
+    const { id } = await execTx(tx)
     const obj = await WithGenericField.r(Option.r('u8')).fetch(client, id)
     expect(obj.genericField).toEqual(null)
   })
@@ -1275,17 +1114,7 @@ describe('handles function calls with option arguments correctly', () => {
     const tx = new Transaction()
 
     createWithGenericField(tx, `${Option.$typeName}<u8>`, null)
-    const txRes = await client.signAndExecuteTransaction({
-      signer: keypair,
-      transaction: tx,
-      options: {
-        showEffects: true,
-      },
-    })
-    await client.waitForTransaction({
-      digest: txRes.digest,
-    })
-    const id = txRes.effects!.created![0].reference.objectId
+    const { id } = await execTx(tx)
     const obj = await WithGenericField.r(Option.r('u8')).fetch(client, id)
     expect(obj.genericField).toEqual(null)
   })
@@ -1294,23 +1123,13 @@ describe('handles function calls with option arguments correctly', () => {
     const tx = new Transaction()
 
     createWithGenericField(tx, `${Option.$typeName}<vector<${Option.$typeName}<u8>>>`, [3, null, 4])
-    const txRes = await client.signAndExecuteTransaction({
-      signer: keypair,
-      transaction: tx,
-      options: {
-        showEffects: true,
-      },
-    })
-    await client.waitForTransaction({
-      digest: txRes.digest,
-    })
-    const id = txRes.effects!.created![0].reference.objectId
+    const { id } = await execTx(tx)
     const obj = await WithGenericField.r(Option.r(vector(Option.r('u8')))).fetch(client, id)
     expect(obj.genericField).toEqual([3, null, 4])
   })
 })
 
-it('handles enums correctly', async () => {
+it.concurrent('handles enums correctly', async () => {
   const id = '0x867aff39fede0ba58effd5d9fec74184503391321cf72ff5df5c631824b2c75a'
 
   // Setup reified types
