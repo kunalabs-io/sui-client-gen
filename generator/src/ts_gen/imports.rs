@@ -9,7 +9,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use move_core_types::account_address::AccountAddress;
 use move_symbol_pool::Symbol;
 
-use super::utils::{module_import_name, package_import_name};
+use super::utils::module_import_name;
 
 // ============================================================================
 // TsImportsBuilder - Unified import statement builder
@@ -185,6 +185,8 @@ pub struct ImportPathResolver {
     package_address: AccountAddress,
     /// Current module name
     module_name: Symbol,
+    /// Map of all package addresses to their folder names
+    folder_names: BTreeMap<AccountAddress, String>,
     /// Map of top-level package addresses to their names
     top_level_pkg_names: BTreeMap<AccountAddress, Symbol>,
     /// Whether current package is top-level
@@ -195,12 +197,14 @@ impl ImportPathResolver {
     pub fn new(
         package_address: AccountAddress,
         module_name: Symbol,
+        folder_names: BTreeMap<AccountAddress, String>,
         top_level_pkg_names: BTreeMap<AccountAddress, Symbol>,
         is_top_level: bool,
     ) -> Self {
         Self {
             package_address,
             module_name,
+            folder_names,
             top_level_pkg_names,
             is_top_level,
         }
@@ -226,6 +230,19 @@ impl ImportPathResolver {
         self.path_to_module(target_pkg_addr, target_mod_name, "functions")
     }
 
+    /// Get the folder name for a package address.
+    fn get_folder_name(&self, pkg_addr: &AccountAddress) -> &str {
+        self.folder_names
+            .get(pkg_addr)
+            .map(|s| s.as_str())
+            .unwrap_or_else(|| {
+                panic!(
+                    "Missing folder name for package {}",
+                    pkg_addr.to_hex_literal()
+                )
+            })
+    }
+
     /// Get the import path to a module file (structs.ts, functions.ts, etc).
     fn path_to_module(
         &self,
@@ -247,38 +264,31 @@ impl ImportPathResolver {
 
         // Different package - check if it's top-level
         let target_is_top_level = self.top_level_pkg_names.contains_key(&target_pkg_addr);
+        let target_folder_name = self.get_folder_name(&target_pkg_addr);
 
         if self.is_top_level && target_is_top_level {
             // Both are top-level packages
-            let target_pkg_name =
-                package_import_name(*self.top_level_pkg_names.get(&target_pkg_addr).unwrap());
             Some(format!(
                 "../../{}/{}/{}",
-                target_pkg_name, mod_import_name, file_name
+                target_folder_name, mod_import_name, file_name
             ))
         } else if self.is_top_level {
             // Current is top-level, target is a dependency
             Some(format!(
                 "../../_dependencies/{}/{}/{}",
-                target_pkg_addr.to_hex_literal(),
-                mod_import_name,
-                file_name
+                target_folder_name, mod_import_name, file_name
             ))
         } else if target_is_top_level {
             // Current is a dependency, target is top-level
-            let target_pkg_name =
-                package_import_name(*self.top_level_pkg_names.get(&target_pkg_addr).unwrap());
             Some(format!(
                 "../../../{}/{}/{}",
-                target_pkg_name, mod_import_name, file_name
+                target_folder_name, mod_import_name, file_name
             ))
         } else {
             // Both are dependencies - siblings in _dependencies/
             Some(format!(
                 "../../{}/{}/{}",
-                target_pkg_addr.to_hex_literal(),
-                mod_import_name,
-                file_name
+                target_folder_name, mod_import_name, file_name
             ))
         }
     }

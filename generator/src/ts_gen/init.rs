@@ -9,7 +9,7 @@ use move_model_2::model;
 use move_model_2::source_kind::SourceKind;
 use move_symbol_pool::Symbol;
 
-use super::utils::{module_import_name, package_import_name, sanitize_identifier};
+use super::utils::{module_import_name, sanitize_identifier};
 
 // ============================================================================
 // Package Init IR (for init.ts files)
@@ -142,14 +142,20 @@ impl InitLoaderIR {
     /// Build the IR from package information.
     pub fn new(
         pkg_ids: &[AccountAddress],
+        folder_names: &BTreeMap<AccountAddress, String>,
         top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
     ) -> Self {
         let packages = pkg_ids
             .iter()
             .map(|pkg_id| {
-                let import_path = match top_level_pkg_names.get(pkg_id) {
-                    Some(pkg_name) => format!("../{}/init", package_import_name(*pkg_name)),
-                    None => format!("../_dependencies/{}/init", pkg_id.to_hex_literal()),
+                let folder_name = folder_names
+                    .get(pkg_id)
+                    .expect("All packages should have folder names");
+
+                let import_path = if top_level_pkg_names.contains_key(pkg_id) {
+                    format!("../{}/init", folder_name)
+                } else {
+                    format!("../_dependencies/{}/init", folder_name)
                 };
 
                 let alias = format!("package_{}", pkg_id.short_str_lossless());
@@ -219,9 +225,10 @@ pub fn gen_package_init<HasSource: SourceKind>(
 /// Generate _framework/init-loader.ts.
 pub fn gen_init_loader(
     pkg_ids: &[AccountAddress],
+    folder_names: &BTreeMap<AccountAddress, String>,
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
 ) -> String {
-    InitLoaderIR::new(pkg_ids, top_level_pkg_names).emit()
+    InitLoaderIR::new(pkg_ids, folder_names, top_level_pkg_names).emit()
 }
 
 #[cfg(test)]
@@ -230,8 +237,9 @@ mod tests {
 
     #[test]
     fn test_init_loader_empty() {
+        let folder_names = BTreeMap::new();
         let top_level = BTreeMap::new();
-        let output = gen_init_loader(&[], &top_level);
+        let output = gen_init_loader(&[], &folder_names, &top_level);
         assert!(output.contains("export function registerClasses"));
         assert!(output.contains("_: StructClassLoader"));
     }

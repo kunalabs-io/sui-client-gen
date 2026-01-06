@@ -91,14 +91,15 @@ Output: _framework/, <package>/, _dependencies/
 ```
 <out>/
   _framework/           # Runtime helpers (reified.ts, loader.ts, util.ts, vector.ts)
-  <top-level-pkg>/      # Packages from gen.toml
+  <top-level-pkg>/      # Packages from gen.toml (kebab-case)
     index.ts            # PACKAGE_ID, PUBLISHED_AT exports
     init.ts             # Loader registration
     <module>/
       structs.ts        # Struct/enum classes
       functions.ts      # Function bindings (top-level only)
   _dependencies/
-    <0xaddr>/           # Dependency structs by package address
+    <pkg-name>/         # Dependency structs by kebab-case package name
+                        # (if name collision: pkg-name-1, pkg-name-2, etc.)
 ```
 
 ## Testing Workflow for Code Generation Changes
