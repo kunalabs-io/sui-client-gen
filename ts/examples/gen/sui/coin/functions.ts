@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
-import { String as String1 } from '../../_dependencies/0x1/ascii/structs'
-import { String } from '../../_dependencies/0x1/string/structs'
+import { String as String1 } from '../../_dependencies/std/ascii/structs'
+import { String } from '../../_dependencies/std/string/structs'
 import { GenericArg, generic, obj, option, pure } from '../../_framework/util'
 import { Url } from '../url/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'

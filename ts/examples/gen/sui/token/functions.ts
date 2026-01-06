@@ -1,6 +1,6 @@
 import { PUBLISHED_AT } from '..'
-import { Option } from '../../_dependencies/0x1/option/structs'
-import { String } from '../../_dependencies/0x1/string/structs'
+import { Option } from '../../_dependencies/std/option/structs'
+import { String } from '../../_dependencies/std/string/structs'
 import { GenericArg, generic, obj, option, pure } from '../../_framework/util'
 import { Balance } from '../balance/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'

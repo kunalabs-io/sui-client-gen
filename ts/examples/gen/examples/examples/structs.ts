@@ -1,6 +1,6 @@
-import { String } from '../../_dependencies/0x1/ascii/structs'
-import { Option } from '../../_dependencies/0x1/option/structs'
-import { String as StringString } from '../../_dependencies/0x1/string/structs'
+import { String } from '../../_dependencies/std/ascii/structs'
+import { Option } from '../../_dependencies/std/option/structs'
+import { String as StringString } from '../../_dependencies/std/string/structs'
 import {
   PhantomReified,
   Reified,

@@ -1,4 +1,4 @@
-import { TypeName } from '../../_dependencies/0x1/type-name/structs'
+import { TypeName } from '../../_dependencies/std/type-name/structs'
 import {
   PhantomReified,
   PhantomToTypeStr,
