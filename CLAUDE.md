@@ -82,6 +82,7 @@ Output: _framework/, <package>/, _dependencies/
 | `ts_gen/enums.rs` | Enum emission |
 | `ts_gen/functions.rs` | Function binding emission |
 | `ts_gen/imports.rs` | Import path resolution & deduplication |
+| `ts_gen/env_config.rs` | Environment configuration generation |
 | `package_cache.rs` | RPC-side cache for on-chain packages |
 | `layout.rs` | Output filesystem structure |
 | `framework_sources.rs` | Embeds `framework/*.ts` runtime files |
@@ -90,9 +91,11 @@ Output: _framework/, <package>/, _dependencies/
 
 ```
 <out>/
-  _framework/           # Runtime helpers (reified.ts, loader.ts, util.ts, vector.ts)
+  _framework/           # Runtime helpers (reified.ts, loader.ts, util.ts, vector.ts, env.ts)
+  _envs/                # Environment configs (sibling to _framework/)
+    index.ts            # Registers envs, sets default, re-exports env API
+    <env>.ts            # e.g., mainnet.ts, testnet.ts (from gen.toml [environments])
   <top-level-pkg>/      # Packages from gen.toml (kebab-case)
-    index.ts            # PACKAGE_ID, PUBLISHED_AT exports
     init.ts             # Loader registration
     <module>/
       structs.ts        # Struct/enum classes
@@ -129,6 +132,7 @@ Output: _framework/, <package>/, _dependencies/
 - **gen.toml**: Configuration file specifying packages to generate (source: local/git, on-chain: id)
 - **Type Origin Table**: Maps struct definitions to their original defining package (handles upgrades)
 - **Phantom types**: Generic parameters that don't require runtime data
+- **Environment configuration**: Runtime environment switching via `_envs/` - supports mainnet/testnet/custom envs with different package addresses
 
 ## Sui Framework Pinning
 
