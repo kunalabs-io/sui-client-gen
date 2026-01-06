@@ -104,32 +104,131 @@ The generated code has the following structure:
 │    ├── sui-framework
 │    └── ...
 ├── _framework
+│    ├── env.ts
 │    └── ...
+├── _envs
+│    ├── index.ts
+│    ├── mainnet.ts
+│    └── testnet.ts
 ├── <package>
 │    ├── <module-1>
 │    │   ├── functions.ts
 │    │   └── structs.ts
 │    ├── <module-2>
 │    │   └── ...
-│    ├── index.ts
 │    └── init.ts
 ├── <other packages from gen.toml>
 └── .eslintrc.json
 ```
 
-**`_framework`** directory contains functions and utilities required for the operation of the generated SDK.
+**`_framework`** directory contains functions and utilities required for the operation of the generated SDK, including the environment management runtime (`env.ts`).
+
+**`_envs`** directory contains environment configurations and is the primary entry point for environment management:
+- `index.ts` - Registers all environments, sets the default (from `[config].environment`), and re-exports the environment API
+- `<env>.ts` - Environment-specific configuration files containing package addresses and type origins
 
 **`_dependencies`** contains generated code of the direct and transitive dependencies of packages listed in `gen.toml`. Dependencies are organized by kebab-case package name (with `-1`, `-2` suffixes if names collide). While their contents are similar to those of listed packages, these are not intended to be imported or used directly as its APIs are not guaranteed to be stable and may change. Any package code that's intended to be used directly in the app should be listed in `gen.toml`.
 
-Each **`<package>`** directory contains a separate directory for each of its modules and `index.ts` and `init.ts` files.
-
-`index.ts` contains the `PACKAGE_ID` and `PUBLISHED_AT` constants referring to the original package ID and the address of the current version (as per `gen.toml`).
+Each **`<package>`** directory contains a separate directory for each of its modules and an `init.ts` file.
 
 `init.ts` contains some internal initialization functionalities that are not intended to be used directly.
 
 Each module directory further contains `functions.ts` and `structs.ts` corresponding to the functions and structs defined in the module.
 
 **`.eslintrc.json`** is generated in order to turn off the `@typescript-eslint/ban-types` rule which breaks the generated code.
+
+## Environment Switching
+
+The generated SDK supports runtime environment switching, allowing you to use the same codebase for different networks (mainnet, testnet, custom environments).
+
+### Auto-initialization
+
+When you import anything from the generated code, the default environment (specified in `[config].environment` of your `gen.toml`) is automatically set. No manual initialization is required.
+
+```ts
+// Just import and use - default environment is already active
+import { createBar } from './gen/examples/fixture/functions'
+```
+
+### Switching Environments
+
+You can switch environments at runtime using `setActiveEnv()`:
+
+```ts
+import { setActiveEnv } from './gen/_envs'
+
+// Switch to testnet
+setActiveEnv('testnet')
+
+// Switch to mainnet
+setActiveEnv('mainnet')
+
+// Switch to custom environment (must be defined in gen.toml [environments])
+setActiveEnv('staging')
+```
+
+### Custom Environment Configuration
+
+For advanced use cases, you can provide a custom environment configuration at runtime without pre-defining it in `gen.toml`:
+
+```ts
+import { setActiveEnvWithConfig, type EnvConfig } from './gen/_envs'
+
+const customConfig: EnvConfig = {
+  packages: {
+    'my-package': {
+      originalId: '0x123...',
+      publishedAt: '0x456...',
+      typeOrigins: {
+        'main::MyStruct': '0x123...',
+      },
+    },
+  },
+  dependencies: {
+    sui: {
+      originalId: '0x2',
+      publishedAt: '0x2',
+      typeOrigins: {
+        'object::UID': '0x2',
+      },
+    },
+  },
+}
+
+setActiveEnvWithConfig(customConfig)
+```
+
+### Querying Active Environment
+
+```ts
+import { getActiveEnvName, getActiveEnv, getRegisteredEnvs } from './gen/_envs'
+
+// Get the name of the active environment
+const envName = getActiveEnvName() // 'mainnet', 'testnet', 'custom', etc.
+
+// Get the full config of the active environment
+const config = getActiveEnv()
+
+// List all registered environments
+const envs = getRegisteredEnvs() // ['mainnet', 'testnet', ...]
+```
+
+### Environment Configuration Structure
+
+Each environment configuration has the following structure:
+
+```ts
+interface EnvConfig {
+  packages: Record<string, PackageConfig>
+  dependencies: Record<string, PackageConfig>
+}
+
+interface PackageConfig {
+  originalId: string      // Original package ID (version 1)
+  publishedAt: string     // Current published-at address for function calls
+  typeOrigins: Record<string, string>  // "module::TypeName" -> defining address
+}
+```
 
 ## Functions
 

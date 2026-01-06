@@ -191,7 +191,24 @@ class PoolWrapper {
 }
 ```
 
-#### Loader
+#### Environment Switching
+
+The generated SDK supports runtime environment switching, allowing you to use the same codebase for mainnet, testnet, or custom environments:
+
+```ts
+import { setActiveEnv } from './gen/_envs'
+
+// Switch to testnet
+setActiveEnv('testnet')
+
+// Or provide a custom config
+import { setActiveEnvWithConfig, type EnvConfig } from './gen/_envs'
+setActiveEnvWithConfig(myCustomConfig)
+```
+
+The default environment (from `[config].environment` in `gen.toml`) is automatically set on import. For more details, see the [docs](https://github.com/kunalabs-io/sui-client-gen/blob/master/DOC.md#environment-switching).
+
+### Loader
 
 In some situations it may be more convenient to load reified types using a type string instead of passing in reified types as arguments. This can be done by calling `loader.reified(type: string)`:
 
