@@ -16,7 +16,7 @@ use sui_sdk::types::SYSTEM_PACKAGE_ADDRESSES;
 
 use crate::graphql::GraphQLClient;
 use crate::io::{clean_output, write_str_to_file};
-use crate::layout::OutputLayout;
+use crate::layout::{build_package_folder_names, OutputLayout};
 use crate::manifest::{is_default_environment, parse_gen_manifest_from_file};
 use crate::model_builder::{self, TypeOriginTable, VersionTable};
 use crate::ts_gen::{self, gen_module_structs, gen_package_index};
@@ -166,14 +166,18 @@ pub async fn run(opts: RunOptions) -> Result<()> {
     let output = OutputLayout::new(out_dir);
     std::fs::create_dir_all(&output.root)?;
 
+    // Build folder names map for all packages
+    let folder_names = build_package_folder_names(&model_result.id_map, &top_level_addr_map);
+
     // Generate _framework
     writeln!(progress_output, "{}", "GENERATING FRAMEWORK".green().bold())?;
-    generate_framework(&output, &pkgs, &top_level_addr_map)?;
+    generate_framework(&output, &pkgs, &folder_names, &top_level_addr_map)?;
 
     // Generate packages
     writeln!(progress_output, "{}", "GENERATING PACKAGES".green().bold())?;
     gen_packages(
         pkgs,
+        &folder_names,
         &top_level_addr_map,
         &model_result.published_at,
         &model_result.type_origin_table,
@@ -195,6 +199,7 @@ pub async fn run(opts: RunOptions) -> Result<()> {
 fn generate_framework(
     output: &OutputLayout,
     pkgs: &BTreeMap<AccountAddress, source_model::Package>,
+    folder_names: &BTreeMap<AccountAddress, String>,
     top_level_addr_map: &BTreeMap<AccountAddress, Symbol>,
 ) -> Result<()> {
     std::fs::create_dir_all(&output.framework_dir)?;
@@ -220,6 +225,7 @@ fn generate_framework(
     write_str_to_file(
         &ts_gen::gen_init_loader(
             &pkgs.keys().copied().collect::<Vec<_>>(),
+            folder_names,
             top_level_addr_map,
         ),
         &output.framework_dir.join("init-loader.ts"),
@@ -231,6 +237,7 @@ fn generate_framework(
 /// Generate TypeScript code for all packages.
 fn gen_packages(
     pkgs: BTreeMap<AccountAddress, source_model::Package>,
+    folder_names: &BTreeMap<AccountAddress, String>,
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
     published_at_map: &BTreeMap<AccountAddress, AccountAddress>,
     type_origin_table: &TypeOriginTable,
@@ -242,7 +249,7 @@ fn gen_packages(
     }
 
     for (pkg_id, pkg) in pkgs.iter() {
-        let pkg_layout = output.package_path(pkg_id, top_level_pkg_names);
+        let pkg_layout = output.package_path(pkg_id, folder_names, top_level_pkg_names);
         std::fs::create_dir_all(&pkg_layout.path)?;
 
         // Generate index.ts
@@ -276,6 +283,7 @@ fn gen_packages(
             if pkg_layout.is_top_level {
                 let content = ts_gen::gen_module_functions(
                     &module,
+                    folder_names,
                     top_level_pkg_names,
                     pkg_layout.levels_from_root,
                 );
@@ -289,6 +297,7 @@ fn gen_packages(
                 &module,
                 type_origin_table,
                 version_table,
+                folder_names,
                 top_level_pkg_names,
                 pkg_layout.levels_from_root,
             );

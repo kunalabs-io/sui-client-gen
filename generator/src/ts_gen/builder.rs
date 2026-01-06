@@ -102,6 +102,7 @@ pub struct StructIRBuilder<'a, 'model, HasSource: SourceKind> {
     package_address: AccountAddress,
     module_name: Symbol,
     is_top_level: bool,
+    folder_names: &'a BTreeMap<AccountAddress, String>,
     top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
     framework_path: String,
     /// Tracks struct imports to avoid name conflicts
@@ -113,6 +114,7 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
         strct: model::Struct<'model, HasSource>,
         type_origin_table: &'a TypeOriginTable,
         version_table: &'a VersionTable,
+        folder_names: &'a BTreeMap<AccountAddress, String>,
         top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
         levels_from_root: u8,
     ) -> Self {
@@ -138,6 +140,7 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
             package_address,
             module_name,
             is_top_level,
+            folder_names,
             top_level_pkg_names,
             framework_path,
             struct_imports: HashMap::new(),
@@ -426,6 +429,7 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
         let resolver = ImportPathResolver::new(
             self.package_address,
             self.module_name,
+            self.folder_names.clone(),
             self.top_level_pkg_names.clone(),
             self.is_top_level,
         );
@@ -438,6 +442,7 @@ pub fn gen_module_structs<HasSource: SourceKind>(
     module: &model::Module<HasSource>,
     type_origin_table: &TypeOriginTable,
     version_table: &VersionTable,
+    folder_names: &BTreeMap<AccountAddress, String>,
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
     levels_from_root: u8,
 ) -> String {
@@ -453,6 +458,7 @@ pub fn gen_module_structs<HasSource: SourceKind>(
             strct,
             type_origin_table,
             version_table,
+            folder_names,
             top_level_pkg_names,
             levels_from_root + 2,
         );
@@ -473,6 +479,7 @@ pub fn gen_module_structs<HasSource: SourceKind>(
             enum_,
             type_origin_table,
             version_table,
+            folder_names,
             top_level_pkg_names,
             levels_from_root + 2,
         );
@@ -709,6 +716,7 @@ pub struct EnumIRBuilder<'a, 'model, HasSource: SourceKind> {
     package_address: AccountAddress,
     module_name: Symbol,
     is_top_level: bool,
+    folder_names: &'a BTreeMap<AccountAddress, String>,
     top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
     #[allow(dead_code)]
     framework_path: String,
@@ -721,6 +729,7 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
         enum_: model::Enum<'model, HasSource>,
         type_origin_table: &'a TypeOriginTable,
         version_table: &'a VersionTable,
+        folder_names: &'a BTreeMap<AccountAddress, String>,
         top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
         levels_from_root: u8,
     ) -> Self {
@@ -746,6 +755,7 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
             package_address,
             module_name,
             is_top_level,
+            folder_names,
             top_level_pkg_names,
             framework_path,
             struct_imports: HashMap::new(),
@@ -1086,6 +1096,7 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
         let resolver = ImportPathResolver::new(
             self.package_address,
             self.module_name,
+            self.folder_names.clone(),
             self.top_level_pkg_names.clone(),
             self.is_top_level,
         );
@@ -1113,6 +1124,7 @@ pub struct FunctionIRBuilder<'a, 'model, HasSource: SourceKind> {
     package_address: AccountAddress,
     module_name: Symbol,
     is_top_level: bool,
+    folder_names: &'a BTreeMap<AccountAddress, String>,
     top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
     #[allow(dead_code)]
     framework_path: String,
@@ -1122,6 +1134,7 @@ pub struct FunctionIRBuilder<'a, 'model, HasSource: SourceKind> {
 impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource> {
     pub fn new(
         func: model::Function<'model, HasSource>,
+        folder_names: &'a BTreeMap<AccountAddress, String>,
         top_level_pkg_names: &'a BTreeMap<AccountAddress, Symbol>,
         levels_from_root: u8,
     ) -> Option<Self> {
@@ -1138,6 +1151,7 @@ impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource>
             package_address,
             module_name,
             is_top_level,
+            folder_names,
             top_level_pkg_names,
             framework_path,
             struct_imports: HashMap::new(),
@@ -1508,6 +1522,7 @@ impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource>
         let resolver = ImportPathResolver::new(
             self.package_address,
             self.module_name,
+            self.folder_names.clone(),
             self.top_level_pkg_names.clone(),
             self.is_top_level,
         );
@@ -1580,6 +1595,7 @@ impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource>
 /// Generate functions.ts content for a module.
 pub fn gen_module_functions<HasSource: SourceKind>(
     module: &model::Module<HasSource>,
+    folder_names: &BTreeMap<AccountAddress, String>,
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
     levels_from_root: u8,
 ) -> String {
@@ -1591,7 +1607,9 @@ pub fn gen_module_functions<HasSource: SourceKind>(
 
     let functions: Vec<_> = module
         .functions()
-        .filter_map(|func| FunctionIRBuilder::new(func, top_level_pkg_names, levels_from_root))
+        .filter_map(|func| {
+            FunctionIRBuilder::new(func, folder_names, top_level_pkg_names, levels_from_root)
+        })
         .map(|builder| builder.build())
         .collect();
 

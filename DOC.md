@@ -100,8 +100,8 @@ The generated code has the following structure:
 ```
 <root>
 ├── _dependencies
-│    ├── 0x1
-│    ├── 0x2
+│    ├── move-stdlib
+│    ├── sui-framework
 │    └── ...
 ├── _framework
 │    └── ...
@@ -119,7 +119,7 @@ The generated code has the following structure:
 
 **`_framework`** directory contains functions and utilities required for the operation of the generated SDK.
 
-**`_dependencies`** contains generated code of the direct and transitive dependencies of packages listed in `gen.toml`. While their contents are similar to those of listed packages, these are not intended to be imported or used directly as its APIs are not guaranteed to be stable and may change. Any package code that's intended to be used directly in the app should be listed in `gen.toml`.
+**`_dependencies`** contains generated code of the direct and transitive dependencies of packages listed in `gen.toml`. Dependencies are organized by kebab-case package name (with `-1`, `-2` suffixes if names collide). While their contents are similar to those of listed packages, these are not intended to be imported or used directly as its APIs are not guaranteed to be stable and may change. Any package code that's intended to be used directly in the app should be listed in `gen.toml`.
 
 Each **`<package>`** directory contains a separate directory for each of its modules and `index.ts` and `init.ts` files.
 

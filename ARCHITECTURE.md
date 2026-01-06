@@ -174,11 +174,11 @@ Paths are centralized in `generator/src/layout.rs`:
 
 Packages listed directly in `gen.toml` are considered **top-level** and are written under:
 
-- `<out>/<package-name>/...`
+- `<out>/<package-name>/...` (kebab-case)
 
 Transitive dependencies are written under:
 
-- `<out>/_dependencies/<0xaddr>/...`
+- `<out>/_dependencies/<pkg-name>/...` (kebab-case, with `-1`, `-2` suffixes if names collide)
 
 ### Generated tree (typical)
 
@@ -199,7 +199,7 @@ Transitive dependencies are written under:
       structs.ts
       functions.ts              (top-level packages only)
   _dependencies/
-    <0xaddr>/<module>/structs.ts
+    <pkg-name>/<module>/structs.ts
 ```
 
 ### Cleaning output
@@ -346,7 +346,7 @@ Responsible for computing the relative import path to:
 
 - another module in the same package (`../<module>/structs`)
 - a top-level package from a top-level package (`../../<pkg>/<module>/structs`)
-- a dependency package (`../../_dependencies/<addr>/<module>/structs`)
+- a dependency package (`../../_dependencies/<pkg-name>/<module>/structs`)
 - and the inverse direction when the current package is itself a dependency
 
 ### Alias / collision handling
