@@ -3,7 +3,6 @@ import { fromB64, normalizeSuiAddress } from '@mysten/sui/utils'
 import { SuiClient } from '@mysten/sui/client'
 import { Transaction } from '@mysten/sui/transactions'
 import { create } from './gen/amm/pool/functions'
-import { PACKAGE_ID as EXAMPLES_PACKAGE_ID } from './gen/examples'
 import { intoBalance, fromBalance } from './gen/sui/coin/functions'
 import { faucetMint } from './gen/examples/example-coin/functions'
 import { Command } from 'commander'
@@ -17,6 +16,7 @@ import { bcs } from '@mysten/sui/bcs'
 import { ExampleStruct } from './gen/examples/examples/structs'
 import { SUI } from './gen/sui/sui/structs'
 import { vector } from './gen/_framework/reified'
+import { Coin } from './gen/sui/coin/structs'
 
 const EXAMPLE_COIN_FAUCET_ID = '0x23a00d64a785280a794d0bdd2f641dfabf117c78e07cb682550ed3c2b41dd760'
 const AMM_POOL_REGISTRY_ID = '0xe3e05313eff4f6f44206982e42fa1219c972113f3a651abe168123abc0202411'
@@ -118,11 +118,8 @@ async function createStructWithVector() {
   const field = tx.makeMoveVec({
     elements: [coin],
   })
-  createWithGenericField(
-    tx,
-    `vector<0x2::coin::Coin<${EXAMPLES_PACKAGE_ID}::example_coin::EXAMPLE_COIN>>`,
-    field
-  )
+  const typeName = vector(Coin.r(EXAMPLE_COIN.p)).fullTypeName
+  createWithGenericField(tx, typeName, field)
 
   const res = await client.signAndExecuteTransaction({
     signer: keypair,
