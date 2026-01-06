@@ -1,3 +1,4 @@
+import { TypeName } from '../../_dependencies/0x1/type-name/structs'
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -22,7 +23,6 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { TypeName } from '../../std/type-name/structs'
 import { Balance, Supply } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
