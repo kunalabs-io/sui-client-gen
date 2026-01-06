@@ -42,7 +42,7 @@ export type AccumulatorRootReified = Reified<AccumulatorRoot, AccumulatorRootFie
 export class AccumulatorRoot implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::accumulator::AccumulatorRoot`
+  static readonly $typeName = `0x2::accumulator::AccumulatorRoot` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -218,7 +218,7 @@ export type U128Reified = Reified<U128, U128Fields>
 export class U128 implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::accumulator::U128`
+  static readonly $typeName = `0x2::accumulator::U128` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -388,7 +388,7 @@ export type KeyReified<T extends PhantomTypeArgument> = Reified<Key<T>, KeyField
 export class Key<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::accumulator::Key`
+  static readonly $typeName = `0x2::accumulator::Key` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 

@@ -36,7 +36,7 @@ export type RandomReified = Reified<Random, RandomFields>
 export class Random implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::random::Random`
+  static readonly $typeName = `0x2::random::Random` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -216,7 +216,7 @@ export type RandomInnerReified = Reified<RandomInner, RandomInnerFields>
 export class RandomInner implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::random::RandomInner`
+  static readonly $typeName = `0x2::random::RandomInner` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -412,7 +412,7 @@ export type RandomGeneratorReified = Reified<RandomGenerator, RandomGeneratorFie
 export class RandomGenerator implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::random::RandomGenerator`
+  static readonly $typeName = `0x2::random::RandomGenerator` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

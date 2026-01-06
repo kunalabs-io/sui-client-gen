@@ -42,7 +42,7 @@ export type OwnerKeyReified = Reified<OwnerKey, OwnerKeyFields>
 export class OwnerKey implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::accumulator_metadata::OwnerKey`
+  static readonly $typeName = `0x2::accumulator_metadata::OwnerKey` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -222,7 +222,7 @@ export type OwnerReified = Reified<Owner, OwnerFields>
 export class Owner implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::accumulator_metadata::Owner`
+  static readonly $typeName = `0x2::accumulator_metadata::Owner` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -408,7 +408,7 @@ export type MetadataKeyReified<T extends PhantomTypeArgument> = Reified<
 export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::accumulator_metadata::MetadataKey`
+  static readonly $typeName = `0x2::accumulator_metadata::MetadataKey` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -635,7 +635,7 @@ export type MetadataReified<T extends PhantomTypeArgument> = Reified<Metadata<T>
 export class Metadata<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::accumulator_metadata::Metadata`
+  static readonly $typeName = `0x2::accumulator_metadata::Metadata` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 

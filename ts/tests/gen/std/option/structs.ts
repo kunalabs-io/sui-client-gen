@@ -47,7 +47,7 @@ export type OptionReified<Element extends TypeArgument> = Reified<
 export class Option<Element extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x1::option::Option`
+  static readonly $typeName = `0x1::option::Option` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 

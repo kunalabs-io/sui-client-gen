@@ -1,10 +1,10 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function values(tx: Transaction, typeArgs: [string, string], pool: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::values`,
+    target: `${getPublishedAt('amm')}::pool::values`,
     typeArguments: typeArgs,
     arguments: [obj(tx, pool)],
   })
@@ -12,7 +12,7 @@ export function values(tx: Transaction, typeArgs: [string, string], pool: Transa
 
 export function fees(tx: Transaction, typeArgs: [string, string], pool: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::fees`,
+    target: `${getPublishedAt('amm')}::pool::fees`,
     typeArguments: typeArgs,
     arguments: [obj(tx, pool)],
   })
@@ -24,7 +24,7 @@ export function adminFeeValue(
   pool: TransactionObjectInput
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::admin_fee_value`,
+    target: `${getPublishedAt('amm')}::pool::admin_fee_value`,
     typeArguments: typeArgs,
     arguments: [obj(tx, pool)],
   })
@@ -32,7 +32,7 @@ export function adminFeeValue(
 
 export function newRegistry(tx: Transaction) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::new_registry`,
+    target: `${getPublishedAt('amm')}::pool::new_registry`,
     arguments: [],
   })
 }
@@ -44,7 +44,7 @@ export interface CmpTypeNamesArgs {
 
 export function cmpTypeNames(tx: Transaction, args: CmpTypeNamesArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::cmp_type_names`,
+    target: `${getPublishedAt('amm')}::pool::cmp_type_names`,
     arguments: [obj(tx, args.a), obj(tx, args.b)],
   })
 }
@@ -55,7 +55,7 @@ export function registryAdd(
   self: TransactionObjectInput
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::registry_add`,
+    target: `${getPublishedAt('amm')}::pool::registry_add`,
     typeArguments: typeArgs,
     arguments: [obj(tx, self)],
   })
@@ -69,7 +69,7 @@ export interface MuldivArgs {
 
 export function muldiv(tx: Transaction, args: MuldivArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::muldiv`,
+    target: `${getPublishedAt('amm')}::pool::muldiv`,
     arguments: [pure(tx, args.a, `u64`), pure(tx, args.b, `u64`), pure(tx, args.c, `u64`)],
   })
 }
@@ -82,7 +82,7 @@ export interface CeilMuldivArgs {
 
 export function ceilMuldiv(tx: Transaction, args: CeilMuldivArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::ceil_muldiv`,
+    target: `${getPublishedAt('amm')}::pool::ceil_muldiv`,
     arguments: [pure(tx, args.a, `u64`), pure(tx, args.b, `u64`), pure(tx, args.c, `u64`)],
   })
 }
@@ -94,7 +94,7 @@ export interface MulsqrtArgs {
 
 export function mulsqrt(tx: Transaction, args: MulsqrtArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::mulsqrt`,
+    target: `${getPublishedAt('amm')}::pool::mulsqrt`,
     arguments: [pure(tx, args.a, `u64`), pure(tx, args.b, `u64`)],
   })
 }
@@ -107,14 +107,14 @@ export interface MuldivU128Args {
 
 export function muldivU128(tx: Transaction, args: MuldivU128Args) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::muldiv_u128`,
+    target: `${getPublishedAt('amm')}::pool::muldiv_u128`,
     arguments: [pure(tx, args.a, `u128`), pure(tx, args.b, `u128`), pure(tx, args.c, `u128`)],
   })
 }
 
 export function init(tx: Transaction) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::init`,
+    target: `${getPublishedAt('amm')}::pool::init`,
     arguments: [],
   })
 }
@@ -129,7 +129,7 @@ export interface CreateArgs {
 
 export function create(tx: Transaction, typeArgs: [string, string], args: CreateArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::create`,
+    target: `${getPublishedAt('amm')}::pool::create`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.registry),
@@ -150,7 +150,7 @@ export interface DepositArgs {
 
 export function deposit(tx: Transaction, typeArgs: [string, string], args: DepositArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::deposit`,
+    target: `${getPublishedAt('amm')}::pool::deposit`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.pool),
@@ -170,7 +170,7 @@ export interface WithdrawArgs {
 
 export function withdraw(tx: Transaction, typeArgs: [string, string], args: WithdrawArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::withdraw`,
+    target: `${getPublishedAt('amm')}::pool::withdraw`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.pool),
@@ -192,7 +192,7 @@ export interface CalcSwapResultArgs {
 
 export function calcSwapResult(tx: Transaction, args: CalcSwapResultArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::calc_swap_result`,
+    target: `${getPublishedAt('amm')}::pool::calc_swap_result`,
     arguments: [
       pure(tx, args.iValue, `u64`),
       pure(tx, args.iPoolValue, `u64`),
@@ -212,7 +212,7 @@ export interface SwapAArgs {
 
 export function swapA(tx: Transaction, typeArgs: [string, string], args: SwapAArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::swap_a`,
+    target: `${getPublishedAt('amm')}::pool::swap_a`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.pool), obj(tx, args.input), pure(tx, args.minOut, `u64`)],
   })
@@ -226,7 +226,7 @@ export interface SwapBArgs {
 
 export function swapB(tx: Transaction, typeArgs: [string, string], args: SwapBArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::swap_b`,
+    target: `${getPublishedAt('amm')}::pool::swap_b`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.pool), obj(tx, args.input), pure(tx, args.minOut, `u64`)],
   })
@@ -244,7 +244,7 @@ export function adminWithdrawFees(
   args: AdminWithdrawFeesArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::admin_withdraw_fees`,
+    target: `${getPublishedAt('amm')}::pool::admin_withdraw_fees`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.pool), obj(tx, args.adminCap), pure(tx, args.amount, `u64`)],
   })
@@ -259,7 +259,7 @@ export interface AdminSetFeesArgs {
 
 export function adminSetFees(tx: Transaction, typeArgs: [string, string], args: AdminSetFeesArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::pool::admin_set_fees`,
+    target: `${getPublishedAt('amm')}::pool::admin_set_fees`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.pool),

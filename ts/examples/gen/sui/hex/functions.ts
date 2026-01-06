@@ -1,4 +1,4 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
@@ -7,7 +7,7 @@ export function encode(
   bytes: Array<number | TransactionArgument> | TransactionArgument
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::hex::encode`,
+    target: `${getPublishedAt('sui')}::hex::encode`,
     arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }
@@ -17,14 +17,14 @@ export function decode(
   hex: Array<number | TransactionArgument> | TransactionArgument
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::hex::decode`,
+    target: `${getPublishedAt('sui')}::hex::decode`,
     arguments: [pure(tx, hex, `vector<u8>`)],
   })
 }
 
 export function decodeByte(tx: Transaction, hex: number | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::hex::decode_byte`,
+    target: `${getPublishedAt('sui')}::hex::decode_byte`,
     arguments: [pure(tx, hex, `u8`)],
   })
 }

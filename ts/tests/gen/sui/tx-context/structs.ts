@@ -37,7 +37,7 @@ export type TxContextReified = Reified<TxContext, TxContextFields>
 export class TxContext implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::tx_context::TxContext`
+  static readonly $typeName = `0x2::tx_context::TxContext` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

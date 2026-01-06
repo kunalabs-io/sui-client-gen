@@ -1,4 +1,4 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, option, pure } from '../../_framework/util'
 import { Option } from '../../std/option/structs'
 import { String } from '../../std/string/structs'
@@ -7,7 +7,7 @@ import { Transaction, TransactionArgument, TransactionObjectInput } from '@myste
 
 export function newPolicy(tx: Transaction, typeArg: string, treasuryCap: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::new_policy`,
+    target: `${getPublishedAt('sui')}::token::new_policy`,
     typeArguments: [typeArg],
     arguments: [obj(tx, treasuryCap)],
   })
@@ -15,7 +15,7 @@ export function newPolicy(tx: Transaction, typeArg: string, treasuryCap: Transac
 
 export function sharePolicy(tx: Transaction, typeArg: string, policy: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::share_policy`,
+    target: `${getPublishedAt('sui')}::token::share_policy`,
     typeArguments: [typeArg],
     arguments: [obj(tx, policy)],
   })
@@ -28,7 +28,7 @@ export interface TransferArgs {
 
 export function transfer(tx: Transaction, typeArg: string, args: TransferArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::transfer`,
+    target: `${getPublishedAt('sui')}::token::transfer`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.t), pure(tx, args.recipient, `address`)],
   })
@@ -36,7 +36,7 @@ export function transfer(tx: Transaction, typeArg: string, args: TransferArgs) {
 
 export function spend(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::spend`,
+    target: `${getPublishedAt('sui')}::token::spend`,
     typeArguments: [typeArg],
     arguments: [obj(tx, t)],
   })
@@ -44,7 +44,7 @@ export function spend(tx: Transaction, typeArg: string, t: TransactionObjectInpu
 
 export function toCoin(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::to_coin`,
+    target: `${getPublishedAt('sui')}::token::to_coin`,
     typeArguments: [typeArg],
     arguments: [obj(tx, t)],
   })
@@ -52,7 +52,7 @@ export function toCoin(tx: Transaction, typeArg: string, t: TransactionObjectInp
 
 export function fromCoin(tx: Transaction, typeArg: string, coin: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::from_coin`,
+    target: `${getPublishedAt('sui')}::token::from_coin`,
     typeArguments: [typeArg],
     arguments: [obj(tx, coin)],
   })
@@ -65,7 +65,7 @@ export interface JoinArgs {
 
 export function join(tx: Transaction, typeArg: string, args: JoinArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::join`,
+    target: `${getPublishedAt('sui')}::token::join`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.token), obj(tx, args.another)],
   })
@@ -78,7 +78,7 @@ export interface SplitArgs {
 
 export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::split`,
+    target: `${getPublishedAt('sui')}::token::split`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.token), pure(tx, args.amount, `u64`)],
   })
@@ -86,7 +86,7 @@ export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
 
 export function zero(tx: Transaction, typeArg: string) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::zero`,
+    target: `${getPublishedAt('sui')}::token::zero`,
     typeArguments: [typeArg],
     arguments: [],
   })
@@ -94,7 +94,7 @@ export function zero(tx: Transaction, typeArg: string) {
 
 export function destroyZero(tx: Transaction, typeArg: string, token: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::destroy_zero`,
+    target: `${getPublishedAt('sui')}::token::destroy_zero`,
     typeArguments: [typeArg],
     arguments: [obj(tx, token)],
   })
@@ -102,7 +102,7 @@ export function destroyZero(tx: Transaction, typeArg: string, token: Transaction
 
 export function keep(tx: Transaction, typeArg: string, token: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::keep`,
+    target: `${getPublishedAt('sui')}::token::keep`,
     typeArguments: [typeArg],
     arguments: [obj(tx, token)],
   })
@@ -117,7 +117,7 @@ export interface NewRequestArgs {
 
 export function newRequest(tx: Transaction, typeArg: string, args: NewRequestArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::new_request`,
+    target: `${getPublishedAt('sui')}::token::new_request`,
     typeArguments: [typeArg],
     arguments: [
       pure(tx, args.name, `${String.$typeName}`),
@@ -135,7 +135,7 @@ export interface ConfirmRequestArgs {
 
 export function confirmRequest(tx: Transaction, typeArg: string, args: ConfirmRequestArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::confirm_request`,
+    target: `${getPublishedAt('sui')}::token::confirm_request`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.policy), obj(tx, args.request)],
   })
@@ -148,7 +148,7 @@ export interface ConfirmRequestMutArgs {
 
 export function confirmRequestMut(tx: Transaction, typeArg: string, args: ConfirmRequestMutArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::confirm_request_mut`,
+    target: `${getPublishedAt('sui')}::token::confirm_request_mut`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.policy), obj(tx, args.request)],
   })
@@ -165,7 +165,7 @@ export function confirmWithPolicyCap(
   args: ConfirmWithPolicyCapArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::confirm_with_policy_cap`,
+    target: `${getPublishedAt('sui')}::token::confirm_with_policy_cap`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.policyCap), obj(tx, args.request)],
   })
@@ -182,7 +182,7 @@ export function confirmWithTreasuryCap(
   args: ConfirmWithTreasuryCapArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::confirm_with_treasury_cap`,
+    target: `${getPublishedAt('sui')}::token::confirm_with_treasury_cap`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.treasuryCap), obj(tx, args.request)],
   })
@@ -195,7 +195,7 @@ export interface AddApprovalArgs {
 
 export function addApproval(tx: Transaction, typeArgs: [string, string], args: AddApprovalArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::add_approval`,
+    target: `${getPublishedAt('sui')}::token::add_approval`,
     typeArguments: typeArgs,
     arguments: [generic(tx, `${typeArgs[1]}`, args.t), obj(tx, args.request)],
   })
@@ -214,7 +214,7 @@ export function addRuleConfig(
   args: AddRuleConfigArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::add_rule_config`,
+    target: `${getPublishedAt('sui')}::token::add_rule_config`,
     typeArguments: typeArgs,
     arguments: [
       generic(tx, `${typeArgs[1]}`, args.rule),
@@ -236,7 +236,7 @@ export function ruleConfig(
   args: RuleConfigArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::rule_config`,
+    target: `${getPublishedAt('sui')}::token::rule_config`,
     typeArguments: typeArgs,
     arguments: [generic(tx, `${typeArgs[1]}`, args.rule), obj(tx, args.self)],
   })
@@ -254,7 +254,7 @@ export function ruleConfigMut(
   args: RuleConfigMutArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::rule_config_mut`,
+    target: `${getPublishedAt('sui')}::token::rule_config_mut`,
     typeArguments: typeArgs,
     arguments: [generic(tx, `${typeArgs[1]}`, args.rule), obj(tx, args.self), obj(tx, args.cap)],
   })
@@ -271,7 +271,7 @@ export function removeRuleConfig(
   args: RemoveRuleConfigArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::remove_rule_config`,
+    target: `${getPublishedAt('sui')}::token::remove_rule_config`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.self), obj(tx, args.cap)],
   })
@@ -283,7 +283,7 @@ export function hasRuleConfig(
   self: TransactionObjectInput
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::has_rule_config`,
+    target: `${getPublishedAt('sui')}::token::has_rule_config`,
     typeArguments: typeArgs,
     arguments: [obj(tx, self)],
   })
@@ -295,7 +295,7 @@ export function hasRuleConfigWithType(
   self: TransactionObjectInput
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::has_rule_config_with_type`,
+    target: `${getPublishedAt('sui')}::token::has_rule_config_with_type`,
     typeArguments: typeArgs,
     arguments: [obj(tx, self)],
   })
@@ -309,7 +309,7 @@ export interface AllowArgs {
 
 export function allow(tx: Transaction, typeArg: string, args: AllowArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::allow`,
+    target: `${getPublishedAt('sui')}::token::allow`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -327,7 +327,7 @@ export interface DisallowArgs {
 
 export function disallow(tx: Transaction, typeArg: string, args: DisallowArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::disallow`,
+    target: `${getPublishedAt('sui')}::token::disallow`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -349,7 +349,7 @@ export function addRuleForAction(
   args: AddRuleForActionArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::add_rule_for_action`,
+    target: `${getPublishedAt('sui')}::token::add_rule_for_action`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.self),
@@ -371,7 +371,7 @@ export function removeRuleForAction(
   args: RemoveRuleForActionArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::remove_rule_for_action`,
+    target: `${getPublishedAt('sui')}::token::remove_rule_for_action`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.self),
@@ -388,7 +388,7 @@ export interface MintArgs {
 
 export function mint(tx: Transaction, typeArg: string, args: MintArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::mint`,
+    target: `${getPublishedAt('sui')}::token::mint`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.cap), pure(tx, args.amount, `u64`)],
   })
@@ -401,7 +401,7 @@ export interface BurnArgs {
 
 export function burn(tx: Transaction, typeArg: string, args: BurnArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::burn`,
+    target: `${getPublishedAt('sui')}::token::burn`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.cap), obj(tx, args.token)],
   })
@@ -414,7 +414,7 @@ export interface FlushArgs {
 
 export function flush(tx: Transaction, typeArg: string, args: FlushArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::flush`,
+    target: `${getPublishedAt('sui')}::token::flush`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), obj(tx, args.cap)],
   })
@@ -427,7 +427,7 @@ export interface IsAllowedArgs {
 
 export function isAllowed(tx: Transaction, typeArg: string, args: IsAllowedArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::is_allowed`,
+    target: `${getPublishedAt('sui')}::token::is_allowed`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), pure(tx, args.action, `${String.$typeName}`)],
   })
@@ -440,7 +440,7 @@ export interface RulesArgs {
 
 export function rules(tx: Transaction, typeArg: string, args: RulesArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::rules`,
+    target: `${getPublishedAt('sui')}::token::rules`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), pure(tx, args.action, `${String.$typeName}`)],
   })
@@ -448,7 +448,7 @@ export function rules(tx: Transaction, typeArg: string, args: RulesArgs) {
 
 export function spentBalance(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::spent_balance`,
+    target: `${getPublishedAt('sui')}::token::spent_balance`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -456,7 +456,7 @@ export function spentBalance(tx: Transaction, typeArg: string, self: Transaction
 
 export function value(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::value`,
+    target: `${getPublishedAt('sui')}::token::value`,
     typeArguments: [typeArg],
     arguments: [obj(tx, t)],
   })
@@ -464,35 +464,35 @@ export function value(tx: Transaction, typeArg: string, t: TransactionObjectInpu
 
 export function transferAction(tx: Transaction) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::transfer_action`,
+    target: `${getPublishedAt('sui')}::token::transfer_action`,
     arguments: [],
   })
 }
 
 export function spendAction(tx: Transaction) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::spend_action`,
+    target: `${getPublishedAt('sui')}::token::spend_action`,
     arguments: [],
   })
 }
 
 export function toCoinAction(tx: Transaction) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::to_coin_action`,
+    target: `${getPublishedAt('sui')}::token::to_coin_action`,
     arguments: [],
   })
 }
 
 export function fromCoinAction(tx: Transaction) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::from_coin_action`,
+    target: `${getPublishedAt('sui')}::token::from_coin_action`,
     arguments: [],
   })
 }
 
 export function action(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::action`,
+    target: `${getPublishedAt('sui')}::token::action`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -500,7 +500,7 @@ export function action(tx: Transaction, typeArg: string, self: TransactionObject
 
 export function amount(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::amount`,
+    target: `${getPublishedAt('sui')}::token::amount`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -508,7 +508,7 @@ export function amount(tx: Transaction, typeArg: string, self: TransactionObject
 
 export function sender(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::sender`,
+    target: `${getPublishedAt('sui')}::token::sender`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -516,7 +516,7 @@ export function sender(tx: Transaction, typeArg: string, self: TransactionObject
 
 export function recipient(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::recipient`,
+    target: `${getPublishedAt('sui')}::token::recipient`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -524,7 +524,7 @@ export function recipient(tx: Transaction, typeArg: string, self: TransactionObj
 
 export function approvals(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::approvals`,
+    target: `${getPublishedAt('sui')}::token::approvals`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -532,7 +532,7 @@ export function approvals(tx: Transaction, typeArg: string, self: TransactionObj
 
 export function spent(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::spent`,
+    target: `${getPublishedAt('sui')}::token::spent`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -540,7 +540,7 @@ export function spent(tx: Transaction, typeArg: string, self: TransactionObjectI
 
 export function key(tx: Transaction, typeArg: string) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::token::key`,
+    target: `${getPublishedAt('sui')}::token::key`,
     typeArguments: [typeArg],
     arguments: [],
   })

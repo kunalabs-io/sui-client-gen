@@ -1,6 +1,7 @@
 import { String } from '../../_dependencies/std/ascii/structs'
 import { Option } from '../../_dependencies/std/option/structs'
 import { String as StringString } from '../../_dependencies/std/string/structs'
+import { getTypeOrigin } from '../../_envs'
 import {
   PhantomReified,
   Reified,
@@ -17,7 +18,6 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { ID, UID } from '../../sui/object/structs'
-import { PKG_V1 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
@@ -26,7 +26,7 @@ import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 export function isExampleStruct(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V1}::examples::ExampleStruct`
+  return type === `${getTypeOrigin('examples', 'examples::ExampleStruct')}::examples::ExampleStruct`
 }
 
 export interface ExampleStructFields {
@@ -38,12 +38,13 @@ export type ExampleStructReified = Reified<ExampleStruct, ExampleStructFields>
 export class ExampleStruct implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V1}::examples::ExampleStruct`
+  static readonly $typeName =
+    `${getTypeOrigin('examples', 'examples::ExampleStruct')}::examples::ExampleStruct` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = ExampleStruct.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::examples::ExampleStruct`
+  readonly $fullTypeName: `${string}::examples::ExampleStruct`
   readonly $typeArgs: []
   readonly $isPhantom = ExampleStruct.$isPhantom
 
@@ -53,7 +54,7 @@ export class ExampleStruct implements StructClass {
     this.$fullTypeName = composeSuiType(
       ExampleStruct.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V1}::examples::ExampleStruct`
+    ) as `${string}::examples::ExampleStruct`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -66,7 +67,7 @@ export class ExampleStruct implements StructClass {
       fullTypeName: composeSuiType(
         ExampleStruct.$typeName,
         ...[]
-      ) as `${typeof PKG_V1}::examples::ExampleStruct`,
+      ) as `${string}::examples::ExampleStruct`,
       typeArgs: [] as [],
       isPhantom: ExampleStruct.$isPhantom,
       reifiedTypeArgs: [],
@@ -202,7 +203,10 @@ export class ExampleStruct implements StructClass {
 
 export function isSpecialTypesStruct(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V1}::examples::SpecialTypesStruct`
+  return (
+    type ===
+    `${getTypeOrigin('examples', 'examples::SpecialTypesStruct')}::examples::SpecialTypesStruct`
+  )
 }
 
 export interface SpecialTypesStructFields {
@@ -222,12 +226,13 @@ export type SpecialTypesStructReified = Reified<SpecialTypesStruct, SpecialTypes
 export class SpecialTypesStruct implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V1}::examples::SpecialTypesStruct`
+  static readonly $typeName =
+    `${getTypeOrigin('examples', 'examples::SpecialTypesStruct')}::examples::SpecialTypesStruct` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = SpecialTypesStruct.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::examples::SpecialTypesStruct`
+  readonly $fullTypeName: `${string}::examples::SpecialTypesStruct`
   readonly $typeArgs: []
   readonly $isPhantom = SpecialTypesStruct.$isPhantom
 
@@ -245,7 +250,7 @@ export class SpecialTypesStruct implements StructClass {
     this.$fullTypeName = composeSuiType(
       SpecialTypesStruct.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V1}::examples::SpecialTypesStruct`
+    ) as `${string}::examples::SpecialTypesStruct`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -266,7 +271,7 @@ export class SpecialTypesStruct implements StructClass {
       fullTypeName: composeSuiType(
         SpecialTypesStruct.$typeName,
         ...[]
-      ) as `${typeof PKG_V1}::examples::SpecialTypesStruct`,
+      ) as `${string}::examples::SpecialTypesStruct`,
       typeArgs: [] as [],
       isPhantom: SpecialTypesStruct.$isPhantom,
       reifiedTypeArgs: [],

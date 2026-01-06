@@ -33,7 +33,7 @@ export type BCSReified = Reified<BCS, BCSFields>
 export class BCS implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::bcs::BCS`
+  static readonly $typeName = `0x2::bcs::BCS` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

@@ -48,7 +48,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
 {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::object_table::ObjectTable`
+  static readonly $typeName = `0x2::object_table::ObjectTable` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, true] as const
 

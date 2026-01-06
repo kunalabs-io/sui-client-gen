@@ -1,10 +1,10 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
 export function bitwiseNot(tx: Transaction, x: number | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u8::bitwise_not`,
+    target: `${getPublishedAt('std')}::u8::bitwise_not`,
     arguments: [pure(tx, x, `u8`)],
   })
 }
@@ -16,7 +16,7 @@ export interface MaxArgs {
 
 export function max(tx: Transaction, args: MaxArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u8::max`,
+    target: `${getPublishedAt('std')}::u8::max`,
     arguments: [pure(tx, args.x, `u8`), pure(tx, args.y, `u8`)],
   })
 }
@@ -28,7 +28,7 @@ export interface MinArgs {
 
 export function min(tx: Transaction, args: MinArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u8::min`,
+    target: `${getPublishedAt('std')}::u8::min`,
     arguments: [pure(tx, args.x, `u8`), pure(tx, args.y, `u8`)],
   })
 }
@@ -40,7 +40,7 @@ export interface DiffArgs {
 
 export function diff(tx: Transaction, args: DiffArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u8::diff`,
+    target: `${getPublishedAt('std')}::u8::diff`,
     arguments: [pure(tx, args.x, `u8`), pure(tx, args.y, `u8`)],
   })
 }
@@ -52,7 +52,7 @@ export interface DivideAndRoundUpArgs {
 
 export function divideAndRoundUp(tx: Transaction, args: DivideAndRoundUpArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u8::divide_and_round_up`,
+    target: `${getPublishedAt('std')}::u8::divide_and_round_up`,
     arguments: [pure(tx, args.x, `u8`), pure(tx, args.y, `u8`)],
   })
 }
@@ -64,21 +64,21 @@ export interface PowArgs {
 
 export function pow(tx: Transaction, args: PowArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u8::pow`,
+    target: `${getPublishedAt('std')}::u8::pow`,
     arguments: [pure(tx, args.base, `u8`), pure(tx, args.exponent, `u8`)],
   })
 }
 
 export function sqrt(tx: Transaction, x: number | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u8::sqrt`,
+    target: `${getPublishedAt('std')}::u8::sqrt`,
     arguments: [pure(tx, x, `u8`)],
   })
 }
 
 export function toString(tx: Transaction, x: number | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u8::to_string`,
+    target: `${getPublishedAt('std')}::u8::to_string`,
     arguments: [pure(tx, x, `u8`)],
   })
 }

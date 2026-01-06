@@ -49,7 +49,7 @@ export type KioskReified = Reified<Kiosk, KioskFields>
 export class Kiosk implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::Kiosk`
+  static readonly $typeName = `0x2::kiosk::Kiosk` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -254,7 +254,7 @@ export type KioskOwnerCapReified = Reified<KioskOwnerCap, KioskOwnerCapFields>
 export class KioskOwnerCap implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::KioskOwnerCap`
+  static readonly $typeName = `0x2::kiosk::KioskOwnerCap` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -440,7 +440,7 @@ export type PurchaseCapReified<T extends PhantomTypeArgument> = Reified<
 export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::PurchaseCap`
+  static readonly $typeName = `0x2::kiosk::PurchaseCap` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -689,7 +689,7 @@ export type BorrowReified = Reified<Borrow, BorrowFields>
 export class Borrow implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::Borrow`
+  static readonly $typeName = `0x2::kiosk::Borrow` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -866,7 +866,7 @@ export type ItemReified = Reified<Item, ItemFields>
 export class Item implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::Item`
+  static readonly $typeName = `0x2::kiosk::Item` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -1037,7 +1037,7 @@ export type ListingReified = Reified<Listing, ListingFields>
 export class Listing implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::Listing`
+  static readonly $typeName = `0x2::kiosk::Listing` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -1214,7 +1214,7 @@ export type LockReified = Reified<Lock, LockFields>
 export class Lock implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::Lock`
+  static readonly $typeName = `0x2::kiosk::Lock` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -1389,7 +1389,7 @@ export type ItemListedReified<T extends PhantomTypeArgument> = Reified<
 export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::ItemListed`
+  static readonly $typeName = `0x2::kiosk::ItemListed` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -1635,7 +1635,7 @@ export type ItemPurchasedReified<T extends PhantomTypeArgument> = Reified<
 export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::ItemPurchased`
+  static readonly $typeName = `0x2::kiosk::ItemPurchased` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -1880,7 +1880,7 @@ export type ItemDelistedReified<T extends PhantomTypeArgument> = Reified<
 export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::ItemDelisted`
+  static readonly $typeName = `0x2::kiosk::ItemDelisted` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 

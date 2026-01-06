@@ -33,7 +33,7 @@ export type CurveReified = Reified<Curve, CurveFields>
 export class Curve implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::groth16::Curve`
+  static readonly $typeName = `0x2::groth16::Curve` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -206,7 +206,7 @@ export type PreparedVerifyingKeyReified = Reified<PreparedVerifyingKey, Prepared
 export class PreparedVerifyingKey implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::groth16::PreparedVerifyingKey`
+  static readonly $typeName = `0x2::groth16::PreparedVerifyingKey` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -411,7 +411,7 @@ export type PublicProofInputsReified = Reified<PublicProofInputs, PublicProofInp
 export class PublicProofInputs implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::groth16::PublicProofInputs`
+  static readonly $typeName = `0x2::groth16::PublicProofInputs` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -587,7 +587,7 @@ export type ProofPointsReified = Reified<ProofPoints, ProofPointsFields>
 export class ProofPoints implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::groth16::ProofPoints`
+  static readonly $typeName = `0x2::groth16::ProofPoints` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

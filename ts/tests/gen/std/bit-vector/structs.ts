@@ -34,7 +34,7 @@ export type BitVectorReified = Reified<BitVector, BitVectorFields>
 export class BitVector implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x1::bit_vector::BitVector`
+  static readonly $typeName = `0x1::bit_vector::BitVector` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

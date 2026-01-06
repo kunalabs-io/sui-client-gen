@@ -35,7 +35,7 @@ export type EventStreamHeadReified = Reified<EventStreamHead, EventStreamHeadFie
 export class EventStreamHead implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::accumulator_settlement::EventStreamHead`
+  static readonly $typeName = `0x2::accumulator_settlement::EventStreamHead` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

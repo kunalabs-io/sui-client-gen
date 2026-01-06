@@ -47,7 +47,7 @@ export type VecMapReified<K extends TypeArgument, V extends TypeArgument> = Reif
 export class VecMap<K extends TypeArgument, V extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::vec_map::VecMap`
+  static readonly $typeName = `0x2::vec_map::VecMap` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const
 
@@ -296,7 +296,7 @@ export type EntryReified<K extends TypeArgument, V extends TypeArgument> = Reifi
 export class Entry<K extends TypeArgument, V extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::vec_map::Entry`
+  static readonly $typeName = `0x2::vec_map::Entry` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const
 

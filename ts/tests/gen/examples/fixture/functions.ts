@@ -1,4 +1,4 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, option, pure, vector } from '../../_framework/util'
 import { String as String1 } from '../../std/ascii/structs'
 import { Option } from '../../std/option/structs'
@@ -9,7 +9,7 @@ import { Transaction, TransactionArgument, TransactionObjectInput } from '@myste
 
 export function createWithGenericField(tx: Transaction, typeArg: string, genericField: GenericArg) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::fixture::create_with_generic_field`,
+    target: `${getPublishedAt('examples')}::fixture::create_with_generic_field`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, genericField)],
   })
@@ -17,7 +17,7 @@ export function createWithGenericField(tx: Transaction, typeArg: string, generic
 
 export function createBar(tx: Transaction, value: bigint | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::fixture::create_bar`,
+    target: `${getPublishedAt('examples')}::fixture::create_bar`,
     arguments: [pure(tx, value, `u64`)],
   })
 }
@@ -33,7 +33,7 @@ export function createWithTwoGenerics(
   args: CreateWithTwoGenericsArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::fixture::create_with_two_generics`,
+    target: `${getPublishedAt('examples')}::fixture::create_with_two_generics`,
     typeArguments: typeArgs,
     arguments: [
       generic(tx, `${typeArgs[0]}`, args.genericField1),
@@ -59,7 +59,7 @@ export interface CreateFooArgs {
 
 export function createFoo(tx: Transaction, typeArgs: [string, string], args: CreateFooArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::fixture::create_foo`,
+    target: `${getPublishedAt('examples')}::fixture::create_foo`,
     typeArguments: typeArgs,
     arguments: [
       generic(tx, `${typeArgs[0]}`, args.generic),
@@ -103,7 +103,7 @@ export function createSpecial(
   args: CreateSpecialArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::fixture::create_special`,
+    target: `${getPublishedAt('examples')}::fixture::create_special`,
     typeArguments: typeArgs,
     arguments: [
       pure(tx, args.string, `${String.$typeName}`),
@@ -139,7 +139,7 @@ export function createSpecialAsGenerics(
   args: CreateSpecialAsGenericsArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::fixture::create_special_as_generics`,
+    target: `${getPublishedAt('examples')}::fixture::create_special_as_generics`,
     typeArguments: typeArgs,
     arguments: [
       generic(tx, `${typeArgs[0]}`, args.string),
@@ -169,7 +169,7 @@ export function createSpecialInVectors(
   args: CreateSpecialInVectorsArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::fixture::create_special_in_vectors`,
+    target: `${getPublishedAt('examples')}::fixture::create_special_in_vectors`,
     typeArguments: [typeArg],
     arguments: [
       pure(tx, args.string, `vector<${String.$typeName}>`),

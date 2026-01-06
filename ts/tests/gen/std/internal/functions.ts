@@ -1,9 +1,9 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
 export function permit(tx: Transaction, typeArg: string) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::internal::permit`,
+    target: `${getPublishedAt('std')}::internal::permit`,
     typeArguments: [typeArg],
     arguments: [],
   })

@@ -1,3 +1,4 @@
+import { getTypeOrigin } from '../../_envs'
 import {
   PhantomReified,
   Reified,
@@ -13,7 +14,6 @@ import {
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { TreasuryCap } from '../../sui/coin/structs'
 import { UID } from '../../sui/object/structs'
-import { PKG_V1 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
@@ -22,7 +22,10 @@ import { fromBase64 } from '@mysten/sui/utils'
 
 export function isEXAMPLE_COIN(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V1}::example_coin::EXAMPLE_COIN`
+  return (
+    type ===
+    `${getTypeOrigin('examples', 'example_coin::EXAMPLE_COIN')}::example_coin::EXAMPLE_COIN`
+  )
 }
 
 export interface EXAMPLE_COINFields {
@@ -34,12 +37,13 @@ export type EXAMPLE_COINReified = Reified<EXAMPLE_COIN, EXAMPLE_COINFields>
 export class EXAMPLE_COIN implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V1}::example_coin::EXAMPLE_COIN`
+  static readonly $typeName =
+    `${getTypeOrigin('examples', 'example_coin::EXAMPLE_COIN')}::example_coin::EXAMPLE_COIN` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = EXAMPLE_COIN.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::example_coin::EXAMPLE_COIN`
+  readonly $fullTypeName: `${string}::example_coin::EXAMPLE_COIN`
   readonly $typeArgs: []
   readonly $isPhantom = EXAMPLE_COIN.$isPhantom
 
@@ -49,7 +53,7 @@ export class EXAMPLE_COIN implements StructClass {
     this.$fullTypeName = composeSuiType(
       EXAMPLE_COIN.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V1}::example_coin::EXAMPLE_COIN`
+    ) as `${string}::example_coin::EXAMPLE_COIN`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -62,7 +66,7 @@ export class EXAMPLE_COIN implements StructClass {
       fullTypeName: composeSuiType(
         EXAMPLE_COIN.$typeName,
         ...[]
-      ) as `${typeof PKG_V1}::example_coin::EXAMPLE_COIN`,
+      ) as `${string}::example_coin::EXAMPLE_COIN`,
       typeArgs: [] as [],
       isPhantom: EXAMPLE_COIN.$isPhantom,
       reifiedTypeArgs: [],
@@ -198,7 +202,7 @@ export class EXAMPLE_COIN implements StructClass {
 
 export function isFaucet(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V1}::example_coin::Faucet`
+  return type === `${getTypeOrigin('examples', 'example_coin::Faucet')}::example_coin::Faucet`
 }
 
 export interface FaucetFields {
@@ -211,12 +215,13 @@ export type FaucetReified = Reified<Faucet, FaucetFields>
 export class Faucet implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V1}::example_coin::Faucet`
+  static readonly $typeName =
+    `${getTypeOrigin('examples', 'example_coin::Faucet')}::example_coin::Faucet` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = Faucet.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::example_coin::Faucet`
+  readonly $fullTypeName: `${string}::example_coin::Faucet`
   readonly $typeArgs: []
   readonly $isPhantom = Faucet.$isPhantom
 
@@ -227,7 +232,7 @@ export class Faucet implements StructClass {
     this.$fullTypeName = composeSuiType(
       Faucet.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V1}::example_coin::Faucet`
+    ) as `${string}::example_coin::Faucet`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -238,10 +243,7 @@ export class Faucet implements StructClass {
     const reifiedBcs = Faucet.bcs
     return {
       typeName: Faucet.$typeName,
-      fullTypeName: composeSuiType(
-        Faucet.$typeName,
-        ...[]
-      ) as `${typeof PKG_V1}::example_coin::Faucet`,
+      fullTypeName: composeSuiType(Faucet.$typeName, ...[]) as `${string}::example_coin::Faucet`,
       typeArgs: [] as [],
       isPhantom: Faucet.$isPhantom,
       reifiedTypeArgs: [],

@@ -1,4 +1,5 @@
 import { Option } from '../../_dependencies/std/option/structs'
+import { getTypeOrigin } from '../../_envs'
 import {
   EnumVariantClass,
   PhantomReified,
@@ -31,7 +32,6 @@ import {
 import { Balance } from '../../sui/balance/structs'
 import { UID } from '../../sui/object/structs'
 import { SUI } from '../../sui/sui/structs'
-import { PKG_V3 } from '../index'
 import { BcsType, bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
@@ -40,7 +40,7 @@ import { fromBase64 } from '@mysten/sui/utils'
 
 export function isWrapped(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V3}::enums::Wrapped` + '<')
+  return type.startsWith(`${getTypeOrigin('examples', 'enums::Wrapped')}::enums::Wrapped` + '<')
 }
 
 export interface WrappedFields<
@@ -68,12 +68,13 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
 {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V3}::enums::Wrapped`
+  static readonly $typeName =
+    `${getTypeOrigin('examples', 'enums::Wrapped')}::enums::Wrapped` as const
   static readonly $numTypeParams = 3
   static readonly $isPhantom = [false, false, false] as const
 
   readonly $typeName = Wrapped.$typeName
-  readonly $fullTypeName: `${typeof PKG_V3}::enums::Wrapped<${ToTypeStr<T>}, ${ToTypeStr<U>}, ${ToTypeStr<V>}>`
+  readonly $fullTypeName: `${string}::enums::Wrapped<${ToTypeStr<T>}, ${ToTypeStr<U>}, ${ToTypeStr<V>}>`
   readonly $typeArgs: [ToTypeStr<T>, ToTypeStr<U>, ToTypeStr<V>]
   readonly $isPhantom = Wrapped.$isPhantom
 
@@ -92,7 +93,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     this.$fullTypeName = composeSuiType(
       Wrapped.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V3}::enums::Wrapped<${ToTypeStr<T>}, ${ToTypeStr<U>}, ${ToTypeStr<V>}>`
+    ) as `${string}::enums::Wrapped<${ToTypeStr<T>}, ${ToTypeStr<U>}, ${ToTypeStr<V>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -115,7 +116,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
       fullTypeName: composeSuiType(
         Wrapped.$typeName,
         ...[extractType(T), extractType(U), extractType(V)]
-      ) as `${typeof PKG_V3}::enums::Wrapped<${ToTypeStr<ToTypeArgument<T>>}, ${ToTypeStr<ToTypeArgument<U>>}, ${ToTypeStr<ToTypeArgument<V>>}>`,
+      ) as `${string}::enums::Wrapped<${ToTypeStr<ToTypeArgument<T>>}, ${ToTypeStr<ToTypeArgument<U>>}, ${ToTypeStr<ToTypeArgument<V>>}>`,
       typeArgs: [extractType(T), extractType(U), extractType(V)] as [
         ToTypeStr<ToTypeArgument<T>>,
         ToTypeStr<ToTypeArgument<U>>,
@@ -389,7 +390,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
 
 export function isAction(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V3}::enums::Action` + '<')
+  return type.startsWith(`${getTypeOrigin('examples', 'enums::Action')}::enums::Action` + '<')
 }
 
 export type ActionVariant<T extends TypeArgument, U extends PhantomTypeArgument> =
@@ -414,7 +415,8 @@ export type ActionReified<T extends TypeArgument, U extends PhantomTypeArgument>
 >
 
 export class Action {
-  static readonly $typeName = `${PKG_V3}::enums::Action`
+  static readonly $typeName =
+    `${getTypeOrigin('examples', 'enums::Action')}::enums::Action` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, true] as const
 
@@ -425,10 +427,7 @@ export class Action {
     const reifiedBcs = Action.bcs(toBcs(T))
     return {
       typeName: Action.$typeName,
-      fullTypeName: composeSuiType(
-        Action.$typeName,
-        ...[extractType(T), extractType(U)]
-      ) as `${typeof PKG_V3}::enums::Action<${ToTypeStr<ToTypeArgument<T>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<U>>}>`,
+      fullTypeName: composeSuiType(Action.$typeName, ...[extractType(T), extractType(U)]) as string,
       typeArgs: [extractType(T), extractType(U)] as [
         ToTypeStr<ToTypeArgument<T>>,
         PhantomToTypeStr<ToPhantomTypeArgument<U>>,

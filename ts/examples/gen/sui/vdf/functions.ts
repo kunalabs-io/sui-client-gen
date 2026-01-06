@@ -1,4 +1,4 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
@@ -7,7 +7,7 @@ export function hashToInput(
   message: Array<number | TransactionArgument> | TransactionArgument
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::vdf::hash_to_input`,
+    target: `${getPublishedAt('sui')}::vdf::hash_to_input`,
     arguments: [pure(tx, message, `vector<u8>`)],
   })
 }
@@ -17,7 +17,7 @@ export function hashToInputInternal(
   message: Array<number | TransactionArgument> | TransactionArgument
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::vdf::hash_to_input_internal`,
+    target: `${getPublishedAt('sui')}::vdf::hash_to_input_internal`,
     arguments: [pure(tx, message, `vector<u8>`)],
   })
 }
@@ -31,7 +31,7 @@ export interface VdfVerifyArgs {
 
 export function vdfVerify(tx: Transaction, args: VdfVerifyArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::vdf::vdf_verify`,
+    target: `${getPublishedAt('sui')}::vdf::vdf_verify`,
     arguments: [
       pure(tx, args.input, `vector<u8>`),
       pure(tx, args.output, `vector<u8>`),
@@ -50,7 +50,7 @@ export interface VdfVerifyInternalArgs {
 
 export function vdfVerifyInternal(tx: Transaction, args: VdfVerifyInternalArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::vdf::vdf_verify_internal`,
+    target: `${getPublishedAt('sui')}::vdf::vdf_verify_internal`,
     arguments: [
       pure(tx, args.input, `vector<u8>`),
       pure(tx, args.output, `vector<u8>`),

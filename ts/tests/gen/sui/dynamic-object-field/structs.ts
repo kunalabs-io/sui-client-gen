@@ -42,7 +42,7 @@ export type WrapperReified<Name extends TypeArgument> = Reified<Wrapper<Name>, W
 export class Wrapper<Name extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::dynamic_object_field::Wrapper`
+  static readonly $typeName = `0x2::dynamic_object_field::Wrapper` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 

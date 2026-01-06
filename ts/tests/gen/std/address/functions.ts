@@ -1,9 +1,9 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
 export function length(tx: Transaction) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::address::length`,
+    target: `${getPublishedAt('std')}::address::length`,
     arguments: [],
   })
 }

@@ -55,7 +55,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
 {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::linked_table::LinkedTable`
+  static readonly $typeName = `0x2::linked_table::LinkedTable` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, true] as const
 
@@ -338,7 +338,7 @@ export type NodeReified<K extends TypeArgument, V extends TypeArgument> = Reifie
 export class Node<K extends TypeArgument, V extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::linked_table::Node`
+  static readonly $typeName = `0x2::linked_table::Node` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const
 

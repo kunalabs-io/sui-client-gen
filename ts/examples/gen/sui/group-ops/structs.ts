@@ -44,7 +44,7 @@ export type ElementReified<T extends PhantomTypeArgument> = Reified<Element<T>, 
 export class Element<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::group_ops::Element`
+  static readonly $typeName = `0x2::group_ops::Element` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 

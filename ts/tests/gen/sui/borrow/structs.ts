@@ -45,7 +45,7 @@ export type ReferentReified<T extends TypeArgument> = Reified<Referent<T>, Refer
 export class Referent<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::borrow::Referent`
+  static readonly $typeName = `0x2::borrow::Referent` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
@@ -283,7 +283,7 @@ export type BorrowReified = Reified<Borrow, BorrowFields>
 export class Borrow implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::borrow::Borrow`
+  static readonly $typeName = `0x2::borrow::Borrow` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

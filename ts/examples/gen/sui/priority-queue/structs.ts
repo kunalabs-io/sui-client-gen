@@ -47,7 +47,7 @@ export type PriorityQueueReified<T extends TypeArgument> = Reified<
 export class PriorityQueue<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::priority_queue::PriorityQueue`
+  static readonly $typeName = `0x2::priority_queue::PriorityQueue` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
@@ -280,7 +280,7 @@ export type EntryReified<T extends TypeArgument> = Reified<Entry<T>, EntryFields
 export class Entry<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::priority_queue::Entry`
+  static readonly $typeName = `0x2::priority_queue::Entry` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 

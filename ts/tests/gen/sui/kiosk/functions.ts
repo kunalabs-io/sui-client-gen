@@ -1,4 +1,4 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { Option } from '../../std/option/structs'
 import { ID } from '../object/structs'
@@ -6,14 +6,14 @@ import { Transaction, TransactionArgument, TransactionObjectInput } from '@myste
 
 export function default_(tx: Transaction) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::default`,
+    target: `${getPublishedAt('sui')}::kiosk::default`,
     arguments: [],
   })
 }
 
 export function new_(tx: Transaction) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::new`,
+    target: `${getPublishedAt('sui')}::kiosk::new`,
     arguments: [],
   })
 }
@@ -25,7 +25,7 @@ export interface CloseAndWithdrawArgs {
 
 export function closeAndWithdraw(tx: Transaction, args: CloseAndWithdrawArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::close_and_withdraw`,
+    target: `${getPublishedAt('sui')}::kiosk::close_and_withdraw`,
     arguments: [obj(tx, args.self), obj(tx, args.cap)],
   })
 }
@@ -37,7 +37,7 @@ export interface SetOwnerArgs {
 
 export function setOwner(tx: Transaction, args: SetOwnerArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::set_owner`,
+    target: `${getPublishedAt('sui')}::kiosk::set_owner`,
     arguments: [obj(tx, args.self), obj(tx, args.cap)],
   })
 }
@@ -50,7 +50,7 @@ export interface SetOwnerCustomArgs {
 
 export function setOwnerCustom(tx: Transaction, args: SetOwnerCustomArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::set_owner_custom`,
+    target: `${getPublishedAt('sui')}::kiosk::set_owner_custom`,
     arguments: [obj(tx, args.self), obj(tx, args.cap), pure(tx, args.owner, `address`)],
   })
 }
@@ -63,7 +63,7 @@ export interface PlaceArgs {
 
 export function place(tx: Transaction, typeArg: string, args: PlaceArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::place`,
+    target: `${getPublishedAt('sui')}::kiosk::place`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), obj(tx, args.cap), generic(tx, `${typeArg}`, args.item)],
   })
@@ -78,7 +78,7 @@ export interface LockArgs {
 
 export function lock(tx: Transaction, typeArg: string, args: LockArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::lock`,
+    target: `${getPublishedAt('sui')}::kiosk::lock`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -97,7 +97,7 @@ export interface TakeArgs {
 
 export function take(tx: Transaction, typeArg: string, args: TakeArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::take`,
+    target: `${getPublishedAt('sui')}::kiosk::take`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), obj(tx, args.cap), pure(tx, args.id, `${ID.$typeName}`)],
   })
@@ -112,7 +112,7 @@ export interface ListArgs {
 
 export function list(tx: Transaction, typeArg: string, args: ListArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::list`,
+    target: `${getPublishedAt('sui')}::kiosk::list`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -132,7 +132,7 @@ export interface PlaceAndListArgs {
 
 export function placeAndList(tx: Transaction, typeArg: string, args: PlaceAndListArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::place_and_list`,
+    target: `${getPublishedAt('sui')}::kiosk::place_and_list`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -151,7 +151,7 @@ export interface DelistArgs {
 
 export function delist(tx: Transaction, typeArg: string, args: DelistArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::delist`,
+    target: `${getPublishedAt('sui')}::kiosk::delist`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), obj(tx, args.cap), pure(tx, args.id, `${ID.$typeName}`)],
   })
@@ -165,7 +165,7 @@ export interface PurchaseArgs {
 
 export function purchase(tx: Transaction, typeArg: string, args: PurchaseArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::purchase`,
+    target: `${getPublishedAt('sui')}::kiosk::purchase`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), pure(tx, args.id, `${ID.$typeName}`), obj(tx, args.payment)],
   })
@@ -184,7 +184,7 @@ export function listWithPurchaseCap(
   args: ListWithPurchaseCapArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::list_with_purchase_cap`,
+    target: `${getPublishedAt('sui')}::kiosk::list_with_purchase_cap`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -203,7 +203,7 @@ export interface PurchaseWithCapArgs {
 
 export function purchaseWithCap(tx: Transaction, typeArg: string, args: PurchaseWithCapArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::purchase_with_cap`,
+    target: `${getPublishedAt('sui')}::kiosk::purchase_with_cap`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), obj(tx, args.purchaseCap), obj(tx, args.payment)],
   })
@@ -216,7 +216,7 @@ export interface ReturnPurchaseCapArgs {
 
 export function returnPurchaseCap(tx: Transaction, typeArg: string, args: ReturnPurchaseCapArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::return_purchase_cap`,
+    target: `${getPublishedAt('sui')}::kiosk::return_purchase_cap`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), obj(tx, args.purchaseCap)],
   })
@@ -230,7 +230,7 @@ export interface WithdrawArgs {
 
 export function withdraw(tx: Transaction, args: WithdrawArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::withdraw`,
+    target: `${getPublishedAt('sui')}::kiosk::withdraw`,
     arguments: [
       obj(tx, args.self),
       obj(tx, args.cap),
@@ -246,7 +246,7 @@ export interface LockInternalArgs {
 
 export function lockInternal(tx: Transaction, typeArg: string, args: LockInternalArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::lock_internal`,
+    target: `${getPublishedAt('sui')}::kiosk::lock_internal`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), generic(tx, `${typeArg}`, args.item)],
   })
@@ -259,7 +259,7 @@ export interface PlaceInternalArgs {
 
 export function placeInternal(tx: Transaction, typeArg: string, args: PlaceInternalArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::place_internal`,
+    target: `${getPublishedAt('sui')}::kiosk::place_internal`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), generic(tx, `${typeArg}`, args.item)],
   })
@@ -267,7 +267,7 @@ export function placeInternal(tx: Transaction, typeArg: string, args: PlaceInter
 
 export function uidMutInternal(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::uid_mut_internal`,
+    target: `${getPublishedAt('sui')}::kiosk::uid_mut_internal`,
     arguments: [obj(tx, self)],
   })
 }
@@ -279,7 +279,7 @@ export interface HasItemArgs {
 
 export function hasItem(tx: Transaction, args: HasItemArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::has_item`,
+    target: `${getPublishedAt('sui')}::kiosk::has_item`,
     arguments: [obj(tx, args.self), pure(tx, args.id, `${ID.$typeName}`)],
   })
 }
@@ -291,7 +291,7 @@ export interface HasItemWithTypeArgs {
 
 export function hasItemWithType(tx: Transaction, typeArg: string, args: HasItemWithTypeArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::has_item_with_type`,
+    target: `${getPublishedAt('sui')}::kiosk::has_item_with_type`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), pure(tx, args.id, `${ID.$typeName}`)],
   })
@@ -304,7 +304,7 @@ export interface IsLockedArgs {
 
 export function isLocked(tx: Transaction, args: IsLockedArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::is_locked`,
+    target: `${getPublishedAt('sui')}::kiosk::is_locked`,
     arguments: [obj(tx, args.self), pure(tx, args.id, `${ID.$typeName}`)],
   })
 }
@@ -316,7 +316,7 @@ export interface IsListedArgs {
 
 export function isListed(tx: Transaction, args: IsListedArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::is_listed`,
+    target: `${getPublishedAt('sui')}::kiosk::is_listed`,
     arguments: [obj(tx, args.self), pure(tx, args.id, `${ID.$typeName}`)],
   })
 }
@@ -328,7 +328,7 @@ export interface IsListedExclusivelyArgs {
 
 export function isListedExclusively(tx: Transaction, args: IsListedExclusivelyArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::is_listed_exclusively`,
+    target: `${getPublishedAt('sui')}::kiosk::is_listed_exclusively`,
     arguments: [obj(tx, args.self), pure(tx, args.id, `${ID.$typeName}`)],
   })
 }
@@ -340,7 +340,7 @@ export interface HasAccessArgs {
 
 export function hasAccess(tx: Transaction, args: HasAccessArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::has_access`,
+    target: `${getPublishedAt('sui')}::kiosk::has_access`,
     arguments: [obj(tx, args.self), obj(tx, args.cap)],
   })
 }
@@ -352,7 +352,7 @@ export interface UidMutAsOwnerArgs {
 
 export function uidMutAsOwner(tx: Transaction, args: UidMutAsOwnerArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::uid_mut_as_owner`,
+    target: `${getPublishedAt('sui')}::kiosk::uid_mut_as_owner`,
     arguments: [obj(tx, args.self), obj(tx, args.cap)],
   })
 }
@@ -365,42 +365,42 @@ export interface SetAllowExtensionsArgs {
 
 export function setAllowExtensions(tx: Transaction, args: SetAllowExtensionsArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::set_allow_extensions`,
+    target: `${getPublishedAt('sui')}::kiosk::set_allow_extensions`,
     arguments: [obj(tx, args.self), obj(tx, args.cap), pure(tx, args.allowExtensions, `bool`)],
   })
 }
 
 export function uid(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::uid`,
+    target: `${getPublishedAt('sui')}::kiosk::uid`,
     arguments: [obj(tx, self)],
   })
 }
 
 export function uidMut(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::uid_mut`,
+    target: `${getPublishedAt('sui')}::kiosk::uid_mut`,
     arguments: [obj(tx, self)],
   })
 }
 
 export function owner(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::owner`,
+    target: `${getPublishedAt('sui')}::kiosk::owner`,
     arguments: [obj(tx, self)],
   })
 }
 
 export function itemCount(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::item_count`,
+    target: `${getPublishedAt('sui')}::kiosk::item_count`,
     arguments: [obj(tx, self)],
   })
 }
 
 export function profitsAmount(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::profits_amount`,
+    target: `${getPublishedAt('sui')}::kiosk::profits_amount`,
     arguments: [obj(tx, self)],
   })
 }
@@ -412,7 +412,7 @@ export interface ProfitsMutArgs {
 
 export function profitsMut(tx: Transaction, args: ProfitsMutArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::profits_mut`,
+    target: `${getPublishedAt('sui')}::kiosk::profits_mut`,
     arguments: [obj(tx, args.self), obj(tx, args.cap)],
   })
 }
@@ -425,7 +425,7 @@ export interface BorrowArgs {
 
 export function borrow(tx: Transaction, typeArg: string, args: BorrowArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::borrow`,
+    target: `${getPublishedAt('sui')}::kiosk::borrow`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), obj(tx, args.cap), pure(tx, args.id, `${ID.$typeName}`)],
   })
@@ -439,7 +439,7 @@ export interface BorrowMutArgs {
 
 export function borrowMut(tx: Transaction, typeArg: string, args: BorrowMutArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::borrow_mut`,
+    target: `${getPublishedAt('sui')}::kiosk::borrow_mut`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), obj(tx, args.cap), pure(tx, args.id, `${ID.$typeName}`)],
   })
@@ -453,7 +453,7 @@ export interface BorrowValArgs {
 
 export function borrowVal(tx: Transaction, typeArg: string, args: BorrowValArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::borrow_val`,
+    target: `${getPublishedAt('sui')}::kiosk::borrow_val`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), obj(tx, args.cap), pure(tx, args.id, `${ID.$typeName}`)],
   })
@@ -467,7 +467,7 @@ export interface ReturnValArgs {
 
 export function returnVal(tx: Transaction, typeArg: string, args: ReturnValArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::return_val`,
+    target: `${getPublishedAt('sui')}::kiosk::return_val`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), generic(tx, `${typeArg}`, args.item), obj(tx, args.borrow)],
   })
@@ -475,14 +475,14 @@ export function returnVal(tx: Transaction, typeArg: string, args: ReturnValArgs)
 
 export function kioskOwnerCapFor(tx: Transaction, cap: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::kiosk_owner_cap_for`,
+    target: `${getPublishedAt('sui')}::kiosk::kiosk_owner_cap_for`,
     arguments: [obj(tx, cap)],
   })
 }
 
 export function purchaseCapKiosk(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::purchase_cap_kiosk`,
+    target: `${getPublishedAt('sui')}::kiosk::purchase_cap_kiosk`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -490,7 +490,7 @@ export function purchaseCapKiosk(tx: Transaction, typeArg: string, self: Transac
 
 export function purchaseCapItem(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::purchase_cap_item`,
+    target: `${getPublishedAt('sui')}::kiosk::purchase_cap_item`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -502,7 +502,7 @@ export function purchaseCapMinPrice(
   self: TransactionObjectInput
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::kiosk::purchase_cap_min_price`,
+    target: `${getPublishedAt('sui')}::kiosk::purchase_cap_min_price`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })

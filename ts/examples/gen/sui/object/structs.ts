@@ -30,7 +30,7 @@ export type IDReified = Reified<ID, IDFields>
 export class ID implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::object::ID`
+  static readonly $typeName = `0x2::object::ID` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -203,7 +203,7 @@ export type UIDReified = Reified<UID, UIDFields>
 export class UID implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::object::UID`
+  static readonly $typeName = `0x2::object::UID` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

@@ -44,7 +44,7 @@ export type ExtensionReified = Reified<Extension, ExtensionFields>
 export class Extension implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk_extension::Extension`
+  static readonly $typeName = `0x2::kiosk_extension::Extension` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -234,7 +234,7 @@ export type ExtensionKeyReified<Ext extends PhantomTypeArgument> = Reified<
 export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk_extension::ExtensionKey`
+  static readonly $typeName = `0x2::kiosk_extension::ExtensionKey` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 

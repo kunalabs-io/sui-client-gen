@@ -1,10 +1,10 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function empty(tx: Transaction, typeArg: string) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::empty`,
+    target: `${getPublishedAt('sui')}::table_vec::empty`,
     typeArguments: [typeArg],
     arguments: [],
   })
@@ -12,7 +12,7 @@ export function empty(tx: Transaction, typeArg: string) {
 
 export function singleton(tx: Transaction, typeArg: string, e: GenericArg) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::singleton`,
+    target: `${getPublishedAt('sui')}::table_vec::singleton`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, e)],
   })
@@ -20,7 +20,7 @@ export function singleton(tx: Transaction, typeArg: string, e: GenericArg) {
 
 export function length(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::length`,
+    target: `${getPublishedAt('sui')}::table_vec::length`,
     typeArguments: [typeArg],
     arguments: [obj(tx, t)],
   })
@@ -28,7 +28,7 @@ export function length(tx: Transaction, typeArg: string, t: TransactionObjectInp
 
 export function isEmpty(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::is_empty`,
+    target: `${getPublishedAt('sui')}::table_vec::is_empty`,
     typeArguments: [typeArg],
     arguments: [obj(tx, t)],
   })
@@ -41,7 +41,7 @@ export interface BorrowArgs {
 
 export function borrow(tx: Transaction, typeArg: string, args: BorrowArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::borrow`,
+    target: `${getPublishedAt('sui')}::table_vec::borrow`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.t), pure(tx, args.i, `u64`)],
   })
@@ -54,7 +54,7 @@ export interface PushBackArgs {
 
 export function pushBack(tx: Transaction, typeArg: string, args: PushBackArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::push_back`,
+    target: `${getPublishedAt('sui')}::table_vec::push_back`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.t), generic(tx, `${typeArg}`, args.e)],
   })
@@ -67,7 +67,7 @@ export interface BorrowMutArgs {
 
 export function borrowMut(tx: Transaction, typeArg: string, args: BorrowMutArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::borrow_mut`,
+    target: `${getPublishedAt('sui')}::table_vec::borrow_mut`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.t), pure(tx, args.i, `u64`)],
   })
@@ -75,7 +75,7 @@ export function borrowMut(tx: Transaction, typeArg: string, args: BorrowMutArgs)
 
 export function popBack(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::pop_back`,
+    target: `${getPublishedAt('sui')}::table_vec::pop_back`,
     typeArguments: [typeArg],
     arguments: [obj(tx, t)],
   })
@@ -83,7 +83,7 @@ export function popBack(tx: Transaction, typeArg: string, t: TransactionObjectIn
 
 export function destroyEmpty(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::destroy_empty`,
+    target: `${getPublishedAt('sui')}::table_vec::destroy_empty`,
     typeArguments: [typeArg],
     arguments: [obj(tx, t)],
   })
@@ -91,7 +91,7 @@ export function destroyEmpty(tx: Transaction, typeArg: string, t: TransactionObj
 
 export function drop(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::drop`,
+    target: `${getPublishedAt('sui')}::table_vec::drop`,
     typeArguments: [typeArg],
     arguments: [obj(tx, t)],
   })
@@ -105,7 +105,7 @@ export interface SwapArgs {
 
 export function swap(tx: Transaction, typeArg: string, args: SwapArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::swap`,
+    target: `${getPublishedAt('sui')}::table_vec::swap`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.t), pure(tx, args.i, `u64`), pure(tx, args.j, `u64`)],
   })
@@ -118,7 +118,7 @@ export interface SwapRemoveArgs {
 
 export function swapRemove(tx: Transaction, typeArg: string, args: SwapRemoveArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::table_vec::swap_remove`,
+    target: `${getPublishedAt('sui')}::table_vec::swap_remove`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.t), pure(tx, args.i, `u64`)],
   })

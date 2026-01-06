@@ -1,17 +1,17 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function timestampMs(tx: Transaction, clock: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::clock::timestamp_ms`,
+    target: `${getPublishedAt('sui')}::clock::timestamp_ms`,
     arguments: [obj(tx, clock)],
   })
 }
 
 export function create(tx: Transaction) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::clock::create`,
+    target: `${getPublishedAt('sui')}::clock::create`,
     arguments: [],
   })
 }
@@ -23,7 +23,7 @@ export interface ConsensusCommitPrologueArgs {
 
 export function consensusCommitPrologue(tx: Transaction, args: ConsensusCommitPrologueArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::clock::consensus_commit_prologue`,
+    target: `${getPublishedAt('sui')}::clock::consensus_commit_prologue`,
     arguments: [obj(tx, args.clock), pure(tx, args.timestampMs, `u64`)],
   })
 }

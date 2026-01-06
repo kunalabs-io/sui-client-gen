@@ -32,7 +32,7 @@ export type BagReified = Reified<Bag, BagFields>
 export class Bag implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::bag::Bag`
+  static readonly $typeName = `0x2::bag::Bag` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

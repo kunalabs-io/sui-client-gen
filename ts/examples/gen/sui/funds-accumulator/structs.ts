@@ -45,7 +45,7 @@ export type WithdrawalReified<T extends PhantomTypeArgument> = Reified<
 export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::funds_accumulator::Withdrawal`
+  static readonly $typeName = `0x2::funds_accumulator::Withdrawal` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 

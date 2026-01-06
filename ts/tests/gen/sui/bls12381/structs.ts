@@ -30,7 +30,7 @@ export type ScalarReified = Reified<Scalar, ScalarFields>
 export class Scalar implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::bls12381::Scalar`
+  static readonly $typeName = `0x2::bls12381::Scalar` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -200,7 +200,7 @@ export type G1Reified = Reified<G1, G1Fields>
 export class G1 implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::bls12381::G1`
+  static readonly $typeName = `0x2::bls12381::G1` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -370,7 +370,7 @@ export type G2Reified = Reified<G2, G2Fields>
 export class G2 implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::bls12381::G2`
+  static readonly $typeName = `0x2::bls12381::G2` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -540,7 +540,7 @@ export type GTReified = Reified<GT, GTFields>
 export class GT implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::bls12381::GT`
+  static readonly $typeName = `0x2::bls12381::GT` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -710,7 +710,7 @@ export type UncompressedG1Reified = Reified<UncompressedG1, UncompressedG1Fields
 export class UncompressedG1 implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::bls12381::UncompressedG1`
+  static readonly $typeName = `0x2::bls12381::UncompressedG1` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

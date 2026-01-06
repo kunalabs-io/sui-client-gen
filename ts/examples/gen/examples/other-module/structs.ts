@@ -1,3 +1,4 @@
+import { getTypeOrigin } from '../../_envs'
 import {
   PhantomReified,
   Reified,
@@ -10,7 +11,6 @@ import {
   phantom,
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
-import { PKG_V1, PKG_V2 } from '../index'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
@@ -19,7 +19,10 @@ import { fromBase64 } from '@mysten/sui/utils'
 
 export function isStructFromOtherModule(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V1}::other_module::StructFromOtherModule`
+  return (
+    type ===
+    `${getTypeOrigin('examples', 'other_module::StructFromOtherModule')}::other_module::StructFromOtherModule`
+  )
 }
 
 export interface StructFromOtherModuleFields {
@@ -34,12 +37,13 @@ export type StructFromOtherModuleReified = Reified<
 export class StructFromOtherModule implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V1}::other_module::StructFromOtherModule`
+  static readonly $typeName =
+    `${getTypeOrigin('examples', 'other_module::StructFromOtherModule')}::other_module::StructFromOtherModule` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = StructFromOtherModule.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::other_module::StructFromOtherModule`
+  readonly $fullTypeName: `${string}::other_module::StructFromOtherModule`
   readonly $typeArgs: []
   readonly $isPhantom = StructFromOtherModule.$isPhantom
 
@@ -49,7 +53,7 @@ export class StructFromOtherModule implements StructClass {
     this.$fullTypeName = composeSuiType(
       StructFromOtherModule.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V1}::other_module::StructFromOtherModule`
+    ) as `${string}::other_module::StructFromOtherModule`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -62,7 +66,7 @@ export class StructFromOtherModule implements StructClass {
       fullTypeName: composeSuiType(
         StructFromOtherModule.$typeName,
         ...[]
-      ) as `${typeof PKG_V1}::other_module::StructFromOtherModule`,
+      ) as `${string}::other_module::StructFromOtherModule`,
       typeArgs: [] as [],
       isPhantom: StructFromOtherModule.$isPhantom,
       reifiedTypeArgs: [],
@@ -203,7 +207,10 @@ export class StructFromOtherModule implements StructClass {
 
 export function isAddedInAnUpgrade(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V2}::other_module::AddedInAnUpgrade`
+  return (
+    type ===
+    `${getTypeOrigin('examples', 'other_module::AddedInAnUpgrade')}::other_module::AddedInAnUpgrade`
+  )
 }
 
 export interface AddedInAnUpgradeFields {
@@ -215,12 +222,13 @@ export type AddedInAnUpgradeReified = Reified<AddedInAnUpgrade, AddedInAnUpgrade
 export class AddedInAnUpgrade implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V2}::other_module::AddedInAnUpgrade`
+  static readonly $typeName =
+    `${getTypeOrigin('examples', 'other_module::AddedInAnUpgrade')}::other_module::AddedInAnUpgrade` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = AddedInAnUpgrade.$typeName
-  readonly $fullTypeName: `${typeof PKG_V2}::other_module::AddedInAnUpgrade`
+  readonly $fullTypeName: `${string}::other_module::AddedInAnUpgrade`
   readonly $typeArgs: []
   readonly $isPhantom = AddedInAnUpgrade.$isPhantom
 
@@ -230,7 +238,7 @@ export class AddedInAnUpgrade implements StructClass {
     this.$fullTypeName = composeSuiType(
       AddedInAnUpgrade.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V2}::other_module::AddedInAnUpgrade`
+    ) as `${string}::other_module::AddedInAnUpgrade`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -243,7 +251,7 @@ export class AddedInAnUpgrade implements StructClass {
       fullTypeName: composeSuiType(
         AddedInAnUpgrade.$typeName,
         ...[]
-      ) as `${typeof PKG_V2}::other_module::AddedInAnUpgrade`,
+      ) as `${string}::other_module::AddedInAnUpgrade`,
       typeArgs: [] as [],
       isPhantom: AddedInAnUpgrade.$isPhantom,
       reifiedTypeArgs: [],

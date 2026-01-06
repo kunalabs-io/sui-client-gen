@@ -30,7 +30,7 @@ export type SUIReified = Reified<SUI, SUIFields>
 export class SUI implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::sui::SUI`
+  static readonly $typeName = `0x2::sui::SUI` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

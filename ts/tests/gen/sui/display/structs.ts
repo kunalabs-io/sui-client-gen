@@ -46,7 +46,7 @@ export type DisplayReified<T extends PhantomTypeArgument> = Reified<Display<T>, 
 export class Display<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::display::Display`
+  static readonly $typeName = `0x2::display::Display` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -293,7 +293,7 @@ export type DisplayCreatedReified<T extends PhantomTypeArgument> = Reified<
 export class DisplayCreated<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::display::DisplayCreated`
+  static readonly $typeName = `0x2::display::DisplayCreated` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -525,7 +525,7 @@ export type VersionUpdatedReified<T extends PhantomTypeArgument> = Reified<
 export class VersionUpdated<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::display::VersionUpdated`
+  static readonly $typeName = `0x2::display::VersionUpdated` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
