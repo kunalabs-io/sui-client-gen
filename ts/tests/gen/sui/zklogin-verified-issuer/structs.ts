@@ -34,7 +34,7 @@ export type VerifiedIssuerReified = Reified<VerifiedIssuer, VerifiedIssuerFields
 export class VerifiedIssuer implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::zklogin_verified_issuer::VerifiedIssuer`
+  static readonly $typeName = `0x2::zklogin_verified_issuer::VerifiedIssuer` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

@@ -37,7 +37,7 @@ export type PublisherReified = Reified<Publisher, PublisherFields>
 export class Publisher implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::package::Publisher`
+  static readonly $typeName = `0x2::package::Publisher` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -227,7 +227,7 @@ export type UpgradeCapReified = Reified<UpgradeCap, UpgradeCapFields>
 export class UpgradeCap implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::package::UpgradeCap`
+  static readonly $typeName = `0x2::package::UpgradeCap` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -424,7 +424,7 @@ export type UpgradeTicketReified = Reified<UpgradeTicket, UpgradeTicketFields>
 export class UpgradeTicket implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::package::UpgradeTicket`
+  static readonly $typeName = `0x2::package::UpgradeTicket` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -619,7 +619,7 @@ export type UpgradeReceiptReified = Reified<UpgradeReceipt, UpgradeReceiptFields
 export class UpgradeReceipt implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::package::UpgradeReceipt`
+  static readonly $typeName = `0x2::package::UpgradeReceipt` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

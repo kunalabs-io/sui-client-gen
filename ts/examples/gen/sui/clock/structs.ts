@@ -32,7 +32,7 @@ export type ClockReified = Reified<Clock, ClockFields>
 export class Clock implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::clock::Clock`
+  static readonly $typeName = `0x2::clock::Clock` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

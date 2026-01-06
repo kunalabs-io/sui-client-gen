@@ -48,7 +48,7 @@ export type FieldReified<Name extends TypeArgument, Value extends TypeArgument> 
 export class Field<Name extends TypeArgument, Value extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::dynamic_field::Field`
+  static readonly $typeName = `0x2::dynamic_field::Field` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const
 

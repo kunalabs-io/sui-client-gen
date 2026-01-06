@@ -1,4 +1,4 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
@@ -10,7 +10,7 @@ export interface Secp256k1EcrecoverArgs {
 
 export function secp256k1Ecrecover(tx: Transaction, args: Secp256k1EcrecoverArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::ecdsa_k1::secp256k1_ecrecover`,
+    target: `${getPublishedAt('sui')}::ecdsa_k1::secp256k1_ecrecover`,
     arguments: [
       pure(tx, args.signature, `vector<u8>`),
       pure(tx, args.msg, `vector<u8>`),
@@ -24,7 +24,7 @@ export function decompressPubkey(
   pubkey: Array<number | TransactionArgument> | TransactionArgument
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::ecdsa_k1::decompress_pubkey`,
+    target: `${getPublishedAt('sui')}::ecdsa_k1::decompress_pubkey`,
     arguments: [pure(tx, pubkey, `vector<u8>`)],
   })
 }
@@ -38,7 +38,7 @@ export interface Secp256k1VerifyArgs {
 
 export function secp256k1Verify(tx: Transaction, args: Secp256k1VerifyArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::ecdsa_k1::secp256k1_verify`,
+    target: `${getPublishedAt('sui')}::ecdsa_k1::secp256k1_verify`,
     arguments: [
       pure(tx, args.signature, `vector<u8>`),
       pure(tx, args.publicKey, `vector<u8>`),

@@ -1,4 +1,4 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
@@ -9,7 +9,7 @@ export interface AccumulatorRootOwnerExistsArgs {
 
 export function accumulatorRootOwnerExists(tx: Transaction, args: AccumulatorRootOwnerExistsArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_metadata::accumulator_root_owner_exists`,
+    target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_root_owner_exists`,
     arguments: [obj(tx, args.accumulatorRoot), pure(tx, args.owner, `address`)],
   })
 }
@@ -24,7 +24,7 @@ export function accumulatorRootBorrowOwnerMut(
   args: AccumulatorRootBorrowOwnerMutArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_metadata::accumulator_root_borrow_owner_mut`,
+    target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_root_borrow_owner_mut`,
     arguments: [obj(tx, args.accumulatorRoot), pure(tx, args.owner, `address`)],
   })
 }
@@ -36,7 +36,7 @@ export interface AccumulatorRootAttachOwnerArgs {
 
 export function accumulatorRootAttachOwner(tx: Transaction, args: AccumulatorRootAttachOwnerArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_metadata::accumulator_root_attach_owner`,
+    target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_root_attach_owner`,
     arguments: [obj(tx, args.accumulatorRoot), obj(tx, args.owner)],
   })
 }
@@ -48,7 +48,7 @@ export interface AccumulatorRootDetachOwnerArgs {
 
 export function accumulatorRootDetachOwner(tx: Transaction, args: AccumulatorRootDetachOwnerArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_metadata::accumulator_root_detach_owner`,
+    target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_root_detach_owner`,
     arguments: [obj(tx, args.accumulatorRoot), pure(tx, args.owner, `address`)],
   })
 }
@@ -64,7 +64,7 @@ export function createAccumulatorMetadata(
   args: CreateAccumulatorMetadataArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_metadata::create_accumulator_metadata`,
+    target: `${getPublishedAt('sui')}::accumulator_metadata::create_accumulator_metadata`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.accumulatorRoot), pure(tx, args.owner, `address`)],
   })
@@ -81,7 +81,7 @@ export function removeAccumulatorMetadata(
   args: RemoveAccumulatorMetadataArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_metadata::remove_accumulator_metadata`,
+    target: `${getPublishedAt('sui')}::accumulator_metadata::remove_accumulator_metadata`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.accumulatorRoot), pure(tx, args.owner, `address`)],
   })
@@ -98,7 +98,7 @@ export function accumulatorOwnerAttachMetadata(
   args: AccumulatorOwnerAttachMetadataArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_metadata::accumulator_owner_attach_metadata`,
+    target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_owner_attach_metadata`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), obj(tx, args.metadata)],
   })
@@ -110,7 +110,7 @@ export function accumulatorOwnerDetachMetadata(
   self: TransactionObjectInput
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_metadata::accumulator_owner_detach_metadata`,
+    target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_owner_detach_metadata`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -118,7 +118,7 @@ export function accumulatorOwnerDetachMetadata(
 
 export function accumulatorOwnerDestroy(tx: Transaction, this_: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_metadata::accumulator_owner_destroy`,
+    target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_owner_destroy`,
     arguments: [obj(tx, this_)],
   })
 }

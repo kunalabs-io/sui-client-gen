@@ -1,4 +1,4 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
@@ -13,7 +13,7 @@ export interface SettlementPrologueArgs {
 
 export function settlementPrologue(tx: Transaction, args: SettlementPrologueArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_settlement::settlement_prologue`,
+    target: `${getPublishedAt('sui')}::accumulator_settlement::settlement_prologue`,
     arguments: [
       obj(tx, args.accumulatorRoot),
       pure(tx, args.epoch, `u64`),
@@ -34,7 +34,7 @@ export interface SettleU128Args {
 
 export function settleU128(tx: Transaction, typeArg: string, args: SettleU128Args) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_settlement::settle_u128`,
+    target: `${getPublishedAt('sui')}::accumulator_settlement::settle_u128`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.accumulatorRoot),
@@ -55,7 +55,7 @@ export function recordSettlementSuiConservation(
   args: RecordSettlementSuiConservationArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_settlement::record_settlement_sui_conservation`,
+    target: `${getPublishedAt('sui')}::accumulator_settlement::record_settlement_sui_conservation`,
     arguments: [pure(tx, args.inputSui, `u64`), pure(tx, args.outputSui, `u64`)],
   })
 }
@@ -67,7 +67,7 @@ export interface AddToMmrArgs {
 
 export function addToMmr(tx: Transaction, args: AddToMmrArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_settlement::add_to_mmr`,
+    target: `${getPublishedAt('sui')}::accumulator_settlement::add_to_mmr`,
     arguments: [pure(tx, args.newVal, `u256`), pure(tx, args.mmr, `vector<u256>`)],
   })
 }
@@ -77,7 +77,7 @@ export function u256FromBytes(
   bytes: Array<number | TransactionArgument> | TransactionArgument
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_settlement::u256_from_bytes`,
+    target: `${getPublishedAt('sui')}::accumulator_settlement::u256_from_bytes`,
     arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }
@@ -89,7 +89,7 @@ export interface HashTwoToOneU256Args {
 
 export function hashTwoToOneU256(tx: Transaction, args: HashTwoToOneU256Args) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_settlement::hash_two_to_one_u256`,
+    target: `${getPublishedAt('sui')}::accumulator_settlement::hash_two_to_one_u256`,
     arguments: [pure(tx, args.left, `u256`), pure(tx, args.right, `u256`)],
   })
 }
@@ -102,7 +102,7 @@ export interface NewStreamHeadArgs {
 
 export function newStreamHead(tx: Transaction, args: NewStreamHeadArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_settlement::new_stream_head`,
+    target: `${getPublishedAt('sui')}::accumulator_settlement::new_stream_head`,
     arguments: [
       pure(tx, args.newRoot, `u256`),
       pure(tx, args.eventCountDelta, `u64`),
@@ -121,7 +121,7 @@ export interface SettleEventsArgs {
 
 export function settleEvents(tx: Transaction, args: SettleEventsArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::accumulator_settlement::settle_events`,
+    target: `${getPublishedAt('sui')}::accumulator_settlement::settle_events`,
     arguments: [
       obj(tx, args.accumulatorRoot),
       pure(tx, args.streamId, `address`),

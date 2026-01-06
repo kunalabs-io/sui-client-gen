@@ -32,7 +32,7 @@ export type PartyReified = Reified<Party, PartyFields>
 export class Party implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::party::Party`
+  static readonly $typeName = `0x2::party::Party` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -218,7 +218,7 @@ export type PermissionsReified = Reified<Permissions, PermissionsFields>
 export class Permissions implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::party::Permissions`
+  static readonly $typeName = `0x2::party::Permissions` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

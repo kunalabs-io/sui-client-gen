@@ -39,7 +39,7 @@ export type DenyListReified = Reified<DenyList, DenyListFields>
 export class DenyList implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::deny_list::DenyList`
+  static readonly $typeName = `0x2::deny_list::DenyList` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -219,7 +219,7 @@ export type ConfigWriteCapReified = Reified<ConfigWriteCap, ConfigWriteCapFields
 export class ConfigWriteCap implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::deny_list::ConfigWriteCap`
+  static readonly $typeName = `0x2::deny_list::ConfigWriteCap` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -396,7 +396,7 @@ export type ConfigKeyReified = Reified<ConfigKey, ConfigKeyFields>
 export class ConfigKey implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::deny_list::ConfigKey`
+  static readonly $typeName = `0x2::deny_list::ConfigKey` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -576,7 +576,7 @@ export type AddressKeyReified = Reified<AddressKey, AddressKeyFields>
 export class AddressKey implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::deny_list::AddressKey`
+  static readonly $typeName = `0x2::deny_list::AddressKey` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -752,7 +752,7 @@ export type GlobalPauseKeyReified = Reified<GlobalPauseKey, GlobalPauseKeyFields
 export class GlobalPauseKey implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::deny_list::GlobalPauseKey`
+  static readonly $typeName = `0x2::deny_list::GlobalPauseKey` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -929,7 +929,7 @@ export type PerTypeConfigCreatedReified = Reified<PerTypeConfigCreated, PerTypeC
 export class PerTypeConfigCreated implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::deny_list::PerTypeConfigCreated`
+  static readonly $typeName = `0x2::deny_list::PerTypeConfigCreated` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -1119,7 +1119,7 @@ export type PerTypeListReified = Reified<PerTypeList, PerTypeListFields>
 export class PerTypeList implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::deny_list::PerTypeList`
+  static readonly $typeName = `0x2::deny_list::PerTypeList` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

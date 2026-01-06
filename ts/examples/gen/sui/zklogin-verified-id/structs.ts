@@ -37,7 +37,7 @@ export type VerifiedIDReified = Reified<VerifiedID, VerifiedIDFields>
 export class VerifiedID implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::zklogin_verified_id::VerifiedID`
+  static readonly $typeName = `0x2::zklogin_verified_id::VerifiedID` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

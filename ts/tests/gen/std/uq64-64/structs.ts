@@ -30,7 +30,7 @@ export type UQ64_64Reified = Reified<UQ64_64, UQ64_64Fields>
 export class UQ64_64 implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x1::uq64_64::UQ64_64`
+  static readonly $typeName = `0x1::uq64_64::UQ64_64` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

@@ -35,7 +35,7 @@ export type PCREntryReified = Reified<PCREntry, PCREntryFields>
 export class PCREntry implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::nitro_attestation::PCREntry`
+  static readonly $typeName = `0x2::nitro_attestation::PCREntry` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -224,7 +224,7 @@ export type NitroAttestationDocumentReified = Reified<
 export class NitroAttestationDocument implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::nitro_attestation::NitroAttestationDocument`
+  static readonly $typeName = `0x2::nitro_attestation::NitroAttestationDocument` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

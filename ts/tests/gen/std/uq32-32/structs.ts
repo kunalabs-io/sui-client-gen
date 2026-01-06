@@ -30,7 +30,7 @@ export type UQ32_32Reified = Reified<UQ32_32, UQ32_32Fields>
 export class UQ32_32 implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x1::uq32_32::UQ32_32`
+  static readonly $typeName = `0x1::uq32_32::UQ32_32` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

@@ -1,4 +1,4 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { String } from '../../std/string/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
@@ -14,7 +14,7 @@ export interface NewCurrencyArgs {
 
 export function newCurrency(tx: Transaction, typeArg: string, args: NewCurrencyArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::new_currency`,
+    target: `${getPublishedAt('sui')}::coin_registry::new_currency`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.registry),
@@ -38,7 +38,7 @@ export interface NewCurrencyWithOtwArgs {
 
 export function newCurrencyWithOtw(tx: Transaction, typeArg: string, args: NewCurrencyWithOtwArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::new_currency_with_otw`,
+    target: `${getPublishedAt('sui')}::coin_registry::new_currency_with_otw`,
     typeArguments: [typeArg],
     arguments: [
       generic(tx, `${typeArg}`, args.otw),
@@ -58,7 +58,7 @@ export interface ClaimMetadataCapArgs {
 
 export function claimMetadataCap(tx: Transaction, typeArg: string, args: ClaimMetadataCapArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::claim_metadata_cap`,
+    target: `${getPublishedAt('sui')}::coin_registry::claim_metadata_cap`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.currency), obj(tx, args.treasuryCap)],
   })
@@ -71,7 +71,7 @@ export interface MakeRegulatedArgs {
 
 export function makeRegulated(tx: Transaction, typeArg: string, args: MakeRegulatedArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::make_regulated`,
+    target: `${getPublishedAt('sui')}::coin_registry::make_regulated`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.init), pure(tx, args.allowGlobalPause, `bool`)],
   })
@@ -88,7 +88,7 @@ export function makeSupplyFixedInit(
   args: MakeSupplyFixedInitArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::make_supply_fixed_init`,
+    target: `${getPublishedAt('sui')}::coin_registry::make_supply_fixed_init`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.init), obj(tx, args.cap)],
   })
@@ -105,7 +105,7 @@ export function makeSupplyBurnOnlyInit(
   args: MakeSupplyBurnOnlyInitArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::make_supply_burn_only_init`,
+    target: `${getPublishedAt('sui')}::coin_registry::make_supply_burn_only_init`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.init), obj(tx, args.cap)],
   })
@@ -118,7 +118,7 @@ export interface MakeSupplyFixedArgs {
 
 export function makeSupplyFixed(tx: Transaction, typeArg: string, args: MakeSupplyFixedArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::make_supply_fixed`,
+    target: `${getPublishedAt('sui')}::coin_registry::make_supply_fixed`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.currency), obj(tx, args.cap)],
   })
@@ -131,7 +131,7 @@ export interface MakeSupplyBurnOnlyArgs {
 
 export function makeSupplyBurnOnly(tx: Transaction, typeArg: string, args: MakeSupplyBurnOnlyArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::make_supply_burn_only`,
+    target: `${getPublishedAt('sui')}::coin_registry::make_supply_burn_only`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.currency), obj(tx, args.cap)],
   })
@@ -139,7 +139,7 @@ export function makeSupplyBurnOnly(tx: Transaction, typeArg: string, args: MakeS
 
 export function finalize(tx: Transaction, typeArg: string, builder: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::finalize`,
+    target: `${getPublishedAt('sui')}::coin_registry::finalize`,
     typeArguments: [typeArg],
     arguments: [obj(tx, builder)],
   })
@@ -151,7 +151,7 @@ export function finalizeAndDeleteMetadataCap(
   builder: TransactionObjectInput
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::finalize_and_delete_metadata_cap`,
+    target: `${getPublishedAt('sui')}::coin_registry::finalize_and_delete_metadata_cap`,
     typeArguments: [typeArg],
     arguments: [obj(tx, builder)],
   })
@@ -168,7 +168,7 @@ export function finalizeRegistration(
   args: FinalizeRegistrationArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::finalize_registration`,
+    target: `${getPublishedAt('sui')}::coin_registry::finalize_registration`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.registry), obj(tx, args.currency)],
   })
@@ -181,7 +181,7 @@ export interface DeleteMetadataCapArgs {
 
 export function deleteMetadataCap(tx: Transaction, typeArg: string, args: DeleteMetadataCapArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::delete_metadata_cap`,
+    target: `${getPublishedAt('sui')}::coin_registry::delete_metadata_cap`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.currency), obj(tx, args.cap)],
   })
@@ -194,7 +194,7 @@ export interface BurnArgs {
 
 export function burn(tx: Transaction, typeArg: string, args: BurnArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::burn`,
+    target: `${getPublishedAt('sui')}::coin_registry::burn`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.currency), obj(tx, args.coin)],
   })
@@ -207,7 +207,7 @@ export interface BurnBalanceArgs {
 
 export function burnBalance(tx: Transaction, typeArg: string, args: BurnBalanceArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::burn_balance`,
+    target: `${getPublishedAt('sui')}::coin_registry::burn_balance`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.currency), obj(tx, args.balance)],
   })
@@ -221,7 +221,7 @@ export interface SetNameArgs {
 
 export function setName(tx: Transaction, typeArg: string, args: SetNameArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::set_name`,
+    target: `${getPublishedAt('sui')}::coin_registry::set_name`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.currency),
@@ -239,7 +239,7 @@ export interface SetDescriptionArgs {
 
 export function setDescription(tx: Transaction, typeArg: string, args: SetDescriptionArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::set_description`,
+    target: `${getPublishedAt('sui')}::coin_registry::set_description`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.currency),
@@ -257,7 +257,7 @@ export interface SetIconUrlArgs {
 
 export function setIconUrl(tx: Transaction, typeArg: string, args: SetIconUrlArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::set_icon_url`,
+    target: `${getPublishedAt('sui')}::coin_registry::set_icon_url`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.currency),
@@ -274,7 +274,7 @@ export interface SetTreasuryCapIdArgs {
 
 export function setTreasuryCapId(tx: Transaction, typeArg: string, args: SetTreasuryCapIdArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::set_treasury_cap_id`,
+    target: `${getPublishedAt('sui')}::coin_registry::set_treasury_cap_id`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.currency), obj(tx, args.cap)],
   })
@@ -291,7 +291,7 @@ export function migrateLegacyMetadata(
   args: MigrateLegacyMetadataArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::migrate_legacy_metadata`,
+    target: `${getPublishedAt('sui')}::coin_registry::migrate_legacy_metadata`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.registry), obj(tx, args.legacy)],
   })
@@ -308,7 +308,7 @@ export function updateFromLegacyMetadata(
   args: UpdateFromLegacyMetadataArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::update_from_legacy_metadata`,
+    target: `${getPublishedAt('sui')}::coin_registry::update_from_legacy_metadata`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.currency), obj(tx, args.legacy)],
   })
@@ -325,7 +325,7 @@ export function deleteMigratedLegacyMetadata(
   args: DeleteMigratedLegacyMetadataArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::delete_migrated_legacy_metadata`,
+    target: `${getPublishedAt('sui')}::coin_registry::delete_migrated_legacy_metadata`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.currency), obj(tx, args.coinMetadata)],
   })
@@ -342,7 +342,7 @@ export function migrateRegulatedStateByMetadata(
   args: MigrateRegulatedStateByMetadataArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::migrate_regulated_state_by_metadata`,
+    target: `${getPublishedAt('sui')}::coin_registry::migrate_regulated_state_by_metadata`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.currency), obj(tx, args.metadata)],
   })
@@ -359,7 +359,7 @@ export function migrateRegulatedStateByCap(
   args: MigrateRegulatedStateByCapArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::migrate_regulated_state_by_cap`,
+    target: `${getPublishedAt('sui')}::coin_registry::migrate_regulated_state_by_cap`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.currency), obj(tx, args.cap)],
   })
@@ -371,7 +371,7 @@ export function borrowLegacyMetadata(
   currency: TransactionObjectInput
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::borrow_legacy_metadata`,
+    target: `${getPublishedAt('sui')}::coin_registry::borrow_legacy_metadata`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -389,7 +389,7 @@ export function returnBorrowedLegacyMetadata(
   args: ReturnBorrowedLegacyMetadataArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::return_borrowed_legacy_metadata`,
+    target: `${getPublishedAt('sui')}::coin_registry::return_borrowed_legacy_metadata`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.currency), obj(tx, args.legacy), obj(tx, args.borrow)],
   })
@@ -397,7 +397,7 @@ export function returnBorrowedLegacyMetadata(
 
 export function decimals(tx: Transaction, typeArg: string, currency: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::decimals`,
+    target: `${getPublishedAt('sui')}::coin_registry::decimals`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -405,7 +405,7 @@ export function decimals(tx: Transaction, typeArg: string, currency: Transaction
 
 export function name(tx: Transaction, typeArg: string, currency: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::name`,
+    target: `${getPublishedAt('sui')}::coin_registry::name`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -413,7 +413,7 @@ export function name(tx: Transaction, typeArg: string, currency: TransactionObje
 
 export function symbol(tx: Transaction, typeArg: string, currency: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::symbol`,
+    target: `${getPublishedAt('sui')}::coin_registry::symbol`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -421,7 +421,7 @@ export function symbol(tx: Transaction, typeArg: string, currency: TransactionOb
 
 export function description(tx: Transaction, typeArg: string, currency: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::description`,
+    target: `${getPublishedAt('sui')}::coin_registry::description`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -429,7 +429,7 @@ export function description(tx: Transaction, typeArg: string, currency: Transact
 
 export function iconUrl(tx: Transaction, typeArg: string, currency: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::icon_url`,
+    target: `${getPublishedAt('sui')}::coin_registry::icon_url`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -441,7 +441,7 @@ export function isMetadataCapClaimed(
   currency: TransactionObjectInput
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::is_metadata_cap_claimed`,
+    target: `${getPublishedAt('sui')}::coin_registry::is_metadata_cap_claimed`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -453,7 +453,7 @@ export function isMetadataCapDeleted(
   currency: TransactionObjectInput
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::is_metadata_cap_deleted`,
+    target: `${getPublishedAt('sui')}::coin_registry::is_metadata_cap_deleted`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -461,7 +461,7 @@ export function isMetadataCapDeleted(
 
 export function metadataCapId(tx: Transaction, typeArg: string, currency: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::metadata_cap_id`,
+    target: `${getPublishedAt('sui')}::coin_registry::metadata_cap_id`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -469,7 +469,7 @@ export function metadataCapId(tx: Transaction, typeArg: string, currency: Transa
 
 export function treasuryCapId(tx: Transaction, typeArg: string, currency: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::treasury_cap_id`,
+    target: `${getPublishedAt('sui')}::coin_registry::treasury_cap_id`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -477,7 +477,7 @@ export function treasuryCapId(tx: Transaction, typeArg: string, currency: Transa
 
 export function denyCapId(tx: Transaction, typeArg: string, currency: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::deny_cap_id`,
+    target: `${getPublishedAt('sui')}::coin_registry::deny_cap_id`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -485,7 +485,7 @@ export function denyCapId(tx: Transaction, typeArg: string, currency: Transactio
 
 export function isSupplyFixed(tx: Transaction, typeArg: string, currency: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::is_supply_fixed`,
+    target: `${getPublishedAt('sui')}::coin_registry::is_supply_fixed`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -497,7 +497,7 @@ export function isSupplyBurnOnly(
   currency: TransactionObjectInput
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::is_supply_burn_only`,
+    target: `${getPublishedAt('sui')}::coin_registry::is_supply_burn_only`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -505,7 +505,7 @@ export function isSupplyBurnOnly(
 
 export function isRegulated(tx: Transaction, typeArg: string, currency: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::is_regulated`,
+    target: `${getPublishedAt('sui')}::coin_registry::is_regulated`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -513,7 +513,7 @@ export function isRegulated(tx: Transaction, typeArg: string, currency: Transact
 
 export function totalSupply(tx: Transaction, typeArg: string, currency: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::total_supply`,
+    target: `${getPublishedAt('sui')}::coin_registry::total_supply`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -521,7 +521,7 @@ export function totalSupply(tx: Transaction, typeArg: string, currency: Transact
 
 export function exists(tx: Transaction, typeArg: string, registry: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::exists`,
+    target: `${getPublishedAt('sui')}::coin_registry::exists`,
     typeArguments: [typeArg],
     arguments: [obj(tx, registry)],
   })
@@ -533,7 +533,7 @@ export function isMigratedFromLegacy(
   currency: TransactionObjectInput
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::is_migrated_from_legacy`,
+    target: `${getPublishedAt('sui')}::coin_registry::is_migrated_from_legacy`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -545,7 +545,7 @@ export function toLegacyMetadata(
   currency: TransactionObjectInput
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::to_legacy_metadata`,
+    target: `${getPublishedAt('sui')}::coin_registry::to_legacy_metadata`,
     typeArguments: [typeArg],
     arguments: [obj(tx, currency)],
   })
@@ -553,7 +553,7 @@ export function toLegacyMetadata(
 
 export function create(tx: Transaction) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::coin_registry::create`,
+    target: `${getPublishedAt('sui')}::coin_registry::create`,
     arguments: [],
   })
 }

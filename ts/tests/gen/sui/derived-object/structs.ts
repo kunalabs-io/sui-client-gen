@@ -44,7 +44,7 @@ export type ClaimedReified = Reified<Claimed, ClaimedFields>
 export class Claimed implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::derived_object::Claimed`
+  static readonly $typeName = `0x2::derived_object::Claimed` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -220,7 +220,7 @@ export type DerivedObjectKeyReified<K extends TypeArgument> = Reified<
 export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::derived_object::DerivedObjectKey`
+  static readonly $typeName = `0x2::derived_object::DerivedObjectKey` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
@@ -453,7 +453,7 @@ export type ClaimedStatusFields = ClaimedStatusReservedFields
 export type ClaimedStatusReified = Reified<ClaimedStatusVariant, ClaimedStatusFields>
 
 export class ClaimedStatus {
-  static readonly $typeName = `0x2::derived_object::ClaimedStatus`
+  static readonly $typeName = `0x2::derived_object::ClaimedStatus` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

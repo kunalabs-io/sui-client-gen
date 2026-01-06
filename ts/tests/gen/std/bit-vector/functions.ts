@@ -1,10 +1,10 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
 export function new_(tx: Transaction, length: bigint | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::bit_vector::new`,
+    target: `${getPublishedAt('std')}::bit_vector::new`,
     arguments: [pure(tx, length, `u64`)],
   })
 }
@@ -16,7 +16,7 @@ export interface SetArgs {
 
 export function set(tx: Transaction, args: SetArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::bit_vector::set`,
+    target: `${getPublishedAt('std')}::bit_vector::set`,
     arguments: [obj(tx, args.bitvector), pure(tx, args.bitIndex, `u64`)],
   })
 }
@@ -28,7 +28,7 @@ export interface UnsetArgs {
 
 export function unset(tx: Transaction, args: UnsetArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::bit_vector::unset`,
+    target: `${getPublishedAt('std')}::bit_vector::unset`,
     arguments: [obj(tx, args.bitvector), pure(tx, args.bitIndex, `u64`)],
   })
 }
@@ -40,7 +40,7 @@ export interface ShiftLeftArgs {
 
 export function shiftLeft(tx: Transaction, args: ShiftLeftArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::bit_vector::shift_left`,
+    target: `${getPublishedAt('std')}::bit_vector::shift_left`,
     arguments: [obj(tx, args.bitvector), pure(tx, args.amount, `u64`)],
   })
 }
@@ -52,14 +52,14 @@ export interface IsIndexSetArgs {
 
 export function isIndexSet(tx: Transaction, args: IsIndexSetArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::bit_vector::is_index_set`,
+    target: `${getPublishedAt('std')}::bit_vector::is_index_set`,
     arguments: [obj(tx, args.bitvector), pure(tx, args.bitIndex, `u64`)],
   })
 }
 
 export function length(tx: Transaction, bitvector: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::bit_vector::length`,
+    target: `${getPublishedAt('std')}::bit_vector::length`,
     arguments: [obj(tx, bitvector)],
   })
 }
@@ -74,7 +74,7 @@ export function longestSetSequenceStartingAt(
   args: LongestSetSequenceStartingAtArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::bit_vector::longest_set_sequence_starting_at`,
+    target: `${getPublishedAt('std')}::bit_vector::longest_set_sequence_starting_at`,
     arguments: [obj(tx, args.bitvector), pure(tx, args.startIndex, `u64`)],
   })
 }

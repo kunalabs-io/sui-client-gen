@@ -41,7 +41,7 @@ export type SupplyReified<T extends PhantomTypeArgument> = Reified<Supply<T>, Su
 export class Supply<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::balance::Supply`
+  static readonly $typeName = `0x2::balance::Supply` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -268,7 +268,7 @@ export type BalanceReified<T extends PhantomTypeArgument> = Reified<Balance<T>, 
 export class Balance<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::balance::Balance`
+  static readonly $typeName = `0x2::balance::Balance` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 

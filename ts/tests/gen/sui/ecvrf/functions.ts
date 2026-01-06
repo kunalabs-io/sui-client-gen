@@ -1,4 +1,4 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
@@ -11,7 +11,7 @@ export interface EcvrfVerifyArgs {
 
 export function ecvrfVerify(tx: Transaction, args: EcvrfVerifyArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::ecvrf::ecvrf_verify`,
+    target: `${getPublishedAt('sui')}::ecvrf::ecvrf_verify`,
     arguments: [
       pure(tx, args.hash, `vector<u8>`),
       pure(tx, args.alphaString, `vector<u8>`),

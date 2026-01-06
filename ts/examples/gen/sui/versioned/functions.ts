@@ -1,4 +1,4 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
@@ -9,7 +9,7 @@ export interface CreateArgs {
 
 export function create(tx: Transaction, typeArg: string, args: CreateArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::versioned::create`,
+    target: `${getPublishedAt('sui')}::versioned::create`,
     typeArguments: [typeArg],
     arguments: [pure(tx, args.initVersion, `u64`), generic(tx, `${typeArg}`, args.initValue)],
   })
@@ -17,14 +17,14 @@ export function create(tx: Transaction, typeArg: string, args: CreateArgs) {
 
 export function version(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::versioned::version`,
+    target: `${getPublishedAt('sui')}::versioned::version`,
     arguments: [obj(tx, self)],
   })
 }
 
 export function loadValue(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::versioned::load_value`,
+    target: `${getPublishedAt('sui')}::versioned::load_value`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -32,7 +32,7 @@ export function loadValue(tx: Transaction, typeArg: string, self: TransactionObj
 
 export function loadValueMut(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::versioned::load_value_mut`,
+    target: `${getPublishedAt('sui')}::versioned::load_value_mut`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -44,7 +44,7 @@ export function removeValueForUpgrade(
   self: TransactionObjectInput
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::versioned::remove_value_for_upgrade`,
+    target: `${getPublishedAt('sui')}::versioned::remove_value_for_upgrade`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -59,7 +59,7 @@ export interface UpgradeArgs {
 
 export function upgrade(tx: Transaction, typeArg: string, args: UpgradeArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::versioned::upgrade`,
+    target: `${getPublishedAt('sui')}::versioned::upgrade`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -72,7 +72,7 @@ export function upgrade(tx: Transaction, typeArg: string, args: UpgradeArgs) {
 
 export function destroy(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::versioned::destroy`,
+    target: `${getPublishedAt('sui')}::versioned::destroy`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })

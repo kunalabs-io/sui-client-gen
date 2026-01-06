@@ -49,7 +49,7 @@ export type CoinReified<T extends PhantomTypeArgument> = Reified<Coin<T>, CoinFi
 export class Coin<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin::Coin`
+  static readonly $typeName = `0x2::coin::Coin` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -291,7 +291,7 @@ export type CoinMetadataReified<T extends PhantomTypeArgument> = Reified<
 export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin::CoinMetadata`
+  static readonly $typeName = `0x2::coin::CoinMetadata` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -558,7 +558,7 @@ export type RegulatedCoinMetadataReified<T extends PhantomTypeArgument> = Reifie
 export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin::RegulatedCoinMetadata`
+  static readonly $typeName = `0x2::coin::RegulatedCoinMetadata` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -808,7 +808,7 @@ export type TreasuryCapReified<T extends PhantomTypeArgument> = Reified<
 export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin::TreasuryCap`
+  static readonly $typeName = `0x2::coin::TreasuryCap` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -1046,7 +1046,7 @@ export type DenyCapV2Reified<T extends PhantomTypeArgument> = Reified<
 export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin::DenyCapV2`
+  static readonly $typeName = `0x2::coin::DenyCapV2` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -1283,7 +1283,7 @@ export type CurrencyCreatedReified<T extends PhantomTypeArgument> = Reified<
 export class CurrencyCreated<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin::CurrencyCreated`
+  static readonly $typeName = `0x2::coin::CurrencyCreated` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -1510,7 +1510,7 @@ export type DenyCapReified<T extends PhantomTypeArgument> = Reified<DenyCap<T>, 
 export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin::DenyCap`
+  static readonly $typeName = `0x2::coin::DenyCap` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 

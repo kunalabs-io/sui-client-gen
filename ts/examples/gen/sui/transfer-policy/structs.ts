@@ -53,7 +53,7 @@ export type TransferRequestReified<T extends PhantomTypeArgument> = Reified<
 export class TransferRequest<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::transfer_policy::TransferRequest`
+  static readonly $typeName = `0x2::transfer_policy::TransferRequest` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -306,7 +306,7 @@ export type TransferPolicyReified<T extends PhantomTypeArgument> = Reified<
 export class TransferPolicy<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::transfer_policy::TransferPolicy`
+  static readonly $typeName = `0x2::transfer_policy::TransferPolicy` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -554,7 +554,7 @@ export type TransferPolicyCapReified<T extends PhantomTypeArgument> = Reified<
 export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::transfer_policy::TransferPolicyCap`
+  static readonly $typeName = `0x2::transfer_policy::TransferPolicyCap` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -794,7 +794,7 @@ export type TransferPolicyCreatedReified<T extends PhantomTypeArgument> = Reifie
 export class TransferPolicyCreated<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::transfer_policy::TransferPolicyCreated`
+  static readonly $typeName = `0x2::transfer_policy::TransferPolicyCreated` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -1029,7 +1029,7 @@ export type TransferPolicyDestroyedReified<T extends PhantomTypeArgument> = Reif
 export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::transfer_policy::TransferPolicyDestroyed`
+  static readonly $typeName = `0x2::transfer_policy::TransferPolicyDestroyed` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -1263,7 +1263,7 @@ export type RuleKeyReified<T extends PhantomTypeArgument> = Reified<RuleKey<T>, 
 export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::transfer_policy::RuleKey`
+  static readonly $typeName = `0x2::transfer_policy::RuleKey` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 

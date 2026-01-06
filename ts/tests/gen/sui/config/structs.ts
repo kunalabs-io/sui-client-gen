@@ -50,7 +50,7 @@ export type ConfigReified<WriteCap extends PhantomTypeArgument> = Reified<
 export class Config<WriteCap extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::config::Config`
+  static readonly $typeName = `0x2::config::Config` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -280,7 +280,7 @@ export type SettingReified<Value extends TypeArgument> = Reified<
 export class Setting<Value extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::config::Setting`
+  static readonly $typeName = `0x2::config::Setting` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
@@ -520,7 +520,7 @@ export type SettingDataReified<Value extends TypeArgument> = Reified<
 export class SettingData<Value extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::config::SettingData`
+  static readonly $typeName = `0x2::config::SettingData` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 

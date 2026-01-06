@@ -1,4 +1,4 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { Option } from '../../std/option/structs'
 import { ID } from '../object/structs'
@@ -12,7 +12,7 @@ export interface NewRequestArgs {
 
 export function newRequest(tx: Transaction, typeArg: string, args: NewRequestArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::new_request`,
+    target: `${getPublishedAt('sui')}::transfer_policy::new_request`,
     typeArguments: [typeArg],
     arguments: [
       pure(tx, args.item, `${ID.$typeName}`),
@@ -24,7 +24,7 @@ export function newRequest(tx: Transaction, typeArg: string, args: NewRequestArg
 
 export function new_(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::new`,
+    target: `${getPublishedAt('sui')}::transfer_policy::new`,
     typeArguments: [typeArg],
     arguments: [obj(tx, pub)],
   })
@@ -32,7 +32,7 @@ export function new_(tx: Transaction, typeArg: string, pub: TransactionObjectInp
 
 export function default_(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::default`,
+    target: `${getPublishedAt('sui')}::transfer_policy::default`,
     typeArguments: [typeArg],
     arguments: [obj(tx, pub)],
   })
@@ -46,7 +46,7 @@ export interface WithdrawArgs {
 
 export function withdraw(tx: Transaction, typeArg: string, args: WithdrawArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::withdraw`,
+    target: `${getPublishedAt('sui')}::transfer_policy::withdraw`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -63,7 +63,7 @@ export interface DestroyAndWithdrawArgs {
 
 export function destroyAndWithdraw(tx: Transaction, typeArg: string, args: DestroyAndWithdrawArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::destroy_and_withdraw`,
+    target: `${getPublishedAt('sui')}::transfer_policy::destroy_and_withdraw`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), obj(tx, args.cap)],
   })
@@ -76,7 +76,7 @@ export interface ConfirmRequestArgs {
 
 export function confirmRequest(tx: Transaction, typeArg: string, args: ConfirmRequestArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::confirm_request`,
+    target: `${getPublishedAt('sui')}::transfer_policy::confirm_request`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), obj(tx, args.request)],
   })
@@ -91,7 +91,7 @@ export interface AddRuleArgs {
 
 export function addRule(tx: Transaction, typeArgs: [string, string, string], args: AddRuleArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::add_rule`,
+    target: `${getPublishedAt('sui')}::transfer_policy::add_rule`,
     typeArguments: typeArgs,
     arguments: [
       generic(tx, `${typeArgs[1]}`, args.rule),
@@ -109,7 +109,7 @@ export interface GetRuleArgs {
 
 export function getRule(tx: Transaction, typeArgs: [string, string, string], args: GetRuleArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::get_rule`,
+    target: `${getPublishedAt('sui')}::transfer_policy::get_rule`,
     typeArguments: typeArgs,
     arguments: [generic(tx, `${typeArgs[1]}`, args.rule), obj(tx, args.policy)],
   })
@@ -123,7 +123,7 @@ export interface AddToBalanceArgs {
 
 export function addToBalance(tx: Transaction, typeArgs: [string, string], args: AddToBalanceArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::add_to_balance`,
+    target: `${getPublishedAt('sui')}::transfer_policy::add_to_balance`,
     typeArguments: typeArgs,
     arguments: [generic(tx, `${typeArgs[1]}`, args.rule), obj(tx, args.policy), obj(tx, args.coin)],
   })
@@ -136,7 +136,7 @@ export interface AddReceiptArgs {
 
 export function addReceipt(tx: Transaction, typeArgs: [string, string], args: AddReceiptArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::add_receipt`,
+    target: `${getPublishedAt('sui')}::transfer_policy::add_receipt`,
     typeArguments: typeArgs,
     arguments: [generic(tx, `${typeArgs[1]}`, args.rule), obj(tx, args.request)],
   })
@@ -148,7 +148,7 @@ export function hasRule(
   policy: TransactionObjectInput
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::has_rule`,
+    target: `${getPublishedAt('sui')}::transfer_policy::has_rule`,
     typeArguments: typeArgs,
     arguments: [obj(tx, policy)],
   })
@@ -165,7 +165,7 @@ export function removeRule(
   args: RemoveRuleArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::remove_rule`,
+    target: `${getPublishedAt('sui')}::transfer_policy::remove_rule`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.policy), obj(tx, args.cap)],
   })
@@ -173,7 +173,7 @@ export function removeRule(
 
 export function uid(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::uid`,
+    target: `${getPublishedAt('sui')}::transfer_policy::uid`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -186,7 +186,7 @@ export interface UidMutAsOwnerArgs {
 
 export function uidMutAsOwner(tx: Transaction, typeArg: string, args: UidMutAsOwnerArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::uid_mut_as_owner`,
+    target: `${getPublishedAt('sui')}::transfer_policy::uid_mut_as_owner`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.self), obj(tx, args.cap)],
   })
@@ -194,7 +194,7 @@ export function uidMutAsOwner(tx: Transaction, typeArg: string, args: UidMutAsOw
 
 export function rules(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::rules`,
+    target: `${getPublishedAt('sui')}::transfer_policy::rules`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -202,7 +202,7 @@ export function rules(tx: Transaction, typeArg: string, self: TransactionObjectI
 
 export function item(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::item`,
+    target: `${getPublishedAt('sui')}::transfer_policy::item`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -210,7 +210,7 @@ export function item(tx: Transaction, typeArg: string, self: TransactionObjectIn
 
 export function paid(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::paid`,
+    target: `${getPublishedAt('sui')}::transfer_policy::paid`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -218,7 +218,7 @@ export function paid(tx: Transaction, typeArg: string, self: TransactionObjectIn
 
 export function from(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::transfer_policy::from`,
+    target: `${getPublishedAt('sui')}::transfer_policy::from`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })

@@ -33,7 +33,7 @@ export type StringReified = Reified<String, StringFields>
 export class String implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x1::ascii::String`
+  static readonly $typeName = `0x1::ascii::String` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -203,7 +203,7 @@ export type CharReified = Reified<Char, CharFields>
 export class Char implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x1::ascii::Char`
+  static readonly $typeName = `0x1::ascii::Char` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

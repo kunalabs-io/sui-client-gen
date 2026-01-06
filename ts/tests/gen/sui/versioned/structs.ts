@@ -32,7 +32,7 @@ export type VersionedReified = Reified<Versioned, VersionedFields>
 export class Versioned implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::versioned::Versioned`
+  static readonly $typeName = `0x2::versioned::Versioned` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -213,7 +213,7 @@ export type VersionChangeCapReified = Reified<VersionChangeCap, VersionChangeCap
 export class VersionChangeCap implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::versioned::VersionChangeCap`
+  static readonly $typeName = `0x2::versioned::VersionChangeCap` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

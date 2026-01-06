@@ -52,7 +52,7 @@ export type CoinRegistryReified = Reified<CoinRegistry, CoinRegistryFields>
 export class CoinRegistry implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin_registry::CoinRegistry`
+  static readonly $typeName = `0x2::coin_registry::CoinRegistry` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -229,7 +229,7 @@ export type ExtraFieldReified = Reified<ExtraField, ExtraFieldFields>
 export class ExtraField implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin_registry::ExtraField`
+  static readonly $typeName = `0x2::coin_registry::ExtraField` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -412,7 +412,7 @@ export type CurrencyKeyReified<T extends PhantomTypeArgument> = Reified<
 export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin_registry::CurrencyKey`
+  static readonly $typeName = `0x2::coin_registry::CurrencyKey` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -639,7 +639,7 @@ export type LegacyMetadataKeyReified = Reified<LegacyMetadataKey, LegacyMetadata
 export class LegacyMetadataKey implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin_registry::LegacyMetadataKey`
+  static readonly $typeName = `0x2::coin_registry::LegacyMetadataKey` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -818,7 +818,7 @@ export type MetadataCapReified<T extends PhantomTypeArgument> = Reified<
 export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin_registry::MetadataCap`
+  static readonly $typeName = `0x2::coin_registry::MetadataCap` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -1045,7 +1045,7 @@ export type BorrowReified<T extends PhantomTypeArgument> = Reified<Borrow<T>, Bo
 export class Borrow<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin_registry::Borrow`
+  static readonly $typeName = `0x2::coin_registry::Borrow` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -1282,7 +1282,7 @@ export type CurrencyReified<T extends PhantomTypeArgument> = Reified<Currency<T>
 export class Currency<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin_registry::Currency`
+  static readonly $typeName = `0x2::coin_registry::Currency` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -1608,7 +1608,7 @@ export type CurrencyInitializerReified<T extends PhantomTypeArgument> = Reified<
 export class CurrencyInitializer<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin_registry::CurrencyInitializer`
+  static readonly $typeName = `0x2::coin_registry::CurrencyInitializer` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -1865,7 +1865,7 @@ export type SupplyStateReified<T extends PhantomTypeArgument> = Reified<
 >
 
 export class SupplyState {
-  static readonly $typeName = `0x2::coin_registry::SupplyState`
+  static readonly $typeName = `0x2::coin_registry::SupplyState` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
@@ -2193,7 +2193,7 @@ export type RegulatedStateFields =
 export type RegulatedStateReified = Reified<RegulatedStateVariant, RegulatedStateFields>
 
 export class RegulatedState {
-  static readonly $typeName = `0x2::coin_registry::RegulatedState`
+  static readonly $typeName = `0x2::coin_registry::RegulatedState` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -2510,7 +2510,7 @@ export type MetadataCapStateFields =
 export type MetadataCapStateReified = Reified<MetadataCapStateVariant, MetadataCapStateFields>
 
 export class MetadataCapState {
-  static readonly $typeName = `0x2::coin_registry::MetadataCapState`
+  static readonly $typeName = `0x2::coin_registry::MetadataCapState` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

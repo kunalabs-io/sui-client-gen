@@ -1,10 +1,10 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
 export function bitwiseNot(tx: Transaction, x: bigint | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u64::bitwise_not`,
+    target: `${getPublishedAt('std')}::u64::bitwise_not`,
     arguments: [pure(tx, x, `u64`)],
   })
 }
@@ -16,7 +16,7 @@ export interface MaxArgs {
 
 export function max(tx: Transaction, args: MaxArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u64::max`,
+    target: `${getPublishedAt('std')}::u64::max`,
     arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
   })
 }
@@ -28,7 +28,7 @@ export interface MinArgs {
 
 export function min(tx: Transaction, args: MinArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u64::min`,
+    target: `${getPublishedAt('std')}::u64::min`,
     arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
   })
 }
@@ -40,7 +40,7 @@ export interface DiffArgs {
 
 export function diff(tx: Transaction, args: DiffArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u64::diff`,
+    target: `${getPublishedAt('std')}::u64::diff`,
     arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
   })
 }
@@ -52,7 +52,7 @@ export interface DivideAndRoundUpArgs {
 
 export function divideAndRoundUp(tx: Transaction, args: DivideAndRoundUpArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u64::divide_and_round_up`,
+    target: `${getPublishedAt('std')}::u64::divide_and_round_up`,
     arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
   })
 }
@@ -64,42 +64,42 @@ export interface PowArgs {
 
 export function pow(tx: Transaction, args: PowArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u64::pow`,
+    target: `${getPublishedAt('std')}::u64::pow`,
     arguments: [pure(tx, args.base, `u64`), pure(tx, args.exponent, `u8`)],
   })
 }
 
 export function sqrt(tx: Transaction, x: bigint | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u64::sqrt`,
+    target: `${getPublishedAt('std')}::u64::sqrt`,
     arguments: [pure(tx, x, `u64`)],
   })
 }
 
 export function tryAsU8(tx: Transaction, x: bigint | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u64::try_as_u8`,
+    target: `${getPublishedAt('std')}::u64::try_as_u8`,
     arguments: [pure(tx, x, `u64`)],
   })
 }
 
 export function tryAsU16(tx: Transaction, x: bigint | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u64::try_as_u16`,
+    target: `${getPublishedAt('std')}::u64::try_as_u16`,
     arguments: [pure(tx, x, `u64`)],
   })
 }
 
 export function tryAsU32(tx: Transaction, x: bigint | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u64::try_as_u32`,
+    target: `${getPublishedAt('std')}::u64::try_as_u32`,
     arguments: [pure(tx, x, `u64`)],
   })
 }
 
 export function toString(tx: Transaction, x: bigint | TransactionArgument) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::u64::to_string`,
+    target: `${getPublishedAt('std')}::u64::to_string`,
     arguments: [pure(tx, x, `u64`)],
   })
 }

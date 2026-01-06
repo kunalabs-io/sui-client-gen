@@ -1,4 +1,4 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { obj, pure, vector } from '../../_framework/util'
 import { String as String1 } from '../../std/ascii/structs'
 import { Option } from '../../std/option/structs'
@@ -9,7 +9,7 @@ import { Transaction, TransactionArgument, TransactionObjectInput } from '@myste
 
 export function createExampleStruct(tx: Transaction) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::examples::create_example_struct`,
+    target: `${getPublishedAt('examples')}::examples::create_example_struct`,
     arguments: [],
   })
 }
@@ -27,7 +27,7 @@ export interface SpecialTypesArgs {
 
 export function specialTypes(tx: Transaction, args: SpecialTypesArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::examples::special_types`,
+    target: `${getPublishedAt('examples')}::examples::special_types`,
     arguments: [
       pure(tx, args.asciiString, `${String1.$typeName}`),
       pure(tx, args.utf8String, `${String.$typeName}`),

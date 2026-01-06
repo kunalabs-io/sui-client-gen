@@ -36,7 +36,7 @@ export type AuthenticatorStateReified = Reified<AuthenticatorState, Authenticato
 export class AuthenticatorState implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::authenticator_state::AuthenticatorState`
+  static readonly $typeName = `0x2::authenticator_state::AuthenticatorState` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -223,7 +223,7 @@ export type AuthenticatorStateInnerReified = Reified<
 export class AuthenticatorStateInner implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::authenticator_state::AuthenticatorStateInner`
+  static readonly $typeName = `0x2::authenticator_state::AuthenticatorStateInner` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -416,7 +416,7 @@ export type JWKReified = Reified<JWK, JWKFields>
 export class JWK implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::authenticator_state::JWK`
+  static readonly $typeName = `0x2::authenticator_state::JWK` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -611,7 +611,7 @@ export type JwkIdReified = Reified<JwkId, JwkIdFields>
 export class JwkId implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::authenticator_state::JwkId`
+  static readonly $typeName = `0x2::authenticator_state::JwkId` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -793,7 +793,7 @@ export type ActiveJwkReified = Reified<ActiveJwk, ActiveJwkFields>
 export class ActiveJwk implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::authenticator_state::ActiveJwk`
+  static readonly $typeName = `0x2::authenticator_state::ActiveJwk` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

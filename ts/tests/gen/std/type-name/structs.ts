@@ -31,7 +31,7 @@ export type TypeNameReified = Reified<TypeName, TypeNameFields>
 export class TypeName implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x1::type_name::TypeName`
+  static readonly $typeName = `0x1::type_name::TypeName` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 

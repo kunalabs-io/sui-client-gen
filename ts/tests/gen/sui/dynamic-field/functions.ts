@@ -1,4 +1,4 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
@@ -10,7 +10,7 @@ export interface AddArgs {
 
 export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::add`,
+    target: `${getPublishedAt('sui')}::dynamic_field::add`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.object),
@@ -27,7 +27,7 @@ export interface BorrowArgs {
 
 export function borrow(tx: Transaction, typeArgs: [string, string], args: BorrowArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::borrow`,
+    target: `${getPublishedAt('sui')}::dynamic_field::borrow`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
   })
@@ -40,7 +40,7 @@ export interface BorrowMutArgs {
 
 export function borrowMut(tx: Transaction, typeArgs: [string, string], args: BorrowMutArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::borrow_mut`,
+    target: `${getPublishedAt('sui')}::dynamic_field::borrow_mut`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
   })
@@ -53,7 +53,7 @@ export interface RemoveArgs {
 
 export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::remove`,
+    target: `${getPublishedAt('sui')}::dynamic_field::remove`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
   })
@@ -66,7 +66,7 @@ export interface Exists_Args {
 
 export function exists_(tx: Transaction, typeArg: string, args: Exists_Args) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::exists_`,
+    target: `${getPublishedAt('sui')}::dynamic_field::exists_`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.object), generic(tx, `${typeArg}`, args.name)],
   })
@@ -83,7 +83,7 @@ export function removeIfExists(
   args: RemoveIfExistsArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::remove_if_exists`,
+    target: `${getPublishedAt('sui')}::dynamic_field::remove_if_exists`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
   })
@@ -100,7 +100,7 @@ export function existsWithType(
   args: ExistsWithTypeArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::exists_with_type`,
+    target: `${getPublishedAt('sui')}::dynamic_field::exists_with_type`,
     typeArguments: typeArgs,
     arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
   })
@@ -113,7 +113,7 @@ export interface FieldInfoArgs {
 
 export function fieldInfo(tx: Transaction, typeArg: string, args: FieldInfoArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::field_info`,
+    target: `${getPublishedAt('sui')}::dynamic_field::field_info`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.object), generic(tx, `${typeArg}`, args.name)],
   })
@@ -126,7 +126,7 @@ export interface FieldInfoMutArgs {
 
 export function fieldInfoMut(tx: Transaction, typeArg: string, args: FieldInfoMutArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::field_info_mut`,
+    target: `${getPublishedAt('sui')}::dynamic_field::field_info_mut`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.object), generic(tx, `${typeArg}`, args.name)],
   })
@@ -139,7 +139,7 @@ export interface HashTypeAndKeyArgs {
 
 export function hashTypeAndKey(tx: Transaction, typeArg: string, args: HashTypeAndKeyArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::hash_type_and_key`,
+    target: `${getPublishedAt('sui')}::dynamic_field::hash_type_and_key`,
     typeArguments: [typeArg],
     arguments: [pure(tx, args.parent, `address`), generic(tx, `${typeArg}`, args.k)],
   })
@@ -152,7 +152,7 @@ export interface AddChildObjectArgs {
 
 export function addChildObject(tx: Transaction, typeArg: string, args: AddChildObjectArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::add_child_object`,
+    target: `${getPublishedAt('sui')}::dynamic_field::add_child_object`,
     typeArguments: [typeArg],
     arguments: [pure(tx, args.parent, `address`), generic(tx, `${typeArg}`, args.child)],
   })
@@ -165,7 +165,7 @@ export interface BorrowChildObjectArgs {
 
 export function borrowChildObject(tx: Transaction, typeArg: string, args: BorrowChildObjectArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::borrow_child_object`,
+    target: `${getPublishedAt('sui')}::dynamic_field::borrow_child_object`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.object), pure(tx, args.id, `address`)],
   })
@@ -182,7 +182,7 @@ export function borrowChildObjectMut(
   args: BorrowChildObjectMutArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::borrow_child_object_mut`,
+    target: `${getPublishedAt('sui')}::dynamic_field::borrow_child_object_mut`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.object), pure(tx, args.id, `address`)],
   })
@@ -195,7 +195,7 @@ export interface RemoveChildObjectArgs {
 
 export function removeChildObject(tx: Transaction, typeArg: string, args: RemoveChildObjectArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::remove_child_object`,
+    target: `${getPublishedAt('sui')}::dynamic_field::remove_child_object`,
     typeArguments: [typeArg],
     arguments: [pure(tx, args.parent, `address`), pure(tx, args.id, `address`)],
   })
@@ -208,7 +208,7 @@ export interface HasChildObjectArgs {
 
 export function hasChildObject(tx: Transaction, args: HasChildObjectArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::has_child_object`,
+    target: `${getPublishedAt('sui')}::dynamic_field::has_child_object`,
     arguments: [pure(tx, args.parent, `address`), pure(tx, args.id, `address`)],
   })
 }
@@ -224,7 +224,7 @@ export function hasChildObjectWithTy(
   args: HasChildObjectWithTyArgs
 ) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::dynamic_field::has_child_object_with_ty`,
+    target: `${getPublishedAt('sui')}::dynamic_field::has_child_object_with_ty`,
     typeArguments: [typeArg],
     arguments: [pure(tx, args.parent, `address`), pure(tx, args.id, `address`)],
   })

@@ -44,7 +44,7 @@ export type VecSetReified<K extends TypeArgument> = Reified<VecSet<K>, VecSetFie
 export class VecSet<K extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::vec_set::VecSet`
+  static readonly $typeName = `0x2::vec_set::VecSet` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 

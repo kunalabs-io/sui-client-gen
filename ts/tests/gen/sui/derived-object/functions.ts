@@ -1,4 +1,4 @@
-import { PUBLISHED_AT } from '..'
+import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { ID } from '../object/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
@@ -10,7 +10,7 @@ export interface ClaimArgs {
 
 export function claim(tx: Transaction, typeArg: string, args: ClaimArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::derived_object::claim`,
+    target: `${getPublishedAt('sui')}::derived_object::claim`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.parent), generic(tx, `${typeArg}`, args.key)],
   })
@@ -23,7 +23,7 @@ export interface ExistsArgs {
 
 export function exists(tx: Transaction, typeArg: string, args: ExistsArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::derived_object::exists`,
+    target: `${getPublishedAt('sui')}::derived_object::exists`,
     typeArguments: [typeArg],
     arguments: [obj(tx, args.parent), generic(tx, `${typeArg}`, args.key)],
   })
@@ -36,7 +36,7 @@ export interface DeriveAddressArgs {
 
 export function deriveAddress(tx: Transaction, typeArg: string, args: DeriveAddressArgs) {
   return tx.moveCall({
-    target: `${PUBLISHED_AT}::derived_object::derive_address`,
+    target: `${getPublishedAt('sui')}::derived_object::derive_address`,
     typeArguments: [typeArg],
     arguments: [pure(tx, args.parent, `${ID.$typeName}`), generic(tx, `${typeArg}`, args.key)],
   })
