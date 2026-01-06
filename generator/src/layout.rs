@@ -38,19 +38,15 @@ impl OutputLayout {
         &self,
         pkg_id: &AccountAddress,
         top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
-        is_source: bool,
     ) -> PackageLayout {
         let is_top_level = top_level_pkg_names.contains_key(pkg_id);
 
         let path = match top_level_pkg_names.get(pkg_id) {
             Some(pkg_name) => self.root.join(package_import_name(*pkg_name)),
-            None => {
-                let dep_dir = if is_source { "source" } else { "onchain" };
-                self.root
-                    .join("_dependencies")
-                    .join(dep_dir)
-                    .join(pkg_id.to_hex_literal())
-            }
+            None => self
+                .root
+                .join("_dependencies")
+                .join(pkg_id.to_hex_literal()),
         };
 
         PackageLayout::new(path, is_top_level)
@@ -68,13 +64,13 @@ pub struct PackageLayout {
     pub path: PathBuf,
     /// Whether this is a top-level package (affects path depths)
     pub is_top_level: bool,
-    /// Levels from root: 0 for top-level, 2 for dependencies
+    /// Levels from root: 0 for top-level, 1 for dependencies
     pub levels_from_root: u8,
 }
 
 impl PackageLayout {
     fn new(path: PathBuf, is_top_level: bool) -> Self {
-        let levels_from_root = if is_top_level { 0 } else { 2 };
+        let levels_from_root = if is_top_level { 0 } else { 1 };
         Self {
             path,
             is_top_level,

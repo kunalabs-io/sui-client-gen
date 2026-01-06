@@ -187,8 +187,6 @@ pub struct ImportPathResolver {
     module_name: Symbol,
     /// Map of top-level package addresses to their names
     top_level_pkg_names: BTreeMap<AccountAddress, Symbol>,
-    /// Whether generating source deps (vs onchain)
-    is_source: bool,
     /// Whether current package is top-level
     is_top_level: bool,
 }
@@ -198,14 +196,12 @@ impl ImportPathResolver {
         package_address: AccountAddress,
         module_name: Symbol,
         top_level_pkg_names: BTreeMap<AccountAddress, Symbol>,
-        is_source: bool,
         is_top_level: bool,
     ) -> Self {
         Self {
             package_address,
             module_name,
             top_level_pkg_names,
-            is_source,
             is_top_level,
         }
     }
@@ -262,10 +258,8 @@ impl ImportPathResolver {
             ))
         } else if self.is_top_level {
             // Current is top-level, target is a dependency
-            let dep_dir = if self.is_source { "source" } else { "onchain" };
             Some(format!(
-                "../../_dependencies/{}/{}/{}/{}",
-                dep_dir,
+                "../../_dependencies/{}/{}/{}",
                 target_pkg_addr.to_hex_literal(),
                 mod_import_name,
                 file_name
@@ -275,11 +269,11 @@ impl ImportPathResolver {
             let target_pkg_name =
                 package_import_name(*self.top_level_pkg_names.get(&target_pkg_addr).unwrap());
             Some(format!(
-                "../../../../{}/{}/{}",
+                "../../../{}/{}/{}",
                 target_pkg_name, mod_import_name, file_name
             ))
         } else {
-            // Both are dependencies - sibling in same _dependencies/<source|onchain>/ dir
+            // Both are dependencies - siblings in _dependencies/
             Some(format!(
                 "../../{}/{}/{}",
                 target_pkg_addr.to_hex_literal(),

@@ -100,12 +100,9 @@ The generated code has the following structure:
 ```
 <root>
 ├── _dependencies
-│    ├── source
-│    │   ├── 0x1
-│    │   ├── 0x2
-│    │   └── ...
-│    └── onchain
-│        └── ...
+│    ├── 0x1
+│    ├── 0x2
+│    └── ...
 ├── _framework
 │    └── ...
 ├── <package>
@@ -122,9 +119,7 @@ The generated code has the following structure:
 
 **`_framework`** directory contains functions and utilities required for the operation of the generated SDK.
 
-**`_dependencies`** contains generated code of the direct and transitive dependencies of packages listed in `gen.toml`. While their contents are similar to those of listed packages, these are not intended to be imported or used directly as its APIs are not guaranteed to be stable and may change. Any package code that's inteded to be used directly in the app should be listed in `gen.toml`.
-
-Due to a technical detail, the generator currently generates two separate dependency graphs for on-chain and source packages under `_dependencies`. This causes the code for some of the dependencies to be unnecessarily duplicated but will be fixed in a future version (see https://github.com/kunalabs-io/sui-client-gen/issues/1#issuecomment-1554754842).
+**`_dependencies`** contains generated code of the direct and transitive dependencies of packages listed in `gen.toml`. While their contents are similar to those of listed packages, these are not intended to be imported or used directly as its APIs are not guaranteed to be stable and may change. Any package code that's intended to be used directly in the app should be listed in `gen.toml`.
 
 Each **`<package>`** directory contains a separate directory for each of its modules and `index.ts` and `init.ts` files.
 
