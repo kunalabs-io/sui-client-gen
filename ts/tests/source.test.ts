@@ -39,9 +39,9 @@ import { String as AsciiString } from './gen/std/ascii/structs'
 import { Url } from './gen/sui/url/structs'
 import { ID, UID } from './gen/sui/object/structs'
 import { loader } from './gen/_framework/loader'
-import { PKG_V1 } from './gen/examples'
 import { sqrt } from './gen/sui/math/functions'
 import { Action, isWrapped, Wrapped } from '../examples/gen/examples/enums/structs'
+import { getOriginalId } from '../examples/gen/_envs'
 
 const keypair = Ed25519Keypair.fromSecretKey(
   fromB64('AMVT58FaLF2tJtg/g8X2z1/vG0FvNn0jvRu9X2Wl8F+u').slice(1)
@@ -781,11 +781,13 @@ it('converts to json correctly', () => {
     ],
   })
 
+  const pkgAddress = getOriginalId('examples')
+
   const exp: ReturnType<typeof obj.toJSON> = {
-    $typeName: `${PKG_V1}::fixture::WithTwoGenerics`,
+    $typeName: `${pkgAddress}::fixture::WithTwoGenerics`,
     $typeArgs: [
-      `${PKG_V1}::fixture::WithSpecialTypes<0x2::sui::SUI, u64>`,
-      `vector<${PKG_V1}::fixture::WithTwoGenerics<${PKG_V1}::fixture::Bar, u8>>`,
+      `${pkgAddress}::fixture::WithSpecialTypes<0x2::sui::SUI, u64>`,
+      `vector<${pkgAddress}::fixture::WithTwoGenerics<${pkgAddress}::fixture::Bar, u8>>`,
     ],
     genericField1: {
       id: '0x1',
