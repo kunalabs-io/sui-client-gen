@@ -1,3 +1,6 @@
+import { String as StringAscii } from '../../_dependencies/0x1/ascii/structs'
+import { Option } from '../../_dependencies/0x1/option/structs'
+import { String } from '../../_dependencies/0x1/string/structs'
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -22,9 +25,6 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { String as StringAscii } from '../../std/ascii/structs'
-import { Option } from '../../std/option/structs'
-import { String } from '../../std/string/structs'
 import { Balance, Supply } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { Url } from '../url/structs'

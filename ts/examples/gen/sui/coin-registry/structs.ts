@@ -1,3 +1,6 @@
+import { Option } from '../../_dependencies/0x1/option/structs'
+import { String } from '../../_dependencies/0x1/string/structs'
+import { TypeName } from '../../_dependencies/0x1/type-name/structs'
 import {
   EnumVariantClass,
   PhantomReified,
@@ -25,9 +28,6 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { Option } from '../../std/option/structs'
-import { String } from '../../std/string/structs'
-import { TypeName } from '../../std/type-name/structs'
 import { Bag } from '../bag/structs'
 import { Supply } from '../balance/structs'
 import { ID, UID } from '../object/structs'

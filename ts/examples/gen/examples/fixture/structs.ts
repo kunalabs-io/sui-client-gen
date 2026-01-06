@@ -1,3 +1,6 @@
+import { String as StringAscii } from '../../_dependencies/0x1/ascii/structs'
+import { Option } from '../../_dependencies/0x1/option/structs'
+import { String } from '../../_dependencies/0x1/string/structs'
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -28,9 +31,6 @@ import {
   parseTypeName,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { String as StringAscii } from '../../std/ascii/structs'
-import { Option } from '../../std/option/structs'
-import { String } from '../../std/string/structs'
 import { Balance } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { SUI } from '../../sui/sui/structs'

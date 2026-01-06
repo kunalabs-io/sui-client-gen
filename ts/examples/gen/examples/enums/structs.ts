@@ -1,3 +1,4 @@
+import { Option } from '../../_dependencies/0x1/option/structs'
 import {
   EnumVariantClass,
   PhantomReified,
@@ -27,7 +28,6 @@ import {
   compressSuiType,
   parseTypeName,
 } from '../../_framework/util'
-import { Option } from '../../std/option/structs'
 import { Balance } from '../../sui/balance/structs'
 import { UID } from '../../sui/object/structs'
 import { SUI } from '../../sui/sui/structs'

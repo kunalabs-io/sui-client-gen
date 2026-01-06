@@ -1,3 +1,6 @@
+import { String } from '../../_dependencies/0x1/ascii/structs'
+import { Option } from '../../_dependencies/0x1/option/structs'
+import { String as StringString } from '../../_dependencies/0x1/string/structs'
 import {
   PhantomReified,
   Reified,
@@ -13,9 +16,6 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { String } from '../../std/ascii/structs'
-import { Option } from '../../std/option/structs'
-import { String as StringString } from '../../std/string/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { PKG_V1 } from '../index'
 import { bcs } from '@mysten/sui/bcs'

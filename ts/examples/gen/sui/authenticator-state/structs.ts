@@ -1,3 +1,4 @@
+import { String } from '../../_dependencies/0x1/string/structs'
 import {
   PhantomReified,
   Reified,
@@ -13,7 +14,6 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { String } from '../../std/string/structs'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
