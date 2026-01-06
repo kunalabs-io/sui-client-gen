@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { String } from '../../_dependencies/0x1/string/structs'
+import { String } from '../../_dependencies/std/string/structs'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 

@@ -1,6 +1,6 @@
-import { Option } from '../../_dependencies/0x1/option/structs'
-import { String } from '../../_dependencies/0x1/string/structs'
-import { TypeName } from '../../_dependencies/0x1/type-name/structs'
+import { Option } from '../../_dependencies/std/option/structs'
+import { String } from '../../_dependencies/std/string/structs'
+import { TypeName } from '../../_dependencies/std/type-name/structs'
 import {
   PhantomReified,
   PhantomToTypeStr,

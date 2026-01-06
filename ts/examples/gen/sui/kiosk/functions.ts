@@ -1,5 +1,5 @@
 import { PUBLISHED_AT } from '..'
-import { Option } from '../../_dependencies/0x1/option/structs'
+import { Option } from '../../_dependencies/std/option/structs'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { ID } from '../object/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'

@@ -1,4 +1,4 @@
-import { Option } from '../../_dependencies/0x1/option/structs'
+import { Option } from '../../_dependencies/std/option/structs'
 import {
   PhantomReified,
   PhantomToTypeStr,

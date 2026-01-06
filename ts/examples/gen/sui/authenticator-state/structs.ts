@@ -1,4 +1,4 @@
-import { String } from '../../_dependencies/0x1/string/structs'
+import { String } from '../../_dependencies/std/string/structs'
 import {
   PhantomReified,
   Reified,
