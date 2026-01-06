@@ -1,0 +1,15 @@
+[config]
+environment = "testnet_alt"
+output = "./out-envs"
+
+[packages]
+# Original top-level packages
+pkg_published_toplevel = { local = "./pkg_published_toplevel" }
+pkg_unpublished_toplevel = { local = "./pkg_unpublished_toplevel" }
+
+# Packages with Published.toml entries for testnet_alt
+pkg_published_transitive_alt = { local = "./pkg_published_transitive_alt" }
+pkg_unpublished_transitive = { local = "./pkg_unpublished_transitive" }
+
+[environments]
+testnet_alt = { chain-id = "4c78adac", graphql = "https://graphql.testnet.sui.io/graphql" }

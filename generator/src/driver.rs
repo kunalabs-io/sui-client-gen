@@ -17,10 +17,10 @@ use sui_sdk::types::SYSTEM_PACKAGE_ADDRESSES;
 use crate::graphql::GraphQLClient;
 use crate::io::{clean_output, write_str_to_file};
 use crate::layout::OutputLayout;
-use crate::manifest::parse_gen_manifest_from_file;
+use crate::manifest::{is_default_environment, parse_gen_manifest_from_file};
 use crate::model_builder::{self, TypeOriginTable, VersionTable};
 use crate::ts_gen::{self, gen_module_structs, gen_package_index};
-use crate::{expected_chain_id, framework_sources, DEFAULT_GRAPHQL};
+use crate::{framework_sources, resolve_chain_id, resolve_graphql};
 
 /// Options for running the new generator.
 pub struct RunOptions {
@@ -28,6 +28,10 @@ pub struct RunOptions {
     pub manifest_path: PathBuf,
     /// Output directory (overrides manifest config if set)
     pub out_dir: Option<PathBuf>,
+    /// Environment override (overrides manifest config if set)
+    pub environment: Option<String>,
+    /// GraphQL endpoint override (overrides manifest/environment config if set)
+    pub graphql: Option<String>,
     /// Whether to clean the output directory first
     pub clean: bool,
 }
@@ -46,50 +50,81 @@ pub async fn run(opts: RunOptions) -> Result<()> {
         .or_else(|| manifest.config.output.as_ref().map(PathBuf::from))
         .unwrap_or_else(|| opts.manifest_path.parent().unwrap().to_path_buf());
 
-    // Setup GraphQL client
-    let graphql_url = manifest
-        .config
-        .graphql
+    // Apply CLI environment override, or use manifest config
+    let environment = opts
+        .environment
         .as_deref()
-        .unwrap_or(DEFAULT_GRAPHQL);
-    let graphql_client = GraphQLClient::new(graphql_url);
+        .unwrap_or(&manifest.config.environment);
 
-    // Validate chain ID matches environment
-    if let Some(expected) = expected_chain_id(&manifest.config.environment) {
-        writeln!(progress_output, "{}", "VALIDATING CHAIN ID".green().bold())?;
-        let actual = graphql_client
-            .query_chain_identifier()
-            .await
-            .map_err(|e| anyhow::anyhow!("Failed to query chain identifier from {}: {}", graphql_url, e))?;
+    // Validate environment exists (CLI override may not have been validated by manifest parsing)
+    if !is_default_environment(environment) && !manifest.environments.contains_key(environment) {
+        return Err(anyhow::anyhow!(
+            "Environment '{}' not found. It must be defined in [environments] \
+             or be a default environment (mainnet, testnet).",
+            environment
+        ));
+    }
 
-        if actual != expected {
-            return Err(anyhow::anyhow!(
-                "Chain ID mismatch: GraphQL endpoint '{}' returned chain ID '{}', \
-                 but environment '{}' expects chain ID '{}'. \
-                 Please ensure your GraphQL endpoint matches your environment.",
+    // Resolve chain ID for the environment
+    // This should always succeed since we validated the environment exists above
+    let expected_chain_id = resolve_chain_id(environment, &manifest.environments).ok_or_else(|| {
+        anyhow::anyhow!(
+            "Environment '{}' has no associated chain ID. \
+             This is unexpected as environment validation should have caught this.",
+            environment
+        )
+    })?;
+
+    // Apply CLI graphql override, or resolve from environment
+    let graphql_url = opts.graphql.clone().unwrap_or_else(|| {
+        resolve_graphql(
+            manifest.config.graphql.as_deref(),
+            environment,
+            &manifest.environments,
+        )
+    });
+    let graphql_client = GraphQLClient::new(&graphql_url);
+
+    // Validate chain ID matches endpoint
+    writeln!(progress_output, "{}", "VALIDATING CHAIN ID".green().bold())?;
+    let actual_chain_id = graphql_client
+        .query_chain_identifier()
+        .await
+        .map_err(|e| {
+            anyhow::anyhow!(
+                "Failed to query chain identifier from {}: {}",
                 graphql_url,
-                actual,
-                manifest.config.environment,
-                expected
-            ));
-        }
+                e
+            )
+        })?;
+
+    if actual_chain_id != expected_chain_id {
+        return Err(anyhow::anyhow!(
+            "Chain ID mismatch: GraphQL endpoint '{}' returned chain ID '{}', \
+             but environment '{}' expects chain ID '{}'. \
+             Please ensure your GraphQL endpoint matches your environment.",
+            graphql_url,
+            actual_chain_id,
+            environment,
+            expected_chain_id
+        ));
     }
 
     // Build model using new package system
     writeln!(
         progress_output,
         "{}",
-        format!(
-            "BUILDING MODEL (environment: {})",
-            manifest.config.environment
-        )
-        .green()
-        .bold()
+        format!("BUILDING MODEL (environment: {})", environment)
+            .green()
+            .bold()
     )?;
     let model_result = model_builder::build_model(
         &manifest.packages,
         &opts.manifest_path,
-        &manifest.config.environment,
+        environment,
+        &expected_chain_id,
+        &manifest.environments,
+        &manifest.dep_replacements,
         &graphql_client,
     )
     .await?;

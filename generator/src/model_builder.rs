@@ -13,7 +13,6 @@ use move_compiler::editions::Flavor;
 use move_core_types::account_address::AccountAddress;
 use move_model_2::model::Model;
 use move_model_2::source_kind::WithSource;
-use move_package_alt::flavor::MoveFlavor;
 use move_package_alt::graph::NamedAddress;
 use move_package_alt::package::RootPackage;
 use move_package_alt::schema::{
@@ -26,7 +25,7 @@ use sui_sdk::types::base_types::SequenceNumber;
 use tempfile::TempDir;
 
 use crate::graphql::GraphQLClient;
-use crate::manifest::Packages;
+use crate::manifest::{DepReplacement, DepReplacements, Environments, Packages, is_default_environment};
 
 const STUB_PACKAGE_NAME: &str = "SuiClientGenRootPackageStub";
 
@@ -64,12 +63,18 @@ pub struct ModelResult {
 /// # Arguments
 /// * `packages` - The packages from gen.toml
 /// * `manifest_path` - Path to the gen.toml file
-/// * `environment` - Environment name (e.g., "testnet", "mainnet")
+/// * `environment` - Environment name (e.g., "testnet", "mainnet", or custom)
+/// * `chain_id` - The chain ID for this environment
+/// * `environments` - Custom environments from gen.toml (for stub Move.toml)
+/// * `dep_replacements` - Environment-scoped dep replacements from gen.toml
 /// * `graphql_client` - GraphQL client for type origin queries
 pub async fn build_model(
     packages: &Packages,
     manifest_path: &Path,
     environment: &str,
+    chain_id: &str,
+    environments: &Environments,
+    dep_replacements: &DepReplacements,
     graphql_client: &GraphQLClient,
 ) -> Result<ModelResult> {
     // Get the manifest directory for resolving relative paths
@@ -77,19 +82,11 @@ pub async fn build_model(
         .parent()
         .ok_or_else(|| anyhow::anyhow!("Invalid manifest path"))?;
 
-    // Create stub package in temp directory
-    let temp_dir = create_stub_package(packages, manifest_dir)?;
+    // Create stub package in temp directory with environments and dep-replacements
+    let temp_dir = create_stub_package(packages, manifest_dir, environments, dep_replacements)?;
 
-    // Setup environment
-    let envs = SuiFlavor::default_environments();
-    let environment_id = envs.get(environment).ok_or_else(|| {
-        anyhow::anyhow!(
-            "Environment '{}' not found. Available: {:?}",
-            environment,
-            envs.keys().collect::<Vec<_>>()
-        )
-    })?;
-    let env = Environment::new(environment.to_string(), environment_id.clone());
+    // Setup environment - use the provided chain_id
+    let env = Environment::new(environment.to_string(), chain_id.to_string());
 
     // Load root package
     let root_pkg = RootPackage::<SuiFlavor>::load(temp_dir.path(), env)
@@ -126,8 +123,14 @@ pub async fn build_model(
 /// Create a stub Move package in a temporary directory.
 ///
 /// The stub package has the gen.toml packages as dependencies, with local paths
-/// converted to absolute paths.
-fn create_stub_package(packages: &Packages, manifest_dir: &Path) -> Result<TempDir> {
+/// converted to absolute paths. It also includes [environments] and [dep-replacements.<env>]
+/// sections for custom environments.
+fn create_stub_package(
+    packages: &Packages,
+    manifest_dir: &Path,
+    environments: &Environments,
+    dep_replacements: &DepReplacements,
+) -> Result<TempDir> {
     let temp_dir = tempfile::tempdir()?;
     let stub_path = temp_dir.path();
 
@@ -146,6 +149,37 @@ fn create_stub_package(packages: &Packages, manifest_dir: &Path) -> Result<TempD
     for (name, dep) in packages.iter() {
         let dep_str = format_dependency(dep, manifest_dir)?;
         writeln!(manifest, "{} = {}", name, dep_str)?;
+    }
+
+    // Write [environments] section for non-default environments
+    let custom_envs: Vec<_> = environments
+        .iter()
+        .filter(|(name, _)| !is_default_environment(name))
+        .collect();
+
+    if !custom_envs.is_empty() {
+        writeln!(manifest)?;
+        writeln!(manifest, "[environments]")?;
+        for (env_name, env) in custom_envs {
+            // Custom environments always have chain_id (validated in manifest parsing)
+            if let Some(chain_id) = &env.chain_id {
+                writeln!(manifest, "{} = \"{}\"", env_name, chain_id)?;
+            }
+        }
+    }
+
+    // Write [dep-replacements] section with dotted keys (env.pkg = {...})
+    // Using dotted key format to ensure compatibility with move_package_alt
+    let has_replacements = dep_replacements.values().any(|r| !r.is_empty());
+    if has_replacements {
+        writeln!(manifest)?;
+        writeln!(manifest, "[dep-replacements]")?;
+        for (env_name, replacements) in dep_replacements.iter() {
+            for (pkg_name, replacement) in replacements.iter() {
+                let replacement_str = format_dep_replacement(replacement, manifest_dir)?;
+                writeln!(manifest, "{}.{} = {}", env_name, pkg_name, replacement_str)?;
+            }
+        }
     }
 
     Ok(temp_dir)
@@ -202,6 +236,58 @@ fn format_toml_value(value: &toml::Value) -> String {
         }
         toml::Value::Datetime(dt) => dt.to_string(),
     }
+}
+
+/// Format a dep-replacement for the stub Move.toml.
+fn format_dep_replacement(replacement: &DepReplacement, manifest_dir: &Path) -> Result<String> {
+    let mut parts = Vec::new();
+
+    // If there's a dependency source, format it
+    if let Some(dep) = &replacement.dependency {
+        // Extract the inner fields from the dependency and add them
+        match dep {
+            ManifestDependencyInfo::Local(LocalDepInfo { local }) => {
+                let absolute_path = fs::canonicalize(manifest_dir.join(local))
+                    .with_context(|| format!("Failed to resolve path: {}", local.display()))?;
+                parts.push(format!("local = \"{}\"", absolute_path.display()));
+            }
+            ManifestDependencyInfo::Git(ManifestGitDependency { repo, rev, subdir }) => {
+                parts.push(format!("git = \"{}\"", repo));
+                if let Some(rev) = rev {
+                    parts.push(format!("rev = \"{}\"", rev));
+                }
+                if !subdir.as_os_str().is_empty() {
+                    parts.push(format!("subdir = \"{}\"", subdir.display()));
+                }
+            }
+            ManifestDependencyInfo::External(ExternalDependency { resolver, data }) => {
+                let data_str = format_toml_value(data);
+                parts.push(format!("r.{} = {}", resolver, data_str));
+            }
+            ManifestDependencyInfo::OnChain(OnChainDepInfo { .. }) => {
+                parts.push("on-chain = true".to_string());
+            }
+        }
+    }
+
+    // Add other replacement fields
+    if let Some(published_at) = &replacement.published_at {
+        parts.push(format!("published-at = \"{}\"", published_at));
+    }
+    if let Some(original_id) = &replacement.original_id {
+        parts.push(format!("original-id = \"{}\"", original_id));
+    }
+    if let Some(use_env) = &replacement.use_environment {
+        parts.push(format!("use-environment = \"{}\"", use_env));
+    }
+    if let Some(rename_from) = &replacement.rename_from {
+        parts.push(format!("rename-from = \"{}\"", rename_from));
+    }
+    if replacement.is_override {
+        parts.push("override = true".to_string());
+    }
+
+    Ok(format!("{{ {} }}", parts.join(", ")))
 }
 
 /// Build package info from the loaded RootPackage.

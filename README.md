@@ -13,15 +13,27 @@ A tool for generating TS SDKs for Sui Move smart contracts. Supports code genera
 
 ```toml
 [config]
-# will be set to mainnet by default if omitted
-rpc = "https://fullnode.devnet.sui.io:443"
+environment = "mainnet"  # or "testnet", or a custom environment defined in [environments]
+# graphql = "https://..."  # optional: override GraphQL endpoint
+# output = "./gen"         # optional: output directory
 
 [packages]
 # based on source code (syntax same as in Move.toml):
 DeepBook = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/deepbook", rev = "releases/sui-v1.4.0-release" }
 AMM = { local = "../move/amm" }
 # an on-chain package:
-FooPackage = { id = "0x12345" }
+FooPackage = { on-chain = true }
+# MVR package:
+MyMVRPackage = { r.mvr = "@namespace/package" }
+
+# Optional: define custom environments
+# [environments]
+# staging = "abcd1234"  # chain-id required for custom envs
+# testnet = { graphql = "https://my-testnet-endpoint/graphql" }  # override graphql for default env
+
+# Optional: environment-scoped dependency replacements
+# [dep-replacements.staging]
+# some_dep = { local = "../other", use-environment = "testnet" }
 ```
 
 3. Run the generator from inside the directory: `sui-client-gen`
@@ -228,11 +240,10 @@ specialTypes(tx, {
 
 ## Caveats
 
-- When specifying both source and on-chain packages, the generator will currently generate two separate dependency graphs (one for on-chain and one for source). This is due to a technical detail and will be resolved in a future version so that only a single dependency graph is generated (https://github.com/kunalabs-io/sui-client-gen/issues/1#issuecomment-1554754842).
 - Since whitespace detection relies on some Rust nightly features which are currently unstable (https://github.com/udoprog/genco/issues/39#issuecomment-1569076737), the generated code is not formatted nicely. Usage of formatters on the generated code (e.g., `prettier`, `eslint`) is recommended.
 - Because ESLint renames some types (e.g., `String` -> `string`) due to the `@typescript-eslint/ban-types` rule which breaks the generated code, an `.eslintrc.json` file is generated in the root directory to turn off this rule.
 - When re-running the generator, the files generated on previous run will _not_ be automatically deleted in order to avoid accidental data wipes. The old files can either be deleted manually before re-running the tool (it's safe to delete everything aside from `gen.toml`) or by running the generator with `--clean` (use with caution).
-- When running the generator with default rpc `https://fullnode.mainnet.sui.io:443`, you might get an error `Error: Request rejected 429`; in case of such, you should consider switching to private RPC with higher rate-limits than the default one.
+- When running the generator with default GraphQL endpoint, you might get rate limiting errors. In such cases, consider using a private endpoint by setting `graphql` in `[config]` or the environment's graphql in `[environments]`.
 
 ## Docs
 
