@@ -32,6 +32,19 @@ struct Args {
     out: Option<String>,
 
     #[arg(
+        short,
+        long,
+        help = "Override the environment from gen.toml. Must be defined in [environments] or be a default (mainnet/testnet)."
+    )]
+    environment: Option<String>,
+
+    #[arg(
+        long,
+        help = "Override the GraphQL endpoint. Takes precedence over environment-specific endpoints."
+    )]
+    graphql: Option<String>,
+
+    #[arg(
         long,
         help = "Remove all contents of the output directory before generating, except for gen.toml. Use with caution."
     )]
@@ -47,6 +60,8 @@ async fn main() -> Result<()> {
     sui_client_gen::driver::run(sui_client_gen::driver::RunOptions {
         manifest_path: PathBuf::from(&args.manifest),
         out_dir: args.out.map(PathBuf::from),
+        environment: args.environment,
+        graphql: args.graphql,
         clean: args.clean,
     })
     .await

@@ -90,17 +90,27 @@ async fn build_fixture_model_internal() -> ModelResult {
         .expect("Failed to parse fixture gen.toml");
 
     // Use a GraphQL client - published packages will query testnet
-    let graphql_endpoint = manifest
-        .config
-        .graphql
-        .as_deref()
-        .unwrap_or("https://graphql.testnet.sui.io/graphql");
-    let graphql_client = GraphQLClient::new(graphql_endpoint);
+    let graphql_endpoint = sui_client_gen::resolve_graphql(
+        manifest.config.graphql.as_deref(),
+        &manifest.config.environment,
+        &manifest.environments,
+    );
+    let graphql_client = GraphQLClient::new(&graphql_endpoint);
+
+    // Resolve chain ID for the environment
+    let chain_id = sui_client_gen::resolve_chain_id(
+        &manifest.config.environment,
+        &manifest.environments,
+    )
+    .expect("Failed to resolve chain ID for environment");
 
     model_builder::build_model(
         &manifest.packages,
         &gen_toml_path,
         &manifest.config.environment,
+        &chain_id,
+        &manifest.environments,
+        &manifest.dep_replacements,
         &graphql_client,
     )
     .await
@@ -547,5 +557,147 @@ async fn test_model_has_structs() {
         struct_count > 0,
         "Model should have at least one struct, got {}",
         struct_count
+    );
+}
+
+// ===========================================================================
+// GEN_ENVS.TOML TESTS - Custom Environments and Dep-Replacements
+// ===========================================================================
+
+/// Test that gen_envs.toml can be parsed correctly.
+/// This tests the new [environments] and [dep-replacements.<env>] sections.
+#[test]
+fn test_gen_envs_manifest_parsing() {
+    let fixtures = fixtures_path();
+    let gen_envs_path = fixtures.join("gen_envs.toml");
+
+    let manifest = sui_client_gen::manifest::parse_gen_manifest_from_file(&gen_envs_path)
+        .expect("Failed to parse gen_envs.toml");
+
+    // Check config
+    assert_eq!(manifest.config.environment, "testnet_alt");
+    assert_eq!(manifest.config.output, Some("./out-envs".to_string()));
+    assert!(manifest.config.graphql.is_none()); // graphql is in environment, not config
+
+    // Check packages - now includes 4 top-level packages
+    assert_eq!(manifest.packages.len(), 4);
+    assert!(manifest.packages.contains_key(&PackageName::new("pkg_published_toplevel").unwrap()));
+    assert!(manifest.packages.contains_key(&PackageName::new("pkg_unpublished_toplevel").unwrap()));
+    assert!(manifest.packages.contains_key(&PackageName::new("pkg_published_transitive_alt").unwrap()));
+    assert!(manifest.packages.contains_key(&PackageName::new("pkg_unpublished_transitive").unwrap()));
+
+    // Check environments
+    assert_eq!(manifest.environments.len(), 1);
+    let testnet_alt = manifest.environments.get("testnet_alt").expect("testnet_alt should exist");
+    assert_eq!(testnet_alt.chain_id, Some("4c78adac".to_string()));
+    assert_eq!(testnet_alt.graphql, Some("https://graphql.testnet.sui.io/graphql".to_string()));
+
+    // No dep-replacements in this simplified test
+    assert!(manifest.dep_replacements.is_empty());
+}
+
+/// Test chain ID resolution for custom environment.
+#[test]
+fn test_gen_envs_chain_id_resolution() {
+    let fixtures = fixtures_path();
+    let gen_envs_path = fixtures.join("gen_envs.toml");
+
+    let manifest = sui_client_gen::manifest::parse_gen_manifest_from_file(&gen_envs_path)
+        .expect("Failed to parse gen_envs.toml");
+
+    // Resolve chain ID for the testnet_alt environment
+    let chain_id = sui_client_gen::resolve_chain_id(
+        &manifest.config.environment,
+        &manifest.environments,
+    );
+
+    assert_eq!(chain_id, Some("4c78adac".to_string()));
+}
+
+/// Test GraphQL resolution for custom environment.
+#[test]
+fn test_gen_envs_graphql_resolution() {
+    let fixtures = fixtures_path();
+    let gen_envs_path = fixtures.join("gen_envs.toml");
+
+    let manifest = sui_client_gen::manifest::parse_gen_manifest_from_file(&gen_envs_path)
+        .expect("Failed to parse gen_envs.toml");
+
+    // Resolve GraphQL for the testnet_alt environment (should use environment's graphql)
+    let graphql_url = sui_client_gen::resolve_graphql(
+        manifest.config.graphql.as_deref(),
+        &manifest.config.environment,
+        &manifest.environments,
+    );
+
+    assert_eq!(graphql_url, "https://graphql.testnet.sui.io/graphql");
+}
+
+/// Test building model with gen_envs.toml to verify dep-replacements work.
+/// This tests that:
+/// 1. use-environment overrides the environment used for Published.toml lookup
+/// 2. published-at and original-id overrides set explicit addresses
+#[tokio::test]
+async fn test_gen_envs_model_build() {
+    let fixtures = fixtures_path();
+    let gen_envs_path = fixtures.join("gen_envs.toml");
+
+    let manifest = sui_client_gen::manifest::parse_gen_manifest_from_file(&gen_envs_path)
+        .expect("Failed to parse gen_envs.toml");
+
+    let graphql_endpoint = sui_client_gen::resolve_graphql(
+        manifest.config.graphql.as_deref(),
+        &manifest.config.environment,
+        &manifest.environments,
+    );
+    let graphql_client = GraphQLClient::new(&graphql_endpoint);
+
+    let chain_id = sui_client_gen::resolve_chain_id(
+        &manifest.config.environment,
+        &manifest.environments,
+    )
+    .expect("Failed to resolve chain ID");
+
+    let result = model_builder::build_model(
+        &manifest.packages,
+        &gen_envs_path,
+        &manifest.config.environment,
+        &chain_id,
+        &manifest.environments,
+        &manifest.dep_replacements,
+        &graphql_client,
+    )
+    .await
+    .expect("Failed to build model");
+
+    // Verify pkg_published_transitive_alt uses the address from Published.toml [published.testnet_alt]
+    // Expected: 0xdbd8df5d7f7fc74dd7e1398c964d9f105d16b9782e49211b6799602a7e2bf01c
+    let expected_transitive_alt_addr = AccountAddress::from_hex_literal(
+        "0xdbd8df5d7f7fc74dd7e1398c964d9f105d16b9782e49211b6799602a7e2bf01c"
+    ).unwrap();
+
+    let transitive_alt_name = result.id_map.get(&expected_transitive_alt_addr);
+    assert_eq!(
+        transitive_alt_name.map(|n| n.as_str()),
+        Some("pkg_published_transitive_alt"),
+        "pkg_published_transitive_alt should use address from Published.toml [published.testnet_alt]"
+    );
+
+    // Verify pkg_unpublished_transitive uses address from Published.toml (original-id = "0x56789")
+    let expected_unpublished_addr = AccountAddress::from_hex_literal("0x56789").unwrap();
+    let unpublished_name = result.id_map.get(&expected_unpublished_addr);
+    assert_eq!(
+        unpublished_name.map(|n| n.as_str()),
+        Some("pkg_unpublished_transitive"),
+        "pkg_unpublished_transitive should use address from Published.toml [published.testnet_alt]"
+    );
+
+    // Verify published_at mapping for pkg_unpublished_transitive
+    let expected_published_at = AccountAddress::from_hex_literal("0x12345").unwrap();
+    let actual_published_at = result.published_at.get(&expected_unpublished_addr);
+    assert_eq!(
+        actual_published_at,
+        Some(&expected_published_at),
+        "pkg_unpublished_transitive should have published-at address from Published.toml"
     );
 }

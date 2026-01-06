@@ -2,15 +2,96 @@
 
 ## gen.toml
 
-`gen.toml` is the configuration file for the generator. It has two sections: `config` and `packages`. The `config` section contains the optional `rpc` field which specifies the RPC URL to use for fetching on-chain packages. If not specified, it defaults to `https://fullnode.mainnet.sui.io:443`.
+`gen.toml` is the configuration file for the generator. It has the following sections:
 
-The `packages` section contains a list of packages to generate code for. For source packages, the syntax is the same as in `Move.toml`, while for on-chain packages, the `id` is specified (see examples above).
+### [config]
 
-The dependency resolution for source packages works the same as in `Move.toml` -- if there are packages that transitively depend on the same package of a different version, this needs to be resolved by specifying the version explicitly in `gen.toml` (see https://docs.sui.io/build/dependency-overrides).
+The configuration section for the generator:
 
-In case of on-chain packages, if the same package is specified multiple times with different versions, the version resolution will be done automatically by using the latest version in the dependency graph (not the latest version on-chain).
+```toml
+[config]
+environment = "testnet"              # Required: the environment to generate code for
+graphql = "https://..."              # Optional: GraphQL endpoint override
+output = "./out"                     # Optional: output directory (can also be set via CLI)
+```
 
-Better support for package versions will be added in the future.
+- `environment` - Required. The environment to generate code for. This determines the chain ID for validation and which addresses are used for package resolution. Can be:
+  - Default environments: `mainnet` or `testnet`
+  - Custom environment defined in `[environments]` section
+
+- `graphql` - Optional. Override the GraphQL endpoint. Takes precedence over environment-specific endpoints.
+
+- `output` - Optional. Output directory for generated code. Can be overridden via CLI with `-o/--out`.
+
+### [packages]
+
+The packages section lists packages to generate code for. The syntax is the same as dependencies in `Move.toml`:
+
+```toml
+[packages]
+my_package = { local = "./path/to/package" }
+git_package = { git = "https://github.com/org/repo", rev = "main", subdir = "packages/pkg" }
+mvr_package = { r.mvr = "@namespace/package" }
+onchain_package = { on-chain = true }
+```
+
+The dependency resolution works the same as in `Move.toml` -- if there are packages that transitively depend on the same package of a different version, this needs to be resolved by specifying overrides in `[dep-replacements.<env>]`.
+
+### [environments]
+
+Optional section for defining custom environments. Default environments (`mainnet`, `testnet`) don't need to be defined but can be listed to override their GraphQL endpoint.
+
+```toml
+[environments]
+# Custom environment: chain-id required
+staging = "abcd1234"                                              # String shorthand
+staging_alt = { chain-id = "abcd1234", graphql = "https://..." }  # Full form with graphql
+
+# Default environment override: only graphql allowed, no chain-id
+testnet = { graphql = "https://my-testnet-endpoint.com/graphql" }
+```
+
+**Validation rules:**
+- Custom environments MUST specify a `chain-id`
+- Default environments (`mainnet`, `testnet`) CANNOT specify a `chain-id`
+- The `environment` in `[config]` must exist in `[environments]` or be a default
+
+### [dep-replacements.<env>]
+
+Environment-scoped dependency replacements. These override how transitive dependencies are resolved for a specific environment:
+
+```toml
+[dep-replacements.staging]
+# Override source location and use a different environment's Published.toml
+some_dep = { local = "../other-version", use-environment = "testnet" }
+
+# Override published addresses without changing source
+other_dep = { published-at = "0x123...", original-id = "0x456..." }
+
+# Mark as override dependency (for diamond dependency resolution)
+diamond_dep = { git = "https://...", rev = "main", override = true }
+```
+
+Available fields:
+- Source override: `local`, `git`, `r.mvr`, `on-chain` (same as [packages])
+- `published-at` - Override the published-at address
+- `original-id` - Override the original-id address
+- `use-environment` - Use a different environment's Published.toml
+- `rename-from` - Rename from a different package name
+- `override` - Mark as override dependency (boolean)
+
+## CLI Options
+
+```
+sui-client-gen [OPTIONS]
+
+Options:
+  -m, --manifest <PATH>     Path to gen.toml [default: ./gen.toml]
+  -o, --out <PATH>          Output directory (overrides manifest config)
+  -e, --environment <ENV>   Override environment from manifest
+      --graphql <URL>       Override GraphQL endpoint
+      --clean               Clean output directory before generating
+```
 
 ## Overview of the generated code
 
