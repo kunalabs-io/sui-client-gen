@@ -1,0 +1,10 @@
+# Test Published.toml for pkg_unpublished_transitive
+# This simulates a package that was published to testnet_alt
+
+[published.testnet_alt]
+chain-id = "4c78adac"
+published-at = "0x12345"
+original-id = "0x56789"
+version = 1
+toolchain-version = "1.63.0"
+build-config = { flavor = "sui", edition = "2024" }

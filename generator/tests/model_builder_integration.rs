@@ -75,9 +75,14 @@ mod known_addresses {
         "0xe7828008222ef9e61107348b6ded43053ca068da42e4f43875b36e7609815f1d";
 }
 
-/// Get the path to test fixtures
+/// Get the path to basic test fixtures
 fn fixtures_path() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/basic")
+}
+
+/// Get the path to custom-env test fixtures
+fn custom_env_fixtures_path() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/custom-env")
 }
 
 /// Internal function to build the model using the fixture gen.toml.
@@ -561,22 +566,22 @@ async fn test_model_has_structs() {
 }
 
 // ===========================================================================
-// GEN_ENVS.TOML TESTS - Custom Environments and Dep-Replacements
+// CUSTOM-ENV TESTS - Custom Environments Configuration
 // ===========================================================================
 
-/// Test that gen_envs.toml can be parsed correctly.
-/// This tests the new [environments] and [dep-replacements.<env>] sections.
+/// Test that custom-env gen.toml can be parsed correctly.
+/// This tests the [environments] section for custom environment configuration.
 #[test]
-fn test_gen_envs_manifest_parsing() {
-    let fixtures = fixtures_path();
-    let gen_envs_path = fixtures.join("gen_envs.toml");
+fn test_custom_env_manifest_parsing() {
+    let fixtures = custom_env_fixtures_path();
+    let gen_toml_path = fixtures.join("gen.toml");
 
-    let manifest = sui_client_gen::manifest::parse_gen_manifest_from_file(&gen_envs_path)
-        .expect("Failed to parse gen_envs.toml");
+    let manifest = sui_client_gen::manifest::parse_gen_manifest_from_file(&gen_toml_path)
+        .expect("Failed to parse gen.toml");
 
     // Check config
     assert_eq!(manifest.config.environment, "testnet_alt");
-    assert_eq!(manifest.config.output, Some("./out-envs".to_string()));
+    assert_eq!(manifest.config.output, Some("./out".to_string()));
     assert!(manifest.config.graphql.is_none()); // graphql is in environment, not config
 
     // Check packages - now includes 4 top-level packages
@@ -598,12 +603,12 @@ fn test_gen_envs_manifest_parsing() {
 
 /// Test chain ID resolution for custom environment.
 #[test]
-fn test_gen_envs_chain_id_resolution() {
-    let fixtures = fixtures_path();
-    let gen_envs_path = fixtures.join("gen_envs.toml");
+fn test_custom_env_chain_id_resolution() {
+    let fixtures = custom_env_fixtures_path();
+    let gen_toml_path = fixtures.join("gen.toml");
 
-    let manifest = sui_client_gen::manifest::parse_gen_manifest_from_file(&gen_envs_path)
-        .expect("Failed to parse gen_envs.toml");
+    let manifest = sui_client_gen::manifest::parse_gen_manifest_from_file(&gen_toml_path)
+        .expect("Failed to parse gen.toml");
 
     // Resolve chain ID for the testnet_alt environment
     let chain_id = sui_client_gen::resolve_chain_id(
@@ -616,12 +621,12 @@ fn test_gen_envs_chain_id_resolution() {
 
 /// Test GraphQL resolution for custom environment.
 #[test]
-fn test_gen_envs_graphql_resolution() {
-    let fixtures = fixtures_path();
-    let gen_envs_path = fixtures.join("gen_envs.toml");
+fn test_custom_env_graphql_resolution() {
+    let fixtures = custom_env_fixtures_path();
+    let gen_toml_path = fixtures.join("gen.toml");
 
-    let manifest = sui_client_gen::manifest::parse_gen_manifest_from_file(&gen_envs_path)
-        .expect("Failed to parse gen_envs.toml");
+    let manifest = sui_client_gen::manifest::parse_gen_manifest_from_file(&gen_toml_path)
+        .expect("Failed to parse gen.toml");
 
     // Resolve GraphQL for the testnet_alt environment (should use environment's graphql)
     let graphql_url = sui_client_gen::resolve_graphql(
@@ -633,17 +638,15 @@ fn test_gen_envs_graphql_resolution() {
     assert_eq!(graphql_url, "https://graphql.testnet.sui.io/graphql");
 }
 
-/// Test building model with gen_envs.toml to verify dep-replacements work.
-/// This tests that:
-/// 1. use-environment overrides the environment used for Published.toml lookup
-/// 2. published-at and original-id overrides set explicit addresses
+/// Test building model with custom-env gen.toml.
+/// This tests that packages use addresses from Published.toml [published.testnet_alt].
 #[tokio::test]
-async fn test_gen_envs_model_build() {
-    let fixtures = fixtures_path();
-    let gen_envs_path = fixtures.join("gen_envs.toml");
+async fn test_custom_env_model_build() {
+    let fixtures = custom_env_fixtures_path();
+    let gen_toml_path = fixtures.join("gen.toml");
 
-    let manifest = sui_client_gen::manifest::parse_gen_manifest_from_file(&gen_envs_path)
-        .expect("Failed to parse gen_envs.toml");
+    let manifest = sui_client_gen::manifest::parse_gen_manifest_from_file(&gen_toml_path)
+        .expect("Failed to parse gen.toml");
 
     let graphql_endpoint = sui_client_gen::resolve_graphql(
         manifest.config.graphql.as_deref(),
@@ -660,7 +663,7 @@ async fn test_gen_envs_model_build() {
 
     let result = model_builder::build_model(
         &manifest.packages,
-        &gen_envs_path,
+        &gen_toml_path,
         &manifest.config.environment,
         &chain_id,
         &manifest.environments,
