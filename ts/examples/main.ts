@@ -2,11 +2,12 @@ import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519'
 import { fromB64, normalizeSuiAddress } from '@mysten/sui/utils'
 import { SuiClient } from '@mysten/sui/client'
 import { Transaction } from '@mysten/sui/transactions'
-import { createPoolWithCoins } from './gen/amm/util/functions'
+import { create } from './gen/amm/pool/functions'
 import { PACKAGE_ID as EXAMPLES_PACKAGE_ID } from './gen/examples'
+import { intoBalance, fromBalance } from './gen/sui/coin/functions'
 import { faucetMint } from './gen/examples/example-coin/functions'
 import { Command } from 'commander'
-import { Pool, PoolCreationEvent, PoolRegistry, PoolRegistryItem } from './gen/amm/pool/structs'
+import { LP, Pool, PoolCreationEvent, PoolRegistry, PoolRegistryItem } from './gen/amm/pool/structs'
 import { createWithGenericField } from './gen/examples/fixture/functions'
 import { WithGenericField } from './gen/examples/fixture/structs'
 import { Field } from './gen/sui/dynamic-field/structs'
@@ -43,13 +44,24 @@ async function createPool() {
 
   const [suiCoin] = tx.splitCoins(tx.gas, [tx.pure.u64(1_000_000)])
   const exampleCoin = faucetMint(tx, EXAMPLE_COIN_FAUCET_ID)
-  const lp = createPoolWithCoins(tx, ['0x2::sui::SUI', EXAMPLE_COIN.$typeName], {
+
+  // Convert coins to balances
+  const suiBalance = intoBalance(tx, '0x2::sui::SUI', suiCoin)
+  const exampleBalance = intoBalance(tx, EXAMPLE_COIN.$typeName, exampleCoin)
+
+  // Call pool::create with balances
+  const lpBalance = create(tx, ['0x2::sui::SUI', EXAMPLE_COIN.$typeName], {
     registry: AMM_POOL_REGISTRY_ID,
-    initA: suiCoin,
-    initB: exampleCoin,
+    initA: suiBalance,
+    initB: exampleBalance,
     lpFeeBps: 30n,
     adminFeePct: 10n,
   })
+
+  // Convert LP balance back to coin
+  const lpTypeName = LP.r(SUI.p, EXAMPLE_COIN.p).fullTypeName // `${AMM_PACKAGE_ID}::pool::LP<0x2::sui::SUI, ${EXAMPLE_COIN.$typeName}>`
+  const lp = fromBalance(tx, lpTypeName, lpBalance)
+
   tx.transferObjects([lp], tx.pure.address(address))
 
   const res = await client.signAndExecuteTransaction({
