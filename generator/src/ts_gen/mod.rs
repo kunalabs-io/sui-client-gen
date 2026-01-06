@@ -8,6 +8,7 @@
 
 mod builder;
 mod enums;
+mod env_config;
 mod functions;
 mod imports;
 mod init;
@@ -28,6 +29,7 @@ pub use structs::{
     TypeParamIR,
 };
 pub use utils::{
-    gen_package_index, is_reserved_word, module_import_name, package_import_name,
-    sanitize_identifier, JS_RESERVED_WORDS,
+    is_reserved_word, module_import_name, package_import_name, sanitize_identifier,
+    JS_RESERVED_WORDS,
 };
+pub use env_config::{gen_envs_index, EnvConfigIR, EnvPackageConfigIR};

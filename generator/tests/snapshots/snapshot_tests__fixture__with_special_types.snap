@@ -6,7 +6,7 @@ expression: output
 
 export function isWithSpecialTypes(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V1}::fixture::WithSpecialTypes` + '<')
+  return type.startsWith(`${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithSpecialTypes` + '<')
 }
 
 export interface WithSpecialTypesFields<T extends PhantomTypeArgument, U extends TypeArgument> {
@@ -30,12 +30,12 @@ export type WithSpecialTypesReified<T extends PhantomTypeArgument, U extends Typ
 export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V1}::fixture::WithSpecialTypes`
+  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithSpecialTypes` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, false] as const
 
   readonly $typeName = WithSpecialTypes.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithSpecialTypes<${PhantomToTypeStr<T>}, ${ToTypeStr<U>}>`
+  readonly $fullTypeName: `${string}::fixture::WithSpecialTypes<${PhantomToTypeStr<T>}, ${ToTypeStr<U>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>, ToTypeStr<U>]
   readonly $isPhantom = WithSpecialTypes.$isPhantom
 
@@ -57,7 +57,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     this.$fullTypeName = composeSuiType(
       WithSpecialTypes.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V1}::fixture::WithSpecialTypes<${PhantomToTypeStr<T>}, ${ToTypeStr<U>}>`
+    ) as `${string}::fixture::WithSpecialTypes<${PhantomToTypeStr<T>}, ${ToTypeStr<U>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -84,7 +84,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
       fullTypeName: composeSuiType(
         WithSpecialTypes.$typeName,
         ...[extractType(T), extractType(U)]
-      ) as `${typeof PKG_V1}::fixture::WithSpecialTypes<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}, ${ToTypeStr<ToTypeArgument<U>>}>`,
+      ) as `${string}::fixture::WithSpecialTypes<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}, ${ToTypeStr<ToTypeArgument<U>>}>`,
       typeArgs: [extractType(T), extractType(U)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>, ToTypeStr<ToTypeArgument<U>>],
       isPhantom: WithSpecialTypes.$isPhantom,
       reifiedTypeArgs: [T, U],

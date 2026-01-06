@@ -52,26 +52,3 @@ pub fn package_import_name(pkg_name: Symbol) -> String {
         .from_case(Case::Snake)
         .to_case(Case::Kebab)
 }
-
-/// Generate the `index.ts` content for a package.
-pub fn gen_package_index(
-    pkg_id: &str,
-    published_at: &str,
-    versions: &[(String, u64)], // (published_at_addr, version_number)
-    is_system_package: bool,
-) -> String {
-    let mut lines = Vec::new();
-    lines.push(format!("export const PACKAGE_ID = '{}'", pkg_id));
-    lines.push(format!("export const PUBLISHED_AT = '{}'", published_at));
-
-    if !is_system_package {
-        for (ver_published_at, version) in versions {
-            lines.push(format!(
-                "export const PKG_V{} = '{}'",
-                version, ver_published_at
-            ));
-        }
-    }
-
-    lines.join("\n") + "\n"
-}

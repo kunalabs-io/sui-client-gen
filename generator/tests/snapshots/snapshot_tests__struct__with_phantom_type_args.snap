@@ -6,7 +6,7 @@ expression: output
 
 export function isACL(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V1}::acl::ACL`
+  return type === `${getTypeOrigin('examples', 'example::ExampleStruct')}::acl::ACL`
 }
 
 export interface ACLFields {
@@ -18,19 +18,22 @@ export type ACLReified = Reified<ACL, ACLFields>
 export class ACL implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V1}::acl::ACL`
+  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::acl::ACL` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = ACL.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::acl::ACL`
+  readonly $fullTypeName: `${string}::acl::ACL`
   readonly $typeArgs: []
   readonly $isPhantom = ACL.$isPhantom
 
   readonly permissions: ToField<LinkedTable<'address', 'u128'>>
 
   private constructor(typeArgs: [], fields: ACLFields) {
-    this.$fullTypeName = composeSuiType(ACL.$typeName, ...typeArgs) as `${typeof PKG_V1}::acl::ACL`
+    this.$fullTypeName = composeSuiType(
+      ACL.$typeName,
+      ...typeArgs
+    ) as `${string}::acl::ACL`
     this.$typeArgs = typeArgs
 
     this.permissions = fields.permissions
@@ -40,7 +43,10 @@ export class ACL implements StructClass {
     const reifiedBcs = ACL.bcs
     return {
       typeName: ACL.$typeName,
-      fullTypeName: composeSuiType(ACL.$typeName, ...[]) as `${typeof PKG_V1}::acl::ACL`,
+      fullTypeName: composeSuiType(
+        ACL.$typeName,
+        ...[]
+      ) as `${string}::acl::ACL`,
       typeArgs: [] as [],
       isPhantom: ACL.$isPhantom,
       reifiedTypeArgs: [],

@@ -41,8 +41,13 @@ pub struct StructIR {
 pub enum PackageInfo {
     /// System package (0x1, 0x2, 0x3, etc.) - use literal address
     System { address: String },
-    /// User package - use PKG_V{version} import
-    Versioned { version: u64 },
+    /// User package - use getTypeOrigin() call for dynamic environment lookup
+    Dynamic {
+        /// Kebab-case package name for env lookup
+        pkg_name: String,
+        /// "module::TypeName" path for type origin lookup
+        module_type_path: String,
+    },
 }
 
 /// A type parameter on a struct.
@@ -351,8 +356,14 @@ impl StructIR {
             PackageInfo::System { address } => {
                 format!("{}::{}", address, self.module_struct_path)
             }
-            PackageInfo::Versioned { version } => {
-                format!("${{PKG_V{}}}::{}", version, self.module_struct_path)
+            PackageInfo::Dynamic {
+                pkg_name,
+                module_type_path,
+            } => {
+                format!(
+                    "${{getTypeOrigin('{}', '{}')}}::{}",
+                    pkg_name, module_type_path, self.module_struct_path
+                )
             }
         }
     }
@@ -363,21 +374,17 @@ impl StructIR {
             PackageInfo::System { address } => {
                 format!("`{}::{}`", address, self.module_struct_path)
             }
-            PackageInfo::Versioned { version } => {
-                format!(
-                    "`${{typeof PKG_V{}}}::{}`",
-                    version, self.module_struct_path
-                )
+            PackageInfo::Dynamic { .. } => {
+                // For dynamic packages, use template literal type with ${string} for the address part
+                // This preserves type safety while allowing runtime address resolution
+                format!("`${{string}}::{}`", self.module_struct_path)
             }
         }
     }
 
-    /// Get the PKG_V import name if needed
-    pub fn pkg_import(&self) -> Option<String> {
-        match &self.package_info {
-            PackageInfo::System { .. } => None,
-            PackageInfo::Versioned { version } => Some(format!("PKG_V{}", version)),
-        }
+    /// Returns true if this struct uses dynamic environment lookups (non-system package)
+    pub fn uses_env(&self) -> bool {
+        matches!(&self.package_info, PackageInfo::Dynamic { .. })
     }
 
     fn emit_fields_interface(&self) -> String {
@@ -497,7 +504,7 @@ impl StructIR {
             export class {name} implements StructClass {{
               __StructClass = true as const
 
-              static readonly $typeName = `{full_type_template}`
+              static readonly $typeName = `{full_type_template}` as const
               static readonly $numTypeParams = 0
               static readonly $isPhantom = [] as const
 
@@ -509,7 +516,10 @@ impl StructIR {
             {field_decls}
 
               private constructor(typeArgs: [], fields: {name}Fields) {{
-                this.$fullTypeName = composeSuiType({name}.$typeName, ...typeArgs) as {full_type_as_type}
+                this.$fullTypeName = composeSuiType(
+                  {name}.$typeName,
+                  ...typeArgs
+                ) as {full_type_as_type}
                 this.$typeArgs = typeArgs
 
             {field_assignments}
@@ -519,7 +529,10 @@ impl StructIR {
                 const reifiedBcs = {name}.bcs
                 return {{
                   typeName: {name}.$typeName,
-                  fullTypeName: composeSuiType({name}.$typeName, ...[]) as {full_type_as_type},
+                  fullTypeName: composeSuiType(
+                    {name}.$typeName,
+                    ...[]
+                  ) as {full_type_as_type},
                   typeArgs: [] as [],
                   isPhantom: {name}.$isPhantom,
                   reifiedTypeArgs: [],
@@ -873,7 +886,7 @@ impl StructIR {
             export class {name}{type_param_extends} implements StructClass {{
               __StructClass = true as const
 
-              static readonly $typeName = `{full_type_template}`
+              static readonly $typeName = `{full_type_template}` as const
               static readonly $numTypeParams = {num_type_params}
               static readonly $isPhantom = {is_phantom_array} as const
             {inner_fields_section}
@@ -1203,10 +1216,11 @@ impl StructIR {
                     type_args.join(", ")
                 )
             }
-            PackageInfo::Versioned { version } => {
+            PackageInfo::Dynamic { .. } => {
+                // For dynamic packages, use template literal type with ${string} for the address part
+                // This preserves type safety while allowing runtime address resolution
                 format!(
-                    "`${{typeof PKG_V{}}}::{}<{}>`",
-                    version,
+                    "`${{string}}::{}<{}>`",
                     self.module_struct_path,
                     type_args.join(", ")
                 )
@@ -1237,10 +1251,11 @@ impl StructIR {
                     type_args.join(", ")
                 )
             }
-            PackageInfo::Versioned { version } => {
+            PackageInfo::Dynamic { .. } => {
+                // For dynamic packages, use template literal type with ${string} for the address part
+                // This preserves type safety while allowing runtime address resolution
                 format!(
-                    "`${{typeof PKG_V{}}}::{}<{}>`",
-                    version,
+                    "`${{string}}::{}<{}>`",
                     self.module_struct_path,
                     type_args.join(", ")
                 )

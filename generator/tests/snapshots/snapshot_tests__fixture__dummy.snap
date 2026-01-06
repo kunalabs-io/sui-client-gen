@@ -6,7 +6,7 @@ expression: output
 
 export function isDummy(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V1}::fixture::Dummy`
+  return type === `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Dummy`
 }
 
 export interface DummyFields {
@@ -18,19 +18,22 @@ export type DummyReified = Reified<Dummy, DummyFields>
 export class Dummy implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V1}::fixture::Dummy`
+  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Dummy` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = Dummy.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::fixture::Dummy`
+  readonly $fullTypeName: `${string}::fixture::Dummy`
   readonly $typeArgs: []
   readonly $isPhantom = Dummy.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
   private constructor(typeArgs: [], fields: DummyFields) {
-    this.$fullTypeName = composeSuiType(Dummy.$typeName, ...typeArgs) as `${typeof PKG_V1}::fixture::Dummy`
+    this.$fullTypeName = composeSuiType(
+      Dummy.$typeName,
+      ...typeArgs
+    ) as `${string}::fixture::Dummy`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -40,7 +43,10 @@ export class Dummy implements StructClass {
     const reifiedBcs = Dummy.bcs
     return {
       typeName: Dummy.$typeName,
-      fullTypeName: composeSuiType(Dummy.$typeName, ...[]) as `${typeof PKG_V1}::fixture::Dummy`,
+      fullTypeName: composeSuiType(
+        Dummy.$typeName,
+        ...[]
+      ) as `${string}::fixture::Dummy`,
       typeArgs: [] as [],
       isPhantom: Dummy.$isPhantom,
       reifiedTypeArgs: [],

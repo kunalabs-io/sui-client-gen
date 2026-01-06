@@ -6,7 +6,7 @@ expression: output
 
 export function isMultiCoinHolder(type: string): boolean {
   type = compressSuiType(type)
-  return type === `${PKG_V1}::collision::MultiCoinHolder`
+  return type === `${getTypeOrigin('examples', 'example::ExampleStruct')}::collision::MultiCoinHolder`
 }
 
 export interface MultiCoinHolderFields {
@@ -20,12 +20,12 @@ export type MultiCoinHolderReified = Reified<MultiCoinHolder, MultiCoinHolderFie
 export class MultiCoinHolder implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V1}::collision::MultiCoinHolder`
+  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::collision::MultiCoinHolder` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
   readonly $typeName = MultiCoinHolder.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::collision::MultiCoinHolder`
+  readonly $fullTypeName: `${string}::collision::MultiCoinHolder`
   readonly $typeArgs: []
   readonly $isPhantom = MultiCoinHolder.$isPhantom
 
@@ -34,7 +34,10 @@ export class MultiCoinHolder implements StructClass {
   readonly customCoin: ToField<CoinCustom>
 
   private constructor(typeArgs: [], fields: MultiCoinHolderFields) {
-    this.$fullTypeName = composeSuiType(MultiCoinHolder.$typeName, ...typeArgs) as `${typeof PKG_V1}::collision::MultiCoinHolder`
+    this.$fullTypeName = composeSuiType(
+      MultiCoinHolder.$typeName,
+      ...typeArgs
+    ) as `${string}::collision::MultiCoinHolder`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -46,7 +49,10 @@ export class MultiCoinHolder implements StructClass {
     const reifiedBcs = MultiCoinHolder.bcs
     return {
       typeName: MultiCoinHolder.$typeName,
-      fullTypeName: composeSuiType(MultiCoinHolder.$typeName, ...[]) as `${typeof PKG_V1}::collision::MultiCoinHolder`,
+      fullTypeName: composeSuiType(
+        MultiCoinHolder.$typeName,
+        ...[]
+      ) as `${string}::collision::MultiCoinHolder`,
       typeArgs: [] as [],
       isPhantom: MultiCoinHolder.$isPhantom,
       reifiedTypeArgs: [],

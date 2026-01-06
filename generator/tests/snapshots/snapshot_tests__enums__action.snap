@@ -6,7 +6,7 @@ expression: output
 
 export function isAction(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V1}::enums::Action` + '<')
+  return type.startsWith(`${getTypeOrigin('examples', 'example::ExampleStruct')}::enums::Action` + '<')
 }
 
 export type ActionVariant<T extends TypeArgument, U extends PhantomTypeArgument> =
@@ -31,7 +31,7 @@ export type ActionReified<T extends TypeArgument, U extends PhantomTypeArgument>
 >
 
 export class Action {
-  static readonly $typeName = `${PKG_V1}::enums::Action`
+  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::enums::Action` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, true] as const
 
@@ -44,7 +44,7 @@ export class Action {
       fullTypeName: composeSuiType(
         Action.$typeName,
         ...[extractType(T), extractType(U)]
-      ) as `${typeof PKG_V1}::enums::Action<${ToTypeStr<ToTypeArgument<T>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<U>>}>`,
+      ) as string,
       typeArgs: [extractType(T), extractType(U)] as [ToTypeStr<ToTypeArgument<T>>, PhantomToTypeStr<ToPhantomTypeArgument<U>>],
       isPhantom: Action.$isPhantom,
       reifiedTypeArgs: [T, U],

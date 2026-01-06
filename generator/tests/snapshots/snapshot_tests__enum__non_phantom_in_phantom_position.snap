@@ -6,7 +6,7 @@ expression: output
 
 export function isContainer(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V1}::test::Container` + '<')
+  return type.startsWith(`${getTypeOrigin('examples', 'example::ExampleStruct')}::test::Container` + '<')
 }
 
 export type ContainerVariant<T1 extends TypeArgument, T2 extends PhantomTypeArgument> =
@@ -29,7 +29,7 @@ export type ContainerReified<T1 extends TypeArgument, T2 extends PhantomTypeArgu
 >
 
 export class Container {
-  static readonly $typeName = `${PKG_V1}::test::Container`
+  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::Container` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, true] as const
 
@@ -42,7 +42,7 @@ export class Container {
       fullTypeName: composeSuiType(
         Container.$typeName,
         ...[extractType(T1), extractType(T2)]
-      ) as `${typeof PKG_V1}::test::Container<${ToTypeStr<ToTypeArgument<T1>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<T2>>}>`,
+      ) as string,
       typeArgs: [extractType(T1), extractType(T2)] as [ToTypeStr<ToTypeArgument<T1>>, PhantomToTypeStr<ToPhantomTypeArgument<T2>>],
       isPhantom: Container.$isPhantom,
       reifiedTypeArgs: [T1, T2],

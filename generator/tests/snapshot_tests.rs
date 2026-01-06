@@ -19,7 +19,14 @@ use sui_client_gen::ts_gen::{
 // =============================================================================
 
 fn examples_pkg() -> PackageInfo {
-    PackageInfo::Versioned { version: 1 }
+    examples_pkg_for("example::ExampleStruct")
+}
+
+fn examples_pkg_for(module_type_path: &str) -> PackageInfo {
+    PackageInfo::Dynamic {
+        pkg_name: "examples".to_string(),
+        module_type_path: module_type_path.to_string(),
+    }
 }
 
 #[allow(dead_code)]
@@ -1226,6 +1233,7 @@ fn make_create_bar_function_ir() -> FunctionIR {
         move_name: "create_bar".to_string(),
         ts_name: "createBar".to_string(),
         module_name: "fixture".to_string(),
+        env_pkg_name: "examples".to_string(),
         type_params: vec![],
         params: vec![FunctionParamIR {
             ts_name: "value".to_string(),
@@ -1247,6 +1255,7 @@ fn make_create_with_generic_field_function_ir() -> FunctionIR {
         move_name: "create_with_generic_field".to_string(),
         ts_name: "createWithGenericField".to_string(),
         module_name: "fixture".to_string(),
+        env_pkg_name: "examples".to_string(),
         type_params: vec!["T".to_string()],
         params: vec![FunctionParamIR {
             ts_name: "genericField".to_string(),
@@ -1271,6 +1280,7 @@ fn make_create_with_two_generics_function_ir() -> FunctionIR {
         move_name: "create_with_two_generics".to_string(),
         ts_name: "createWithTwoGenerics".to_string(),
         module_name: "fixture".to_string(),
+        env_pkg_name: "examples".to_string(),
         type_params: vec!["T".to_string(), "U".to_string()],
         params: vec![
             FunctionParamIR {
@@ -1304,6 +1314,7 @@ fn make_create_special_in_vectors_function_ir() -> FunctionIR {
         move_name: "create_special_in_vectors".to_string(),
         ts_name: "createSpecialInVectors".to_string(),
         module_name: "fixture".to_string(),
+        env_pkg_name: "examples".to_string(),
         type_params: vec!["T".to_string()],
         params: vec![
             FunctionParamIR {

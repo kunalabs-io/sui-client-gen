@@ -12,14 +12,13 @@ use colored::*;
 use move_core_types::account_address::AccountAddress;
 use move_model_2::source_model;
 use move_symbol_pool::Symbol;
-use sui_sdk::types::SYSTEM_PACKAGE_ADDRESSES;
 
 use crate::graphql::GraphQLClient;
 use crate::io::{clean_output, write_str_to_file};
 use crate::layout::{build_package_folder_names, OutputLayout};
 use crate::manifest::{is_default_environment, parse_gen_manifest_from_file};
 use crate::model_builder::{self, TypeOriginTable, VersionTable};
-use crate::ts_gen::{self, gen_module_structs, gen_package_index};
+use crate::ts_gen::{self, gen_envs_index, gen_module_structs, EnvConfigIR, EnvPackageConfigIR};
 use crate::{framework_sources, resolve_chain_id, resolve_graphql};
 
 /// Options for running the new generator.
@@ -171,7 +170,15 @@ pub async fn run(opts: RunOptions) -> Result<()> {
 
     // Generate _framework
     writeln!(progress_output, "{}", "GENERATING FRAMEWORK".green().bold())?;
-    generate_framework(&output, &pkgs, &folder_names, &top_level_addr_map)?;
+    generate_framework(
+        &output,
+        &pkgs,
+        &folder_names,
+        &top_level_addr_map,
+        environment,
+        &model_result.published_at,
+        &model_result.type_origin_table,
+    )?;
 
     // Generate packages
     writeln!(progress_output, "{}", "GENERATING PACKAGES".green().bold())?;
@@ -201,6 +208,9 @@ fn generate_framework(
     pkgs: &BTreeMap<AccountAddress, source_model::Package>,
     folder_names: &BTreeMap<AccountAddress, String>,
     top_level_addr_map: &BTreeMap<AccountAddress, Symbol>,
+    env_name: &str,
+    published_at_map: &BTreeMap<AccountAddress, AccountAddress>,
+    type_origin_table: &TypeOriginTable,
 ) -> Result<()> {
     std::fs::create_dir_all(&output.framework_dir)?;
 
@@ -220,6 +230,10 @@ fn generate_framework(
         framework_sources::VECTOR,
         &output.framework_dir.join("vector.ts"),
     )?;
+    write_str_to_file(
+        framework_sources::ENV,
+        &output.framework_dir.join("env.ts"),
+    )?;
 
     // Generate init-loader.ts
     write_str_to_file(
@@ -231,7 +245,100 @@ fn generate_framework(
         &output.framework_dir.join("init-loader.ts"),
     )?;
 
+    // Generate _envs/ directory (at top level, sibling to _framework/)
+    let envs_dir = output.root.join("_envs");
+    std::fs::create_dir_all(&envs_dir)?;
+
+    // Build environment config IR
+    let env_config = build_env_config(
+        env_name,
+        pkgs,
+        folder_names,
+        top_level_addr_map,
+        published_at_map,
+        type_origin_table,
+    );
+
+    // Generate _envs/<env_name>.ts
+    write_str_to_file(&env_config.emit(), &envs_dir.join(format!("{}.ts", env_name)))?;
+
+    // Generate _envs/index.ts
+    write_str_to_file(
+        &gen_envs_index(&[env_name.to_string()], env_name),
+        &envs_dir.join("index.ts"),
+    )?;
+
     Ok(())
+}
+
+/// Build the environment configuration IR from model data.
+fn build_env_config(
+    env_name: &str,
+    pkgs: &BTreeMap<AccountAddress, source_model::Package>,
+    folder_names: &BTreeMap<AccountAddress, String>,
+    top_level_addr_map: &BTreeMap<AccountAddress, Symbol>,
+    published_at_map: &BTreeMap<AccountAddress, AccountAddress>,
+    type_origin_table: &TypeOriginTable,
+) -> EnvConfigIR {
+    let mut packages = Vec::new();
+    let mut dependencies = Vec::new();
+
+    for (pkg_addr, pkg) in pkgs.iter() {
+        // Get the kebab-case package name
+        let pkg_name = folder_names
+            .get(pkg_addr)
+            .cloned()
+            .unwrap_or_else(|| pkg_addr.to_hex_literal());
+
+        // Get original ID and published-at
+        let original_id = pkg_addr.to_hex_literal();
+        let published_at = published_at_map
+            .get(pkg_addr)
+            .map(|a| a.to_hex_literal())
+            .unwrap_or_else(|| original_id.clone());
+
+        // Build type origins from the type_origin_table
+        let mut type_origins = BTreeMap::new();
+        if let Some(origin_map) = type_origin_table.get(pkg_addr) {
+            for (type_path, origin_addr) in origin_map.iter() {
+                type_origins.insert(type_path.clone(), origin_addr.to_hex_literal());
+            }
+        } else {
+            // For packages without type_origin_table entries, derive from modules
+            for module in pkg.modules() {
+                let module_name_sym = module.name();
+                let module_name: &str = module_name_sym.as_ref();
+                for strct in module.structs() {
+                    let type_path = format!("{}::{}", module_name, strct.name());
+                    type_origins.insert(type_path, original_id.clone());
+                }
+                for enum_ in module.enums() {
+                    let type_path = format!("{}::{}", module_name, enum_.name());
+                    type_origins.insert(type_path, original_id.clone());
+                }
+            }
+        }
+
+        let config = EnvPackageConfigIR {
+            name: pkg_name,
+            original_id,
+            published_at,
+            type_origins,
+        };
+
+        // Categorize as top-level package or dependency
+        if top_level_addr_map.contains_key(pkg_addr) {
+            packages.push(config);
+        } else {
+            dependencies.push(config);
+        }
+    }
+
+    EnvConfigIR {
+        env_name: env_name.to_string(),
+        packages,
+        dependencies,
+    }
 }
 
 /// Generate TypeScript code for all packages.
@@ -239,7 +346,7 @@ fn gen_packages(
     pkgs: BTreeMap<AccountAddress, source_model::Package>,
     folder_names: &BTreeMap<AccountAddress, String>,
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
-    published_at_map: &BTreeMap<AccountAddress, AccountAddress>,
+    #[allow(unused_variables)] published_at_map: &BTreeMap<AccountAddress, AccountAddress>,
     type_origin_table: &TypeOriginTable,
     version_table: &VersionTable,
     output: &OutputLayout,
@@ -252,21 +359,8 @@ fn gen_packages(
         let pkg_layout = output.package_path(pkg_id, folder_names, top_level_pkg_names);
         std::fs::create_dir_all(&pkg_layout.path)?;
 
-        // Generate index.ts
-        let published_at = published_at_map.get(pkg_id).unwrap_or(pkg_id);
-        let empty_versions = BTreeMap::new();
-        let versions = version_table.get(pkg_id).unwrap_or(&empty_versions);
-        let version_list: Vec<(String, u64)> = versions
-            .iter()
-            .map(|(addr, seq)| (addr.to_hex_literal(), seq.value()))
-            .collect();
-        let index_content = gen_package_index(
-            &pkg_id.to_hex_literal(),
-            &published_at.to_hex_literal(),
-            &version_list,
-            SYSTEM_PACKAGE_ADDRESSES.contains(pkg_id),
-        );
-        write_str_to_file(&index_content, &pkg_layout.path.join("index.ts"))?;
+        // Note: index.ts is no longer generated per-package
+        // Package addresses are now in _envs/<env>.ts
 
         // Generate init.ts
         write_str_to_file(

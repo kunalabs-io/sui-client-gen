@@ -6,7 +6,7 @@ expression: output
 
 export function isWithSpecialTypesInVectors(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V1}::fixture::WithSpecialTypesInVectors` + '<')
+  return type.startsWith(`${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithSpecialTypesInVectors` + '<')
 }
 
 export interface WithSpecialTypesInVectorsFields<T extends TypeArgument> {
@@ -24,12 +24,12 @@ export type WithSpecialTypesInVectorsReified<T extends TypeArgument> = Reified<W
 export class WithSpecialTypesInVectors<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V1}::fixture::WithSpecialTypesInVectors`
+  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithSpecialTypesInVectors` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
   readonly $typeName = WithSpecialTypesInVectors.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::fixture::WithSpecialTypesInVectors<${ToTypeStr<T>}>`
+  readonly $fullTypeName: `${string}::fixture::WithSpecialTypesInVectors<${ToTypeStr<T>}>`
   readonly $typeArgs: [ToTypeStr<T>]
   readonly $isPhantom = WithSpecialTypesInVectors.$isPhantom
 
@@ -45,7 +45,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     this.$fullTypeName = composeSuiType(
       WithSpecialTypesInVectors.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V1}::fixture::WithSpecialTypesInVectors<${ToTypeStr<T>}>`
+    ) as `${string}::fixture::WithSpecialTypesInVectors<${ToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -66,7 +66,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
       fullTypeName: composeSuiType(
         WithSpecialTypesInVectors.$typeName,
         ...[extractType(T)]
-      ) as `${typeof PKG_V1}::fixture::WithSpecialTypesInVectors<${ToTypeStr<ToTypeArgument<T>>}>`,
+      ) as `${string}::fixture::WithSpecialTypesInVectors<${ToTypeStr<ToTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
       isPhantom: WithSpecialTypesInVectors.$isPhantom,
       reifiedTypeArgs: [T],

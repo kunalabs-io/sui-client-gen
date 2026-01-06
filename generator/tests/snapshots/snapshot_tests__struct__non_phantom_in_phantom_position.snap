@@ -6,7 +6,7 @@ expression: output
 
 export function isWitTable(type: string): boolean {
   type = compressSuiType(type)
-  return type.startsWith(`${PKG_V1}::wit_table::WitTable` + '<')
+  return type.startsWith(`${getTypeOrigin('examples', 'example::ExampleStruct')}::wit_table::WitTable` + '<')
 }
 
 export interface WitTableFields<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T2 extends PhantomTypeArgument> {
@@ -19,12 +19,12 @@ export type WitTableReified<T0 extends PhantomTypeArgument, T1 extends TypeArgum
 export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T2 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${PKG_V1}::wit_table::WitTable`
+  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::wit_table::WitTable` as const
   static readonly $numTypeParams = 3
   static readonly $isPhantom = [true, false, true] as const
 
   readonly $typeName = WitTable.$typeName
-  readonly $fullTypeName: `${typeof PKG_V1}::wit_table::WitTable<${PhantomToTypeStr<T0>}, ${ToTypeStr<T1>}, ${PhantomToTypeStr<T2>}>`
+  readonly $fullTypeName: `${string}::wit_table::WitTable<${PhantomToTypeStr<T0>}, ${ToTypeStr<T1>}, ${PhantomToTypeStr<T2>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>, ToTypeStr<T1>, PhantomToTypeStr<T2>]
   readonly $isPhantom = WitTable.$isPhantom
 
@@ -35,7 +35,7 @@ export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T
     this.$fullTypeName = composeSuiType(
       WitTable.$typeName,
       ...typeArgs
-    ) as `${typeof PKG_V1}::wit_table::WitTable<${PhantomToTypeStr<T0>}, ${ToTypeStr<T1>}, ${PhantomToTypeStr<T2>}>`
+    ) as `${string}::wit_table::WitTable<${PhantomToTypeStr<T0>}, ${ToTypeStr<T1>}, ${PhantomToTypeStr<T2>}>`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -51,7 +51,7 @@ export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T
       fullTypeName: composeSuiType(
         WitTable.$typeName,
         ...[extractType(T0), extractType(T1), extractType(T2)]
-      ) as `${typeof PKG_V1}::wit_table::WitTable<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}, ${ToTypeStr<ToTypeArgument<T1>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<T2>>}>`,
+      ) as `${string}::wit_table::WitTable<${PhantomToTypeStr<ToPhantomTypeArgument<T0>>}, ${ToTypeStr<ToTypeArgument<T1>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<T2>>}>`,
       typeArgs: [extractType(T0), extractType(T1), extractType(T2)] as [PhantomToTypeStr<ToPhantomTypeArgument<T0>>, ToTypeStr<ToTypeArgument<T1>>, PhantomToTypeStr<ToPhantomTypeArgument<T2>>],
       isPhantom: WitTable.$isPhantom,
       reifiedTypeArgs: [T0, T1, T2],
