@@ -1,0 +1,13 @@
+[package]
+name = "root"
+edition = "2024"
+
+[dependencies]
+dep = { local = "../dep_env_1" }
+
+[dep-replacements.env_2]
+dep = { local = "../dep_env_2" }
+
+[environments]
+env_1 = "4c78adac"
+env_2 = "4c78adac"

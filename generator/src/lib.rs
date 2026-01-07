@@ -5,6 +5,7 @@ pub mod io;
 pub mod layout;
 pub mod manifest;
 pub mod model_builder;
+pub mod multi_env;
 pub mod ts_gen;
 
 use manifest::Environments;

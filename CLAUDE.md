@@ -76,13 +76,15 @@ Output: _framework/, <package>/, _dependencies/
 | `driver.rs` | Main orchestrator |
 | `model_builder.rs` | Builds Move models using move_package_alt + move_model_2 |
 | `manifest.rs` | Parses `gen.toml` configuration |
-| `graphql/` | GraphQL client for type origin queries |
+| `multi_env.rs` | Multi-environment model building with compatibility checking |
+| `graphql/` | GraphQL client and per-chain-id cache for type origin queries |
 | `ts_gen/builder.rs` | IR construction (Move → StructIR/EnumIR/FunctionIR) |
 | `ts_gen/structs.rs` | Struct/field type emission |
 | `ts_gen/enums.rs` | Enum emission |
 | `ts_gen/functions.rs` | Function binding emission |
 | `ts_gen/imports.rs` | Import path resolution & deduplication |
 | `ts_gen/env_config.rs` | Environment configuration generation |
+| `ts_gen/compat.rs` | Environment compatibility checking (struct/enum/function) |
 | `package_cache.rs` | RPC-side cache for on-chain packages |
 | `layout.rs` | Output filesystem structure |
 | `framework_sources.rs` | Embeds `framework/*.ts` runtime files |
@@ -133,6 +135,7 @@ Output: _framework/, <package>/, _dependencies/
 - **Type Origin Table**: Maps struct definitions to their original defining package (handles upgrades)
 - **Phantom types**: Generic parameters that don't require runtime data
 - **Environment configuration**: Runtime environment switching via `_envs/` - supports mainnet/testnet/custom envs with different package addresses
+- **Multi-environment generation**: Builds models for ALL environments in gen.toml, checks compatibility, generates `_envs/<env>.ts` for each. Fails with helpful errors if struct/enum/function signatures differ between environments.
 
 ## Sui Framework Pinning
 

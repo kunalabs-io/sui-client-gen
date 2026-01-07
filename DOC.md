@@ -125,7 +125,7 @@ The generated code has the following structure:
 
 **`_envs`** directory contains environment configurations and is the primary entry point for environment management:
 - `index.ts` - Registers all environments, sets the default (from `[config].environment`), and re-exports the environment API
-- `<env>.ts` - Environment-specific configuration files containing package addresses and type origins
+- `<env>.ts` - Environment-specific configuration files containing package addresses and type origins. One file is generated for **each environment** defined in `gen.toml`'s `[environments]` section.
 
 **`_dependencies`** contains generated code of the direct and transitive dependencies of packages listed in `gen.toml`. Dependencies are organized by kebab-case package name (with `-1`, `-2` suffixes if names collide). While their contents are similar to those of listed packages, these are not intended to be imported or used directly as its APIs are not guaranteed to be stable and may change. Any package code that's intended to be used directly in the app should be listed in `gen.toml`.
 
@@ -229,6 +229,27 @@ interface PackageConfig {
   typeOrigins: Record<string, string>  // "module::TypeName" -> defining address
 }
 ```
+
+### Multi-Environment Generation and Compatibility
+
+When you define multiple environments in `gen.toml`, the generator builds models for **all** environments and checks that they are compatible. This ensures the generated TypeScript code works correctly across all environments at runtime.
+
+**What the generator checks:**
+- **Structs**: Same field count, same field names, and compatible field types
+- **Enums**: Same variant count, same variant names, and compatible variant types
+- **Functions**: Same parameter count, same parameter names, and compatible parameter types
+
+**What the generator allows (asymmetry):**
+- A struct, enum, or function can exist in one environment but not another. At runtime, accessing missing items will fail with a clear error from `getPublishedAt()` or `getTypeOrigin()`.
+- Extra fields or parameters in one environment (but not the other) will cause a compatibility error.
+
+**Example error:**
+```
+Environment compatibility errors:
+  - Struct 'dep::lib::DepStruct': field count mismatch (env_1: 1, env_2: 2)
+```
+
+This check prevents generating code that would compile but fail unexpectedly at runtime when switching environments.
 
 ## Functions
 
