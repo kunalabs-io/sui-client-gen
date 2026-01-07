@@ -1,0 +1,6 @@
+[package]
+name = "dep"
+edition = "2024"
+
+[environments]
+env_2 = "4c78adac"

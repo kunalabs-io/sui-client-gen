@@ -1,0 +1,10 @@
+[config]
+environment = "env_1"
+output = "./out"
+
+[packages]
+root = { local = "./root" }
+
+[environments]
+env_1 = { chain-id = "4c78adac", graphql = "https://graphql.testnet.sui.io/graphql" }
+env_2 = { chain-id = "4c78adac", graphql = "https://graphql.testnet.sui.io/graphql" }

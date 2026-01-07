@@ -7,6 +7,7 @@
 //! This avoids the "AST Trap" of modeling TypeScript's exact AST in Rust.
 
 mod builder;
+pub mod compat;
 mod enums;
 mod env_config;
 mod functions;

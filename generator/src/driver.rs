@@ -13,13 +13,14 @@ use move_core_types::account_address::AccountAddress;
 use move_model_2::source_model;
 use move_symbol_pool::Symbol;
 
-use crate::graphql::GraphQLClient;
+use crate::graphql::GraphQLCache;
 use crate::io::{clean_output, write_str_to_file};
-use crate::layout::{build_package_folder_names, OutputLayout};
+use crate::layout::OutputLayout;
 use crate::manifest::{is_default_environment, parse_gen_manifest_from_file};
-use crate::model_builder::{self, TypeOriginTable, VersionTable};
+use crate::model_builder::{TypeOriginTable, VersionTable};
+use crate::multi_env::{build_multi_env_models, MultiEnvResult};
 use crate::ts_gen::{self, gen_envs_index, gen_module_structs, EnvConfigIR, EnvPackageConfigIR};
-use crate::{framework_sources, resolve_chain_id, resolve_graphql};
+use crate::framework_sources;
 
 /// Options for running the new generator.
 pub struct RunOptions {
@@ -64,75 +65,35 @@ pub async fn run(opts: RunOptions) -> Result<()> {
         ));
     }
 
-    // Resolve chain ID for the environment
-    // This should always succeed since we validated the environment exists above
-    let expected_chain_id = resolve_chain_id(environment, &manifest.environments).ok_or_else(|| {
-        anyhow::anyhow!(
-            "Environment '{}' has no associated chain ID. \
-             This is unexpected as environment validation should have caught this.",
-            environment
-        )
-    })?;
-
-    // Apply CLI graphql override, or resolve from environment
-    let graphql_url = opts.graphql.clone().unwrap_or_else(|| {
-        resolve_graphql(
-            manifest.config.graphql.as_deref(),
-            environment,
-            &manifest.environments,
-        )
-    });
-    let graphql_client = GraphQLClient::new(&graphql_url);
-
-    // Validate chain ID matches endpoint
-    writeln!(progress_output, "{}", "VALIDATING CHAIN ID".green().bold())?;
-    let actual_chain_id = graphql_client
-        .query_chain_identifier()
-        .await
-        .map_err(|e| {
-            anyhow::anyhow!(
-                "Failed to query chain identifier from {}: {}",
-                graphql_url,
-                e
-            )
-        })?;
-
-    if actual_chain_id != expected_chain_id {
-        return Err(anyhow::anyhow!(
-            "Chain ID mismatch: GraphQL endpoint '{}' returned chain ID '{}', \
-             but environment '{}' expects chain ID '{}'. \
-             Please ensure your GraphQL endpoint matches your environment.",
-            graphql_url,
-            actual_chain_id,
-            environment,
-            expected_chain_id
-        ));
+    // Create a manifest copy with CLI overrides applied
+    let mut manifest = manifest;
+    if let Some(ref env_override) = opts.environment {
+        manifest.config.environment = env_override.clone();
+    }
+    if let Some(ref graphql_override) = opts.graphql {
+        manifest.config.graphql = Some(graphql_override.clone());
     }
 
-    // Build model using new package system
+    // Build models for all environments with compatibility checking
     writeln!(
         progress_output,
         "{}",
-        format!("BUILDING MODEL (environment: {})", environment)
-            .green()
-            .bold()
+        "BUILDING MODELS FOR ALL ENVIRONMENTS".green().bold()
     )?;
-    let model_result = model_builder::build_model(
-        &manifest.packages,
-        &opts.manifest_path,
-        environment,
-        &expected_chain_id,
-        &manifest.environments,
-        &manifest.dep_replacements,
-        &graphql_client,
-    )
-    .await?;
+    let mut graphql_cache = GraphQLCache::new();
+    let multi_env_result = build_multi_env_models(&manifest, &opts.manifest_path, &mut graphql_cache).await?;
 
     writeln!(
         progress_output,
+        "  Default env: {}, All envs: {:?}",
+        multi_env_result.default_env,
+        multi_env_result.all_envs
+    )?;
+    writeln!(
+        progress_output,
         "  Packages: {}, Modules: {}",
-        model_result.model.packages().count(),
-        model_result.model.modules().count()
+        multi_env_result.default_model.model.packages().count(),
+        multi_env_result.default_model.model.modules().count()
     )?;
 
     // Clean output if requested
@@ -141,54 +102,30 @@ pub async fn run(opts: RunOptions) -> Result<()> {
     }
 
     // Collect packages by address
-    let pkgs: BTreeMap<AccountAddress, source_model::Package> = model_result
+    let pkgs: BTreeMap<AccountAddress, source_model::Package> = multi_env_result
+        .default_model
         .model
         .packages()
         .map(|pkg| (pkg.address(), pkg))
-        .collect();
-
-    // Build top-level address map (address -> Symbol)
-    // Convert PackageName (Identifier) to Symbol for compatibility with ts_gen
-    let top_level_addr_map: BTreeMap<AccountAddress, Symbol> = model_result
-        .id_map
-        .iter()
-        .filter_map(|(addr, name)| {
-            if model_result.top_level_packages.contains(name) {
-                Some((*addr, Symbol::from(name.as_str())))
-            } else {
-                None
-            }
-        })
         .collect();
 
     // Setup output layout
     let output = OutputLayout::new(out_dir);
     std::fs::create_dir_all(&output.root)?;
 
-    // Build folder names map for all packages
-    let folder_names = build_package_folder_names(&model_result.id_map, &top_level_addr_map);
-
     // Generate _framework
     writeln!(progress_output, "{}", "GENERATING FRAMEWORK".green().bold())?;
-    generate_framework(
-        &output,
-        &pkgs,
-        &folder_names,
-        &top_level_addr_map,
-        environment,
-        &model_result.published_at,
-        &model_result.type_origin_table,
-    )?;
+    generate_framework(&output, &pkgs, &multi_env_result)?;
 
     // Generate packages
     writeln!(progress_output, "{}", "GENERATING PACKAGES".green().bold())?;
     gen_packages(
         pkgs,
-        &folder_names,
-        &top_level_addr_map,
-        &model_result.published_at,
-        &model_result.type_origin_table,
-        &model_result.version_table,
+        &multi_env_result.folder_names,
+        &multi_env_result.top_level_addr_map,
+        &multi_env_result.default_model.published_at,
+        &multi_env_result.default_model.type_origin_table,
+        &multi_env_result.default_model.version_table,
         &output,
     )?;
 
@@ -206,11 +143,7 @@ pub async fn run(opts: RunOptions) -> Result<()> {
 fn generate_framework(
     output: &OutputLayout,
     pkgs: &BTreeMap<AccountAddress, source_model::Package>,
-    folder_names: &BTreeMap<AccountAddress, String>,
-    top_level_addr_map: &BTreeMap<AccountAddress, Symbol>,
-    env_name: &str,
-    published_at_map: &BTreeMap<AccountAddress, AccountAddress>,
-    type_origin_table: &TypeOriginTable,
+    multi_env: &MultiEnvResult,
 ) -> Result<()> {
     std::fs::create_dir_all(&output.framework_dir)?;
 
@@ -239,8 +172,8 @@ fn generate_framework(
     write_str_to_file(
         &ts_gen::gen_init_loader(
             &pkgs.keys().copied().collect::<Vec<_>>(),
-            folder_names,
-            top_level_addr_map,
+            &multi_env.folder_names,
+            &multi_env.top_level_addr_map,
         ),
         &output.framework_dir.join("init-loader.ts"),
     )?;
@@ -249,22 +182,39 @@ fn generate_framework(
     let envs_dir = output.root.join("_envs");
     std::fs::create_dir_all(&envs_dir)?;
 
-    // Build environment config IR
-    let env_config = build_env_config(
-        env_name,
-        pkgs,
-        folder_names,
-        top_level_addr_map,
-        published_at_map,
-        type_origin_table,
-    );
+    // Generate _envs/<env>.ts for each environment
+    for env_name in &multi_env.all_envs {
+        // Get per-environment data
+        let type_origin_table = multi_env
+            .env_type_origins
+            .get(env_name)
+            .expect("type_origin_table missing for env");
+        let published_at_map = multi_env
+            .env_published_at
+            .get(env_name)
+            .expect("published_at missing for env");
+        let id_map = multi_env
+            .env_id_maps
+            .get(env_name)
+            .expect("id_map missing for env");
 
-    // Generate _envs/<env_name>.ts
-    write_str_to_file(&env_config.emit(), &envs_dir.join(format!("{}.ts", env_name)))?;
+        // Build environment config IR
+        let env_config = build_env_config(
+            env_name,
+            id_map,
+            &multi_env.folder_names,
+            &multi_env.top_level_addr_map,
+            published_at_map,
+            type_origin_table,
+        );
+
+        // Generate _envs/<env_name>.ts
+        write_str_to_file(&env_config.emit(), &envs_dir.join(format!("{}.ts", env_name)))?;
+    }
 
     // Generate _envs/index.ts
     write_str_to_file(
-        &gen_envs_index(&[env_name.to_string()], env_name),
+        &gen_envs_index(&multi_env.all_envs, &multi_env.default_env),
         &envs_dir.join("index.ts"),
     )?;
 
@@ -272,9 +222,12 @@ fn generate_framework(
 }
 
 /// Build the environment configuration IR from model data.
+///
+/// Uses id_map to iterate packages (works for any environment, not just default).
+/// The type_origin_table must have entries for all packages.
 fn build_env_config(
     env_name: &str,
-    pkgs: &BTreeMap<AccountAddress, source_model::Package>,
+    id_map: &BTreeMap<AccountAddress, move_package_alt::schema::PackageName>,
     folder_names: &BTreeMap<AccountAddress, String>,
     top_level_addr_map: &BTreeMap<AccountAddress, Symbol>,
     published_at_map: &BTreeMap<AccountAddress, AccountAddress>,
@@ -283,7 +236,7 @@ fn build_env_config(
     let mut packages = Vec::new();
     let mut dependencies = Vec::new();
 
-    for (pkg_addr, pkg) in pkgs.iter() {
+    for pkg_addr in id_map.keys() {
         // Get the kebab-case package name
         let pkg_name = folder_names
             .get(pkg_addr)
@@ -303,21 +256,10 @@ fn build_env_config(
             for (type_path, origin_addr) in origin_map.iter() {
                 type_origins.insert(type_path.clone(), origin_addr.to_hex_literal());
             }
-        } else {
-            // For packages without type_origin_table entries, derive from modules
-            for module in pkg.modules() {
-                let module_name_sym = module.name();
-                let module_name: &str = module_name_sym.as_ref();
-                for strct in module.structs() {
-                    let type_path = format!("{}::{}", module_name, strct.name());
-                    type_origins.insert(type_path, original_id.clone());
-                }
-                for enum_ in module.enums() {
-                    let type_path = format!("{}::{}", module_name, enum_.name());
-                    type_origins.insert(type_path, original_id.clone());
-                }
-            }
         }
+        // Note: if type_origin_table doesn't have entries for this package,
+        // we skip it. This can happen for system packages which don't need
+        // type origins as they are handled specially.
 
         let config = EnvPackageConfigIR {
             name: pkg_name,
