@@ -1,3 +1,8 @@
+/**
+ * Coin<SUI> is the token used to pay for gas in Sui.
+ * It has 9 decimals, and the smallest unit (10^-9) is called "mist".
+ */
+
 import {
   PhantomReified,
   Reified,
@@ -27,6 +32,7 @@ export interface SUIFields {
 
 export type SUIReified = Reified<SUI, SUIFields>
 
+/** Name of the coin */
 export class SUI implements StructClass {
   __StructClass = true as const
 

@@ -2,6 +2,10 @@ import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/**
+ * Return the address of the user that signed the current
+ * transaction
+ */
 export function sender(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::sender`,
@@ -16,6 +20,10 @@ export function nativeSender(tx: Transaction) {
   })
 }
 
+/**
+ * Return the transaction digest (hash of transaction inputs).
+ * Please do not use as a source of randomness.
+ */
 export function digest(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::digest`,
@@ -23,6 +31,7 @@ export function digest(tx: Transaction) {
   })
 }
 
+/** Return the current epoch */
 export function epoch(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::epoch`,
@@ -37,6 +46,7 @@ export function nativeEpoch(tx: Transaction) {
   })
 }
 
+/** Return the epoch start time as a unix timestamp in milliseconds. */
 export function epochTimestampMs(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::epoch_timestamp_ms`,
@@ -51,6 +61,7 @@ export function nativeEpochTimestampMs(tx: Transaction) {
   })
 }
 
+/** Return the adress of the transaction sponsor or `None` if there was no sponsor. */
 export function sponsor(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::sponsor`,
@@ -58,6 +69,11 @@ export function sponsor(tx: Transaction) {
   })
 }
 
+/**
+ * Create an `address` that has not been used. As it is an object address, it will never
+ * occur as the address for a user.
+ * In other words, the generated address is a globally unique object ID.
+ */
 export function freshObjectAddress(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::fresh_object_address`,
@@ -72,6 +88,10 @@ export function freshId(tx: Transaction) {
   })
 }
 
+/**
+ * Return the reference gas price in effect for the epoch the transaction
+ * is being executed in.
+ */
 export function referenceGasPrice(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::reference_gas_price`,
@@ -86,6 +106,10 @@ export function nativeRgp(tx: Transaction) {
   })
 }
 
+/**
+ * Return the gas price submitted for the current transaction.
+ * That is the value the user submitted with the transaction data.
+ */
 export function gasPrice(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::gas_price`,
@@ -133,6 +157,7 @@ export interface DeriveIdArgs {
   idsCreated: bigint | TransactionArgument
 }
 
+/** Native function for deriving an ID via hash(tx_hash || ids_created) */
 export function deriveId(tx: Transaction, args: DeriveIdArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::derive_id`,

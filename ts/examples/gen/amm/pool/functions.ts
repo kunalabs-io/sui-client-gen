@@ -2,6 +2,10 @@ import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/**
+ * Returns the balances of token A and B present in the pool and the total
+ * supply of LP coins.
+ */
 export function values(tx: Transaction, typeArgs: [string, string], pool: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('amm')}::pool::values`,
@@ -10,6 +14,7 @@ export function values(tx: Transaction, typeArgs: [string, string], pool: Transa
   })
 }
 
+/** Returns the pool fee info. */
 export function fees(tx: Transaction, typeArgs: [string, string], pool: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('amm')}::pool::fees`,
@@ -18,6 +23,7 @@ export function fees(tx: Transaction, typeArgs: [string, string], pool: Transact
   })
 }
 
+/** Returns the value of collected admin fees stored in the pool. */
 export function adminFeeValue(
   tx: Transaction,
   typeArgs: [string, string],
@@ -30,6 +36,7 @@ export function adminFeeValue(
   })
 }
 
+/** Creat a new empty `PoolRegistry`. */
 export function newRegistry(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('amm')}::pool::new_registry`,
@@ -49,6 +56,13 @@ export function cmpTypeNames(tx: Transaction, args: CmpTypeNamesArgs) {
   })
 }
 
+/**
+ * Add a new coin type tuple (`A`, `B`) to the registry. Types must be sorted alphabetically (ASCII ordered)
+ * such that `A` < `B`. They also cannot be equal.
+ * Aborts when coin types are the same.
+ * Aborts when coin types are not in order (type `A` must come before `B` alphabetically).
+ * Aborts when coin type tuple is already in the registry.
+ */
 export function registryAdd(
   tx: Transaction,
   typeArgs: [string, string],
@@ -67,6 +81,7 @@ export interface MuldivArgs {
   c: bigint | TransactionArgument
 }
 
+/** Calculates (a * b) / c. Errors if result doesn't fit into u64. */
 export function muldiv(tx: Transaction, args: MuldivArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('amm')}::pool::muldiv`,
@@ -80,6 +95,7 @@ export interface CeilMuldivArgs {
   c: bigint | TransactionArgument
 }
 
+/** Calculates ceil_div((a * b), c). Errors if result doesn't fit into u64. */
 export function ceilMuldiv(tx: Transaction, args: CeilMuldivArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('amm')}::pool::ceil_muldiv`,
@@ -92,6 +108,7 @@ export interface MulsqrtArgs {
   b: bigint | TransactionArgument
 }
 
+/** Calculates sqrt(a * b). */
 export function mulsqrt(tx: Transaction, args: MulsqrtArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('amm')}::pool::mulsqrt`,
@@ -105,6 +122,7 @@ export interface MuldivU128Args {
   c: bigint | TransactionArgument
 }
 
+/** Calculates (a * b) / c for u128. Errors if result doesn't fit into u128. */
 export function muldivU128(tx: Transaction, args: MuldivU128Args) {
   return tx.moveCall({
     target: `${getPublishedAt('amm')}::pool::muldiv_u128`,
@@ -112,6 +130,7 @@ export function muldivU128(tx: Transaction, args: MuldivU128Args) {
   })
 }
 
+/** Initializes the `PoolRegistry` objects and shares it, and transfers `AdminCap` to sender. */
 export function init(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('amm')}::pool::init`,
@@ -127,6 +146,7 @@ export interface CreateArgs {
   adminFeePct: bigint | TransactionArgument
 }
 
+/** Creates a new Pool with provided initial balances. Returns the initial LP coins. */
 export function create(tx: Transaction, typeArgs: [string, string], args: CreateArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('amm')}::pool::create`,
@@ -148,6 +168,14 @@ export interface DepositArgs {
   minLpOut: bigint | TransactionArgument
 }
 
+/**
+ * Deposit liquidity into pool. The deposit will use up the maximum amount of
+ * the provided balances possible depending on the current pool ratio. Usually
+ * this means that all of either `input_a` or `input_b` will be fully used, while
+ * the other only partially. Otherwise, both input values will be fully used.
+ * Returns the remaining input amounts (if any) and LP Coin of appropriate value.
+ * Fails if the value of the issued LP Coin is smaller than `min_lp_out`.
+ */
 export function deposit(tx: Transaction, typeArgs: [string, string], args: DepositArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('amm')}::pool::deposit`,
@@ -168,6 +196,11 @@ export interface WithdrawArgs {
   minBOut: bigint | TransactionArgument
 }
 
+/**
+ * Burns the provided LP Coin and withdraws corresponding pool balances.
+ * Fails if the withdrawn balances are smaller than `min_a_out` and `min_b_out`
+ * respectively.
+ */
 export function withdraw(tx: Transaction, typeArgs: [string, string], args: WithdrawArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('amm')}::pool::withdraw`,
@@ -190,6 +223,7 @@ export interface CalcSwapResultArgs {
   adminFeePct: bigint | TransactionArgument
 }
 
+/** Calclates swap result and fees based on the input amount and current pool state. */
 export function calcSwapResult(tx: Transaction, args: CalcSwapResultArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('amm')}::pool::calc_swap_result`,
@@ -210,6 +244,10 @@ export interface SwapAArgs {
   minOut: bigint | TransactionArgument
 }
 
+/**
+ * Swaps the provided amount of A for B. Fails if the resulting amount of B
+ * is smaller than `min_out`.
+ */
 export function swapA(tx: Transaction, typeArgs: [string, string], args: SwapAArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('amm')}::pool::swap_a`,
@@ -224,6 +262,10 @@ export interface SwapBArgs {
   minOut: bigint | TransactionArgument
 }
 
+/**
+ * Swaps the provided amount of B for A. Fails if the resulting amount of A
+ * is smaller than `min_out`.
+ */
 export function swapB(tx: Transaction, typeArgs: [string, string], args: SwapBArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('amm')}::pool::swap_b`,
@@ -238,6 +280,10 @@ export interface AdminWithdrawFeesArgs {
   amount: bigint | TransactionArgument
 }
 
+/**
+ * Withdraw `amount` of collected admin fees by providing pool's PoolAdminCap.
+ * When `amount` is set to 0, it will withdraw all available fees.
+ */
 export function adminWithdrawFees(
   tx: Transaction,
   typeArgs: [string, string],
@@ -257,6 +303,7 @@ export interface AdminSetFeesArgs {
   adminFeePct: bigint | TransactionArgument
 }
 
+/** Admin function. Set new fees for the pool. */
 export function adminSetFees(tx: Transaction, typeArgs: [string, string], args: AdminSetFeesArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('amm')}::pool::admin_set_fees`,

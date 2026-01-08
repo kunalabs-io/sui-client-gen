@@ -2,6 +2,10 @@ import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/**
+ * The `clock`'s current timestamp as a running total of
+ * milliseconds since an arbitrary point in the past.
+ */
 export function timestampMs(tx: Transaction, clock: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::clock::timestamp_ms`,
@@ -9,6 +13,10 @@ export function timestampMs(tx: Transaction, clock: TransactionObjectInput) {
   })
 }
 
+/**
+ * Create and share the singleton Clock -- this function is
+ * called exactly once, during genesis.
+ */
 export function create(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::clock::create`,

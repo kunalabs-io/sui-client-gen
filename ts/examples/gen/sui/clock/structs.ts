@@ -1,3 +1,8 @@
+/**
+ * APIs for accessing time from move calls, via the `Clock`: a unique
+ * shared object that is created at 0x6 during genesis.
+ */
+
 import {
   PhantomReified,
   Reified,
@@ -24,11 +29,27 @@ export function isClock(type: string): boolean {
 
 export interface ClockFields {
   id: ToField<UID>
+  /**
+   * The clock's timestamp, which is set automatically by a
+   * system transaction every time consensus commits a
+   * schedule, or by `sui::clock::increment_for_testing` during
+   * testing.
+   */
   timestampMs: ToField<'u64'>
 }
 
 export type ClockReified = Reified<Clock, ClockFields>
 
+/**
+ * Singleton shared object that exposes time to Move calls.  This
+ * object is found at address 0x6, and can only be read (accessed
+ * via an immutable reference) by entry functions.
+ *
+ * Entry Functions that attempt to accept `Clock` by mutable
+ * reference or value will fail to verify, and honest validators
+ * will not sign or execute transactions that use `Clock` as an
+ * input parameter, unless it is passed by immutable reference.
+ */
 export class Clock implements StructClass {
   __StructClass = true as const
 
@@ -42,6 +63,12 @@ export class Clock implements StructClass {
   readonly $isPhantom = Clock.$isPhantom
 
   readonly id: ToField<UID>
+  /**
+   * The clock's timestamp, which is set automatically by a
+   * system transaction every time consensus commits a
+   * schedule, or by `sui::clock::increment_for_testing` during
+   * testing.
+   */
   readonly timestampMs: ToField<'u64'>
 
   private constructor(typeArgs: [], fields: ClockFields) {

@@ -23,12 +23,23 @@ export function isParty(type: string): boolean {
 }
 
 export interface PartyFields {
+  /** The permissions that apply if no specific permissions are set in the `members` map. */
   default: ToField<Permissions>
+  /** The permissions per transaction sender. */
   members: ToField<VecMap<'address', Permissions>>
 }
 
 export type PartyReified = Reified<Party, PartyFields>
 
+/**
+ * The permissions that apply to a party object. If the transaction sender has an entry in
+ * the `members` map, the permissions in that entry apply. Otherwise, the `default` permissions
+ * are used.
+ * If the party has the `READ` permission, the object can be taken as an immutable input.
+ * If the party has the `WRITE`, `DELETE`, or `TRANSFER` permissions, the object can be taken as
+ * a mutable input. Additional restrictions pertaining to each permission are checked at the end
+ * of transaction execution.
+ */
 export class Party implements StructClass {
   __StructClass = true as const
 
@@ -41,7 +52,9 @@ export class Party implements StructClass {
   readonly $typeArgs: []
   readonly $isPhantom = Party.$isPhantom
 
+  /** The permissions that apply if no specific permissions are set in the `members` map. */
   readonly default: ToField<Permissions>
+  /** The permissions per transaction sender. */
   readonly members: ToField<VecMap<'address', Permissions>>
 
   private constructor(typeArgs: [], fields: PartyFields) {
@@ -215,6 +228,10 @@ export interface PermissionsFields {
 
 export type PermissionsReified = Reified<Permissions, PermissionsFields>
 
+/**
+ * The permissions that a party has. The permissions are a bitset of the `READ`, `WRITE`,
+ * `DELETE`, and `TRANSFER` constants.
+ */
 export class Permissions implements StructClass {
   __StructClass = true as const
 

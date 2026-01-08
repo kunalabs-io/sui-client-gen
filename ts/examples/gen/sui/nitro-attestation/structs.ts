@@ -32,6 +32,7 @@ export interface PCREntryFields {
 
 export type PCREntryReified = Reified<PCREntry, PCREntryFields>
 
+/** Represents a PCR entry with an index and value. */
 export class PCREntry implements StructClass {
   __StructClass = true as const
 
@@ -207,12 +208,25 @@ export function isNitroAttestationDocument(type: string): boolean {
 }
 
 export interface NitroAttestationDocumentFields {
+  /** Issuing Nitro hypervisor module ID. */
   moduleId: ToField<Vector<'u8'>>
+  /** UTC time when document was created, in milliseconds since UNIX epoch. */
   timestamp: ToField<'u64'>
+  /** The digest function used for calculating the register values. */
   digest: ToField<Vector<'u8'>>
+  /**
+   * A list of PCREntry containing the index and the PCR bytes.
+   * <https://docs.aws.amazon.com/enclaves/latest/user/set-up-attestation.html#where>.
+   */
   pcrs: ToField<Vector<PCREntry>>
+  /** An optional DER-encoded key the attestation, consumer can use to encrypt data with. */
   publicKey: ToField<Option<Vector<'u8'>>>
+  /** Additional signed user data, defined by protocol. */
   userData: ToField<Option<Vector<'u8'>>>
+  /**
+   * An optional cryptographic nonce provided by the attestation consumer as a proof of
+   * authenticity.
+   */
   nonce: ToField<Option<Vector<'u8'>>>
 }
 
@@ -221,6 +235,7 @@ export type NitroAttestationDocumentReified = Reified<
   NitroAttestationDocumentFields
 >
 
+/** Nitro Attestation Document defined for AWS. */
 export class NitroAttestationDocument implements StructClass {
   __StructClass = true as const
 
@@ -233,12 +248,25 @@ export class NitroAttestationDocument implements StructClass {
   readonly $typeArgs: []
   readonly $isPhantom = NitroAttestationDocument.$isPhantom
 
+  /** Issuing Nitro hypervisor module ID. */
   readonly moduleId: ToField<Vector<'u8'>>
+  /** UTC time when document was created, in milliseconds since UNIX epoch. */
   readonly timestamp: ToField<'u64'>
+  /** The digest function used for calculating the register values. */
   readonly digest: ToField<Vector<'u8'>>
+  /**
+   * A list of PCREntry containing the index and the PCR bytes.
+   * <https://docs.aws.amazon.com/enclaves/latest/user/set-up-attestation.html#where>.
+   */
   readonly pcrs: ToField<Vector<PCREntry>>
+  /** An optional DER-encoded key the attestation, consumer can use to encrypt data with. */
   readonly publicKey: ToField<Option<Vector<'u8'>>>
+  /** Additional signed user data, defined by protocol. */
   readonly userData: ToField<Option<Vector<'u8'>>>
+  /**
+   * An optional cryptographic nonce provided by the attestation consumer as a proof of
+   * authenticity.
+   */
   readonly nonce: ToField<Option<Vector<'u8'>>>
 
   private constructor(typeArgs: [], fields: NitroAttestationDocumentFields) {

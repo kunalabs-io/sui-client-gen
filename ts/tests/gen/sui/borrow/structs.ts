@@ -1,3 +1,11 @@
+/**
+ * A simple library that enables hot-potato-locked borrow mechanics.
+ *
+ * With Programmable transactions, it is possible to borrow a value within
+ * a transaction, use it and put back in the end. Hot-potato `Borrow` makes
+ * sure the object is returned and was not swapped for another one.
+ */
+
 import {
   PhantomReified,
   Reified,
@@ -42,6 +50,7 @@ export interface ReferentFields<T extends TypeArgument> {
 
 export type ReferentReified<T extends TypeArgument> = Reified<Referent<T>, ReferentFields<T>>
 
+/** An object wrapping a `T` and providing the borrow API. */
 export class Referent<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -280,6 +289,7 @@ export interface BorrowFields {
 
 export type BorrowReified = Reified<Borrow, BorrowFields>
 
+/** A hot potato making sure the object is put back once borrowed. */
 export class Borrow implements StructClass {
   __StructClass = true as const
 

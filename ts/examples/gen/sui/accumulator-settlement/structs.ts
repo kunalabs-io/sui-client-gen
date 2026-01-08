@@ -25,8 +25,11 @@ export function isEventStreamHead(type: string): boolean {
 }
 
 export interface EventStreamHeadFields {
+  /** Merkle Mountain Range of all events in the stream. */
   mmr: ToField<Vector<'u256'>>
+  /** Checkpoint sequence number at which the event stream was written. */
   checkpointSeq: ToField<'u64'>
+  /** Number of events in the stream. */
   numEvents: ToField<'u64'>
 }
 
@@ -44,8 +47,11 @@ export class EventStreamHead implements StructClass {
   readonly $typeArgs: []
   readonly $isPhantom = EventStreamHead.$isPhantom
 
+  /** Merkle Mountain Range of all events in the stream. */
   readonly mmr: ToField<Vector<'u256'>>
+  /** Checkpoint sequence number at which the event stream was written. */
   readonly checkpointSeq: ToField<'u64'>
+  /** Number of events in the stream. */
   readonly numEvents: ToField<'u64'>
 
   private constructor(typeArgs: [], fields: EventStreamHeadFields) {

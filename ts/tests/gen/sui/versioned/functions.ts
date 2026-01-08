@@ -7,6 +7,7 @@ export interface CreateArgs {
   initValue: GenericArg
 }
 
+/** Create a new Versioned object that contains a initial value of type `T` with an initial version. */
 export function create(tx: Transaction, typeArg: string, args: CreateArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::versioned::create`,
@@ -15,6 +16,7 @@ export function create(tx: Transaction, typeArg: string, args: CreateArgs) {
   })
 }
 
+/** Get the current version of the inner type. */
 export function version(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::versioned::version`,
@@ -22,6 +24,10 @@ export function version(tx: Transaction, self: TransactionObjectInput) {
   })
 }
 
+/**
+ * Load the inner value based on the current version. Caller specifies an expected type T.
+ * If the type mismatch, the load will fail.
+ */
 export function loadValue(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::versioned::load_value`,
@@ -30,6 +36,7 @@ export function loadValue(tx: Transaction, typeArg: string, self: TransactionObj
   })
 }
 
+/** Similar to load_value, but return a mutable reference. */
 export function loadValueMut(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::versioned::load_value_mut`,
@@ -38,6 +45,10 @@ export function loadValueMut(tx: Transaction, typeArg: string, self: Transaction
   })
 }
 
+/**
+ * Take the inner object out for upgrade. To ensure we always upgrade properly, a capability object is returned
+ * and must be used when we upgrade.
+ */
 export function removeValueForUpgrade(
   tx: Transaction,
   typeArg: string,
@@ -57,6 +68,10 @@ export interface UpgradeArgs {
   cap: TransactionObjectInput
 }
 
+/**
+ * Upgrade the inner object with a new version and new value. Must use the capability returned
+ * by calling remove_value_for_upgrade.
+ */
 export function upgrade(tx: Transaction, typeArg: string, args: UpgradeArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::versioned::upgrade`,
@@ -70,6 +85,7 @@ export function upgrade(tx: Transaction, typeArg: string, args: UpgradeArgs) {
   })
 }
 
+/** Destroy this Versioned container, and return the inner object. */
 export function destroy(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::versioned::destroy`,

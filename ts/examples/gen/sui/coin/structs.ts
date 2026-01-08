@@ -1,3 +1,9 @@
+/**
+ * Defines the `Coin` type - platform wide representation of fungible
+ * tokens and coins. `Coin` can be described as a secure wrapper around
+ * `Balance` type.
+ */
+
 import { String as StringAscii } from '../../_dependencies/std/ascii/structs'
 import { Option } from '../../_dependencies/std/option/structs'
 import { String } from '../../_dependencies/std/string/structs'
@@ -46,6 +52,7 @@ export interface CoinFields<T extends PhantomTypeArgument> {
 
 export type CoinReified<T extends PhantomTypeArgument> = Reified<Coin<T>, CoinFields<T>>
 
+/** A coin of type `T` worth `value`. Transferable and storable */
 export class Coin<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -276,10 +283,20 @@ export function isCoinMetadata(type: string): boolean {
 
 export interface CoinMetadataFields<T extends PhantomTypeArgument> {
   id: ToField<UID>
+  /**
+   * Number of decimal places the coin uses.
+   * A coin with `value ` N and `decimals` D should be shown as N / 10^D
+   * E.g., a coin with `value` 7002 and decimals 3 should be displayed as 7.002
+   * This is metadata for display usage only.
+   */
   decimals: ToField<'u8'>
+  /** Name for the token */
   name: ToField<String>
+  /** Symbol for the token */
   symbol: ToField<StringAscii>
+  /** Description of the token */
   description: ToField<String>
+  /** URL for the token logo */
   iconUrl: ToField<Option<Url>>
 }
 
@@ -288,6 +305,10 @@ export type CoinMetadataReified<T extends PhantomTypeArgument> = Reified<
   CoinMetadataFields<T>
 >
 
+/**
+ * Each Coin type T created through `create_currency` function will have a
+ * unique instance of CoinMetadata<T> that stores the metadata for this coin type.
+ */
 export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -301,10 +322,20 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
   readonly $isPhantom = CoinMetadata.$isPhantom
 
   readonly id: ToField<UID>
+  /**
+   * Number of decimal places the coin uses.
+   * A coin with `value ` N and `decimals` D should be shown as N / 10^D
+   * E.g., a coin with `value` 7002 and decimals 3 should be displayed as 7.002
+   * This is metadata for display usage only.
+   */
   readonly decimals: ToField<'u8'>
+  /** Name for the token */
   readonly name: ToField<String>
+  /** Symbol for the token */
   readonly symbol: ToField<StringAscii>
+  /** Description of the token */
   readonly description: ToField<String>
+  /** URL for the token logo */
   readonly iconUrl: ToField<Option<Url>>
 
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: CoinMetadataFields<T>) {
@@ -546,7 +577,9 @@ export function isRegulatedCoinMetadata(type: string): boolean {
 
 export interface RegulatedCoinMetadataFields<T extends PhantomTypeArgument> {
   id: ToField<UID>
+  /** The ID of the coin's CoinMetadata object. */
   coinMetadataObject: ToField<ID>
+  /** The ID of the coin's DenyCap object. */
   denyCapObject: ToField<ID>
 }
 
@@ -555,6 +588,10 @@ export type RegulatedCoinMetadataReified<T extends PhantomTypeArgument> = Reifie
   RegulatedCoinMetadataFields<T>
 >
 
+/**
+ * Similar to CoinMetadata, but created only for regulated coins that use the DenyList.
+ * This object is always immutable.
+ */
 export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -568,7 +605,9 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
   readonly $isPhantom = RegulatedCoinMetadata.$isPhantom
 
   readonly id: ToField<UID>
+  /** The ID of the coin's CoinMetadata object. */
   readonly coinMetadataObject: ToField<ID>
+  /** The ID of the coin's DenyCap object. */
   readonly denyCapObject: ToField<ID>
 
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: RegulatedCoinMetadataFields<T>) {
@@ -805,6 +844,10 @@ export type TreasuryCapReified<T extends PhantomTypeArgument> = Reified<
   TreasuryCapFields<T>
 >
 
+/**
+ * Capability allowing the bearer to mint and burn
+ * coins of type `T`. Transferable
+ */
 export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -1043,6 +1086,13 @@ export type DenyCapV2Reified<T extends PhantomTypeArgument> = Reified<
   DenyCapV2Fields<T>
 >
 
+/**
+ * Capability allowing the bearer to deny addresses from using the currency's coins--
+ * immediately preventing those addresses from interacting with the coin as an input to a
+ * transaction and at the start of the next preventing them from receiving the coin.
+ * If `allow_global_pause` is true, the bearer can enable a global pause that behaves as if
+ * all addresses were added to the deny list.
+ */
 export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -1507,6 +1557,10 @@ export interface DenyCapFields<T extends PhantomTypeArgument> {
 
 export type DenyCapReified<T extends PhantomTypeArgument> = Reified<DenyCap<T>, DenyCapFields<T>>
 
+/**
+ * Capability allowing the bearer to freeze addresses, preventing those addresses from
+ * interacting with the coin as an input to a transaction.
+ */
 export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 

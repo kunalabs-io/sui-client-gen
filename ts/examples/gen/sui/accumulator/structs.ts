@@ -215,6 +215,13 @@ export interface U128Fields {
 
 export type U128Reified = Reified<U128, U128Fields>
 
+/**
+ * Storage for 128-bit accumulator values.
+ *
+ * Currently only used to represent the sum of 64 bit values (such as `Balance<T>`).
+ * The additional bits are necessary to prevent overflow, as it would take 2^64 deposits of U64_MAX
+ * to cause an overflow.
+ */
 export class U128 implements StructClass {
   __StructClass = true as const
 
@@ -385,6 +392,10 @@ export interface KeyFields<T extends PhantomTypeArgument> {
 
 export type KeyReified<T extends PhantomTypeArgument> = Reified<Key<T>, KeyFields<T>>
 
+/**
+ * `Key` is used only for computing the field id of accumulator objects.
+ * `T` is the type of the accumulated value, e.g. `Balance<SUI>`
+ */
 export class Key<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 

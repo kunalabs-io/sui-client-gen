@@ -1,3 +1,18 @@
+/**
+ * Enables the creation of objects with deterministic addresses derived from a parent object's UID.
+ * This module provides a way to generate objects with predictable addresses based on a parent UID
+ * and a key, creating a namespace that ensures uniqueness for each parent-key combination,
+ * which is usually how registries are built.
+ *
+ * Key features:
+ * - Deterministic address generation based on parent object UID and key
+ * - Derived objects can exist and operate independently of their parent
+ *
+ * The derived UIDs, once created, are independent and do not require sequencing on the parent
+ * object. They can be used without affecting the parent. The parent only maintains a record of
+ * which derived addresses have been claimed to prevent duplicates.
+ */
+
 import {
   EnumVariantClass,
   PhantomReified,
@@ -41,6 +56,7 @@ export interface ClaimedFields {
 
 export type ClaimedReified = Reified<Claimed, ClaimedFields>
 
+/** Added as a DF to the parent's UID, to mark an ID as claimed. */
 export class Claimed implements StructClass {
   __StructClass = true as const
 
@@ -217,6 +233,7 @@ export type DerivedObjectKeyReified<K extends TypeArgument> = Reified<
   DerivedObjectKeyFields<K>
 >
 
+/** An internal key to protect from generating the same UID twice (e.g. collide with DFs) */
 export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -435,6 +452,11 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
 
 /* ============================== ClaimedStatus =============================== */
 
+/**
+ * The possible values of a claimed UID.
+ * We make it an enum to make upgradeability easier in the future.
+ */
+
 export function isClaimedStatus(type: string): boolean {
   type = compressSuiType(type)
   return type === `0x2::derived_object::ClaimedStatus`
@@ -566,6 +588,7 @@ export class ClaimedStatus {
   }
 }
 
+/** The UID has been claimed and cannot be re-claimed or used. */
 export type ClaimedStatusReservedFields = Record<string, never>
 
 export class ClaimedStatusReserved implements EnumVariantClass {

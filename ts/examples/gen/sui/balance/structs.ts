@@ -1,3 +1,9 @@
+/**
+ * A storable handler for Balances in general. Is used in the `Coin`
+ * module to allow balance operations and can be used to implement
+ * custom coins with `Supply` and `Balance`s.
+ */
+
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -38,6 +44,10 @@ export interface SupplyFields<T extends PhantomTypeArgument> {
 
 export type SupplyReified<T extends PhantomTypeArgument> = Reified<Supply<T>, SupplyFields<T>>
 
+/**
+ * A Supply of T. Used for minting and burning.
+ * Wrapped into a `TreasuryCap` in the `Coin` module.
+ */
 export class Supply<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -265,6 +275,10 @@ export interface BalanceFields<T extends PhantomTypeArgument> {
 
 export type BalanceReified<T extends PhantomTypeArgument> = Reified<Balance<T>, BalanceFields<T>>
 
+/**
+ * Storable balance - an inner struct of a Coin type.
+ * Can be used to store coins which don't need the key ability.
+ */
 export class Balance<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 

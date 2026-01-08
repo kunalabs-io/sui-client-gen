@@ -2,6 +2,7 @@ import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/** Creates a new, empty table */
 export function new_(tx: Transaction, typeArgs: [string, string]) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::linked_table::new`,
@@ -10,6 +11,7 @@ export function new_(tx: Transaction, typeArgs: [string, string]) {
   })
 }
 
+/** Returns the key for the first element in the table, or None if the table is empty */
 export function front(tx: Transaction, typeArgs: [string, string], table: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::linked_table::front`,
@@ -18,6 +20,7 @@ export function front(tx: Transaction, typeArgs: [string, string], table: Transa
   })
 }
 
+/** Returns the key for the last element in the table, or None if the table is empty */
 export function back(tx: Transaction, typeArgs: [string, string], table: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::linked_table::back`,
@@ -32,6 +35,12 @@ export interface PushFrontArgs {
   value: GenericArg
 }
 
+/**
+ * Inserts a key-value pair at the front of the table, i.e. the newly inserted pair will be
+ * the first element in the table
+ * Aborts with `sui::dynamic_field::EFieldAlreadyExists` if the table already has an entry with
+ * that key `k: K`.
+ */
 export function pushFront(tx: Transaction, typeArgs: [string, string], args: PushFrontArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::linked_table::push_front`,
@@ -50,6 +59,12 @@ export interface PushBackArgs {
   value: GenericArg
 }
 
+/**
+ * Inserts a key-value pair at the back of the table, i.e. the newly inserted pair will be
+ * the last element in the table
+ * Aborts with `sui::dynamic_field::EFieldAlreadyExists` if the table already has an entry with
+ * that key `k: K`.
+ */
 export function pushBack(tx: Transaction, typeArgs: [string, string], args: PushBackArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::linked_table::push_back`,
@@ -67,6 +82,11 @@ export interface BorrowArgs {
   k: GenericArg
 }
 
+/**
+ * Immutable borrows the value associated with the key in the table `table: &LinkedTable<K, V>`.
+ * Aborts with `sui::dynamic_field::EFieldDoesNotExist` if the table does not have an entry with
+ * that key `k: K`.
+ */
 export function borrow(tx: Transaction, typeArgs: [string, string], args: BorrowArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::linked_table::borrow`,
@@ -80,6 +100,11 @@ export interface BorrowMutArgs {
   k: GenericArg
 }
 
+/**
+ * Mutably borrows the value associated with the key in the table `table: &mut LinkedTable<K, V>`.
+ * Aborts with `sui::dynamic_field::EFieldDoesNotExist` if the table does not have an entry with
+ * that key `k: K`.
+ */
 export function borrowMut(tx: Transaction, typeArgs: [string, string], args: BorrowMutArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::linked_table::borrow_mut`,
@@ -93,6 +118,12 @@ export interface PrevArgs {
   k: GenericArg
 }
 
+/**
+ * Borrows the key for the previous entry of the specified key `k: K` in the table
+ * `table: &LinkedTable<K, V>`. Returns None if the entry does not have a predecessor.
+ * Aborts with `sui::dynamic_field::EFieldDoesNotExist` if the table does not have an entry with
+ * that key `k: K`
+ */
 export function prev(tx: Transaction, typeArgs: [string, string], args: PrevArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::linked_table::prev`,
@@ -106,6 +137,12 @@ export interface NextArgs {
   k: GenericArg
 }
 
+/**
+ * Borrows the key for the next entry of the specified key `k: K` in the table
+ * `table: &LinkedTable<K, V>`. Returns None if the entry does not have a predecessor.
+ * Aborts with `sui::dynamic_field::EFieldDoesNotExist` if the table does not have an entry with
+ * that key `k: K`
+ */
 export function next(tx: Transaction, typeArgs: [string, string], args: NextArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::linked_table::next`,
@@ -119,6 +156,12 @@ export interface RemoveArgs {
   k: GenericArg
 }
 
+/**
+ * Removes the key-value pair in the table `table: &mut LinkedTable<K, V>` and returns the value.
+ * This splices the element out of the ordering.
+ * Aborts with `sui::dynamic_field::EFieldDoesNotExist` if the table does not have an entry with
+ * that key `k: K`. Note: this is also what happens when the table is empty.
+ */
 export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::linked_table::remove`,
@@ -127,6 +170,10 @@ export function remove(tx: Transaction, typeArgs: [string, string], args: Remove
   })
 }
 
+/**
+ * Removes the front of the table `table: &mut LinkedTable<K, V>`, returns the key and value.
+ * Aborts with `ETableIsEmpty` if the table is empty
+ */
 export function popFront(
   tx: Transaction,
   typeArgs: [string, string],
@@ -139,6 +186,10 @@ export function popFront(
   })
 }
 
+/**
+ * Removes the back of the table `table: &mut LinkedTable<K, V>`, returns the key and value.
+ * Aborts with `ETableIsEmpty` if the table is empty
+ */
 export function popBack(
   tx: Transaction,
   typeArgs: [string, string],
@@ -156,6 +207,10 @@ export interface ContainsArgs {
   k: GenericArg
 }
 
+/**
+ * Returns true iff there is a value associated with the key `k: K` in table
+ * `table: &LinkedTable<K, V>`
+ */
 export function contains(tx: Transaction, typeArgs: [string, string], args: ContainsArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::linked_table::contains`,
@@ -164,6 +219,7 @@ export function contains(tx: Transaction, typeArgs: [string, string], args: Cont
   })
 }
 
+/** Returns the size of the table, the number of key-value pairs */
 export function length(tx: Transaction, typeArgs: [string, string], table: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::linked_table::length`,
@@ -172,6 +228,7 @@ export function length(tx: Transaction, typeArgs: [string, string], table: Trans
   })
 }
 
+/** Returns true iff the table is empty (if `length` returns `0`) */
 export function isEmpty(
   tx: Transaction,
   typeArgs: [string, string],
@@ -184,6 +241,10 @@ export function isEmpty(
   })
 }
 
+/**
+ * Destroys an empty table
+ * Aborts with `ETableNotEmpty` if the table still contains values
+ */
 export function destroyEmpty(
   tx: Transaction,
   typeArgs: [string, string],
@@ -196,6 +257,10 @@ export function destroyEmpty(
   })
 }
 
+/**
+ * Drop a possibly non-empty table.
+ * Usable only if the value type `V` has the `drop` ability
+ */
 export function drop(tx: Transaction, typeArgs: [string, string], table: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::linked_table::drop`,

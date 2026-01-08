@@ -64,6 +64,11 @@ export function jwkLt(tx: Transaction, args: JwkLtArgs) {
   })
 }
 
+/**
+ * Create and share the AuthenticatorState object. This function is call exactly once, when
+ * the authenticator state object is first created.
+ * Can only be called by genesis or change_epoch transactions.
+ */
 export function create(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::authenticator_state::create`,
@@ -100,6 +105,12 @@ export interface UpdateAuthenticatorStateArgs {
   newActiveJwks: Array<TransactionObjectInput> | TransactionArgument
 }
 
+/**
+ * Record a new set of active_jwks. Called when executing the AuthenticatorStateUpdate system
+ * transaction. The new input vector must be sorted and must not contain duplicates.
+ * If a new JWK is already present, but with a previous epoch, then the epoch is updated to
+ * indicate that the JWK has been validated in the current epoch and should not be expired.
+ */
 export function updateAuthenticatorState(tx: Transaction, args: UpdateAuthenticatorStateArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::authenticator_state::update_authenticator_state`,
@@ -129,6 +140,10 @@ export function expireJwks(tx: Transaction, args: ExpireJwksArgs) {
   })
 }
 
+/**
+ * Get the current active_jwks. Called when the node starts up in order to load the current
+ * JWK state from the chain.
+ */
 export function getActiveJwks(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::authenticator_state::get_active_jwks`,

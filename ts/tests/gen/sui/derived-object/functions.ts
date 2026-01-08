@@ -8,6 +8,7 @@ export interface ClaimArgs {
   key: GenericArg
 }
 
+/** Claim a deterministic UID, using the parent's UID & any key. */
 export function claim(tx: Transaction, typeArg: string, args: ClaimArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::derived_object::claim`,
@@ -21,6 +22,10 @@ export interface ExistsArgs {
   key: GenericArg
 }
 
+/**
+ * Checks if a provided `key` has been claimed for the given parent.
+ * Note: If the UID has been deleted through `object::delete`, this will always return true.
+ */
 export function exists(tx: Transaction, typeArg: string, args: ExistsArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::derived_object::exists`,
@@ -34,6 +39,7 @@ export interface DeriveAddressArgs {
   key: GenericArg
 }
 
+/** Given an ID and a Key, it calculates the derived address. */
 export function deriveAddress(tx: Transaction, typeArg: string, args: DeriveAddressArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::derived_object::derive_address`,

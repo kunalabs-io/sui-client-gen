@@ -7,6 +7,7 @@ export interface MaxArgs {
   y: bigint | TransactionArgument
 }
 
+/** DEPRECATED, use `std::u64::max` instead */
 export function max(tx: Transaction, args: MaxArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::math::max`,
@@ -19,6 +20,7 @@ export interface MinArgs {
   y: bigint | TransactionArgument
 }
 
+/** DEPRECATED, use `std::u64::min` instead */
 export function min(tx: Transaction, args: MinArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::math::min`,
@@ -31,6 +33,7 @@ export interface DiffArgs {
   y: bigint | TransactionArgument
 }
 
+/** DEPRECATED, use `std::u64::diff` instead */
 export function diff(tx: Transaction, args: DiffArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::math::diff`,
@@ -43,6 +46,7 @@ export interface PowArgs {
   exponent: number | TransactionArgument
 }
 
+/** DEPRECATED, use `std::u64::pow` instead */
 export function pow(tx: Transaction, args: PowArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::math::pow`,
@@ -50,6 +54,7 @@ export function pow(tx: Transaction, args: PowArgs) {
   })
 }
 
+/** DEPRECATED, use `std::u64::sqrt` instead */
 export function sqrt(tx: Transaction, x: bigint | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::math::sqrt`,
@@ -57,6 +62,7 @@ export function sqrt(tx: Transaction, x: bigint | TransactionArgument) {
   })
 }
 
+/** DEPRECATED, use `std::u128::sqrt` instead */
 export function sqrtU128(tx: Transaction, x: bigint | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::math::sqrt_u128`,
@@ -69,6 +75,7 @@ export interface DivideAndRoundUpArgs {
   y: bigint | TransactionArgument
 }
 
+/** DEPRECATED, use `std::u64::divide_and_round_up` instead */
 export function divideAndRoundUp(tx: Transaction, args: DivideAndRoundUpArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::math::divide_and_round_up`,

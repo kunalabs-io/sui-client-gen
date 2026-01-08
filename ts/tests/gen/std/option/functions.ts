@@ -2,6 +2,7 @@ import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, option } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/** Return an empty `Option` */
 export function none(tx: Transaction, typeArg: string) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::none`,
@@ -10,6 +11,7 @@ export function none(tx: Transaction, typeArg: string) {
   })
 }
 
+/** Return an `Option` containing `e` */
 export function some(tx: Transaction, typeArg: string, e: GenericArg) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::some`,
@@ -18,6 +20,7 @@ export function some(tx: Transaction, typeArg: string, e: GenericArg) {
   })
 }
 
+/** Return true if `t` does not hold a value */
 export function isNone(tx: Transaction, typeArg: string, t: GenericArg | null) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::is_none`,
@@ -26,6 +29,7 @@ export function isNone(tx: Transaction, typeArg: string, t: GenericArg | null) {
   })
 }
 
+/** Return true if `t` holds a value */
 export function isSome(tx: Transaction, typeArg: string, t: GenericArg | null) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::is_some`,
@@ -39,6 +43,10 @@ export interface ContainsArgs {
   eRef: GenericArg
 }
 
+/**
+ * Return true if the value in `t` is equal to `e_ref`
+ * Always returns `false` if `t` does not hold a value
+ */
 export function contains(tx: Transaction, typeArg: string, args: ContainsArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::contains`,
@@ -47,6 +55,10 @@ export function contains(tx: Transaction, typeArg: string, args: ContainsArgs) {
   })
 }
 
+/**
+ * Return an immutable reference to the value inside `t`
+ * Aborts if `t` does not hold a value
+ */
 export function borrow(tx: Transaction, typeArg: string, t: GenericArg | null) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::borrow`,
@@ -60,6 +72,10 @@ export interface BorrowWithDefaultArgs {
   defaultRef: GenericArg
 }
 
+/**
+ * Return a reference to the value inside `t` if it holds one
+ * Return `default_ref` if `t` does not hold a value
+ */
 export function borrowWithDefault(tx: Transaction, typeArg: string, args: BorrowWithDefaultArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::borrow_with_default`,
@@ -73,6 +89,10 @@ export interface GetWithDefaultArgs {
   default: GenericArg
 }
 
+/**
+ * Return the value inside `t` if it holds one
+ * Return `default` if `t` does not hold a value
+ */
 export function getWithDefault(tx: Transaction, typeArg: string, args: GetWithDefaultArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::get_with_default`,
@@ -86,6 +106,10 @@ export interface FillArgs {
   e: GenericArg
 }
 
+/**
+ * Convert the none option `t` to a some option by adding `e`.
+ * Aborts if `t` already holds a value
+ */
 export function fill(tx: Transaction, typeArg: string, args: FillArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::fill`,
@@ -94,6 +118,10 @@ export function fill(tx: Transaction, typeArg: string, args: FillArgs) {
   })
 }
 
+/**
+ * Convert a `some` option to a `none` by removing and returning the value stored inside `t`
+ * Aborts if `t` does not hold a value
+ */
 export function extract(tx: Transaction, typeArg: string, t: GenericArg | null) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::extract`,
@@ -102,6 +130,10 @@ export function extract(tx: Transaction, typeArg: string, t: GenericArg | null) 
   })
 }
 
+/**
+ * Return a mutable reference to the value inside `t`
+ * Aborts if `t` does not hold a value
+ */
 export function borrowMut(tx: Transaction, typeArg: string, t: GenericArg | null) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::borrow_mut`,
@@ -115,6 +147,10 @@ export interface SwapArgs {
   e: GenericArg
 }
 
+/**
+ * Swap the old value inside `t` with `e` and return the old value
+ * Aborts if `t` does not hold a value
+ */
 export function swap(tx: Transaction, typeArg: string, args: SwapArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::swap`,
@@ -128,6 +164,11 @@ export interface SwapOrFillArgs {
   e: GenericArg
 }
 
+/**
+ * Swap the old value inside `t` with `e` and return the old value;
+ * or if there is no old value, fill it with `e`.
+ * Different from swap(), swap_or_fill() allows for `t` not holding a value.
+ */
 export function swapOrFill(tx: Transaction, typeArg: string, args: SwapOrFillArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::swap_or_fill`,
@@ -141,6 +182,7 @@ export interface DestroyWithDefaultArgs {
   default: GenericArg
 }
 
+/** Destroys `t.` If `t` holds a value, return it. Returns `default` otherwise */
 export function destroyWithDefault(tx: Transaction, typeArg: string, args: DestroyWithDefaultArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::destroy_with_default`,
@@ -149,6 +191,10 @@ export function destroyWithDefault(tx: Transaction, typeArg: string, args: Destr
   })
 }
 
+/**
+ * Unpack `t` and return its contents
+ * Aborts if `t` does not hold a value
+ */
 export function destroySome(tx: Transaction, typeArg: string, t: GenericArg | null) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::destroy_some`,
@@ -157,6 +203,10 @@ export function destroySome(tx: Transaction, typeArg: string, t: GenericArg | nu
   })
 }
 
+/**
+ * Unpack `t`
+ * Aborts if `t` holds a value
+ */
 export function destroyNone(tx: Transaction, typeArg: string, t: GenericArg | null) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::destroy_none`,
@@ -165,6 +215,10 @@ export function destroyNone(tx: Transaction, typeArg: string, t: GenericArg | nu
   })
 }
 
+/**
+ * Convert `t` into a vector of length 1 if it is `Some`,
+ * and an empty vector otherwise
+ */
 export function toVec(tx: Transaction, typeArg: string, t: GenericArg | null) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::option::to_vec`,

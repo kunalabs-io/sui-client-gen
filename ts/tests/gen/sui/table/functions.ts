@@ -2,6 +2,7 @@ import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/** Creates a new, empty table */
 export function new_(tx: Transaction, typeArgs: [string, string]) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::table::new`,
@@ -16,6 +17,11 @@ export interface AddArgs {
   v: GenericArg
 }
 
+/**
+ * Adds a key-value pair to the table `table: &mut Table<K, V>`
+ * Aborts with `sui::dynamic_field::EFieldAlreadyExists` if the table already has an entry with
+ * that key `k: K`.
+ */
 export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::table::add`,
@@ -33,6 +39,11 @@ export interface BorrowArgs {
   k: GenericArg
 }
 
+/**
+ * Immutable borrows the value associated with the key in the table `table: &Table<K, V>`.
+ * Aborts with `sui::dynamic_field::EFieldDoesNotExist` if the table does not have an entry with
+ * that key `k: K`.
+ */
 export function borrow(tx: Transaction, typeArgs: [string, string], args: BorrowArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::table::borrow`,
@@ -46,6 +57,11 @@ export interface BorrowMutArgs {
   k: GenericArg
 }
 
+/**
+ * Mutably borrows the value associated with the key in the table `table: &mut Table<K, V>`.
+ * Aborts with `sui::dynamic_field::EFieldDoesNotExist` if the table does not have an entry with
+ * that key `k: K`.
+ */
 export function borrowMut(tx: Transaction, typeArgs: [string, string], args: BorrowMutArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::table::borrow_mut`,
@@ -59,6 +75,11 @@ export interface RemoveArgs {
   k: GenericArg
 }
 
+/**
+ * Removes the key-value pair in the table `table: &mut Table<K, V>` and returns the value.
+ * Aborts with `sui::dynamic_field::EFieldDoesNotExist` if the table does not have an entry with
+ * that key `k: K`.
+ */
 export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::table::remove`,
@@ -72,6 +93,7 @@ export interface ContainsArgs {
   k: GenericArg
 }
 
+/** Returns true if there is a value associated with the key `k: K` in table `table: &Table<K, V>` */
 export function contains(tx: Transaction, typeArgs: [string, string], args: ContainsArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::table::contains`,
@@ -80,6 +102,7 @@ export function contains(tx: Transaction, typeArgs: [string, string], args: Cont
   })
 }
 
+/** Returns the size of the table, the number of key-value pairs */
 export function length(tx: Transaction, typeArgs: [string, string], table: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::table::length`,
@@ -88,6 +111,7 @@ export function length(tx: Transaction, typeArgs: [string, string], table: Trans
   })
 }
 
+/** Returns true if the table is empty (if `length` returns `0`) */
 export function isEmpty(
   tx: Transaction,
   typeArgs: [string, string],
@@ -100,6 +124,10 @@ export function isEmpty(
   })
 }
 
+/**
+ * Destroys an empty table
+ * Aborts with `ETableNotEmpty` if the table still contains values
+ */
 export function destroyEmpty(
   tx: Transaction,
   typeArgs: [string, string],
@@ -112,6 +140,10 @@ export function destroyEmpty(
   })
 }
 
+/**
+ * Drop a possibly non-empty table.
+ * Usable only if the value type `V` has the `drop` ability
+ */
 export function drop(tx: Transaction, typeArgs: [string, string], table: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::table::drop`,

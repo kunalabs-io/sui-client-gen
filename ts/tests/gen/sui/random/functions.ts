@@ -2,6 +2,11 @@ import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, pure, vector } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/**
+ * Create and share the Random object. This function is called exactly once, when
+ * the Random object is first created.
+ * Can only be called by genesis or change_epoch transactions.
+ */
 export function create(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::create`,
@@ -29,6 +34,10 @@ export interface UpdateRandomnessStateArgs {
   newBytes: Array<number | TransactionArgument> | TransactionArgument
 }
 
+/**
+ * Record new randomness. Called when executing the RandomnessStateUpdate system
+ * transaction.
+ */
 export function updateRandomnessState(tx: Transaction, args: UpdateRandomnessStateArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::update_randomness_state`,
@@ -40,6 +49,14 @@ export function updateRandomnessState(tx: Transaction, args: UpdateRandomnessSta
   })
 }
 
+/**
+ * Create a generator. Can be used to derive up to MAX_U16 * 32 random bytes.
+ *
+ * Using randomness can be error-prone if you don't observe the subtleties in its correct use, for example, randomness
+ * dependent code might be exploitable to attacks that carefully set the gas budget
+ * in a way that breaks security. For more information, see:
+ * https://docs.sui.io/guides/developer/advanced/randomness-onchain
+ */
 export function newGenerator(tx: Transaction, r: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::new_generator`,
@@ -47,6 +64,7 @@ export function newGenerator(tx: Transaction, r: TransactionObjectInput) {
   })
 }
 
+/** Get the next block of 32 random bytes. */
 export function deriveNextBlock(tx: Transaction, g: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::derive_next_block`,
@@ -59,6 +77,7 @@ export interface GenerateBytesArgs {
   numOfBytes: number | TransactionArgument
 }
 
+/** Generate n random bytes. */
 export function generateBytes(tx: Transaction, args: GenerateBytesArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_bytes`,
@@ -66,6 +85,7 @@ export function generateBytes(tx: Transaction, args: GenerateBytesArgs) {
   })
 }
 
+/** Generate a u256. */
 export function generateU256(tx: Transaction, g: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_u256`,
@@ -73,6 +93,7 @@ export function generateU256(tx: Transaction, g: TransactionObjectInput) {
   })
 }
 
+/** Generate a u128. */
 export function generateU128(tx: Transaction, g: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_u128`,
@@ -80,6 +101,7 @@ export function generateU128(tx: Transaction, g: TransactionObjectInput) {
   })
 }
 
+/** Generate a u64. */
 export function generateU64(tx: Transaction, g: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_u64`,
@@ -87,6 +109,7 @@ export function generateU64(tx: Transaction, g: TransactionObjectInput) {
   })
 }
 
+/** Generate a u32. */
 export function generateU32(tx: Transaction, g: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_u32`,
@@ -94,6 +117,7 @@ export function generateU32(tx: Transaction, g: TransactionObjectInput) {
   })
 }
 
+/** Generate a u16. */
 export function generateU16(tx: Transaction, g: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_u16`,
@@ -101,6 +125,7 @@ export function generateU16(tx: Transaction, g: TransactionObjectInput) {
   })
 }
 
+/** Generate a u8. */
 export function generateU8(tx: Transaction, g: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_u8`,
@@ -108,6 +133,7 @@ export function generateU8(tx: Transaction, g: TransactionObjectInput) {
   })
 }
 
+/** Generate a boolean. */
 export function generateBool(tx: Transaction, g: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_bool`,
@@ -121,6 +147,7 @@ export interface GenerateU128InRangeArgs {
   max: bigint | TransactionArgument
 }
 
+/** Generate a random u128 in [min, max] (with a bias of 2^{-64}). */
 export function generateU128InRange(tx: Transaction, args: GenerateU128InRangeArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_u128_in_range`,
@@ -147,6 +174,7 @@ export interface GenerateU32InRangeArgs {
   max: number | TransactionArgument
 }
 
+/** Generate a random u32 in [min, max] (with a bias of 2^{-64}). */
 export function generateU32InRange(tx: Transaction, args: GenerateU32InRangeArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_u32_in_range`,
@@ -160,6 +188,7 @@ export interface GenerateU16InRangeArgs {
   max: number | TransactionArgument
 }
 
+/** Generate a random u16 in [min, max] (with a bias of 2^{-64}). */
 export function generateU16InRange(tx: Transaction, args: GenerateU16InRangeArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_u16_in_range`,
@@ -173,6 +202,7 @@ export interface GenerateU8InRangeArgs {
   max: number | TransactionArgument
 }
 
+/** Generate a random u8 in [min, max] (with a bias of 2^{-64}). */
 export function generateU8InRange(tx: Transaction, args: GenerateU8InRangeArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_u8_in_range`,
@@ -185,6 +215,7 @@ export interface ShuffleArgs {
   v: Array<GenericArg> | TransactionArgument
 }
 
+/** Shuffle a vector using the random generator (Fisher–Yates/Knuth shuffle). */
 export function shuffle(tx: Transaction, typeArg: string, args: ShuffleArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::shuffle`,

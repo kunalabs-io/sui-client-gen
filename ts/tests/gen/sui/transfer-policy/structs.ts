@@ -1,3 +1,26 @@
+/**
+ * Defines the `TransferPolicy` type and the logic to approve `TransferRequest`s.
+ *
+ * - TransferPolicy - is a highly customizable primitive, which provides an
+ * interface for the type owner to set custom transfer rules for every
+ * deal performed in the `Kiosk` or a similar system that integrates with TP.
+ *
+ * - Once a `TransferPolicy<T>` is created for and shared (or frozen), the
+ * type `T` becomes tradable in `Kiosk`s. On every purchase operation, a
+ * `TransferRequest` is created and needs to be confirmed by the `TransferPolicy`
+ * hot potato or transaction will fail.
+ *
+ * - Type owner (creator) can set any Rules as long as the ecosystem supports
+ * them. All of the Rules need to be resolved within a single transaction (eg
+ * pay royalty and pay fixed commission). Once required actions are performed,
+ * the `TransferRequest` can be "confirmed" via `confirm_request` call.
+ *
+ * - `TransferPolicy` aims to be the main interface for creators to control trades
+ * of their types and collect profits if a fee is required on sales. Custom
+ * policies can be removed at any moment, and the change will affect all instances
+ * of the type at once.
+ */
+
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -39,9 +62,26 @@ export function isTransferRequest(type: string): boolean {
 }
 
 export interface TransferRequestFields<T extends PhantomTypeArgument> {
+  /**
+   * The ID of the transferred item. Although the `T` has no
+   * constraints, the main use case for this module is to work
+   * with Objects.
+   */
   item: ToField<ID>
+  /**
+   * Amount of SUI paid for the item. Can be used to
+   * calculate the fee / transfer policy enforcement.
+   */
   paid: ToField<'u64'>
+  /**
+   * The ID of the Kiosk / Safe the object is being sold from.
+   * Can be used by the TransferPolicy implementors.
+   */
   from: ToField<ID>
+  /**
+   * Collected Receipts. Used to verify that all of the rules
+   * were followed and `TransferRequest` can be confirmed.
+   */
   receipts: ToField<VecSet<TypeName>>
 }
 
@@ -50,6 +90,10 @@ export type TransferRequestReified<T extends PhantomTypeArgument> = Reified<
   TransferRequestFields<T>
 >
 
+/**
+ * A "Hot Potato" forcing the buyer to get a transfer permission
+ * from the item type (`T`) owner on purchase attempt.
+ */
 export class TransferRequest<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -62,9 +106,26 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
   readonly $typeArgs: [PhantomToTypeStr<T>]
   readonly $isPhantom = TransferRequest.$isPhantom
 
+  /**
+   * The ID of the transferred item. Although the `T` has no
+   * constraints, the main use case for this module is to work
+   * with Objects.
+   */
   readonly item: ToField<ID>
+  /**
+   * Amount of SUI paid for the item. Can be used to
+   * calculate the fee / transfer policy enforcement.
+   */
   readonly paid: ToField<'u64'>
+  /**
+   * The ID of the Kiosk / Safe the object is being sold from.
+   * Can be used by the TransferPolicy implementors.
+   */
   readonly from: ToField<ID>
+  /**
+   * Collected Receipts. Used to verify that all of the rules
+   * were followed and `TransferRequest` can be confirmed.
+   */
   readonly receipts: ToField<VecSet<TypeName>>
 
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: TransferRequestFields<T>) {
@@ -294,7 +355,19 @@ export function isTransferPolicy(type: string): boolean {
 
 export interface TransferPolicyFields<T extends PhantomTypeArgument> {
   id: ToField<UID>
+  /**
+   * The Balance of the `TransferPolicy` which collects `SUI`.
+   * By default, transfer policy does not collect anything , and it's
+   * a matter of an implementation of a specific rule - whether to add
+   * to balance and how much.
+   */
   balance: ToField<Balance<ToPhantom<SUI>>>
+  /**
+   * Set of types of attached rules - used to verify `receipts` when
+   * a `TransferRequest` is received in `confirm_request` function.
+   *
+   * Additionally provides a way to look up currently attached Rules.
+   */
   rules: ToField<VecSet<TypeName>>
 }
 
@@ -303,6 +376,13 @@ export type TransferPolicyReified<T extends PhantomTypeArgument> = Reified<
   TransferPolicyFields<T>
 >
 
+/**
+ * A unique capability that allows the owner of the `T` to authorize
+ * transfers. Can only be created with the `Publisher` object. Although
+ * there's no limitation to how many policies can be created, for most
+ * of the cases there's no need to create more than one since any of the
+ * policies can be used to confirm the `TransferRequest`.
+ */
 export class TransferPolicy<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -316,7 +396,19 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
   readonly $isPhantom = TransferPolicy.$isPhantom
 
   readonly id: ToField<UID>
+  /**
+   * The Balance of the `TransferPolicy` which collects `SUI`.
+   * By default, transfer policy does not collect anything , and it's
+   * a matter of an implementation of a specific rule - whether to add
+   * to balance and how much.
+   */
   readonly balance: ToField<Balance<ToPhantom<SUI>>>
+  /**
+   * Set of types of attached rules - used to verify `receipts` when
+   * a `TransferRequest` is received in `confirm_request` function.
+   *
+   * Additionally provides a way to look up currently attached Rules.
+   */
   readonly rules: ToField<VecSet<TypeName>>
 
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: TransferPolicyFields<T>) {
@@ -551,6 +643,10 @@ export type TransferPolicyCapReified<T extends PhantomTypeArgument> = Reified<
   TransferPolicyCapFields<T>
 >
 
+/**
+ * A Capability granting the owner permission to add/remove rules as well
+ * as to `withdraw` and `destroy_and_withdraw` the `TransferPolicy`.
+ */
 export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -791,6 +887,10 @@ export type TransferPolicyCreatedReified<T extends PhantomTypeArgument> = Reifie
   TransferPolicyCreatedFields<T>
 >
 
+/**
+ * Event that is emitted when a publisher creates a new `TransferPolicyCap`
+ * making the discoverability and tracking the supported types easier.
+ */
 export class TransferPolicyCreated<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -1026,6 +1126,10 @@ export type TransferPolicyDestroyedReified<T extends PhantomTypeArgument> = Reif
   TransferPolicyDestroyedFields<T>
 >
 
+/**
+ * Event that is emitted when a publisher destroys a `TransferPolicyCap`.
+ * Allows for tracking supported policies.
+ */
 export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -1260,6 +1364,7 @@ export interface RuleKeyFields<T extends PhantomTypeArgument> {
 
 export type RuleKeyReified<T extends PhantomTypeArgument> = Reified<RuleKey<T>, RuleKeyFields<T>>
 
+/** Key to store "Rule" configuration for a specific `TransferPolicy`. */
 export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 

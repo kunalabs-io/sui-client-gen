@@ -43,6 +43,15 @@ export type ReceivingReified<T extends PhantomTypeArgument> = Reified<
   ReceivingFields<T>
 >
 
+/**
+ * This represents the ability to `receive` an object of type `T`.
+ * This type is ephemeral per-transaction and cannot be stored on-chain.
+ * This does not represent the obligation to receive the object that it
+ * references, but simply the ability to receive the object with object ID
+ * `id` at version `version` if you can prove mutable access to the parent
+ * object during the transaction.
+ * Internals of this struct are opaque outside this module.
+ */
 export class Receiving<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 

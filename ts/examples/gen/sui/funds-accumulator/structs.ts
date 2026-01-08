@@ -1,3 +1,5 @@
+/** A module for accumulating funds, i.e. Balance-like types. */
+
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -33,7 +35,12 @@ export function isWithdrawal(type: string): boolean {
 }
 
 export interface WithdrawalFields<T extends PhantomTypeArgument> {
+  /** The owner of the funds, either an object or a transaction sender */
   owner: ToField<'address'>
+  /**
+   * At signing we check the limit <= balance when taking this as a call arg.
+   * If this was generated from an object, we cannot check this until redemption.
+   */
   limit: ToField<'u256'>
 }
 
@@ -42,6 +49,11 @@ export type WithdrawalReified<T extends PhantomTypeArgument> = Reified<
   WithdrawalFields<T>
 >
 
+/**
+ * Allows for withdrawing funds from a given address. The `Withdrawal` can be created in PTBs for
+ * the transaction sender, or dynamically from an object via `withdraw_from_object`.
+ * The redemption of the funds must be initiated from the module that defines `T`.
+ */
 export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -54,7 +66,12 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
   readonly $typeArgs: [PhantomToTypeStr<T>]
   readonly $isPhantom = Withdrawal.$isPhantom
 
+  /** The owner of the funds, either an object or a transaction sender */
   readonly owner: ToField<'address'>
+  /**
+   * At signing we check the limit <= balance when taking this as a call arg.
+   * If this was generated from an object, we cannot check this until redemption.
+   */
   readonly limit: ToField<'u256'>
 
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: WithdrawalFields<T>) {

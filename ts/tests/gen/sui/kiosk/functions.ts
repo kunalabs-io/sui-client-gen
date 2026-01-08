@@ -4,6 +4,10 @@ import { Option } from '../../std/option/structs'
 import { ID } from '../object/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/**
+ * Creates a new Kiosk in a default configuration: sender receives the
+ * `KioskOwnerCap` and becomes the Owner, the `Kiosk` is shared.
+ */
 export function default_(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::default`,
@@ -11,6 +15,7 @@ export function default_(tx: Transaction) {
   })
 }
 
+/** Creates a new `Kiosk` with a matching `KioskOwnerCap`. */
 export function new_(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::new`,
@@ -23,6 +28,11 @@ export interface CloseAndWithdrawArgs {
   cap: TransactionObjectInput
 }
 
+/**
+ * Unpacks and destroys a Kiosk returning the profits (even if "0").
+ * Can only be performed by the bearer of the `KioskOwnerCap` in the
+ * case where there's no items inside and a `Kiosk` is not shared.
+ */
 export function closeAndWithdraw(tx: Transaction, args: CloseAndWithdrawArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::close_and_withdraw`,
@@ -35,6 +45,12 @@ export interface SetOwnerArgs {
   cap: TransactionObjectInput
 }
 
+/**
+ * Change the `owner` field to the transaction sender.
+ * The change is purely cosmetical and does not affect any of the
+ * basic kiosk functions unless some logic for this is implemented
+ * in a third party module.
+ */
 export function setOwner(tx: Transaction, args: SetOwnerArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::set_owner`,
@@ -48,6 +64,10 @@ export interface SetOwnerCustomArgs {
   owner: string | TransactionArgument
 }
 
+/**
+ * Update the `owner` field with a custom address. Can be used for
+ * implementing a custom logic that relies on the `Kiosk` owner.
+ */
 export function setOwnerCustom(tx: Transaction, args: SetOwnerCustomArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::set_owner_custom`,
@@ -61,6 +81,10 @@ export interface PlaceArgs {
   item: GenericArg
 }
 
+/**
+ * Place any object into a Kiosk.
+ * Performs an authorization check to make sure only owner can do that.
+ */
 export function place(tx: Transaction, typeArg: string, args: PlaceArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::place`,
@@ -76,6 +100,14 @@ export interface LockArgs {
   item: GenericArg
 }
 
+/**
+ * Place an item to the `Kiosk` and issue a `Lock` for it. Once placed this
+ * way, an item can only be listed either with a `list` function or with a
+ * `list_with_purchase_cap`.
+ *
+ * Requires policy for `T` to make sure that there's an issued `TransferPolicy`
+ * and the item can be sold, otherwise the asset might be locked forever.
+ */
 export function lock(tx: Transaction, typeArg: string, args: LockArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::lock`,
@@ -95,6 +127,10 @@ export interface TakeArgs {
   id: string | TransactionArgument
 }
 
+/**
+ * Take any object from the Kiosk.
+ * Performs an authorization check to make sure only owner can do that.
+ */
 export function take(tx: Transaction, typeArg: string, args: TakeArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::take`,
@@ -110,6 +146,10 @@ export interface ListArgs {
   price: bigint | TransactionArgument
 }
 
+/**
+ * List the item by setting a price and making it available for purchase.
+ * Performs an authorization check to make sure only owner can sell.
+ */
 export function list(tx: Transaction, typeArg: string, args: ListArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::list`,
@@ -130,6 +170,7 @@ export interface PlaceAndListArgs {
   price: bigint | TransactionArgument
 }
 
+/** Calls `place` and `list` together - simplifies the flow. */
 export function placeAndList(tx: Transaction, typeArg: string, args: PlaceAndListArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::place_and_list`,
@@ -149,6 +190,10 @@ export interface DelistArgs {
   id: string | TransactionArgument
 }
 
+/**
+ * Remove an existing listing from the `Kiosk` and keep the item in the
+ * user Kiosk. Can only be performed by the owner of the `Kiosk`.
+ */
 export function delist(tx: Transaction, typeArg: string, args: DelistArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::delist`,
@@ -163,6 +208,15 @@ export interface PurchaseArgs {
   payment: TransactionObjectInput
 }
 
+/**
+ * Make a trade: pay the owner of the item and request a Transfer to the `target`
+ * kiosk (to prevent item being taken by the approving party).
+ *
+ * Received `TransferRequest` needs to be handled by the publisher of the T,
+ * if they have a method implemented that allows a trade, it is possible to
+ * request their approval (by calling some function) so that the trade can be
+ * finalized.
+ */
 export function purchase(tx: Transaction, typeArg: string, args: PurchaseArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::purchase`,
@@ -178,6 +232,10 @@ export interface ListWithPurchaseCapArgs {
   minPrice: bigint | TransactionArgument
 }
 
+/**
+ * Creates a `PurchaseCap` which gives the right to purchase an item
+ * for any price equal or higher than the `min_price`.
+ */
 export function listWithPurchaseCap(
   tx: Transaction,
   typeArg: string,
@@ -201,6 +259,10 @@ export interface PurchaseWithCapArgs {
   payment: TransactionObjectInput
 }
 
+/**
+ * Unpack the `PurchaseCap` and call `purchase`. Sets the payment amount
+ * as the price for the listing making sure it's no less than `min_amount`.
+ */
 export function purchaseWithCap(tx: Transaction, typeArg: string, args: PurchaseWithCapArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::purchase_with_cap`,
@@ -214,6 +276,10 @@ export interface ReturnPurchaseCapArgs {
   purchaseCap: TransactionObjectInput
 }
 
+/**
+ * Return the `PurchaseCap` without making a purchase; remove an active offer and
+ * allow the item for taking. Can only be returned to its `Kiosk`, aborts otherwise.
+ */
 export function returnPurchaseCap(tx: Transaction, typeArg: string, args: ReturnPurchaseCapArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::return_purchase_cap`,
@@ -228,6 +294,7 @@ export interface WithdrawArgs {
   amount: bigint | TransactionArgument | null
 }
 
+/** Withdraw profits from the Kiosk. */
 export function withdraw(tx: Transaction, args: WithdrawArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::withdraw`,
@@ -244,6 +311,7 @@ export interface LockInternalArgs {
   item: GenericArg
 }
 
+/** Internal: "lock" an item disabling the `take` action. */
 export function lockInternal(tx: Transaction, typeArg: string, args: LockInternalArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::lock_internal`,
@@ -257,6 +325,7 @@ export interface PlaceInternalArgs {
   item: GenericArg
 }
 
+/** Internal: "place" an item to the Kiosk and increment the item count. */
 export function placeInternal(tx: Transaction, typeArg: string, args: PlaceInternalArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::place_internal`,
@@ -265,6 +334,7 @@ export function placeInternal(tx: Transaction, typeArg: string, args: PlaceInter
   })
 }
 
+/** Internal: get a mutable access to the UID. */
 export function uidMutInternal(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::uid_mut_internal`,
@@ -277,6 +347,7 @@ export interface HasItemArgs {
   id: string | TransactionArgument
 }
 
+/** Check whether the `item` is present in the `Kiosk`. */
 export function hasItem(tx: Transaction, args: HasItemArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::has_item`,
@@ -289,6 +360,7 @@ export interface HasItemWithTypeArgs {
   id: string | TransactionArgument
 }
 
+/** Check whether the `item` is present in the `Kiosk` and has type T. */
 export function hasItemWithType(tx: Transaction, typeArg: string, args: HasItemWithTypeArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::has_item_with_type`,
@@ -302,6 +374,11 @@ export interface IsLockedArgs {
   id: string | TransactionArgument
 }
 
+/**
+ * Check whether an item with the `id` is locked in the `Kiosk`. Meaning
+ * that the only two actions that can be performed on it are `list` and
+ * `list_with_purchase_cap`, it cannot be `take`n out of the `Kiosk`.
+ */
 export function isLocked(tx: Transaction, args: IsLockedArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::is_locked`,
@@ -314,6 +391,7 @@ export interface IsListedArgs {
   id: string | TransactionArgument
 }
 
+/** Check whether an `item` is listed (exclusively or non exclusively). */
 export function isListed(tx: Transaction, args: IsListedArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::is_listed`,
@@ -326,6 +404,7 @@ export interface IsListedExclusivelyArgs {
   id: string | TransactionArgument
 }
 
+/** Check whether there's a `PurchaseCap` issued for an item. */
 export function isListedExclusively(tx: Transaction, args: IsListedExclusivelyArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::is_listed_exclusively`,
@@ -338,6 +417,7 @@ export interface HasAccessArgs {
   cap: TransactionObjectInput
 }
 
+/** Check whether the `KioskOwnerCap` matches the `Kiosk`. */
 export function hasAccess(tx: Transaction, args: HasAccessArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::has_access`,
@@ -350,6 +430,7 @@ export interface UidMutAsOwnerArgs {
   cap: TransactionObjectInput
 }
 
+/** Access the `UID` using the `KioskOwnerCap`. */
 export function uidMutAsOwner(tx: Transaction, args: UidMutAsOwnerArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::uid_mut_as_owner`,
@@ -363,6 +444,11 @@ export interface SetAllowExtensionsArgs {
   allowExtensions: boolean | TransactionArgument
 }
 
+/**
+ * [DEPRECATED]
+ * Allow or disallow `uid` and `uid_mut` access via the `allow_extensions`
+ * setting.
+ */
 export function setAllowExtensions(tx: Transaction, args: SetAllowExtensionsArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::set_allow_extensions`,
@@ -370,6 +456,13 @@ export function setAllowExtensions(tx: Transaction, args: SetAllowExtensionsArgs
   })
 }
 
+/**
+ * Get the immutable `UID` for dynamic field access.
+ * Always enabled.
+ *
+ * Given the &UID can be used for reading keys and authorization,
+ * its access
+ */
 export function uid(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::uid`,
@@ -377,6 +470,10 @@ export function uid(tx: Transaction, self: TransactionObjectInput) {
   })
 }
 
+/**
+ * Get the mutable `UID` for dynamic field access and extensions.
+ * Aborts if `allow_extensions` set to `false`.
+ */
 export function uidMut(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::uid_mut`,
@@ -384,6 +481,7 @@ export function uidMut(tx: Transaction, self: TransactionObjectInput) {
   })
 }
 
+/** Get the owner of the Kiosk. */
 export function owner(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::owner`,
@@ -391,6 +489,7 @@ export function owner(tx: Transaction, self: TransactionObjectInput) {
   })
 }
 
+/** Get the number of items stored in a Kiosk. */
 export function itemCount(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::item_count`,
@@ -398,6 +497,7 @@ export function itemCount(tx: Transaction, self: TransactionObjectInput) {
   })
 }
 
+/** Get the amount of profits collected by selling items. */
 export function profitsAmount(tx: Transaction, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::profits_amount`,
@@ -410,6 +510,7 @@ export interface ProfitsMutArgs {
   cap: TransactionObjectInput
 }
 
+/** Get mutable access to `profits` - owner only action. */
 export function profitsMut(tx: Transaction, args: ProfitsMutArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::profits_mut`,
@@ -423,6 +524,10 @@ export interface BorrowArgs {
   id: string | TransactionArgument
 }
 
+/**
+ * Immutably borrow an item from the `Kiosk`. Any item can be `borrow`ed
+ * at any time.
+ */
 export function borrow(tx: Transaction, typeArg: string, args: BorrowArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::borrow`,
@@ -437,6 +542,10 @@ export interface BorrowMutArgs {
   id: string | TransactionArgument
 }
 
+/**
+ * Mutably borrow an item from the `Kiosk`.
+ * Item can be `borrow_mut`ed only if it's not `is_listed`.
+ */
 export function borrowMut(tx: Transaction, typeArg: string, args: BorrowMutArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::borrow_mut`,
@@ -451,6 +560,10 @@ export interface BorrowValArgs {
   id: string | TransactionArgument
 }
 
+/**
+ * Take the item from the `Kiosk` with a guarantee that it will be returned.
+ * Item can be `borrow_val`-ed only if it's not `is_listed`.
+ */
 export function borrowVal(tx: Transaction, typeArg: string, args: BorrowValArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::borrow_val`,
@@ -465,6 +578,10 @@ export interface ReturnValArgs {
   borrow: TransactionObjectInput
 }
 
+/**
+ * Return the borrowed item to the `Kiosk`. This method cannot be avoided
+ * if `borrow_val` is used.
+ */
 export function returnVal(tx: Transaction, typeArg: string, args: ReturnValArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::return_val`,
@@ -473,6 +590,7 @@ export function returnVal(tx: Transaction, typeArg: string, args: ReturnValArgs)
   })
 }
 
+/** Get the `for` field of the `KioskOwnerCap`. */
 export function kioskOwnerCapFor(tx: Transaction, cap: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::kiosk_owner_cap_for`,
@@ -480,6 +598,7 @@ export function kioskOwnerCapFor(tx: Transaction, cap: TransactionObjectInput) {
   })
 }
 
+/** Get the `kiosk_id` from the `PurchaseCap`. */
 export function purchaseCapKiosk(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::purchase_cap_kiosk`,
@@ -488,6 +607,7 @@ export function purchaseCapKiosk(tx: Transaction, typeArg: string, self: Transac
   })
 }
 
+/** Get the `Item_id` from the `PurchaseCap`. */
 export function purchaseCapItem(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk::purchase_cap_item`,
@@ -496,6 +616,7 @@ export function purchaseCapItem(tx: Transaction, typeArg: string, self: Transact
   })
 }
 
+/** Get the `min_price` from the `PurchaseCap`. */
 export function purchaseCapMinPrice(
   tx: Transaction,
   typeArg: string,

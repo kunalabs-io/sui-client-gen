@@ -1,3 +1,5 @@
+/** Generic Move and native functions for group operations. */
+
 import {
   PhantomReified,
   PhantomToTypeStr,

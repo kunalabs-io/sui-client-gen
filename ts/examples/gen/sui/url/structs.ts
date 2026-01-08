@@ -1,3 +1,5 @@
+/** URL: standard Uniform Resource Locator string */
+
 import { String } from '../../_dependencies/std/ascii/structs'
 import {
   PhantomReified,
@@ -28,6 +30,7 @@ export interface UrlFields {
 
 export type UrlReified = Reified<Url, UrlFields>
 
+/** Standard Uniform Resource Locator (URL) string. */
 export class Url implements StructClass {
   __StructClass = true as const
 

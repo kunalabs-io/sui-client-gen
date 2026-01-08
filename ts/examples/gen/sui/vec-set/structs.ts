@@ -41,6 +41,13 @@ export interface VecSetFields<K extends TypeArgument> {
 
 export type VecSetReified<K extends TypeArgument> = Reified<VecSet<K>, VecSetFields<K>>
 
+/**
+ * A set data structure backed by a vector. The set is guaranteed not to
+ * contain duplicate keys. All operations are O(N) in the size of the set
+ * - the intention of this data structure is only to provide the convenience
+ * of programming against a set API. Sets that need sorted iteration rather
+ * than insertion order iteration should be handwritten.
+ */
 export class VecSet<K extends TypeArgument> implements StructClass {
   __StructClass = true as const
 

@@ -1,3 +1,8 @@
+/**
+ * Similar to `sui::table` but the values are linked together, allowing for ordered insertion and
+ * removal
+ */
+
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -39,9 +44,13 @@ export function isLinkedTable(type: string): boolean {
 }
 
 export interface LinkedTableFields<K extends TypeArgument, V extends PhantomTypeArgument> {
+  /** the ID of this table */
   id: ToField<UID>
+  /** the number of key-value pairs in the table */
   size: ToField<'u64'>
+  /** the front of the table, i.e. the key of the first entry */
   head: ToField<Option<K>>
+  /** the back of the table, i.e. the key of the last entry */
   tail: ToField<Option<K>>
 }
 
@@ -64,9 +73,13 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
   readonly $typeArgs: [ToTypeStr<K>, PhantomToTypeStr<V>]
   readonly $isPhantom = LinkedTable.$isPhantom
 
+  /** the ID of this table */
   readonly id: ToField<UID>
+  /** the number of key-value pairs in the table */
   readonly size: ToField<'u64'>
+  /** the front of the table, i.e. the key of the first entry */
   readonly head: ToField<Option<K>>
+  /** the back of the table, i.e. the key of the last entry */
   readonly tail: ToField<Option<K>>
 
   private constructor(
@@ -325,8 +338,11 @@ export function isNode(type: string): boolean {
 }
 
 export interface NodeFields<K extends TypeArgument, V extends TypeArgument> {
+  /** the previous key */
   prev: ToField<Option<K>>
+  /** the next key */
   next: ToField<Option<K>>
+  /** the value being stored */
   value: ToField<V>
 }
 
@@ -347,8 +363,11 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
   readonly $typeArgs: [ToTypeStr<K>, ToTypeStr<V>]
   readonly $isPhantom = Node.$isPhantom
 
+  /** the previous key */
   readonly prev: ToField<Option<K>>
+  /** the next key */
   readonly next: ToField<Option<K>>
+  /** the value being stored */
   readonly value: ToField<V>
 
   private constructor(typeArgs: [ToTypeStr<K>, ToTypeStr<V>], fields: NodeFields<K, V>) {

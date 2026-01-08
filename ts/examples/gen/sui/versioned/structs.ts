@@ -29,6 +29,14 @@ export interface VersionedFields {
 
 export type VersionedReified = Reified<Versioned, VersionedFields>
 
+/**
+ * A wrapper type that supports versioning of the inner type.
+ * The inner type is a dynamic field of the Versioned object, and is keyed using version.
+ * User of this type could load the inner object using corresponding type based on the version.
+ * You can also upgrade the inner object to a new type version.
+ * If you want to support lazy upgrade of the inner type, one caveat is that all APIs would have
+ * to use mutable reference even if it's a read-only API.
+ */
 export class Versioned implements StructClass {
   __StructClass = true as const
 
@@ -210,6 +218,10 @@ export interface VersionChangeCapFields {
 
 export type VersionChangeCapReified = Reified<VersionChangeCap, VersionChangeCapFields>
 
+/**
+ * Represents a hot potato object generated when we take out the dynamic field.
+ * This is to make sure that we always put a new value back.
+ */
 export class VersionChangeCap implements StructClass {
   __StructClass = true as const
 

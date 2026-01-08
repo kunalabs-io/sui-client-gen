@@ -2,6 +2,7 @@ import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, pure, vector } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/** Create an empty `VecMap` */
 export function empty(tx: Transaction, typeArgs: [string, string]) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::empty`,
@@ -16,6 +17,10 @@ export interface InsertArgs {
   value: GenericArg
 }
 
+/**
+ * Insert the entry `key` |-> `value` into `self`.
+ * Aborts if `key` is already bound in `self`.
+ */
 export function insert(tx: Transaction, typeArgs: [string, string], args: InsertArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::insert`,
@@ -33,6 +38,7 @@ export interface RemoveArgs {
   key: GenericArg
 }
 
+/** Remove the entry `key` |-> `value` from self. Aborts if `key` is not bound in `self`. */
 export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::remove`,
@@ -41,6 +47,7 @@ export function remove(tx: Transaction, typeArgs: [string, string], args: Remove
   })
 }
 
+/** Pop the most recently inserted entry from the map. Aborts if the map is empty. */
 export function pop(tx: Transaction, typeArgs: [string, string], self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::pop`,
@@ -54,6 +61,10 @@ export interface GetMutArgs {
   key: GenericArg
 }
 
+/**
+ * Get a mutable reference to the value bound to `key` in `self`.
+ * Aborts if `key` is not bound in `self`.
+ */
 export function getMut(tx: Transaction, typeArgs: [string, string], args: GetMutArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::get_mut`,
@@ -67,6 +78,10 @@ export interface GetArgs {
   key: GenericArg
 }
 
+/**
+ * Get a reference to the value bound to `key` in `self`.
+ * Aborts if `key` is not bound in `self`.
+ */
 export function get(tx: Transaction, typeArgs: [string, string], args: GetArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::get`,
@@ -80,6 +95,11 @@ export interface TryGetArgs {
   key: GenericArg
 }
 
+/**
+ * Safely try borrow a value bound to `key` in `self`.
+ * Return Some(V) if the value exists, None otherwise.
+ * Only works for a "copyable" value as references cannot be stored in `vector`.
+ */
 export function tryGet(tx: Transaction, typeArgs: [string, string], args: TryGetArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::try_get`,
@@ -93,6 +113,7 @@ export interface ContainsArgs {
   key: GenericArg
 }
 
+/** Return true if `self` contains an entry for `key`, false otherwise */
 export function contains(tx: Transaction, typeArgs: [string, string], args: ContainsArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::contains`,
@@ -101,6 +122,7 @@ export function contains(tx: Transaction, typeArgs: [string, string], args: Cont
   })
 }
 
+/** Return the number of entries in `self` */
 export function length(tx: Transaction, typeArgs: [string, string], self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::length`,
@@ -109,6 +131,7 @@ export function length(tx: Transaction, typeArgs: [string, string], self: Transa
   })
 }
 
+/** Return true if `self` has 0 elements, false otherwise */
 export function isEmpty(tx: Transaction, typeArgs: [string, string], self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::is_empty`,
@@ -117,6 +140,7 @@ export function isEmpty(tx: Transaction, typeArgs: [string, string], self: Trans
   })
 }
 
+/** Destroy an empty map. Aborts if `self` is not empty */
 export function destroyEmpty(
   tx: Transaction,
   typeArgs: [string, string],
@@ -129,6 +153,10 @@ export function destroyEmpty(
   })
 }
 
+/**
+ * Unpack `self` into vectors of its keys and values.
+ * The output keys and values are stored in insertion order, *not* sorted by key.
+ */
 export function intoKeysValues(
   tx: Transaction,
   typeArgs: [string, string],
@@ -146,6 +174,13 @@ export interface FromKeysValuesArgs {
   values: Array<GenericArg> | TransactionArgument
 }
 
+/**
+ * Construct a new `VecMap` from two vectors, one for keys and one for values.
+ * The key value pairs are associated via their indices in the vectors, e.g. the key at index i
+ * in `keys` is associated with the value at index i in `values`.
+ * The key value pairs are stored in insertion order (the original vectors ordering)
+ * and are *not* sorted.
+ */
 export function fromKeysValues(
   tx: Transaction,
   typeArgs: [string, string],
@@ -158,6 +193,10 @@ export function fromKeysValues(
   })
 }
 
+/**
+ * Returns a list of keys in the map.
+ * Do not assume any particular ordering.
+ */
 export function keys(tx: Transaction, typeArgs: [string, string], self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::keys`,
@@ -171,6 +210,10 @@ export interface GetIdxOptArgs {
   key: GenericArg
 }
 
+/**
+ * Find the index of `key` in `self`. Return `None` if `key` is not in `self`.
+ * Note that map entries are stored in insertion order, *not* sorted by key.
+ */
 export function getIdxOpt(tx: Transaction, typeArgs: [string, string], args: GetIdxOptArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::get_idx_opt`,
@@ -184,6 +227,10 @@ export interface GetIdxArgs {
   key: GenericArg
 }
 
+/**
+ * Find the index of `key` in `self`. Aborts if `key` is not in `self`.
+ * Note that map entries are stored in insertion order, *not* sorted by key.
+ */
 export function getIdx(tx: Transaction, typeArgs: [string, string], args: GetIdxArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::get_idx`,
@@ -197,6 +244,11 @@ export interface GetEntryByIdxArgs {
   idx: bigint | TransactionArgument
 }
 
+/**
+ * Return a reference to the `idx`th entry of `self`. This gives direct access into the backing array of the map--use with caution.
+ * Note that map entries are stored in insertion order, *not* sorted by key.
+ * Aborts if `idx` is greater than or equal to `self.length()`
+ */
 export function getEntryByIdx(
   tx: Transaction,
   typeArgs: [string, string],
@@ -214,6 +266,11 @@ export interface GetEntryByIdxMutArgs {
   idx: bigint | TransactionArgument
 }
 
+/**
+ * Return a mutable reference to the `idx`th entry of `self`. This gives direct access into the backing array of the map--use with caution.
+ * Note that map entries are stored in insertion order, *not* sorted by key.
+ * Aborts if `idx` is greater than or equal to `self.length()`
+ */
 export function getEntryByIdxMut(
   tx: Transaction,
   typeArgs: [string, string],
@@ -231,6 +288,10 @@ export interface RemoveEntryByIdxArgs {
   idx: bigint | TransactionArgument
 }
 
+/**
+ * Remove the entry at index `idx` from self.
+ * Aborts if `idx` is greater than or equal to `self.length()`
+ */
 export function removeEntryByIdx(
   tx: Transaction,
   typeArgs: [string, string],
@@ -243,6 +304,11 @@ export function removeEntryByIdx(
   })
 }
 
+/**
+ * Return the number of entries in `self`
+ *
+ * @deprecated Renamed to `length` for consistency.
+ */
 export function size(tx: Transaction, typeArgs: [string, string], self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::size`,

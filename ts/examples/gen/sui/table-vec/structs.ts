@@ -1,3 +1,5 @@
+/** A basic scalable vector library implemented using `Table`. */
+
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -34,6 +36,7 @@ export function isTableVec(type: string): boolean {
 }
 
 export interface TableVecFields<Element extends PhantomTypeArgument> {
+  /** The contents of the table vector. */
   contents: ToField<Table<'u64', Element>>
 }
 
@@ -54,6 +57,7 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
   readonly $typeArgs: [PhantomToTypeStr<Element>]
   readonly $isPhantom = TableVec.$isPhantom
 
+  /** The contents of the table vector. */
   readonly contents: ToField<Table<'u64', Element>>
 
   private constructor(typeArgs: [PhantomToTypeStr<Element>], fields: TableVecFields<Element>) {

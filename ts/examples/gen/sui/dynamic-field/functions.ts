@@ -8,6 +8,10 @@ export interface AddArgs {
   value: GenericArg
 }
 
+/**
+ * Adds a dynamic field to the object `object: &mut UID` at field specified by `name: Name`.
+ * Aborts with `EFieldAlreadyExists` if the object already has that field with that name.
+ */
 export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::add`,
@@ -25,6 +29,12 @@ export interface BorrowArgs {
   name: GenericArg
 }
 
+/**
+ * Immutably borrows the `object`s dynamic field with the name specified by `name: Name`.
+ * Aborts with `EFieldDoesNotExist` if the object does not have a field with that name.
+ * Aborts with `EFieldTypeMismatch` if the field exists, but the value does not have the specified
+ * type.
+ */
 export function borrow(tx: Transaction, typeArgs: [string, string], args: BorrowArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::borrow`,
@@ -38,6 +48,12 @@ export interface BorrowMutArgs {
   name: GenericArg
 }
 
+/**
+ * Mutably borrows the `object`s dynamic field with the name specified by `name: Name`.
+ * Aborts with `EFieldDoesNotExist` if the object does not have a field with that name.
+ * Aborts with `EFieldTypeMismatch` if the field exists, but the value does not have the specified
+ * type.
+ */
 export function borrowMut(tx: Transaction, typeArgs: [string, string], args: BorrowMutArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::borrow_mut`,
@@ -51,6 +67,13 @@ export interface RemoveArgs {
   name: GenericArg
 }
 
+/**
+ * Removes the `object`s dynamic field with the name specified by `name: Name` and returns the
+ * bound value.
+ * Aborts with `EFieldDoesNotExist` if the object does not have a field with that name.
+ * Aborts with `EFieldTypeMismatch` if the field exists, but the value does not have the specified
+ * type.
+ */
 export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::remove`,
@@ -64,6 +87,10 @@ export interface Exists_Args {
   name: GenericArg
 }
 
+/**
+ * Returns true if and only if the `object` has a dynamic field with the name specified by
+ * `name: Name` but without specifying the `Value` type
+ */
 export function exists_(tx: Transaction, typeArg: string, args: Exists_Args) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::exists_`,
@@ -77,6 +104,7 @@ export interface RemoveIfExistsArgs {
   name: GenericArg
 }
 
+/** Removes the dynamic field if it exists. Returns the `some(Value)` if it exists or none otherwise. */
 export function removeIfExists(
   tx: Transaction,
   typeArgs: [string, string],
@@ -94,6 +122,10 @@ export interface ExistsWithTypeArgs {
   name: GenericArg
 }
 
+/**
+ * Returns true if and only if the `object` has a dynamic field with the name specified by
+ * `name: Name` with an assigned value of type `Value`.
+ */
 export function existsWithType(
   tx: Transaction,
   typeArgs: [string, string],
@@ -137,6 +169,7 @@ export interface HashTypeAndKeyArgs {
   k: GenericArg
 }
 
+/** May abort with `EBCSSerializationFailure`. */
 export function hashTypeAndKey(tx: Transaction, typeArg: string, args: HashTypeAndKeyArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::hash_type_and_key`,
@@ -163,6 +196,12 @@ export interface BorrowChildObjectArgs {
   id: string | TransactionArgument
 }
 
+/**
+ * throws `EFieldDoesNotExist` if a child does not exist with that ID
+ * or throws `EFieldTypeMismatch` if the type does not match,
+ * and may also abort with `EBCSSerializationFailure`
+ * we need two versions to return a reference or a mutable reference
+ */
 export function borrowChildObject(tx: Transaction, typeArg: string, args: BorrowChildObjectArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::borrow_child_object`,
@@ -193,6 +232,11 @@ export interface RemoveChildObjectArgs {
   id: string | TransactionArgument
 }
 
+/**
+ * throws `EFieldDoesNotExist` if a child does not exist with that ID
+ * or throws `EFieldTypeMismatch` if the type does not match,
+ * and may also abort with `EBCSSerializationFailure`.
+ */
 export function removeChildObject(tx: Transaction, typeArg: string, args: RemoveChildObjectArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::remove_child_object`,

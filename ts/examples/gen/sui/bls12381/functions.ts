@@ -10,6 +10,14 @@ export interface Bls12381MinSigVerifyArgs {
   msg: Array<number | TransactionArgument> | TransactionArgument
 }
 
+/**
+ * @param signature: A 48-bytes signature that is a point on the G1 subgroup.
+ * @param public_key: A 96-bytes public key that is a point on the G2 subgroup.
+ * @param msg: The message that we test the signature against.
+ *
+ * If the signature is a valid signature of the message and public key according to
+ * BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_, return true. Otherwise, return false.
+ */
 export function bls12381MinSigVerify(tx: Transaction, args: Bls12381MinSigVerifyArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::bls12381::bls12381_min_sig_verify`,
@@ -27,6 +35,14 @@ export interface Bls12381MinPkVerifyArgs {
   msg: Array<number | TransactionArgument> | TransactionArgument
 }
 
+/**
+ * @param signature: A 96-bytes signature that is a point on the G2 subgroup.
+ * @param public_key: A 48-bytes public key that is a point on the G1 subgroup.
+ * @param msg: The message that we test the signature against.
+ *
+ * If the signature is a valid signature of the message and public key according to
+ * BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_, return true. Otherwise, return false.
+ */
 export function bls12381MinPkVerify(tx: Transaction, args: Bls12381MinPkVerifyArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::bls12381::bls12381_min_pk_verify`,
@@ -110,6 +126,7 @@ export interface ScalarDivArgs {
   e2: TransactionObjectInput
 }
 
+/** Returns e2/e1, fails if a is zero. */
 export function scalarDiv(tx: Transaction, args: ScalarDivArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::bls12381::scalar_div`,
@@ -196,6 +213,7 @@ export interface G1DivArgs {
   e2: TransactionObjectInput
 }
 
+/** Returns e2 / e1, fails if scalar is zero. */
 export function g1Div(tx: Transaction, args: G1DivArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::bls12381::g1_div`,
@@ -210,6 +228,7 @@ export function g1Neg(tx: Transaction, e: TransactionObjectInput) {
   })
 }
 
+/** Hash using DST = BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_NUL_ */
 export function hashToG1(
   tx: Transaction,
   m: Array<number | TransactionArgument> | TransactionArgument
@@ -225,6 +244,11 @@ export interface G1MultiScalarMultiplicationArgs {
   elements: Array<TransactionObjectInput> | TransactionArgument
 }
 
+/**
+ * Let 'scalars' be the vector [s1, s2, ..., sn] and 'elements' be the vector [e1, e2, ..., en].
+ * Returns s1*e1 + s2*e2 + ... + sn*en.
+ * Aborts with `EInputTooLong` if the vectors are larger than 32 (may increase in the future).
+ */
 export function g1MultiScalarMultiplication(
   tx: Transaction,
   args: G1MultiScalarMultiplicationArgs
@@ -238,6 +262,7 @@ export function g1MultiScalarMultiplication(
   })
 }
 
+/** Convert an `Element<G1>` to uncompressed form. */
 export function g1ToUncompressedG1(tx: Transaction, e: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::bls12381::g1_to_uncompressed_g1`,
@@ -310,6 +335,7 @@ export interface G2DivArgs {
   e2: TransactionObjectInput
 }
 
+/** Returns e2 / e1, fails if scalar is zero. */
 export function g2Div(tx: Transaction, args: G2DivArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::bls12381::g2_div`,
@@ -324,6 +350,7 @@ export function g2Neg(tx: Transaction, e: TransactionObjectInput) {
   })
 }
 
+/** Hash using DST = BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_NUL_ */
 export function hashToG2(
   tx: Transaction,
   m: Array<number | TransactionArgument> | TransactionArgument
@@ -339,6 +366,11 @@ export interface G2MultiScalarMultiplicationArgs {
   elements: Array<TransactionObjectInput> | TransactionArgument
 }
 
+/**
+ * Let 'scalars' be the vector [s1, s2, ..., sn] and 'elements' be the vector [e1, e2, ..., en].
+ * Returns s1*e1 + s2*e2 + ... + sn*en.
+ * Aborts with `EInputTooLong` if the vectors are larger than 32 (may increase in the future).
+ */
 export function g2MultiScalarMultiplication(
   tx: Transaction,
   args: G2MultiScalarMultiplicationArgs
@@ -407,6 +439,7 @@ export interface GtDivArgs {
   e2: TransactionObjectInput
 }
 
+/** Returns e2 / e1, fails if scalar is zero. */
 export function gtDiv(tx: Transaction, args: GtDivArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::bls12381::gt_div`,
@@ -433,6 +466,10 @@ export function pairing(tx: Transaction, args: PairingArgs) {
   })
 }
 
+/**
+ * UncompressedG1 group operations ///
+ * Create a `Element<G1>` from its uncompressed form.
+ */
 export function uncompressedG1ToG1(tx: Transaction, e: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::bls12381::uncompressed_g1_to_g1`,
@@ -440,6 +477,10 @@ export function uncompressedG1ToG1(tx: Transaction, e: TransactionObjectInput) {
   })
 }
 
+/**
+ * Compute the sum of a list of uncompressed elements.
+ * This is significantly faster and cheaper than summing the elements.
+ */
 export function uncompressedG1Sum(
   tx: Transaction,
   terms: Array<TransactionObjectInput> | TransactionArgument

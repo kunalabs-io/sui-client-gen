@@ -1,3 +1,15 @@
+/**
+ * Defines a Display struct which defines the way an Object
+ * should be displayed. The intention is to keep data as independent
+ * from its display as possible, protecting the development process
+ * and keeping it separate from the ecosystem agreements.
+ *
+ * Each of the fields of the Display object should allow for pattern
+ * substitution and filling-in the pieces using the data from the object T.
+ *
+ * More entry functions might be added in the future depending on the use cases.
+ */
+
 import { String } from '../../_dependencies/std/string/structs'
 import {
   PhantomReified,
@@ -37,12 +49,40 @@ export function isDisplay(type: string): boolean {
 
 export interface DisplayFields<T extends PhantomTypeArgument> {
   id: ToField<UID>
+  /**
+   * Contains fields for display. Currently supported
+   * fields are: name, link, image and description.
+   */
   fields: ToField<VecMap<String, String>>
+  /** Version that can only be updated manually by the Publisher. */
   version: ToField<'u16'>
 }
 
 export type DisplayReified<T extends PhantomTypeArgument> = Reified<Display<T>, DisplayFields<T>>
 
+/**
+ * The Display<T> object. Defines the way a T instance should be
+ * displayed. Display object can only be created and modified with
+ * a PublisherCap, making sure that the rules are set by the owner
+ * of the type.
+ *
+ * Each of the display properties should support patterns outside
+ * of the system, making it simpler to customize Display based
+ * on the property values of an Object.
+ * ```
+ * // Example of a display object
+ * Display<0x...::capy::Capy> {
+ * fields:
+ * <name, "Capy { genes }">
+ * <link, "https://capy.art/capy/{ id }">
+ * <image, "https://api.capy.art/capy/{ id }/svg">
+ * <description, "Lovely Capy, one of many">
+ * }
+ * ```
+ *
+ * Uses only String type due to external-facing nature of the object,
+ * the property names have a priority over their types.
+ */
 export class Display<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -56,7 +96,12 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
   readonly $isPhantom = Display.$isPhantom
 
   readonly id: ToField<UID>
+  /**
+   * Contains fields for display. Currently supported
+   * fields are: name, link, image and description.
+   */
   readonly fields: ToField<VecMap<String, String>>
+  /** Version that can only be updated manually by the Publisher. */
   readonly version: ToField<'u16'>
 
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: DisplayFields<T>) {
@@ -290,6 +335,14 @@ export type DisplayCreatedReified<T extends PhantomTypeArgument> = Reified<
   DisplayCreatedFields<T>
 >
 
+/**
+ * Event: emitted when a new Display object has been created for type T.
+ * Type signature of the event corresponds to the type while id serves for
+ * the discovery.
+ *
+ * Since Sui RPC supports querying events by type, finding a Display for the T
+ * would be as simple as looking for the first event with `Display<T>`.
+ */
 export class DisplayCreated<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -522,6 +575,7 @@ export type VersionUpdatedReified<T extends PhantomTypeArgument> = Reified<
   VersionUpdatedFields<T>
 >
 
+/** Version of Display got updated - */
 export class VersionUpdated<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 

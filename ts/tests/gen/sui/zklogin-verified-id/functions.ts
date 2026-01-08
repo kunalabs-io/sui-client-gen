@@ -3,6 +3,7 @@ import { obj, pure } from '../../_framework/util'
 import { String } from '../../std/string/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/** Returns the address associated with the given VerifiedID */
 export function owner(tx: Transaction, verifiedId: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::owner`,
@@ -10,6 +11,7 @@ export function owner(tx: Transaction, verifiedId: TransactionObjectInput) {
   })
 }
 
+/** Returns the name of the key claim associated with the given VerifiedID */
 export function keyClaimName(tx: Transaction, verifiedId: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::key_claim_name`,
@@ -17,6 +19,7 @@ export function keyClaimName(tx: Transaction, verifiedId: TransactionObjectInput
   })
 }
 
+/** Returns the value of the key claim associated with the given VerifiedID */
 export function keyClaimValue(tx: Transaction, verifiedId: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::key_claim_value`,
@@ -24,6 +27,7 @@ export function keyClaimValue(tx: Transaction, verifiedId: TransactionObjectInpu
   })
 }
 
+/** Returns the issuer associated with the given VerifiedID */
 export function issuer(tx: Transaction, verifiedId: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::issuer`,
@@ -31,6 +35,7 @@ export function issuer(tx: Transaction, verifiedId: TransactionObjectInput) {
   })
 }
 
+/** Returns the audience (wallet) associated with the given VerifiedID */
 export function audience(tx: Transaction, verifiedId: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::audience`,
@@ -38,6 +43,7 @@ export function audience(tx: Transaction, verifiedId: TransactionObjectInput) {
   })
 }
 
+/** Delete a VerifiedID */
 export function delete_(tx: Transaction, verifiedId: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::delete`,
@@ -53,6 +59,7 @@ export interface VerifyZkloginIdArgs {
   pinHash: bigint | TransactionArgument
 }
 
+/** This function has been disabled. */
 export function verifyZkloginId(tx: Transaction, args: VerifyZkloginIdArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::verify_zklogin_id`,
@@ -75,6 +82,7 @@ export interface CheckZkloginIdArgs {
   pinHash: bigint | TransactionArgument
 }
 
+/** This function has been disabled. */
 export function checkZkloginId(tx: Transaction, args: CheckZkloginIdArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::check_zklogin_id`,
@@ -98,6 +106,13 @@ export interface CheckZkloginIdInternalArgs {
   pinHash: bigint | TransactionArgument
 }
 
+/**
+ * Returns true if `address` was created using zklogin and the given parameters.
+ *
+ * Aborts with `EInvalidInput` if any of `kc_name`, `kc_value`, `iss` and `aud` is not a properly encoded UTF-8
+ * string or if the inputs are longer than the allowed upper bounds: `kc_name` must be at most 32 characters,
+ * `kc_value` must be at most 115 characters and `aud` must be at most 145 characters.
+ */
 export function checkZkloginIdInternal(tx: Transaction, args: CheckZkloginIdInternalArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::check_zklogin_id_internal`,

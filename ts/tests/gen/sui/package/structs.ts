@@ -1,3 +1,9 @@
+/**
+ * Functions for operating on Move packages from within Move:
+ * - Creating proof-of-publish objects from one-time witnesses
+ * - Administering package upgrades through upgrade policies.
+ */
+
 import {
   PhantomReified,
   Reified,
@@ -34,6 +40,12 @@ export interface PublisherFields {
 
 export type PublisherReified = Reified<Publisher, PublisherFields>
 
+/**
+ * This type can only be created in the transaction that
+ * generates a module, by consuming its one-time witness, so it
+ * can be used to identify the address that published the package
+ * a type originated from.
+ */
 export class Publisher implements StructClass {
   __StructClass = true as const
 
@@ -217,13 +229,20 @@ export function isUpgradeCap(type: string): boolean {
 
 export interface UpgradeCapFields {
   id: ToField<UID>
+  /** (Mutable) ID of the package that can be upgraded. */
   package: ToField<ID>
+  /**
+   * (Mutable) The number of upgrades that have been applied
+   * successively to the original package.  Initially 0.
+   */
   version: ToField<'u64'>
+  /** What kind of upgrades are allowed. */
   policy: ToField<'u8'>
 }
 
 export type UpgradeCapReified = Reified<UpgradeCap, UpgradeCapFields>
 
+/** Capability controlling the ability to upgrade a package. */
 export class UpgradeCap implements StructClass {
   __StructClass = true as const
 
@@ -237,8 +256,14 @@ export class UpgradeCap implements StructClass {
   readonly $isPhantom = UpgradeCap.$isPhantom
 
   readonly id: ToField<UID>
+  /** (Mutable) ID of the package that can be upgraded. */
   readonly package: ToField<ID>
+  /**
+   * (Mutable) The number of upgrades that have been applied
+   * successively to the original package.  Initially 0.
+   */
   readonly version: ToField<'u64'>
+  /** What kind of upgrades are allowed. */
   readonly policy: ToField<'u8'>
 
   private constructor(typeArgs: [], fields: UpgradeCapFields) {
@@ -413,14 +438,34 @@ export function isUpgradeTicket(type: string): boolean {
 }
 
 export interface UpgradeTicketFields {
+  /** (Immutable) ID of the `UpgradeCap` this originated from. */
   cap: ToField<ID>
+  /** (Immutable) ID of the package that can be upgraded. */
   package: ToField<ID>
+  /**
+   * (Immutable) The policy regarding what kind of upgrade this ticket
+   * permits.
+   */
   policy: ToField<'u8'>
+  /**
+   * (Immutable) SHA256 digest of the bytecode and transitive
+   * dependencies that will be used in the upgrade.
+   */
   digest: ToField<Vector<'u8'>>
 }
 
 export type UpgradeTicketReified = Reified<UpgradeTicket, UpgradeTicketFields>
 
+/**
+ * Permission to perform a particular upgrade (for a fixed version of
+ * the package, bytecode to upgrade with and transitive dependencies to
+ * depend against).
+ *
+ * An `UpgradeCap` can only issue one ticket at a time, to prevent races
+ * between concurrent updates or a change in its upgrade policy after
+ * issuing a ticket, so the ticket is a "Hot Potato" to preserve forward
+ * progress.
+ */
 export class UpgradeTicket implements StructClass {
   __StructClass = true as const
 
@@ -433,9 +478,19 @@ export class UpgradeTicket implements StructClass {
   readonly $typeArgs: []
   readonly $isPhantom = UpgradeTicket.$isPhantom
 
+  /** (Immutable) ID of the `UpgradeCap` this originated from. */
   readonly cap: ToField<ID>
+  /** (Immutable) ID of the package that can be upgraded. */
   readonly package: ToField<ID>
+  /**
+   * (Immutable) The policy regarding what kind of upgrade this ticket
+   * permits.
+   */
   readonly policy: ToField<'u8'>
+  /**
+   * (Immutable) SHA256 digest of the bytecode and transitive
+   * dependencies that will be used in the upgrade.
+   */
   readonly digest: ToField<Vector<'u8'>>
 
   private constructor(typeArgs: [], fields: UpgradeTicketFields) {
@@ -610,12 +665,20 @@ export function isUpgradeReceipt(type: string): boolean {
 }
 
 export interface UpgradeReceiptFields {
+  /** (Immutable) ID of the `UpgradeCap` this originated from. */
   cap: ToField<ID>
+  /** (Immutable) ID of the package after it was upgraded. */
   package: ToField<ID>
 }
 
 export type UpgradeReceiptReified = Reified<UpgradeReceipt, UpgradeReceiptFields>
 
+/**
+ * Issued as a result of a successful upgrade, containing the
+ * information to be used to update the `UpgradeCap`.  This is a "Hot
+ * Potato" to ensure that it is used to update its `UpgradeCap` before
+ * the end of the transaction that performed the upgrade.
+ */
 export class UpgradeReceipt implements StructClass {
   __StructClass = true as const
 
@@ -628,7 +691,9 @@ export class UpgradeReceipt implements StructClass {
   readonly $typeArgs: []
   readonly $isPhantom = UpgradeReceipt.$isPhantom
 
+  /** (Immutable) ID of the `UpgradeCap` this originated from. */
   readonly cap: ToField<ID>
+  /** (Immutable) ID of the package after it was upgraded. */
   readonly package: ToField<ID>
 
   private constructor(typeArgs: [], fields: UpgradeReceiptFields) {

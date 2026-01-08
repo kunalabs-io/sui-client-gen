@@ -1,3 +1,8 @@
+/**
+ * Defines a fixed-point numeric type with a 32-bit integer part and
+ * a 32-bit fractional part.
+ */
+
 import {
   PhantomReified,
   Reified,
@@ -27,6 +32,17 @@ export interface FixedPoint32Fields {
 
 export type FixedPoint32Reified = Reified<FixedPoint32, FixedPoint32Fields>
 
+/**
+ * Define a fixed-point numeric type with 32 fractional bits.
+ * This is just a u64 integer but it is wrapped in a struct to
+ * make a unique type. This is a binary representation, so decimal
+ * values may not be exactly representable, but it provides more
+ * than 9 decimal digits of precision both before and after the
+ * decimal point (18 digits total). For comparison, double precision
+ * floating-point has less than 16 decimal digits of precision, so
+ * be careful about using floating-point to convert these values to
+ * decimal.
+ */
 export class FixedPoint32 implements StructClass {
   __StructClass = true as const
 

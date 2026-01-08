@@ -1,3 +1,5 @@
+/** This module provides functionality for generating secure randomness. */
+
 import {
   PhantomReified,
   Reified,
@@ -33,6 +35,10 @@ export interface RandomFields {
 
 export type RandomReified = Reified<Random, RandomFields>
 
+/**
+ * Singleton shared object which stores the global randomness state.
+ * The actual state is stored in a versioned inner field.
+ */
 export class Random implements StructClass {
   __StructClass = true as const
 
@@ -409,6 +415,7 @@ export interface RandomGeneratorFields {
 
 export type RandomGeneratorReified = Reified<RandomGenerator, RandomGeneratorFields>
 
+/** Unique randomness generator, derived from the global randomness. */
 export class RandomGenerator implements StructClass {
   __StructClass = true as const
 
