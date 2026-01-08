@@ -5,6 +5,8 @@
 
 use indoc::formatdoc;
 
+use super::jsdoc::format_jsdoc;
+
 // ============================================================================
 // Struct IR - Domain-focused representation
 // ============================================================================
@@ -34,6 +36,8 @@ pub struct StructIR {
     pub has_non_phantom_type_params: bool,
     /// Whether fieldToJSON is needed (for Option, Vector, or certain struct types)
     pub uses_field_to_json: bool,
+    /// Struct-level documentation from Move source
+    pub doc_comment: Option<String>,
 }
 
 /// Package address information for generating full type names.
@@ -68,6 +72,8 @@ pub struct FieldIR {
     pub move_name: String,
     /// The field type
     pub field_type: FieldTypeIR,
+    /// Field-level documentation from Move source
+    pub doc_comment: Option<String>,
 }
 
 /// Distinguishes between struct and enum datatypes.
@@ -393,7 +399,14 @@ impl StructIR {
         let fields: Vec<String> = self
             .fields
             .iter()
-            .map(|f| format!("  {}: ToField<{}>", f.ts_name, f.field_type.to_ts_type()))
+            .map(|f| {
+                let mut parts = Vec::new();
+                if let Some(jsdoc) = format_jsdoc(&f.doc_comment, "  ") {
+                    parts.push(jsdoc);
+                }
+                parts.push(format!("  {}: ToField<{}>", f.ts_name, f.field_type.to_ts_type()));
+                parts.join("\n")
+            })
             .collect();
 
         formatdoc! {r#"
@@ -435,11 +448,17 @@ impl StructIR {
             .fields
             .iter()
             .map(|f| {
-                format!(
+                let mut parts = Vec::new();
+                // Add field JSDoc if available
+                if let Some(jsdoc) = format_jsdoc(&f.doc_comment, "  ") {
+                    parts.push(jsdoc);
+                }
+                parts.push(format!(
                     "  readonly {}: ToField<{}>",
                     f.ts_name,
                     f.field_type.to_ts_type()
-                )
+                ));
+                parts.join("\n")
             })
             .collect();
 
@@ -500,7 +519,7 @@ impl StructIR {
             })
             .collect();
 
-        formatdoc! {r#"
+        let class_body = formatdoc! {r#"
             export class {name} implements StructClass {{
               __StructClass = true as const
 
@@ -671,6 +690,13 @@ impl StructIR {
             from_fields_with_types_decodes = from_fields_with_types_decodes.join("\n"),
             to_json_fields = to_json_fields.join("\n"),
             from_json_decodes = from_json_decodes.join("\n"),
+        };
+
+        // Add struct-level JSDoc if available
+        if let Some(jsdoc) = format_jsdoc(&self.doc_comment, "") {
+            format!("{}\n{}", jsdoc, class_body)
+        } else {
+            class_body
         }
     }
 
@@ -693,11 +719,17 @@ impl StructIR {
             .fields
             .iter()
             .map(|f| {
-                format!(
+                let mut parts = Vec::new();
+                // Add field JSDoc if available
+                if let Some(jsdoc) = format_jsdoc(&f.doc_comment, "  ") {
+                    parts.push(jsdoc);
+                }
+                parts.push(format!(
                     "  readonly {}: ToField<{}>",
                     f.ts_name,
                     f.field_type.to_ts_type()
-                )
+                ));
+                parts.join("\n")
             })
             .collect();
 
@@ -882,7 +914,7 @@ impl StructIR {
             )
         };
 
-        formatdoc! {r#"
+        let class_body = formatdoc! {r#"
             export class {name}{type_param_extends} implements StructClass {{
               __StructClass = true as const
 
@@ -1105,6 +1137,13 @@ impl StructIR {
             from_fields_with_types_decodes = from_fields_with_types_decodes.join("\n"),
             to_json_fields = to_json_fields.join("\n"),
             from_json_decodes = from_json_decodes.join("\n"),
+        };
+
+        // Add struct-level JSDoc if available
+        if let Some(jsdoc) = format_jsdoc(&self.doc_comment, "") {
+            format!("{}\n{}", jsdoc, class_body)
+        } else {
+            class_body
         }
     }
 
@@ -1923,11 +1962,13 @@ mod tests {
                         type_arg_is_phantom: vec![],
                         kind: DatatypeKind::Struct,
                     },
+                    doc_comment: None,
                 },
                 FieldIR {
                     ts_name: "timestampMs".to_string(),
                     move_name: "timestamp_ms".to_string(),
                     field_type: FieldTypeIR::Primitive("u64".to_string()),
+                    doc_comment: None,
                 },
             ],
             struct_imports: vec![StructImport {
@@ -1940,6 +1981,7 @@ mod tests {
             uses_phantom_struct_args: false,
             has_non_phantom_type_params: false,
             uses_field_to_json: false,
+            doc_comment: None,
         }
     }
 
@@ -1978,6 +2020,7 @@ mod tests {
                 ts_name: "value".to_string(),
                 move_name: "value".to_string(),
                 field_type: FieldTypeIR::Primitive("u64".to_string()),
+                doc_comment: None,
             }],
             struct_imports: vec![],
             uses_vector: false,
@@ -1985,6 +2028,7 @@ mod tests {
             uses_phantom_struct_args: false,
             has_non_phantom_type_params: false,
             uses_field_to_json: false,
+            doc_comment: None,
         }
     }
 

@@ -1,0 +1,180 @@
+---
+source: generator/tests/snapshot_tests.rs
+expression: output
+---
+/* ============================== EscapedDoc =============================== */
+
+export function isEscapedDoc(type: string): boolean {
+  type = compressSuiType(type)
+  return type === `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::EscapedDoc`
+}
+
+export interface EscapedDocFields {
+  /** Field with *\/ sequence that must be escaped */
+  value: ToField<'u64'>
+}
+
+export type EscapedDocReified = Reified<EscapedDoc, EscapedDocFields>
+
+/** Doc comment with *\/ in the middle must be escaped */
+export class EscapedDoc implements StructClass {
+  __StructClass = true as const
+
+  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::EscapedDoc` as const
+  static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
+
+  readonly $typeName = EscapedDoc.$typeName
+  readonly $fullTypeName: `${string}::test::EscapedDoc`
+  readonly $typeArgs: []
+  readonly $isPhantom = EscapedDoc.$isPhantom
+
+  /** Field with *\/ sequence that must be escaped */
+  readonly value: ToField<'u64'>
+
+  private constructor(typeArgs: [], fields: EscapedDocFields) {
+    this.$fullTypeName = composeSuiType(
+      EscapedDoc.$typeName,
+      ...typeArgs
+    ) as `${string}::test::EscapedDoc`
+    this.$typeArgs = typeArgs
+
+    this.value = fields.value
+  }
+
+  static reified(): EscapedDocReified {
+    const reifiedBcs = EscapedDoc.bcs
+    return {
+      typeName: EscapedDoc.$typeName,
+      fullTypeName: composeSuiType(
+        EscapedDoc.$typeName,
+        ...[]
+      ) as `${string}::test::EscapedDoc`,
+      typeArgs: [] as [],
+      isPhantom: EscapedDoc.$isPhantom,
+      reifiedTypeArgs: [],
+      fromFields: (fields: Record<string, any>) => EscapedDoc.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => EscapedDoc.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => EscapedDoc.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
+      fromJSONField: (field: any) => EscapedDoc.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => EscapedDoc.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => EscapedDoc.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => EscapedDoc.fromSuiObjectData(content),
+      fetch: async (client: SuiClient, id: string) => EscapedDoc.fetch(client, id),
+      new: (fields: EscapedDocFields) => {
+        return new EscapedDoc([], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return EscapedDoc.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<EscapedDoc>> {
+    return phantom(EscapedDoc.reified())
+  }
+
+  static get p() {
+    return EscapedDoc.phantom()
+  }
+
+  private static instantiateBcs() {
+    return bcs.struct('EscapedDoc', {
+      value: bcs.u64(),
+    })
+  }
+
+  private static cachedBcs: ReturnType<typeof EscapedDoc.instantiateBcs> | null = null
+
+  static get bcs(): ReturnType<typeof EscapedDoc.instantiateBcs> {
+    if (!EscapedDoc.cachedBcs) {
+      EscapedDoc.cachedBcs = EscapedDoc.instantiateBcs()
+    }
+    return EscapedDoc.cachedBcs
+  }
+
+  static fromFields(fields: Record<string, any>): EscapedDoc {
+    return EscapedDoc.reified().new({
+      value: decodeFromFields('u64', fields.value),
+    })
+  }
+
+  static fromFieldsWithTypes(item: FieldsWithTypes): EscapedDoc {
+    if (!isEscapedDoc(item.type)) {
+      throw new Error('not a EscapedDoc type')
+    }
+
+    return EscapedDoc.reified().new({
+      value: decodeFromFieldsWithTypes('u64', item.fields.value),
+    })
+  }
+
+  static fromBcs(data: Uint8Array): EscapedDoc {
+    return EscapedDoc.fromFields(EscapedDoc.bcs.parse(data))
+  }
+
+  toJSONField() {
+    return {
+      value: this.value.toString(),
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): EscapedDoc {
+    return EscapedDoc.reified().new({
+      value: decodeFromJSONField('u64', field.value),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): EscapedDoc {
+    if (json.$typeName !== EscapedDoc.$typeName) {
+      throw new Error(`not a EscapedDoc json object: expected '${EscapedDoc.$typeName}' but got '${json.$typeName}'`)
+    }
+
+    return EscapedDoc.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): EscapedDoc {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isEscapedDoc(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a EscapedDoc object`)
+    }
+    return EscapedDoc.fromFieldsWithTypes(content)
+  }
+
+  static fromSuiObjectData(data: SuiObjectData): EscapedDoc {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isEscapedDoc(data.bcs.type)) {
+        throw new Error(`object at is not a EscapedDoc object`)
+      }
+
+      return EscapedDoc.fromBcs(fromBase64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return EscapedDoc.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<EscapedDoc> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching EscapedDoc object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isEscapedDoc(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a EscapedDoc object`)
+    }
+
+    return EscapedDoc.fromSuiObjectData(res.data)
+  }
+}

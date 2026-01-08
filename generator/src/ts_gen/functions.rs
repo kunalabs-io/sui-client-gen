@@ -5,6 +5,7 @@
 use convert_case::{Case, Casing};
 use indoc::formatdoc;
 
+use super::jsdoc::format_jsdoc;
 use super::utils::is_reserved_word;
 
 /// Represents a function parameter's type for transaction arguments.
@@ -158,6 +159,8 @@ pub struct FunctionParamIR {
     pub ts_name: String,
     /// The parameter type.
     pub param_type: ParamTypeIR,
+    /// Parameter-level documentation from Move source
+    pub doc_comment: Option<String>,
 }
 
 /// Struct import needed by a function.
@@ -200,6 +203,12 @@ pub struct FunctionIR {
     pub uses_pure: bool,
     /// Whether this function uses obj.
     pub uses_obj: bool,
+    /// Function-level documentation from Move source
+    pub doc_comment: Option<String>,
+    /// Whether this function is marked as deprecated
+    pub is_deprecated: bool,
+    /// Deprecation note/message if present
+    pub deprecation_note: Option<String>,
 }
 
 impl FunctionIR {
@@ -395,10 +404,40 @@ impl FunctionIR {
         let interface = self.emit_args_interface();
         let body = self.emit_body(module_aliased);
 
-        if interface.is_empty() {
-            body
+        // Build combined doc comment with @deprecated tag if needed
+        let combined_doc = if self.is_deprecated {
+            let deprecated_line = if let Some(note) = &self.deprecation_note {
+                format!("@deprecated {}", note)
+            } else {
+                "@deprecated".to_string()
+            };
+
+            match &self.doc_comment {
+                Some(doc) if !doc.trim().is_empty() => {
+                    // Combine doc comment and deprecated tag
+                    Some(format!("{}\n\n{}", doc, deprecated_line))
+                }
+                _ => {
+                    // Only deprecated tag, no doc comment
+                    Some(deprecated_line)
+                }
+            }
         } else {
-            format!("{}\n\n{}", interface, body)
+            self.doc_comment.clone()
+        };
+
+        // Add function JSDoc to the body only (not the interface)
+        let body_with_jsdoc = if let Some(jsdoc) = format_jsdoc(&combined_doc, "") {
+            format!("{}\n{}", jsdoc, body)
+        } else {
+            body
+        };
+
+        // Combine interface and body (JSDoc is already on the body)
+        if interface.is_empty() {
+            body_with_jsdoc
+        } else {
+            format!("{}\n\n{}", interface, body_with_jsdoc)
         }
     }
 }

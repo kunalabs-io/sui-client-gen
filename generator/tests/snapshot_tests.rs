@@ -267,6 +267,7 @@ fn make_fixture_dummy_ir() -> StructIR {
             ts_name: "dummyField".to_string(),
             move_name: "dummy_field".to_string(),
             field_type: FieldTypeIR::Primitive("bool".to_string()),
+            doc_comment: None,
         }],
         struct_imports: vec![],
         uses_vector: false,
@@ -274,6 +275,7 @@ fn make_fixture_dummy_ir() -> StructIR {
         uses_phantom_struct_args: false,
         has_non_phantom_type_params: false,
         uses_field_to_json: false,
+        doc_comment: None,
     }
 }
 
@@ -289,6 +291,7 @@ fn make_fixture_bar_ir() -> StructIR {
             ts_name: "value".to_string(),
             move_name: "value".to_string(),
             field_type: FieldTypeIR::Primitive("u64".to_string()),
+            doc_comment: None,
         }],
         struct_imports: vec![],
         uses_vector: false,
@@ -296,6 +299,7 @@ fn make_fixture_bar_ir() -> StructIR {
         uses_phantom_struct_args: false,
         has_non_phantom_type_params: false,
         uses_field_to_json: false,
+        doc_comment: None,
     }
 }
 
@@ -315,6 +319,7 @@ fn make_fixture_with_generic_field_ir() -> StructIR {
                 ts_name: "id".to_string(),
                 move_name: "id".to_string(),
                 field_type: uid_field_type(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "genericField".to_string(),
@@ -324,6 +329,7 @@ fn make_fixture_with_generic_field_ir() -> StructIR {
                     is_phantom: false,
                     index: 0,
                 },
+                doc_comment: None,
             },
         ],
         struct_imports: vec![uid_import()],
@@ -332,6 +338,7 @@ fn make_fixture_with_generic_field_ir() -> StructIR {
         uses_phantom_struct_args: false,
         has_non_phantom_type_params: true,
         uses_field_to_json: true,
+        doc_comment: None,
     }
 }
 
@@ -361,6 +368,7 @@ fn make_fixture_with_two_generics_ir() -> StructIR {
                     is_phantom: false,
                     index: 0,
                 },
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "genericField2".to_string(),
@@ -370,6 +378,7 @@ fn make_fixture_with_two_generics_ir() -> StructIR {
                     is_phantom: false,
                     index: 1,
                 },
+                doc_comment: None,
             },
         ],
         struct_imports: vec![],
@@ -378,6 +387,7 @@ fn make_fixture_with_two_generics_ir() -> StructIR {
         uses_phantom_struct_args: false,
         has_non_phantom_type_params: true,
         uses_field_to_json: true,
+        doc_comment: None,
     }
 }
 
@@ -403,66 +413,79 @@ fn make_fixture_with_special_types_ir() -> StructIR {
                 ts_name: "id".to_string(),
                 move_name: "id".to_string(),
                 field_type: uid_field_type(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "string".to_string(),
                 move_name: "string".to_string(),
                 field_type: utf8_string_field_type(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "asciiString".to_string(),
                 move_name: "ascii_string".to_string(),
                 field_type: ascii_string_field_type(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "url".to_string(),
                 move_name: "url".to_string(),
                 field_type: url_field_type(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "idField".to_string(),
                 move_name: "id_field".to_string(),
                 field_type: id_field_type(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "uid".to_string(),
                 move_name: "uid".to_string(),
                 field_type: uid_field_type(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "balance".to_string(),
                 move_name: "balance".to_string(),
                 field_type: balance_sui_field_type(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "option".to_string(),
                 move_name: "option".to_string(),
                 field_type: option_u64_field_type(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "optionObj".to_string(),
                 move_name: "option_obj".to_string(),
                 field_type: option_bar_field_type(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "optionNone".to_string(),
                 move_name: "option_none".to_string(),
                 field_type: option_u64_field_type(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "balanceGeneric".to_string(),
                 move_name: "balance_generic".to_string(),
                 field_type: balance_generic_field_type("T", 0),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "optionGeneric".to_string(),
                 move_name: "option_generic".to_string(),
                 field_type: option_generic_field_type("U", false, 1),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "optionGenericNone".to_string(),
                 move_name: "option_generic_none".to_string(),
                 field_type: option_generic_field_type("U", false, 1),
+                doc_comment: None,
             },
         ],
         struct_imports: vec![
@@ -481,6 +504,7 @@ fn make_fixture_with_special_types_ir() -> StructIR {
         uses_phantom_struct_args: true,
         has_non_phantom_type_params: true,
         uses_field_to_json: true,
+        doc_comment: None,
     }
 }
 
@@ -500,36 +524,43 @@ fn make_fixture_with_special_types_in_vectors_ir() -> StructIR {
                 ts_name: "id".to_string(),
                 move_name: "id".to_string(),
                 field_type: uid_field_type(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "string".to_string(),
                 move_name: "string".to_string(),
                 field_type: FieldTypeIR::Vector(Box::new(utf8_string_field_type())),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "asciiString".to_string(),
                 move_name: "ascii_string".to_string(),
                 field_type: FieldTypeIR::Vector(Box::new(ascii_string_field_type())),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "idField".to_string(),
                 move_name: "id_field".to_string(),
                 field_type: FieldTypeIR::Vector(Box::new(id_field_type())),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "bar".to_string(),
                 move_name: "bar".to_string(),
                 field_type: FieldTypeIR::Vector(Box::new(bar_field_type())),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "option".to_string(),
                 move_name: "option".to_string(),
                 field_type: FieldTypeIR::Vector(Box::new(option_u64_field_type())),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "optionGeneric".to_string(),
                 move_name: "option_generic".to_string(),
                 field_type: FieldTypeIR::Vector(Box::new(option_generic_field_type("T", false, 0))),
+                doc_comment: None,
             },
         ],
         struct_imports: vec![
@@ -545,6 +576,7 @@ fn make_fixture_with_special_types_in_vectors_ir() -> StructIR {
         uses_phantom_struct_args: false,
         has_non_phantom_type_params: true,
         uses_field_to_json: true,
+        doc_comment: None,
     }
 }
 
@@ -581,11 +613,13 @@ fn make_fixture_foo_ir() -> StructIR {
                 ts_name: "id".to_string(),
                 move_name: "id".to_string(),
                 field_type: uid_field_type(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "generic".to_string(),
                 move_name: "generic".to_string(),
                 field_type: t_type_param.clone(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "reifiedPrimitiveVec".to_string(),
@@ -593,16 +627,19 @@ fn make_fixture_foo_ir() -> StructIR {
                 field_type: FieldTypeIR::Vector(Box::new(FieldTypeIR::Primitive(
                     "u64".to_string(),
                 ))),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "reifiedObjectVec".to_string(),
                 move_name: "reified_object_vec".to_string(),
                 field_type: FieldTypeIR::Vector(Box::new(bar_field_type())),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "genericVec".to_string(),
                 move_name: "generic_vec".to_string(),
                 field_type: FieldTypeIR::Vector(Box::new(t_type_param.clone())),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "genericVecNested".to_string(),
@@ -611,11 +648,13 @@ fn make_fixture_foo_ir() -> StructIR {
                     t_type_param.clone(),
                     FieldTypeIR::Primitive("u8".to_string()),
                 ))),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "twoGenerics".to_string(),
                 move_name: "two_generics".to_string(),
                 field_type: with_two_generics(t_type_param.clone(), bar_field_type()),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "twoGenericsReifiedPrimitive".to_string(),
@@ -624,11 +663,13 @@ fn make_fixture_foo_ir() -> StructIR {
                     FieldTypeIR::Primitive("u16".to_string()),
                     FieldTypeIR::Primitive("u64".to_string()),
                 ),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "twoGenericsReifiedObject".to_string(),
                 move_name: "two_generics_reified_object".to_string(),
                 field_type: with_two_generics(bar_field_type(), bar_field_type()),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "twoGenericsNested".to_string(),
@@ -640,6 +681,7 @@ fn make_fixture_foo_ir() -> StructIR {
                         FieldTypeIR::Primitive("u8".to_string()),
                     ),
                 ),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "twoGenericsReifiedNested".to_string(),
@@ -651,6 +693,7 @@ fn make_fixture_foo_ir() -> StructIR {
                         FieldTypeIR::Primitive("u8".to_string()),
                     ),
                 ),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "twoGenericsNestedVec".to_string(),
@@ -662,6 +705,7 @@ fn make_fixture_foo_ir() -> StructIR {
                         FieldTypeIR::Primitive("u8".to_string()),
                     ))),
                 ))),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "dummy".to_string(),
@@ -673,6 +717,7 @@ fn make_fixture_foo_ir() -> StructIR {
                     type_arg_is_phantom: vec![],
                     kind: DatatypeKind::Struct,
                 },
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "other".to_string(),
@@ -684,6 +729,7 @@ fn make_fixture_foo_ir() -> StructIR {
                     type_arg_is_phantom: vec![],
                     kind: DatatypeKind::Struct,
                 },
+                doc_comment: None,
             },
         ],
         struct_imports: vec![
@@ -710,6 +756,7 @@ fn make_fixture_foo_ir() -> StructIR {
         uses_phantom_struct_args: false,
         has_non_phantom_type_params: true,
         uses_field_to_json: true,
+        doc_comment: None,
     }
 }
 
@@ -753,6 +800,7 @@ fn make_enums_action_ir() -> EnumIR {
                 name: "Stop".to_string(),
                 fields: vec![],
                 is_tuple: false,
+                doc_comment: None,
             },
             // Struct variant: Pause { duration, generic_field, phantom_field, reified_field }
             EnumVariantIR {
@@ -762,24 +810,29 @@ fn make_enums_action_ir() -> EnumIR {
                         ts_name: "duration".to_string(),
                         move_name: "duration".to_string(),
                         field_type: FieldTypeIR::Primitive("u32".to_string()),
+                        doc_comment: None,
                     },
                     FieldIR {
                         ts_name: "genericField".to_string(),
                         move_name: "generic_field".to_string(),
                         field_type: t_type_param.clone(),
+                        doc_comment: None,
                     },
                     FieldIR {
                         ts_name: "phantomField".to_string(),
                         move_name: "phantom_field".to_string(),
                         field_type: balance_generic_field_type("U", 1),
+                        doc_comment: None,
                     },
                     FieldIR {
                         ts_name: "reifiedField".to_string(),
                         move_name: "reified_field".to_string(),
                         field_type: option_u64_field_type(),
+                        doc_comment: None,
                     },
                 ],
                 is_tuple: false,
+                doc_comment: None,
             },
             // Tuple variant: Jump(u64, T, Balance<U>, Option<u64>)
             EnumVariantIR {
@@ -789,29 +842,35 @@ fn make_enums_action_ir() -> EnumIR {
                         ts_name: "0".to_string(),
                         move_name: "0".to_string(),
                         field_type: FieldTypeIR::Primitive("u64".to_string()),
+                        doc_comment: None,
                     },
                     FieldIR {
                         ts_name: "1".to_string(),
                         move_name: "1".to_string(),
                         field_type: t_type_param.clone(),
+                        doc_comment: None,
                     },
                     FieldIR {
                         ts_name: "2".to_string(),
                         move_name: "2".to_string(),
                         field_type: balance_generic_field_type("U", 1),
+                        doc_comment: None,
                     },
                     FieldIR {
                         ts_name: "3".to_string(),
                         move_name: "3".to_string(),
                         field_type: option_u64_field_type(),
+                        doc_comment: None,
                     },
                 ],
                 is_tuple: true,
+                doc_comment: None,
             },
         ],
         uses_vector: false,
         uses_address: false,
         uses_phantom_struct_args: true,
+        doc_comment: None,
     }
 }
 
@@ -851,6 +910,7 @@ fn make_enums_wrapped_ir() -> StructIR {
                 ts_name: "id".to_string(),
                 move_name: "id".to_string(),
                 field_type: uid_field_type(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "t".to_string(),
@@ -860,6 +920,7 @@ fn make_enums_wrapped_ir() -> StructIR {
                     is_phantom: false,
                     index: 0,
                 },
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "u".to_string(),
@@ -869,6 +930,7 @@ fn make_enums_wrapped_ir() -> StructIR {
                     is_phantom: false,
                     index: 1,
                 },
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "v".to_string(),
@@ -878,21 +940,25 @@ fn make_enums_wrapped_ir() -> StructIR {
                     is_phantom: false,
                     index: 2,
                 },
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "stop".to_string(),
                 move_name: "stop".to_string(),
                 field_type: action_u64_sui(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "pause".to_string(),
                 move_name: "pause".to_string(),
                 field_type: action_u64_sui(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "jump".to_string(),
                 move_name: "jump".to_string(),
                 field_type: action_u64_sui(),
+                doc_comment: None,
             },
         ],
         struct_imports: vec![
@@ -909,6 +975,7 @@ fn make_enums_wrapped_ir() -> StructIR {
         uses_phantom_struct_args: true,
         has_non_phantom_type_params: true,
         uses_field_to_json: true,
+        doc_comment: None,
     }
 }
 
@@ -1238,6 +1305,7 @@ fn make_create_bar_function_ir() -> FunctionIR {
         params: vec![FunctionParamIR {
             ts_name: "value".to_string(),
             param_type: ParamTypeIR::Primitive("u64".to_string()),
+            doc_comment: None,
         }],
         struct_imports: vec![],
         uses_generic: false,
@@ -1246,6 +1314,9 @@ fn make_create_bar_function_ir() -> FunctionIR {
         uses_vector: false,
         uses_pure: true,
         uses_obj: false,
+        doc_comment: None,
+        is_deprecated: false,
+        deprecation_note: None,
     }
 }
 
@@ -1263,6 +1334,7 @@ fn make_create_with_generic_field_function_ir() -> FunctionIR {
                 name: "T".to_string(),
                 index: 0,
             },
+            doc_comment: None,
         }],
         struct_imports: vec![],
         uses_generic: true,
@@ -1271,6 +1343,9 @@ fn make_create_with_generic_field_function_ir() -> FunctionIR {
         uses_vector: false,
         uses_pure: false,
         uses_obj: false,
+        doc_comment: None,
+        is_deprecated: false,
+        deprecation_note: None,
     }
 }
 
@@ -1289,6 +1364,7 @@ fn make_create_with_two_generics_function_ir() -> FunctionIR {
                     name: "T".to_string(),
                     index: 0,
                 },
+                doc_comment: None,
             },
             FunctionParamIR {
                 ts_name: "genericField2".to_string(),
@@ -1296,6 +1372,7 @@ fn make_create_with_two_generics_function_ir() -> FunctionIR {
                     name: "U".to_string(),
                     index: 1,
                 },
+                doc_comment: None,
             },
         ],
         struct_imports: vec![],
@@ -1305,6 +1382,9 @@ fn make_create_with_two_generics_function_ir() -> FunctionIR {
         uses_vector: false,
         uses_pure: false,
         uses_obj: false,
+        doc_comment: None,
+        is_deprecated: false,
+        deprecation_note: None,
     }
 }
 
@@ -1322,16 +1402,19 @@ fn make_create_special_in_vectors_function_ir() -> FunctionIR {
                 param_type: ParamTypeIR::Vector(Box::new(ParamTypeIR::StringType {
                     module: "string".to_string(),
                 })),
+                doc_comment: None,
             },
             FunctionParamIR {
                 ts_name: "asciiString".to_string(),
                 param_type: ParamTypeIR::Vector(Box::new(ParamTypeIR::StringType {
                     module: "ascii".to_string(),
                 })),
+                doc_comment: None,
             },
             FunctionParamIR {
                 ts_name: "idField".to_string(),
                 param_type: ParamTypeIR::Vector(Box::new(ParamTypeIR::ID)),
+                doc_comment: None,
             },
             FunctionParamIR {
                 ts_name: "bar".to_string(),
@@ -1339,12 +1422,14 @@ fn make_create_special_in_vectors_function_ir() -> FunctionIR {
                     class_name: "Bar".to_string(),
                     type_args: vec![],
                 })),
+                doc_comment: None,
             },
             FunctionParamIR {
                 ts_name: "option".to_string(),
                 param_type: ParamTypeIR::Vector(Box::new(ParamTypeIR::Option(Box::new(
                     ParamTypeIR::Primitive("u64".to_string()),
                 )))),
+                doc_comment: None,
             },
             FunctionParamIR {
                 ts_name: "optionGeneric".to_string(),
@@ -1354,6 +1439,7 @@ fn make_create_special_in_vectors_function_ir() -> FunctionIR {
                         index: 0,
                     },
                 )))),
+                doc_comment: None,
             },
         ],
         struct_imports: vec![FunctionStructImport {
@@ -1367,6 +1453,9 @@ fn make_create_special_in_vectors_function_ir() -> FunctionIR {
         uses_vector: true,
         uses_pure: false,
         uses_obj: false,
+        doc_comment: None,
+        is_deprecated: false,
+        deprecation_note: None,
     }
 }
 
@@ -1412,6 +1501,103 @@ fn test_function_module_file_snapshot() {
     ];
     let output = emit_functions_file(&functions, "../../_framework");
     insta::assert_snapshot!("module__fixture_functions", output);
+}
+
+/// `deprecatedSimple()` - deprecated without note
+fn make_deprecated_simple_function_ir() -> FunctionIR {
+    FunctionIR {
+        move_name: "deprecated_simple".to_string(),
+        ts_name: "deprecatedSimple".to_string(),
+        module_name: "fixture".to_string(),
+        env_pkg_name: "examples".to_string(),
+        type_params: vec![],
+        params: vec![],
+        struct_imports: vec![],
+        uses_generic: false,
+        uses_option: false,
+        aliased_util_imports: vec![],
+        uses_vector: false,
+        uses_pure: false,
+        uses_obj: false,
+        doc_comment: Some("This function is deprecated".to_string()),
+        is_deprecated: true,
+        deprecation_note: None,
+    }
+}
+
+/// `deprecatedWithNote()` - deprecated with note
+fn make_deprecated_with_note_function_ir() -> FunctionIR {
+    FunctionIR {
+        move_name: "deprecated_with_note".to_string(),
+        ts_name: "deprecatedWithNote".to_string(),
+        module_name: "fixture".to_string(),
+        env_pkg_name: "examples".to_string(),
+        type_params: vec![],
+        params: vec![FunctionParamIR {
+            ts_name: "value".to_string(),
+            param_type: ParamTypeIR::Primitive("u64".to_string()),
+            doc_comment: None,
+        }],
+        struct_imports: vec![],
+        uses_generic: false,
+        uses_option: false,
+        aliased_util_imports: vec![],
+        uses_vector: false,
+        uses_pure: true,
+        uses_obj: false,
+        doc_comment: Some("This function will be removed soon".to_string()),
+        is_deprecated: true,
+        deprecation_note: Some("Use `new_function` instead".to_string()),
+    }
+}
+
+/// `deprecatedWithArgs(x: u64, y: u64, z: u64)` - deprecated function with Args interface
+fn make_deprecated_with_args_function_ir() -> FunctionIR {
+    FunctionIR {
+        move_name: "deprecated_with_args".to_string(),
+        ts_name: "deprecatedWithArgs".to_string(),
+        module_name: "fixture".to_string(),
+        env_pkg_name: "examples".to_string(),
+        type_params: vec![],
+        params: vec![
+            FunctionParamIR {
+                ts_name: "x".to_string(),
+                param_type: ParamTypeIR::Primitive("u64".to_string()),
+                doc_comment: Some("First parameter".to_string()),
+            },
+            FunctionParamIR {
+                ts_name: "y".to_string(),
+                param_type: ParamTypeIR::Primitive("u64".to_string()),
+                doc_comment: Some("Second parameter".to_string()),
+            },
+            FunctionParamIR {
+                ts_name: "z".to_string(),
+                param_type: ParamTypeIR::Primitive("u64".to_string()),
+                doc_comment: None,
+            },
+        ],
+        struct_imports: vec![],
+        uses_generic: false,
+        uses_option: false,
+        aliased_util_imports: vec![],
+        uses_vector: false,
+        uses_pure: true,
+        uses_obj: false,
+        doc_comment: Some("This function has multiple parameters and is deprecated.\n\nIt will be removed in the next version.".to_string()),
+        is_deprecated: true,
+        deprecation_note: Some("Use `new_function_with_args` instead".to_string()),
+    }
+}
+
+#[test]
+fn test_function_deprecated_snapshot() {
+    let functions = vec![
+        make_deprecated_simple_function_ir(),
+        make_deprecated_with_note_function_ir(),
+        make_deprecated_with_args_function_ir(),
+    ];
+    let output = emit_functions_file(&functions, "../../_framework");
+    insta::assert_snapshot!("function__deprecated", output);
 }
 
 // =============================================================================
@@ -1490,6 +1676,7 @@ fn make_collision_same_name_different_packages_ir() -> StructIR {
                 ts_name: "id".to_string(),
                 move_name: "id".to_string(),
                 field_type: uid_field_type(),
+                doc_comment: None,
             },
             // Coin from package A (sui)
             FieldIR {
@@ -1502,6 +1689,7 @@ fn make_collision_same_name_different_packages_ir() -> StructIR {
                     type_arg_is_phantom: vec![true],
                     kind: DatatypeKind::Struct,
                 },
+                doc_comment: None,
             },
             // Coin from a different package (aliased to avoid conflict)
             FieldIR {
@@ -1514,6 +1702,7 @@ fn make_collision_same_name_different_packages_ir() -> StructIR {
                     type_arg_is_phantom: vec![],
                     kind: DatatypeKind::Struct,
                 },
+                doc_comment: None,
             },
         ],
         struct_imports: vec![
@@ -1535,6 +1724,7 @@ fn make_collision_same_name_different_packages_ir() -> StructIR {
         uses_phantom_struct_args: true,
         has_non_phantom_type_params: false,
         uses_field_to_json: false,
+        doc_comment: None,
     }
 }
 
@@ -1655,6 +1845,7 @@ fn make_struct_with_phantom_type_args_ir() -> StructIR {
             ts_name: "permissions".to_string(),
             move_name: "permissions".to_string(),
             field_type: linked_table_field,
+            doc_comment: None,
         }],
         struct_imports: vec![DatatypeImport {
             class_name: "LinkedTable".to_string(),
@@ -1666,6 +1857,7 @@ fn make_struct_with_phantom_type_args_ir() -> StructIR {
         uses_phantom_struct_args: true, // This is set to true because field has phantom type args
         has_non_phantom_type_params: false,
         uses_field_to_json: false,
+        doc_comment: None,
     }
 }
 
@@ -1740,6 +1932,7 @@ fn test_field_to_json_not_imported_when_unused() {
                 ts_name: "id".to_string(),
                 move_name: "id".to_string(),
                 field_type: uid_field_type(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "balanceA".to_string(),
@@ -1755,6 +1948,7 @@ fn test_field_to_json_not_imported_when_unused() {
                     type_arg_is_phantom: vec![true],
                     kind: DatatypeKind::Struct,
                 },
+                doc_comment: None,
             },
         ],
         struct_imports: vec![uid_import(), balance_import()],
@@ -1763,6 +1957,7 @@ fn test_field_to_json_not_imported_when_unused() {
         uses_phantom_struct_args: false,
         has_non_phantom_type_params: false,
         uses_field_to_json: false, // No Vector/Option/TypeParam fields
+        doc_comment: None,
     };
 
     let output = emit_module_structs_from_ir(&[pool_ir], &[], "../../_framework");
@@ -1873,11 +2068,13 @@ fn make_struct_with_non_phantom_in_phantom_position_ir() -> StructIR {
                 ts_name: "id".to_string(),
                 move_name: "id".to_string(),
                 field_type: uid_field_type(),
+                doc_comment: None,
             },
             FieldIR {
                 ts_name: "table".to_string(),
                 move_name: "table".to_string(),
                 field_type: table_field,
+                doc_comment: None,
             },
         ],
         struct_imports: vec![
@@ -1893,6 +2090,7 @@ fn make_struct_with_non_phantom_in_phantom_position_ir() -> StructIR {
         uses_phantom_struct_args: true, // True because T1 (non-phantom) is used in phantom position
         has_non_phantom_type_params: true,
         uses_field_to_json: false,
+        doc_comment: None,
     }
 }
 
@@ -1970,6 +2168,7 @@ fn make_enum_with_non_phantom_in_phantom_position_ir() -> EnumIR {
                 name: "Empty".to_string(),
                 fields: vec![],
                 is_tuple: false,
+                doc_comment: None,
             },
             EnumVariantIR {
                 name: "WithTable".to_string(),
@@ -1994,13 +2193,16 @@ fn make_enum_with_non_phantom_in_phantom_position_ir() -> EnumIR {
                         type_arg_is_phantom: vec![true, false], // K is phantom in Table
                         kind: DatatypeKind::Struct,
                     },
+                    doc_comment: None,
                 }],
                 is_tuple: false,
+                doc_comment: None,
             },
         ],
         uses_vector: false,
         uses_address: false,
         uses_phantom_struct_args: true, // True because T1 is used in phantom position
+        doc_comment: None,
     }
 }
 
@@ -2049,4 +2251,117 @@ fn test_enum_to_phantom_for_non_phantom_type_param() {
         !output.contains("reified.phantom("),
         "Enums should use phantom() directly, not reified.phantom()"
     );
+}
+
+// =============================================================================
+// JSDoc Documentation Tests
+// =============================================================================
+
+/// Test fixture for struct with single-line doc comment
+fn make_documented_struct_single_line_ir() -> StructIR {
+    StructIR {
+        name: "DocumentedStruct".to_string(),
+        module_struct_path: "test::DocumentedStruct".to_string(),
+        package_info: examples_pkg(),
+        type_params: vec![],
+        fields: vec![FieldIR {
+            ts_name: "value".to_string(),
+            move_name: "value".to_string(),
+            field_type: FieldTypeIR::Primitive("u64".to_string()),
+            doc_comment: Some("The value field".to_string()),
+        }],
+        struct_imports: vec![],
+        uses_vector: false,
+        uses_address: false,
+        uses_phantom_struct_args: false,
+        has_non_phantom_type_params: false,
+        uses_field_to_json: false,
+        doc_comment: Some("A struct with single-line documentation".to_string()),
+    }
+}
+
+/// Test fixture for struct with multi-line doc comment
+fn make_documented_struct_multiline_ir() -> StructIR {
+    StructIR {
+        name: "MultilineDoc".to_string(),
+        module_struct_path: "test::MultilineDoc".to_string(),
+        package_info: examples_pkg(),
+        type_params: vec![],
+        fields: vec![FieldIR {
+            ts_name: "data".to_string(),
+            move_name: "data".to_string(),
+            field_type: FieldTypeIR::Primitive("u64".to_string()),
+            doc_comment: Some("This field has\nmultiple lines\nof documentation".to_string()),
+        }],
+        struct_imports: vec![],
+        uses_vector: false,
+        uses_address: false,
+        uses_phantom_struct_args: false,
+        has_non_phantom_type_params: false,
+        uses_field_to_json: false,
+        doc_comment: Some("A struct with multi-line documentation.\n\nThis includes multiple paragraphs.".to_string()),
+    }
+}
+
+/// Test fixture for struct with doc comment containing */ that needs escaping
+fn make_documented_struct_with_escaping_ir() -> StructIR {
+    StructIR {
+        name: "EscapedDoc".to_string(),
+        module_struct_path: "test::EscapedDoc".to_string(),
+        package_info: examples_pkg(),
+        type_params: vec![],
+        fields: vec![FieldIR {
+            ts_name: "value".to_string(),
+            move_name: "value".to_string(),
+            field_type: FieldTypeIR::Primitive("u64".to_string()),
+            doc_comment: Some("Field with */ sequence that must be escaped".to_string()),
+        }],
+        struct_imports: vec![],
+        uses_vector: false,
+        uses_address: false,
+        uses_phantom_struct_args: false,
+        has_non_phantom_type_params: false,
+        uses_field_to_json: false,
+        doc_comment: Some("Doc comment with */ in the middle must be escaped".to_string()),
+    }
+}
+
+#[test]
+fn test_struct_single_line_doc_snapshot() {
+    let ir = make_documented_struct_single_line_ir();
+    let output = ir.emit_body();
+
+    // Verify struct-level JSDoc is present
+    assert!(output.contains("/** A struct with single-line documentation */"));
+
+    // Verify field-level JSDoc is present
+    assert!(output.contains("/** The value field */"));
+
+    insta::assert_snapshot!("struct__single_line_doc", output);
+}
+
+#[test]
+fn test_struct_multiline_doc_snapshot() {
+    let ir = make_documented_struct_multiline_ir();
+    let output = ir.emit_body();
+
+    // Verify multi-line JSDoc formatting
+    assert!(output.contains("/**\n * A struct with multi-line documentation."));
+    assert!(output.contains(" * This includes multiple paragraphs."));
+
+    // Verify field multi-line JSDoc
+    assert!(output.contains("/**\n   * This field has\n   * multiple lines\n   * of documentation"));
+
+    insta::assert_snapshot!("struct__multiline_doc", output);
+}
+
+#[test]
+fn test_struct_doc_escaping_snapshot() {
+    let ir = make_documented_struct_with_escaping_ir();
+    let output = ir.emit_body();
+
+    // Verify */ is escaped to *\/
+    assert!(output.contains("*\\/"), "Doc comments should escape */ to *\\/");
+
+    insta::assert_snapshot!("struct__doc_escaping", output);
 }

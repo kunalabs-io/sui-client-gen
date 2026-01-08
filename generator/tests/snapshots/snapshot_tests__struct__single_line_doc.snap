@@ -1,0 +1,180 @@
+---
+source: generator/tests/snapshot_tests.rs
+expression: output
+---
+/* ============================== DocumentedStruct =============================== */
+
+export function isDocumentedStruct(type: string): boolean {
+  type = compressSuiType(type)
+  return type === `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::DocumentedStruct`
+}
+
+export interface DocumentedStructFields {
+  /** The value field */
+  value: ToField<'u64'>
+}
+
+export type DocumentedStructReified = Reified<DocumentedStruct, DocumentedStructFields>
+
+/** A struct with single-line documentation */
+export class DocumentedStruct implements StructClass {
+  __StructClass = true as const
+
+  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::DocumentedStruct` as const
+  static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
+
+  readonly $typeName = DocumentedStruct.$typeName
+  readonly $fullTypeName: `${string}::test::DocumentedStruct`
+  readonly $typeArgs: []
+  readonly $isPhantom = DocumentedStruct.$isPhantom
+
+  /** The value field */
+  readonly value: ToField<'u64'>
+
+  private constructor(typeArgs: [], fields: DocumentedStructFields) {
+    this.$fullTypeName = composeSuiType(
+      DocumentedStruct.$typeName,
+      ...typeArgs
+    ) as `${string}::test::DocumentedStruct`
+    this.$typeArgs = typeArgs
+
+    this.value = fields.value
+  }
+
+  static reified(): DocumentedStructReified {
+    const reifiedBcs = DocumentedStruct.bcs
+    return {
+      typeName: DocumentedStruct.$typeName,
+      fullTypeName: composeSuiType(
+        DocumentedStruct.$typeName,
+        ...[]
+      ) as `${string}::test::DocumentedStruct`,
+      typeArgs: [] as [],
+      isPhantom: DocumentedStruct.$isPhantom,
+      reifiedTypeArgs: [],
+      fromFields: (fields: Record<string, any>) => DocumentedStruct.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => DocumentedStruct.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => DocumentedStruct.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
+      fromJSONField: (field: any) => DocumentedStruct.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => DocumentedStruct.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => DocumentedStruct.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => DocumentedStruct.fromSuiObjectData(content),
+      fetch: async (client: SuiClient, id: string) => DocumentedStruct.fetch(client, id),
+      new: (fields: DocumentedStructFields) => {
+        return new DocumentedStruct([], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return DocumentedStruct.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<DocumentedStruct>> {
+    return phantom(DocumentedStruct.reified())
+  }
+
+  static get p() {
+    return DocumentedStruct.phantom()
+  }
+
+  private static instantiateBcs() {
+    return bcs.struct('DocumentedStruct', {
+      value: bcs.u64(),
+    })
+  }
+
+  private static cachedBcs: ReturnType<typeof DocumentedStruct.instantiateBcs> | null = null
+
+  static get bcs(): ReturnType<typeof DocumentedStruct.instantiateBcs> {
+    if (!DocumentedStruct.cachedBcs) {
+      DocumentedStruct.cachedBcs = DocumentedStruct.instantiateBcs()
+    }
+    return DocumentedStruct.cachedBcs
+  }
+
+  static fromFields(fields: Record<string, any>): DocumentedStruct {
+    return DocumentedStruct.reified().new({
+      value: decodeFromFields('u64', fields.value),
+    })
+  }
+
+  static fromFieldsWithTypes(item: FieldsWithTypes): DocumentedStruct {
+    if (!isDocumentedStruct(item.type)) {
+      throw new Error('not a DocumentedStruct type')
+    }
+
+    return DocumentedStruct.reified().new({
+      value: decodeFromFieldsWithTypes('u64', item.fields.value),
+    })
+  }
+
+  static fromBcs(data: Uint8Array): DocumentedStruct {
+    return DocumentedStruct.fromFields(DocumentedStruct.bcs.parse(data))
+  }
+
+  toJSONField() {
+    return {
+      value: this.value.toString(),
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): DocumentedStruct {
+    return DocumentedStruct.reified().new({
+      value: decodeFromJSONField('u64', field.value),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): DocumentedStruct {
+    if (json.$typeName !== DocumentedStruct.$typeName) {
+      throw new Error(`not a DocumentedStruct json object: expected '${DocumentedStruct.$typeName}' but got '${json.$typeName}'`)
+    }
+
+    return DocumentedStruct.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): DocumentedStruct {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isDocumentedStruct(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a DocumentedStruct object`)
+    }
+    return DocumentedStruct.fromFieldsWithTypes(content)
+  }
+
+  static fromSuiObjectData(data: SuiObjectData): DocumentedStruct {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isDocumentedStruct(data.bcs.type)) {
+        throw new Error(`object at is not a DocumentedStruct object`)
+      }
+
+      return DocumentedStruct.fromBcs(fromBase64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return DocumentedStruct.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<DocumentedStruct> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching DocumentedStruct object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isDocumentedStruct(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a DocumentedStruct object`)
+    }
+
+    return DocumentedStruct.fromSuiObjectData(res.data)
+  }
+}

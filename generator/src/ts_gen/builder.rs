@@ -12,8 +12,10 @@ use move_model_2::normalized::Type;
 use move_model_2::source_kind::SourceKind;
 use move_symbol_pool::Symbol;
 
+use super::doc_utils::{extract_deprecated, extract_doc};
 use super::enums::{EnumIR, EnumVariantIR};
 use super::imports::{ImportPathResolver, TsImportsBuilder};
+use super::jsdoc::format_jsdoc;
 use super::structs::{
     DatatypeKind, FieldIR, FieldTypeIR, PackageInfo, StructIR, StructImport, TypeParamIR,
 };
@@ -153,6 +155,12 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
         // Check if there are non-phantom type parameters
         let has_non_phantom_type_params = type_params.iter().any(|p| !p.is_phantom);
 
+        // Extract struct-level documentation
+        let doc_comment = match self.strct.kind() {
+            model::Kind::WithSource(strct) => extract_doc(&strct.summary().doc),
+            model::Kind::WithoutSource(_) => None,
+        };
+
         let ir = StructIR {
             name,
             module_struct_path,
@@ -165,6 +173,7 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
             uses_phantom_struct_args,
             has_non_phantom_type_params,
             uses_field_to_json,
+            doc_comment,
         };
 
         (ir, self.framework_path)
@@ -215,6 +224,20 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
         let compiled = self.strct.compiled();
         let type_param_names = self.strct_type_param_names();
 
+        // Extract field documentation if source is available
+        let field_docs: HashMap<Symbol, Option<String>> = match self.strct.kind() {
+            model::Kind::WithSource(strct) => {
+                let summary = strct.summary();
+                summary
+                    .fields
+                    .fields
+                    .iter()
+                    .map(|(name, field_summary)| (*name, extract_doc(&field_summary.doc)))
+                    .collect()
+            }
+            model::Kind::WithoutSource(_) => HashMap::new(),
+        };
+
         compiled
             .fields
             .0
@@ -226,10 +249,14 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
                 let ts_name = move_name.to_case(Case::Camel);
                 let field_type = self.build_field_type(&field.type_, &type_param_names);
 
+                // Look up field documentation
+                let doc_comment = field_docs.get(&field.name).cloned().flatten();
+
                 FieldIR {
                     ts_name,
                     move_name,
                     field_type,
+                    doc_comment,
                 }
             })
             .collect()
@@ -429,6 +456,12 @@ pub fn gen_module_structs<HasSource: SourceKind>(
     top_level_pkg_names: &BTreeMap<AccountAddress, Symbol>,
     levels_from_root: u8,
 ) -> String {
+    // Extract module-level documentation
+    let module_doc = match module.kind() {
+        model::Kind::WithSource(m) => extract_doc(&m.summary().doc),
+        model::Kind::WithoutSource(_) => None,
+    };
+
     let mut all_struct_irs = Vec::new();
     let mut all_enum_irs = Vec::new();
     // Key by the name used in code (alias if present, otherwise class_name)
@@ -504,7 +537,14 @@ pub fn gen_module_structs<HasSource: SourceKind>(
     // Emit enum bodies
     let enum_bodies: Vec<String> = all_enum_irs.iter().map(|ir| ir.emit_body()).collect();
 
-    let mut parts = vec![combined_imports];
+    let mut parts = Vec::new();
+
+    // Add module-level JSDoc if present
+    if let Some(jsdoc) = format_jsdoc(&module_doc, "") {
+        parts.push(jsdoc);
+    }
+
+    parts.push(combined_imports);
     if !struct_bodies.is_empty() {
         parts.push(struct_bodies.join("\n\n"));
     }
@@ -787,6 +827,9 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
                 .any(|f| f.field_type.uses_phantom_struct_args())
         });
 
+        // Extract enum-level documentation
+        let doc_comment = extract_doc(&self.enum_.summary().doc);
+
         EnumIR {
             name,
             module_enum_path,
@@ -796,6 +839,7 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
             uses_vector,
             uses_address,
             uses_phantom_struct_args,
+            doc_comment,
         }
     }
 
@@ -808,6 +852,15 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
         let v_fields = &variant.compiled().fields.0;
         let is_tuple = variant.summary().fields.positional_fields;
 
+        // Extract variant field documentation if source is available
+        let summary = variant.summary();
+        let field_docs: HashMap<Symbol, Option<String>> = summary
+            .fields
+            .fields
+            .iter()
+            .map(|(name, field_summary)| (*name, extract_doc(&field_summary.doc)))
+            .collect();
+
         let fields: Vec<FieldIR> = v_fields
             .iter()
             .map(|(field_name, field)| {
@@ -815,18 +868,26 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
                 let ts_name = self.gen_field_name(&move_name);
                 let field_type = self.build_field_type(&field.type_, type_params);
 
+                // Look up field documentation
+                let doc_comment = field_docs.get(field_name).cloned().flatten();
+
                 FieldIR {
                     move_name,
                     ts_name,
                     field_type,
+                    doc_comment,
                 }
             })
             .collect();
+
+        // Extract variant-level documentation
+        let doc_comment = extract_doc(&variant.summary().doc);
 
         EnumVariantIR {
             name,
             fields,
             is_tuple,
+            doc_comment,
         }
     }
 
@@ -1167,6 +1228,18 @@ impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource>
             .cloned()
             .unwrap_or_else(|| self.package_address.to_hex_literal());
 
+        // Extract function-level documentation
+        let doc_comment = match self.func.kind() {
+            model::Kind::WithSource(func) => extract_doc(&func.summary().doc),
+            model::Kind::WithoutSource(_) => None,
+        };
+
+        // Extract deprecated status and note
+        let (is_deprecated, deprecation_note) = match self.func.kind() {
+            model::Kind::WithSource(func) => extract_deprecated(&func.summary().attributes),
+            model::Kind::WithoutSource(_) => (false, None),
+        };
+
         FunctionIR {
             move_name,
             ts_name,
@@ -1181,6 +1254,9 @@ impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource>
             uses_pure,
             uses_obj,
             aliased_util_imports,
+            doc_comment,
+            is_deprecated,
+            deprecation_note,
         }
     }
 
@@ -1231,6 +1307,9 @@ impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource>
             model::Kind::WithoutSource(_) => None,
         };
 
+        // Note: Move model doesn't provide per-parameter documentation
+        // Parameters are documented in the function-level doc comment
+
         // Build params, filtering out TxContext
         let mut name_counts: HashMap<String, usize> = HashMap::new();
         let mut results = Vec::new();
@@ -1272,9 +1351,11 @@ impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource>
 
             let param_type = self.build_param_type(&ty);
 
+            // Note: Move model doesn't provide per-parameter documentation
             results.push(FunctionParamIR {
                 ts_name: name,
                 param_type,
+                doc_comment: None,
             });
         }
 
