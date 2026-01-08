@@ -198,6 +198,32 @@ const customConfig: EnvConfig = {
 setActiveEnvWithConfig(customConfig)
 ```
 
+### Dynamic Address Overrides
+
+When a smart contract is upgraded on-chain, you may need to point function calls to a new package address without regenerating code. Both `setActiveEnv()` and `setActiveEnvWithConfig()` accept an optional second parameter for address overrides:
+
+```ts
+import { setActiveEnv } from './gen/_envs'
+
+// After contract upgrade, override the publishedAt address
+setActiveEnv('mainnet', {
+  'my-package': '0xNEW_ADDRESS_AFTER_UPGRADE',
+})
+
+// Now all function calls to 'my-package' use the new address
+// Other packages remain unchanged
+```
+
+The overrides only affect `getPublishedAt()` lookups. When you call `setActiveEnv()` again without overrides, any previous overrides are cleared:
+
+```ts
+setActiveEnv('mainnet', { 'my-package': '0xOVERRIDDEN' })
+// getPublishedAt('my-package') returns '0xOVERRIDDEN'
+
+setActiveEnv('mainnet')
+// getPublishedAt('my-package') returns the original address from the env config
+```
+
 ### Querying Active Environment
 
 ```ts

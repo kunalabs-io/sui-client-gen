@@ -1,6 +1,7 @@
 import { it, expect, describe, afterAll } from 'vitest'
 import {
   setActiveEnv,
+  setActiveEnvWithConfig,
   getActiveEnvName,
   getRegisteredEnvs,
   getPublishedAt,
@@ -78,5 +79,48 @@ describe('environment switching', () => {
     expect(() => setActiveEnv('nonexistent')).toThrow(
       "Environment 'nonexistent' not found. Available: testnet, testnet_alt"
     )
+  })
+})
+
+describe('publishedAtOverrides', () => {
+  it('setActiveEnv with overrides changes publishedAt', () => {
+    setActiveEnv('testnet', { sui: '0xOVERRIDDEN' })
+    expect(getPublishedAt('sui')).toBe('0xOVERRIDDEN')
+
+    // Other packages unchanged
+    expect(getPublishedAt('std')).toBe('0x1')
+  })
+
+  it('setActiveEnv without overrides clears previous overrides', () => {
+    setActiveEnv('testnet', { sui: '0xOVERRIDDEN' })
+    expect(getPublishedAt('sui')).toBe('0xOVERRIDDEN')
+
+    setActiveEnv('testnet')
+    expect(getPublishedAt('sui')).toBe('0x2')
+  })
+
+  it('setActiveEnvWithConfig with overrides works', () => {
+    const config = {
+      packages: {
+        sui: { originalId: '0x2', publishedAt: '0x2', typeOrigins: {} },
+      },
+      dependencies: {},
+    }
+    setActiveEnvWithConfig(config, { sui: '0xOVERRIDDEN' })
+    expect(getPublishedAt('sui')).toBe('0xOVERRIDDEN')
+  })
+
+  it('setActiveEnvWithConfig without overrides clears previous overrides', () => {
+    setActiveEnv('testnet', { sui: '0xOVERRIDDEN' })
+    expect(getPublishedAt('sui')).toBe('0xOVERRIDDEN')
+
+    const config = {
+      packages: {
+        sui: { originalId: '0x2', publishedAt: '0x2', typeOrigins: {} },
+      },
+      dependencies: {},
+    }
+    setActiveEnvWithConfig(config)
+    expect(getPublishedAt('sui')).toBe('0x2')
   })
 })
