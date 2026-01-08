@@ -1,3 +1,12 @@
+/**
+ * In addition to the fields declared in its type definition, a Sui object can have dynamic fields
+ * that can be added after the object has been constructed. Unlike ordinary field names
+ * (which are always statically declared identifiers) a dynamic field name can be any value with
+ * the `copy`, `drop`, and `store` abilities, e.g. an integer, a boolean, or a string.
+ * This gives Sui programmers the flexibility to extend objects on-the-fly, and it also serves as a
+ * building block for core collection types
+ */
+
 import {
   PhantomReified,
   Reified,
@@ -35,8 +44,14 @@ export function isField(type: string): boolean {
 }
 
 export interface FieldFields<Name extends TypeArgument, Value extends TypeArgument> {
+  /**
+   * Determined by the hash of the object ID, the field name value and it's type,
+   * i.e. hash(parent.id || name || Name)
+   */
   id: ToField<UID>
+  /** The value for the name of this field */
   name: ToField<Name>
+  /** The value bound to this field */
   value: ToField<Value>
 }
 
@@ -45,6 +60,7 @@ export type FieldReified<Name extends TypeArgument, Value extends TypeArgument> 
   FieldFields<Name, Value>
 >
 
+/** Internal object used for storing the field and value */
 export class Field<Name extends TypeArgument, Value extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -57,8 +73,14 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
   readonly $typeArgs: [ToTypeStr<Name>, ToTypeStr<Value>]
   readonly $isPhantom = Field.$isPhantom
 
+  /**
+   * Determined by the hash of the object ID, the field name value and it's type,
+   * i.e. hash(parent.id || name || Name)
+   */
   readonly id: ToField<UID>
+  /** The value for the name of this field */
   readonly name: ToField<Name>
+  /** The value bound to this field */
   readonly value: ToField<Value>
 
   private constructor(

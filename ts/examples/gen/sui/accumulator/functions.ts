@@ -86,6 +86,7 @@ export interface RootHasAccumulatorArgs {
   name: TransactionObjectInput
 }
 
+/** Balance object methods */
 export function rootHasAccumulator(
   tx: Transaction,
   typeArgs: [string, string],

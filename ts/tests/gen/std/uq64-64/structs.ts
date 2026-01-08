@@ -1,3 +1,12 @@
+/**
+ * Defines an unsigned, fixed-point numeric type with a 64-bit integer part and a 64-bit fractional
+ * part. The notation `uq64_64` and `UQ64_64` is based on
+ * [Q notation](https://en.wikipedia.org/wiki/Q_(number_format)). `q` indicates it a fixed-point
+ * number. The `u` prefix indicates it is unsigned. The `64_64` suffix indicates the number of
+ * bits, where the first number indicates the number of bits in the integer part, and the second
+ * the number of bits in the fractional part--in this case 64 bits for each.
+ */
+
 import {
   PhantomReified,
   Reified,
@@ -27,6 +36,12 @@ export interface UQ64_64Fields {
 
 export type UQ64_64Reified = Reified<UQ64_64, UQ64_64Fields>
 
+/**
+ * A fixed-point numeric type with 64 integer bits and 64 fractional bits, represented by an
+ * underlying 128 bit value. This is a binary representation, so decimal values may not be exactly
+ * representable, but it provides more than 19 decimal digits of precision both before and after
+ * the decimal point (38 digits total).
+ */
 export class UQ64_64 implements StructClass {
   __StructClass = true as const
 

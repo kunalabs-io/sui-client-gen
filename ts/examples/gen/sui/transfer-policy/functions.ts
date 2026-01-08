@@ -10,6 +10,12 @@ export interface NewRequestArgs {
   from: string | TransactionArgument
 }
 
+/**
+ * Construct a new `TransferRequest` hot potato which requires an
+ * approving action from the creator to be destroyed / resolved. Once
+ * created, it must be confirmed in the `confirm_request` call otherwise
+ * the transaction will fail.
+ */
 export function newRequest(tx: Transaction, typeArg: string, args: NewRequestArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::new_request`,
@@ -22,6 +28,12 @@ export function newRequest(tx: Transaction, typeArg: string, args: NewRequestArg
   })
 }
 
+/**
+ * Register a type in the Kiosk system and receive a `TransferPolicy` and
+ * a `TransferPolicyCap` for the type. The `TransferPolicy` is required to
+ * confirm kiosk deals for the `T`. If there's no `TransferPolicy`
+ * available for use, the type can not be traded in kiosks.
+ */
 export function new_(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::new`,
@@ -30,6 +42,11 @@ export function new_(tx: Transaction, typeArg: string, pub: TransactionObjectInp
   })
 }
 
+/**
+ * Initialize the Transfer Policy in the default scenario: Create and share
+ * the `TransferPolicy`, transfer `TransferPolicyCap` to the transaction
+ * sender.
+ */
 export function default_(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::default`,
@@ -44,6 +61,10 @@ export interface WithdrawArgs {
   amount: bigint | TransactionArgument | null
 }
 
+/**
+ * Withdraw some amount of profits from the `TransferPolicy`. If amount
+ * is not specified, all profits are withdrawn.
+ */
 export function withdraw(tx: Transaction, typeArg: string, args: WithdrawArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::withdraw`,
@@ -61,6 +82,10 @@ export interface DestroyAndWithdrawArgs {
   cap: TransactionObjectInput
 }
 
+/**
+ * Destroy a TransferPolicyCap.
+ * Can be performed by any party as long as they own it.
+ */
 export function destroyAndWithdraw(tx: Transaction, typeArg: string, args: DestroyAndWithdrawArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::destroy_and_withdraw`,
@@ -74,6 +99,14 @@ export interface ConfirmRequestArgs {
   request: TransactionObjectInput
 }
 
+/**
+ * Allow a `TransferRequest` for the type `T`. The call is protected
+ * by the type constraint, as only the publisher of the `T` can get
+ * `TransferPolicy<T>`.
+ *
+ * Note: unless there's a policy for `T` to allow transfers,
+ * Kiosk trades will not be possible.
+ */
 export function confirmRequest(tx: Transaction, typeArg: string, args: ConfirmRequestArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::confirm_request`,
@@ -89,6 +122,17 @@ export interface AddRuleArgs {
   cfg: GenericArg
 }
 
+/**
+ * Add a custom Rule to the `TransferPolicy`. Once set, `TransferRequest` must
+ * receive a confirmation of the rule executed so the hot potato can be unpacked.
+ *
+ * - T: the type to which TransferPolicy<T> is applied.
+ * - Rule: the witness type for the Custom rule
+ * - Config: a custom configuration for the rule
+ *
+ * Config requires `drop` to allow creators to remove any policy at any moment,
+ * even if graceful unpacking has not been implemented in a "rule module".
+ */
 export function addRule(tx: Transaction, typeArgs: [string, string, string], args: AddRuleArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::add_rule`,
@@ -107,6 +151,7 @@ export interface GetRuleArgs {
   policy: TransactionObjectInput
 }
 
+/** Get the custom Config for the Rule (can be only one per "Rule" type). */
 export function getRule(tx: Transaction, typeArgs: [string, string, string], args: GetRuleArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::get_rule`,
@@ -121,6 +166,7 @@ export interface AddToBalanceArgs {
   coin: TransactionObjectInput
 }
 
+/** Add some `SUI` to the balance of a `TransferPolicy`. */
 export function addToBalance(tx: Transaction, typeArgs: [string, string], args: AddToBalanceArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::add_to_balance`,
@@ -134,6 +180,10 @@ export interface AddReceiptArgs {
   request: TransactionObjectInput
 }
 
+/**
+ * Adds a `Receipt` to the `TransferRequest`, unblocking the request and
+ * confirming that the policy requirements are satisfied.
+ */
 export function addReceipt(tx: Transaction, typeArgs: [string, string], args: AddReceiptArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::add_receipt`,
@@ -142,6 +192,7 @@ export function addReceipt(tx: Transaction, typeArgs: [string, string], args: Ad
   })
 }
 
+/** Check whether a custom rule has been added to the `TransferPolicy`. */
 export function hasRule(
   tx: Transaction,
   typeArgs: [string, string],
@@ -159,6 +210,7 @@ export interface RemoveRuleArgs {
   cap: TransactionObjectInput
 }
 
+/** Remove the Rule from the `TransferPolicy`. */
 export function removeRule(
   tx: Transaction,
   typeArgs: [string, string, string],
@@ -171,6 +223,7 @@ export function removeRule(
   })
 }
 
+/** Allows reading custom attachments to the `TransferPolicy` if there are any. */
 export function uid(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::uid`,
@@ -184,6 +237,10 @@ export interface UidMutAsOwnerArgs {
   cap: TransactionObjectInput
 }
 
+/**
+ * Get a mutable reference to the `self.id` to enable custom attachments
+ * to the `TransferPolicy`.
+ */
 export function uidMutAsOwner(tx: Transaction, typeArg: string, args: UidMutAsOwnerArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::uid_mut_as_owner`,
@@ -192,6 +249,7 @@ export function uidMutAsOwner(tx: Transaction, typeArg: string, args: UidMutAsOw
   })
 }
 
+/** Read the `rules` field from the `TransferPolicy`. */
 export function rules(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::rules`,
@@ -200,6 +258,7 @@ export function rules(tx: Transaction, typeArg: string, self: TransactionObjectI
   })
 }
 
+/** Get the `item` field of the `TransferRequest`. */
 export function item(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::item`,
@@ -208,6 +267,7 @@ export function item(tx: Transaction, typeArg: string, self: TransactionObjectIn
   })
 }
 
+/** Get the `paid` field of the `TransferRequest`. */
 export function paid(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::paid`,
@@ -216,6 +276,7 @@ export function paid(tx: Transaction, typeArg: string, self: TransactionObjectIn
   })
 }
 
+/** Get the `from` field of the `TransferRequest`. */
 export function from(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::from`,

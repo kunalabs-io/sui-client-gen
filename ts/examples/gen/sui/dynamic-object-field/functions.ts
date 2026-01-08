@@ -8,6 +8,10 @@ export interface AddArgs {
   value: GenericArg
 }
 
+/**
+ * Adds a dynamic object field to the object `object: &mut UID` at field specified by `name: Name`.
+ * Aborts with `EFieldAlreadyExists` if the object already has that field with that name.
+ */
 export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_object_field::add`,
@@ -25,6 +29,12 @@ export interface BorrowArgs {
   name: GenericArg
 }
 
+/**
+ * Immutably borrows the `object`s dynamic object field with the name specified by `name: Name`.
+ * Aborts with `EFieldDoesNotExist` if the object does not have a field with that name.
+ * Aborts with `EFieldTypeMismatch` if the field exists, but the value object does not have the
+ * specified type.
+ */
 export function borrow(tx: Transaction, typeArgs: [string, string], args: BorrowArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_object_field::borrow`,
@@ -38,6 +48,12 @@ export interface BorrowMutArgs {
   name: GenericArg
 }
 
+/**
+ * Mutably borrows the `object`s dynamic object field with the name specified by `name: Name`.
+ * Aborts with `EFieldDoesNotExist` if the object does not have a field with that name.
+ * Aborts with `EFieldTypeMismatch` if the field exists, but the value object does not have the
+ * specified type.
+ */
 export function borrowMut(tx: Transaction, typeArgs: [string, string], args: BorrowMutArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_object_field::borrow_mut`,
@@ -51,6 +67,13 @@ export interface RemoveArgs {
   name: GenericArg
 }
 
+/**
+ * Removes the `object`s dynamic object field with the name specified by `name: Name` and returns
+ * the bound object.
+ * Aborts with `EFieldDoesNotExist` if the object does not have a field with that name.
+ * Aborts with `EFieldTypeMismatch` if the field exists, but the value object does not have the
+ * specified type.
+ */
 export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_object_field::remove`,
@@ -64,6 +87,10 @@ export interface Exists_Args {
   name: GenericArg
 }
 
+/**
+ * Returns true if and only if the `object` has a dynamic object field with the name specified by
+ * `name: Name`.
+ */
 export function exists_(tx: Transaction, typeArg: string, args: Exists_Args) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_object_field::exists_`,
@@ -77,6 +104,10 @@ export interface ExistsWithTypeArgs {
   name: GenericArg
 }
 
+/**
+ * Returns true if and only if the `object` has a dynamic field with the name specified by
+ * `name: Name` with an assigned value of type `Value`.
+ */
 export function existsWithType(
   tx: Transaction,
   typeArgs: [string, string],
@@ -94,6 +125,10 @@ export interface IdArgs {
   name: GenericArg
 }
 
+/**
+ * Returns the ID of the object associated with the dynamic object field
+ * Returns none otherwise
+ */
 export function id(tx: Transaction, typeArg: string, args: IdArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_object_field::id`,

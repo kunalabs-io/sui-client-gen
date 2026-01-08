@@ -2,6 +2,10 @@ import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/**
+ * Creates a `Party` value with a single "owner" that has all permissions. No other party
+ * has any permissions. And there are no default permissions.
+ */
 export function singleOwner(tx: Transaction, owner: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::party::single_owner`,

@@ -7,6 +7,16 @@ export interface FromQuotientArgs {
   denominator: bigint | TransactionArgument
 }
 
+/**
+ * Create a fixed-point value from a quotient specified by its numerator and denominator.
+ * `from_quotient` and `from_int` should be preferred over using `from_raw`.
+ * Unless the denominator is a power of two, fractions can not be represented accurately,
+ * so be careful about rounding errors.
+ * Aborts if the denominator is zero.
+ * Aborts if the input is non-zero but so small that it will be represented as zero, e.g. smaller
+ * than 2^{-32}.
+ * Aborts if the input is too large, e.g. larger than or equal to 2^32.
+ */
 export function fromQuotient(tx: Transaction, args: FromQuotientArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq32_32::from_quotient`,
@@ -14,6 +24,10 @@ export function fromQuotient(tx: Transaction, args: FromQuotientArgs) {
   })
 }
 
+/**
+ * Create a fixed-point value from an integer.
+ * `from_int` and `from_quotient` should be preferred over using `from_raw`.
+ */
 export function fromInt(tx: Transaction, integer: number | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq32_32::from_int`,
@@ -26,6 +40,10 @@ export interface AddArgs {
   b: TransactionObjectInput
 }
 
+/**
+ * Add two fixed-point numbers, `a + b`.
+ * Aborts if the sum overflows.
+ */
 export function add(tx: Transaction, args: AddArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq32_32::add`,
@@ -38,6 +56,10 @@ export interface SubArgs {
   b: TransactionObjectInput
 }
 
+/**
+ * Subtract two fixed-point numbers, `a - b`.
+ * Aborts if `a < b`.
+ */
 export function sub(tx: Transaction, args: SubArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq32_32::sub`,
@@ -50,6 +72,10 @@ export interface MulArgs {
   b: TransactionObjectInput
 }
 
+/**
+ * Multiply two fixed-point numbers, truncating any fractional part of the product.
+ * Aborts if the product overflows.
+ */
 export function mul(tx: Transaction, args: MulArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq32_32::mul`,
@@ -62,6 +88,11 @@ export interface DivArgs {
   b: TransactionObjectInput
 }
 
+/**
+ * Divide two fixed-point numbers, truncating any fractional part of the quotient.
+ * Aborts if the divisor is zero.
+ * Aborts if the quotient overflows.
+ */
 export function div(tx: Transaction, args: DivArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq32_32::div`,
@@ -69,6 +100,7 @@ export function div(tx: Transaction, args: DivArgs) {
   })
 }
 
+/** Convert a fixed-point number to an integer, truncating any fractional part. */
 export function toInt(tx: Transaction, a: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq32_32::to_int`,
@@ -81,6 +113,10 @@ export interface IntMulArgs {
   multiplier: TransactionObjectInput
 }
 
+/**
+ * Multiply a `u64` integer by a fixed-point number, truncating any fractional part of the product.
+ * Aborts if the product overflows.
+ */
 export function intMul(tx: Transaction, args: IntMulArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq32_32::int_mul`,
@@ -93,6 +129,11 @@ export interface IntDivArgs {
   divisor: TransactionObjectInput
 }
 
+/**
+ * Divide a `u64` integer by a fixed-point number, truncating any fractional part of the quotient.
+ * Aborts if the divisor is zero.
+ * Aborts if the quotient overflows.
+ */
 export function intDiv(tx: Transaction, args: IntDivArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq32_32::int_div`,
@@ -105,6 +146,7 @@ export interface LeArgs {
   b: TransactionObjectInput
 }
 
+/** Less than or equal to. Returns `true` if and only if `a <= a`. */
 export function le(tx: Transaction, args: LeArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq32_32::le`,
@@ -117,6 +159,7 @@ export interface LtArgs {
   b: TransactionObjectInput
 }
 
+/** Less than. Returns `true` if and only if `a < b`. */
 export function lt(tx: Transaction, args: LtArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq32_32::lt`,
@@ -129,6 +172,7 @@ export interface GeArgs {
   b: TransactionObjectInput
 }
 
+/** Greater than or equal to. Returns `true` if and only if `a >= b`. */
 export function ge(tx: Transaction, args: GeArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq32_32::ge`,
@@ -141,6 +185,7 @@ export interface GtArgs {
   b: TransactionObjectInput
 }
 
+/** Greater than. Returns `true` if and only if `a > b`. */
 export function gt(tx: Transaction, args: GtArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq32_32::gt`,
@@ -148,6 +193,10 @@ export function gt(tx: Transaction, args: GtArgs) {
   })
 }
 
+/**
+ * Accessor for the raw u64 value. Can be paired with `from_raw` to perform less common operations
+ * on the raw values directly.
+ */
 export function toRaw(tx: Transaction, a: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq32_32::to_raw`,
@@ -155,6 +204,10 @@ export function toRaw(tx: Transaction, a: TransactionObjectInput) {
   })
 }
 
+/**
+ * Accessor for the raw u64 value. Can be paired with `to_raw` to perform less common operations
+ * on the raw values directly.
+ */
 export function fromRaw(tx: Transaction, rawValue: bigint | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq32_32::from_raw`,

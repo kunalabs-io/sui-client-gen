@@ -4,6 +4,10 @@ import { String as String1 } from '../ascii/structs'
 import { String } from './structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/**
+ * Creates a new string from a sequence of bytes. Aborts if the bytes do
+ * not represent valid utf8.
+ */
 export function utf8(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument
@@ -14,6 +18,7 @@ export function utf8(
   })
 }
 
+/** Convert an ASCII string to a UTF8 string */
 export function fromAscii(tx: Transaction, s: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::from_ascii`,
@@ -21,6 +26,10 @@ export function fromAscii(tx: Transaction, s: string | TransactionArgument) {
   })
 }
 
+/**
+ * Convert an UTF8 string to an ASCII string.
+ * Aborts if `s` is not valid ASCII
+ */
 export function toAscii(tx: Transaction, s: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::to_ascii`,
@@ -28,6 +37,7 @@ export function toAscii(tx: Transaction, s: string | TransactionArgument) {
   })
 }
 
+/** Tries to create a new string from a sequence of bytes. */
 export function tryUtf8(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument
@@ -38,6 +48,7 @@ export function tryUtf8(
   })
 }
 
+/** Returns a reference to the underlying byte vector. */
 export function asBytes(tx: Transaction, s: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::as_bytes`,
@@ -45,6 +56,7 @@ export function asBytes(tx: Transaction, s: string | TransactionArgument) {
   })
 }
 
+/** Unpack the `string` to get its underlying bytes. */
 export function intoBytes(tx: Transaction, s: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::into_bytes`,
@@ -52,6 +64,7 @@ export function intoBytes(tx: Transaction, s: string | TransactionArgument) {
   })
 }
 
+/** Checks whether this string is empty. */
 export function isEmpty(tx: Transaction, s: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::is_empty`,
@@ -59,6 +72,7 @@ export function isEmpty(tx: Transaction, s: string | TransactionArgument) {
   })
 }
 
+/** Returns the length of this string, in bytes. */
 export function length(tx: Transaction, s: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::length`,
@@ -71,6 +85,7 @@ export interface AppendArgs {
   r: string | TransactionArgument
 }
 
+/** Appends a string. */
 export function append(tx: Transaction, args: AppendArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::append`,
@@ -83,6 +98,7 @@ export interface AppendUtf8Args {
   bytes: Array<number | TransactionArgument> | TransactionArgument
 }
 
+/** Appends bytes which must be in valid utf8 format. */
 export function appendUtf8(tx: Transaction, args: AppendUtf8Args) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::append_utf8`,
@@ -96,6 +112,10 @@ export interface InsertArgs {
   o: string | TransactionArgument
 }
 
+/**
+ * Insert the other string at the byte index in given string. The index
+ * must be at a valid utf8 char boundary.
+ */
 export function insert(tx: Transaction, args: InsertArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::insert`,
@@ -113,6 +133,12 @@ export interface SubstringArgs {
   j: bigint | TransactionArgument
 }
 
+/**
+ * Returns a sub-string using the given byte indices, where `i` is the first
+ * byte position and `j` is the start of the first byte not included (or the
+ * length of the string). The indices must be at valid utf8 char boundaries,
+ * guaranteeing that the result is valid utf8.
+ */
 export function substring(tx: Transaction, args: SubstringArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::substring`,
@@ -129,6 +155,10 @@ export interface IndexOfArgs {
   r: string | TransactionArgument
 }
 
+/**
+ * Computes the index of the first occurrence of a string. Returns `s.length()`
+ * if no occurrence found.
+ */
 export function indexOf(tx: Transaction, args: IndexOfArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::index_of`,
@@ -183,6 +213,7 @@ export function internalIndexOf(tx: Transaction, args: InternalIndexOfArgs) {
   })
 }
 
+/** @deprecated Use `std::string::as_bytes` instead. */
 export function bytes(tx: Transaction, s: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::bytes`,
@@ -196,6 +227,7 @@ export interface SubStringArgs {
   j: bigint | TransactionArgument
 }
 
+/** @deprecated Use `std::string::substring` instead. */
 export function subString(tx: Transaction, args: SubStringArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::sub_string`,

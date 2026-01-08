@@ -1,3 +1,8 @@
+/**
+ * The `ASCII` module defines basic string and char newtypes in Move that verify
+ * that characters are valid ASCII, and that strings consist of only valid ASCII characters.
+ */
+
 import {
   PhantomReified,
   Reified,
@@ -30,6 +35,13 @@ export interface StringFields {
 
 export type StringReified = Reified<String, StringFields>
 
+/**
+ * The `String` struct holds a vector of bytes that all represent
+ * valid ASCII characters. Note that these ASCII characters may not all
+ * be printable. To determine if a `String` contains only "printable"
+ * characters you should use the `all_characters_printable` predicate
+ * defined in this module.
+ */
 export class String implements StructClass {
   __StructClass = true as const
 
@@ -200,6 +212,7 @@ export interface CharFields {
 
 export type CharReified = Reified<Char, CharFields>
 
+/** An ASCII character. */
 export class Char implements StructClass {
   __StructClass = true as const
 

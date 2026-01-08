@@ -1,3 +1,8 @@
+/**
+ * The `string` module defines the `String` type which represents UTF8 encoded
+ * strings.
+ */
+
 import {
   PhantomReified,
   Reified,
@@ -30,6 +35,10 @@ export interface StringFields {
 
 export type StringReified = Reified<String, StringFields>
 
+/**
+ * A `String` holds a sequence of bytes which is guaranteed to be in utf8
+ * format.
+ */
 export class String implements StructClass {
   __StructClass = true as const
 

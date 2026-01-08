@@ -1,3 +1,5 @@
+/** Sui object identifiers */
+
 import {
   PhantomReified,
   Reified,
@@ -27,6 +29,14 @@ export interface IDFields {
 
 export type IDReified = Reified<ID, IDFields>
 
+/**
+ * An object ID. This is used to reference Sui Objects.
+ * This is *not* guaranteed to be globally unique--anyone can create an `ID` from a `UID` or
+ * from an object, and ID's can be freely copied and dropped.
+ * Here, the values are not globally unique because there can be multiple values of type `ID`
+ * with the same underlying bytes. For example, `object::id(&obj)` can be called as many times
+ * as you want for a given `obj`, and each `ID` value will be identical.
+ */
 export class ID implements StructClass {
   __StructClass = true as const
 
@@ -200,6 +210,14 @@ export interface UIDFields {
 
 export type UIDReified = Reified<UID, UIDFields>
 
+/**
+ * Globally unique IDs that define an object's ID in storage. Any Sui Object, that is a struct
+ * with the `key` ability, must have `id: UID` as its first field.
+ * These are globally unique in the sense that no two values of type `UID` are ever equal, in
+ * other words for any two values `id1: UID` and `id2: UID`, `id1` != `id2`.
+ * This is a privileged type that can only be derived from a `TxContext`.
+ * `UID` doesn't have the `drop` ability, so deleting a `UID` requires a call to `delete`.
+ */
 export class UID implements StructClass {
   __StructClass = true as const
 

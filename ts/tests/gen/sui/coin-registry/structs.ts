@@ -1,3 +1,10 @@
+/**
+ * Defines the system object for managing coin data in a central
+ * registry. This module provides a centralized way to store and manage
+ * metadata for all currencies in the Sui ecosystem, including their
+ * supply information, regulatory status, and metadata capabilities.
+ */
+
 import {
   EnumVariantClass,
   PhantomReified,
@@ -49,6 +56,11 @@ export interface CoinRegistryFields {
 
 export type CoinRegistryReified = Reified<CoinRegistry, CoinRegistryFields>
 
+/**
+ * System object found at address `0xc` that stores coin data for all
+ * registered coin types. This is a shared object that acts as a central
+ * registry for coin metadata, supply information, and regulatory status.
+ */
 export class CoinRegistry implements StructClass {
   __StructClass = true as const
 
@@ -226,6 +238,11 @@ export interface ExtraFieldFields {
 
 export type ExtraFieldReified = Reified<ExtraField, ExtraFieldFields>
 
+/**
+ * Store only object that enables more flexible coin data
+ * registration, allowing for additional fields to be added
+ * without changing the `Currency` structure.
+ */
 export class ExtraField implements StructClass {
   __StructClass = true as const
 
@@ -409,6 +426,7 @@ export type CurrencyKeyReified<T extends PhantomTypeArgument> = Reified<
   CurrencyKeyFields<T>
 >
 
+/** Key used to derive addresses when creating `Currency<T>` objects. */
 export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -636,6 +654,7 @@ export interface LegacyMetadataKeyFields {
 
 export type LegacyMetadataKeyReified = Reified<LegacyMetadataKey, LegacyMetadataKeyFields>
 
+/** Key used to store the legacy `CoinMetadata` for a `Currency`. */
 export class LegacyMetadataKey implements StructClass {
   __StructClass = true as const
 
@@ -815,6 +834,11 @@ export type MetadataCapReified<T extends PhantomTypeArgument> = Reified<
   MetadataCapFields<T>
 >
 
+/**
+ * Capability object that gates metadata (name, description, icon_url, symbol)
+ * changes in the `Currency`. It can only be created (or claimed) once, and can
+ * be deleted to prevent changes to the `Currency` metadata.
+ */
 export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -1042,6 +1066,7 @@ export interface BorrowFields<T extends PhantomTypeArgument> {
 
 export type BorrowReified<T extends PhantomTypeArgument> = Reified<Borrow<T>, BorrowFields<T>>
 
+/** Potato callback for the legacy `CoinMetadata` borrowing. */
 export class Borrow<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -1265,20 +1290,38 @@ export function isCurrency(type: string): boolean {
 
 export interface CurrencyFields<T extends PhantomTypeArgument> {
   id: ToField<UID>
+  /** Number of decimal places the coin uses for display purposes. */
   decimals: ToField<'u8'>
+  /** Human-readable name for the coin. */
   name: ToField<String>
+  /** Short symbol/ticker for the coin. */
   symbol: ToField<String>
+  /** Detailed description of the coin. */
   description: ToField<String>
+  /** URL for the coin's icon/logo. */
   iconUrl: ToField<String>
+  /**
+   * Current supply state of the coin (fixed supply or unknown)
+   * Note: We're using `Option` because `SupplyState` does not have drop,
+   * meaning we cannot swap out its value at a later state.
+   */
   supply: ToField<Option<SupplyStateVariant<T>>>
+  /** Regulatory status of the coin (regulated with deny cap or unknown) */
   regulated: ToField<RegulatedStateVariant>
+  /** ID of the treasury cap for this coin type, if registered. */
   treasuryCapId: ToField<Option<ID>>
+  /** ID of the metadata capability for this coin type, if claimed. */
   metadataCapId: ToField<MetadataCapStateVariant>
+  /** Additional fields for extensibility. */
   extraFields: ToField<VecMap<String, ExtraField>>
 }
 
 export type CurrencyReified<T extends PhantomTypeArgument> = Reified<Currency<T>, CurrencyFields<T>>
 
+/**
+ * Currency stores metadata such as name, symbol, decimals, icon_url and description,
+ * as well as supply states (optional) and regulatory status.
+ */
 export class Currency<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -1292,15 +1335,29 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
   readonly $isPhantom = Currency.$isPhantom
 
   readonly id: ToField<UID>
+  /** Number of decimal places the coin uses for display purposes. */
   readonly decimals: ToField<'u8'>
+  /** Human-readable name for the coin. */
   readonly name: ToField<String>
+  /** Short symbol/ticker for the coin. */
   readonly symbol: ToField<String>
+  /** Detailed description of the coin. */
   readonly description: ToField<String>
+  /** URL for the coin's icon/logo. */
   readonly iconUrl: ToField<String>
+  /**
+   * Current supply state of the coin (fixed supply or unknown)
+   * Note: We're using `Option` because `SupplyState` does not have drop,
+   * meaning we cannot swap out its value at a later state.
+   */
   readonly supply: ToField<Option<SupplyStateVariant<T>>>
+  /** Regulatory status of the coin (regulated with deny cap or unknown) */
   readonly regulated: ToField<RegulatedStateVariant>
+  /** ID of the treasury cap for this coin type, if registered. */
   readonly treasuryCapId: ToField<Option<ID>>
+  /** ID of the metadata capability for this coin type, if claimed. */
   readonly metadataCapId: ToField<MetadataCapStateVariant>
+  /** Additional fields for extensibility. */
   readonly extraFields: ToField<VecMap<String, ExtraField>>
 
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: CurrencyFields<T>) {
@@ -1605,6 +1662,12 @@ export type CurrencyInitializerReified<T extends PhantomTypeArgument> = Reified<
   CurrencyInitializerFields<T>
 >
 
+/**
+ * Hot potato wrapper to enforce registration after "new_currency" data creation.
+ * Destroyed in the `finalize` call and either transferred to the `CoinRegistry`
+ * (in case of an OTW registration) or shared directly (for dynamically created
+ * currencies).
+ */
 export class CurrencyInitializer<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -1838,6 +1901,13 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
 
 /* ============================== SupplyState =============================== */
 
+/**
+ * Supply state marks the type of Currency Supply, which can be
+ * - Fixed: no minting or burning;
+ * - BurnOnly: no minting, burning is allowed;
+ * - Unknown: flexible (supply is controlled by its `TreasuryCap`);
+ */
+
 export function isSupplyState(type: string): boolean {
   type = compressSuiType(type)
   return type.startsWith(`0x2::coin_registry::SupplyState` + '<')
@@ -2039,6 +2109,7 @@ export class SupplyState {
   }
 }
 
+/** Coin has a fixed supply with the given Supply object. */
 export type SupplyStateFixedFields<T extends PhantomTypeArgument> = [ToField<Supply<T>>]
 
 export class SupplyStateFixed<T extends PhantomTypeArgument> implements EnumVariantClass {
@@ -2084,6 +2155,7 @@ export class SupplyStateFixed<T extends PhantomTypeArgument> implements EnumVari
   }
 }
 
+/** Coin has a supply that can ONLY decrease. */
 export type SupplyStateBurnOnlyFields<T extends PhantomTypeArgument> = [ToField<Supply<T>>]
 
 export class SupplyStateBurnOnly<T extends PhantomTypeArgument> implements EnumVariantClass {
@@ -2129,6 +2201,7 @@ export class SupplyStateBurnOnly<T extends PhantomTypeArgument> implements EnumV
   }
 }
 
+/** Supply information is not yet known or registered. */
 export type SupplyStateUnknownFields = Record<string, never>
 
 export class SupplyStateUnknown<T extends PhantomTypeArgument> implements EnumVariantClass {
@@ -2168,6 +2241,13 @@ export class SupplyStateUnknown<T extends PhantomTypeArgument> implements EnumVa
 }
 
 /* ============================== RegulatedState =============================== */
+
+/**
+ * Regulated state of a coin type.
+ * - Regulated: `DenyCap` exists or a `RegulatedCoinMetadata` used to mark currency as regulated;
+ * - Unregulated: the currency was created without deny list;
+ * - Unknown: the regulatory status is unknown.
+ */
 
 export function isRegulatedState(type: string): boolean {
   type = compressSuiType(type)
@@ -2348,6 +2428,10 @@ export class RegulatedState {
   }
 }
 
+/**
+ * Coin is regulated with a deny cap for address restrictions.
+ * `allow_global_pause` is `None` if the information is unknown (has not been migrated from `DenyCapV2`).
+ */
 export interface RegulatedStateRegulatedFields {
   cap: ToField<ID>
   allowGlobalPause: ToField<Option<'bool'>>
@@ -2406,6 +2490,7 @@ export class RegulatedStateRegulated implements EnumVariantClass {
   }
 }
 
+/** The coin has been created without deny list. */
 export type RegulatedStateUnregulatedFields = Record<string, never>
 
 export class RegulatedStateUnregulated implements EnumVariantClass {
@@ -2444,6 +2529,10 @@ export class RegulatedStateUnregulated implements EnumVariantClass {
   }
 }
 
+/**
+ * Regulatory status is unknown.
+ * Result of a legacy migration for that coin (from `coin.move` constructors)
+ */
 export type RegulatedStateUnknownFields = Record<string, never>
 
 export class RegulatedStateUnknown implements EnumVariantClass {
@@ -2483,6 +2572,8 @@ export class RegulatedStateUnknown implements EnumVariantClass {
 }
 
 /* ============================== MetadataCapState =============================== */
+
+/** State of the `MetadataCap` for a single `Currency`. */
 
 export function isMetadataCapState(type: string): boolean {
   type = compressSuiType(type)
@@ -2644,6 +2735,7 @@ export class MetadataCapState {
   }
 }
 
+/** The metadata cap has been claimed. */
 export type MetadataCapStateClaimedFields = [ToField<ID>]
 
 export class MetadataCapStateClaimed implements EnumVariantClass {
@@ -2689,6 +2781,7 @@ export class MetadataCapStateClaimed implements EnumVariantClass {
   }
 }
 
+/** The metadata cap has not been claimed. */
 export type MetadataCapStateUnclaimedFields = Record<string, never>
 
 export class MetadataCapStateUnclaimed implements EnumVariantClass {
@@ -2727,6 +2820,7 @@ export class MetadataCapStateUnclaimed implements EnumVariantClass {
   }
 }
 
+/** The metadata cap has been claimed and then deleted. */
 export type MetadataCapStateDeletedFields = Record<string, never>
 
 export class MetadataCapStateDeleted implements EnumVariantClass {

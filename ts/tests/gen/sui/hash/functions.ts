@@ -2,6 +2,10 @@ import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/**
+ * @param data: Arbitrary binary data to hash
+ * Hash the input bytes using Blake2b-256 and returns 32 bytes.
+ */
 export function blake2b256(
   tx: Transaction,
   data: Array<number | TransactionArgument> | TransactionArgument
@@ -12,6 +16,10 @@ export function blake2b256(
   })
 }
 
+/**
+ * @param data: Arbitrary binary data to hash
+ * Hash the input bytes using keccak256 and returns 32 bytes.
+ */
 export function keccak256(
   tx: Transaction,
   data: Array<number | TransactionArgument> | TransactionArgument

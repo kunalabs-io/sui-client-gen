@@ -1,3 +1,37 @@
+/**
+ * This module implements BCS (de)serialization in Move.
+ * Full specification can be found here: https://github.com/diem/bcs
+ *
+ * Short summary (for Move-supported types):
+ *
+ * - address - sequence of X bytes
+ * - bool - byte with 0 or 1
+ * - u8 - a single u8 byte
+ * - u16 / u32 / u64 / u128 / u256 - LE bytes
+ * - vector - ULEB128 length + LEN elements
+ * - option - first byte bool: None (0) or Some (1), then value
+ *
+ * Usage example:
+ * ```
+ * /// This function reads u8 and u64 value from the input
+ * /// and returns the rest of the bytes.
+ * fun deserialize(bytes: vector<u8>): (u8, u64, vector<u8>) {
+ * use sui::bcs::{Self, BCS};
+ *
+ * let prepared: BCS = bcs::new(bytes);
+ * let (u8_value, u64_value) = (
+ * prepared.peel_u8(),
+ * prepared.peel_u64()
+ * );
+ *
+ * // unpack bcs struct
+ * let leftovers = prepared.into_remainder_bytes();
+ *
+ * (u8_value, u64_value, leftovers)
+ * }
+ * ```
+ */
+
 import {
   PhantomReified,
   Reified,
@@ -30,6 +64,11 @@ export interface BCSFields {
 
 export type BCSReified = Reified<BCS, BCSFields>
 
+/**
+ * A helper struct that saves resources on operations. For better
+ * vector performance, it stores reversed bytes of the BCS and
+ * enables use of `vector::pop_back`.
+ */
 export class BCS implements StructClass {
   __StructClass = true as const
 

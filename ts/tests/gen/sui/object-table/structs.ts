@@ -1,3 +1,10 @@
+/**
+ * Similar to `sui::table`, an `ObjectTable<K, V>` is a map-like collection. But unlike
+ * `sui::table`, the values bound to these dynamic fields _must_ be objects themselves. This allows
+ * for the objects to still exist within in storage, which may be important for external tools.
+ * The difference is otherwise not observable from within Move.
+ */
+
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -34,7 +41,9 @@ export function isObjectTable(type: string): boolean {
 }
 
 export interface ObjectTableFields<K extends PhantomTypeArgument, V extends PhantomTypeArgument> {
+  /** the ID of this table */
   id: ToField<UID>
+  /** the number of key-value pairs in the table */
   size: ToField<'u64'>
 }
 
@@ -57,7 +66,9 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
   readonly $typeArgs: [PhantomToTypeStr<K>, PhantomToTypeStr<V>]
   readonly $isPhantom = ObjectTable.$isPhantom
 
+  /** the ID of this table */
   readonly id: ToField<UID>
+  /** the number of key-value pairs in the table */
   readonly size: ToField<'u64'>
 
   private constructor(

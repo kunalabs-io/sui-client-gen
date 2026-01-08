@@ -2,6 +2,7 @@ import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/** Returns the owner, either a sender's address or an object, of the withdrawal. */
 export function withdrawalOwner(
   tx: Transaction,
   typeArg: string,
@@ -14,6 +15,7 @@ export function withdrawalOwner(
   })
 }
 
+/** Returns the remaining limit of the withdrawal. */
 export function withdrawalLimit(
   tx: Transaction,
   typeArg: string,
@@ -31,6 +33,7 @@ export interface WithdrawalSplitArgs {
   subLimit: bigint | TransactionArgument
 }
 
+/** Split a `Withdrawal` and take a sub-withdrawal from it with the specified sub-limit. */
 export function withdrawalSplit(tx: Transaction, typeArg: string, args: WithdrawalSplitArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::withdrawal_split`,
@@ -44,6 +47,11 @@ export interface WithdrawalJoinArgs {
   other: TransactionObjectInput
 }
 
+/**
+ * Join two withdrawals together, increasing the limit of `self` by the limit of `other`.
+ * Aborts with `EOwnerMismatch` if the owners are not equal.
+ * Aborts with `EOverflow` if the resulting limit would overflow `u256`.
+ */
 export function withdrawalJoin(tx: Transaction, typeArg: string, args: WithdrawalJoinArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::withdrawal_join`,

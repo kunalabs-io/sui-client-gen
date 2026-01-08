@@ -3,6 +3,10 @@ import { obj, pure } from '../../_framework/util'
 import { String } from '../../std/string/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/**
+ * Create an empty Display object. It can either be shared empty or filled
+ * with data right away via cheaper `set_owned` method.
+ */
 export function new_(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::new`,
@@ -17,6 +21,7 @@ export interface NewWithFieldsArgs {
   values: Array<string | TransactionArgument> | TransactionArgument
 }
 
+/** Create a new Display<T> object with a set of fields. */
 export function newWithFields(tx: Transaction, typeArg: string, args: NewWithFieldsArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::new_with_fields`,
@@ -29,6 +34,7 @@ export function newWithFields(tx: Transaction, typeArg: string, args: NewWithFie
   })
 }
 
+/** Create a new empty Display<T> object and keep it. */
 export function createAndKeep(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::create_and_keep`,
@@ -37,6 +43,7 @@ export function createAndKeep(tx: Transaction, typeArg: string, pub: Transaction
   })
 }
 
+/** Manually bump the version and emit an event with the updated version's contents. */
 export function updateVersion(tx: Transaction, typeArg: string, display: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::update_version`,
@@ -51,6 +58,7 @@ export interface AddArgs {
   value: string | TransactionArgument
 }
 
+/** Sets a custom `name` field with the `value`. */
 export function add(tx: Transaction, typeArg: string, args: AddArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::add`,
@@ -69,6 +77,7 @@ export interface AddMultipleArgs {
   values: Array<string | TransactionArgument> | TransactionArgument
 }
 
+/** Sets multiple `fields` with `values`. */
 export function addMultiple(tx: Transaction, typeArg: string, args: AddMultipleArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::add_multiple`,
@@ -87,6 +96,10 @@ export interface EditArgs {
   value: string | TransactionArgument
 }
 
+/**
+ * Change the value of the field.
+ * TODO (long run): version changes;
+ */
 export function edit(tx: Transaction, typeArg: string, args: EditArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::edit`,
@@ -104,6 +117,7 @@ export interface RemoveArgs {
   name: string | TransactionArgument
 }
 
+/** Remove the key from the Display. */
 export function remove(tx: Transaction, typeArg: string, args: RemoveArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::remove`,
@@ -112,6 +126,7 @@ export function remove(tx: Transaction, typeArg: string, args: RemoveArgs) {
   })
 }
 
+/** Authorization check; can be performed externally to implement protection rules for Display. */
 export function isAuthorized(tx: Transaction, typeArg: string, pub: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::is_authorized`,
@@ -120,6 +135,7 @@ export function isAuthorized(tx: Transaction, typeArg: string, pub: TransactionO
   })
 }
 
+/** Read the `version` field. */
 export function version(tx: Transaction, typeArg: string, d: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::version`,
@@ -128,6 +144,7 @@ export function version(tx: Transaction, typeArg: string, d: TransactionObjectIn
   })
 }
 
+/** Read the `fields` field. */
 export function fields(tx: Transaction, typeArg: string, d: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::fields`,
@@ -136,6 +153,7 @@ export function fields(tx: Transaction, typeArg: string, d: TransactionObjectInp
   })
 }
 
+/** Internal function to create a new `Display<T>`. */
 export function createInternal(tx: Transaction, typeArg: string) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::create_internal`,
@@ -150,6 +168,7 @@ export interface AddInternalArgs {
   value: string | TransactionArgument
 }
 
+/** Private method for inserting fields without security checks. */
 export function addInternal(tx: Transaction, typeArg: string, args: AddInternalArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::add_internal`,

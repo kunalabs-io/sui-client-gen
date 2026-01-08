@@ -1,3 +1,85 @@
+/**
+ * Kiosk is a primitive for building safe, decentralized and trustless trading
+ * experiences. It allows storing and trading any types of assets as long as
+ * the creator of these assets implements a `TransferPolicy` for them.
+ *
+ * ### Principles and philosophy:
+ *
+ * - Kiosk provides guarantees of "true ownership"; - just like single owner
+ * objects, assets stored in the Kiosk can only be managed by the Kiosk owner.
+ * Only the owner can `place`, `take`, `list`, perform any other actions on
+ * assets in the Kiosk.
+ *
+ * - Kiosk aims to be generic - allowing for a small set of default behaviors
+ * and not imposing any restrictions on how the assets can be traded. The only
+ * default scenario is a `list` + `purchase` flow; any other trading logic can
+ * be implemented on top using the `list_with_purchase_cap` (and a matching
+ * `purchase_with_cap`) flow.
+ *
+ * - For every transaction happening with a third party a `TransferRequest` is
+ * created - this way creators are fully in control of the trading experience.
+ *
+ * ### Asset states in the Kiosk:
+ *
+ * - `placed` -  An asset is `place`d into the Kiosk and can be `take`n out by
+ * the Kiosk owner; it's freely tradable and modifiable via the `borrow_mut`
+ * and `borrow_val` functions.
+ *
+ * - `locked` - Similar to `placed` except that `take` is disabled and the only
+ * way to move the asset out of the Kiosk is to `list` it or
+ * `list_with_purchase_cap` therefore performing a trade (issuing a
+ * `TransferRequest`). The check on the `lock` function makes sure that the
+ * `TransferPolicy` exists to not lock the item in a `Kiosk` forever.
+ *
+ * - `listed` - A `place`d or a `lock`ed item can be `list`ed for a fixed price
+ * allowing anyone to `purchase` it from the Kiosk. While listed, an item can
+ * not be taken or modified. However, an immutable borrow via `borrow` call is
+ * still available. The `delist` function returns the asset to the previous
+ * state.
+ *
+ * - `listed_exclusively` - An item is listed via the `list_with_purchase_cap`
+ * function (and a `PurchaseCap` is created). While listed this way, an item
+ * can not be `delist`-ed unless a `PurchaseCap` is returned. All actions
+ * available at this item state require a `PurchaseCap`:
+ *
+ * 1. `purchase_with_cap` - to purchase the item for a price equal or higher
+ * than the `min_price` set in the `PurchaseCap`.
+ * 2. `return_purchase_cap` - to return the `PurchaseCap` and return the asset
+ * into the previous state.
+ *
+ * When an item is listed exclusively it cannot be modified nor taken and
+ * losing a `PurchaseCap` would lock the item in the Kiosk forever. Therefore,
+ * it is recommended to only use `PurchaseCap` functionality in trusted
+ * applications and not use it for direct trading (eg sending to another
+ * account).
+ *
+ * ### Using multiple Transfer Policies for different "tracks":
+ *
+ * Every `purchase` or `purchase_with_purchase_cap` creates a `TransferRequest`
+ * hot potato which must be resolved in a matching `TransferPolicy` for the
+ * transaction to pass. While the default scenario implies that there should be
+ * a single `TransferPolicy<T>` for `T`; it is possible to have multiple, each
+ * one having its own set of rules.
+ *
+ * ### Examples:
+ *
+ * - I create one `TransferPolicy` with "Royalty Rule" for everyone
+ * - I create a special `TransferPolicy` for bearers of a "Club Membership"
+ * object so they don't have to pay anything
+ * - I create and wrap a `TransferPolicy` so that players of my game can
+ * transfer items between `Kiosk`s in game without any charge (and maybe not
+ * even paying the price with a 0 SUI PurchaseCap)
+ *
+ * ```
+ * Kiosk -> (Item, TransferRequest)
+ * ... TransferRequest ------> Common Transfer Policy
+ * ... TransferRequest ------> In-game Wrapped Transfer Policy
+ * ... TransferRequest ------> Club Membership Transfer Policy
+ * ```
+ *
+ * See `transfer_policy` module for more details on how they function.
+ */
+
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -38,14 +120,36 @@ export function isKiosk(type: string): boolean {
 
 export interface KioskFields {
   id: ToField<UID>
+  /** Balance of the Kiosk - all profits from sales go here. */
   profits: ToField<Balance<ToPhantom<SUI>>>
+  /**
+   * Always point to `sender` of the transaction.
+   * Can be changed by calling `set_owner` with Cap.
+   */
   owner: ToField<'address'>
+  /**
+   * Number of items stored in a Kiosk. Used to allow unpacking
+   * an empty Kiosk if it was wrapped or has a single owner.
+   */
   itemCount: ToField<'u32'>
+  /**
+   * [DEPRECATED] Please, don't use the `allow_extensions` and the matching
+   * `set_allow_extensions` function - it is a legacy feature that is being
+   * replaced by the `kiosk_extension` module and its Extensions API.
+   *
+   * Exposes `uid_mut` publicly when set to `true`, set to `false` by default.
+   */
   allowExtensions: ToField<'bool'>
 }
 
 export type KioskReified = Reified<Kiosk, KioskFields>
 
+/**
+ * An object which allows selling collectibles within "kiosk" ecosystem.
+ * By default gives the functionality to list an item openly - for anyone
+ * to purchase providing the guarantees for creators that every transfer
+ * needs to be approved via the `TransferPolicy`.
+ */
 export class Kiosk implements StructClass {
   __StructClass = true as const
 
@@ -59,9 +163,25 @@ export class Kiosk implements StructClass {
   readonly $isPhantom = Kiosk.$isPhantom
 
   readonly id: ToField<UID>
+  /** Balance of the Kiosk - all profits from sales go here. */
   readonly profits: ToField<Balance<ToPhantom<SUI>>>
+  /**
+   * Always point to `sender` of the transaction.
+   * Can be changed by calling `set_owner` with Cap.
+   */
   readonly owner: ToField<'address'>
+  /**
+   * Number of items stored in a Kiosk. Used to allow unpacking
+   * an empty Kiosk if it was wrapped or has a single owner.
+   */
   readonly itemCount: ToField<'u32'>
+  /**
+   * [DEPRECATED] Please, don't use the `allow_extensions` and the matching
+   * `set_allow_extensions` function - it is a legacy feature that is being
+   * replaced by the `kiosk_extension` module and its Extensions API.
+   *
+   * Exposes `uid_mut` publicly when set to `true`, set to `false` by default.
+   */
   readonly allowExtensions: ToField<'bool'>
 
   private constructor(typeArgs: [], fields: KioskFields) {
@@ -251,6 +371,10 @@ export interface KioskOwnerCapFields {
 
 export type KioskOwnerCapReified = Reified<KioskOwnerCap, KioskOwnerCapFields>
 
+/**
+ * A Capability granting the bearer a right to `place` and `take` items
+ * from the `Kiosk` as well as to `list` them and `list_with_purchase_cap`.
+ */
 export class KioskOwnerCap implements StructClass {
   __StructClass = true as const
 
@@ -427,8 +551,11 @@ export function isPurchaseCap(type: string): boolean {
 
 export interface PurchaseCapFields<T extends PhantomTypeArgument> {
   id: ToField<UID>
+  /** ID of the `Kiosk` the cap belongs to. */
   kioskId: ToField<ID>
+  /** ID of the listed item. */
   itemId: ToField<ID>
+  /** Minimum price for which the item can be purchased. */
   minPrice: ToField<'u64'>
 }
 
@@ -437,6 +564,17 @@ export type PurchaseCapReified<T extends PhantomTypeArgument> = Reified<
   PurchaseCapFields<T>
 >
 
+/**
+ * A capability which locks an item and gives a permission to
+ * purchase it from a `Kiosk` for any price no less than `min_price`.
+ *
+ * Allows exclusive listing: only bearer of the `PurchaseCap` can
+ * purchase the asset. However, the capability should be used
+ * carefully as losing it would lock the asset in the `Kiosk`.
+ *
+ * The main application for the `PurchaseCap` is building extensions
+ * on top of the `Kiosk`.
+ */
 export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -450,8 +588,11 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
   readonly $isPhantom = PurchaseCap.$isPhantom
 
   readonly id: ToField<UID>
+  /** ID of the `Kiosk` the cap belongs to. */
   readonly kioskId: ToField<ID>
+  /** ID of the listed item. */
   readonly itemId: ToField<ID>
+  /** Minimum price for which the item can be purchased. */
   readonly minPrice: ToField<'u64'>
 
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: PurchaseCapFields<T>) {
@@ -686,6 +827,10 @@ export interface BorrowFields {
 
 export type BorrowReified = Reified<Borrow, BorrowFields>
 
+/**
+ * Hot potato to ensure an item was returned after being taken using
+ * the `borrow_val` call.
+ */
 export class Borrow implements StructClass {
   __StructClass = true as const
 
@@ -863,6 +1008,7 @@ export interface ItemFields {
 
 export type ItemReified = Reified<Item, ItemFields>
 
+/** Dynamic field key for an item placed into the kiosk. */
 export class Item implements StructClass {
   __StructClass = true as const
 
@@ -1034,6 +1180,10 @@ export interface ListingFields {
 
 export type ListingReified = Reified<Listing, ListingFields>
 
+/**
+ * Dynamic field key for an active offer to purchase the T. If an
+ * item is listed without a `PurchaseCap`, exclusive is set to `false`.
+ */
 export class Listing implements StructClass {
   __StructClass = true as const
 
@@ -1211,6 +1361,11 @@ export interface LockFields {
 
 export type LockReified = Reified<Lock, LockFields>
 
+/**
+ * Dynamic field key which marks that an item is locked in the `Kiosk` and
+ * can't be `take`n. The item then can only be listed / sold via the PurchaseCap.
+ * Lock is released on `purchase`.
+ */
 export class Lock implements StructClass {
   __StructClass = true as const
 
@@ -1386,6 +1541,11 @@ export type ItemListedReified<T extends PhantomTypeArgument> = Reified<
   ItemListedFields<T>
 >
 
+/**
+ * Emitted when an item was listed by the safe owner. Can be used
+ * to track available offers anywhere on the network; the event is
+ * type-indexed which allows for searching for offers of a specific `T`
+ */
 export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -1632,6 +1792,17 @@ export type ItemPurchasedReified<T extends PhantomTypeArgument> = Reified<
   ItemPurchasedFields<T>
 >
 
+/**
+ * Emitted when an item was purchased from the `Kiosk`. Can be used
+ * to track finalized sales across the network. The event is emitted
+ * in both cases: when an item is purchased via the `PurchaseCap` or
+ * when it's purchased directly (via `list` + `purchase`).
+ *
+ * The `price` is also emitted and might differ from the `price` set
+ * in the `ItemListed` event. This is because the `PurchaseCap` only
+ * sets a minimum price for the item, and the actual price is defined
+ * by the trading module / extension.
+ */
 export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -1877,6 +2048,10 @@ export type ItemDelistedReified<T extends PhantomTypeArgument> = Reified<
   ItemDelistedFields<T>
 >
 
+/**
+ * Emitted when an item was delisted by the safe owner. Can be used
+ * to close tracked offers.
+ */
 export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 

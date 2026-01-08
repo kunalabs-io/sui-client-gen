@@ -3,6 +3,7 @@ import { obj, pure, vector } from '../../_framework/util'
 import { Coin } from '../coin/structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/** Transfer `c` to the sender of the current transaction */
 export function keep(tx: Transaction, typeArg: string, c: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::keep`,
@@ -16,6 +17,10 @@ export interface SplitArgs {
   splitAmount: bigint | TransactionArgument
 }
 
+/**
+ * Split `coin` to two coins, one with balance `split_amount`,
+ * and the remaining balance is left in `coin`.
+ */
 export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::split`,
@@ -29,6 +34,10 @@ export interface SplitVecArgs {
   splitAmounts: Array<bigint | TransactionArgument> | TransactionArgument
 }
 
+/**
+ * Split coin `self` into multiple coins, each with balance specified
+ * in `split_amounts`. Remaining balance is left in `self`.
+ */
 export function splitVec(tx: Transaction, typeArg: string, args: SplitVecArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::split_vec`,
@@ -43,6 +52,10 @@ export interface SplitAndTransferArgs {
   recipient: string | TransactionArgument
 }
 
+/**
+ * Send `amount` units of `c` to `recipient`
+ * Aborts with `sui::balance::ENotEnough` if `amount` is greater than the balance in `c`
+ */
 export function splitAndTransfer(tx: Transaction, typeArg: string, args: SplitAndTransferArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::split_and_transfer`,
@@ -56,6 +69,10 @@ export interface DivideAndKeepArgs {
   n: bigint | TransactionArgument
 }
 
+/**
+ * Divide coin `self` into `n - 1` coins with equal balances. If the balance is
+ * not evenly divisible by `n`, the remainder is left in `self`.
+ */
 export function divideAndKeep(tx: Transaction, typeArg: string, args: DivideAndKeepArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::divide_and_keep`,
@@ -69,6 +86,10 @@ export interface JoinArgs {
   coin: TransactionObjectInput
 }
 
+/**
+ * Join `coin` into `self`. Re-exports `coin::join` function.
+ * Deprecated: you should call `coin.join(other)` directly.
+ */
 export function join(tx: Transaction, typeArg: string, args: JoinArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::join`,
@@ -82,6 +103,7 @@ export interface JoinVecArgs {
   coins: Array<TransactionObjectInput> | TransactionArgument
 }
 
+/** Join everything in `coins` with `self` */
 export function joinVec(tx: Transaction, typeArg: string, args: JoinVecArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::join_vec`,
@@ -95,6 +117,7 @@ export interface JoinVecAndTransferArgs {
   receiver: string | TransactionArgument
 }
 
+/** Join a vector of `Coin` into a single object and transfer it to `receiver`. */
 export function joinVecAndTransfer(tx: Transaction, typeArg: string, args: JoinVecAndTransferArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::join_vec_and_transfer`,

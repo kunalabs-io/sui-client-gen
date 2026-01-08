@@ -1,3 +1,9 @@
+/**
+ * Defines the `DenyList` type. The `DenyList` shared object is used to restrict access to
+ * instances of certain core types from being used as inputs by specified addresses in the deny
+ * list.
+ */
+
 import {
   PhantomReified,
   Reified,
@@ -31,11 +37,13 @@ export function isDenyList(type: string): boolean {
 
 export interface DenyListFields {
   id: ToField<UID>
+  /** The individual deny lists. */
   lists: ToField<Bag>
 }
 
 export type DenyListReified = Reified<DenyList, DenyListFields>
 
+/** A shared object that stores the addresses that are blocked for a given core type. */
 export class DenyList implements StructClass {
   __StructClass = true as const
 
@@ -49,6 +57,7 @@ export class DenyList implements StructClass {
   readonly $isPhantom = DenyList.$isPhantom
 
   readonly id: ToField<UID>
+  /** The individual deny lists. */
   readonly lists: ToField<Bag>
 
   private constructor(typeArgs: [], fields: DenyListFields) {
@@ -216,6 +225,10 @@ export interface ConfigWriteCapFields {
 
 export type ConfigWriteCapReified = Reified<ConfigWriteCap, ConfigWriteCapFields>
 
+/**
+ * The capability used to write to the deny list config. Ensures that the Configs for the
+ * DenyList are modified only by this module.
+ */
 export class ConfigWriteCap implements StructClass {
   __StructClass = true as const
 
@@ -393,6 +406,10 @@ export interface ConfigKeyFields {
 
 export type ConfigKeyReified = Reified<ConfigKey, ConfigKeyFields>
 
+/**
+ * The dynamic object field key used to store the `Config` for a given type, essentially a
+ * `(per_type_index, per_type_key)` pair.
+ */
 export class ConfigKey implements StructClass {
   __StructClass = true as const
 
@@ -573,6 +590,7 @@ export interface AddressKeyFields {
 
 export type AddressKeyReified = Reified<AddressKey, AddressKeyFields>
 
+/** The setting key used to store the deny list for a given address in the `Config`. */
 export class AddressKey implements StructClass {
   __StructClass = true as const
 
@@ -749,6 +767,7 @@ export interface GlobalPauseKeyFields {
 
 export type GlobalPauseKeyReified = Reified<GlobalPauseKey, GlobalPauseKeyFields>
 
+/** The setting key used to store the global pause setting in the `Config`. */
 export class GlobalPauseKey implements StructClass {
   __StructClass = true as const
 
@@ -926,6 +945,10 @@ export interface PerTypeConfigCreatedFields {
 
 export type PerTypeConfigCreatedReified = Reified<PerTypeConfigCreated, PerTypeConfigCreatedFields>
 
+/**
+ * The event emitted when a new `Config` is created for a given type. This can be useful for
+ * tracking the `ID` of a type's `Config` object.
+ */
 export class PerTypeConfigCreated implements StructClass {
   __StructClass = true as const
 
@@ -1110,12 +1133,22 @@ export function isPerTypeList(type: string): boolean {
 
 export interface PerTypeListFields {
   id: ToField<UID>
+  /**
+   * Number of object types that have been banned for a given address.
+   * Used to quickly skip checks for most addresses.
+   */
   deniedCount: ToField<Table<'address', 'u64'>>
+  /**
+   * Set of addresses that are banned for a given type.
+   * For example with `sui::coin::Coin`: If addresses A and B are banned from using
+   * "0...0123::my_coin::MY_COIN", this will be "0...0123::my_coin::MY_COIN" -> {A, B}.
+   */
   deniedAddresses: ToField<Table<ToPhantom<Vector<'u8'>>, ToPhantom<VecSet<'address'>>>>
 }
 
 export type PerTypeListReified = Reified<PerTypeList, PerTypeListFields>
 
+/** Stores the addresses that are denied for a given core type. */
 export class PerTypeList implements StructClass {
   __StructClass = true as const
 
@@ -1129,7 +1162,16 @@ export class PerTypeList implements StructClass {
   readonly $isPhantom = PerTypeList.$isPhantom
 
   readonly id: ToField<UID>
+  /**
+   * Number of object types that have been banned for a given address.
+   * Used to quickly skip checks for most addresses.
+   */
   readonly deniedCount: ToField<Table<'address', 'u64'>>
+  /**
+   * Set of addresses that are banned for a given type.
+   * For example with `sui::coin::Coin`: If addresses A and B are banned from using
+   * "0...0123::my_coin::MY_COIN", this will be "0...0123::my_coin::MY_COIN" -> {A, B}.
+   */
   readonly deniedAddresses: ToField<Table<ToPhantom<Vector<'u8'>>, ToPhantom<VecSet<'address'>>>>
 
   private constructor(typeArgs: [], fields: PerTypeListFields) {

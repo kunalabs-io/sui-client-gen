@@ -90,6 +90,7 @@ export interface DivArgs {
   e: TransactionObjectInput
 }
 
+/** Fails if scalar = 0. Else returns 1/scalar * e. */
 export function div(tx: Transaction, typeArgs: [string, string], args: DivArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::group_ops::div`,
@@ -117,6 +118,11 @@ export interface MultiScalarMultiplicationArgs {
   elements: Array<TransactionObjectInput> | TransactionArgument
 }
 
+/**
+ * Aborts with `EInputTooLong` if the vectors are too long.
+ *
+ * This function is currently only enabled on Devnet.
+ */
 export function multiScalarMultiplication(
   tx: Transaction,
   typeArgs: [string, string],

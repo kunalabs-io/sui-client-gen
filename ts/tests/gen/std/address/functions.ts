@@ -1,6 +1,10 @@
 import { getPublishedAt } from '../../_envs'
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
+/**
+ * Should be converted to a native function.
+ * Current implementation only works for Sui.
+ */
 export function length(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::address::length`,

@@ -39,6 +39,18 @@ export interface OwnerKeyFields {
 
 export type OwnerKeyReified = Reified<OwnerKey, OwnerKeyFields>
 
+/**
+ * === Accumulator metadata ===
+ *
+ * Accumulator metadata is organized as follows:
+ * - Each address that holds at least one type of accumulator has an owner field attached
+ * to the accumulator root.
+ * - For each type of accumulator held by that address, there is an AccumulatorMetadata field
+ * attached to the owner field.
+ * - When the value of an accumulator drops to zero, the metadata field is removed.
+ * - If the owner field has no more accumulator metadata field attached to it, it is removed
+ * as well.
+ */
 export class OwnerKey implements StructClass {
   __StructClass = true as const
 
@@ -213,12 +225,17 @@ export function isOwner(type: string): boolean {
 }
 
 export interface OwnerFields {
+  /** The individual balances owned by the owner. */
   balances: ToField<Bag>
   owner: ToField<'address'>
 }
 
 export type OwnerReified = Reified<Owner, OwnerFields>
 
+/**
+ * An owner field, to which all AccumulatorMetadata fields for the owner are
+ * attached.
+ */
 export class Owner implements StructClass {
   __StructClass = true as const
 
@@ -231,6 +248,7 @@ export class Owner implements StructClass {
   readonly $typeArgs: []
   readonly $isPhantom = Owner.$isPhantom
 
+  /** The individual balances owned by the owner. */
   readonly balances: ToField<Bag>
   readonly owner: ToField<'address'>
 
@@ -627,11 +645,13 @@ export function isMetadata(type: string): boolean {
 }
 
 export interface MetadataFields<T extends PhantomTypeArgument> {
+  /** Any per-balance fields we wish to add in the future. */
   fields: ToField<Bag>
 }
 
 export type MetadataReified<T extends PhantomTypeArgument> = Reified<Metadata<T>, MetadataFields<T>>
 
+/** A metadata field for a balance field with type T. */
 export class Metadata<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -644,6 +664,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
   readonly $typeArgs: [PhantomToTypeStr<T>]
   readonly $isPhantom = Metadata.$isPhantom
 
+  /** Any per-balance fields we wish to add in the future. */
   readonly fields: ToField<Bag>
 
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: MetadataFields<T>) {

@@ -3,6 +3,7 @@ import { obj, pure } from '../../_framework/util'
 import { String as String1 } from './structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/** Convert a `byte` into a `Char` that is checked to make sure it is valid ASCII. */
 export function char_(tx: Transaction, byte_: number | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::char`,
@@ -10,6 +11,10 @@ export function char_(tx: Transaction, byte_: number | TransactionArgument) {
   })
 }
 
+/**
+ * Convert a vector of bytes `bytes` into an `String`. Aborts if
+ * `bytes` contains non-ASCII characters.
+ */
 export function string(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument
@@ -20,6 +25,11 @@ export function string(
   })
 }
 
+/**
+ * Convert a vector of bytes `bytes` into an `String`. Returns
+ * `Some(<ascii_string>)` if the `bytes` contains all valid ASCII
+ * characters. Otherwise returns `None`.
+ */
 export function tryString(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument
@@ -30,6 +40,10 @@ export function tryString(
   })
 }
 
+/**
+ * Returns `true` if all characters in `string` are printable characters
+ * Returns `false` otherwise. Not all `String`s are printable strings.
+ */
 export function allCharactersPrintable(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::all_characters_printable`,
@@ -42,6 +56,7 @@ export interface PushCharArgs {
   char: TransactionObjectInput
 }
 
+/** Push a `Char` to the end of the `string`. */
 export function pushChar(tx: Transaction, args: PushCharArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::push_char`,
@@ -49,6 +64,7 @@ export function pushChar(tx: Transaction, args: PushCharArgs) {
   })
 }
 
+/** Pop a `Char` from the end of the `string`. */
 export function popChar(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::pop_char`,
@@ -56,6 +72,7 @@ export function popChar(tx: Transaction, string: string | TransactionArgument) {
   })
 }
 
+/** Returns the length of the `string` in bytes. */
 export function length(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::length`,
@@ -68,6 +85,7 @@ export interface AppendArgs {
   other: string | TransactionArgument
 }
 
+/** Append the `other` string to the end of `string`. */
 export function append(tx: Transaction, args: AppendArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::append`,
@@ -84,6 +102,7 @@ export interface InsertArgs {
   o: string | TransactionArgument
 }
 
+/** Insert the `other` string at the `at` index of `string`. */
 export function insert(tx: Transaction, args: InsertArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::insert`,
@@ -101,6 +120,7 @@ export interface SubstringArgs {
   j: bigint | TransactionArgument
 }
 
+/** Copy the slice of the `string` from `i` to `j` into a new `String`. */
 export function substring(tx: Transaction, args: SubstringArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::substring`,
@@ -112,6 +132,7 @@ export function substring(tx: Transaction, args: SubstringArgs) {
   })
 }
 
+/** Get the inner bytes of the `string` as a reference */
 export function asBytes(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::as_bytes`,
@@ -119,6 +140,7 @@ export function asBytes(tx: Transaction, string: string | TransactionArgument) {
   })
 }
 
+/** Unpack the `string` to get its backing bytes */
 export function intoBytes(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::into_bytes`,
@@ -126,6 +148,7 @@ export function intoBytes(tx: Transaction, string: string | TransactionArgument)
   })
 }
 
+/** Unpack the `char` into its underlying bytes. */
 export function byte_(tx: Transaction, char_: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::byte`,
@@ -133,6 +156,10 @@ export function byte_(tx: Transaction, char_: TransactionObjectInput) {
   })
 }
 
+/**
+ * Returns `true` if `b` is a valid ASCII character.
+ * Returns `false` otherwise.
+ */
 export function isValidChar(tx: Transaction, b: number | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::is_valid_char`,
@@ -140,6 +167,10 @@ export function isValidChar(tx: Transaction, b: number | TransactionArgument) {
   })
 }
 
+/**
+ * Returns `true` if `byte` is a printable ASCII character.
+ * Returns `false` otherwise.
+ */
 export function isPrintableChar(tx: Transaction, byte_: number | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::is_printable_char`,
@@ -147,6 +178,7 @@ export function isPrintableChar(tx: Transaction, byte_: number | TransactionArgu
   })
 }
 
+/** Returns `true` if `string` is empty. */
 export function isEmpty(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::is_empty`,
@@ -154,6 +186,7 @@ export function isEmpty(tx: Transaction, string: string | TransactionArgument) {
   })
 }
 
+/** Convert a `string` to its uppercase equivalent. */
 export function toUppercase(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::to_uppercase`,
@@ -161,6 +194,7 @@ export function toUppercase(tx: Transaction, string: string | TransactionArgumen
   })
 }
 
+/** Convert a `string` to its lowercase equivalent. */
 export function toLowercase(tx: Transaction, string: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::to_lowercase`,
@@ -173,6 +207,11 @@ export interface IndexOfArgs {
   substr: string | TransactionArgument
 }
 
+/**
+ * Computes the index of the first occurrence of the `substr` in the `string`.
+ * Returns the length of the `string` if the `substr` is not found.
+ * Returns 0 if the `substr` is empty.
+ */
 export function indexOf(tx: Transaction, args: IndexOfArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::index_of`,
@@ -183,6 +222,7 @@ export function indexOf(tx: Transaction, args: IndexOfArgs) {
   })
 }
 
+/** Convert a `char` to its lowercase equivalent. */
 export function charToUppercase(tx: Transaction, byte_: number | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::char_to_uppercase`,
@@ -190,6 +230,7 @@ export function charToUppercase(tx: Transaction, byte_: number | TransactionArgu
   })
 }
 
+/** Convert a `char` to its lowercase equivalent. */
 export function charToLowercase(tx: Transaction, byte_: number | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::char_to_lowercase`,

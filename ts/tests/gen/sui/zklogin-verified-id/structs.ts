@@ -24,16 +24,23 @@ export function isVerifiedID(type: string): boolean {
 }
 
 export interface VerifiedIDFields {
+  /** The ID of this VerifiedID */
   id: ToField<UID>
+  /** The address this VerifiedID is associated with */
   owner: ToField<'address'>
+  /** The name of the key claim */
   keyClaimName: ToField<String>
+  /** The value of the key claim */
   keyClaimValue: ToField<String>
+  /** The issuer */
   issuer: ToField<String>
+  /** The audience (wallet) */
   audience: ToField<String>
 }
 
 export type VerifiedIDReified = Reified<VerifiedID, VerifiedIDFields>
 
+/** Possession of a VerifiedID proves that the user's address was created using zklogin and the given parameters. */
 export class VerifiedID implements StructClass {
   __StructClass = true as const
 
@@ -46,11 +53,17 @@ export class VerifiedID implements StructClass {
   readonly $typeArgs: []
   readonly $isPhantom = VerifiedID.$isPhantom
 
+  /** The ID of this VerifiedID */
   readonly id: ToField<UID>
+  /** The address this VerifiedID is associated with */
   readonly owner: ToField<'address'>
+  /** The name of the key claim */
   readonly keyClaimName: ToField<String>
+  /** The value of the key claim */
   readonly keyClaimValue: ToField<String>
+  /** The issuer */
   readonly issuer: ToField<String>
+  /** The audience (wallet) */
   readonly audience: ToField<String>
 
   private constructor(typeArgs: [], fields: VerifiedIDFields) {

@@ -24,13 +24,20 @@ export function isVerifiedIssuer(type: string): boolean {
 }
 
 export interface VerifiedIssuerFields {
+  /** The ID of this VerifiedIssuer */
   id: ToField<UID>
+  /** The address this VerifiedID is associated with */
   owner: ToField<'address'>
+  /** The issuer */
   issuer: ToField<String>
 }
 
 export type VerifiedIssuerReified = Reified<VerifiedIssuer, VerifiedIssuerFields>
 
+/**
+ * Possession of a VerifiedIssuer proves that the user's address was created using zklogin and with the given issuer
+ * (identity provider).
+ */
 export class VerifiedIssuer implements StructClass {
   __StructClass = true as const
 
@@ -43,8 +50,11 @@ export class VerifiedIssuer implements StructClass {
   readonly $typeArgs: []
   readonly $isPhantom = VerifiedIssuer.$isPhantom
 
+  /** The ID of this VerifiedIssuer */
   readonly id: ToField<UID>
+  /** The address this VerifiedID is associated with */
   readonly owner: ToField<'address'>
+  /** The issuer */
   readonly issuer: ToField<String>
 
   private constructor(typeArgs: [], fields: VerifiedIssuerFields) {

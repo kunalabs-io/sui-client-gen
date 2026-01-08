@@ -7,6 +7,13 @@ export interface LoadNitroAttestationArgs {
   clock: TransactionObjectInput
 }
 
+/**
+ * @param attestation: attesttaion documents bytes data.
+ * @param clock: the clock object.
+ *
+ * Returns the parsed NitroAttestationDocument after verifying the attestation,
+ * may abort with errors described above.
+ */
 export function loadNitroAttestation(tx: Transaction, args: LoadNitroAttestationArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::nitro_attestation::load_nitro_attestation`,
@@ -35,6 +42,10 @@ export function digest(tx: Transaction, attestation: TransactionObjectInput) {
   })
 }
 
+/**
+ * Returns a list of mapping PCREntry containg the index and the PCR bytes.
+ * AWS supports PCR0-31. All-zero PCR values are excluded.
+ */
 export function pcrs(tx: Transaction, attestation: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::nitro_attestation::pcrs`,
@@ -82,6 +93,7 @@ export interface LoadNitroAttestationInternalArgs {
   currentTimestamp: bigint | TransactionArgument
 }
 
+/** Internal native function */
 export function loadNitroAttestationInternal(
   tx: Transaction,
   args: LoadNitroAttestationInternalArgs

@@ -1,3 +1,5 @@
+/** Group operations of BLS12-381. */
+
 import {
   PhantomReified,
   Reified,

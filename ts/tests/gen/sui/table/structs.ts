@@ -1,3 +1,21 @@
+/**
+ * A table is a map-like collection. But unlike a traditional collection, it's keys and values are
+ * not stored within the `Table` value, but instead are stored using Sui's object system. The
+ * `Table` struct acts only as a handle into the object system to retrieve those keys and values.
+ * Note that this means that `Table` values with exactly the same key-value mapping will not be
+ * equal, with `==`, at runtime. For example
+ * ```
+ * let table1 = table::new<u64, bool>();
+ * let table2 = table::new<u64, bool>();
+ * table::add(&mut table1, 0, false);
+ * table::add(&mut table1, 1, true);
+ * table::add(&mut table2, 0, false);
+ * table::add(&mut table2, 1, true);
+ * // table1 does not equal table2, despite having the same entries
+ * assert!(&table1 != &table2);
+ * ```
+ */
+
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -34,7 +52,9 @@ export function isTable(type: string): boolean {
 }
 
 export interface TableFields<K extends PhantomTypeArgument, V extends PhantomTypeArgument> {
+  /** the ID of this table */
   id: ToField<UID>
+  /** the number of key-value pairs in the table */
   size: ToField<'u64'>
 }
 
@@ -57,7 +77,9 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
   readonly $typeArgs: [PhantomToTypeStr<K>, PhantomToTypeStr<V>]
   readonly $isPhantom = Table.$isPhantom
 
+  /** the ID of this table */
   readonly id: ToField<UID>
+  /** the number of key-value pairs in the table */
   readonly size: ToField<'u64'>
 
   private constructor(

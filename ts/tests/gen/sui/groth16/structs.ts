@@ -30,6 +30,10 @@ export interface CurveFields {
 
 export type CurveReified = Reified<Curve, CurveFields>
 
+/**
+ * Represents an elliptic curve construction to be used in the verifier. Currently we support BLS12-381 and BN254.
+ * This should be given as the first parameter to `prepare_verifying_key` or `verify_groth16_proof`.
+ */
 export class Curve implements StructClass {
   __StructClass = true as const
 
@@ -203,6 +207,7 @@ export interface PreparedVerifyingKeyFields {
 
 export type PreparedVerifyingKeyReified = Reified<PreparedVerifyingKey, PreparedVerifyingKeyFields>
 
+/** A `PreparedVerifyingKey` consisting of four components in serialized form. */
 export class PreparedVerifyingKey implements StructClass {
   __StructClass = true as const
 
@@ -408,6 +413,7 @@ export interface PublicProofInputsFields {
 
 export type PublicProofInputsReified = Reified<PublicProofInputs, PublicProofInputsFields>
 
+/** A `PublicProofInputs` wrapper around its serialized bytes. */
 export class PublicProofInputs implements StructClass {
   __StructClass = true as const
 
@@ -584,6 +590,7 @@ export interface ProofPointsFields {
 
 export type ProofPointsReified = Reified<ProofPoints, ProofPointsFields>
 
+/** A `ProofPoints` wrapper around the serialized form of three proof points. */
 export class ProofPoints implements StructClass {
   __StructClass = true as const
 

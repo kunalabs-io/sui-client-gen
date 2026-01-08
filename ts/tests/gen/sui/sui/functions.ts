@@ -2,6 +2,10 @@ import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/**
+ * Register the `SUI` Coin to acquire its `Supply`.
+ * This should be called only once during genesis creation.
+ */
 export function new_(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::sui::new`,

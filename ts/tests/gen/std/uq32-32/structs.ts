@@ -1,3 +1,12 @@
+/**
+ * Defines an unsigned, fixed-point numeric type with a 32-bit integer part and a 32-bit fractional
+ * part. The notation `uq32_32` and `UQ32_32` is based on
+ * [Q notation](https://en.wikipedia.org/wiki/Q_(number_format)). `q` indicates it a fixed-point
+ * number. The `u` prefix indicates it is unsigned. The `32_32` suffix indicates the number of
+ * bits, where the first number indicates the number of bits in the integer part, and the second
+ * the number of bits in the fractional part--in this case 32 bits for each.
+ */
+
 import {
   PhantomReified,
   Reified,
@@ -27,6 +36,12 @@ export interface UQ32_32Fields {
 
 export type UQ32_32Reified = Reified<UQ32_32, UQ32_32Fields>
 
+/**
+ * A fixed-point numeric type with 32 integer bits and 32 fractional bits, represented by an
+ * underlying 64 bit value. This is a binary representation, so decimal values may not be exactly
+ * representable, but it provides more than 9 decimal digits of precision both before and after the
+ * decimal point (18 digits total).
+ */
 export class UQ32_32 implements StructClass {
   __StructClass = true as const
 

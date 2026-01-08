@@ -244,6 +244,12 @@ export interface V1AddArgs {
   addr: string | TransactionArgument
 }
 
+/**
+ * Adds the given address to the deny list of the specified type, preventing it
+ * from interacting with instances of that type as an input to a transaction. For coins,
+ * the type specified is the type of the coin, not the coin type itself. For example,
+ * "00...0123::my_coin::MY_COIN" would be the type, not "00...02::coin::Coin".
+ */
 export function v1Add(tx: Transaction, args: V1AddArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::deny_list::v1_add`,
@@ -280,6 +286,10 @@ export interface V1RemoveArgs {
   addr: string | TransactionArgument
 }
 
+/**
+ * Removes a previously denied address from the list.
+ * Aborts with `ENotDenied` if the address is not on the list.
+ */
 export function v1Remove(tx: Transaction, args: V1RemoveArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::deny_list::v1_remove`,
@@ -316,6 +326,7 @@ export interface V1ContainsArgs {
   addr: string | TransactionArgument
 }
 
+/** Returns true iff the given address is denied for the given type. */
 export function v1Contains(tx: Transaction, args: V1ContainsArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::deny_list::v1_contains`,
@@ -345,6 +356,10 @@ export function v1PerTypeListContains(tx: Transaction, args: V1PerTypeListContai
   })
 }
 
+/**
+ * Creation of the deny list object is restricted to the system address
+ * via a system transaction.
+ */
 export function create(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::deny_list::create`,

@@ -3,6 +3,7 @@ import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/** Returns the address associated with the given VerifiedIssuer */
 export function owner(tx: Transaction, verifiedIssuer: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_issuer::owner`,
@@ -10,6 +11,7 @@ export function owner(tx: Transaction, verifiedIssuer: TransactionObjectInput) {
   })
 }
 
+/** Returns the issuer associated with the given VerifiedIssuer */
 export function issuer(tx: Transaction, verifiedIssuer: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_issuer::issuer`,
@@ -17,6 +19,7 @@ export function issuer(tx: Transaction, verifiedIssuer: TransactionObjectInput) 
   })
 }
 
+/** Delete a VerifiedIssuer */
 export function delete_(tx: Transaction, verifiedIssuer: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_issuer::delete`,
@@ -29,6 +32,12 @@ export interface VerifyZkloginIssuerArgs {
   issuer: string | TransactionArgument
 }
 
+/**
+ * Verify that the caller's address was created using zklogin with the given issuer. If so, a VerifiedIssuer object
+ * with the issuers id transferred to the caller.
+ *
+ * Aborts with `EInvalidProof` if the verification fails.
+ */
 export function verifyZkloginIssuer(tx: Transaction, args: VerifyZkloginIssuerArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_issuer::verify_zklogin_issuer`,
@@ -42,6 +51,7 @@ export interface CheckZkloginIssuerArgs {
   issuer: string | TransactionArgument
 }
 
+/** Returns true if `address` was created using zklogin with the given issuer and address seed. */
 export function checkZkloginIssuer(tx: Transaction, args: CheckZkloginIssuerArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_issuer::check_zklogin_issuer`,
@@ -59,6 +69,11 @@ export interface CheckZkloginIssuerInternalArgs {
   issuer: Array<number | TransactionArgument> | TransactionArgument
 }
 
+/**
+ * Returns true if `address` was created using zklogin with the given issuer and address seed.
+ *
+ * Aborts with `EInvalidInput` if the `iss` input is not a valid UTF-8 string.
+ */
 export function checkZkloginIssuerInternal(tx: Transaction, args: CheckZkloginIssuerInternalArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_issuer::check_zklogin_issuer_internal`,

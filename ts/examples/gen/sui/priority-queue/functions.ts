@@ -3,6 +3,7 @@ import { GenericArg, generic, obj, pure, vector } from '../../_framework/util'
 import { Entry } from './structs'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/** Create a new priority queue from the input entry vectors. */
 export function new_(
   tx: Transaction,
   typeArg: string,
@@ -15,6 +16,7 @@ export function new_(
   })
 }
 
+/** Pop the entry with the highest priority value. */
 export function popMax(tx: Transaction, typeArg: string, pq: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::priority_queue::pop_max`,
@@ -29,6 +31,7 @@ export interface InsertArgs {
   value: GenericArg
 }
 
+/** Insert a new entry into the queue. */
 export function insert(tx: Transaction, typeArg: string, args: InsertArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::priority_queue::insert`,
@@ -90,6 +93,13 @@ export interface MaxHeapifyRecursiveArgs {
   i: bigint | TransactionArgument
 }
 
+/**
+ * Max heapify the subtree whose root is at index `i`. That means after this function
+ * finishes, the subtree should have the property that the parent node has higher priority
+ * than both child nodes.
+ * This function assumes that all the other nodes in the subtree (nodes other than the root)
+ * do satisfy the max heap property.
+ */
 export function maxHeapifyRecursive(
   tx: Transaction,
   typeArg: string,

@@ -33,6 +33,11 @@ export interface AuthenticatorStateFields {
 
 export type AuthenticatorStateReified = Reified<AuthenticatorState, AuthenticatorStateFields>
 
+/**
+ * Singleton shared object which stores the global authenticator state.
+ * The actual state is stored in a dynamic field of type AuthenticatorStateInner to support
+ * future versions of the authenticator state.
+ */
 export class AuthenticatorState implements StructClass {
   __StructClass = true as const
 
@@ -212,6 +217,7 @@ export function isAuthenticatorStateInner(type: string): boolean {
 
 export interface AuthenticatorStateInnerFields {
   version: ToField<'u64'>
+  /** List of currently active JWKs. */
   activeJwks: ToField<Vector<ActiveJwk>>
 }
 
@@ -233,6 +239,7 @@ export class AuthenticatorStateInner implements StructClass {
   readonly $isPhantom = AuthenticatorStateInner.$isPhantom
 
   readonly version: ToField<'u64'>
+  /** List of currently active JWKs. */
   readonly activeJwks: ToField<Vector<ActiveJwk>>
 
   private constructor(typeArgs: [], fields: AuthenticatorStateInnerFields) {
@@ -413,6 +420,7 @@ export interface JWKFields {
 
 export type JWKReified = Reified<JWK, JWKFields>
 
+/** Must match the JWK struct in fastcrypto-zkp */
 export class JWK implements StructClass {
   __StructClass = true as const
 
@@ -608,6 +616,7 @@ export interface JwkIdFields {
 
 export type JwkIdReified = Reified<JwkId, JwkIdFields>
 
+/** Must match the JwkId struct in fastcrypto-zkp */
 export class JwkId implements StructClass {
   __StructClass = true as const
 

@@ -2,6 +2,10 @@ import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
 
+/**
+ * Returns the bitwise not of the value.
+ * Each bit that is 1 becomes 0. Each bit that is 0 becomes 1.
+ */
 export function bitwiseNot(tx: Transaction, x: bigint | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::u256::bitwise_not`,
@@ -14,6 +18,7 @@ export interface MaxArgs {
   y: bigint | TransactionArgument
 }
 
+/** Return the larger of `x` and `y` */
 export function max(tx: Transaction, args: MaxArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::u256::max`,
@@ -26,6 +31,7 @@ export interface MinArgs {
   y: bigint | TransactionArgument
 }
 
+/** Return the smaller of `x` and `y` */
 export function min(tx: Transaction, args: MinArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::u256::min`,
@@ -38,6 +44,7 @@ export interface DiffArgs {
   y: bigint | TransactionArgument
 }
 
+/** Return the absolute value of x - y */
 export function diff(tx: Transaction, args: DiffArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::u256::diff`,
@@ -50,6 +57,7 @@ export interface DivideAndRoundUpArgs {
   y: bigint | TransactionArgument
 }
 
+/** Calculate x / y, but round up the result. */
 export function divideAndRoundUp(tx: Transaction, args: DivideAndRoundUpArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::u256::divide_and_round_up`,
@@ -62,6 +70,7 @@ export interface PowArgs {
   exponent: number | TransactionArgument
 }
 
+/** Return the value of a base raised to a power */
 export function pow(tx: Transaction, args: PowArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::u256::pow`,
@@ -69,6 +78,7 @@ export function pow(tx: Transaction, args: PowArgs) {
   })
 }
 
+/** Try to convert a `u256` to a `u8`. Returns `None` if the value is too large. */
 export function tryAsU8(tx: Transaction, x: bigint | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::u256::try_as_u8`,
@@ -76,6 +86,7 @@ export function tryAsU8(tx: Transaction, x: bigint | TransactionArgument) {
   })
 }
 
+/** Try to convert a `u256` to a `u16`. Returns `None` if the value is too large. */
 export function tryAsU16(tx: Transaction, x: bigint | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::u256::try_as_u16`,
@@ -83,6 +94,7 @@ export function tryAsU16(tx: Transaction, x: bigint | TransactionArgument) {
   })
 }
 
+/** Try to convert a `u256` to a `u32`. Returns `None` if the value is too large. */
 export function tryAsU32(tx: Transaction, x: bigint | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::u256::try_as_u32`,
@@ -90,6 +102,7 @@ export function tryAsU32(tx: Transaction, x: bigint | TransactionArgument) {
   })
 }
 
+/** Try to convert a `u256` to a `u64`. Returns `None` if the value is too large. */
 export function tryAsU64(tx: Transaction, x: bigint | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::u256::try_as_u64`,
@@ -97,6 +110,7 @@ export function tryAsU64(tx: Transaction, x: bigint | TransactionArgument) {
   })
 }
 
+/** Try to convert a `u256` to a `u128`. Returns `None` if the value is too large. */
 export function tryAsU128(tx: Transaction, x: bigint | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::u256::try_as_u128`,

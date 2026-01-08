@@ -7,6 +7,10 @@ export interface AccumulatorRootOwnerExistsArgs {
   owner: string | TransactionArgument
 }
 
+/**
+ * === Owner functions ===
+ * Check if there is an owner field attached to the accumulator root.
+ */
 export function accumulatorRootOwnerExists(tx: Transaction, args: AccumulatorRootOwnerExistsArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_root_owner_exists`,
@@ -19,6 +23,7 @@ export interface AccumulatorRootBorrowOwnerMutArgs {
   owner: string | TransactionArgument
 }
 
+/** Borrow an owner field mutably. */
 export function accumulatorRootBorrowOwnerMut(
   tx: Transaction,
   args: AccumulatorRootBorrowOwnerMutArgs
@@ -34,6 +39,7 @@ export interface AccumulatorRootAttachOwnerArgs {
   owner: TransactionObjectInput
 }
 
+/** Attach an owner field to the accumulator root. */
 export function accumulatorRootAttachOwner(tx: Transaction, args: AccumulatorRootAttachOwnerArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_root_attach_owner`,
@@ -46,6 +52,7 @@ export interface AccumulatorRootDetachOwnerArgs {
   owner: string | TransactionArgument
 }
 
+/** Detach an owner field from the accumulator root. */
 export function accumulatorRootDetachOwner(tx: Transaction, args: AccumulatorRootDetachOwnerArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_root_detach_owner`,
@@ -58,6 +65,12 @@ export interface CreateAccumulatorMetadataArgs {
   owner: string | TransactionArgument
 }
 
+/**
+ * === Metadata functions ===
+ * Create a metadata field for a new balance field with type T.
+ * The metadata will be attached to the owner field `owner`.
+ * If the owner field does not exist, it will be created.
+ */
 export function createAccumulatorMetadata(
   tx: Transaction,
   typeArg: string,
@@ -75,6 +88,12 @@ export interface RemoveAccumulatorMetadataArgs {
   owner: string | TransactionArgument
 }
 
+/**
+ * Remove the metadata field for a balance field with type T.
+ * The metadata will be detached from the owner field `owner`.
+ * If there are no more balance fields attached to the owner field,
+ * the owner field will be destroyed.
+ */
 export function removeAccumulatorMetadata(
   tx: Transaction,
   typeArg: string,
@@ -92,6 +111,7 @@ export interface AccumulatorOwnerAttachMetadataArgs {
   metadata: TransactionObjectInput
 }
 
+/** Attach a metadata field for type T to the owner field. */
 export function accumulatorOwnerAttachMetadata(
   tx: Transaction,
   typeArg: string,
@@ -104,6 +124,7 @@ export function accumulatorOwnerAttachMetadata(
   })
 }
 
+/** Detach a metadata field for type T from the owner field. */
 export function accumulatorOwnerDetachMetadata(
   tx: Transaction,
   typeArg: string,
@@ -116,6 +137,7 @@ export function accumulatorOwnerDetachMetadata(
   })
 }
 
+/** Destroy an owner field. */
 export function accumulatorOwnerDestroy(tx: Transaction, this_: TransactionObjectInput) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_owner_destroy`,

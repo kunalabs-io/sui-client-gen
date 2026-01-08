@@ -2,6 +2,10 @@ import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/**
+ * Convert `a` into a u256 by interpreting `a` as the bytes of a big-endian integer
+ * (e.g., `to_u256(0x1) == 1`)
+ */
 export function toU256(tx: Transaction, a: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::address::to_u256`,
@@ -9,6 +13,10 @@ export function toU256(tx: Transaction, a: string | TransactionArgument) {
   })
 }
 
+/**
+ * Convert `n` into an address by encoding it as a big-endian integer (e.g., `from_u256(1) = @0x1`)
+ * Aborts if `n` > `MAX_ADDRESS`
+ */
 export function fromU256(tx: Transaction, n: bigint | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::address::from_u256`,
@@ -16,6 +24,10 @@ export function fromU256(tx: Transaction, n: bigint | TransactionArgument) {
   })
 }
 
+/**
+ * Convert `bytes` into an address.
+ * Aborts with `EAddressParseError` if the length of `bytes` is not 32
+ */
 export function fromBytes(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument
@@ -26,6 +38,7 @@ export function fromBytes(
   })
 }
 
+/** Convert `a` into BCS-encoded bytes. */
 export function toBytes(tx: Transaction, a: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::address::to_bytes`,
@@ -33,6 +46,7 @@ export function toBytes(tx: Transaction, a: string | TransactionArgument) {
   })
 }
 
+/** Convert `a` to a hex-encoded ASCII string */
 export function toAsciiString(tx: Transaction, a: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::address::to_ascii_string`,
@@ -40,6 +54,7 @@ export function toAsciiString(tx: Transaction, a: string | TransactionArgument) 
   })
 }
 
+/** Convert `a` to a hex-encoded string */
 export function toString(tx: Transaction, a: string | TransactionArgument) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::address::to_string`,
@@ -47,6 +62,14 @@ export function toString(tx: Transaction, a: string | TransactionArgument) {
   })
 }
 
+/**
+ * Converts an ASCII string to an address, taking the numerical value for each character. The
+ * string must be Base16 encoded, and thus exactly 64 characters long.
+ * For example, the string "00000000000000000000000000000000000000000000000000000000DEADB33F"
+ * will be converted to the address @0xDEADB33F.
+ * Aborts with `EAddressParseError` if the length of `s` is not 64,
+ * or if an invalid character is encountered.
+ */
 export function fromAsciiBytes(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument
@@ -64,6 +87,7 @@ export function hexCharValue(tx: Transaction, c: number | TransactionArgument) {
   })
 }
 
+/** Length of a Sui address in bytes */
 export function length(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::address::length`,
@@ -71,6 +95,7 @@ export function length(tx: Transaction) {
   })
 }
 
+/** Largest possible address */
 export function max(tx: Transaction) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::address::max`,

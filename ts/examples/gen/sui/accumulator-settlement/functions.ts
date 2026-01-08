@@ -11,6 +11,10 @@ export interface SettlementPrologueArgs {
   outputSui: bigint | TransactionArgument
 }
 
+/**
+ * Called by settlement transactions to ensure that the settlement transaction has a unique
+ * digest.
+ */
 export function settlementPrologue(tx: Transaction, args: SettlementPrologueArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::accumulator_settlement::settlement_prologue`,
@@ -50,6 +54,7 @@ export interface RecordSettlementSuiConservationArgs {
   outputSui: bigint | TransactionArgument
 }
 
+/** Called by the settlement transaction to track conservation of SUI. */
 export function recordSettlementSuiConservation(
   tx: Transaction,
   args: RecordSettlementSuiConservationArgs

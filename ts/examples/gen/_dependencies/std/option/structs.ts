@@ -1,3 +1,5 @@
+/** This module defines the Option type and its methods to represent and handle an optional value. */
+
 import {
   PhantomReified,
   Reified,
@@ -44,6 +46,10 @@ export type OptionReified<Element extends TypeArgument> = Reified<
   OptionFields<Element>
 >
 
+/**
+ * Abstraction of a value that may or may not be present. Implemented with a vector of size
+ * zero or one because Move bytecode does not have ADTs.
+ */
 export class Option<Element extends TypeArgument> implements StructClass {
   __StructClass = true as const
 

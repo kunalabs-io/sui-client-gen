@@ -224,6 +224,7 @@ export type LPReified<A extends PhantomTypeArgument, B extends PhantomTypeArgume
   LPFields<A, B>
 >
 
+/** Pool LP token witness. */
 export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   implements StructClass
 {
@@ -475,8 +476,14 @@ export interface PoolFields<A extends PhantomTypeArgument, B extends PhantomType
   balanceA: ToField<Balance<A>>
   balanceB: ToField<Balance<B>>
   lpSupply: ToField<Supply<ToPhantom<LP<A, B>>>>
+  /** The liquidity provider fees expressed in basis points (1 bps is 0.01%) */
   lpFeeBps: ToField<'u64'>
+  /** Admin fees are calculated as a percentage of liquidity provider fees. */
   adminFeePct: ToField<'u64'>
+  /**
+   * Admin fees are deposited into this balance. They can be colleced by
+   * this pool's PoolAdminCap bearer.
+   */
   adminFeeBalance: ToField<Balance<ToPhantom<LP<A, B>>>>
 }
 
@@ -485,6 +492,7 @@ export type PoolReified<A extends PhantomTypeArgument, B extends PhantomTypeArgu
   PoolFields<A, B>
 >
 
+/** Pool represents an AMM Pool. */
 export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   implements StructClass
 {
@@ -503,8 +511,14 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   readonly balanceA: ToField<Balance<A>>
   readonly balanceB: ToField<Balance<B>>
   readonly lpSupply: ToField<Supply<ToPhantom<LP<A, B>>>>
+  /** The liquidity provider fees expressed in basis points (1 bps is 0.01%) */
   readonly lpFeeBps: ToField<'u64'>
+  /** Admin fees are calculated as a percentage of liquidity provider fees. */
   readonly adminFeePct: ToField<'u64'>
+  /**
+   * Admin fees are deposited into this balance. They can be colleced by
+   * this pool's PoolAdminCap bearer.
+   */
   readonly adminFeeBalance: ToField<Balance<ToPhantom<LP<A, B>>>>
 
   private constructor(
@@ -804,6 +818,10 @@ export interface PoolRegistryFields {
 
 export type PoolRegistryReified = Reified<PoolRegistry, PoolRegistryFields>
 
+/**
+ * `PoolRegistry` stores a table of all pools created which is used to guarantee
+ * that only one pool per currency pair can exist.
+ */
 export class PoolRegistry implements StructClass {
   __StructClass = true as const
 
@@ -998,6 +1016,7 @@ export interface PoolRegistryItemFields {
 
 export type PoolRegistryItemReified = Reified<PoolRegistryItem, PoolRegistryItemFields>
 
+/** An item in the `PoolRegistry` table. Represents a pool's currency pair. */
 export class PoolRegistryItem implements StructClass {
   __StructClass = true as const
 
@@ -1182,6 +1201,11 @@ export interface AdminCapFields {
 
 export type AdminCapReified = Reified<AdminCap, AdminCapFields>
 
+/**
+ * Capability allowing the bearer to execute admin operations on the pools
+ * (e.g. withdraw admin fees). There's only one `AdminCap` created during module
+ * initialization that's valid for all pools.
+ */
 export class AdminCap implements StructClass {
   __StructClass = true as const
 

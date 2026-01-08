@@ -25,15 +25,28 @@ export function isTxContext(type: string): boolean {
 }
 
 export interface TxContextFields {
+  /** The address of the user that signed the current transaction */
   sender: ToField<'address'>
+  /** Hash of the current transaction */
   txHash: ToField<Vector<'u8'>>
+  /** The current epoch number */
   epoch: ToField<'u64'>
+  /** Timestamp that the epoch started at */
   epochTimestampMs: ToField<'u64'>
+  /**
+   * Counter recording the number of fresh id's created while executing
+   * this transaction. Always 0 at the start of a transaction
+   */
   idsCreated: ToField<'u64'>
 }
 
 export type TxContextReified = Reified<TxContext, TxContextFields>
 
+/**
+ * Information about the transaction currently being executed.
+ * This cannot be constructed by a transaction--it is a privileged object created by
+ * the VM and passed in to the entrypoint of the transaction as `&mut TxContext`.
+ */
 export class TxContext implements StructClass {
   __StructClass = true as const
 
@@ -46,10 +59,18 @@ export class TxContext implements StructClass {
   readonly $typeArgs: []
   readonly $isPhantom = TxContext.$isPhantom
 
+  /** The address of the user that signed the current transaction */
   readonly sender: ToField<'address'>
+  /** Hash of the current transaction */
   readonly txHash: ToField<Vector<'u8'>>
+  /** The current epoch number */
   readonly epoch: ToField<'u64'>
+  /** Timestamp that the epoch started at */
   readonly epochTimestampMs: ToField<'u64'>
+  /**
+   * Counter recording the number of fresh id's created while executing
+   * this transaction. Always 0 at the start of a transaction
+   */
   readonly idsCreated: ToField<'u64'>
 
   private constructor(typeArgs: [], fields: TxContextFields) {

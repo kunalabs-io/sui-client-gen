@@ -1,3 +1,43 @@
+/**
+ * This module implements the Kiosk Extensions functionality. It allows
+ * exposing previously protected (only-owner) methods to third-party apps.
+ *
+ * A Kiosk Extension is a module that implements any functionality on top of
+ * the `Kiosk` without discarding nor blocking the base. Given that `Kiosk`
+ * itself is a trading primitive, most of the extensions are expected to be
+ * related to trading. However, there's no limit to what can be built using the
+ * `kiosk_extension` module, as it gives certain benefits such as using `Kiosk`
+ * as the storage for any type of data / assets.
+ *
+ * ### Flow:
+ * - An extension can only be installed by the Kiosk Owner and requires an
+ * authorization via the `KioskOwnerCap`.
+ * - When installed, the extension is given a permission bitmap that allows it
+ * to perform certain protected actions (eg `place`, `lock`). However, it is
+ * possible to install an extension that does not have any permissions.
+ * - Kiosk Owner can `disable` the extension at any time, which prevents it
+ * from performing any protected actions. The storage is still available to the
+ * extension until it is completely removed.
+ * - A disabled extension can be `enable`d at any time giving the permissions
+ * back to the extension.
+ * - An extension permissions follow the all-or-nothing policy. Either all of
+ * the requested permissions are granted or none of them (can't install).
+ *
+ * ### Examples:
+ * - An Auction extension can utilize the storage to store Auction-related data
+ * while utilizing the same `Kiosk` object that the items are stored in.
+ * - A Marketplace extension that implements custom events and fees for the
+ * default trading functionality.
+ *
+ * ### Notes:
+ * - Trading functionality can utilize the `PurchaseCap` to build a custom
+ * logic around the purchase flow. However, it should be carefully managed to
+ * prevent asset locking.
+ * - `kiosk_extension` is a friend module to `kiosk` and has access to its
+ * internal functions (such as `place_internal` and `lock_internal` to
+ * implement custom authorization scheme for `place` and `lock` respectively).
+ */
+
 import {
   PhantomReified,
   PhantomToTypeStr,
@@ -34,13 +74,45 @@ export function isExtension(type: string): boolean {
 }
 
 export interface ExtensionFields {
+  /**
+   * Storage for the extension, an isolated Bag. By putting the extension
+   * into a single dynamic field, we reduce the amount of fields on the
+   * top level (eg items / listings) while giving extension developers
+   * the ability to store any data they want.
+   */
   storage: ToField<Bag>
+  /**
+   * Bitmap of permissions that the extension has (can be revoked any
+   * moment). It's all or nothing policy - either the extension has the
+   * required permissions or no permissions at all.
+   *
+   * 1st bit - `place` - allows to place items for sale
+   * 2nd bit - `lock` and `place` - allows to lock items (and place)
+   *
+   * For example:
+   * - `10` - allows to place items and lock them.
+   * - `11` - allows to place items and lock them (`lock` includes `place`).
+   * - `01` - allows to place items, but not lock them.
+   * - `00` - no permissions.
+   */
   permissions: ToField<'u128'>
+  /**
+   * Whether the extension can call protected actions. By default, all
+   * extensions are enabled (on `add` call), however the Kiosk
+   * owner can disable them at any time.
+   *
+   * Disabling the extension does not limit its access to the storage.
+   */
   isEnabled: ToField<'bool'>
 }
 
 export type ExtensionReified = Reified<Extension, ExtensionFields>
 
+/**
+ * The Extension struct contains the data used by the extension and the
+ * configuration for this extension. Stored under the `ExtensionKey`
+ * dynamic field.
+ */
 export class Extension implements StructClass {
   __StructClass = true as const
 
@@ -53,8 +125,35 @@ export class Extension implements StructClass {
   readonly $typeArgs: []
   readonly $isPhantom = Extension.$isPhantom
 
+  /**
+   * Storage for the extension, an isolated Bag. By putting the extension
+   * into a single dynamic field, we reduce the amount of fields on the
+   * top level (eg items / listings) while giving extension developers
+   * the ability to store any data they want.
+   */
   readonly storage: ToField<Bag>
+  /**
+   * Bitmap of permissions that the extension has (can be revoked any
+   * moment). It's all or nothing policy - either the extension has the
+   * required permissions or no permissions at all.
+   *
+   * 1st bit - `place` - allows to place items for sale
+   * 2nd bit - `lock` and `place` - allows to lock items (and place)
+   *
+   * For example:
+   * - `10` - allows to place items and lock them.
+   * - `11` - allows to place items and lock them (`lock` includes `place`).
+   * - `01` - allows to place items, but not lock them.
+   * - `00` - no permissions.
+   */
   readonly permissions: ToField<'u128'>
+  /**
+   * Whether the extension can call protected actions. By default, all
+   * extensions are enabled (on `add` call), however the Kiosk
+   * owner can disable them at any time.
+   *
+   * Disabling the extension does not limit its access to the storage.
+   */
   readonly isEnabled: ToField<'bool'>
 
   private constructor(typeArgs: [], fields: ExtensionFields) {
@@ -231,6 +330,11 @@ export type ExtensionKeyReified<Ext extends PhantomTypeArgument> = Reified<
   ExtensionKeyFields<Ext>
 >
 
+/**
+ * The `ExtensionKey` is a typed dynamic field key used to store the
+ * extension configuration and data. `Ext` is a phantom type that is used
+ * to identify the extension witness.
+ */
 export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 

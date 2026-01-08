@@ -1,3 +1,24 @@
+/**
+ * The Token module which implements a Closed Loop Token with a configurable
+ * policy. The policy is defined by a set of rules that must be satisfied for
+ * an action to be performed on the token.
+ *
+ * The module is designed to be used with a `TreasuryCap` to allow for minting
+ * and burning of the `Token`s. And can act as a replacement / extension or a
+ * companion to existing open-loop (`Coin`) systems.
+ *
+ * ```
+ * Module:      sui::balance       sui::coin             sui::token
+ * Main type:   Balance<T>         Coin<T>               Token<T>
+ * Capability:  Supply<T>  <---->  TreasuryCap<T> <----> TreasuryCap<T>
+ * Abilities:   store              key + store           key
+ * ```
+ *
+ * The Token system allows for fine-grained control over the actions performed
+ * on the token. And hence it is highly suitable for applications that require
+ * control over the currency which a simple open-loop system can't provide.
+ */
+
 import { Option } from '../../_dependencies/std/option/structs'
 import { String } from '../../_dependencies/std/string/structs'
 import { TypeName } from '../../_dependencies/std/type-name/structs'
@@ -42,11 +63,16 @@ export function isToken(type: string): boolean {
 
 export interface TokenFields<T extends PhantomTypeArgument> {
   id: ToField<UID>
+  /** The Balance of the `Token`. */
   balance: ToField<Balance<T>>
 }
 
 export type TokenReified<T extends PhantomTypeArgument> = Reified<Token<T>, TokenFields<T>>
 
+/**
+ * A single `Token` with `Balance` inside. Can only be owned by an address,
+ * and actions performed on it must be confirmed in a matching `TokenPolicy`.
+ */
 export class Token<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -60,6 +86,7 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
   readonly $isPhantom = Token.$isPhantom
 
   readonly id: ToField<UID>
+  /** The Balance of the `Token`. */
   readonly balance: ToField<Balance<T>>
 
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: TokenFields<T>) {
@@ -285,6 +312,10 @@ export type TokenPolicyCapReified<T extends PhantomTypeArgument> = Reified<
   TokenPolicyCapFields<T>
 >
 
+/**
+ * A Capability that manages a single `TokenPolicy` specified in the `for`
+ * field. Created together with `TokenPolicy` in the `new` function.
+ */
 export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -515,7 +546,20 @@ export function isTokenPolicy(type: string): boolean {
 
 export interface TokenPolicyFields<T extends PhantomTypeArgument> {
   id: ToField<UID>
+  /**
+   * The balance that is effectively spent by the user on the "spend"
+   * action. However, actual decrease of the supply can only be done by
+   * the `TreasuryCap` owner when `flush` is called.
+   *
+   * This balance is effectively spent and cannot be accessed by anyone
+   * but the `TreasuryCap` owner.
+   */
   spentBalance: ToField<Balance<T>>
+  /**
+   * The set of rules that define what actions can be performed on the
+   * token. For each "action" there's a set of Rules that must be
+   * satisfied for the `ActionRequest` to be confirmed.
+   */
   rules: ToField<VecMap<String, VecSet<TypeName>>>
 }
 
@@ -524,6 +568,17 @@ export type TokenPolicyReified<T extends PhantomTypeArgument> = Reified<
   TokenPolicyFields<T>
 >
 
+/**
+ * `TokenPolicy` represents a set of rules that define what actions can be
+ * performed on a `Token` and which `Rules` must be satisfied for the
+ * action to succeed.
+ *
+ * - For the sake of availability, `TokenPolicy` is a `key`-only object.
+ * - Each `TokenPolicy` is managed by a matching `TokenPolicyCap`.
+ * - For an action to become available, there needs to be a record in the
+ * `rules` VecMap. To allow an action to be performed freely, there's an
+ * `allow` function that can be called by the `TokenPolicyCap` owner.
+ */
 export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -537,7 +592,20 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
   readonly $isPhantom = TokenPolicy.$isPhantom
 
   readonly id: ToField<UID>
+  /**
+   * The balance that is effectively spent by the user on the "spend"
+   * action. However, actual decrease of the supply can only be done by
+   * the `TreasuryCap` owner when `flush` is called.
+   *
+   * This balance is effectively spent and cannot be accessed by anyone
+   * but the `TreasuryCap` owner.
+   */
   readonly spentBalance: ToField<Balance<T>>
+  /**
+   * The set of rules that define what actions can be performed on the
+   * token. For each "action" there's a set of Rules that must be
+   * satisfied for the `ActionRequest` to be confirmed.
+   */
   readonly rules: ToField<VecMap<String, VecSet<TypeName>>>
 
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: TokenPolicyFields<T>) {
@@ -769,11 +837,28 @@ export function isActionRequest(type: string): boolean {
 }
 
 export interface ActionRequestFields<T extends PhantomTypeArgument> {
+  /**
+   * Name of the Action to look up in the Policy. Name can be one of the
+   * default actions: `transfer`, `spend`, `to_coin`, `from_coin` or a
+   * custom action.
+   */
   name: ToField<String>
+  /** Amount is present in all of the txs */
   amount: ToField<'u64'>
+  /** Sender is a permanent field always */
   sender: ToField<'address'>
+  /** Recipient is only available in `transfer` action. */
   recipient: ToField<Option<'address'>>
+  /**
+   * The balance to be "spent" in the `TokenPolicy`, only available
+   * in the `spend` action.
+   */
   spentBalance: ToField<Option<Balance<T>>>
+  /**
+   * Collected approvals (stamps) from completed `Rules`. They're matched
+   * against `TokenPolicy.rules` to determine if the request can be
+   * confirmed.
+   */
   approvals: ToField<VecSet<TypeName>>
 }
 
@@ -782,6 +867,11 @@ export type ActionRequestReified<T extends PhantomTypeArgument> = Reified<
   ActionRequestFields<T>
 >
 
+/**
+ * A request to perform an "Action" on a token. Stores the information
+ * about the action to be performed and must be consumed by the `confirm_request`
+ * or `confirm_request_mut` functions when the Rules are satisfied.
+ */
 export class ActionRequest<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -794,11 +884,28 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
   readonly $typeArgs: [PhantomToTypeStr<T>]
   readonly $isPhantom = ActionRequest.$isPhantom
 
+  /**
+   * Name of the Action to look up in the Policy. Name can be one of the
+   * default actions: `transfer`, `spend`, `to_coin`, `from_coin` or a
+   * custom action.
+   */
   readonly name: ToField<String>
+  /** Amount is present in all of the txs */
   readonly amount: ToField<'u64'>
+  /** Sender is a permanent field always */
   readonly sender: ToField<'address'>
+  /** Recipient is only available in `transfer` action. */
   readonly recipient: ToField<Option<'address'>>
+  /**
+   * The balance to be "spent" in the `TokenPolicy`, only available
+   * in the `spend` action.
+   */
   readonly spentBalance: ToField<Option<Balance<T>>>
+  /**
+   * Collected approvals (stamps) from completed `Rules`. They're matched
+   * against `TokenPolicy.rules` to determine if the request can be
+   * confirmed.
+   */
   readonly approvals: ToField<VecSet<TypeName>>
 
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: ActionRequestFields<T>) {
@@ -1067,6 +1174,11 @@ export interface RuleKeyFields<T extends PhantomTypeArgument> {
 
 export type RuleKeyReified<T extends PhantomTypeArgument> = Reified<RuleKey<T>, RuleKeyFields<T>>
 
+/**
+ * Dynamic field key for the `TokenPolicy` to store the `Config` for a
+ * specific action `Rule`. There can be only one configuration per
+ * `Rule` per `TokenPolicy`.
+ */
 export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -1289,7 +1401,12 @@ export function isTokenPolicyCreated(type: string): boolean {
 }
 
 export interface TokenPolicyCreatedFields<T extends PhantomTypeArgument> {
+  /** ID of the `TokenPolicy` that was created. */
   id: ToField<ID>
+  /**
+   * Whether the `TokenPolicy` is "shared" (mutable) or "frozen"
+   * (immutable) - TBD.
+   */
   isMutable: ToField<'bool'>
 }
 
@@ -1298,6 +1415,11 @@ export type TokenPolicyCreatedReified<T extends PhantomTypeArgument> = Reified<
   TokenPolicyCreatedFields<T>
 >
 
+/**
+ * An event emitted when a `TokenPolicy` is created and shared. Because
+ * `TokenPolicy` can only be shared (and potentially frozen in the future),
+ * we emit this event in the `share_policy` function and mark it as mutable.
+ */
 export class TokenPolicyCreated<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -1310,7 +1432,12 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
   readonly $typeArgs: [PhantomToTypeStr<T>]
   readonly $isPhantom = TokenPolicyCreated.$isPhantom
 
+  /** ID of the `TokenPolicy` that was created. */
   readonly id: ToField<ID>
+  /**
+   * Whether the `TokenPolicy` is "shared" (mutable) or "frozen"
+   * (immutable) - TBD.
+   */
   readonly isMutable: ToField<'bool'>
 
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: TokenPolicyCreatedFields<T>) {

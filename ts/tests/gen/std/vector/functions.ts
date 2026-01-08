@@ -2,6 +2,7 @@ import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, pure, vector } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
 
+/** Create an empty vector. */
 export function empty(tx: Transaction, typeArg: string) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::empty`,
@@ -10,6 +11,7 @@ export function empty(tx: Transaction, typeArg: string) {
   })
 }
 
+/** Return the length of the vector. */
 export function length(
   tx: Transaction,
   typeArg: string,
@@ -27,6 +29,10 @@ export interface BorrowArgs {
   i: bigint | TransactionArgument
 }
 
+/**
+ * Acquire an immutable reference to the `i`th element of the vector `v`.
+ * Aborts if `i` is out of bounds.
+ */
 export function borrow(tx: Transaction, typeArg: string, args: BorrowArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::borrow`,
@@ -40,6 +46,7 @@ export interface PushBackArgs {
   e: GenericArg
 }
 
+/** Add element `e` to the end of the vector `v`. */
 export function pushBack(tx: Transaction, typeArg: string, args: PushBackArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::push_back`,
@@ -53,6 +60,10 @@ export interface BorrowMutArgs {
   i: bigint | TransactionArgument
 }
 
+/**
+ * Return a mutable reference to the `i`th element in the vector `v`.
+ * Aborts if `i` is out of bounds.
+ */
 export function borrowMut(tx: Transaction, typeArg: string, args: BorrowMutArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::borrow_mut`,
@@ -61,6 +72,10 @@ export function borrowMut(tx: Transaction, typeArg: string, args: BorrowMutArgs)
   })
 }
 
+/**
+ * Pop an element from the end of vector `v`.
+ * Aborts if `v` is empty.
+ */
 export function popBack(
   tx: Transaction,
   typeArg: string,
@@ -73,6 +88,10 @@ export function popBack(
   })
 }
 
+/**
+ * Destroy the vector `v`.
+ * Aborts if `v` is not empty.
+ */
 export function destroyEmpty(
   tx: Transaction,
   typeArg: string,
@@ -91,6 +110,10 @@ export interface SwapArgs {
   j: bigint | TransactionArgument
 }
 
+/**
+ * Swaps the elements at the `i`th and `j`th indices in the vector `v`.
+ * Aborts if `i` or `j` is out of bounds.
+ */
 export function swap(tx: Transaction, typeArg: string, args: SwapArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::swap`,
@@ -99,6 +122,7 @@ export function swap(tx: Transaction, typeArg: string, args: SwapArgs) {
   })
 }
 
+/** Return an vector of size one containing element `e`. */
 export function singleton(tx: Transaction, typeArg: string, e: GenericArg) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::singleton`,
@@ -107,6 +131,7 @@ export function singleton(tx: Transaction, typeArg: string, e: GenericArg) {
   })
 }
 
+/** Reverses the order of the elements in the vector `v` in place. */
 export function reverse(
   tx: Transaction,
   typeArg: string,
@@ -124,6 +149,7 @@ export interface AppendArgs {
   other: Array<GenericArg> | TransactionArgument
 }
 
+/** Pushes all of the elements of the `other` vector into the `lhs` vector. */
 export function append(tx: Transaction, typeArg: string, args: AppendArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::append`,
@@ -132,6 +158,7 @@ export function append(tx: Transaction, typeArg: string, args: AppendArgs) {
   })
 }
 
+/** Return `true` if the vector `v` has no elements and `false` otherwise. */
 export function isEmpty(
   tx: Transaction,
   typeArg: string,
@@ -149,6 +176,10 @@ export interface ContainsArgs {
   e: GenericArg
 }
 
+/**
+ * Return true if `e` is in the vector `v`.
+ * Otherwise, returns false.
+ */
 export function contains(tx: Transaction, typeArg: string, args: ContainsArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::contains`,
@@ -162,6 +193,10 @@ export interface IndexOfArgs {
   e: GenericArg
 }
 
+/**
+ * Return `(true, i)` if `e` is in the vector `v` at index `i`.
+ * Otherwise, returns `(false, 0)`.
+ */
 export function indexOf(tx: Transaction, typeArg: string, args: IndexOfArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::index_of`,
@@ -175,6 +210,11 @@ export interface RemoveArgs {
   i: bigint | TransactionArgument
 }
 
+/**
+ * Remove the `i`th element of the vector `v`, shifting all subsequent elements.
+ * This is O(n) and preserves ordering of elements in the vector.
+ * Aborts if `i` is out of bounds.
+ */
 export function remove(tx: Transaction, typeArg: string, args: RemoveArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::remove`,
@@ -189,6 +229,13 @@ export interface InsertArgs {
   i: bigint | TransactionArgument
 }
 
+/**
+ * Insert `e` at position `i` in the vector `v`.
+ * If `i` is in bounds, this shifts the old `v[i]` and all subsequent elements to the right.
+ * If `i == v.length()`, this adds `e` to the end of the vector.
+ * This is O(n) and preserves ordering of elements in the vector.
+ * Aborts if `i > v.length()`
+ */
 export function insert(tx: Transaction, typeArg: string, args: InsertArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::insert`,
@@ -206,6 +253,11 @@ export interface SwapRemoveArgs {
   i: bigint | TransactionArgument
 }
 
+/**
+ * Swap the `i`th element of the vector `v` with the last element and then pop the vector.
+ * This is O(1), but does not preserve ordering of elements in the vector.
+ * Aborts if `i` is out of bounds.
+ */
 export function swapRemove(tx: Transaction, typeArg: string, args: SwapRemoveArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::swap_remove`,
@@ -219,6 +271,10 @@ export interface SkipArgs {
   n: bigint | TransactionArgument
 }
 
+/**
+ * Return a new vector containing the elements of `v` except the first `n` elements.
+ * If `n > length`, returns an empty vector.
+ */
 export function skip(tx: Transaction, typeArg: string, args: SkipArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::skip`,
@@ -232,6 +288,10 @@ export interface TakeArgs {
   n: bigint | TransactionArgument
 }
 
+/**
+ * Take the first `n` elements of the vector `v` and drop the rest.
+ * Aborts if `n` is greater than the length of `v`.
+ */
 export function take(tx: Transaction, typeArg: string, args: TakeArgs) {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::take`,
@@ -240,6 +300,7 @@ export function take(tx: Transaction, typeArg: string, args: TakeArgs) {
   })
 }
 
+/** Concatenate the vectors of `v` into a single vector, keeping the order of the elements. */
 export function flatten(
   tx: Transaction,
   typeArg: string,
