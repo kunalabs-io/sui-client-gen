@@ -1,0 +1,192 @@
+---
+source: generator/tests/snapshot_tests.rs
+expression: output
+---
+/* ============================== MultilineDoc =============================== */
+
+export function isMultilineDoc(type: string): boolean {
+  type = compressSuiType(type)
+  return type === `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::MultilineDoc`
+}
+
+export interface MultilineDocFields {
+  /**
+   * This field has
+   * multiple lines
+   * of documentation
+   */
+  data: ToField<'u64'>
+}
+
+export type MultilineDocReified = Reified<MultilineDoc, MultilineDocFields>
+
+/**
+ * A struct with multi-line documentation.
+ *
+ * This includes multiple paragraphs.
+ */
+export class MultilineDoc implements StructClass {
+  __StructClass = true as const
+
+  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::MultilineDoc` as const
+  static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
+
+  readonly $typeName = MultilineDoc.$typeName
+  readonly $fullTypeName: `${string}::test::MultilineDoc`
+  readonly $typeArgs: []
+  readonly $isPhantom = MultilineDoc.$isPhantom
+
+  /**
+   * This field has
+   * multiple lines
+   * of documentation
+   */
+  readonly data: ToField<'u64'>
+
+  private constructor(typeArgs: [], fields: MultilineDocFields) {
+    this.$fullTypeName = composeSuiType(
+      MultilineDoc.$typeName,
+      ...typeArgs
+    ) as `${string}::test::MultilineDoc`
+    this.$typeArgs = typeArgs
+
+    this.data = fields.data
+  }
+
+  static reified(): MultilineDocReified {
+    const reifiedBcs = MultilineDoc.bcs
+    return {
+      typeName: MultilineDoc.$typeName,
+      fullTypeName: composeSuiType(
+        MultilineDoc.$typeName,
+        ...[]
+      ) as `${string}::test::MultilineDoc`,
+      typeArgs: [] as [],
+      isPhantom: MultilineDoc.$isPhantom,
+      reifiedTypeArgs: [],
+      fromFields: (fields: Record<string, any>) => MultilineDoc.fromFields(fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => MultilineDoc.fromFieldsWithTypes(item),
+      fromBcs: (data: Uint8Array) => MultilineDoc.fromFields(reifiedBcs.parse(data)),
+      bcs: reifiedBcs,
+      fromJSONField: (field: any) => MultilineDoc.fromJSONField(field),
+      fromJSON: (json: Record<string, any>) => MultilineDoc.fromJSON(json),
+      fromSuiParsedData: (content: SuiParsedData) => MultilineDoc.fromSuiParsedData(content),
+      fromSuiObjectData: (content: SuiObjectData) => MultilineDoc.fromSuiObjectData(content),
+      fetch: async (client: SuiClient, id: string) => MultilineDoc.fetch(client, id),
+      new: (fields: MultilineDocFields) => {
+        return new MultilineDoc([], fields)
+      },
+      kind: 'StructClassReified',
+    }
+  }
+
+  static get r() {
+    return MultilineDoc.reified()
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<MultilineDoc>> {
+    return phantom(MultilineDoc.reified())
+  }
+
+  static get p() {
+    return MultilineDoc.phantom()
+  }
+
+  private static instantiateBcs() {
+    return bcs.struct('MultilineDoc', {
+      data: bcs.u64(),
+    })
+  }
+
+  private static cachedBcs: ReturnType<typeof MultilineDoc.instantiateBcs> | null = null
+
+  static get bcs(): ReturnType<typeof MultilineDoc.instantiateBcs> {
+    if (!MultilineDoc.cachedBcs) {
+      MultilineDoc.cachedBcs = MultilineDoc.instantiateBcs()
+    }
+    return MultilineDoc.cachedBcs
+  }
+
+  static fromFields(fields: Record<string, any>): MultilineDoc {
+    return MultilineDoc.reified().new({
+      data: decodeFromFields('u64', fields.data),
+    })
+  }
+
+  static fromFieldsWithTypes(item: FieldsWithTypes): MultilineDoc {
+    if (!isMultilineDoc(item.type)) {
+      throw new Error('not a MultilineDoc type')
+    }
+
+    return MultilineDoc.reified().new({
+      data: decodeFromFieldsWithTypes('u64', item.fields.data),
+    })
+  }
+
+  static fromBcs(data: Uint8Array): MultilineDoc {
+    return MultilineDoc.fromFields(MultilineDoc.bcs.parse(data))
+  }
+
+  toJSONField() {
+    return {
+      data: this.data.toString(),
+    }
+  }
+
+  toJSON() {
+    return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
+  }
+
+  static fromJSONField(field: any): MultilineDoc {
+    return MultilineDoc.reified().new({
+      data: decodeFromJSONField('u64', field.data),
+    })
+  }
+
+  static fromJSON(json: Record<string, any>): MultilineDoc {
+    if (json.$typeName !== MultilineDoc.$typeName) {
+      throw new Error(`not a MultilineDoc json object: expected '${MultilineDoc.$typeName}' but got '${json.$typeName}'`)
+    }
+
+    return MultilineDoc.fromJSONField(json)
+  }
+
+  static fromSuiParsedData(content: SuiParsedData): MultilineDoc {
+    if (content.dataType !== 'moveObject') {
+      throw new Error('not an object')
+    }
+    if (!isMultilineDoc(content.type)) {
+      throw new Error(`object at ${(content.fields as any).id} is not a MultilineDoc object`)
+    }
+    return MultilineDoc.fromFieldsWithTypes(content)
+  }
+
+  static fromSuiObjectData(data: SuiObjectData): MultilineDoc {
+    if (data.bcs) {
+      if (data.bcs.dataType !== 'moveObject' || !isMultilineDoc(data.bcs.type)) {
+        throw new Error(`object at is not a MultilineDoc object`)
+      }
+
+      return MultilineDoc.fromBcs(fromBase64(data.bcs.bcsBytes))
+    }
+    if (data.content) {
+      return MultilineDoc.fromSuiParsedData(data.content)
+    }
+    throw new Error(
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+    )
+  }
+
+  static async fetch(client: SuiClient, id: string): Promise<MultilineDoc> {
+    const res = await client.getObject({ id, options: { showBcs: true } })
+    if (res.error) {
+      throw new Error(`error fetching MultilineDoc object at id ${id}: ${res.error.code}`)
+    }
+    if (res.data?.bcs?.dataType !== 'moveObject' || !isMultilineDoc(res.data.bcs.type)) {
+      throw new Error(`object at id ${id} is not a MultilineDoc object`)
+    }
+
+    return MultilineDoc.fromSuiObjectData(res.data)
+  }
+}

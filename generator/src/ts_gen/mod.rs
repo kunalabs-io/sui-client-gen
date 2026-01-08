@@ -8,11 +8,13 @@
 
 mod builder;
 pub mod compat;
+mod doc_utils;
 mod enums;
 mod env_config;
 mod functions;
 mod imports;
 mod init;
+mod jsdoc;
 mod structs;
 mod utils;
 

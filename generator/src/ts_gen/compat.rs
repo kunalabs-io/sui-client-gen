@@ -836,6 +836,7 @@ mod tests {
             ts_name: name.to_string(),
             move_name: name.to_string(),
             field_type: FieldTypeIR::Primitive(prim_type.to_string()),
+            doc_comment: None,
         }
     }
 
@@ -854,6 +855,7 @@ mod tests {
             uses_phantom_struct_args: false,
             has_non_phantom_type_params: false,
             uses_field_to_json: false,
+            doc_comment: None,
         }
     }
 

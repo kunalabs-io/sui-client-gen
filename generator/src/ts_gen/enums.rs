@@ -7,6 +7,8 @@
 
 use indoc::formatdoc;
 
+use super::doc_utils::process_doc_string;
+use super::jsdoc::format_jsdoc;
 use super::structs::{
     is_balance_type, is_option_type, is_primitive_like_type, FieldIR, PackageInfo, TypeParamIR,
 };
@@ -30,6 +32,8 @@ pub struct EnumIR {
     pub uses_address: bool,
     /// Whether any variant has phantom struct type args
     pub uses_phantom_struct_args: bool,
+    /// Enum-level documentation from Move source
+    pub doc_comment: Option<String>,
 }
 
 /// Represents a single enum variant.
@@ -41,6 +45,8 @@ pub struct EnumVariantIR {
     pub fields: Vec<FieldIR>,
     /// Whether this is a tuple variant (positional fields) vs struct variant (named fields)
     pub is_tuple: bool,
+    /// Variant-level documentation from Move source
+    pub doc_comment: Option<String>,
 }
 
 impl EnumVariantIR {
@@ -64,6 +70,11 @@ impl EnumIR {
             "/* ============================== {} =============================== */",
             self.name
         ));
+
+        // Enum-level JSDoc if available
+        if let Some(jsdoc) = format_jsdoc(&self.doc_comment, "") {
+            sections.push(jsdoc);
+        }
 
         // Type guard function
         sections.push(self.emit_type_guard());
@@ -557,7 +568,7 @@ impl EnumIR {
         let type_args_string = self.emit_type_args_string();
         let variant_full_type_name = self.emit_variant_full_type_name();
 
-        if variant.is_unit() {
+        let variant_body = if variant.is_unit() {
             // Unit variant - no fields
             formatdoc! {r#"
                 export type {class_name}Fields = Record<string, never>
@@ -677,6 +688,13 @@ impl EnumIR {
                 to_json_fields = to_json_fields,
                 fields_type = fields_type,
             }
+        };
+
+        // Add variant-level JSDoc if available
+        if let Some(jsdoc) = format_jsdoc(&variant.doc_comment, "") {
+            format!("{}\n{}", jsdoc, variant_body)
+        } else {
+            variant_body
         }
     }
 
@@ -689,23 +707,43 @@ impl EnumIR {
             let fields: Vec<String> = variant
                 .fields
                 .iter()
-                .map(|f| format!("ToField<{}>", f.field_type.to_ts_type()))
+                .map(|f| {
+                    let type_str = format!("ToField<{}>", f.field_type.to_ts_type());
+                    // Add inline comment for tuple fields if doc exists
+                    if let Some(doc) = &f.doc_comment {
+                        let processed = process_doc_string(doc);
+                        if !processed.is_empty() {
+                            format!("{},  // {}", type_str, processed.replace("\n", " "))
+                        } else {
+                            format!("{},", type_str)
+                        }
+                    } else {
+                        format!("{},", type_str)
+                    }
+                })
                 .collect();
 
             formatdoc! {r#"
                 export type {class_name}Fields{type_params_def} = [
-                {fields},
+                {fields}
                 ]"#,
                 class_name = class_name,
                 type_params_def = type_params_def,
-                fields = fields.join(",\n"),
+                fields = fields.join("\n"),
             }
         } else {
             // Struct variants use interface
             let fields: Vec<String> = variant
                 .fields
                 .iter()
-                .map(|f| format!("  {}: ToField<{}>", f.ts_name, f.field_type.to_ts_type()))
+                .map(|f| {
+                    let mut parts = Vec::new();
+                    if let Some(jsdoc) = format_jsdoc(&f.doc_comment, "  ") {
+                        parts.push(jsdoc);
+                    }
+                    parts.push(format!("  {}: ToField<{}>", f.ts_name, f.field_type.to_ts_type()));
+                    parts.join("\n")
+                })
                 .collect();
 
             formatdoc! {r#"
@@ -726,7 +764,15 @@ impl EnumIR {
                 .fields
                 .iter()
                 .enumerate()
-                .map(|(i, f)| format!("  readonly {}: ToField<{}>", i, f.field_type.to_ts_type()))
+                .map(|(i, f)| {
+                    let mut parts = Vec::new();
+                    // Add field JSDoc if available
+                    if let Some(jsdoc) = format_jsdoc(&f.doc_comment, "  ") {
+                        parts.push(jsdoc);
+                    }
+                    parts.push(format!("  readonly {}: ToField<{}>", i, f.field_type.to_ts_type()));
+                    parts.join("\n")
+                })
                 .collect::<Vec<_>>()
                 .join("\n");
         }
@@ -735,11 +781,17 @@ impl EnumIR {
             .fields
             .iter()
             .map(|f| {
-                format!(
+                let mut parts = Vec::new();
+                // Add field JSDoc if available
+                if let Some(jsdoc) = format_jsdoc(&f.doc_comment, "  ") {
+                    parts.push(jsdoc);
+                }
+                parts.push(format!(
                     "  readonly {}: ToField<{}>",
                     f.ts_name,
                     f.field_type.to_ts_type()
-                )
+                ));
+                parts.join("\n")
             })
             .collect::<Vec<_>>()
             .join("\n")
@@ -1549,16 +1601,19 @@ mod tests {
                     name: "Active".to_string(),
                     fields: vec![],
                     is_tuple: false,
+                    doc_comment: None,
                 },
                 EnumVariantIR {
                     name: "Inactive".to_string(),
                     fields: vec![],
                     is_tuple: false,
+                    doc_comment: None,
                 },
             ],
             uses_vector: false,
             uses_address: false,
             uses_phantom_struct_args: false,
+            doc_comment: None,
         };
 
         let output = enum_ir.emit_body();
