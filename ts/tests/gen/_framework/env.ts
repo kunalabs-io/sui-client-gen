@@ -37,6 +37,7 @@ const envRegistry: Record<string, EnvConfig> = {}
 // Active environment state
 let activeEnv: EnvConfig | null = null
 let activeEnvName: string | null = null
+let publishedAtOverrides: Record<string, string> = {}
 
 /**
  * Register an environment configuration.
@@ -49,25 +50,32 @@ export function registerEnv(name: string, config: EnvConfig): void {
 /**
  * Set the active environment by name.
  * @param name - The name of a registered environment
+ * @param overrides - Optional map of package names to publishedAt addresses to override
  * @throws Error if the environment is not registered
  */
-export function setActiveEnv(name: string): void {
+export function setActiveEnv(name: string, overrides?: Record<string, string>): void {
   if (!envRegistry[name]) {
     const available = Object.keys(envRegistry).join(', ') || '(none registered)'
     throw new Error(`Environment '${name}' not found. Available: ${available}`)
   }
   activeEnv = envRegistry[name]
   activeEnvName = name
+  publishedAtOverrides = overrides ?? {}
 }
 
 /**
  * Set the active environment using a custom config object.
  * Use this to provide a custom environment configuration at runtime.
  * @param config - A custom EnvConfig object
+ * @param overrides - Optional map of package names to publishedAt addresses to override
  */
-export function setActiveEnvWithConfig(config: EnvConfig): void {
+export function setActiveEnvWithConfig(
+  config: EnvConfig,
+  overrides?: Record<string, string>
+): void {
   activeEnv = config
   activeEnvName = 'custom'
+  publishedAtOverrides = overrides ?? {}
 }
 
 /**
@@ -125,9 +133,15 @@ export function getDependencyConfig(pkgName: string): PackageConfig {
 /**
  * Get the publishedAt address for function calls.
  * Works for both packages and dependencies.
+ * Checks publishedAtOverrides first if set via setActiveEnv/setActiveEnvWithConfig.
  * @throws Error if package not found
  */
 export function getPublishedAt(pkgName: string): string {
+  // Check overrides first
+  if (publishedAtOverrides[pkgName]) {
+    return publishedAtOverrides[pkgName]
+  }
+
   const env = getActiveEnv()
   const config = env.packages[pkgName] || env.dependencies[pkgName]
   if (!config) {
