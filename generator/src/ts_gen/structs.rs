@@ -183,6 +183,9 @@ impl StructIR {
         // Reified type alias
         sections.push(self.emit_reified_type());
 
+        // JSON type aliases
+        sections.push(self.emit_json_types());
+
         // The main class
         sections.push(self.emit_class());
 
@@ -223,6 +226,7 @@ impl StructIR {
                 "Reified",
                 "StructClass",
                 "ToField",
+                "ToJSON",
                 "ToTypeStr",
                 "decodeFromFields",
                 "decodeFromFieldsWithTypes",
@@ -235,6 +239,7 @@ impl StructIR {
                 "Reified",
                 "StructClass",
                 "ToField",
+                "ToJSON",
                 "ToTypeStr",
                 "assertFieldsWithTypesArgsMatch",
                 "assertReifiedTypeArgsMatch",
@@ -430,6 +435,45 @@ impl StructIR {
         }
     }
 
+    fn emit_json_types(&self) -> String {
+        let type_params_decl = self.emit_type_params_decl();
+        let type_params_use = self.emit_type_params_use();
+
+        // Generate field types for JSONField
+        let field_types: Vec<String> = self
+            .fields
+            .iter()
+            .map(|f| format!("  {}: {}", f.ts_name, f.field_type.to_json_field_type()))
+            .collect();
+
+        let json_field_body = if field_types.is_empty() {
+            "{}".to_string()
+        } else {
+            format!("{{\n{}\n}}", field_types.join("\n"))
+        };
+
+        // Generate $typeArgs array
+        let type_args_array = if self.type_params.is_empty() {
+            "[]".to_string()
+        } else {
+            self.emit_to_type_str_args()
+        };
+
+        formatdoc! {r#"
+            export type {name}JSONField{type_params_decl} = {json_field_body}
+
+            export type {name}JSON{type_params_decl} = {{
+              $typeName: typeof {name}.$typeName
+              $typeArgs: {type_args_array}
+            }} & {name}JSONField{type_params_use}"#,
+            name = self.name,
+            type_params_decl = type_params_decl,
+            type_params_use = type_params_use,
+            json_field_body = json_field_body,
+            type_args_array = type_args_array,
+        }
+    }
+
     fn emit_class(&self) -> String {
         // For now, handle the no-type-params case
         if self.type_params.is_empty() {
@@ -617,13 +661,13 @@ impl StructIR {
                 return {name}.fromFields({name}.bcs.parse(data))
               }}
 
-              toJSONField(): Record<string, any> {{
+              toJSONField(): {name}JSONField {{
                 return {{
             {to_json_fields}
                 }}
               }}
 
-              toJSON(): Record<string, any> {{
+              toJSON(): {name}JSON {{
                 return {{ $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }}
               }}
 
@@ -1011,13 +1055,13 @@ impl StructIR {
                 {from_bcs_body}
               }}
 
-              toJSONField(): Record<string, any> {{
+              toJSONField(): {name}JSONField{type_params_use} {{
                 return {{
             {to_json_fields}
                 }}
               }}
 
-              toJSON(): Record<string, any> {{
+              toJSON(): {name}JSON{type_params_use} {{
                 return {{ $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }}
               }}
 
@@ -1385,6 +1429,27 @@ impl StructIR {
             .map(|p| format!("{}: {}", p.name, p.name))
             .collect::<Vec<_>>()
             .join(", ")
+    }
+
+    /// Emit ToTypeStr args for JSON type alias: `[ToTypeStr<T>, ToTypeStr<U>]` or `[PhantomToTypeStr<T>]` for phantom params
+    fn emit_to_type_str_args(&self) -> String {
+        if self.type_params.is_empty() {
+            return "[]".to_string();
+        }
+
+        let args: Vec<String> = self
+            .type_params
+            .iter()
+            .map(|p| {
+                if p.is_phantom {
+                    format!("PhantomToTypeStr<{}>", p.name)
+                } else {
+                    format!("ToTypeStr<{}>", p.name)
+                }
+            })
+            .collect();
+
+        format!("[{}]", args.join(", "))
     }
 
     /// Emit reified arg names for class reified() method: `T, U`
@@ -1888,6 +1953,7 @@ impl FieldTypeIR {
             FieldTypeIR::Datatype {
                 class_name,
                 type_args,
+                type_arg_is_phantom,
                 kind,
                 ..
             } => {
@@ -1901,7 +1967,37 @@ impl FieldTypeIR {
                 if type_args.is_empty() {
                     type_name
                 } else {
-                    let args: Vec<String> = type_args.iter().map(|a| a.to_json_ts_type()).collect();
+                    // Wrap phantom args with ToPhantom<> (same as to_ts_type)
+                    let args: Vec<String> = type_args
+                        .iter()
+                        .zip(type_arg_is_phantom.iter())
+                        .map(|(arg, is_phantom)| {
+                            let ts_type = arg.to_json_ts_type();
+                            if *is_phantom {
+                                match arg {
+                                    // Wrap complex types (datatype and vector) with ToPhantom
+                                    FieldTypeIR::Datatype { .. } | FieldTypeIR::Vector(_) => {
+                                        format!("ToPhantom<{}>", ts_type)
+                                    }
+                                    // Also wrap non-phantom type params when they go into phantom positions
+                                    FieldTypeIR::TypeParam {
+                                        is_phantom: param_is_phantom,
+                                        ..
+                                    } => {
+                                        if !param_is_phantom {
+                                            format!("ToPhantom<{}>", ts_type)
+                                        } else {
+                                            ts_type
+                                        }
+                                    }
+                                    // Primitives don't need wrapping
+                                    _ => ts_type,
+                                }
+                            } else {
+                                ts_type
+                            }
+                        })
+                        .collect();
                     format!("{}<{}>", type_name, args.join(", "))
                 }
             }
@@ -1929,6 +2025,62 @@ impl FieldTypeIR {
                 }
             }
             FieldTypeIR::TypeParam { index, .. } => format!("${{this.$typeArgs[{}]}}", index),
+        }
+    }
+
+    /// Generate the TypeScript type for this field in JSONField type alias
+    /// This aligns with ToJSON<T> conditional type and runtime fieldToJSON() behavior
+    pub fn to_json_field_type(&self) -> String {
+        match self {
+            FieldTypeIR::Primitive(p) => match p.as_str() {
+                // Large integers serialize as strings
+                "u64" | "u128" | "u256" => "string".to_string(),
+                "bool" => "boolean".to_string(),
+                "u8" | "u16" | "u32" => "number".to_string(),
+                "address" => "string".to_string(),
+                _ => "any".to_string(), // fallback for unknown primitives
+            },
+            FieldTypeIR::Vector(inner) => {
+                // Vectors become arrays of the inner type's JSON field type
+                let inner_type = inner.to_json_field_type();
+                // Wrap in parentheses if it's a union type to fix precedence
+                // e.g., "(string | null)[]" not "string | null[]"
+                if inner_type.contains(" | ") {
+                    format!("({})[]", inner_type)
+                } else {
+                    format!("{}[]", inner_type)
+                }
+            }
+            FieldTypeIR::Datatype {
+                full_type_name,
+                type_args,
+                kind,
+                ..
+            } => {
+                // Primitive-like types (String, ID, UID, Url, TypeName) serialize as strings
+                if is_primitive_like_type(full_type_name) {
+                    "string".to_string()
+                } else if is_option_type(full_type_name) {
+                    // Option<T> becomes inner_type | null
+                    if let Some(inner) = type_args.first() {
+                        format!("{} | null", inner.to_json_field_type())
+                    } else {
+                        "any | null".to_string()
+                    }
+                } else if *kind == DatatypeKind::Enum {
+                    // For enums, use ToJSON<EnumVariant> to handle union type distribution
+                    format!("ToJSON<{}>", self.to_json_ts_type())
+                } else {
+                    // Regular structs use ToJSON wrapper
+                    // ToJSON<Struct> resolves to ReturnType<Struct['toJSONField']>
+                    // This avoids needing to import {Struct}JSONField from dependencies
+                    format!("ToJSON<{}>", self.to_json_ts_type())
+                }
+            }
+            FieldTypeIR::TypeParam { name, .. } => {
+                // Type parameters use ToJSON for proper mapping
+                format!("ToJSON<{}>", name)
+            }
         }
     }
 }

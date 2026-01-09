@@ -21,6 +21,21 @@ export interface WithSpecialTypesInVectorsFields<T extends TypeArgument> {
 
 export type WithSpecialTypesInVectorsReified<T extends TypeArgument> = Reified<WithSpecialTypesInVectors<T>, WithSpecialTypesInVectorsFields<T>>
 
+export type WithSpecialTypesInVectorsJSONField<T extends TypeArgument> = {
+  id: string
+  string: string[]
+  asciiString: string[]
+  idField: string[]
+  bar: ToJSON<Bar>[]
+  option: (string | null)[]
+  optionGeneric: (ToJSON<T> | null)[]
+}
+
+export type WithSpecialTypesInVectorsJSON<T extends TypeArgument> = {
+  $typeName: typeof WithSpecialTypesInVectors.$typeName
+  $typeArgs: [ToTypeStr<T>]
+} & WithSpecialTypesInVectorsJSONField<T>
+
 export class WithSpecialTypesInVectors<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -165,7 +180,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
                 return WithSpecialTypesInVectors.fromFields(typeArg, WithSpecialTypesInVectors.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): WithSpecialTypesInVectorsJSONField<T> {
     return {
       id: this.id,
       string: fieldToJSON<Vector<String>>(`vector<${String.$typeName}>`, this.string),
@@ -177,7 +192,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): WithSpecialTypesInVectorsJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

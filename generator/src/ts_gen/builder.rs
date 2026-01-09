@@ -594,6 +594,7 @@ fn emit_combined_imports_with_enums(
         "Reified",
         "StructClass",
         "ToField",
+        "ToJSON",
         "ToTypeStr",
         "decodeFromFields",
         "decodeFromFieldsWithTypes",

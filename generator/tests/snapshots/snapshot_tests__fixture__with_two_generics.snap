@@ -16,6 +16,16 @@ export interface WithTwoGenericsFields<T extends TypeArgument, U extends TypeArg
 
 export type WithTwoGenericsReified<T extends TypeArgument, U extends TypeArgument> = Reified<WithTwoGenerics<T, U>, WithTwoGenericsFields<T, U>>
 
+export type WithTwoGenericsJSONField<T extends TypeArgument, U extends TypeArgument> = {
+  genericField1: ToJSON<T>
+  genericField2: ToJSON<U>
+}
+
+export type WithTwoGenericsJSON<T extends TypeArgument, U extends TypeArgument> = {
+  $typeName: typeof WithTwoGenerics.$typeName
+  $typeArgs: [ToTypeStr<T>, ToTypeStr<U>]
+} & WithTwoGenericsJSONField<T, U>
+
 export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -134,14 +144,14 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> imp
     return WithTwoGenerics.fromFields(typeArgs, WithTwoGenerics.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): WithTwoGenericsJSONField<T, U> {
     return {
       genericField1: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.genericField1),
       genericField2: fieldToJSON<U>(`${this.$typeArgs[1]}`, this.genericField2),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): WithTwoGenericsJSON<T, U> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

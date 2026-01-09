@@ -16,6 +16,15 @@ export interface EscapedDocFields {
 
 export type EscapedDocReified = Reified<EscapedDoc, EscapedDocFields>
 
+export type EscapedDocJSONField = {
+  value: string
+}
+
+export type EscapedDocJSON = {
+  $typeName: typeof EscapedDoc.$typeName
+  $typeArgs: []
+} & EscapedDocJSONField
+
 /** Doc comment with *\/ in the middle must be escaped */
 export class EscapedDoc implements StructClass {
   __StructClass = true as const
@@ -116,13 +125,13 @@ export class EscapedDoc implements StructClass {
     return EscapedDoc.fromFields(EscapedDoc.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): EscapedDocJSONField {
     return {
       value: this.value.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): EscapedDocJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

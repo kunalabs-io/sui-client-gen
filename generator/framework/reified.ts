@@ -188,16 +188,20 @@ export type ToJSON<T extends TypeArgument> = T extends 'bool'
                         ? string
                         : T extends { $typeName: '0x2::url::Url' }
                           ? string
-                          : T extends {
-                                $typeName: '0x1::option::Option'
-                                __inner: infer U extends TypeArgument
-                              }
-                            ? ToJSON<U> | null
+                          : T extends { $typeName: '0x1::type_name::TypeName' }
+                            ? string
+                            : T extends {
+                                  $typeName: '0x1::option::Option'
+                                  __inner: infer U extends TypeArgument
+                                }
+                              ? ToJSON<U> | null
                             : T extends VectorClass
                               ? ReturnType<T['toJSONField']>
                               : T extends StructClass
                                 ? ReturnType<T['toJSONField']>
-                                : never
+                                : T extends EnumVariantClass
+                                  ? ReturnType<T['toJSONField']>
+                                  : never
 
 export type ToField<T extends TypeArgument> = T extends 'bool'
   ? boolean
@@ -225,18 +229,20 @@ export type ToField<T extends TypeArgument> = T extends 'bool'
                         ? string
                         : T extends { $typeName: '0x2::url::Url' }
                           ? string
-                          : T extends {
-                                $typeName: '0x1::option::Option'
-                                __inner: infer U extends TypeArgument
-                              }
-                            ? ToField<U> | null
-                            : T extends VectorClass
-                              ? T['elements']
-                              : T extends StructClass
-                                ? T
-                                : T extends EnumVariantClass
+                          : T extends { $typeName: '0x1::type_name::TypeName' }
+                            ? string
+                            : T extends {
+                                  $typeName: '0x1::option::Option'
+                                  __inner: infer U extends TypeArgument
+                                }
+                              ? ToField<U> | null
+                              : T extends VectorClass
+                                ? T['elements']
+                                : T extends StructClass
                                   ? T
-                                  : never
+                                  : T extends EnumVariantClass
+                                    ? T
+                                    : never
 
 const Address = bcs.bytes(32).transform({
   input: (val: string) => fromHex(val),
@@ -430,6 +436,7 @@ export function fieldToJSON<T extends TypeArgument>(type: string, field: ToField
     case '0x2::url::Url':
     case '0x2::object::ID':
     case '0x2::object::UID':
+    case '0x1::type_name::TypeName':
       return field as any
     case '0x1::option::Option': {
       if (field === null) {

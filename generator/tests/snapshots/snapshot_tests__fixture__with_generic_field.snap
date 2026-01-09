@@ -16,6 +16,16 @@ export interface WithGenericFieldFields<T extends TypeArgument> {
 
 export type WithGenericFieldReified<T extends TypeArgument> = Reified<WithGenericField<T>, WithGenericFieldFields<T>>
 
+export type WithGenericFieldJSONField<T extends TypeArgument> = {
+  id: string
+  genericField: ToJSON<T>
+}
+
+export type WithGenericFieldJSON<T extends TypeArgument> = {
+  $typeName: typeof WithGenericField.$typeName
+  $typeArgs: [ToTypeStr<T>]
+} & WithGenericFieldJSONField<T>
+
 export class WithGenericField<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -135,14 +145,14 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
                 return WithGenericField.fromFields(typeArg, WithGenericField.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): WithGenericFieldJSONField<T> {
     return {
       id: this.id,
       genericField: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.genericField),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): WithGenericFieldJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

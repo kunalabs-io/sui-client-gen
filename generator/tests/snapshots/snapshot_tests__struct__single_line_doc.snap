@@ -16,6 +16,15 @@ export interface DocumentedStructFields {
 
 export type DocumentedStructReified = Reified<DocumentedStruct, DocumentedStructFields>
 
+export type DocumentedStructJSONField = {
+  value: string
+}
+
+export type DocumentedStructJSON = {
+  $typeName: typeof DocumentedStruct.$typeName
+  $typeArgs: []
+} & DocumentedStructJSONField
+
 /** A struct with single-line documentation */
 export class DocumentedStruct implements StructClass {
   __StructClass = true as const
@@ -116,13 +125,13 @@ export class DocumentedStruct implements StructClass {
     return DocumentedStruct.fromFields(DocumentedStruct.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): DocumentedStructJSONField {
     return {
       value: this.value.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): DocumentedStructJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

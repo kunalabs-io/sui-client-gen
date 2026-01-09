@@ -27,6 +27,27 @@ export interface WithSpecialTypesFields<T extends PhantomTypeArgument, U extends
 
 export type WithSpecialTypesReified<T extends PhantomTypeArgument, U extends TypeArgument> = Reified<WithSpecialTypes<T, U>, WithSpecialTypesFields<T, U>>
 
+export type WithSpecialTypesJSONField<T extends PhantomTypeArgument, U extends TypeArgument> = {
+  id: string
+  string: string
+  asciiString: string
+  url: string
+  idField: string
+  uid: string
+  balance: ToJSON<Balance<ToPhantom<SUI>>>
+  option: string | null
+  optionObj: ToJSON<Bar> | null
+  optionNone: string | null
+  balanceGeneric: ToJSON<Balance<T>>
+  optionGeneric: ToJSON<U> | null
+  optionGenericNone: ToJSON<U> | null
+}
+
+export type WithSpecialTypesJSON<T extends PhantomTypeArgument, U extends TypeArgument> = {
+  $typeName: typeof WithSpecialTypes.$typeName
+  $typeArgs: [PhantomToTypeStr<T>, ToTypeStr<U>]
+} & WithSpecialTypesJSONField<T, U>
+
 export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -200,7 +221,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     return WithSpecialTypes.fromFields(typeArgs, WithSpecialTypes.bcs(toBcs(typeArgs[1])).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): WithSpecialTypesJSONField<T, U> {
     return {
       id: this.id,
       string: this.string,
@@ -218,7 +239,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): WithSpecialTypesJSON<T, U> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

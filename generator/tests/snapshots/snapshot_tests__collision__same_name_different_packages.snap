@@ -17,6 +17,17 @@ export interface MultiCoinHolderFields {
 
 export type MultiCoinHolderReified = Reified<MultiCoinHolder, MultiCoinHolderFields>
 
+export type MultiCoinHolderJSONField = {
+  id: string
+  suiCoin: ToJSON<Coin<ToPhantom<SUI>>>
+  customCoin: ToJSON<CoinCustom>
+}
+
+export type MultiCoinHolderJSON = {
+  $typeName: typeof MultiCoinHolder.$typeName
+  $typeArgs: []
+} & MultiCoinHolderJSONField
+
 export class MultiCoinHolder implements StructClass {
   __StructClass = true as const
 
@@ -125,7 +136,7 @@ export class MultiCoinHolder implements StructClass {
     return MultiCoinHolder.fromFields(MultiCoinHolder.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): MultiCoinHolderJSONField {
     return {
       id: this.id,
       suiCoin: this.suiCoin.toJSONField(),
@@ -133,7 +144,7 @@ export class MultiCoinHolder implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): MultiCoinHolderJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

@@ -28,6 +28,28 @@ export interface FooFields<T extends TypeArgument> {
 
 export type FooReified<T extends TypeArgument> = Reified<Foo<T>, FooFields<T>>
 
+export type FooJSONField<T extends TypeArgument> = {
+  id: string
+  generic: ToJSON<T>
+  reifiedPrimitiveVec: string[]
+  reifiedObjectVec: ToJSON<Bar>[]
+  genericVec: ToJSON<T>[]
+  genericVecNested: ToJSON<WithTwoGenerics<T, 'u8'>>[]
+  twoGenerics: ToJSON<WithTwoGenerics<T, Bar>>
+  twoGenericsReifiedPrimitive: ToJSON<WithTwoGenerics<'u16', 'u64'>>
+  twoGenericsReifiedObject: ToJSON<WithTwoGenerics<Bar, Bar>>
+  twoGenericsNested: ToJSON<WithTwoGenerics<T, WithTwoGenerics<'u8', 'u8'>>>
+  twoGenericsReifiedNested: ToJSON<WithTwoGenerics<Bar, WithTwoGenerics<'u8', 'u8'>>>
+  twoGenericsNestedVec: ToJSON<WithTwoGenerics<Bar, Vector<WithTwoGenerics<T, 'u8'>>>>[]
+  dummy: ToJSON<Dummy>
+  other: ToJSON<StructFromOtherModule>
+}
+
+export type FooJSON<T extends TypeArgument> = {
+  $typeName: typeof Foo.$typeName
+  $typeArgs: [ToTypeStr<T>]
+} & FooJSONField<T>
+
 export class Foo<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -207,7 +229,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
                 return Foo.fromFields(typeArg, Foo.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): FooJSONField<T> {
     return {
       id: this.id,
       generic: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.generic),
@@ -226,7 +248,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): FooJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
