@@ -69,7 +69,10 @@ export function setActiveEnv(name: string, overrides?: Record<string, string>): 
  * @param config - A custom EnvConfig object
  * @param overrides - Optional map of package names to publishedAt addresses to override
  */
-export function setActiveEnvWithConfig(config: EnvConfig, overrides?: Record<string, string>): void {
+export function setActiveEnvWithConfig(
+  config: EnvConfig,
+  overrides?: Record<string, string>,
+): void {
   activeEnv = config
   activeEnvName = 'custom'
   publishedAtOverrides = overrides ?? {}
@@ -163,8 +166,8 @@ export function getTypeOrigin(pkgName: string, moduleTypePath: string): string {
   const origin = config.typeOrigins[moduleTypePath]
   if (!origin) {
     throw new Error(
-      `Type origin for '${moduleTypePath}' not found in package '${pkgName}'. ` +
-        `Available: ${Object.keys(config.typeOrigins).join(', ') || '(none)'}`
+      `Type origin for '${moduleTypePath}' not found in package '${pkgName}'. `
+        + `Available: ${Object.keys(config.typeOrigins).join(', ') || '(none)'}`,
     )
   }
   return origin

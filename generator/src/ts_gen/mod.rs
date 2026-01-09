@@ -11,6 +11,7 @@ pub mod compat;
 mod doc_utils;
 mod enums;
 mod env_config;
+mod format;
 mod functions;
 mod imports;
 mod init;
@@ -36,3 +37,4 @@ pub use utils::{
     JS_RESERVED_WORDS,
 };
 pub use env_config::{gen_envs_index, EnvConfigIR, EnvPackageConfigIR};
+pub use format::TsFormatter;

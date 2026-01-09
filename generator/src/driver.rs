@@ -14,12 +14,12 @@ use move_model_2::source_model;
 use move_symbol_pool::Symbol;
 
 use crate::graphql::GraphQLCache;
-use crate::io::{clean_output, write_str_to_file};
+use crate::io::{clean_output, write_str_to_file, write_ts_file};
 use crate::layout::OutputLayout;
 use crate::manifest::{is_default_environment, parse_gen_manifest_from_file};
 use crate::model_builder::{TypeOriginTable, VersionTable};
 use crate::multi_env::{build_multi_env_models, MultiEnvResult};
-use crate::ts_gen::{self, gen_envs_index, gen_module_structs, EnvConfigIR, EnvPackageConfigIR};
+use crate::ts_gen::{self, gen_envs_index, gen_module_structs, EnvConfigIR, EnvPackageConfigIR, TsFormatter};
 use crate::framework_sources;
 
 /// Options for running the new generator.
@@ -113,9 +113,12 @@ pub async fn run(opts: RunOptions) -> Result<()> {
     let output = OutputLayout::new(out_dir);
     std::fs::create_dir_all(&output.root)?;
 
+    // Create TypeScript formatter
+    let formatter = TsFormatter::new();
+
     // Generate _framework
     writeln!(progress_output, "{}", "GENERATING FRAMEWORK".green().bold())?;
-    generate_framework(&output, &pkgs, &multi_env_result)?;
+    generate_framework(&output, &pkgs, &multi_env_result, &formatter)?;
 
     // Generate packages
     writeln!(progress_output, "{}", "GENERATING PACKAGES".green().bold())?;
@@ -127,13 +130,12 @@ pub async fn run(opts: RunOptions) -> Result<()> {
         &multi_env_result.default_model.type_origin_table,
         &multi_env_result.default_model.version_table,
         &output,
+        &formatter,
     )?;
 
-    // Generate .eslintrc.json
-    write_str_to_file(
-        framework_sources::ESLINTRC,
-        &output.root.join(".eslintrc.json"),
-    )?;
+    // Generate ignore files to skip linting/formatting of generated code
+    write_str_to_file("*\n", &output.root.join(".prettierignore"))?;
+    write_str_to_file("*\n", &output.root.join(".eslintignore"))?;
 
     writeln!(progress_output, "{}", "DONE".green().bold())?;
     Ok(())
@@ -144,32 +146,39 @@ fn generate_framework(
     output: &OutputLayout,
     pkgs: &BTreeMap<AccountAddress, source_model::Package>,
     multi_env: &MultiEnvResult,
+    formatter: &TsFormatter,
 ) -> Result<()> {
     std::fs::create_dir_all(&output.framework_dir)?;
 
-    write_str_to_file(
+    write_ts_file(
+        formatter,
         framework_sources::LOADER,
         &output.framework_dir.join("loader.ts"),
     )?;
-    write_str_to_file(
+    write_ts_file(
+        formatter,
         framework_sources::UTIL,
         &output.framework_dir.join("util.ts"),
     )?;
-    write_str_to_file(
+    write_ts_file(
+        formatter,
         framework_sources::REIFIED,
         &output.framework_dir.join("reified.ts"),
     )?;
-    write_str_to_file(
+    write_ts_file(
+        formatter,
         framework_sources::VECTOR,
         &output.framework_dir.join("vector.ts"),
     )?;
-    write_str_to_file(
+    write_ts_file(
+        formatter,
         framework_sources::ENV,
         &output.framework_dir.join("env.ts"),
     )?;
 
     // Generate init-loader.ts
-    write_str_to_file(
+    write_ts_file(
+        formatter,
         &ts_gen::gen_init_loader(
             &pkgs.keys().copied().collect::<Vec<_>>(),
             &multi_env.folder_names,
@@ -209,11 +218,12 @@ fn generate_framework(
         );
 
         // Generate _envs/<env_name>.ts
-        write_str_to_file(&env_config.emit(), &envs_dir.join(format!("{}.ts", env_name)))?;
+        write_ts_file(formatter, &env_config.emit(), &envs_dir.join(format!("{}.ts", env_name)))?;
     }
 
     // Generate _envs/index.ts
-    write_str_to_file(
+    write_ts_file(
+        formatter,
         &gen_envs_index(&multi_env.all_envs, &multi_env.default_env),
         &envs_dir.join("index.ts"),
     )?;
@@ -292,6 +302,7 @@ fn gen_packages(
     type_origin_table: &TypeOriginTable,
     version_table: &VersionTable,
     output: &OutputLayout,
+    formatter: &TsFormatter,
 ) -> Result<()> {
     if pkgs.is_empty() {
         return Ok(());
@@ -305,7 +316,8 @@ fn gen_packages(
         // Package addresses are now in _envs/<env>.ts
 
         // Generate init.ts
-        write_str_to_file(
+        write_ts_file(
+            formatter,
             &ts_gen::gen_package_init(pkg, &pkg_layout.framework_rel_path_for_init()),
             &pkg_layout.path.join("init.ts"),
         )?;
@@ -324,7 +336,7 @@ fn gen_packages(
                     pkg_layout.levels_from_root,
                 );
                 if !content.is_empty() {
-                    write_str_to_file(&content, &module_path.join("functions.ts"))?;
+                    write_ts_file(formatter, &content, &module_path.join("functions.ts"))?;
                 }
             }
 
@@ -337,7 +349,7 @@ fn gen_packages(
                 top_level_pkg_names,
                 pkg_layout.levels_from_root,
             );
-            write_str_to_file(&content, &module_path.join("structs.ts"))?;
+            write_ts_file(formatter, &content, &module_path.join("structs.ts"))?;
         }
     }
 

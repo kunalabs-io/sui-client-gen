@@ -3,9 +3,6 @@
 //! These are the runtime support files that get copied to `_framework/` in the generated output.
 //! The source files live in `generator/framework/` for easier editing with proper IDE support.
 
-/// ESLint configuration to suppress common warnings in generated code.
-pub static ESLINTRC: &str = include_str!("../framework/.eslintrc.json");
-
 /// The struct class loader - provides runtime type lookup and reification.
 pub static LOADER: &str = include_str!("../framework/loader.ts");
 

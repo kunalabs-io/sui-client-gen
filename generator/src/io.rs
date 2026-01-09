@@ -6,6 +6,8 @@ use std::path::Path;
 
 use anyhow::Result;
 
+use crate::ts_gen::TsFormatter;
+
 /// Write a string to a file, creating parent directories if needed.
 ///
 /// Does nothing if the string is empty.
@@ -15,6 +17,19 @@ pub fn write_str_to_file(s: &str, path: &Path) -> Result<()> {
     }
 
     std::fs::write(path, s)?;
+    Ok(())
+}
+
+/// Write TypeScript content to a file, formatting it first.
+///
+/// Does nothing if the string is empty.
+pub fn write_ts_file(formatter: &TsFormatter, content: &str, path: &Path) -> Result<()> {
+    if content.is_empty() {
+        return Ok(());
+    }
+
+    let formatted = formatter.format(path, content)?;
+    std::fs::write(path, formatted)?;
     Ok(())
 }
 

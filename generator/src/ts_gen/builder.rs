@@ -1400,10 +1400,11 @@ impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource>
             Type::Bool => "bool".to_string(),
             Type::Address => "address".to_string(),
             Type::Vector(inner) => {
-                "vec".to_string()
-                    + &self
-                        .field_name_from_type(inner, type_param_names)
+                format!(
+                    "vec{}",
+                    self.field_name_from_type(inner, type_param_names)
                         .to_case(Case::Pascal)
+                )
             }
             Type::Datatype(dt) => dt.name.to_string().to_case(Case::Camel),
             Type::Reference(_, inner) => self.field_name_from_type(inner, type_param_names),

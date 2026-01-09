@@ -48,7 +48,7 @@ pnpm run test:watch       # Run vitest in watch mode
 **Slow commands - avoid during iteration:**
 ```bash
 pnpm run gen:example      # Regenerate example code
-pnpm run gen:all          # Regenerate all + lint fix
+pnpm run gen:all          # Regenerate all
 ```
 
 ## Architecture

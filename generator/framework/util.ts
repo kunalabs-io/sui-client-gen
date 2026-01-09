@@ -1,13 +1,13 @@
 import { bcs, BcsType } from '@mysten/sui/bcs'
+import type { SuiClient } from '@mysten/sui/client'
+import type { SuiGraphQLClient } from '@mysten/sui/graphql'
+import type { SuiGrpcClient } from '@mysten/sui/grpc'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectArgument,
   TransactionObjectInput,
 } from '@mysten/sui/transactions'
-import type { SuiClient } from '@mysten/sui/client'
-import type { SuiGrpcClient } from '@mysten/sui/grpc'
-import type { SuiGraphQLClient } from '@mysten/sui/graphql'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /**
@@ -42,7 +42,7 @@ export type GenericArg =
 
 export function splitGenericParameters(
   str: string,
-  genericSeparators: [string, string] = ['<', '>']
+  genericSeparators: [string, string] = ['<', '>'],
 ): string[] {
   const [left, right] = genericSeparators
   const tok: string[] = []
@@ -291,9 +291,9 @@ export function generic(tx: Transaction, type: string, arg: GenericArg): Transac
 
       return tx.makeMoveVec({
         type: itemType,
-        elements: arg.map(item =>
-          obj(tx, item as TransactionObjectInput)
-        ) as Array<TransactionObjectArgument>,
+        elements: arg.map(item => obj(tx, item as TransactionObjectInput)) as Array<
+          TransactionObjectArgument
+        >,
       })
     } else {
       return obj(tx, arg as TransactionObjectInput)
@@ -304,7 +304,7 @@ export function generic(tx: Transaction, type: string, arg: GenericArg): Transac
 export function vector(
   tx: Transaction,
   itemType: string,
-  items: Array<GenericArg> | TransactionArgument
+  items: Array<GenericArg> | TransactionArgument,
 ): TransactionArgument {
   if (typeof items === 'function') {
     throw new Error('Transaction plugins are not supported')
@@ -317,9 +317,9 @@ export function vector(
   } else {
     const { typeName: itemTypeName, typeArgs: itemTypeArgs } = parseTypeName(itemType)
     if (itemTypeName === '0x1::option::Option') {
-      const elements = items.map(item =>
-        option(tx, itemTypeArgs[0], item)
-      ) as Array<TransactionObjectArgument>
+      const elements = items.map(item => option(tx, itemTypeArgs[0], item)) as Array<
+        TransactionObjectArgument
+      >
       return tx.makeMoveVec({
         type: itemType,
         elements,
@@ -426,11 +426,11 @@ function isGrpcClient(client: unknown): client is SuiGrpcClient {
  */
 function isGraphQLClient(client: unknown): client is SuiGraphQLClient {
   return (
-    client != null &&
-    typeof client === 'object' &&
-    'query' in client &&
-    typeof (client as any).query === 'function' &&
-    !('ledgerService' in client)
+    client != null
+    && typeof client === 'object'
+    && 'query' in client
+    && typeof (client as any).query === 'function'
+    && !('ledgerService' in client)
   )
 }
 
@@ -479,7 +479,7 @@ interface GraphQLObjectResponse {
  */
 export async function fetchObjectBcs(
   client: SupportedSuiClient,
-  id: string
+  id: string,
 ): Promise<FetchObjectBcsResult> {
   if (isGrpcClient(client)) {
     return fetchObjectBcsWithGrpc(client, id)
@@ -492,7 +492,7 @@ export async function fetchObjectBcs(
 
 async function fetchObjectBcsWithJsonRpc(
   client: SuiClient,
-  id: string
+  id: string,
 ): Promise<FetchObjectBcsResult> {
   const res = await client.getObject({ id, options: { showBcs: true } })
 
@@ -513,7 +513,7 @@ async function fetchObjectBcsWithJsonRpc(
 
 async function fetchObjectBcsWithGrpc(
   client: SuiGrpcClient,
-  id: string
+  id: string,
 ): Promise<FetchObjectBcsResult> {
   try {
     const res = await client.ledgerService.getObject({
@@ -543,7 +543,7 @@ async function fetchObjectBcsWithGrpc(
 
 async function fetchObjectBcsWithGraphQL(
   client: SuiGraphQLClient,
-  id: string
+  id: string,
 ): Promise<FetchObjectBcsResult> {
   const res = await client.query<GraphQLObjectResponse>({
     query: GRAPHQL_OBJECT_QUERY,

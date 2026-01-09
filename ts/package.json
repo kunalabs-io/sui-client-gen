@@ -13,7 +13,7 @@
     "test:watch": "vitest --test-timeout=15000",
     "gen:example": "cd examples/gen && cargo run -- --clean",
     "gen:tests": "cd tests/gen && cargo run -- --clean",
-    "gen:all": "pnpm run -r gen:example & pnpm run -r gen:tests & wait && pnpm run lint:fix"
+    "gen:all": "pnpm run -r gen:example & pnpm run -r gen:tests & wait"
   },
   "type": "module",
   "keywords": [],
