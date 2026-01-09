@@ -4,6 +4,9 @@ import tseslint from 'typescript-eslint'
 import eslint from '@eslint/js'
 
 export default [
+  {
+    ignores: ['examples/gen/**', 'tests/gen/**'],
+  },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {
