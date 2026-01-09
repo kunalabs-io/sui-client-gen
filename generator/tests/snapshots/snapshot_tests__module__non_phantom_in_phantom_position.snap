@@ -10,6 +10,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeArgument,
   ToTypeStr,
@@ -51,6 +52,16 @@ export interface WitTableFields<T0 extends PhantomTypeArgument, T1 extends TypeA
 }
 
 export type WitTableReified<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T2 extends PhantomTypeArgument> = Reified<WitTable<T0, T1, T2>, WitTableFields<T0, T1, T2>>
+
+export type WitTableJSONField<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T2 extends PhantomTypeArgument> = {
+  id: string
+  table: ToJSON<Table<ToPhantom<T1>, T2>>
+}
+
+export type WitTableJSON<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T2 extends PhantomTypeArgument> = {
+  $typeName: typeof WitTable.$typeName
+  $typeArgs: [PhantomToTypeStr<T0>, ToTypeStr<T1>, PhantomToTypeStr<T2>]
+} & WitTableJSONField<T0, T1, T2>
 
 export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T2 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
@@ -170,14 +181,14 @@ export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T
     return WitTable.fromFields(typeArgs, WitTable.bcs(toBcs(typeArgs[1])).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): WitTableJSONField<T0, T1, T2> {
     return {
       id: this.id,
       table: this.table.toJSONField(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): WitTableJSON<T0, T1, T2> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

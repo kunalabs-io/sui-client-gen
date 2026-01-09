@@ -82,6 +82,9 @@ impl EnumIR {
         // Union type for all variants
         sections.push(self.emit_variant_union());
 
+        // Union type for all variant JSON types
+        sections.push(self.emit_variant_json_union());
+
         // Variant name type
         sections.push(self.emit_variant_name_type());
 
@@ -169,6 +172,31 @@ impl EnumIR {
 
         formatdoc! {r#"
             export type {name}Variant{type_params} =
+            {variants}"#,
+            name = name,
+            type_params = type_params,
+            variants = variants.join("\n"),
+        }
+    }
+
+    fn emit_variant_json_union(&self) -> String {
+        let name = &self.name;
+        let type_params = self.emit_type_params_def();
+        let type_params_use = self.emit_type_params_use();
+        let variants: Vec<String> = self
+            .variants
+            .iter()
+            .map(|v| {
+                if type_params_use.is_empty() {
+                    format!("  | {}{}JSON", name, v.name)
+                } else {
+                    format!("  | {}{}JSON<{}>", name, v.name, type_params_use)
+                }
+            })
+            .collect();
+
+        formatdoc! {r#"
+            export type {name}VariantJSON{type_params} =
             {variants}"#,
             name = name,
             type_params = type_params,
@@ -560,20 +588,97 @@ impl EnumIR {
         }
     }
 
+    fn emit_variant_json_types(&self, variant: &EnumVariantIR) -> String {
+        let enum_name = &self.name;
+        let variant_name = &variant.name;
+        let class_name = format!("{}{}", enum_name, variant_name);
+        let type_params_def = self.emit_type_params_def();
+        let type_params_use_raw = self.emit_type_params_use();
+        // Wrap type params in angle brackets if present
+        let type_params_use = if type_params_use_raw.is_empty() {
+            String::new()
+        } else {
+            format!("<{}>", type_params_use_raw)
+        };
+
+        // Generate $typeArgs array
+        let type_args_array = if self.type_params.is_empty() {
+            "[]".to_string()
+        } else {
+            self.emit_to_type_str_args()
+        };
+
+        let json_field_body = if variant.is_unit() {
+            // Unit variant - only $kind field
+            format!("{{\n  $kind: '{}'\n}}", variant_name)
+        } else if variant.is_tuple {
+            // Tuple variant - use vec array
+            let field_types: Vec<String> = variant
+                .fields
+                .iter()
+                .map(|f| f.field_type.to_json_field_type())
+                .collect();
+            format!(
+                "{{\n  $kind: '{}'\n  vec: [{}]\n}}",
+                variant_name,
+                field_types.join(", ")
+            )
+        } else {
+            // Struct variant with named fields
+            let mut field_types = vec![format!("  $kind: '{}'", variant_name)];
+
+            for field in &variant.fields {
+                // Use the ts_name directly since it's always present for variant fields
+                let field_type = field.field_type.to_json_field_type();
+                field_types.push(format!("  {}: {}", field.ts_name, field_type));
+            }
+
+            format!("{{\n{}\n}}", field_types.join("\n"))
+        };
+
+        formatdoc! {r#"
+            export type {class_name}JSONField{type_params_def} = {json_field_body}
+
+            export type {class_name}JSON{type_params_def} = {{
+              $typeName: typeof {enum_name}.$typeName
+              $typeArgs: {type_args_array}
+              $variantName: '{variant_name}'
+            }} & {class_name}JSONField{type_params_use}"#,
+            class_name = class_name,
+            type_params_def = type_params_def,
+            type_params_use = type_params_use,
+            enum_name = enum_name,
+            json_field_body = json_field_body,
+            variant_name = variant_name,
+            type_args_array = type_args_array,
+        }
+    }
+
     fn emit_variant_class(&self, variant: &EnumVariantIR) -> String {
         let enum_name = &self.name;
         let variant_name = &variant.name;
         let class_name = format!("{}{}", enum_name, variant_name);
         let type_params_def = self.emit_type_params_def();
-        let type_params_use = self.emit_type_params_use();
+        let type_params_use_raw = self.emit_type_params_use();
+        // Wrap type params in angle brackets if present
+        let type_params_use = if type_params_use_raw.is_empty() {
+            String::new()
+        } else {
+            format!("<{}>", type_params_use_raw)
+        };
 
         let type_args_string = self.emit_type_args_string();
         let variant_full_type_name = self.emit_variant_full_type_name();
+
+        // Generate JSON types for this variant
+        let json_types = self.emit_variant_json_types(variant);
 
         let variant_body = if variant.is_unit() {
             // Unit variant - no fields
             formatdoc! {r#"
                 export type {class_name}Fields = Record<string, never>
+
+                {json_types}
 
                 export class {class_name}{type_params_def}
                   implements EnumVariantClass
@@ -599,11 +704,11 @@ impl EnumIR {
                     this.$typeArgs = typeArgs
                   }}
 
-                  toJSONField(): Record<string, any> {{
+                  toJSONField(): {class_name}JSONField{type_params_use} {{
                     return {{ $kind: this.$variantName }}
                   }}
 
-                  toJSON(): Record<string, any> {{
+                  toJSON(): {class_name}JSON{type_params_use} {{
                     return {{
                       $typeName: this.$typeName,
                       $typeArgs: this.$typeArgs,
@@ -616,8 +721,10 @@ impl EnumIR {
                 enum_name = enum_name,
                 variant_name = variant_name,
                 type_params_def = type_params_def,
+                type_params_use = type_params_use,
                 type_args_string = type_args_string,
                 variant_full_type_name = variant_full_type_name,
+                json_types = json_types,
             }
         } else {
             // Variant with fields
@@ -625,14 +732,16 @@ impl EnumIR {
             let field_declarations = self.emit_variant_field_declarations(variant);
             let field_assignments = self.emit_variant_field_assignments(variant);
             let to_json_fields = self.emit_variant_to_json_fields(variant);
-            let fields_type = if type_params_use.is_empty() {
+            let fields_type = if type_params_use_raw.is_empty() {
                 format!("{}Fields", class_name)
             } else {
-                format!("{}Fields<{}>", class_name, type_params_use)
+                format!("{}Fields<{}>", class_name, type_params_use_raw)
             };
 
             formatdoc! {r#"
                 {fields_interface}
+
+                {json_types}
 
                 export class {class_name}{type_params_def}
                   implements EnumVariantClass
@@ -662,14 +771,14 @@ impl EnumIR {
                 {field_assignments}
                   }}
 
-                  toJSONField(): Record<string, any> {{
+                  toJSONField(): {class_name}JSONField{type_params_use} {{
                     return {{
                       $kind: this.$variantName,
                 {to_json_fields}
                     }}
                   }}
 
-                  toJSON(): Record<string, any> {{
+                  toJSON(): {class_name}JSON{type_params_use} {{
                     return {{
                       $typeName: this.$typeName,
                       $typeArgs: this.$typeArgs,
@@ -683,12 +792,14 @@ impl EnumIR {
                 enum_name = enum_name,
                 variant_name = variant_name,
                 type_params_def = type_params_def,
+                type_params_use = type_params_use,
                 type_args_string = type_args_string,
                 variant_full_type_name = variant_full_type_name,
                 field_declarations = field_declarations,
                 field_assignments = field_assignments,
                 to_json_fields = to_json_fields,
                 fields_type = fields_type,
+                json_types = json_types,
             }
         };
 
@@ -1032,6 +1143,27 @@ impl EnumIR {
             .map(|p| if p.is_phantom { "true" } else { "false" })
             .collect();
         format!("[{}]", values.join(", "))
+    }
+
+    /// Emit ToTypeStr args for JSON type alias: `[ToTypeStr<T>, ToTypeStr<U>]` or `[PhantomToTypeStr<T>]` for phantom params
+    fn emit_to_type_str_args(&self) -> String {
+        if self.type_params.is_empty() {
+            return "[]".to_string();
+        }
+
+        let args: Vec<String> = self
+            .type_params
+            .iter()
+            .map(|p| {
+                if p.is_phantom {
+                    format!("PhantomToTypeStr<{}>", p.name)
+                } else {
+                    format!("ToTypeStr<{}>", p.name)
+                }
+            })
+            .collect();
+
+        format!("[{}]", args.join(", "))
     }
 
     // ========================================================================

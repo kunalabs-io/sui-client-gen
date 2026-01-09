@@ -15,6 +15,15 @@ export interface ACLFields {
 
 export type ACLReified = Reified<ACL, ACLFields>
 
+export type ACLJSONField = {
+  permissions: ToJSON<LinkedTable<'address', 'u128'>>
+}
+
+export type ACLJSON = {
+  $typeName: typeof ACL.$typeName
+  $typeArgs: []
+} & ACLJSONField
+
 export class ACL implements StructClass {
   __StructClass = true as const
 
@@ -113,13 +122,13 @@ export class ACL implements StructClass {
     return ACL.fromFields(ACL.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ACLJSONField {
     return {
       permissions: this.permissions.toJSONField(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ACLJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

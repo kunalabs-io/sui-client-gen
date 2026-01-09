@@ -20,6 +20,15 @@ export interface MultilineDocFields {
 
 export type MultilineDocReified = Reified<MultilineDoc, MultilineDocFields>
 
+export type MultilineDocJSONField = {
+  data: string
+}
+
+export type MultilineDocJSON = {
+  $typeName: typeof MultilineDoc.$typeName
+  $typeArgs: []
+} & MultilineDocJSONField
+
 /**
  * A struct with multi-line documentation.
  *
@@ -128,13 +137,13 @@ export class MultilineDoc implements StructClass {
     return MultilineDoc.fromFields(MultilineDoc.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): MultilineDocJSONField {
     return {
       data: this.data.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): MultilineDocJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

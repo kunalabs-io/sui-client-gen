@@ -7,6 +7,7 @@ import {
   Reified,
   toBcs,
   ToField,
+  ToJSON,
   ToTypeArgument,
   ToTypeStr,
   TypeArgument,
@@ -19,6 +20,14 @@ import { composeSuiType, FieldsWithTypes } from './util'
 export type VectorElements<T extends TypeArgument> = Array<ToField<T>>
 
 export type VectorReified<T extends TypeArgument> = VectorClassReified<Vector<T>, VectorElements<T>>
+
+export type VectorJSONField<T extends TypeArgument> = ToJSON<T>[]
+
+export type VectorJSON<T extends TypeArgument> = {
+  $typeName: 'vector'
+  $typeArgs: [ToTypeStr<T>]
+  elements: VectorJSONField<T>
+}
 
 export class Vector<T extends TypeArgument> implements VectorClass {
   __VectorClass = true as const
@@ -95,11 +104,11 @@ export class Vector<T extends TypeArgument> implements VectorClass {
     return Vector.fromFields(typeArg, Vector.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField(): any[] {
+  toJSONField(): VectorJSONField<T> {
     return this.elements.map(element => fieldToJSON(this.$typeArgs[0], element))
   }
 
-  toJSON(): { $typeName: string; $typeArgs: string[]; elements: any[] } {
+  toJSON(): VectorJSON<T> {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,

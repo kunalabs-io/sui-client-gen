@@ -13,6 +13,10 @@ export type ContainerVariant<T1 extends TypeArgument, T2 extends PhantomTypeArgu
   | ContainerEmpty<T1, T2>
   | ContainerWithTable<T1, T2>
 
+export type ContainerVariantJSON<T1 extends TypeArgument, T2 extends PhantomTypeArgument> =
+  | ContainerEmptyJSON<T1, T2>
+  | ContainerWithTableJSON<T1, T2>
+
 export type ContainerVariantName = 'Empty' | 'WithTable'
 
 export function isContainerVariantName(variant: string): variant is ContainerVariantName {
@@ -194,6 +198,16 @@ export class Container {
 
 export type ContainerEmptyFields = Record<string, never>
 
+export type ContainerEmptyJSONField<T1 extends TypeArgument, T2 extends PhantomTypeArgument> = {
+  $kind: 'Empty'
+}
+
+export type ContainerEmptyJSON<T1 extends TypeArgument, T2 extends PhantomTypeArgument> = {
+  $typeName: typeof Container.$typeName
+  $typeArgs: [ToTypeStr<T1>, PhantomToTypeStr<T2>]
+  $variantName: 'Empty'
+} & ContainerEmptyJSONField<T1, T2>
+
 export class ContainerEmpty<T1 extends TypeArgument, T2 extends PhantomTypeArgument>
   implements EnumVariantClass
 {
@@ -218,11 +232,11 @@ export class ContainerEmpty<T1 extends TypeArgument, T2 extends PhantomTypeArgum
     this.$typeArgs = typeArgs
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ContainerEmptyJSONField<T1, T2> {
     return { $kind: this.$variantName }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ContainerEmptyJSON<T1, T2> {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,
@@ -235,6 +249,17 @@ export class ContainerEmpty<T1 extends TypeArgument, T2 extends PhantomTypeArgum
 export interface ContainerWithTableFields<T1 extends TypeArgument, T2 extends PhantomTypeArgument> {
   table: ToField<Table<ToPhantom<T1>, T2>>
 }
+
+export type ContainerWithTableJSONField<T1 extends TypeArgument, T2 extends PhantomTypeArgument> = {
+  $kind: 'WithTable'
+  table: ToJSON<Table<ToPhantom<T1>, T2>>
+}
+
+export type ContainerWithTableJSON<T1 extends TypeArgument, T2 extends PhantomTypeArgument> = {
+  $typeName: typeof Container.$typeName
+  $typeArgs: [ToTypeStr<T1>, PhantomToTypeStr<T2>]
+  $variantName: 'WithTable'
+} & ContainerWithTableJSONField<T1, T2>
 
 export class ContainerWithTable<T1 extends TypeArgument, T2 extends PhantomTypeArgument>
   implements EnumVariantClass
@@ -264,14 +289,14 @@ export class ContainerWithTable<T1 extends TypeArgument, T2 extends PhantomTypeA
     this.table = fields.table
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ContainerWithTableJSONField<T1, T2> {
     return {
       $kind: this.$variantName,
       table: fieldToJSON<Table<ToPhantom<T1>, T2>>(`${Table.$typeName}<${this.$typeArgs[0]}, ${this.$typeArgs[1]}>`, this.table),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ContainerWithTableJSON<T1, T2> {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,

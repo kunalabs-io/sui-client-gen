@@ -21,6 +21,21 @@ export interface WrappedFields<T extends TypeArgument, U extends TypeArgument, V
 
 export type WrappedReified<T extends TypeArgument, U extends TypeArgument, V extends TypeArgument> = Reified<Wrapped<T, U, V>, WrappedFields<T, U, V>>
 
+export type WrappedJSONField<T extends TypeArgument, U extends TypeArgument, V extends TypeArgument> = {
+  id: string
+  t: ToJSON<T>
+  u: ToJSON<U>
+  v: ToJSON<V>
+  stop: ToJSON<ActionVariant<'u64', ToPhantom<SUI>>>
+  pause: ToJSON<ActionVariant<'u64', ToPhantom<SUI>>>
+  jump: ToJSON<ActionVariant<'u64', ToPhantom<SUI>>>
+}
+
+export type WrappedJSON<T extends TypeArgument, U extends TypeArgument, V extends TypeArgument> = {
+  $typeName: typeof Wrapped.$typeName
+  $typeArgs: [ToTypeStr<T>, ToTypeStr<U>, ToTypeStr<V>]
+} & WrappedJSONField<T, U, V>
+
 export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
@@ -164,7 +179,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     return Wrapped.fromFields(typeArgs, Wrapped.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1]), toBcs(typeArgs[2])).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): WrappedJSONField<T, U, V> {
     return {
       id: this.id,
       t: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.t),
@@ -176,7 +191,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): WrappedJSON<T, U, V> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

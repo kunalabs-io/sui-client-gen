@@ -15,6 +15,15 @@ export interface BarFields {
 
 export type BarReified = Reified<Bar, BarFields>
 
+export type BarJSONField = {
+  value: string
+}
+
+export type BarJSON = {
+  $typeName: typeof Bar.$typeName
+  $typeArgs: []
+} & BarJSONField
+
 export class Bar implements StructClass {
   __StructClass = true as const
 
@@ -113,13 +122,13 @@ export class Bar implements StructClass {
     return Bar.fromFields(Bar.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): BarJSONField {
     return {
       value: this.value.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): BarJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

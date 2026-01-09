@@ -15,6 +15,15 @@ export interface DummyFields {
 
 export type DummyReified = Reified<Dummy, DummyFields>
 
+export type DummyJSONField = {
+  dummyField: boolean
+}
+
+export type DummyJSON = {
+  $typeName: typeof Dummy.$typeName
+  $typeArgs: []
+} & DummyJSONField
+
 export class Dummy implements StructClass {
   __StructClass = true as const
 
@@ -113,13 +122,13 @@ export class Dummy implements StructClass {
     return Dummy.fromFields(Dummy.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): DummyJSONField {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): DummyJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
