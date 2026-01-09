@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { pure } from '../../_framework/util'
 
 export interface Secp256k1EcrecoverArgs {
   signature: Array<number | TransactionArgument> | TransactionArgument
@@ -27,7 +27,7 @@ export interface Secp256k1EcrecoverArgs {
  */
 export function secp256k1Ecrecover(
   tx: Transaction,
-  args: Secp256k1EcrecoverArgs
+  args: Secp256k1EcrecoverArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::ecdsa_k1::secp256k1_ecrecover`,
@@ -47,7 +47,7 @@ export function secp256k1Ecrecover(
  */
 export function decompressPubkey(
   tx: Transaction,
-  pubkey: Array<number | TransactionArgument> | TransactionArgument
+  pubkey: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::ecdsa_k1::decompress_pubkey`,

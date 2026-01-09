@@ -1,5 +1,12 @@
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import { getTypeOrigin } from '../../_envs'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
@@ -7,32 +14,23 @@ import {
   ToJSON,
   ToTypeStr,
   ToTypeStr as ToPhantom,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { TreasuryCap } from '../../sui/coin/structs'
 import { UID } from '../../sui/object/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== EXAMPLE_COIN =============================== */
 
 export function isEXAMPLE_COIN(type: string): boolean {
   type = compressSuiType(type)
-  return (
-    type ===
-    `${getTypeOrigin('examples', 'example_coin::EXAMPLE_COIN')}::example_coin::EXAMPLE_COIN`
-  )
+  return type
+    === `${getTypeOrigin('examples', 'example_coin::EXAMPLE_COIN')}::example_coin::EXAMPLE_COIN`
 }
 
 export interface EXAMPLE_COINFields {
@@ -53,8 +51,9 @@ export type EXAMPLE_COINJSON = {
 export class EXAMPLE_COIN implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::example_coin::EXAMPLE_COIN` =
-    `${getTypeOrigin('examples', 'example_coin::EXAMPLE_COIN')}::example_coin::EXAMPLE_COIN` as const
+  static readonly $typeName: `${string}::example_coin::EXAMPLE_COIN` = `${
+    getTypeOrigin('examples', 'example_coin::EXAMPLE_COIN')
+  }::example_coin::EXAMPLE_COIN` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -68,7 +67,7 @@ export class EXAMPLE_COIN implements StructClass {
   private constructor(typeArgs: [], fields: EXAMPLE_COINFields) {
     this.$fullTypeName = composeSuiType(
       EXAMPLE_COIN.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${string}::example_coin::EXAMPLE_COIN`
     this.$typeArgs = typeArgs
 
@@ -81,7 +80,7 @@ export class EXAMPLE_COIN implements StructClass {
       typeName: EXAMPLE_COIN.$typeName,
       fullTypeName: composeSuiType(
         EXAMPLE_COIN.$typeName,
-        ...[]
+        ...[],
       ) as `${string}::example_coin::EXAMPLE_COIN`,
       typeArgs: [] as [],
       isPhantom: EXAMPLE_COIN.$isPhantom,
@@ -168,7 +167,7 @@ export class EXAMPLE_COIN implements StructClass {
   static fromJSON(json: Record<string, any>): EXAMPLE_COIN {
     if (json.$typeName !== EXAMPLE_COIN.$typeName) {
       throw new Error(
-        `not a EXAMPLE_COIN json object: expected '${EXAMPLE_COIN.$typeName}' but got '${json.$typeName}'`
+        `not a EXAMPLE_COIN json object: expected '${EXAMPLE_COIN.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -197,7 +196,7 @@ export class EXAMPLE_COIN implements StructClass {
       return EXAMPLE_COIN.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -238,8 +237,9 @@ export type FaucetJSON = {
 export class Faucet implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::example_coin::Faucet` =
-    `${getTypeOrigin('examples', 'example_coin::Faucet')}::example_coin::Faucet` as const
+  static readonly $typeName: `${string}::example_coin::Faucet` = `${
+    getTypeOrigin('examples', 'example_coin::Faucet')
+  }::example_coin::Faucet` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -254,7 +254,7 @@ export class Faucet implements StructClass {
   private constructor(typeArgs: [], fields: FaucetFields) {
     this.$fullTypeName = composeSuiType(
       Faucet.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${string}::example_coin::Faucet`
     this.$typeArgs = typeArgs
 
@@ -266,7 +266,10 @@ export class Faucet implements StructClass {
     const reifiedBcs = Faucet.bcs
     return {
       typeName: Faucet.$typeName,
-      fullTypeName: composeSuiType(Faucet.$typeName, ...[]) as `${string}::example_coin::Faucet`,
+      fullTypeName: composeSuiType(
+        Faucet.$typeName,
+        ...[],
+      ) as `${string}::example_coin::Faucet`,
       typeArgs: [] as [],
       isPhantom: Faucet.$isPhantom,
       reifiedTypeArgs: [],
@@ -330,7 +333,7 @@ export class Faucet implements StructClass {
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       cap: decodeFromFieldsWithTypes(
         TreasuryCap.reified(phantom(EXAMPLE_COIN.reified())),
-        item.fields.cap
+        item.fields.cap,
       ),
     })
   }
@@ -360,7 +363,7 @@ export class Faucet implements StructClass {
   static fromJSON(json: Record<string, any>): Faucet {
     if (json.$typeName !== Faucet.$typeName) {
       throw new Error(
-        `not a Faucet json object: expected '${Faucet.$typeName}' but got '${json.$typeName}'`
+        `not a Faucet json object: expected '${Faucet.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -389,7 +392,7 @@ export class Faucet implements StructClass {
       return Faucet.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

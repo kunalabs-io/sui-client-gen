@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { obj, pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { obj, pure } from '../../_framework/util'
 
 export interface FromQuotientArgs {
   numerator: bigint | TransactionArgument
@@ -25,7 +25,10 @@ export interface FromQuotientArgs {
 export function fromQuotient(tx: Transaction, args: FromQuotientArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq64_64::from_quotient`,
-    arguments: [pure(tx, args.numerator, `u128`), pure(tx, args.denominator, `u128`)],
+    arguments: [
+      pure(tx, args.numerator, `u128`),
+      pure(tx, args.denominator, `u128`),
+    ],
   })
 }
 
@@ -52,7 +55,10 @@ export interface AddArgs {
 export function add(tx: Transaction, args: AddArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq64_64::add`,
-    arguments: [obj(tx, args.a), obj(tx, args.b)],
+    arguments: [
+      obj(tx, args.a),
+      obj(tx, args.b),
+    ],
   })
 }
 
@@ -68,7 +74,10 @@ export interface SubArgs {
 export function sub(tx: Transaction, args: SubArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq64_64::sub`,
-    arguments: [obj(tx, args.a), obj(tx, args.b)],
+    arguments: [
+      obj(tx, args.a),
+      obj(tx, args.b),
+    ],
   })
 }
 
@@ -84,7 +93,10 @@ export interface MulArgs {
 export function mul(tx: Transaction, args: MulArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq64_64::mul`,
-    arguments: [obj(tx, args.a), obj(tx, args.b)],
+    arguments: [
+      obj(tx, args.a),
+      obj(tx, args.b),
+    ],
   })
 }
 
@@ -101,7 +113,10 @@ export interface DivArgs {
 export function div(tx: Transaction, args: DivArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq64_64::div`,
-    arguments: [obj(tx, args.a), obj(tx, args.b)],
+    arguments: [
+      obj(tx, args.a),
+      obj(tx, args.b),
+    ],
   })
 }
 
@@ -125,7 +140,10 @@ export interface IntMulArgs {
 export function intMul(tx: Transaction, args: IntMulArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq64_64::int_mul`,
-    arguments: [pure(tx, args.val, `u128`), obj(tx, args.multiplier)],
+    arguments: [
+      pure(tx, args.val, `u128`),
+      obj(tx, args.multiplier),
+    ],
   })
 }
 
@@ -142,7 +160,10 @@ export interface IntDivArgs {
 export function intDiv(tx: Transaction, args: IntDivArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq64_64::int_div`,
-    arguments: [pure(tx, args.val, `u128`), obj(tx, args.divisor)],
+    arguments: [
+      pure(tx, args.val, `u128`),
+      obj(tx, args.divisor),
+    ],
   })
 }
 
@@ -155,7 +176,10 @@ export interface LeArgs {
 export function le(tx: Transaction, args: LeArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq64_64::le`,
-    arguments: [obj(tx, args.a), obj(tx, args.b)],
+    arguments: [
+      obj(tx, args.a),
+      obj(tx, args.b),
+    ],
   })
 }
 
@@ -168,7 +192,10 @@ export interface LtArgs {
 export function lt(tx: Transaction, args: LtArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq64_64::lt`,
-    arguments: [obj(tx, args.a), obj(tx, args.b)],
+    arguments: [
+      obj(tx, args.a),
+      obj(tx, args.b),
+    ],
   })
 }
 
@@ -181,7 +208,10 @@ export interface GeArgs {
 export function ge(tx: Transaction, args: GeArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq64_64::ge`,
-    arguments: [obj(tx, args.a), obj(tx, args.b)],
+    arguments: [
+      obj(tx, args.a),
+      obj(tx, args.b),
+    ],
   })
 }
 
@@ -194,7 +224,10 @@ export interface GtArgs {
 export function gt(tx: Transaction, args: GtArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq64_64::gt`,
-    arguments: [obj(tx, args.a), obj(tx, args.b)],
+    arguments: [
+      obj(tx, args.a),
+      obj(tx, args.b),
+    ],
   })
 }
 
@@ -215,7 +248,7 @@ export function toRaw(tx: Transaction, a: TransactionObjectInput): TransactionRe
  */
 export function fromRaw(
   tx: Transaction,
-  rawValue: bigint | TransactionArgument
+  rawValue: bigint | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::uq64_64::from_raw`,

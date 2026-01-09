@@ -1,9 +1,9 @@
+import { StructClassLoader } from '../_framework/loader'
 import * as enums from './enums/structs'
 import * as exampleCoin from './example-coin/structs'
 import * as examples from './examples/structs'
 import * as fixture from './fixture/structs'
 import * as otherModule from './other-module/structs'
-import { StructClassLoader } from '../_framework/loader'
 
 export function registerClasses(loader: StructClassLoader): void {
   loader.register(enums.Wrapped)

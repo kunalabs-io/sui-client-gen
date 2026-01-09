@@ -1,6 +1,6 @@
+import { Transaction, TransactionArgument, TransactionResult } from '@mysten/sui/transactions'
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
-import { Transaction, TransactionArgument, TransactionResult } from '@mysten/sui/transactions'
 
 /**
  * Returns the bitwise not of the value.
@@ -22,7 +22,10 @@ export interface MaxArgs {
 export function max(tx: Transaction, args: MaxArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::u64::max`,
-    arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
+    arguments: [
+      pure(tx, args.x, `u64`),
+      pure(tx, args.y, `u64`),
+    ],
   })
 }
 
@@ -35,7 +38,10 @@ export interface MinArgs {
 export function min(tx: Transaction, args: MinArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::u64::min`,
-    arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
+    arguments: [
+      pure(tx, args.x, `u64`),
+      pure(tx, args.y, `u64`),
+    ],
   })
 }
 
@@ -48,7 +54,10 @@ export interface DiffArgs {
 export function diff(tx: Transaction, args: DiffArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::u64::diff`,
-    arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
+    arguments: [
+      pure(tx, args.x, `u64`),
+      pure(tx, args.y, `u64`),
+    ],
   })
 }
 
@@ -61,7 +70,10 @@ export interface DivideAndRoundUpArgs {
 export function divideAndRoundUp(tx: Transaction, args: DivideAndRoundUpArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::u64::divide_and_round_up`,
-    arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
+    arguments: [
+      pure(tx, args.x, `u64`),
+      pure(tx, args.y, `u64`),
+    ],
   })
 }
 
@@ -74,7 +86,10 @@ export interface PowArgs {
 export function pow(tx: Transaction, args: PowArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::u64::pow`,
-    arguments: [pure(tx, args.base, `u64`), pure(tx, args.exponent, `u8`)],
+    arguments: [
+      pure(tx, args.base, `u64`),
+      pure(tx, args.exponent, `u8`),
+    ],
   })
 }
 
@@ -100,7 +115,6 @@ export function pow(tx: Transaction, args: PowArgs): TransactionResult {
  * // now we can use this value as if it was 2.82;
  * // but to get the actual result, this value needs
  * // to be divided by 100 (because sqrt(10000)).
- *
  *
  * math::sqrt(8 * 1000000) => 2828; // same as above, 2828 / 1000 (2.828)
  * ```

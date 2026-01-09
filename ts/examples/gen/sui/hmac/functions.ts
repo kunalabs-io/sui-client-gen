@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { pure } from '../../_framework/util'
 
 export interface HmacSha3256Args {
   key: Array<number | TransactionArgument> | TransactionArgument
@@ -20,6 +20,9 @@ export interface HmacSha3256Args {
 export function hmacSha3256(tx: Transaction, args: HmacSha3256Args): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::hmac::hmac_sha3_256`,
-    arguments: [pure(tx, args.key, `vector<u8>`), pure(tx, args.msg, `vector<u8>`)],
+    arguments: [
+      pure(tx, args.key, `vector<u8>`),
+      pure(tx, args.msg, `vector<u8>`),
+    ],
   })
 }

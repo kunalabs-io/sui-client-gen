@@ -32,31 +32,31 @@
  * ```
  */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  fieldToJSON,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  fieldToJSON,
-  phantom,
   vector,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== BCS =============================== */
 
@@ -100,7 +100,10 @@ export class BCS implements StructClass {
   readonly bytes: ToField<Vector<'u8'>>
 
   private constructor(typeArgs: [], fields: BCSFields) {
-    this.$fullTypeName = composeSuiType(BCS.$typeName, ...typeArgs) as `0x2::bcs::BCS`
+    this.$fullTypeName = composeSuiType(
+      BCS.$typeName,
+      ...typeArgs,
+    ) as `0x2::bcs::BCS`
     this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
@@ -110,7 +113,10 @@ export class BCS implements StructClass {
     const reifiedBcs = BCS.bcs
     return {
       typeName: BCS.$typeName,
-      fullTypeName: composeSuiType(BCS.$typeName, ...[]) as `0x2::bcs::BCS`,
+      fullTypeName: composeSuiType(
+        BCS.$typeName,
+        ...[],
+      ) as `0x2::bcs::BCS`,
       typeArgs: [] as [],
       isPhantom: BCS.$isPhantom,
       reifiedTypeArgs: [],
@@ -196,7 +202,7 @@ export class BCS implements StructClass {
   static fromJSON(json: Record<string, any>): BCS {
     if (json.$typeName !== BCS.$typeName) {
       throw new Error(
-        `not a BCS json object: expected '${BCS.$typeName}' but got '${json.$typeName}'`
+        `not a BCS json object: expected '${BCS.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -225,7 +231,7 @@ export class BCS implements StructClass {
       return BCS.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { pure } from '../../_framework/util'
 
 export interface Secp256r1EcrecoverArgs {
   signature: Array<number | TransactionArgument> | TransactionArgument
@@ -27,7 +27,7 @@ export interface Secp256r1EcrecoverArgs {
  */
 export function secp256r1Ecrecover(
   tx: Transaction,
-  args: Secp256r1EcrecoverArgs
+  args: Secp256r1EcrecoverArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::ecdsa_r1::secp256r1_ecrecover`,

@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { pure } from '../../_framework/util'
 
 /**
  * @param data: Arbitrary binary data to hash
@@ -13,7 +13,7 @@ import {
  */
 export function blake2b256(
   tx: Transaction,
-  data: Array<number | TransactionArgument> | TransactionArgument
+  data: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::hash::blake2b256`,
@@ -27,7 +27,7 @@ export function blake2b256(
  */
 export function keccak256(
   tx: Transaction,
-  data: Array<number | TransactionArgument> | TransactionArgument
+  data: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::hash::keccak256`,

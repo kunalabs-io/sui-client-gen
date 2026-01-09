@@ -4,33 +4,33 @@
  * - Administering package upgrades through upgrade policies.
  */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  fieldToJSON,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  fieldToJSON,
-  phantom,
   vector,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { String } from '../../std/ascii/structs'
 import { ID, UID } from '../object/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Publisher =============================== */
 
@@ -83,7 +83,7 @@ export class Publisher implements StructClass {
   private constructor(typeArgs: [], fields: PublisherFields) {
     this.$fullTypeName = composeSuiType(
       Publisher.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::package::Publisher`
     this.$typeArgs = typeArgs
 
@@ -96,7 +96,10 @@ export class Publisher implements StructClass {
     const reifiedBcs = Publisher.bcs
     return {
       typeName: Publisher.$typeName,
-      fullTypeName: composeSuiType(Publisher.$typeName, ...[]) as `0x2::package::Publisher`,
+      fullTypeName: composeSuiType(
+        Publisher.$typeName,
+        ...[],
+      ) as `0x2::package::Publisher`,
       typeArgs: [] as [],
       isPhantom: Publisher.$isPhantom,
       reifiedTypeArgs: [],
@@ -192,7 +195,7 @@ export class Publisher implements StructClass {
   static fromJSON(json: Record<string, any>): Publisher {
     if (json.$typeName !== Publisher.$typeName) {
       throw new Error(
-        `not a Publisher json object: expected '${Publisher.$typeName}' but got '${json.$typeName}'`
+        `not a Publisher json object: expected '${Publisher.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -221,7 +224,7 @@ export class Publisher implements StructClass {
       return Publisher.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -296,7 +299,7 @@ export class UpgradeCap implements StructClass {
   private constructor(typeArgs: [], fields: UpgradeCapFields) {
     this.$fullTypeName = composeSuiType(
       UpgradeCap.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::package::UpgradeCap`
     this.$typeArgs = typeArgs
 
@@ -310,7 +313,10 @@ export class UpgradeCap implements StructClass {
     const reifiedBcs = UpgradeCap.bcs
     return {
       typeName: UpgradeCap.$typeName,
-      fullTypeName: composeSuiType(UpgradeCap.$typeName, ...[]) as `0x2::package::UpgradeCap`,
+      fullTypeName: composeSuiType(
+        UpgradeCap.$typeName,
+        ...[],
+      ) as `0x2::package::UpgradeCap`,
       typeArgs: [] as [],
       isPhantom: UpgradeCap.$isPhantom,
       reifiedTypeArgs: [],
@@ -411,7 +417,7 @@ export class UpgradeCap implements StructClass {
   static fromJSON(json: Record<string, any>): UpgradeCap {
     if (json.$typeName !== UpgradeCap.$typeName) {
       throw new Error(
-        `not a UpgradeCap json object: expected '${UpgradeCap.$typeName}' but got '${json.$typeName}'`
+        `not a UpgradeCap json object: expected '${UpgradeCap.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -440,7 +446,7 @@ export class UpgradeCap implements StructClass {
       return UpgradeCap.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -532,7 +538,7 @@ export class UpgradeTicket implements StructClass {
   private constructor(typeArgs: [], fields: UpgradeTicketFields) {
     this.$fullTypeName = composeSuiType(
       UpgradeTicket.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::package::UpgradeTicket`
     this.$typeArgs = typeArgs
 
@@ -546,7 +552,10 @@ export class UpgradeTicket implements StructClass {
     const reifiedBcs = UpgradeTicket.bcs
     return {
       typeName: UpgradeTicket.$typeName,
-      fullTypeName: composeSuiType(UpgradeTicket.$typeName, ...[]) as `0x2::package::UpgradeTicket`,
+      fullTypeName: composeSuiType(
+        UpgradeTicket.$typeName,
+        ...[],
+      ) as `0x2::package::UpgradeTicket`,
       typeArgs: [] as [],
       isPhantom: UpgradeTicket.$isPhantom,
       reifiedTypeArgs: [],
@@ -647,7 +656,7 @@ export class UpgradeTicket implements StructClass {
   static fromJSON(json: Record<string, any>): UpgradeTicket {
     if (json.$typeName !== UpgradeTicket.$typeName) {
       throw new Error(
-        `not a UpgradeTicket json object: expected '${UpgradeTicket.$typeName}' but got '${json.$typeName}'`
+        `not a UpgradeTicket json object: expected '${UpgradeTicket.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -676,7 +685,7 @@ export class UpgradeTicket implements StructClass {
       return UpgradeTicket.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -743,7 +752,7 @@ export class UpgradeReceipt implements StructClass {
   private constructor(typeArgs: [], fields: UpgradeReceiptFields) {
     this.$fullTypeName = composeSuiType(
       UpgradeReceipt.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::package::UpgradeReceipt`
     this.$typeArgs = typeArgs
 
@@ -757,7 +766,7 @@ export class UpgradeReceipt implements StructClass {
       typeName: UpgradeReceipt.$typeName,
       fullTypeName: composeSuiType(
         UpgradeReceipt.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::package::UpgradeReceipt`,
       typeArgs: [] as [],
       isPhantom: UpgradeReceipt.$isPhantom,
@@ -849,7 +858,7 @@ export class UpgradeReceipt implements StructClass {
   static fromJSON(json: Record<string, any>): UpgradeReceipt {
     if (json.$typeName !== UpgradeReceipt.$typeName) {
       throw new Error(
-        `not a UpgradeReceipt json object: expected '${UpgradeReceipt.$typeName}' but got '${json.$typeName}'`
+        `not a UpgradeReceipt json object: expected '${UpgradeReceipt.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -878,7 +887,7 @@ export class UpgradeReceipt implements StructClass {
       return UpgradeReceipt.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

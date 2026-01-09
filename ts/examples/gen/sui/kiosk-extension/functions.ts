@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, obj, pure } from '../../_framework/util'
 
 export interface AddArgs {
   ext: GenericArg
@@ -46,7 +46,10 @@ export function disable(tx: Transaction, typeArg: string, args: DisableArgs): Tr
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::disable`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), obj(tx, args.cap)],
+    arguments: [
+      obj(tx, args.self),
+      obj(tx, args.cap),
+    ],
   })
 }
 
@@ -64,7 +67,10 @@ export function enable(tx: Transaction, typeArg: string, args: EnableArgs): Tran
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::enable`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), obj(tx, args.cap)],
+    arguments: [
+      obj(tx, args.self),
+      obj(tx, args.cap),
+    ],
   })
 }
 
@@ -81,7 +87,10 @@ export function remove(tx: Transaction, typeArg: string, args: RemoveArgs): Tran
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::remove`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), obj(tx, args.cap)],
+    arguments: [
+      obj(tx, args.self),
+      obj(tx, args.cap),
+    ],
   })
 }
 
@@ -98,7 +107,10 @@ export function storage(tx: Transaction, typeArg: string, args: StorageArgs): Tr
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::storage`,
     typeArguments: [typeArg],
-    arguments: [generic(tx, `${typeArg}`, args.ext), obj(tx, args.self)],
+    arguments: [
+      generic(tx, `${typeArg}`, args.ext),
+      obj(tx, args.self),
+    ],
   })
 }
 
@@ -124,12 +136,15 @@ export interface StorageMutArgs {
 export function storageMut(
   tx: Transaction,
   typeArg: string,
-  args: StorageMutArgs
+  args: StorageMutArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::storage_mut`,
     typeArguments: [typeArg],
-    arguments: [generic(tx, `${typeArg}`, args.ext), obj(tx, args.self)],
+    arguments: [
+      generic(tx, `${typeArg}`, args.ext),
+      obj(tx, args.self),
+    ],
   })
 }
 
@@ -151,7 +166,7 @@ export interface PlaceArgs {
 export function place(
   tx: Transaction,
   typeArgs: [string, string],
-  args: PlaceArgs
+  args: PlaceArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::place`,
@@ -179,7 +194,7 @@ export interface LockArgs {
 export function lock(
   tx: Transaction,
   typeArgs: [string, string],
-  args: LockArgs
+  args: LockArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::lock`,
@@ -197,7 +212,7 @@ export function lock(
 export function isInstalled(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::is_installed`,
@@ -210,7 +225,7 @@ export function isInstalled(
 export function isEnabled(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::is_enabled`,
@@ -223,7 +238,7 @@ export function isEnabled(
 export function canPlace(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::can_place`,
@@ -239,7 +254,7 @@ export function canPlace(
 export function canLock(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::can_lock`,
@@ -252,7 +267,7 @@ export function canLock(
 export function extension(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::extension`,
@@ -265,7 +280,7 @@ export function extension(
 export function extensionMut(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::extension_mut`,

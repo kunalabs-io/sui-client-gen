@@ -1,12 +1,12 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, obj as obj_, pure } from '../../_framework/util'
-import { ID } from './structs'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, obj as obj_, pure } from '../../_framework/util'
+import { ID } from './structs'
 
 /** Get the raw bytes of a `ID` */
 export function idToBytes(tx: Transaction, id: string | TransactionArgument): TransactionResult {
@@ -27,7 +27,7 @@ export function idToAddress(tx: Transaction, id: string | TransactionArgument): 
 /** Make an `ID` from raw bytes. */
 export function idFromBytes(
   tx: Transaction,
-  bytes: Array<number | TransactionArgument> | TransactionArgument
+  bytes: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object::id_from_bytes`,
@@ -38,7 +38,7 @@ export function idFromBytes(
 /** Make an `ID` from an address. */
 export function idFromAddress(
   tx: Transaction,
-  bytes: string | TransactionArgument
+  bytes: string | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object::id_from_address`,
@@ -255,7 +255,7 @@ export function borrowUid(tx: Transaction, typeArg: string, obj: GenericArg): Tr
 /** Generate a new UID specifically used for creating a UID from a hash */
 export function newUidFromHash(
   tx: Transaction,
-  bytes: string | TransactionArgument
+  bytes: string | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object::new_uid_from_hash`,

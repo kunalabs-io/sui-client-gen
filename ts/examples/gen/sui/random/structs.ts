@@ -1,32 +1,32 @@
 /** This module provides functionality for generating secure randomness. */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  fieldToJSON,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  fieldToJSON,
-  phantom,
   vector,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { UID } from '../object/structs'
 import { Versioned } from '../versioned/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Random =============================== */
 
@@ -72,7 +72,10 @@ export class Random implements StructClass {
   readonly inner: ToField<Versioned>
 
   private constructor(typeArgs: [], fields: RandomFields) {
-    this.$fullTypeName = composeSuiType(Random.$typeName, ...typeArgs) as `0x2::random::Random`
+    this.$fullTypeName = composeSuiType(
+      Random.$typeName,
+      ...typeArgs,
+    ) as `0x2::random::Random`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -83,7 +86,10 @@ export class Random implements StructClass {
     const reifiedBcs = Random.bcs
     return {
       typeName: Random.$typeName,
-      fullTypeName: composeSuiType(Random.$typeName, ...[]) as `0x2::random::Random`,
+      fullTypeName: composeSuiType(
+        Random.$typeName,
+        ...[],
+      ) as `0x2::random::Random`,
       typeArgs: [] as [],
       isPhantom: Random.$isPhantom,
       reifiedTypeArgs: [],
@@ -174,7 +180,7 @@ export class Random implements StructClass {
   static fromJSON(json: Record<string, any>): Random {
     if (json.$typeName !== Random.$typeName) {
       throw new Error(
-        `not a Random json object: expected '${Random.$typeName}' but got '${json.$typeName}'`
+        `not a Random json object: expected '${Random.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -203,7 +209,7 @@ export class Random implements StructClass {
       return Random.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -265,7 +271,7 @@ export class RandomInner implements StructClass {
   private constructor(typeArgs: [], fields: RandomInnerFields) {
     this.$fullTypeName = composeSuiType(
       RandomInner.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::random::RandomInner`
     this.$typeArgs = typeArgs
 
@@ -279,7 +285,10 @@ export class RandomInner implements StructClass {
     const reifiedBcs = RandomInner.bcs
     return {
       typeName: RandomInner.$typeName,
-      fullTypeName: composeSuiType(RandomInner.$typeName, ...[]) as `0x2::random::RandomInner`,
+      fullTypeName: composeSuiType(
+        RandomInner.$typeName,
+        ...[],
+      ) as `0x2::random::RandomInner`,
       typeArgs: [] as [],
       isPhantom: RandomInner.$isPhantom,
       reifiedTypeArgs: [],
@@ -380,7 +389,7 @@ export class RandomInner implements StructClass {
   static fromJSON(json: Record<string, any>): RandomInner {
     if (json.$typeName !== RandomInner.$typeName) {
       throw new Error(
-        `not a RandomInner json object: expected '${RandomInner.$typeName}' but got '${json.$typeName}'`
+        `not a RandomInner json object: expected '${RandomInner.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -409,7 +418,7 @@ export class RandomInner implements StructClass {
       return RandomInner.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -470,7 +479,7 @@ export class RandomGenerator implements StructClass {
   private constructor(typeArgs: [], fields: RandomGeneratorFields) {
     this.$fullTypeName = composeSuiType(
       RandomGenerator.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::random::RandomGenerator`
     this.$typeArgs = typeArgs
 
@@ -485,7 +494,7 @@ export class RandomGenerator implements StructClass {
       typeName: RandomGenerator.$typeName,
       fullTypeName: composeSuiType(
         RandomGenerator.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::random::RandomGenerator`,
       typeArgs: [] as [],
       isPhantom: RandomGenerator.$isPhantom,
@@ -582,7 +591,7 @@ export class RandomGenerator implements StructClass {
   static fromJSON(json: Record<string, any>): RandomGenerator {
     if (json.$typeName !== RandomGenerator.$typeName) {
       throw new Error(
-        `not a RandomGenerator json object: expected '${RandomGenerator.$typeName}' but got '${json.$typeName}'`
+        `not a RandomGenerator json object: expected '${RandomGenerator.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -611,7 +620,7 @@ export class RandomGenerator implements StructClass {
       return RandomGenerator.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

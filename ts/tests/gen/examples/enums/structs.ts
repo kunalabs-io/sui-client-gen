@@ -1,11 +1,23 @@
+import { bcs, BcsType } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import { getTypeOrigin } from '../../_envs'
 import {
+  assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   EnumVariantClass,
+  extractType,
+  fieldToJSON,
+  phantom,
   PhantomReified,
   PhantomToTypeStr,
   PhantomTypeArgument,
   Reified,
   StructClass,
+  toBcs,
   ToField,
   ToJSON,
   ToPhantomTypeArgument,
@@ -13,31 +25,19 @@ import {
   ToTypeStr,
   ToTypeStr as ToPhantom,
   TypeArgument,
-  assertFieldsWithTypesArgsMatch,
-  assertReifiedTypeArgsMatch,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  extractType,
-  fieldToJSON,
-  phantom,
-  toBcs,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
   parseTypeName,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Option } from '../../std/option/structs'
 import { Balance } from '../../sui/balance/structs'
 import { UID } from '../../sui/object/structs'
 import { SUI } from '../../sui/sui/structs'
-import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Wrapped =============================== */
 
@@ -60,11 +60,8 @@ export interface WrappedFields<
   jump: ToField<ActionVariant<'u64', ToPhantom<SUI>>>
 }
 
-export type WrappedReified<
-  T extends TypeArgument,
-  U extends TypeArgument,
-  V extends TypeArgument,
-> = Reified<Wrapped<T, U, V>, WrappedFields<T, U, V>>
+export type WrappedReified<T extends TypeArgument, U extends TypeArgument, V extends TypeArgument> =
+  Reified<Wrapped<T, U, V>, WrappedFields<T, U, V>>
 
 export type WrappedJSONField<
   T extends TypeArgument,
@@ -90,13 +87,16 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
 {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::enums::Wrapped` =
-    `${getTypeOrigin('examples', 'enums::Wrapped')}::enums::Wrapped` as const
+  static readonly $typeName: `${string}::enums::Wrapped` = `${
+    getTypeOrigin('examples', 'enums::Wrapped')
+  }::enums::Wrapped` as const
   static readonly $numTypeParams = 3
   static readonly $isPhantom = [false, false, false] as const
 
   readonly $typeName: typeof Wrapped.$typeName = Wrapped.$typeName
-  readonly $fullTypeName: `${string}::enums::Wrapped<${ToTypeStr<T>}, ${ToTypeStr<U>}, ${ToTypeStr<V>}>`
+  readonly $fullTypeName: `${string}::enums::Wrapped<${ToTypeStr<T>}, ${ToTypeStr<U>}, ${ToTypeStr<
+    V
+  >}>`
   readonly $typeArgs: [ToTypeStr<T>, ToTypeStr<U>, ToTypeStr<V>]
   readonly $isPhantom: typeof Wrapped.$isPhantom = Wrapped.$isPhantom
 
@@ -110,11 +110,11 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
 
   private constructor(
     typeArgs: [ToTypeStr<T>, ToTypeStr<U>, ToTypeStr<V>],
-    fields: WrappedFields<T, U, V>
+    fields: WrappedFields<T, U, V>,
   ) {
     this.$fullTypeName = composeSuiType(
       Wrapped.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${string}::enums::Wrapped<${ToTypeStr<T>}, ${ToTypeStr<U>}, ${ToTypeStr<V>}>`
     this.$typeArgs = typeArgs
 
@@ -131,14 +131,20 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     T extends Reified<TypeArgument, any>,
     U extends Reified<TypeArgument, any>,
     V extends Reified<TypeArgument, any>,
-  >(T: T, U: U, V: V): WrappedReified<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>> {
+  >(
+    T: T,
+    U: U,
+    V: V,
+  ): WrappedReified<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>> {
     const reifiedBcs = Wrapped.bcs(toBcs(T), toBcs(U), toBcs(V))
     return {
       typeName: Wrapped.$typeName,
       fullTypeName: composeSuiType(
         Wrapped.$typeName,
-        ...[extractType(T), extractType(U), extractType(V)]
-      ) as `${string}::enums::Wrapped<${ToTypeStr<ToTypeArgument<T>>}, ${ToTypeStr<ToTypeArgument<U>>}, ${ToTypeStr<ToTypeArgument<V>>}>`,
+        ...[extractType(T), extractType(U), extractType(V)],
+      ) as `${string}::enums::Wrapped<${ToTypeStr<ToTypeArgument<T>>}, ${ToTypeStr<
+        ToTypeArgument<U>
+      >}, ${ToTypeStr<ToTypeArgument<V>>}>`,
       typeArgs: [extractType(T), extractType(U), extractType(V)] as [
         ToTypeStr<ToTypeArgument<T>>,
         ToTypeStr<ToTypeArgument<U>>,
@@ -173,7 +179,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
   >(
     T: T,
     U: U,
-    V: V
+    V: V,
   ): PhantomReified<ToTypeStr<Wrapped<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>>>> {
     return phantom(Wrapped.reified(T, U, V))
   }
@@ -186,7 +192,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     return <T extends BcsType<any>, U extends BcsType<any>, V extends BcsType<any>>(
       T: T,
       U: U,
-      V: V
+      V: V,
     ) =>
       bcs.struct(`Wrapped<${T.name}, ${U.name}, ${V.name}>`, {
         id: UID.bcs,
@@ -214,7 +220,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     V extends Reified<TypeArgument, any>,
   >(
     typeArgs: [T, U, V],
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): Wrapped<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>> {
     return Wrapped.reified(typeArgs[0], typeArgs[1], typeArgs[2]).new({
       id: decodeFromFields(UID.reified(), fields.id),
@@ -233,7 +239,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     V extends Reified<TypeArgument, any>,
   >(
     typeArgs: [T, U, V],
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): Wrapped<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>> {
     if (!isWrapped(item.type)) {
       throw new Error('not a Wrapped type')
@@ -247,15 +253,15 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
       v: decodeFromFieldsWithTypes(typeArgs[2], item.fields.v),
       stop: decodeFromFieldsWithTypes(
         Action.reified('u64', phantom(SUI.reified())),
-        item.fields.stop
+        item.fields.stop,
       ),
       pause: decodeFromFieldsWithTypes(
         Action.reified('u64', phantom(SUI.reified())),
-        item.fields.pause
+        item.fields.pause,
       ),
       jump: decodeFromFieldsWithTypes(
         Action.reified('u64', phantom(SUI.reified())),
-        item.fields.jump
+        item.fields.jump,
       ),
     })
   }
@@ -266,11 +272,11 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     V extends Reified<TypeArgument, any>,
   >(
     typeArgs: [T, U, V],
-    data: Uint8Array
+    data: Uint8Array,
   ): Wrapped<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>> {
     return Wrapped.fromFields(
       typeArgs,
-      Wrapped.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1]), toBcs(typeArgs[2])).parse(data)
+      Wrapped.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1]), toBcs(typeArgs[2])).parse(data),
     )
   }
 
@@ -296,7 +302,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     V extends Reified<TypeArgument, any>,
   >(
     typeArgs: [T, U, V],
-    field: any
+    field: any,
   ): Wrapped<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>> {
     return Wrapped.reified(typeArgs[0], typeArgs[1], typeArgs[2]).new({
       id: decodeFromJSONField(UID.reified(), field.id),
@@ -315,17 +321,17 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     V extends Reified<TypeArgument, any>,
   >(
     typeArgs: [T, U, V],
-    json: Record<string, any>
+    json: Record<string, any>,
   ): Wrapped<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>> {
     if (json.$typeName !== Wrapped.$typeName) {
       throw new Error(
-        `not a Wrapped json object: expected '${Wrapped.$typeName}' but got '${json.$typeName}'`
+        `not a Wrapped json object: expected '${Wrapped.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Wrapped.$typeName, ...typeArgs.map(extractType)),
       json.$typeArgs,
-      typeArgs
+      typeArgs,
     )
 
     return Wrapped.fromJSONField(typeArgs, json)
@@ -337,7 +343,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     V extends Reified<TypeArgument, any>,
   >(
     typeArgs: [T, U, V],
-    content: SuiParsedData
+    content: SuiParsedData,
   ): Wrapped<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -354,7 +360,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     V extends Reified<TypeArgument, any>,
   >(
     typeArgs: [T, U, V],
-    data: SuiObjectData
+    data: SuiObjectData,
   ): Wrapped<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isWrapped(data.bcs.type)) {
@@ -364,7 +370,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 3) {
         throw new Error(
-          `type argument mismatch: expected 3 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 3 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 3; i++) {
@@ -372,7 +378,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
         const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -383,7 +389,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
       return Wrapped.fromSuiParsedData(typeArgs, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -394,7 +400,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
   >(
     client: SupportedSuiClient,
     typeArgs: [T, U, V],
-    id: string
+    id: string,
   ): Promise<Wrapped<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isWrapped(res.type)) {
@@ -404,7 +410,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 3) {
       throw new Error(
-        `type argument mismatch: expected 3 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 3 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 3; i++) {
@@ -412,7 +418,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
       const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }
@@ -455,19 +461,26 @@ export type ActionReified<T extends TypeArgument, U extends PhantomTypeArgument>
 >
 
 export class Action {
-  static readonly $typeName: string =
-    `${getTypeOrigin('examples', 'enums::Action')}::enums::Action` as const
+  static readonly $typeName: string = `${
+    getTypeOrigin('examples', 'enums::Action')
+  }::enums::Action` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, true] as const
 
   static reified<
     T extends Reified<TypeArgument, any>,
     U extends PhantomReified<PhantomTypeArgument>,
-  >(T: T, U: U): ActionReified<ToTypeArgument<T>, ToPhantomTypeArgument<U>> {
+  >(
+    T: T,
+    U: U,
+  ): ActionReified<ToTypeArgument<T>, ToPhantomTypeArgument<U>> {
     const reifiedBcs = Action.bcs(toBcs(T))
     return {
       typeName: Action.$typeName,
-      fullTypeName: composeSuiType(Action.$typeName, ...[extractType(T), extractType(U)]) as string,
+      fullTypeName: composeSuiType(
+        Action.$typeName,
+        ...[extractType(T), extractType(U)],
+      ) as string,
       typeArgs: [extractType(T), extractType(U)] as [
         ToTypeStr<ToTypeArgument<T>>,
         PhantomToTypeStr<ToPhantomTypeArgument<U>>,
@@ -482,7 +495,7 @@ export class Action {
       fromJSON: (json: Record<string, any>) => Action.fromJSON([T, U], json),
       new: (
         variant: ActionVariantName,
-        fields: ActionFields<ToTypeArgument<T>, ToPhantomTypeArgument<U>>
+        fields: ActionFields<ToTypeArgument<T>, ToPhantomTypeArgument<U>>,
       ) => {
         switch (variant) {
           case 'Stop':
@@ -490,12 +503,12 @@ export class Action {
           case 'Pause':
             return new ActionPause(
               [extractType(T), extractType(U)],
-              fields as ActionPauseFields<ToTypeArgument<T>, ToPhantomTypeArgument<U>>
+              fields as ActionPauseFields<ToTypeArgument<T>, ToPhantomTypeArgument<U>>,
             )
           case 'Jump':
             return new ActionJump(
               [extractType(T), extractType(U)],
-              fields as ActionJumpFields<ToTypeArgument<T>, ToPhantomTypeArgument<U>>
+              fields as ActionJumpFields<ToTypeArgument<T>, ToPhantomTypeArgument<U>>,
             )
         }
       },
@@ -512,7 +525,7 @@ export class Action {
     U extends PhantomReified<PhantomTypeArgument>,
   >(
     T: T,
-    U: U
+    U: U,
   ): PhantomReified<ToTypeStr<ActionVariant<ToTypeArgument<T>, ToPhantomTypeArgument<U>>>> {
     return phantom(Action.reified(T, U))
   }
@@ -549,7 +562,7 @@ export class Action {
     U extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [T, U],
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): ActionVariant<ToTypeArgument<T>, ToPhantomTypeArgument<U>> {
     const r = Action.reified(typeArgs[0], typeArgs[1])
 
@@ -581,7 +594,7 @@ export class Action {
     U extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [T, U],
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): ActionVariant<ToTypeArgument<T>, ToPhantomTypeArgument<U>> {
     if (!isAction(item.type)) {
       throw new Error('not a Action type')
@@ -603,7 +616,7 @@ export class Action {
           genericField: decodeFromFieldsWithTypes(typeArgs[0], item.fields.generic_field),
           phantomField: decodeFromFieldsWithTypes(
             Balance.reified(typeArgs[1]),
-            item.fields.phantom_field
+            item.fields.phantom_field,
           ),
           reifiedField: decodeFromFieldsWithTypes(Option.reified('u64'), item.fields.reified_field),
         })
@@ -622,7 +635,7 @@ export class Action {
     U extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [T, U],
-    data: Uint8Array
+    data: Uint8Array,
   ): ActionVariant<ToTypeArgument<T>, ToPhantomTypeArgument<U>> {
     const parsed = Action.bcs(toBcs(typeArgs[0])).parse(data)
     return Action.fromFields(typeArgs, parsed)
@@ -631,7 +644,10 @@ export class Action {
   static fromJSONField<
     T extends Reified<TypeArgument, any>,
     U extends PhantomReified<PhantomTypeArgument>,
-  >(typeArgs: [T, U], field: any): ActionVariant<ToTypeArgument<T>, ToPhantomTypeArgument<U>> {
+  >(
+    typeArgs: [T, U],
+    field: any,
+  ): ActionVariant<ToTypeArgument<T>, ToPhantomTypeArgument<U>> {
     const r = Action.reified(typeArgs[0], typeArgs[1])
 
     const kind = field.$kind
@@ -663,17 +679,17 @@ export class Action {
     U extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [T, U],
-    json: Record<string, any>
+    json: Record<string, any>,
   ): ActionVariant<ToTypeArgument<T>, ToPhantomTypeArgument<U>> {
     if (json.$typeName !== Action.$typeName) {
       throw new Error(
-        `not a Action json object: expected '${Action.$typeName}' but got '${json.$typeName}'`
+        `not a Action json object: expected '${Action.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Action.$typeName, ...typeArgs.map(extractType)),
       json.$typeArgs,
-      typeArgs
+      typeArgs,
     )
 
     return Action.fromJSONField(typeArgs, json)
@@ -711,7 +727,7 @@ export class ActionStop<T extends TypeArgument, U extends PhantomTypeArgument>
   constructor(typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>], fields: ActionStopFields) {
     this.$fullTypeName = composeSuiType(
       Action.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
     this.$typeArgs = typeArgs
   }
@@ -775,7 +791,7 @@ export class ActionPause<T extends TypeArgument, U extends PhantomTypeArgument>
   constructor(typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>], fields: ActionPauseFields<T, U>) {
     this.$fullTypeName = composeSuiType(
       Action.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
     this.$typeArgs = typeArgs
 
@@ -792,7 +808,7 @@ export class ActionPause<T extends TypeArgument, U extends PhantomTypeArgument>
       genericField: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.genericField),
       phantomField: fieldToJSON<Balance<U>>(
         `${Balance.$typeName}<${this.$typeArgs[1]}>`,
-        this.phantomField
+        this.phantomField,
       ),
       reifiedField: fieldToJSON<Option<'u64'>>(`${Option.$typeName}<u64>`, this.reifiedField),
     }
@@ -850,7 +866,7 @@ export class ActionJump<T extends TypeArgument, U extends PhantomTypeArgument>
   constructor(typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>], fields: ActionJumpFields<T, U>) {
     this.$fullTypeName = composeSuiType(
       Action.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
     this.$typeArgs = typeArgs
 

@@ -1,27 +1,27 @@
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 import { String } from '../../_dependencies/std/string/structs'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { UID } from '../object/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== VerifiedID =============================== */
 
@@ -91,7 +91,7 @@ export class VerifiedID implements StructClass {
   private constructor(typeArgs: [], fields: VerifiedIDFields) {
     this.$fullTypeName = composeSuiType(
       VerifiedID.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::zklogin_verified_id::VerifiedID`
     this.$typeArgs = typeArgs
 
@@ -109,7 +109,7 @@ export class VerifiedID implements StructClass {
       typeName: VerifiedID.$typeName,
       fullTypeName: composeSuiType(
         VerifiedID.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::zklogin_verified_id::VerifiedID`,
       typeArgs: [] as [],
       isPhantom: VerifiedID.$isPhantom,
@@ -224,7 +224,7 @@ export class VerifiedID implements StructClass {
   static fromJSON(json: Record<string, any>): VerifiedID {
     if (json.$typeName !== VerifiedID.$typeName) {
       throw new Error(
-        `not a VerifiedID json object: expected '${VerifiedID.$typeName}' but got '${json.$typeName}'`
+        `not a VerifiedID json object: expected '${VerifiedID.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -253,7 +253,7 @@ export class VerifiedID implements StructClass {
       return VerifiedID.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

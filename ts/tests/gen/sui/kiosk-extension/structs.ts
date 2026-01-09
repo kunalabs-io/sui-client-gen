@@ -38,7 +38,17 @@
  * implement custom authorization scheme for `place` and `lock` respectively).
  */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  extractType,
+  phantom,
   PhantomReified,
   PhantomToTypeStr,
   PhantomTypeArgument,
@@ -48,26 +58,16 @@ import {
   ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
-  assertFieldsWithTypesArgsMatch,
-  assertReifiedTypeArgsMatch,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  extractType,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
   parseTypeName,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Bag } from '../bag/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Extension =============================== */
 
@@ -174,7 +174,7 @@ export class Extension implements StructClass {
   private constructor(typeArgs: [], fields: ExtensionFields) {
     this.$fullTypeName = composeSuiType(
       Extension.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::kiosk_extension::Extension`
     this.$typeArgs = typeArgs
 
@@ -187,7 +187,10 @@ export class Extension implements StructClass {
     const reifiedBcs = Extension.bcs
     return {
       typeName: Extension.$typeName,
-      fullTypeName: composeSuiType(Extension.$typeName, ...[]) as `0x2::kiosk_extension::Extension`,
+      fullTypeName: composeSuiType(
+        Extension.$typeName,
+        ...[],
+      ) as `0x2::kiosk_extension::Extension`,
       typeArgs: [] as [],
       isPhantom: Extension.$isPhantom,
       reifiedTypeArgs: [],
@@ -283,7 +286,7 @@ export class Extension implements StructClass {
   static fromJSON(json: Record<string, any>): Extension {
     if (json.$typeName !== Extension.$typeName) {
       throw new Error(
-        `not a Extension json object: expected '${Extension.$typeName}' but got '${json.$typeName}'`
+        `not a Extension json object: expected '${Extension.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -312,7 +315,7 @@ export class Extension implements StructClass {
       return Extension.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -374,7 +377,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
   private constructor(typeArgs: [PhantomToTypeStr<Ext>], fields: ExtensionKeyFields<Ext>) {
     this.$fullTypeName = composeSuiType(
       ExtensionKey.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::kiosk_extension::ExtensionKey<${PhantomToTypeStr<Ext>}>`
     this.$typeArgs = typeArgs
 
@@ -382,14 +385,14 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
   }
 
   static reified<Ext extends PhantomReified<PhantomTypeArgument>>(
-    Ext: Ext
+    Ext: Ext,
   ): ExtensionKeyReified<ToPhantomTypeArgument<Ext>> {
     const reifiedBcs = ExtensionKey.bcs
     return {
       typeName: ExtensionKey.$typeName,
       fullTypeName: composeSuiType(
         ExtensionKey.$typeName,
-        ...[extractType(Ext)]
+        ...[extractType(Ext)],
       ) as `0x2::kiosk_extension::ExtensionKey<${PhantomToTypeStr<ToPhantomTypeArgument<Ext>>}>`,
       typeArgs: [extractType(Ext)] as [PhantomToTypeStr<ToPhantomTypeArgument<Ext>>],
       isPhantom: ExtensionKey.$isPhantom,
@@ -415,7 +418,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
   }
 
   static phantom<Ext extends PhantomReified<PhantomTypeArgument>>(
-    Ext: Ext
+    Ext: Ext,
   ): PhantomReified<ToTypeStr<ExtensionKey<ToPhantomTypeArgument<Ext>>>> {
     return phantom(ExtensionKey.reified(Ext))
   }
@@ -441,7 +444,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
 
   static fromFields<Ext extends PhantomReified<PhantomTypeArgument>>(
     typeArg: Ext,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): ExtensionKey<ToPhantomTypeArgument<Ext>> {
     return ExtensionKey.reified(typeArg).new({
       dummyField: decodeFromFields('bool', fields.dummy_field),
@@ -450,7 +453,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
 
   static fromFieldsWithTypes<Ext extends PhantomReified<PhantomTypeArgument>>(
     typeArg: Ext,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): ExtensionKey<ToPhantomTypeArgument<Ext>> {
     if (!isExtensionKey(item.type)) {
       throw new Error('not a ExtensionKey type')
@@ -464,7 +467,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
 
   static fromBcs<Ext extends PhantomReified<PhantomTypeArgument>>(
     typeArg: Ext,
-    data: Uint8Array
+    data: Uint8Array,
   ): ExtensionKey<ToPhantomTypeArgument<Ext>> {
     return ExtensionKey.fromFields(typeArg, ExtensionKey.bcs.parse(data))
   }
@@ -481,7 +484,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
 
   static fromJSONField<Ext extends PhantomReified<PhantomTypeArgument>>(
     typeArg: Ext,
-    field: any
+    field: any,
   ): ExtensionKey<ToPhantomTypeArgument<Ext>> {
     return ExtensionKey.reified(typeArg).new({
       dummyField: decodeFromJSONField('bool', field.dummyField),
@@ -490,17 +493,17 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
 
   static fromJSON<Ext extends PhantomReified<PhantomTypeArgument>>(
     typeArg: Ext,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): ExtensionKey<ToPhantomTypeArgument<Ext>> {
     if (json.$typeName !== ExtensionKey.$typeName) {
       throw new Error(
-        `not a ExtensionKey json object: expected '${ExtensionKey.$typeName}' but got '${json.$typeName}'`
+        `not a ExtensionKey json object: expected '${ExtensionKey.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(ExtensionKey.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return ExtensionKey.fromJSONField(typeArg, json)
@@ -508,7 +511,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
 
   static fromSuiParsedData<Ext extends PhantomReified<PhantomTypeArgument>>(
     typeArg: Ext,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): ExtensionKey<ToPhantomTypeArgument<Ext>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -521,7 +524,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
 
   static fromSuiObjectData<Ext extends PhantomReified<PhantomTypeArgument>>(
     typeArg: Ext,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): ExtensionKey<ToPhantomTypeArgument<Ext>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isExtensionKey(data.bcs.type)) {
@@ -531,7 +534,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -539,7 +542,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -550,14 +553,14 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
       return ExtensionKey.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<Ext extends PhantomReified<PhantomTypeArgument>>(
     client: SupportedSuiClient,
     typeArg: Ext,
-    id: string
+    id: string,
   ): Promise<ExtensionKey<ToPhantomTypeArgument<Ext>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isExtensionKey(res.type)) {
@@ -567,7 +570,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -575,7 +578,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }

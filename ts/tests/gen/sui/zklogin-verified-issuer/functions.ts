@@ -1,12 +1,12 @@
-import { getPublishedAt } from '../../_envs'
-import { obj, pure } from '../../_framework/util'
-import { String } from '../../std/string/structs'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { obj, pure } from '../../_framework/util'
+import { String } from '../../std/string/structs'
 
 /** Returns the address associated with the given VerifiedIssuer */
 export function owner(tx: Transaction, verifiedIssuer: TransactionObjectInput): TransactionResult {
@@ -27,7 +27,7 @@ export function issuer(tx: Transaction, verifiedIssuer: TransactionObjectInput):
 /** Delete a VerifiedIssuer */
 export function delete_(
   tx: Transaction,
-  verifiedIssuer: TransactionObjectInput
+  verifiedIssuer: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_issuer::delete`,
@@ -48,11 +48,14 @@ export interface VerifyZkloginIssuerArgs {
  */
 export function verifyZkloginIssuer(
   tx: Transaction,
-  args: VerifyZkloginIssuerArgs
+  args: VerifyZkloginIssuerArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_issuer::verify_zklogin_issuer`,
-    arguments: [pure(tx, args.addressSeed, `u256`), pure(tx, args.issuer, `${String.$typeName}`)],
+    arguments: [
+      pure(tx, args.addressSeed, `u256`),
+      pure(tx, args.issuer, `${String.$typeName}`),
+    ],
   })
 }
 
@@ -65,7 +68,7 @@ export interface CheckZkloginIssuerArgs {
 /** Returns true if `address` was created using zklogin with the given issuer and address seed. */
 export function checkZkloginIssuer(
   tx: Transaction,
-  args: CheckZkloginIssuerArgs
+  args: CheckZkloginIssuerArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_issuer::check_zklogin_issuer`,
@@ -90,7 +93,7 @@ export interface CheckZkloginIssuerInternalArgs {
  */
 export function checkZkloginIssuerInternal(
   tx: Transaction,
-  args: CheckZkloginIssuerInternalArgs
+  args: CheckZkloginIssuerInternalArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_issuer::check_zklogin_issuer_internal`,

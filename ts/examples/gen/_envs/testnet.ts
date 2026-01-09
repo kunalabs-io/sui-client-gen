@@ -2,7 +2,7 @@ import type { EnvConfig } from '../_framework/env'
 
 export const testnetEnv: EnvConfig = {
   packages: {
-    sui: {
+    'sui': {
       originalId: '0x2',
       publishedAt: '0x2',
       typeOrigins: {
@@ -135,7 +135,7 @@ export const testnetEnv: EnvConfig = {
         'zklogin_verified_issuer::VerifiedIssuer': '0x2',
       },
     },
-    examples: {
+    'examples': {
       originalId: '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209',
       publishedAt: '0xa2a8baeeb817a18f6a69716b084a47c8f82bbff0d82b8aeef5929a9a78d7f83',
       typeOrigins: {
@@ -168,7 +168,7 @@ export const testnetEnv: EnvConfig = {
           '0x8b699fdce543505aeb290ee1b6b5d20fcaa8e8b1a5fc137a8b3facdfa2902209',
       },
     },
-    amm: {
+    'amm': {
       originalId: '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7',
       publishedAt: '0xf917eb03d02b9221b10276064b2c10296276cb43feb24aac35113a272dd691c7',
       typeOrigins: {
@@ -184,7 +184,7 @@ export const testnetEnv: EnvConfig = {
     },
   },
   dependencies: {
-    std: {
+    'std': {
       originalId: '0x1',
       publishedAt: '0x1',
       typeOrigins: {

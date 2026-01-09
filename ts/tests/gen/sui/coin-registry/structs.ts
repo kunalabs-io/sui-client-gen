@@ -5,8 +5,19 @@
  * supply information, regulatory status, and metadata capabilities.
  */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
   EnumVariantClass,
+  extractType,
+  fieldToJSON,
+  phantom,
   PhantomReified,
   PhantomToTypeStr,
   PhantomTypeArgument,
@@ -16,23 +27,15 @@ import {
   ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
-  assertFieldsWithTypesArgsMatch,
-  assertReifiedTypeArgsMatch,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  extractType,
-  fieldToJSON,
-  phantom,
   vector,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
   parseTypeName,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { Option } from '../../std/option/structs'
@@ -42,9 +45,6 @@ import { Bag } from '../bag/structs'
 import { Supply } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== CoinRegistry =============================== */
 
@@ -91,7 +91,7 @@ export class CoinRegistry implements StructClass {
   private constructor(typeArgs: [], fields: CoinRegistryFields) {
     this.$fullTypeName = composeSuiType(
       CoinRegistry.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::coin_registry::CoinRegistry`
     this.$typeArgs = typeArgs
 
@@ -104,7 +104,7 @@ export class CoinRegistry implements StructClass {
       typeName: CoinRegistry.$typeName,
       fullTypeName: composeSuiType(
         CoinRegistry.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::coin_registry::CoinRegistry`,
       typeArgs: [] as [],
       isPhantom: CoinRegistry.$isPhantom,
@@ -191,7 +191,7 @@ export class CoinRegistry implements StructClass {
   static fromJSON(json: Record<string, any>): CoinRegistry {
     if (json.$typeName !== CoinRegistry.$typeName) {
       throw new Error(
-        `not a CoinRegistry json object: expected '${CoinRegistry.$typeName}' but got '${json.$typeName}'`
+        `not a CoinRegistry json object: expected '${CoinRegistry.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -220,7 +220,7 @@ export class CoinRegistry implements StructClass {
       return CoinRegistry.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -282,7 +282,7 @@ export class ExtraField implements StructClass {
   private constructor(typeArgs: [], fields: ExtraFieldFields) {
     this.$fullTypeName = composeSuiType(
       ExtraField.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::coin_registry::ExtraField`
     this.$typeArgs = typeArgs
 
@@ -294,7 +294,10 @@ export class ExtraField implements StructClass {
     const reifiedBcs = ExtraField.bcs
     return {
       typeName: ExtraField.$typeName,
-      fullTypeName: composeSuiType(ExtraField.$typeName, ...[]) as `0x2::coin_registry::ExtraField`,
+      fullTypeName: composeSuiType(
+        ExtraField.$typeName,
+        ...[],
+      ) as `0x2::coin_registry::ExtraField`,
       typeArgs: [] as [],
       isPhantom: ExtraField.$isPhantom,
       reifiedTypeArgs: [],
@@ -385,7 +388,7 @@ export class ExtraField implements StructClass {
   static fromJSON(json: Record<string, any>): ExtraField {
     if (json.$typeName !== ExtraField.$typeName) {
       throw new Error(
-        `not a ExtraField json object: expected '${ExtraField.$typeName}' but got '${json.$typeName}'`
+        `not a ExtraField json object: expected '${ExtraField.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -414,7 +417,7 @@ export class ExtraField implements StructClass {
       return ExtraField.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -472,7 +475,7 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: CurrencyKeyFields<T>) {
     this.$fullTypeName = composeSuiType(
       CurrencyKey.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::coin_registry::CurrencyKey<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
@@ -480,14 +483,14 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): CurrencyKeyReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = CurrencyKey.bcs
     return {
       typeName: CurrencyKey.$typeName,
       fullTypeName: composeSuiType(
         CurrencyKey.$typeName,
-        ...[extractType(T)]
+        ...[extractType(T)],
       ) as `0x2::coin_registry::CurrencyKey<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       isPhantom: CurrencyKey.$isPhantom,
@@ -513,7 +516,7 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static phantom<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): PhantomReified<ToTypeStr<CurrencyKey<ToPhantomTypeArgument<T>>>> {
     return phantom(CurrencyKey.reified(T))
   }
@@ -539,7 +542,7 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): CurrencyKey<ToPhantomTypeArgument<T>> {
     return CurrencyKey.reified(typeArg).new({
       dummyField: decodeFromFields('bool', fields.dummy_field),
@@ -548,7 +551,7 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): CurrencyKey<ToPhantomTypeArgument<T>> {
     if (!isCurrencyKey(item.type)) {
       throw new Error('not a CurrencyKey type')
@@ -562,7 +565,7 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
 
   static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: Uint8Array
+    data: Uint8Array,
   ): CurrencyKey<ToPhantomTypeArgument<T>> {
     return CurrencyKey.fromFields(typeArg, CurrencyKey.bcs.parse(data))
   }
@@ -579,7 +582,7 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    field: any
+    field: any,
   ): CurrencyKey<ToPhantomTypeArgument<T>> {
     return CurrencyKey.reified(typeArg).new({
       dummyField: decodeFromJSONField('bool', field.dummyField),
@@ -588,17 +591,17 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): CurrencyKey<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== CurrencyKey.$typeName) {
       throw new Error(
-        `not a CurrencyKey json object: expected '${CurrencyKey.$typeName}' but got '${json.$typeName}'`
+        `not a CurrencyKey json object: expected '${CurrencyKey.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(CurrencyKey.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return CurrencyKey.fromJSONField(typeArg, json)
@@ -606,7 +609,7 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): CurrencyKey<ToPhantomTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -619,7 +622,7 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): CurrencyKey<ToPhantomTypeArgument<T>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isCurrencyKey(data.bcs.type)) {
@@ -629,7 +632,7 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -637,7 +640,7 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -648,14 +651,14 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
       return CurrencyKey.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SupportedSuiClient,
     typeArg: T,
-    id: string
+    id: string,
   ): Promise<CurrencyKey<ToPhantomTypeArgument<T>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isCurrencyKey(res.type)) {
@@ -665,7 +668,7 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -673,7 +676,7 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }
@@ -723,7 +726,7 @@ export class LegacyMetadataKey implements StructClass {
   private constructor(typeArgs: [], fields: LegacyMetadataKeyFields) {
     this.$fullTypeName = composeSuiType(
       LegacyMetadataKey.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::coin_registry::LegacyMetadataKey`
     this.$typeArgs = typeArgs
 
@@ -736,7 +739,7 @@ export class LegacyMetadataKey implements StructClass {
       typeName: LegacyMetadataKey.$typeName,
       fullTypeName: composeSuiType(
         LegacyMetadataKey.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::coin_registry::LegacyMetadataKey`,
       typeArgs: [] as [],
       isPhantom: LegacyMetadataKey.$isPhantom,
@@ -823,7 +826,7 @@ export class LegacyMetadataKey implements StructClass {
   static fromJSON(json: Record<string, any>): LegacyMetadataKey {
     if (json.$typeName !== LegacyMetadataKey.$typeName) {
       throw new Error(
-        `not a LegacyMetadataKey json object: expected '${LegacyMetadataKey.$typeName}' but got '${json.$typeName}'`
+        `not a LegacyMetadataKey json object: expected '${LegacyMetadataKey.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -852,7 +855,7 @@ export class LegacyMetadataKey implements StructClass {
       return LegacyMetadataKey.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -914,7 +917,7 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: MetadataCapFields<T>) {
     this.$fullTypeName = composeSuiType(
       MetadataCap.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::coin_registry::MetadataCap<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
@@ -922,14 +925,14 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): MetadataCapReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = MetadataCap.bcs
     return {
       typeName: MetadataCap.$typeName,
       fullTypeName: composeSuiType(
         MetadataCap.$typeName,
-        ...[extractType(T)]
+        ...[extractType(T)],
       ) as `0x2::coin_registry::MetadataCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       isPhantom: MetadataCap.$isPhantom,
@@ -955,7 +958,7 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static phantom<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): PhantomReified<ToTypeStr<MetadataCap<ToPhantomTypeArgument<T>>>> {
     return phantom(MetadataCap.reified(T))
   }
@@ -981,7 +984,7 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): MetadataCap<ToPhantomTypeArgument<T>> {
     return MetadataCap.reified(typeArg).new({
       id: decodeFromFields(UID.reified(), fields.id),
@@ -990,7 +993,7 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): MetadataCap<ToPhantomTypeArgument<T>> {
     if (!isMetadataCap(item.type)) {
       throw new Error('not a MetadataCap type')
@@ -1004,7 +1007,7 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
 
   static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: Uint8Array
+    data: Uint8Array,
   ): MetadataCap<ToPhantomTypeArgument<T>> {
     return MetadataCap.fromFields(typeArg, MetadataCap.bcs.parse(data))
   }
@@ -1021,7 +1024,7 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    field: any
+    field: any,
   ): MetadataCap<ToPhantomTypeArgument<T>> {
     return MetadataCap.reified(typeArg).new({
       id: decodeFromJSONField(UID.reified(), field.id),
@@ -1030,17 +1033,17 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): MetadataCap<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== MetadataCap.$typeName) {
       throw new Error(
-        `not a MetadataCap json object: expected '${MetadataCap.$typeName}' but got '${json.$typeName}'`
+        `not a MetadataCap json object: expected '${MetadataCap.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(MetadataCap.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return MetadataCap.fromJSONField(typeArg, json)
@@ -1048,7 +1051,7 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): MetadataCap<ToPhantomTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -1061,7 +1064,7 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): MetadataCap<ToPhantomTypeArgument<T>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isMetadataCap(data.bcs.type)) {
@@ -1071,7 +1074,7 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -1079,7 +1082,7 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -1090,14 +1093,14 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
       return MetadataCap.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SupportedSuiClient,
     typeArg: T,
-    id: string
+    id: string,
   ): Promise<MetadataCap<ToPhantomTypeArgument<T>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isMetadataCap(res.type)) {
@@ -1107,7 +1110,7 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -1115,7 +1118,7 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }
@@ -1164,7 +1167,7 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: BorrowFields<T>) {
     this.$fullTypeName = composeSuiType(
       Borrow.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::coin_registry::Borrow<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
@@ -1172,14 +1175,14 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): BorrowReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Borrow.bcs
     return {
       typeName: Borrow.$typeName,
       fullTypeName: composeSuiType(
         Borrow.$typeName,
-        ...[extractType(T)]
+        ...[extractType(T)],
       ) as `0x2::coin_registry::Borrow<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       isPhantom: Borrow.$isPhantom,
@@ -1205,7 +1208,7 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static phantom<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): PhantomReified<ToTypeStr<Borrow<ToPhantomTypeArgument<T>>>> {
     return phantom(Borrow.reified(T))
   }
@@ -1231,7 +1234,7 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): Borrow<ToPhantomTypeArgument<T>> {
     return Borrow.reified(typeArg).new({
       dummyField: decodeFromFields('bool', fields.dummy_field),
@@ -1240,7 +1243,7 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): Borrow<ToPhantomTypeArgument<T>> {
     if (!isBorrow(item.type)) {
       throw new Error('not a Borrow type')
@@ -1254,7 +1257,7 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
 
   static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: Uint8Array
+    data: Uint8Array,
   ): Borrow<ToPhantomTypeArgument<T>> {
     return Borrow.fromFields(typeArg, Borrow.bcs.parse(data))
   }
@@ -1271,7 +1274,7 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    field: any
+    field: any,
   ): Borrow<ToPhantomTypeArgument<T>> {
     return Borrow.reified(typeArg).new({
       dummyField: decodeFromJSONField('bool', field.dummyField),
@@ -1280,17 +1283,17 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): Borrow<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Borrow.$typeName) {
       throw new Error(
-        `not a Borrow json object: expected '${Borrow.$typeName}' but got '${json.$typeName}'`
+        `not a Borrow json object: expected '${Borrow.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Borrow.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return Borrow.fromJSONField(typeArg, json)
@@ -1298,7 +1301,7 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): Borrow<ToPhantomTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -1311,7 +1314,7 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): Borrow<ToPhantomTypeArgument<T>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isBorrow(data.bcs.type)) {
@@ -1321,7 +1324,7 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -1329,7 +1332,7 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -1340,14 +1343,14 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
       return Borrow.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SupportedSuiClient,
     typeArg: T,
-    id: string
+    id: string,
   ): Promise<Borrow<ToPhantomTypeArgument<T>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isBorrow(res.type)) {
@@ -1357,7 +1360,7 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -1365,7 +1368,7 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }
@@ -1476,7 +1479,7 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: CurrencyFields<T>) {
     this.$fullTypeName = composeSuiType(
       Currency.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::coin_registry::Currency<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
@@ -1494,14 +1497,14 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): CurrencyReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Currency.bcs
     return {
       typeName: Currency.$typeName,
       fullTypeName: composeSuiType(
         Currency.$typeName,
-        ...[extractType(T)]
+        ...[extractType(T)],
       ) as `0x2::coin_registry::Currency<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       isPhantom: Currency.$isPhantom,
@@ -1527,7 +1530,7 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static phantom<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): PhantomReified<ToTypeStr<Currency<ToPhantomTypeArgument<T>>>> {
     return phantom(Currency.reified(T))
   }
@@ -1563,7 +1566,7 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): Currency<ToPhantomTypeArgument<T>> {
     return Currency.reified(typeArg).new({
       id: decodeFromFields(UID.reified(), fields.id),
@@ -1578,14 +1581,14 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
       metadataCapId: decodeFromFields(MetadataCapState.reified(), fields.metadata_cap_id),
       extraFields: decodeFromFields(
         VecMap.reified(String.reified(), ExtraField.reified()),
-        fields.extra_fields
+        fields.extra_fields,
       ),
     })
   }
 
   static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): Currency<ToPhantomTypeArgument<T>> {
     if (!isCurrency(item.type)) {
       throw new Error('not a Currency type')
@@ -1601,27 +1604,27 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
       iconUrl: decodeFromFieldsWithTypes(String.reified(), item.fields.icon_url),
       supply: decodeFromFieldsWithTypes(
         Option.reified(SupplyState.reified(typeArg)),
-        item.fields.supply
+        item.fields.supply,
       ),
       regulated: decodeFromFieldsWithTypes(RegulatedState.reified(), item.fields.regulated),
       treasuryCapId: decodeFromFieldsWithTypes(
         Option.reified(ID.reified()),
-        item.fields.treasury_cap_id
+        item.fields.treasury_cap_id,
       ),
       metadataCapId: decodeFromFieldsWithTypes(
         MetadataCapState.reified(),
-        item.fields.metadata_cap_id
+        item.fields.metadata_cap_id,
       ),
       extraFields: decodeFromFieldsWithTypes(
         VecMap.reified(String.reified(), ExtraField.reified()),
-        item.fields.extra_fields
+        item.fields.extra_fields,
       ),
     })
   }
 
   static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: Uint8Array
+    data: Uint8Array,
   ): Currency<ToPhantomTypeArgument<T>> {
     return Currency.fromFields(typeArg, Currency.bcs.parse(data))
   }
@@ -1636,12 +1639,12 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
       iconUrl: this.iconUrl,
       supply: fieldToJSON<Option<SupplyStateVariant<T>>>(
         `${Option.$typeName}<${SupplyState.$typeName}<${this.$typeArgs[0]}>>`,
-        this.supply
+        this.supply,
       ),
       regulated: this.regulated.toJSONField(),
       treasuryCapId: fieldToJSON<Option<ID>>(
         `${Option.$typeName}<${ID.$typeName}>`,
-        this.treasuryCapId
+        this.treasuryCapId,
       ),
       metadataCapId: this.metadataCapId.toJSONField(),
       extraFields: this.extraFields.toJSONField(),
@@ -1654,7 +1657,7 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    field: any
+    field: any,
   ): Currency<ToPhantomTypeArgument<T>> {
     return Currency.reified(typeArg).new({
       id: decodeFromJSONField(UID.reified(), field.id),
@@ -1669,24 +1672,24 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
       metadataCapId: decodeFromJSONField(MetadataCapState.reified(), field.metadataCapId),
       extraFields: decodeFromJSONField(
         VecMap.reified(String.reified(), ExtraField.reified()),
-        field.extraFields
+        field.extraFields,
       ),
     })
   }
 
   static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): Currency<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Currency.$typeName) {
       throw new Error(
-        `not a Currency json object: expected '${Currency.$typeName}' but got '${json.$typeName}'`
+        `not a Currency json object: expected '${Currency.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Currency.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return Currency.fromJSONField(typeArg, json)
@@ -1694,7 +1697,7 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): Currency<ToPhantomTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -1707,7 +1710,7 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): Currency<ToPhantomTypeArgument<T>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isCurrency(data.bcs.type)) {
@@ -1717,7 +1720,7 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -1725,7 +1728,7 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -1736,14 +1739,14 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
       return Currency.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SupportedSuiClient,
     typeArg: T,
-    id: string
+    id: string,
   ): Promise<Currency<ToPhantomTypeArgument<T>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isCurrency(res.type)) {
@@ -1753,7 +1756,7 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -1761,7 +1764,7 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }
@@ -1825,7 +1828,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: CurrencyInitializerFields<T>) {
     this.$fullTypeName = composeSuiType(
       CurrencyInitializer.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::coin_registry::CurrencyInitializer<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
@@ -1835,14 +1838,14 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
   }
 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): CurrencyInitializerReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = CurrencyInitializer.bcs
     return {
       typeName: CurrencyInitializer.$typeName,
       fullTypeName: composeSuiType(
         CurrencyInitializer.$typeName,
-        ...[extractType(T)]
+        ...[extractType(T)],
       ) as `0x2::coin_registry::CurrencyInitializer<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       isPhantom: CurrencyInitializer.$isPhantom,
@@ -1872,7 +1875,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
   }
 
   static phantom<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): PhantomReified<ToTypeStr<CurrencyInitializer<ToPhantomTypeArgument<T>>>> {
     return phantom(CurrencyInitializer.reified(T))
   }
@@ -1900,7 +1903,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): CurrencyInitializer<ToPhantomTypeArgument<T>> {
     return CurrencyInitializer.reified(typeArg).new({
       currency: decodeFromFields(Currency.reified(typeArg), fields.currency),
@@ -1911,7 +1914,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
 
   static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): CurrencyInitializer<ToPhantomTypeArgument<T>> {
     if (!isCurrencyInitializer(item.type)) {
       throw new Error('not a CurrencyInitializer type')
@@ -1927,7 +1930,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
 
   static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: Uint8Array
+    data: Uint8Array,
   ): CurrencyInitializer<ToPhantomTypeArgument<T>> {
     return CurrencyInitializer.fromFields(typeArg, CurrencyInitializer.bcs.parse(data))
   }
@@ -1946,7 +1949,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    field: any
+    field: any,
   ): CurrencyInitializer<ToPhantomTypeArgument<T>> {
     return CurrencyInitializer.reified(typeArg).new({
       currency: decodeFromJSONField(Currency.reified(typeArg), field.currency),
@@ -1957,17 +1960,17 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
 
   static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): CurrencyInitializer<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== CurrencyInitializer.$typeName) {
       throw new Error(
-        `not a CurrencyInitializer json object: expected '${CurrencyInitializer.$typeName}' but got '${json.$typeName}'`
+        `not a CurrencyInitializer json object: expected '${CurrencyInitializer.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(CurrencyInitializer.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return CurrencyInitializer.fromJSONField(typeArg, json)
@@ -1975,7 +1978,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
 
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): CurrencyInitializer<ToPhantomTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -1988,7 +1991,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
 
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): CurrencyInitializer<ToPhantomTypeArgument<T>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isCurrencyInitializer(data.bcs.type)) {
@@ -1998,7 +2001,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -2006,7 +2009,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -2017,14 +2020,14 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
       return CurrencyInitializer.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SupportedSuiClient,
     typeArg: T,
-    id: string
+    id: string,
   ): Promise<CurrencyInitializer<ToPhantomTypeArgument<T>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isCurrencyInitializer(res.type)) {
@@ -2034,7 +2037,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -2042,7 +2045,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }
@@ -2098,14 +2101,14 @@ export class SupplyState {
   static readonly $isPhantom = [true] as const
 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): SupplyStateReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = SupplyState.bcs
     return {
       typeName: SupplyState.$typeName,
       fullTypeName: composeSuiType(
         SupplyState.$typeName,
-        ...[extractType(T)]
+        ...[extractType(T)],
       ) as `0x2::coin_registry::SupplyState<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       isPhantom: SupplyState.$isPhantom,
@@ -2118,18 +2121,18 @@ export class SupplyState {
       fromJSON: (json: Record<string, any>) => SupplyState.fromJSON([T], json),
       new: (
         variant: SupplyStateVariantName,
-        fields: SupplyStateFields<ToPhantomTypeArgument<T>>
+        fields: SupplyStateFields<ToPhantomTypeArgument<T>>,
       ) => {
         switch (variant) {
           case 'Fixed':
             return new SupplyStateFixed(
               [extractType(T)],
-              fields as SupplyStateFixedFields<ToPhantomTypeArgument<T>>
+              fields as SupplyStateFixedFields<ToPhantomTypeArgument<T>>,
             )
           case 'BurnOnly':
             return new SupplyStateBurnOnly(
               [extractType(T)],
-              fields as SupplyStateBurnOnlyFields<ToPhantomTypeArgument<T>>
+              fields as SupplyStateBurnOnlyFields<ToPhantomTypeArgument<T>>,
             )
           case 'Unknown':
             return new SupplyStateUnknown([extractType(T)], fields as SupplyStateUnknownFields)
@@ -2144,7 +2147,7 @@ export class SupplyState {
   }
 
   static phantom<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): PhantomReified<ToTypeStr<SupplyStateVariant<ToPhantomTypeArgument<T>>>> {
     return phantom(SupplyState.reified(T))
   }
@@ -2172,7 +2175,7 @@ export class SupplyState {
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArgs: [T],
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): SupplyStateVariant<ToPhantomTypeArgument<T>> {
     const r = SupplyState.reified(typeArgs[0])
 
@@ -2181,7 +2184,9 @@ export class SupplyState {
     }
     switch (fields.$kind) {
       case 'Fixed':
-        return r.new('Fixed', [decodeFromFields(Supply.reified(typeArgs[0]), fields.Fixed[0])])
+        return r.new('Fixed', [
+          decodeFromFields(Supply.reified(typeArgs[0]), fields.Fixed[0]),
+        ])
       case 'BurnOnly':
         return r.new('BurnOnly', [
           decodeFromFields(Supply.reified(typeArgs[0]), fields.BurnOnly[0]),
@@ -2193,7 +2198,7 @@ export class SupplyState {
 
   static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArgs: [T],
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): SupplyStateVariant<ToPhantomTypeArgument<T>> {
     if (!isSupplyState(item.type)) {
       throw new Error('not a SupplyState type')
@@ -2222,7 +2227,7 @@ export class SupplyState {
 
   static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArgs: [T],
-    data: Uint8Array
+    data: Uint8Array,
   ): SupplyStateVariant<ToPhantomTypeArgument<T>> {
     const parsed = SupplyState.bcs.parse(data)
     return SupplyState.fromFields(typeArgs, parsed)
@@ -2230,7 +2235,7 @@ export class SupplyState {
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArgs: [T],
-    field: any
+    field: any,
   ): SupplyStateVariant<ToPhantomTypeArgument<T>> {
     const r = SupplyState.reified(typeArgs[0])
 
@@ -2240,9 +2245,13 @@ export class SupplyState {
     }
     switch (kind) {
       case 'Fixed':
-        return r.new('Fixed', [decodeFromJSONField(Supply.reified(typeArgs[0]), field.vec[0])])
+        return r.new('Fixed', [
+          decodeFromJSONField(Supply.reified(typeArgs[0]), field.vec[0]),
+        ])
       case 'BurnOnly':
-        return r.new('BurnOnly', [decodeFromJSONField(Supply.reified(typeArgs[0]), field.vec[0])])
+        return r.new('BurnOnly', [
+          decodeFromJSONField(Supply.reified(typeArgs[0]), field.vec[0]),
+        ])
       case 'Unknown':
         return r.new('Unknown', {})
     }
@@ -2250,17 +2259,17 @@ export class SupplyState {
 
   static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArgs: [T],
-    json: Record<string, any>
+    json: Record<string, any>,
   ): SupplyStateVariant<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== SupplyState.$typeName) {
       throw new Error(
-        `not a SupplyState json object: expected '${SupplyState.$typeName}' but got '${json.$typeName}'`
+        `not a SupplyState json object: expected '${SupplyState.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(SupplyState.$typeName, ...typeArgs.map(extractType)),
       json.$typeArgs,
-      typeArgs
+      typeArgs,
     )
 
     return SupplyState.fromJSONField(typeArgs, json)
@@ -2268,7 +2277,9 @@ export class SupplyState {
 }
 
 /** Coin has a fixed supply with the given Supply object. */
-export type SupplyStateFixedFields<T extends PhantomTypeArgument> = [ToField<Supply<T>>]
+export type SupplyStateFixedFields<T extends PhantomTypeArgument> = [
+  ToField<Supply<T>>,
+]
 
 export type SupplyStateFixedJSONField<T extends PhantomTypeArgument> = {
   $kind: 'Fixed'
@@ -2300,7 +2311,7 @@ export class SupplyStateFixed<T extends PhantomTypeArgument> implements EnumVari
   constructor(typeArgs: [PhantomToTypeStr<T>], fields: SupplyStateFixedFields<T>) {
     this.$fullTypeName = composeSuiType(
       SupplyState.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${typeof SupplyState.$typeName}<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
@@ -2310,7 +2321,9 @@ export class SupplyStateFixed<T extends PhantomTypeArgument> implements EnumVari
   toJSONField(): SupplyStateFixedJSONField<T> {
     return {
       $kind: this.$variantName,
-      vec: [fieldToJSON<Supply<T>>(`${Supply.$typeName}<${this.$typeArgs[0]}>`, this[0])],
+      vec: [
+        fieldToJSON<Supply<T>>(`${Supply.$typeName}<${this.$typeArgs[0]}>`, this[0]),
+      ],
     }
   }
 
@@ -2325,7 +2338,9 @@ export class SupplyStateFixed<T extends PhantomTypeArgument> implements EnumVari
 }
 
 /** Coin has a supply that can ONLY decrease. */
-export type SupplyStateBurnOnlyFields<T extends PhantomTypeArgument> = [ToField<Supply<T>>]
+export type SupplyStateBurnOnlyFields<T extends PhantomTypeArgument> = [
+  ToField<Supply<T>>,
+]
 
 export type SupplyStateBurnOnlyJSONField<T extends PhantomTypeArgument> = {
   $kind: 'BurnOnly'
@@ -2357,7 +2372,7 @@ export class SupplyStateBurnOnly<T extends PhantomTypeArgument> implements EnumV
   constructor(typeArgs: [PhantomToTypeStr<T>], fields: SupplyStateBurnOnlyFields<T>) {
     this.$fullTypeName = composeSuiType(
       SupplyState.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${typeof SupplyState.$typeName}<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
@@ -2367,7 +2382,9 @@ export class SupplyStateBurnOnly<T extends PhantomTypeArgument> implements EnumV
   toJSONField(): SupplyStateBurnOnlyJSONField<T> {
     return {
       $kind: this.$variantName,
-      vec: [fieldToJSON<Supply<T>>(`${Supply.$typeName}<${this.$typeArgs[0]}>`, this[0])],
+      vec: [
+        fieldToJSON<Supply<T>>(`${Supply.$typeName}<${this.$typeArgs[0]}>`, this[0]),
+      ],
     }
   }
 
@@ -2411,7 +2428,7 @@ export class SupplyStateUnknown<T extends PhantomTypeArgument> implements EnumVa
   constructor(typeArgs: [PhantomToTypeStr<T>], fields: SupplyStateUnknownFields) {
     this.$fullTypeName = composeSuiType(
       SupplyState.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${typeof SupplyState.$typeName}<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
   }
@@ -2465,7 +2482,10 @@ export type RegulatedStateFields =
   | RegulatedStateUnregulatedFields
   | RegulatedStateUnknownFields
 
-export type RegulatedStateReified = Reified<RegulatedStateVariant, RegulatedStateFields>
+export type RegulatedStateReified = Reified<
+  RegulatedStateVariant,
+  RegulatedStateFields
+>
 
 export class RegulatedState {
   static readonly $typeName: `0x2::coin_registry::RegulatedState` =
@@ -2478,7 +2498,7 @@ export class RegulatedState {
     return {
       typeName: RegulatedState.$typeName,
       fullTypeName: composeSuiType(
-        RegulatedState.$typeName
+        RegulatedState.$typeName,
       ) as `0x2::coin_registry::RegulatedState`,
       typeArgs: [] as [],
       isPhantom: RegulatedState.$isPhantom,
@@ -2548,7 +2568,7 @@ export class RegulatedState {
           cap: decodeFromFields(ID.reified(), fields.Regulated.cap),
           allowGlobalPause: decodeFromFields(
             Option.reified('bool'),
-            fields.Regulated.allow_global_pause
+            fields.Regulated.allow_global_pause,
           ),
           variant: decodeFromFields('u8', fields.Regulated.variant),
         })
@@ -2576,7 +2596,7 @@ export class RegulatedState {
           cap: decodeFromFieldsWithTypes(ID.reified(), item.fields.cap),
           allowGlobalPause: decodeFromFieldsWithTypes(
             Option.reified('bool'),
-            item.fields.allow_global_pause
+            item.fields.allow_global_pause,
           ),
           variant: decodeFromFieldsWithTypes('u8', item.fields.variant),
         })
@@ -2616,7 +2636,7 @@ export class RegulatedState {
   static fromJSON(typeArgs: [], json: Record<string, any>): RegulatedStateVariant {
     if (json.$typeName !== RegulatedState.$typeName) {
       throw new Error(
-        `not a RegulatedState json object: expected '${RegulatedState.$typeName}' but got '${json.$typeName}'`
+        `not a RegulatedState json object: expected '${RegulatedState.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -2670,7 +2690,7 @@ export class RegulatedStateRegulated implements EnumVariantClass {
   constructor(typeArgs: [], fields: RegulatedStateRegulatedFields) {
     this.$fullTypeName = composeSuiType(
       RegulatedState.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${typeof RegulatedState.$typeName}`
     this.$typeArgs = typeArgs
 
@@ -2685,7 +2705,7 @@ export class RegulatedStateRegulated implements EnumVariantClass {
       cap: fieldToJSON<ID>(`${ID.$typeName}`, this.cap),
       allowGlobalPause: fieldToJSON<Option<'bool'>>(
         `${Option.$typeName}<bool>`,
-        this.allowGlobalPause
+        this.allowGlobalPause,
       ),
       variant: fieldToJSON<'u8'>(`u8`, this.variant),
     }
@@ -2734,7 +2754,7 @@ export class RegulatedStateUnregulated implements EnumVariantClass {
   constructor(typeArgs: [], fields: RegulatedStateUnregulatedFields) {
     this.$fullTypeName = composeSuiType(
       RegulatedState.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${typeof RegulatedState.$typeName}`
     this.$typeArgs = typeArgs
   }
@@ -2788,7 +2808,7 @@ export class RegulatedStateUnknown implements EnumVariantClass {
   constructor(typeArgs: [], fields: RegulatedStateUnknownFields) {
     this.$fullTypeName = composeSuiType(
       RegulatedState.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${typeof RegulatedState.$typeName}`
     this.$typeArgs = typeArgs
   }
@@ -2829,7 +2849,7 @@ export type MetadataCapStateVariantJSON =
 export type MetadataCapStateVariantName = 'Claimed' | 'Unclaimed' | 'Deleted'
 
 export function isMetadataCapStateVariantName(
-  variant: string
+  variant: string,
 ): variant is MetadataCapStateVariantName {
   return variant === 'Claimed' || variant === 'Unclaimed' || variant === 'Deleted'
 }
@@ -2839,7 +2859,10 @@ export type MetadataCapStateFields =
   | MetadataCapStateUnclaimedFields
   | MetadataCapStateDeletedFields
 
-export type MetadataCapStateReified = Reified<MetadataCapStateVariant, MetadataCapStateFields>
+export type MetadataCapStateReified = Reified<
+  MetadataCapStateVariant,
+  MetadataCapStateFields
+>
 
 export class MetadataCapState {
   static readonly $typeName: `0x2::coin_registry::MetadataCapState` =
@@ -2852,7 +2875,7 @@ export class MetadataCapState {
     return {
       typeName: MetadataCapState.$typeName,
       fullTypeName: composeSuiType(
-        MetadataCapState.$typeName
+        MetadataCapState.$typeName,
       ) as `0x2::coin_registry::MetadataCapState`,
       typeArgs: [] as [],
       isPhantom: MetadataCapState.$isPhantom,
@@ -2915,7 +2938,9 @@ export class MetadataCapState {
     }
     switch (fields.$kind) {
       case 'Claimed':
-        return r.new('Claimed', [decodeFromFields(ID.reified(), fields.Claimed[0])])
+        return r.new('Claimed', [
+          decodeFromFields(ID.reified(), fields.Claimed[0]),
+        ])
       case 'Unclaimed':
         return r.new('Unclaimed', fields.Unclaimed)
       case 'Deleted':
@@ -2936,7 +2961,9 @@ export class MetadataCapState {
     const r = MetadataCapState.reified()
     switch (variant) {
       case 'Claimed':
-        return r.new('Claimed', [decodeFromFieldsWithTypes(ID.reified(), item.fields.pos0)])
+        return r.new('Claimed', [
+          decodeFromFieldsWithTypes(ID.reified(), item.fields.pos0),
+        ])
       case 'Unclaimed':
         return r.new('Unclaimed', {})
       case 'Deleted':
@@ -2958,7 +2985,9 @@ export class MetadataCapState {
     }
     switch (kind) {
       case 'Claimed':
-        return r.new('Claimed', [decodeFromJSONField(ID.reified(), field.vec[0])])
+        return r.new('Claimed', [
+          decodeFromJSONField(ID.reified(), field.vec[0]),
+        ])
       case 'Unclaimed':
         return r.new('Unclaimed', {})
       case 'Deleted':
@@ -2969,7 +2998,7 @@ export class MetadataCapState {
   static fromJSON(typeArgs: [], json: Record<string, any>): MetadataCapStateVariant {
     if (json.$typeName !== MetadataCapState.$typeName) {
       throw new Error(
-        `not a MetadataCapState json object: expected '${MetadataCapState.$typeName}' but got '${json.$typeName}'`
+        `not a MetadataCapState json object: expected '${MetadataCapState.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -2978,7 +3007,9 @@ export class MetadataCapState {
 }
 
 /** The metadata cap has been claimed. */
-export type MetadataCapStateClaimedFields = [ToField<ID>]
+export type MetadataCapStateClaimedFields = [
+  ToField<ID>,
+]
 
 export type MetadataCapStateClaimedJSONField = {
   $kind: 'Claimed'
@@ -3012,7 +3043,7 @@ export class MetadataCapStateClaimed implements EnumVariantClass {
   constructor(typeArgs: [], fields: MetadataCapStateClaimedFields) {
     this.$fullTypeName = composeSuiType(
       MetadataCapState.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${typeof MetadataCapState.$typeName}`
     this.$typeArgs = typeArgs
 
@@ -3022,7 +3053,9 @@ export class MetadataCapStateClaimed implements EnumVariantClass {
   toJSONField(): MetadataCapStateClaimedJSONField {
     return {
       $kind: this.$variantName,
-      vec: [this[0]],
+      vec: [
+        this[0],
+      ],
     }
   }
 
@@ -3069,7 +3102,7 @@ export class MetadataCapStateUnclaimed implements EnumVariantClass {
   constructor(typeArgs: [], fields: MetadataCapStateUnclaimedFields) {
     this.$fullTypeName = composeSuiType(
       MetadataCapState.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${typeof MetadataCapState.$typeName}`
     this.$typeArgs = typeArgs
   }
@@ -3120,7 +3153,7 @@ export class MetadataCapStateDeleted implements EnumVariantClass {
   constructor(typeArgs: [], fields: MetadataCapStateDeletedFields) {
     this.$fullTypeName = composeSuiType(
       MetadataCapState.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${typeof MetadataCapState.$typeName}`
     this.$typeArgs = typeArgs
   }

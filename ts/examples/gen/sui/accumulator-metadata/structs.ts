@@ -1,4 +1,14 @@
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 import {
+  assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  extractType,
+  phantom,
   PhantomReified,
   PhantomToTypeStr,
   PhantomTypeArgument,
@@ -8,26 +18,16 @@ import {
   ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
-  assertFieldsWithTypesArgsMatch,
-  assertReifiedTypeArgsMatch,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  extractType,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
   parseTypeName,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Bag } from '../bag/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== OwnerKey =============================== */
 
@@ -81,7 +81,7 @@ export class OwnerKey implements StructClass {
   private constructor(typeArgs: [], fields: OwnerKeyFields) {
     this.$fullTypeName = composeSuiType(
       OwnerKey.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::accumulator_metadata::OwnerKey`
     this.$typeArgs = typeArgs
 
@@ -94,7 +94,7 @@ export class OwnerKey implements StructClass {
       typeName: OwnerKey.$typeName,
       fullTypeName: composeSuiType(
         OwnerKey.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::accumulator_metadata::OwnerKey`,
       typeArgs: [] as [],
       isPhantom: OwnerKey.$isPhantom,
@@ -184,7 +184,7 @@ export class OwnerKey implements StructClass {
   static fromJSON(json: Record<string, any>): OwnerKey {
     if (json.$typeName !== OwnerKey.$typeName) {
       throw new Error(
-        `not a OwnerKey json object: expected '${OwnerKey.$typeName}' but got '${json.$typeName}'`
+        `not a OwnerKey json object: expected '${OwnerKey.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -213,7 +213,7 @@ export class OwnerKey implements StructClass {
       return OwnerKey.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -276,7 +276,7 @@ export class Owner implements StructClass {
   private constructor(typeArgs: [], fields: OwnerFields) {
     this.$fullTypeName = composeSuiType(
       Owner.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::accumulator_metadata::Owner`
     this.$typeArgs = typeArgs
 
@@ -288,7 +288,10 @@ export class Owner implements StructClass {
     const reifiedBcs = Owner.bcs
     return {
       typeName: Owner.$typeName,
-      fullTypeName: composeSuiType(Owner.$typeName, ...[]) as `0x2::accumulator_metadata::Owner`,
+      fullTypeName: composeSuiType(
+        Owner.$typeName,
+        ...[],
+      ) as `0x2::accumulator_metadata::Owner`,
       typeArgs: [] as [],
       isPhantom: Owner.$isPhantom,
       reifiedTypeArgs: [],
@@ -382,7 +385,7 @@ export class Owner implements StructClass {
   static fromJSON(json: Record<string, any>): Owner {
     if (json.$typeName !== Owner.$typeName) {
       throw new Error(
-        `not a Owner json object: expected '${Owner.$typeName}' but got '${json.$typeName}'`
+        `not a Owner json object: expected '${Owner.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -411,7 +414,7 @@ export class Owner implements StructClass {
       return Owner.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -468,7 +471,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: MetadataKeyFields<T>) {
     this.$fullTypeName = composeSuiType(
       MetadataKey.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::accumulator_metadata::MetadataKey<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
@@ -476,14 +479,14 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): MetadataKeyReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = MetadataKey.bcs
     return {
       typeName: MetadataKey.$typeName,
       fullTypeName: composeSuiType(
         MetadataKey.$typeName,
-        ...[extractType(T)]
+        ...[extractType(T)],
       ) as `0x2::accumulator_metadata::MetadataKey<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       isPhantom: MetadataKey.$isPhantom,
@@ -509,7 +512,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static phantom<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): PhantomReified<ToTypeStr<MetadataKey<ToPhantomTypeArgument<T>>>> {
     return phantom(MetadataKey.reified(T))
   }
@@ -535,7 +538,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): MetadataKey<ToPhantomTypeArgument<T>> {
     return MetadataKey.reified(typeArg).new({
       dummyField: decodeFromFields('bool', fields.dummy_field),
@@ -544,7 +547,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): MetadataKey<ToPhantomTypeArgument<T>> {
     if (!isMetadataKey(item.type)) {
       throw new Error('not a MetadataKey type')
@@ -558,7 +561,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
 
   static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: Uint8Array
+    data: Uint8Array,
   ): MetadataKey<ToPhantomTypeArgument<T>> {
     return MetadataKey.fromFields(typeArg, MetadataKey.bcs.parse(data))
   }
@@ -575,7 +578,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    field: any
+    field: any,
   ): MetadataKey<ToPhantomTypeArgument<T>> {
     return MetadataKey.reified(typeArg).new({
       dummyField: decodeFromJSONField('bool', field.dummyField),
@@ -584,17 +587,17 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): MetadataKey<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== MetadataKey.$typeName) {
       throw new Error(
-        `not a MetadataKey json object: expected '${MetadataKey.$typeName}' but got '${json.$typeName}'`
+        `not a MetadataKey json object: expected '${MetadataKey.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(MetadataKey.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return MetadataKey.fromJSONField(typeArg, json)
@@ -602,7 +605,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): MetadataKey<ToPhantomTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -615,7 +618,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): MetadataKey<ToPhantomTypeArgument<T>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isMetadataKey(data.bcs.type)) {
@@ -625,7 +628,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -633,7 +636,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -644,14 +647,14 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
       return MetadataKey.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SupportedSuiClient,
     typeArg: T,
-    id: string
+    id: string,
   ): Promise<MetadataKey<ToPhantomTypeArgument<T>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isMetadataKey(res.type)) {
@@ -661,7 +664,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -669,7 +672,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }
@@ -721,7 +724,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: MetadataFields<T>) {
     this.$fullTypeName = composeSuiType(
       Metadata.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::accumulator_metadata::Metadata<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
@@ -729,14 +732,14 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): MetadataReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Metadata.bcs
     return {
       typeName: Metadata.$typeName,
       fullTypeName: composeSuiType(
         Metadata.$typeName,
-        ...[extractType(T)]
+        ...[extractType(T)],
       ) as `0x2::accumulator_metadata::Metadata<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       isPhantom: Metadata.$isPhantom,
@@ -762,7 +765,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static phantom<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): PhantomReified<ToTypeStr<Metadata<ToPhantomTypeArgument<T>>>> {
     return phantom(Metadata.reified(T))
   }
@@ -788,7 +791,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): Metadata<ToPhantomTypeArgument<T>> {
     return Metadata.reified(typeArg).new({
       fields: decodeFromFields(Bag.reified(), fields.fields),
@@ -797,7 +800,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): Metadata<ToPhantomTypeArgument<T>> {
     if (!isMetadata(item.type)) {
       throw new Error('not a Metadata type')
@@ -811,7 +814,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
 
   static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: Uint8Array
+    data: Uint8Array,
   ): Metadata<ToPhantomTypeArgument<T>> {
     return Metadata.fromFields(typeArg, Metadata.bcs.parse(data))
   }
@@ -828,7 +831,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    field: any
+    field: any,
   ): Metadata<ToPhantomTypeArgument<T>> {
     return Metadata.reified(typeArg).new({
       fields: decodeFromJSONField(Bag.reified(), field.fields),
@@ -837,17 +840,17 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): Metadata<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Metadata.$typeName) {
       throw new Error(
-        `not a Metadata json object: expected '${Metadata.$typeName}' but got '${json.$typeName}'`
+        `not a Metadata json object: expected '${Metadata.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Metadata.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return Metadata.fromJSONField(typeArg, json)
@@ -855,7 +858,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): Metadata<ToPhantomTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -868,7 +871,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): Metadata<ToPhantomTypeArgument<T>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isMetadata(data.bcs.type)) {
@@ -878,7 +881,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -886,7 +889,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -897,14 +900,14 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
       return Metadata.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SupportedSuiClient,
     typeArg: T,
-    id: string
+    id: string,
   ): Promise<Metadata<ToPhantomTypeArgument<T>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isMetadata(res.type)) {
@@ -914,7 +917,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -922,7 +925,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }

@@ -1,27 +1,27 @@
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 import { String } from '../../_dependencies/std/string/structs'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { UID } from '../object/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== VerifiedIssuer =============================== */
 
@@ -79,7 +79,7 @@ export class VerifiedIssuer implements StructClass {
   private constructor(typeArgs: [], fields: VerifiedIssuerFields) {
     this.$fullTypeName = composeSuiType(
       VerifiedIssuer.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::zklogin_verified_issuer::VerifiedIssuer`
     this.$typeArgs = typeArgs
 
@@ -94,7 +94,7 @@ export class VerifiedIssuer implements StructClass {
       typeName: VerifiedIssuer.$typeName,
       fullTypeName: composeSuiType(
         VerifiedIssuer.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::zklogin_verified_issuer::VerifiedIssuer`,
       typeArgs: [] as [],
       isPhantom: VerifiedIssuer.$isPhantom,
@@ -194,7 +194,7 @@ export class VerifiedIssuer implements StructClass {
   static fromJSON(json: Record<string, any>): VerifiedIssuer {
     if (json.$typeName !== VerifiedIssuer.$typeName) {
       throw new Error(
-        `not a VerifiedIssuer json object: expected '${VerifiedIssuer.$typeName}' but got '${json.$typeName}'`
+        `not a VerifiedIssuer json object: expected '${VerifiedIssuer.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -223,7 +223,7 @@ export class VerifiedIssuer implements StructClass {
       return VerifiedIssuer.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

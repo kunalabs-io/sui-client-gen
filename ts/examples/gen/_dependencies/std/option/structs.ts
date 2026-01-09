@@ -1,14 +1,9 @@
 /** This module defines the Option type and its methods to represent and handle an optional value. */
 
+import { bcs, BcsType } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
-  PhantomReified,
-  Reified,
-  StructClass,
-  ToField,
-  ToJSON,
-  ToTypeArgument,
-  ToTypeStr,
-  TypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -17,21 +12,26 @@ import {
   extractType,
   fieldToJSON,
   phantom,
+  PhantomReified,
+  Reified,
+  StructClass,
   toBcs,
+  ToField,
+  ToJSON,
+  ToTypeArgument,
+  ToTypeStr,
+  TypeArgument,
   vector,
 } from '../../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
   parseTypeName,
+  SupportedSuiClient,
 } from '../../../_framework/util'
 import { Vector } from '../../../_framework/vector'
-import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Option =============================== */
 
@@ -81,7 +81,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
   private constructor(typeArgs: [ToTypeStr<Element>], fields: OptionFields<Element>) {
     this.$fullTypeName = composeSuiType(
       Option.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x1::option::Option<${ToTypeStr<Element>}>`
     this.$typeArgs = typeArgs
 
@@ -89,14 +89,14 @@ export class Option<Element extends TypeArgument> implements StructClass {
   }
 
   static reified<Element extends Reified<TypeArgument, any>>(
-    Element: Element
+    Element: Element,
   ): OptionReified<ToTypeArgument<Element>> {
     const reifiedBcs = Option.bcs(toBcs(Element))
     return {
       typeName: Option.$typeName,
       fullTypeName: composeSuiType(
         Option.$typeName,
-        ...[extractType(Element)]
+        ...[extractType(Element)],
       ) as `0x1::option::Option<${ToTypeStr<ToTypeArgument<Element>>}>`,
       typeArgs: [extractType(Element)] as [ToTypeStr<ToTypeArgument<Element>>],
       isPhantom: Option.$isPhantom,
@@ -122,7 +122,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
   }
 
   static phantom<Element extends Reified<TypeArgument, any>>(
-    Element: Element
+    Element: Element,
   ): PhantomReified<ToTypeStr<Option<ToTypeArgument<Element>>>> {
     return phantom(Option.reified(Element))
   }
@@ -149,7 +149,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
 
   static fromFields<Element extends Reified<TypeArgument, any>>(
     typeArg: Element,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): Option<ToTypeArgument<Element>> {
     return Option.reified(typeArg).new({
       vec: decodeFromFields(vector(typeArg), fields.vec),
@@ -158,7 +158,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
 
   static fromFieldsWithTypes<Element extends Reified<TypeArgument, any>>(
     typeArg: Element,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): Option<ToTypeArgument<Element>> {
     if (!isOption(item.type)) {
       throw new Error('not a Option type')
@@ -172,7 +172,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
 
   static fromBcs<Element extends Reified<TypeArgument, any>>(
     typeArg: Element,
-    data: Uint8Array
+    data: Uint8Array,
   ): Option<ToTypeArgument<Element>> {
     const typeArgs = [typeArg]
     return Option.fromFields(typeArg, Option.bcs(toBcs(typeArg)).parse(data))
@@ -190,7 +190,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
 
   static fromJSONField<Element extends Reified<TypeArgument, any>>(
     typeArg: Element,
-    field: any
+    field: any,
   ): Option<ToTypeArgument<Element>> {
     return Option.reified(typeArg).new({
       vec: decodeFromJSONField(vector(typeArg), field.vec),
@@ -199,17 +199,17 @@ export class Option<Element extends TypeArgument> implements StructClass {
 
   static fromJSON<Element extends Reified<TypeArgument, any>>(
     typeArg: Element,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): Option<ToTypeArgument<Element>> {
     if (json.$typeName !== Option.$typeName) {
       throw new Error(
-        `not a Option json object: expected '${Option.$typeName}' but got '${json.$typeName}'`
+        `not a Option json object: expected '${Option.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Option.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return Option.fromJSONField(typeArg, json)
@@ -217,7 +217,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
 
   static fromSuiParsedData<Element extends Reified<TypeArgument, any>>(
     typeArg: Element,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): Option<ToTypeArgument<Element>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -230,7 +230,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
 
   static fromSuiObjectData<Element extends Reified<TypeArgument, any>>(
     typeArg: Element,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): Option<ToTypeArgument<Element>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isOption(data.bcs.type)) {
@@ -240,7 +240,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -248,7 +248,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -259,14 +259,14 @@ export class Option<Element extends TypeArgument> implements StructClass {
       return Option.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<Element extends Reified<TypeArgument, any>>(
     client: SupportedSuiClient,
     typeArg: Element,
-    id: string
+    id: string,
   ): Promise<Option<ToTypeArgument<Element>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isOption(res.type)) {
@@ -276,7 +276,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -284,7 +284,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }

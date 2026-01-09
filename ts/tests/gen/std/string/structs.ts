@@ -3,31 +3,31 @@
  * strings.
  */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  fieldToJSON,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  fieldToJSON,
-  phantom,
   vector,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== String =============================== */
 
@@ -70,7 +70,10 @@ export class String implements StructClass {
   readonly bytes: ToField<Vector<'u8'>>
 
   private constructor(typeArgs: [], fields: StringFields) {
-    this.$fullTypeName = composeSuiType(String.$typeName, ...typeArgs) as `0x1::string::String`
+    this.$fullTypeName = composeSuiType(
+      String.$typeName,
+      ...typeArgs,
+    ) as `0x1::string::String`
     this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
@@ -80,7 +83,10 @@ export class String implements StructClass {
     const reifiedBcs = String.bcs
     return {
       typeName: String.$typeName,
-      fullTypeName: composeSuiType(String.$typeName, ...[]) as `0x1::string::String`,
+      fullTypeName: composeSuiType(
+        String.$typeName,
+        ...[],
+      ) as `0x1::string::String`,
       typeArgs: [] as [],
       isPhantom: String.$isPhantom,
       reifiedTypeArgs: [],
@@ -166,7 +172,7 @@ export class String implements StructClass {
   static fromJSON(json: Record<string, any>): String {
     if (json.$typeName !== String.$typeName) {
       throw new Error(
-        `not a String json object: expected '${String.$typeName}' but got '${json.$typeName}'`
+        `not a String json object: expected '${String.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -195,7 +201,7 @@ export class String implements StructClass {
       return String.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

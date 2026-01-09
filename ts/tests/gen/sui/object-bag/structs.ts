@@ -5,29 +5,29 @@
  * The difference is otherwise not observable from within Move.
  */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { UID } from '../object/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== ObjectBag =============================== */
 
@@ -75,7 +75,7 @@ export class ObjectBag implements StructClass {
   private constructor(typeArgs: [], fields: ObjectBagFields) {
     this.$fullTypeName = composeSuiType(
       ObjectBag.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::object_bag::ObjectBag`
     this.$typeArgs = typeArgs
 
@@ -87,7 +87,10 @@ export class ObjectBag implements StructClass {
     const reifiedBcs = ObjectBag.bcs
     return {
       typeName: ObjectBag.$typeName,
-      fullTypeName: composeSuiType(ObjectBag.$typeName, ...[]) as `0x2::object_bag::ObjectBag`,
+      fullTypeName: composeSuiType(
+        ObjectBag.$typeName,
+        ...[],
+      ) as `0x2::object_bag::ObjectBag`,
       typeArgs: [] as [],
       isPhantom: ObjectBag.$isPhantom,
       reifiedTypeArgs: [],
@@ -178,7 +181,7 @@ export class ObjectBag implements StructClass {
   static fromJSON(json: Record<string, any>): ObjectBag {
     if (json.$typeName !== ObjectBag.$typeName) {
       throw new Error(
-        `not a ObjectBag json object: expected '${ObjectBag.$typeName}' but got '${json.$typeName}'`
+        `not a ObjectBag json object: expected '${ObjectBag.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -207,7 +210,7 @@ export class ObjectBag implements StructClass {
       return ObjectBag.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

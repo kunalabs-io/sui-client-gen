@@ -1,12 +1,12 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, obj, pure } from '../../_framework/util'
-import { ID } from '../object/structs'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, obj, pure } from '../../_framework/util'
+import { ID } from '../object/structs'
 
 export function new_(tx: Transaction, typeArg: string, cap: GenericArg): TransactionResult {
   return tx.moveCall({
@@ -19,7 +19,7 @@ export function new_(tx: Transaction, typeArg: string, cap: GenericArg): Transac
 export function share(
   tx: Transaction,
   typeArg: string,
-  config: TransactionObjectInput
+  config: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::config::share`,
@@ -37,7 +37,10 @@ export function transfer(tx: Transaction, typeArg: string, args: TransferArgs): 
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::config::transfer`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.config), pure(tx, args.owner, `address`)],
+    arguments: [
+      obj(tx, args.config),
+      pure(tx, args.owner, `address`),
+    ],
   })
 }
 
@@ -51,7 +54,7 @@ export interface AddForNextEpochArgs {
 export function addForNextEpoch(
   tx: Transaction,
   typeArgs: [string, string, string],
-  args: AddForNextEpochArgs
+  args: AddForNextEpochArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::config::add_for_next_epoch`,
@@ -74,7 +77,7 @@ export interface RemoveForNextEpochArgs {
 export function removeForNextEpoch(
   tx: Transaction,
   typeArgs: [string, string, string],
-  args: RemoveForNextEpochArgs
+  args: RemoveForNextEpochArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::config::remove_for_next_epoch`,
@@ -95,12 +98,15 @@ export interface ExistsWithTypeArgs {
 export function existsWithType(
   tx: Transaction,
   typeArgs: [string, string, string],
-  args: ExistsWithTypeArgs
+  args: ExistsWithTypeArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::config::exists_with_type`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.config), generic(tx, `${typeArgs[1]}`, args.name)],
+    arguments: [
+      obj(tx, args.config),
+      generic(tx, `${typeArgs[1]}`, args.name),
+    ],
   })
 }
 
@@ -112,12 +118,15 @@ export interface ExistsWithTypeForNextEpochArgs {
 export function existsWithTypeForNextEpoch(
   tx: Transaction,
   typeArgs: [string, string, string],
-  args: ExistsWithTypeForNextEpochArgs
+  args: ExistsWithTypeForNextEpochArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::config::exists_with_type_for_next_epoch`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.config), generic(tx, `${typeArgs[1]}`, args.name)],
+    arguments: [
+      obj(tx, args.config),
+      generic(tx, `${typeArgs[1]}`, args.name),
+    ],
   })
 }
 
@@ -130,7 +139,7 @@ export interface BorrowForNextEpochMutArgs {
 export function borrowForNextEpochMut(
   tx: Transaction,
   typeArgs: [string, string, string],
-  args: BorrowForNextEpochMutArgs
+  args: BorrowForNextEpochMutArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::config::borrow_for_next_epoch_mut`,
@@ -151,12 +160,15 @@ export interface ReadSettingForNextEpochArgs {
 export function readSettingForNextEpoch(
   tx: Transaction,
   typeArgs: [string, string, string],
-  args: ReadSettingForNextEpochArgs
+  args: ReadSettingForNextEpochArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::config::read_setting_for_next_epoch`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.config), generic(tx, `${typeArgs[1]}`, args.name)],
+    arguments: [
+      obj(tx, args.config),
+      generic(tx, `${typeArgs[1]}`, args.name),
+    ],
   })
 }
 
@@ -168,12 +180,15 @@ export interface ReadSettingArgs {
 export function readSetting(
   tx: Transaction,
   typeArgs: [string, string],
-  args: ReadSettingArgs
+  args: ReadSettingArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::config::read_setting`,
     typeArguments: typeArgs,
-    arguments: [pure(tx, args.config, `${ID.$typeName}`), generic(tx, `${typeArgs[0]}`, args.name)],
+    arguments: [
+      pure(tx, args.config, `${ID.$typeName}`),
+      generic(tx, `${typeArgs[0]}`, args.name),
+    ],
   })
 }
 
@@ -186,7 +201,7 @@ export interface ReadSettingImplArgs {
 export function readSettingImpl(
   tx: Transaction,
   typeArgs: [string, string, string, string],
-  args: ReadSettingImplArgs
+  args: ReadSettingImplArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::config::read_setting_impl`,

@@ -16,7 +16,17 @@
  * ```
  */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  extractType,
+  phantom,
   PhantomReified,
   PhantomToTypeStr,
   PhantomTypeArgument,
@@ -26,26 +36,16 @@ import {
   ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
-  assertFieldsWithTypesArgsMatch,
-  assertReifiedTypeArgsMatch,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  extractType,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
   parseTypeName,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { UID } from '../object/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Table =============================== */
 
@@ -97,11 +97,11 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
 
   private constructor(
     typeArgs: [PhantomToTypeStr<K>, PhantomToTypeStr<V>],
-    fields: TableFields<K, V>
+    fields: TableFields<K, V>,
   ) {
     this.$fullTypeName = composeSuiType(
       Table.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::table::Table<${PhantomToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
     this.$typeArgs = typeArgs
 
@@ -112,14 +112,19 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
   static reified<
     K extends PhantomReified<PhantomTypeArgument>,
     V extends PhantomReified<PhantomTypeArgument>,
-  >(K: K, V: V): TableReified<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
+  >(
+    K: K,
+    V: V,
+  ): TableReified<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     const reifiedBcs = Table.bcs
     return {
       typeName: Table.$typeName,
       fullTypeName: composeSuiType(
         Table.$typeName,
-        ...[extractType(K), extractType(V)]
-      ) as `0x2::table::Table<${PhantomToTypeStr<ToPhantomTypeArgument<K>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<V>>}>`,
+        ...[extractType(K), extractType(V)],
+      ) as `0x2::table::Table<${PhantomToTypeStr<ToPhantomTypeArgument<K>>}, ${PhantomToTypeStr<
+        ToPhantomTypeArgument<V>
+      >}>`,
       typeArgs: [extractType(K), extractType(V)] as [
         PhantomToTypeStr<ToPhantomTypeArgument<K>>,
         PhantomToTypeStr<ToPhantomTypeArgument<V>>,
@@ -151,7 +156,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
     V extends PhantomReified<PhantomTypeArgument>,
   >(
     K: K,
-    V: V
+    V: V,
   ): PhantomReified<ToTypeStr<Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>>> {
     return phantom(Table.reified(K, V))
   }
@@ -181,7 +186,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
     V extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [K, V],
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     return Table.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromFields(UID.reified(), fields.id),
@@ -194,7 +199,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
     V extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [K, V],
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     if (!isTable(item.type)) {
       throw new Error('not a Table type')
@@ -210,7 +215,10 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
   static fromBcs<
     K extends PhantomReified<PhantomTypeArgument>,
     V extends PhantomReified<PhantomTypeArgument>,
-  >(typeArgs: [K, V], data: Uint8Array): Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
+  >(
+    typeArgs: [K, V],
+    data: Uint8Array,
+  ): Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     return Table.fromFields(typeArgs, Table.bcs.parse(data))
   }
 
@@ -228,7 +236,10 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
   static fromJSONField<
     K extends PhantomReified<PhantomTypeArgument>,
     V extends PhantomReified<PhantomTypeArgument>,
-  >(typeArgs: [K, V], field: any): Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
+  >(
+    typeArgs: [K, V],
+    field: any,
+  ): Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     return Table.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       size: decodeFromJSONField('u64', field.size),
@@ -240,17 +251,17 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
     V extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [K, V],
-    json: Record<string, any>
+    json: Record<string, any>,
   ): Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     if (json.$typeName !== Table.$typeName) {
       throw new Error(
-        `not a Table json object: expected '${Table.$typeName}' but got '${json.$typeName}'`
+        `not a Table json object: expected '${Table.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Table.$typeName, ...typeArgs.map(extractType)),
       json.$typeArgs,
-      typeArgs
+      typeArgs,
     )
 
     return Table.fromJSONField(typeArgs, json)
@@ -261,7 +272,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
     V extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [K, V],
-    content: SuiParsedData
+    content: SuiParsedData,
   ): Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -277,7 +288,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
     V extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [K, V],
-    data: SuiObjectData
+    data: SuiObjectData,
   ): Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isTable(data.bcs.type)) {
@@ -287,7 +298,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 2) {
         throw new Error(
-          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 2; i++) {
@@ -295,7 +306,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
         const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -306,7 +317,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
       return Table.fromSuiParsedData(typeArgs, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -316,7 +327,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
   >(
     client: SupportedSuiClient,
     typeArgs: [K, V],
-    id: string
+    id: string,
   ): Promise<Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isTable(res.type)) {
@@ -326,7 +337,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 2) {
       throw new Error(
-        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 2; i++) {
@@ -334,7 +345,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
       const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }

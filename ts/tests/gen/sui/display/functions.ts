@@ -1,12 +1,12 @@
-import { getPublishedAt } from '../../_envs'
-import { obj, pure } from '../../_framework/util'
-import { String } from '../../std/string/structs'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { obj, pure } from '../../_framework/util'
+import { String } from '../../std/string/structs'
 
 /**
  * Create an empty Display object. It can either be shared empty or filled
@@ -15,7 +15,7 @@ import {
 export function new_(
   tx: Transaction,
   typeArg: string,
-  pub: TransactionObjectInput
+  pub: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::new`,
@@ -34,7 +34,7 @@ export interface NewWithFieldsArgs {
 export function newWithFields(
   tx: Transaction,
   typeArg: string,
-  args: NewWithFieldsArgs
+  args: NewWithFieldsArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::new_with_fields`,
@@ -51,7 +51,7 @@ export function newWithFields(
 export function createAndKeep(
   tx: Transaction,
   typeArg: string,
-  pub: TransactionObjectInput
+  pub: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::create_and_keep`,
@@ -64,7 +64,7 @@ export function createAndKeep(
 export function updateVersion(
   tx: Transaction,
   typeArg: string,
-  display: TransactionObjectInput
+  display: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::update_version`,
@@ -102,7 +102,7 @@ export interface AddMultipleArgs {
 export function addMultiple(
   tx: Transaction,
   typeArg: string,
-  args: AddMultipleArgs
+  args: AddMultipleArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::add_multiple`,
@@ -147,7 +147,10 @@ export function remove(tx: Transaction, typeArg: string, args: RemoveArgs): Tran
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::remove`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), pure(tx, args.name, `${String.$typeName}`)],
+    arguments: [
+      obj(tx, args.self),
+      pure(tx, args.name, `${String.$typeName}`),
+    ],
   })
 }
 
@@ -155,7 +158,7 @@ export function remove(tx: Transaction, typeArg: string, args: RemoveArgs): Tran
 export function isAuthorized(
   tx: Transaction,
   typeArg: string,
-  pub: TransactionObjectInput
+  pub: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::is_authorized`,
@@ -168,7 +171,7 @@ export function isAuthorized(
 export function version(
   tx: Transaction,
   typeArg: string,
-  d: TransactionObjectInput
+  d: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::version`,
@@ -181,7 +184,7 @@ export function version(
 export function fields(
   tx: Transaction,
   typeArg: string,
-  d: TransactionObjectInput
+  d: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::fields`,
@@ -209,7 +212,7 @@ export interface AddInternalArgs {
 export function addInternal(
   tx: Transaction,
   typeArg: string,
-  args: AddInternalArgs
+  args: AddInternalArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::display::add_internal`,

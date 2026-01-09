@@ -1,13 +1,13 @@
-import { getPublishedAt } from '../../_envs'
-import { pure } from '../../_framework/util'
-import { String as String1 } from '../ascii/structs'
-import { String } from './structs'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { pure } from '../../_framework/util'
+import { String as String1 } from '../ascii/structs'
+import { String } from './structs'
 
 /**
  * Creates a new string from a sequence of bytes. Aborts if the bytes do
@@ -15,7 +15,7 @@ import {
  */
 export function utf8(
   tx: Transaction,
-  bytes: Array<number | TransactionArgument> | TransactionArgument
+  bytes: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::utf8`,
@@ -45,7 +45,7 @@ export function toAscii(tx: Transaction, s: string | TransactionArgument): Trans
 /** Tries to create a new string from a sequence of bytes. */
 export function tryUtf8(
   tx: Transaction,
-  bytes: Array<number | TransactionArgument> | TransactionArgument
+  bytes: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::try_utf8`,
@@ -94,7 +94,10 @@ export interface AppendArgs {
 export function append(tx: Transaction, args: AppendArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::append`,
-    arguments: [pure(tx, args.s, `${String.$typeName}`), pure(tx, args.r, `${String.$typeName}`)],
+    arguments: [
+      pure(tx, args.s, `${String.$typeName}`),
+      pure(tx, args.r, `${String.$typeName}`),
+    ],
   })
 }
 
@@ -107,7 +110,10 @@ export interface AppendUtf8Args {
 export function appendUtf8(tx: Transaction, args: AppendUtf8Args): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::append_utf8`,
-    arguments: [pure(tx, args.s, `${String.$typeName}`), pure(tx, args.bytes, `vector<u8>`)],
+    arguments: [
+      pure(tx, args.s, `${String.$typeName}`),
+      pure(tx, args.bytes, `vector<u8>`),
+    ],
   })
 }
 
@@ -167,13 +173,16 @@ export interface IndexOfArgs {
 export function indexOf(tx: Transaction, args: IndexOfArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::index_of`,
-    arguments: [pure(tx, args.s, `${String.$typeName}`), pure(tx, args.r, `${String.$typeName}`)],
+    arguments: [
+      pure(tx, args.s, `${String.$typeName}`),
+      pure(tx, args.r, `${String.$typeName}`),
+    ],
   })
 }
 
 export function internalCheckUtf8(
   tx: Transaction,
-  v: Array<number | TransactionArgument> | TransactionArgument
+  v: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::internal_check_utf8`,
@@ -188,11 +197,14 @@ export interface InternalIsCharBoundaryArgs {
 
 export function internalIsCharBoundary(
   tx: Transaction,
-  args: InternalIsCharBoundaryArgs
+  args: InternalIsCharBoundaryArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::internal_is_char_boundary`,
-    arguments: [pure(tx, args.v, `vector<u8>`), pure(tx, args.i, `u64`)],
+    arguments: [
+      pure(tx, args.v, `vector<u8>`),
+      pure(tx, args.i, `u64`),
+    ],
   })
 }
 
@@ -205,7 +217,11 @@ export interface InternalSubStringArgs {
 export function internalSubString(tx: Transaction, args: InternalSubStringArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::internal_sub_string`,
-    arguments: [pure(tx, args.v, `vector<u8>`), pure(tx, args.i, `u64`), pure(tx, args.j, `u64`)],
+    arguments: [
+      pure(tx, args.v, `vector<u8>`),
+      pure(tx, args.i, `u64`),
+      pure(tx, args.j, `u64`),
+    ],
   })
 }
 
@@ -217,7 +233,10 @@ export interface InternalIndexOfArgs {
 export function internalIndexOf(tx: Transaction, args: InternalIndexOfArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::string::internal_index_of`,
-    arguments: [pure(tx, args.v, `vector<u8>`), pure(tx, args.r, `vector<u8>`)],
+    arguments: [
+      pure(tx, args.v, `vector<u8>`),
+      pure(tx, args.r, `vector<u8>`),
+    ],
   })
 }
 

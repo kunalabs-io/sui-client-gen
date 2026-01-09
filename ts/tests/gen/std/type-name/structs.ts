@@ -1,28 +1,28 @@
 /** Functionality for converting Move types into values. Use with care! */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { String } from '../ascii/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== TypeName =============================== */
 
@@ -81,7 +81,7 @@ export class TypeName implements StructClass {
   private constructor(typeArgs: [], fields: TypeNameFields) {
     this.$fullTypeName = composeSuiType(
       TypeName.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x1::type_name::TypeName`
     this.$typeArgs = typeArgs
 
@@ -92,7 +92,10 @@ export class TypeName implements StructClass {
     const reifiedBcs = TypeName.bcs
     return {
       typeName: TypeName.$typeName,
-      fullTypeName: composeSuiType(TypeName.$typeName, ...[]) as `0x1::type_name::TypeName`,
+      fullTypeName: composeSuiType(
+        TypeName.$typeName,
+        ...[],
+      ) as `0x1::type_name::TypeName`,
       typeArgs: [] as [],
       isPhantom: TypeName.$isPhantom,
       reifiedTypeArgs: [],
@@ -178,7 +181,7 @@ export class TypeName implements StructClass {
   static fromJSON(json: Record<string, any>): TypeName {
     if (json.$typeName !== TypeName.$typeName) {
       throw new Error(
-        `not a TypeName json object: expected '${TypeName.$typeName}' but got '${json.$typeName}'`
+        `not a TypeName json object: expected '${TypeName.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -207,7 +210,7 @@ export class TypeName implements StructClass {
       return TypeName.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

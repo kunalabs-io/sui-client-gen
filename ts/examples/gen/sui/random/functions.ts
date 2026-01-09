@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, obj, pure, vector } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, obj, pure, vector } from '../../_framework/util'
 
 /**
  * Create and share the Random object. This function is called exactly once, when
@@ -45,7 +45,7 @@ export interface UpdateRandomnessStateArgs {
  */
 export function updateRandomnessState(
   tx: Transaction,
-  args: UpdateRandomnessStateArgs
+  args: UpdateRandomnessStateArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::update_randomness_state`,
@@ -89,7 +89,10 @@ export interface GenerateBytesArgs {
 export function generateBytes(tx: Transaction, args: GenerateBytesArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_bytes`,
-    arguments: [obj(tx, args.g), pure(tx, args.numOfBytes, `u16`)],
+    arguments: [
+      obj(tx, args.g),
+      pure(tx, args.numOfBytes, `u16`),
+    ],
   })
 }
 
@@ -158,11 +161,15 @@ export interface GenerateU128InRangeArgs {
 /** Generate a random u128 in [min, max] (with a bias of 2^{-64}). */
 export function generateU128InRange(
   tx: Transaction,
-  args: GenerateU128InRangeArgs
+  args: GenerateU128InRangeArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_u128_in_range`,
-    arguments: [obj(tx, args.g), pure(tx, args.min, `u128`), pure(tx, args.max, `u128`)],
+    arguments: [
+      obj(tx, args.g),
+      pure(tx, args.min, `u128`),
+      pure(tx, args.max, `u128`),
+    ],
   })
 }
 
@@ -174,11 +181,15 @@ export interface GenerateU64InRangeArgs {
 
 export function generateU64InRange(
   tx: Transaction,
-  args: GenerateU64InRangeArgs
+  args: GenerateU64InRangeArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_u64_in_range`,
-    arguments: [obj(tx, args.g), pure(tx, args.min, `u64`), pure(tx, args.max, `u64`)],
+    arguments: [
+      obj(tx, args.g),
+      pure(tx, args.min, `u64`),
+      pure(tx, args.max, `u64`),
+    ],
   })
 }
 
@@ -191,11 +202,15 @@ export interface GenerateU32InRangeArgs {
 /** Generate a random u32 in [min, max] (with a bias of 2^{-64}). */
 export function generateU32InRange(
   tx: Transaction,
-  args: GenerateU32InRangeArgs
+  args: GenerateU32InRangeArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_u32_in_range`,
-    arguments: [obj(tx, args.g), pure(tx, args.min, `u32`), pure(tx, args.max, `u32`)],
+    arguments: [
+      obj(tx, args.g),
+      pure(tx, args.min, `u32`),
+      pure(tx, args.max, `u32`),
+    ],
   })
 }
 
@@ -208,11 +223,15 @@ export interface GenerateU16InRangeArgs {
 /** Generate a random u16 in [min, max] (with a bias of 2^{-64}). */
 export function generateU16InRange(
   tx: Transaction,
-  args: GenerateU16InRangeArgs
+  args: GenerateU16InRangeArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_u16_in_range`,
-    arguments: [obj(tx, args.g), pure(tx, args.min, `u16`), pure(tx, args.max, `u16`)],
+    arguments: [
+      obj(tx, args.g),
+      pure(tx, args.min, `u16`),
+      pure(tx, args.max, `u16`),
+    ],
   })
 }
 
@@ -226,7 +245,11 @@ export interface GenerateU8InRangeArgs {
 export function generateU8InRange(tx: Transaction, args: GenerateU8InRangeArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::generate_u8_in_range`,
-    arguments: [obj(tx, args.g), pure(tx, args.min, `u8`), pure(tx, args.max, `u8`)],
+    arguments: [
+      obj(tx, args.g),
+      pure(tx, args.min, `u8`),
+      pure(tx, args.max, `u8`),
+    ],
   })
 }
 
@@ -240,6 +263,9 @@ export function shuffle(tx: Transaction, typeArg: string, args: ShuffleArgs): Tr
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::random::shuffle`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.g), vector(tx, `${typeArg}`, args.v)],
+    arguments: [
+      obj(tx, args.g),
+      vector(tx, `${typeArg}`, args.v),
+    ],
   })
 }

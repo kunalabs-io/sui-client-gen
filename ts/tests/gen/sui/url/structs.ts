@@ -1,28 +1,28 @@
 /** URL: standard Uniform Resource Locator string */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { String } from '../../std/ascii/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Url =============================== */
 
@@ -62,7 +62,10 @@ export class Url implements StructClass {
   readonly url: ToField<String>
 
   private constructor(typeArgs: [], fields: UrlFields) {
-    this.$fullTypeName = composeSuiType(Url.$typeName, ...typeArgs) as `0x2::url::Url`
+    this.$fullTypeName = composeSuiType(
+      Url.$typeName,
+      ...typeArgs,
+    ) as `0x2::url::Url`
     this.$typeArgs = typeArgs
 
     this.url = fields.url
@@ -72,7 +75,10 @@ export class Url implements StructClass {
     const reifiedBcs = Url.bcs
     return {
       typeName: Url.$typeName,
-      fullTypeName: composeSuiType(Url.$typeName, ...[]) as `0x2::url::Url`,
+      fullTypeName: composeSuiType(
+        Url.$typeName,
+        ...[],
+      ) as `0x2::url::Url`,
       typeArgs: [] as [],
       isPhantom: Url.$isPhantom,
       reifiedTypeArgs: [],
@@ -158,7 +164,7 @@ export class Url implements StructClass {
   static fromJSON(json: Record<string, any>): Url {
     if (json.$typeName !== Url.$typeName) {
       throw new Error(
-        `not a Url json object: expected '${Url.$typeName}' but got '${json.$typeName}'`
+        `not a Url json object: expected '${Url.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -187,7 +193,7 @@ export class Url implements StructClass {
       return Url.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

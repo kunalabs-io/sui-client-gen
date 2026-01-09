@@ -1,20 +1,20 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, obj, option, pure } from '../../_framework/util'
-import { String as String1 } from '../../std/ascii/structs'
-import { String } from '../../std/string/structs'
-import { Url } from '../url/structs'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, obj, option, pure } from '../../_framework/util'
+import { String as String1 } from '../../std/ascii/structs'
+import { String } from '../../std/string/structs'
+import { Url } from '../url/structs'
 
 /** Return the total number of `T`'s in circulation. */
 export function totalSupply(
   tx: Transaction,
   typeArg: string,
-  cap: TransactionObjectInput
+  cap: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::total_supply`,
@@ -32,7 +32,7 @@ export function totalSupply(
 export function treasuryIntoSupply(
   tx: Transaction,
   typeArg: string,
-  treasury: TransactionObjectInput
+  treasury: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::treasury_into_supply`,
@@ -45,7 +45,7 @@ export function treasuryIntoSupply(
 export function supplyImmut(
   tx: Transaction,
   typeArg: string,
-  treasury: TransactionObjectInput
+  treasury: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::supply_immut`,
@@ -58,7 +58,7 @@ export function supplyImmut(
 export function supplyMut(
   tx: Transaction,
   typeArg: string,
-  treasury: TransactionObjectInput
+  treasury: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::supply_mut`,
@@ -71,7 +71,7 @@ export function supplyMut(
 export function value(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::value`,
@@ -84,7 +84,7 @@ export function value(
 export function balance(
   tx: Transaction,
   typeArg: string,
-  coin: TransactionObjectInput
+  coin: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::balance`,
@@ -97,7 +97,7 @@ export function balance(
 export function balanceMut(
   tx: Transaction,
   typeArg: string,
-  coin: TransactionObjectInput
+  coin: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::balance_mut`,
@@ -110,7 +110,7 @@ export function balanceMut(
 export function fromBalance(
   tx: Transaction,
   typeArg: string,
-  balance: TransactionObjectInput
+  balance: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::from_balance`,
@@ -123,7 +123,7 @@ export function fromBalance(
 export function intoBalance(
   tx: Transaction,
   typeArg: string,
-  coin: TransactionObjectInput
+  coin: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::into_balance`,
@@ -145,7 +145,10 @@ export function take(tx: Transaction, typeArg: string, args: TakeArgs): Transact
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::take`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.balance), pure(tx, args.value, `u64`)],
+    arguments: [
+      obj(tx, args.balance),
+      pure(tx, args.value, `u64`),
+    ],
   })
 }
 
@@ -159,7 +162,10 @@ export function put(tx: Transaction, typeArg: string, args: PutArgs): Transactio
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::put`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.balance), obj(tx, args.coin)],
+    arguments: [
+      obj(tx, args.balance),
+      obj(tx, args.coin),
+    ],
   })
 }
 
@@ -167,7 +173,7 @@ export function put(tx: Transaction, typeArg: string, args: PutArgs): Transactio
 export function redeemFunds(
   tx: Transaction,
   typeArg: string,
-  withdrawal: TransactionObjectInput
+  withdrawal: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::redeem_funds`,
@@ -185,12 +191,15 @@ export interface SendFundsArgs {
 export function sendFunds(
   tx: Transaction,
   typeArg: string,
-  args: SendFundsArgs
+  args: SendFundsArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::send_funds`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.coin), pure(tx, args.recipient, `address`)],
+    arguments: [
+      obj(tx, args.coin),
+      pure(tx, args.recipient, `address`),
+    ],
   })
 }
 
@@ -207,7 +216,10 @@ export function join(tx: Transaction, typeArg: string, args: JoinArgs): Transact
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::join`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), obj(tx, args.c)],
+    arguments: [
+      obj(tx, args.self),
+      obj(tx, args.c),
+    ],
   })
 }
 
@@ -224,7 +236,10 @@ export function split(tx: Transaction, typeArg: string, args: SplitArgs): Transa
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::split`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), pure(tx, args.splitAmount, `u64`)],
+    arguments: [
+      obj(tx, args.self),
+      pure(tx, args.splitAmount, `u64`),
+    ],
   })
 }
 
@@ -240,12 +255,15 @@ export interface DivideIntoNArgs {
 export function divideIntoN(
   tx: Transaction,
   typeArg: string,
-  args: DivideIntoNArgs
+  args: DivideIntoNArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::divide_into_n`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), pure(tx, args.n, `u64`)],
+    arguments: [
+      obj(tx, args.self),
+      pure(tx, args.n, `u64`),
+    ],
   })
 }
 
@@ -265,7 +283,7 @@ export function zero(tx: Transaction, typeArg: string): TransactionResult {
 export function destroyZero(
   tx: Transaction,
   typeArg: string,
-  c: TransactionObjectInput
+  c: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::destroy_zero`,
@@ -293,7 +311,7 @@ export interface CreateCurrencyArgs {
 export function createCurrency(
   tx: Transaction,
   typeArg: string,
-  args: CreateCurrencyArgs
+  args: CreateCurrencyArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::create_currency`,
@@ -334,7 +352,7 @@ export interface CreateRegulatedCurrencyV2Args {
 export function createRegulatedCurrencyV2(
   tx: Transaction,
   typeArg: string,
-  args: CreateRegulatedCurrencyV2Args
+  args: CreateRegulatedCurrencyV2Args,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::create_regulated_currency_v2`,
@@ -365,12 +383,16 @@ export interface MigrateRegulatedCurrencyToV2Args {
 export function migrateRegulatedCurrencyToV2(
   tx: Transaction,
   typeArg: string,
-  args: MigrateRegulatedCurrencyToV2Args
+  args: MigrateRegulatedCurrencyToV2Args,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::migrate_regulated_currency_to_v2`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.denyList), obj(tx, args.cap), pure(tx, args.allowGlobalPause, `bool`)],
+    arguments: [
+      obj(tx, args.denyList),
+      obj(tx, args.cap),
+      pure(tx, args.allowGlobalPause, `bool`),
+    ],
   })
 }
 
@@ -387,7 +409,10 @@ export function mint(tx: Transaction, typeArg: string, args: MintArgs): Transact
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::mint`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.cap), pure(tx, args.value, `u64`)],
+    arguments: [
+      obj(tx, args.cap),
+      pure(tx, args.value, `u64`),
+    ],
   })
 }
 
@@ -404,12 +429,15 @@ export interface MintBalanceArgs {
 export function mintBalance(
   tx: Transaction,
   typeArg: string,
-  args: MintBalanceArgs
+  args: MintBalanceArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::mint_balance`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.cap), pure(tx, args.value, `u64`)],
+    arguments: [
+      obj(tx, args.cap),
+      pure(tx, args.value, `u64`),
+    ],
   })
 }
 
@@ -426,7 +454,10 @@ export function burn(tx: Transaction, typeArg: string, args: BurnArgs): Transact
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::burn`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.cap), obj(tx, args.c)],
+    arguments: [
+      obj(tx, args.cap),
+      obj(tx, args.c),
+    ],
   })
 }
 
@@ -444,12 +475,16 @@ export interface DenyListV2AddArgs {
 export function denyListV2Add(
   tx: Transaction,
   typeArg: string,
-  args: DenyListV2AddArgs
+  args: DenyListV2AddArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::deny_list_v2_add`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.denyList), obj(tx, args.denyCap), pure(tx, args.addr, `address`)],
+    arguments: [
+      obj(tx, args.denyList),
+      obj(tx, args.denyCap),
+      pure(tx, args.addr, `address`),
+    ],
   })
 }
 
@@ -467,12 +502,16 @@ export interface DenyListV2RemoveArgs {
 export function denyListV2Remove(
   tx: Transaction,
   typeArg: string,
-  args: DenyListV2RemoveArgs
+  args: DenyListV2RemoveArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::deny_list_v2_remove`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.denyList), obj(tx, args.denyCap), pure(tx, args.addr, `address`)],
+    arguments: [
+      obj(tx, args.denyList),
+      obj(tx, args.denyCap),
+      pure(tx, args.addr, `address`),
+    ],
   })
 }
 
@@ -488,12 +527,15 @@ export interface DenyListV2ContainsCurrentEpochArgs {
 export function denyListV2ContainsCurrentEpoch(
   tx: Transaction,
   typeArg: string,
-  args: DenyListV2ContainsCurrentEpochArgs
+  args: DenyListV2ContainsCurrentEpochArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::deny_list_v2_contains_current_epoch`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.denyList), pure(tx, args.addr, `address`)],
+    arguments: [
+      obj(tx, args.denyList),
+      pure(tx, args.addr, `address`),
+    ],
   })
 }
 
@@ -510,12 +552,15 @@ export interface DenyListV2ContainsNextEpochArgs {
 export function denyListV2ContainsNextEpoch(
   tx: Transaction,
   typeArg: string,
-  args: DenyListV2ContainsNextEpochArgs
+  args: DenyListV2ContainsNextEpochArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::deny_list_v2_contains_next_epoch`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.denyList), pure(tx, args.addr, `address`)],
+    arguments: [
+      obj(tx, args.denyList),
+      pure(tx, args.addr, `address`),
+    ],
   })
 }
 
@@ -532,12 +577,15 @@ export interface DenyListV2EnableGlobalPauseArgs {
 export function denyListV2EnableGlobalPause(
   tx: Transaction,
   typeArg: string,
-  args: DenyListV2EnableGlobalPauseArgs
+  args: DenyListV2EnableGlobalPauseArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::deny_list_v2_enable_global_pause`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.denyList), obj(tx, args.denyCap)],
+    arguments: [
+      obj(tx, args.denyList),
+      obj(tx, args.denyCap),
+    ],
   })
 }
 
@@ -554,12 +602,15 @@ export interface DenyListV2DisableGlobalPauseArgs {
 export function denyListV2DisableGlobalPause(
   tx: Transaction,
   typeArg: string,
-  args: DenyListV2DisableGlobalPauseArgs
+  args: DenyListV2DisableGlobalPauseArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::deny_list_v2_disable_global_pause`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.denyList), obj(tx, args.denyCap)],
+    arguments: [
+      obj(tx, args.denyList),
+      obj(tx, args.denyCap),
+    ],
   })
 }
 
@@ -567,7 +618,7 @@ export function denyListV2DisableGlobalPause(
 export function denyListV2IsGlobalPauseEnabledCurrentEpoch(
   tx: Transaction,
   typeArg: string,
-  denyList: TransactionObjectInput
+  denyList: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::deny_list_v2_is_global_pause_enabled_current_epoch`,
@@ -580,7 +631,7 @@ export function denyListV2IsGlobalPauseEnabledCurrentEpoch(
 export function denyListV2IsGlobalPauseEnabledNextEpoch(
   tx: Transaction,
   typeArg: string,
-  denyList: TransactionObjectInput
+  denyList: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::deny_list_v2_is_global_pause_enabled_next_epoch`,
@@ -599,12 +650,16 @@ export interface MintAndTransferArgs {
 export function mintAndTransfer(
   tx: Transaction,
   typeArg: string,
-  args: MintAndTransferArgs
+  args: MintAndTransferArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::mint_and_transfer`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.c), pure(tx, args.amount, `u64`), pure(tx, args.recipient, `address`)],
+    arguments: [
+      obj(tx, args.c),
+      pure(tx, args.amount, `u64`),
+      pure(tx, args.recipient, `address`),
+    ],
   })
 }
 
@@ -618,7 +673,7 @@ export interface UpdateNameArgs {
 export function updateName(
   tx: Transaction,
   typeArg: string,
-  args: UpdateNameArgs
+  args: UpdateNameArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::update_name`,
@@ -641,7 +696,7 @@ export interface UpdateSymbolArgs {
 export function updateSymbol(
   tx: Transaction,
   typeArg: string,
-  args: UpdateSymbolArgs
+  args: UpdateSymbolArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::update_symbol`,
@@ -664,7 +719,7 @@ export interface UpdateDescriptionArgs {
 export function updateDescription(
   tx: Transaction,
   typeArg: string,
-  args: UpdateDescriptionArgs
+  args: UpdateDescriptionArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::update_description`,
@@ -687,7 +742,7 @@ export interface UpdateIconUrlArgs {
 export function updateIconUrl(
   tx: Transaction,
   typeArg: string,
-  args: UpdateIconUrlArgs
+  args: UpdateIconUrlArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::update_icon_url`,
@@ -703,7 +758,7 @@ export function updateIconUrl(
 export function getDecimals(
   tx: Transaction,
   typeArg: string,
-  metadata: TransactionObjectInput
+  metadata: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::get_decimals`,
@@ -715,7 +770,7 @@ export function getDecimals(
 export function getName(
   tx: Transaction,
   typeArg: string,
-  metadata: TransactionObjectInput
+  metadata: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::get_name`,
@@ -727,7 +782,7 @@ export function getName(
 export function getSymbol(
   tx: Transaction,
   typeArg: string,
-  metadata: TransactionObjectInput
+  metadata: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::get_symbol`,
@@ -739,7 +794,7 @@ export function getSymbol(
 export function getDescription(
   tx: Transaction,
   typeArg: string,
-  metadata: TransactionObjectInput
+  metadata: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::get_description`,
@@ -751,7 +806,7 @@ export function getDescription(
 export function getIconUrl(
   tx: Transaction,
   typeArg: string,
-  metadata: TransactionObjectInput
+  metadata: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::get_icon_url`,
@@ -764,7 +819,7 @@ export function getIconUrl(
 export function destroyMetadata(
   tx: Transaction,
   typeArg: string,
-  metadata: TransactionObjectInput
+  metadata: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::destroy_metadata`,
@@ -776,7 +831,7 @@ export function destroyMetadata(
 export function denyCapId(
   tx: Transaction,
   typeArg: string,
-  metadata: TransactionObjectInput
+  metadata: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::deny_cap_id`,
@@ -788,7 +843,7 @@ export function denyCapId(
 export function newDenyCapV2(
   tx: Transaction,
   typeArg: string,
-  allowGlobalPause: boolean | TransactionArgument
+  allowGlobalPause: boolean | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::new_deny_cap_v2`,
@@ -808,7 +863,7 @@ export function newTreasuryCap(tx: Transaction, typeArg: string): TransactionRes
 export function allowGlobalPause(
   tx: Transaction,
   typeArg: string,
-  cap: TransactionObjectInput
+  cap: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::allow_global_pause`,
@@ -828,7 +883,7 @@ export interface NewCoinMetadataArgs {
 export function newCoinMetadata(
   tx: Transaction,
   typeArg: string,
-  args: NewCoinMetadataArgs
+  args: NewCoinMetadataArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::new_coin_metadata`,
@@ -858,7 +913,7 @@ export interface UpdateCoinMetadataArgs {
 export function updateCoinMetadata(
   tx: Transaction,
   typeArg: string,
-  args: UpdateCoinMetadataArgs
+  args: UpdateCoinMetadataArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::update_coin_metadata`,
@@ -876,7 +931,7 @@ export function updateCoinMetadata(
 export function supply(
   tx: Transaction,
   typeArg: string,
-  treasury: TransactionObjectInput
+  treasury: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::supply`,
@@ -904,7 +959,7 @@ export interface CreateRegulatedCurrencyArgs {
 export function createRegulatedCurrency(
   tx: Transaction,
   typeArg: string,
-  args: CreateRegulatedCurrencyArgs
+  args: CreateRegulatedCurrencyArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::create_regulated_currency`,
@@ -935,12 +990,16 @@ export interface DenyListAddArgs {
 export function denyListAdd(
   tx: Transaction,
   typeArg: string,
-  args: DenyListAddArgs
+  args: DenyListAddArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::deny_list_add`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.denyList), obj(tx, args.denyCap), pure(tx, args.addr, `address`)],
+    arguments: [
+      obj(tx, args.denyList),
+      obj(tx, args.denyCap),
+      pure(tx, args.addr, `address`),
+    ],
   })
 }
 
@@ -959,12 +1018,16 @@ export interface DenyListRemoveArgs {
 export function denyListRemove(
   tx: Transaction,
   typeArg: string,
-  args: DenyListRemoveArgs
+  args: DenyListRemoveArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::deny_list_remove`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.denyList), obj(tx, args.denyCap), pure(tx, args.addr, `address`)],
+    arguments: [
+      obj(tx, args.denyList),
+      obj(tx, args.denyCap),
+      pure(tx, args.addr, `address`),
+    ],
   })
 }
 
@@ -982,11 +1045,14 @@ export interface DenyListContainsArgs {
 export function denyListContains(
   tx: Transaction,
   typeArg: string,
-  args: DenyListContainsArgs
+  args: DenyListContainsArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::coin::deny_list_contains`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.denyList), pure(tx, args.addr, `address`)],
+    arguments: [
+      obj(tx, args.denyList),
+      pure(tx, args.addr, `address`),
+    ],
   })
 }

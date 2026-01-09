@@ -1,35 +1,35 @@
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import { getTypeOrigin } from '../../_envs'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== StructFromOtherModule =============================== */
 
 export function isStructFromOtherModule(type: string): boolean {
   type = compressSuiType(type)
-  return (
-    type ===
-    `${getTypeOrigin('examples', 'other_module::StructFromOtherModule')}::other_module::StructFromOtherModule`
-  )
+  return type
+    === `${
+      getTypeOrigin('examples', 'other_module::StructFromOtherModule')
+    }::other_module::StructFromOtherModule`
 }
 
 export interface StructFromOtherModuleFields {
@@ -53,8 +53,9 @@ export type StructFromOtherModuleJSON = {
 export class StructFromOtherModule implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::other_module::StructFromOtherModule` =
-    `${getTypeOrigin('examples', 'other_module::StructFromOtherModule')}::other_module::StructFromOtherModule` as const
+  static readonly $typeName: `${string}::other_module::StructFromOtherModule` = `${
+    getTypeOrigin('examples', 'other_module::StructFromOtherModule')
+  }::other_module::StructFromOtherModule` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -68,7 +69,7 @@ export class StructFromOtherModule implements StructClass {
   private constructor(typeArgs: [], fields: StructFromOtherModuleFields) {
     this.$fullTypeName = composeSuiType(
       StructFromOtherModule.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${string}::other_module::StructFromOtherModule`
     this.$typeArgs = typeArgs
 
@@ -81,7 +82,7 @@ export class StructFromOtherModule implements StructClass {
       typeName: StructFromOtherModule.$typeName,
       fullTypeName: composeSuiType(
         StructFromOtherModule.$typeName,
-        ...[]
+        ...[],
       ) as `${string}::other_module::StructFromOtherModule`,
       typeArgs: [] as [],
       isPhantom: StructFromOtherModule.$isPhantom,
@@ -172,7 +173,7 @@ export class StructFromOtherModule implements StructClass {
   static fromJSON(json: Record<string, any>): StructFromOtherModule {
     if (json.$typeName !== StructFromOtherModule.$typeName) {
       throw new Error(
-        `not a StructFromOtherModule json object: expected '${StructFromOtherModule.$typeName}' but got '${json.$typeName}'`
+        `not a StructFromOtherModule json object: expected '${StructFromOtherModule.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -185,7 +186,7 @@ export class StructFromOtherModule implements StructClass {
     }
     if (!isStructFromOtherModule(content.type)) {
       throw new Error(
-        `object at ${(content.fields as any).id} is not a StructFromOtherModule object`
+        `object at ${(content.fields as any).id} is not a StructFromOtherModule object`,
       )
     }
     return StructFromOtherModule.fromFieldsWithTypes(content)
@@ -203,7 +204,7 @@ export class StructFromOtherModule implements StructClass {
       return StructFromOtherModule.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -221,10 +222,10 @@ export class StructFromOtherModule implements StructClass {
 
 export function isAddedInAnUpgrade(type: string): boolean {
   type = compressSuiType(type)
-  return (
-    type ===
-    `${getTypeOrigin('examples', 'other_module::AddedInAnUpgrade')}::other_module::AddedInAnUpgrade`
-  )
+  return type
+    === `${
+      getTypeOrigin('examples', 'other_module::AddedInAnUpgrade')
+    }::other_module::AddedInAnUpgrade`
 }
 
 export interface AddedInAnUpgradeFields {
@@ -245,8 +246,9 @@ export type AddedInAnUpgradeJSON = {
 export class AddedInAnUpgrade implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::other_module::AddedInAnUpgrade` =
-    `${getTypeOrigin('examples', 'other_module::AddedInAnUpgrade')}::other_module::AddedInAnUpgrade` as const
+  static readonly $typeName: `${string}::other_module::AddedInAnUpgrade` = `${
+    getTypeOrigin('examples', 'other_module::AddedInAnUpgrade')
+  }::other_module::AddedInAnUpgrade` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -260,7 +262,7 @@ export class AddedInAnUpgrade implements StructClass {
   private constructor(typeArgs: [], fields: AddedInAnUpgradeFields) {
     this.$fullTypeName = composeSuiType(
       AddedInAnUpgrade.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${string}::other_module::AddedInAnUpgrade`
     this.$typeArgs = typeArgs
 
@@ -273,7 +275,7 @@ export class AddedInAnUpgrade implements StructClass {
       typeName: AddedInAnUpgrade.$typeName,
       fullTypeName: composeSuiType(
         AddedInAnUpgrade.$typeName,
-        ...[]
+        ...[],
       ) as `${string}::other_module::AddedInAnUpgrade`,
       typeArgs: [] as [],
       isPhantom: AddedInAnUpgrade.$isPhantom,
@@ -360,7 +362,7 @@ export class AddedInAnUpgrade implements StructClass {
   static fromJSON(json: Record<string, any>): AddedInAnUpgrade {
     if (json.$typeName !== AddedInAnUpgrade.$typeName) {
       throw new Error(
-        `not a AddedInAnUpgrade json object: expected '${AddedInAnUpgrade.$typeName}' but got '${json.$typeName}'`
+        `not a AddedInAnUpgrade json object: expected '${AddedInAnUpgrade.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -389,7 +391,7 @@ export class AddedInAnUpgrade implements StructClass {
       return AddedInAnUpgrade.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

@@ -1,28 +1,28 @@
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  fieldToJSON,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  fieldToJSON,
-  phantom,
   vector,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== TxContext =============================== */
 
@@ -96,7 +96,7 @@ export class TxContext implements StructClass {
   private constructor(typeArgs: [], fields: TxContextFields) {
     this.$fullTypeName = composeSuiType(
       TxContext.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::tx_context::TxContext`
     this.$typeArgs = typeArgs
 
@@ -111,7 +111,10 @@ export class TxContext implements StructClass {
     const reifiedBcs = TxContext.bcs
     return {
       typeName: TxContext.$typeName,
-      fullTypeName: composeSuiType(TxContext.$typeName, ...[]) as `0x2::tx_context::TxContext`,
+      fullTypeName: composeSuiType(
+        TxContext.$typeName,
+        ...[],
+      ) as `0x2::tx_context::TxContext`,
       typeArgs: [] as [],
       isPhantom: TxContext.$isPhantom,
       reifiedTypeArgs: [],
@@ -220,7 +223,7 @@ export class TxContext implements StructClass {
   static fromJSON(json: Record<string, any>): TxContext {
     if (json.$typeName !== TxContext.$typeName) {
       throw new Error(
-        `not a TxContext json object: expected '${TxContext.$typeName}' but got '${json.$typeName}'`
+        `not a TxContext json object: expected '${TxContext.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -249,7 +252,7 @@ export class TxContext implements StructClass {
       return TxContext.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

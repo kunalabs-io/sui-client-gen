@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, obj, pure } from '../../_framework/util'
 
 export interface CreateArgs {
   initVersion: bigint | TransactionArgument
@@ -17,7 +17,10 @@ export function create(tx: Transaction, typeArg: string, args: CreateArgs): Tran
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::versioned::create`,
     typeArguments: [typeArg],
-    arguments: [pure(tx, args.initVersion, `u64`), generic(tx, `${typeArg}`, args.initValue)],
+    arguments: [
+      pure(tx, args.initVersion, `u64`),
+      generic(tx, `${typeArg}`, args.initValue),
+    ],
   })
 }
 
@@ -36,7 +39,7 @@ export function version(tx: Transaction, self: TransactionObjectInput): Transact
 export function loadValue(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::versioned::load_value`,
@@ -49,7 +52,7 @@ export function loadValue(
 export function loadValueMut(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::versioned::load_value_mut`,
@@ -65,7 +68,7 @@ export function loadValueMut(
 export function removeValueForUpgrade(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::versioned::remove_value_for_upgrade`,
@@ -102,7 +105,7 @@ export function upgrade(tx: Transaction, typeArg: string, args: UpgradeArgs): Tr
 export function destroy(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::versioned::destroy`,

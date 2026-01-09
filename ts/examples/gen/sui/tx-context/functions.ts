@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { pure } from '../../_framework/util'
 
 /**
  * Return the address of the user that signed the current
@@ -166,6 +166,9 @@ export interface DeriveIdArgs {
 export function deriveId(tx: Transaction, args: DeriveIdArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::derive_id`,
-    arguments: [pure(tx, args.txHash, `vector<u8>`), pure(tx, args.idsCreated, `u64`)],
+    arguments: [
+      pure(tx, args.txHash, `vector<u8>`),
+      pure(tx, args.idsCreated, `u64`),
+    ],
   })
 }

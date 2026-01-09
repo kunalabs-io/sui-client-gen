@@ -18,15 +18,15 @@ if (!initialized) {
 
 // Re-export public API from _framework/env
 export {
-  setActiveEnv,
-  setActiveEnvWithConfig,
   getActiveEnv,
   getActiveEnvName,
-  getRegisteredEnvs,
-  getPackageConfig,
   getDependencyConfig,
-  getPublishedAt,
-  getTypeOrigin,
   getOriginalId,
+  getPackageConfig,
+  getPublishedAt,
+  getRegisteredEnvs,
+  getTypeOrigin,
+  setActiveEnv,
+  setActiveEnvWithConfig,
 } from '../_framework/env'
 export type { EnvConfig, PackageConfig } from '../_framework/env'

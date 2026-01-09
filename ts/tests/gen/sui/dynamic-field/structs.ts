@@ -7,15 +7,10 @@
  * building block for core collection types
  */
 
+import { bcs, BcsType } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
-  PhantomReified,
-  Reified,
-  StructClass,
-  ToField,
-  ToJSON,
-  ToTypeArgument,
-  ToTypeStr,
-  TypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -24,20 +19,25 @@ import {
   extractType,
   fieldToJSON,
   phantom,
+  PhantomReified,
+  Reified,
+  StructClass,
   toBcs,
+  ToField,
+  ToJSON,
+  ToTypeArgument,
+  ToTypeStr,
+  TypeArgument,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
   parseTypeName,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { UID } from '../object/structs'
-import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Field =============================== */
 
@@ -99,11 +99,11 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
 
   private constructor(
     typeArgs: [ToTypeStr<Name>, ToTypeStr<Value>],
-    fields: FieldFields<Name, Value>
+    fields: FieldFields<Name, Value>,
   ) {
     this.$fullTypeName = composeSuiType(
       Field.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::dynamic_field::Field<${ToTypeStr<Name>}, ${ToTypeStr<Value>}>`
     this.$typeArgs = typeArgs
 
@@ -114,15 +114,17 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
 
   static reified<Name extends Reified<TypeArgument, any>, Value extends Reified<TypeArgument, any>>(
     Name: Name,
-    Value: Value
+    Value: Value,
   ): FieldReified<ToTypeArgument<Name>, ToTypeArgument<Value>> {
     const reifiedBcs = Field.bcs(toBcs(Name), toBcs(Value))
     return {
       typeName: Field.$typeName,
       fullTypeName: composeSuiType(
         Field.$typeName,
-        ...[extractType(Name), extractType(Value)]
-      ) as `0x2::dynamic_field::Field<${ToTypeStr<ToTypeArgument<Name>>}, ${ToTypeStr<ToTypeArgument<Value>>}>`,
+        ...[extractType(Name), extractType(Value)],
+      ) as `0x2::dynamic_field::Field<${ToTypeStr<ToTypeArgument<Name>>}, ${ToTypeStr<
+        ToTypeArgument<Value>
+      >}>`,
       typeArgs: [extractType(Name), extractType(Value)] as [
         ToTypeStr<ToTypeArgument<Name>>,
         ToTypeStr<ToTypeArgument<Value>>,
@@ -155,7 +157,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
 
   static phantom<Name extends Reified<TypeArgument, any>, Value extends Reified<TypeArgument, any>>(
     Name: Name,
-    Value: Value
+    Value: Value,
   ): PhantomReified<ToTypeStr<Field<ToTypeArgument<Name>, ToTypeArgument<Value>>>> {
     return phantom(Field.reified(Name, Value))
   }
@@ -187,7 +189,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     Value extends Reified<TypeArgument, any>,
   >(
     typeArgs: [Name, Value],
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
     return Field.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromFields(UID.reified(), fields.id),
@@ -201,7 +203,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     Value extends Reified<TypeArgument, any>,
   >(
     typeArgs: [Name, Value],
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
     if (!isField(item.type)) {
       throw new Error('not a Field type')
@@ -217,7 +219,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
 
   static fromBcs<Name extends Reified<TypeArgument, any>, Value extends Reified<TypeArgument, any>>(
     typeArgs: [Name, Value],
-    data: Uint8Array
+    data: Uint8Array,
   ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
     return Field.fromFields(typeArgs, Field.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data))
   }
@@ -237,7 +239,10 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
   static fromJSONField<
     Name extends Reified<TypeArgument, any>,
     Value extends Reified<TypeArgument, any>,
-  >(typeArgs: [Name, Value], field: any): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
+  >(
+    typeArgs: [Name, Value],
+    field: any,
+  ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
     return Field.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       name: decodeFromJSONField(typeArgs[0], field.name),
@@ -250,17 +255,17 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     Value extends Reified<TypeArgument, any>,
   >(
     typeArgs: [Name, Value],
-    json: Record<string, any>
+    json: Record<string, any>,
   ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
     if (json.$typeName !== Field.$typeName) {
       throw new Error(
-        `not a Field json object: expected '${Field.$typeName}' but got '${json.$typeName}'`
+        `not a Field json object: expected '${Field.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Field.$typeName, ...typeArgs.map(extractType)),
       json.$typeArgs,
-      typeArgs
+      typeArgs,
     )
 
     return Field.fromJSONField(typeArgs, json)
@@ -271,7 +276,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     Value extends Reified<TypeArgument, any>,
   >(
     typeArgs: [Name, Value],
-    content: SuiParsedData
+    content: SuiParsedData,
   ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -287,7 +292,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     Value extends Reified<TypeArgument, any>,
   >(
     typeArgs: [Name, Value],
-    data: SuiObjectData
+    data: SuiObjectData,
   ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isField(data.bcs.type)) {
@@ -297,7 +302,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 2) {
         throw new Error(
-          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 2; i++) {
@@ -305,7 +310,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
         const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -316,7 +321,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
       return Field.fromSuiParsedData(typeArgs, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -326,7 +331,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
   >(
     client: SupportedSuiClient,
     typeArgs: [Name, Value],
-    id: string
+    id: string,
   ): Promise<Field<ToTypeArgument<Name>, ToTypeArgument<Value>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isField(res.type)) {
@@ -336,7 +341,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 2) {
       throw new Error(
-        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 2; i++) {
@@ -344,7 +349,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
       const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }

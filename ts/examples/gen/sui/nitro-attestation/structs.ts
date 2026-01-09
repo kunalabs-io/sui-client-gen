@@ -1,29 +1,29 @@
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import { Option } from '../../_dependencies/std/option/structs'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  fieldToJSON,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  fieldToJSON,
-  phantom,
   vector,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== PCREntry =============================== */
 
@@ -69,7 +69,7 @@ export class PCREntry implements StructClass {
   private constructor(typeArgs: [], fields: PCREntryFields) {
     this.$fullTypeName = composeSuiType(
       PCREntry.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::nitro_attestation::PCREntry`
     this.$typeArgs = typeArgs
 
@@ -81,7 +81,10 @@ export class PCREntry implements StructClass {
     const reifiedBcs = PCREntry.bcs
     return {
       typeName: PCREntry.$typeName,
-      fullTypeName: composeSuiType(PCREntry.$typeName, ...[]) as `0x2::nitro_attestation::PCREntry`,
+      fullTypeName: composeSuiType(
+        PCREntry.$typeName,
+        ...[],
+      ) as `0x2::nitro_attestation::PCREntry`,
       typeArgs: [] as [],
       isPhantom: PCREntry.$isPhantom,
       reifiedTypeArgs: [],
@@ -172,7 +175,7 @@ export class PCREntry implements StructClass {
   static fromJSON(json: Record<string, any>): PCREntry {
     if (json.$typeName !== PCREntry.$typeName) {
       throw new Error(
-        `not a PCREntry json object: expected '${PCREntry.$typeName}' but got '${json.$typeName}'`
+        `not a PCREntry json object: expected '${PCREntry.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -201,7 +204,7 @@ export class PCREntry implements StructClass {
       return PCREntry.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -304,7 +307,7 @@ export class NitroAttestationDocument implements StructClass {
   private constructor(typeArgs: [], fields: NitroAttestationDocumentFields) {
     this.$fullTypeName = composeSuiType(
       NitroAttestationDocument.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::nitro_attestation::NitroAttestationDocument`
     this.$typeArgs = typeArgs
 
@@ -323,7 +326,7 @@ export class NitroAttestationDocument implements StructClass {
       typeName: NitroAttestationDocument.$typeName,
       fullTypeName: composeSuiType(
         NitroAttestationDocument.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::nitro_attestation::NitroAttestationDocument`,
       typeArgs: [] as [],
       isPhantom: NitroAttestationDocument.$isPhantom,
@@ -421,7 +424,7 @@ export class NitroAttestationDocument implements StructClass {
       pcrs: fieldToJSON<Vector<PCREntry>>(`vector<${PCREntry.$typeName}>`, this.pcrs),
       publicKey: fieldToJSON<Option<Vector<'u8'>>>(
         `${Option.$typeName}<vector<u8>>`,
-        this.publicKey
+        this.publicKey,
       ),
       userData: fieldToJSON<Option<Vector<'u8'>>>(`${Option.$typeName}<vector<u8>>`, this.userData),
       nonce: fieldToJSON<Option<Vector<'u8'>>>(`${Option.$typeName}<vector<u8>>`, this.nonce),
@@ -447,7 +450,7 @@ export class NitroAttestationDocument implements StructClass {
   static fromJSON(json: Record<string, any>): NitroAttestationDocument {
     if (json.$typeName !== NitroAttestationDocument.$typeName) {
       throw new Error(
-        `not a NitroAttestationDocument json object: expected '${NitroAttestationDocument.$typeName}' but got '${json.$typeName}'`
+        `not a NitroAttestationDocument json object: expected '${NitroAttestationDocument.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -460,7 +463,7 @@ export class NitroAttestationDocument implements StructClass {
     }
     if (!isNitroAttestationDocument(content.type)) {
       throw new Error(
-        `object at ${(content.fields as any).id} is not a NitroAttestationDocument object`
+        `object at ${(content.fields as any).id} is not a NitroAttestationDocument object`,
       )
     }
     return NitroAttestationDocument.fromFieldsWithTypes(content)
@@ -478,7 +481,7 @@ export class NitroAttestationDocument implements StructClass {
       return NitroAttestationDocument.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

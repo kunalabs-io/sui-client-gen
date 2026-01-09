@@ -1,6 +1,6 @@
+import { Transaction, TransactionArgument, TransactionResult } from '@mysten/sui/transactions'
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
-import { Transaction, TransactionArgument, TransactionResult } from '@mysten/sui/transactions'
 
 export interface MaxArgs {
   x: bigint | TransactionArgument
@@ -11,7 +11,10 @@ export interface MaxArgs {
 export function max(tx: Transaction, args: MaxArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::math::max`,
-    arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
+    arguments: [
+      pure(tx, args.x, `u64`),
+      pure(tx, args.y, `u64`),
+    ],
   })
 }
 
@@ -24,7 +27,10 @@ export interface MinArgs {
 export function min(tx: Transaction, args: MinArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::math::min`,
-    arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
+    arguments: [
+      pure(tx, args.x, `u64`),
+      pure(tx, args.y, `u64`),
+    ],
   })
 }
 
@@ -37,7 +43,10 @@ export interface DiffArgs {
 export function diff(tx: Transaction, args: DiffArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::math::diff`,
-    arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
+    arguments: [
+      pure(tx, args.x, `u64`),
+      pure(tx, args.y, `u64`),
+    ],
   })
 }
 
@@ -50,7 +59,10 @@ export interface PowArgs {
 export function pow(tx: Transaction, args: PowArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::math::pow`,
-    arguments: [pure(tx, args.base, `u64`), pure(tx, args.exponent, `u8`)],
+    arguments: [
+      pure(tx, args.base, `u64`),
+      pure(tx, args.exponent, `u8`),
+    ],
   })
 }
 
@@ -79,6 +91,9 @@ export interface DivideAndRoundUpArgs {
 export function divideAndRoundUp(tx: Transaction, args: DivideAndRoundUpArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::math::divide_and_round_up`,
-    arguments: [pure(tx, args.x, `u64`), pure(tx, args.y, `u64`)],
+    arguments: [
+      pure(tx, args.x, `u64`),
+      pure(tx, args.y, `u64`),
+    ],
   })
 }

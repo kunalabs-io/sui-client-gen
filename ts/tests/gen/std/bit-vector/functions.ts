@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { obj, pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { obj, pure } from '../../_framework/util'
 
 export function new_(tx: Transaction, length: bigint | TransactionArgument): TransactionResult {
   return tx.moveCall({
@@ -23,7 +23,10 @@ export interface SetArgs {
 export function set(tx: Transaction, args: SetArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::bit_vector::set`,
-    arguments: [obj(tx, args.bitvector), pure(tx, args.bitIndex, `u64`)],
+    arguments: [
+      obj(tx, args.bitvector),
+      pure(tx, args.bitIndex, `u64`),
+    ],
   })
 }
 
@@ -36,7 +39,10 @@ export interface UnsetArgs {
 export function unset(tx: Transaction, args: UnsetArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::bit_vector::unset`,
-    arguments: [obj(tx, args.bitvector), pure(tx, args.bitIndex, `u64`)],
+    arguments: [
+      obj(tx, args.bitvector),
+      pure(tx, args.bitIndex, `u64`),
+    ],
   })
 }
 
@@ -52,7 +58,10 @@ export interface ShiftLeftArgs {
 export function shiftLeft(tx: Transaction, args: ShiftLeftArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::bit_vector::shift_left`,
-    arguments: [obj(tx, args.bitvector), pure(tx, args.amount, `u64`)],
+    arguments: [
+      obj(tx, args.bitvector),
+      pure(tx, args.amount, `u64`),
+    ],
   })
 }
 
@@ -68,7 +77,10 @@ export interface IsIndexSetArgs {
 export function isIndexSet(tx: Transaction, args: IsIndexSetArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::bit_vector::is_index_set`,
-    arguments: [obj(tx, args.bitvector), pure(tx, args.bitIndex, `u64`)],
+    arguments: [
+      obj(tx, args.bitvector),
+      pure(tx, args.bitIndex, `u64`),
+    ],
   })
 }
 
@@ -92,10 +104,13 @@ export interface LongestSetSequenceStartingAtArgs {
  */
 export function longestSetSequenceStartingAt(
   tx: Transaction,
-  args: LongestSetSequenceStartingAtArgs
+  args: LongestSetSequenceStartingAtArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::bit_vector::longest_set_sequence_starting_at`,
-    arguments: [obj(tx, args.bitvector), pure(tx, args.startIndex, `u64`)],
+    arguments: [
+      obj(tx, args.bitvector),
+      pure(tx, args.startIndex, `u64`),
+    ],
   })
 }

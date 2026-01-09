@@ -1,3 +1,4 @@
+import { StructClassLoader } from '../_framework/loader'
 import * as accumulatorMetadata from './accumulator-metadata/structs'
 import * as accumulatorSettlement from './accumulator-settlement/structs'
 import * as accumulator from './accumulator/structs'
@@ -43,7 +44,6 @@ import * as vecSet from './vec-set/structs'
 import * as versioned from './versioned/structs'
 import * as zkloginVerifiedId from './zklogin-verified-id/structs'
 import * as zkloginVerifiedIssuer from './zklogin-verified-issuer/structs'
-import { StructClassLoader } from '../_framework/loader'
 
 export function registerClasses(loader: StructClassLoader): void {
   loader.register(accumulator.AccumulatorRoot)

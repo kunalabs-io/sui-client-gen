@@ -1,26 +1,26 @@
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { ID, UID } from '../object/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Versioned =============================== */
 
@@ -72,7 +72,7 @@ export class Versioned implements StructClass {
   private constructor(typeArgs: [], fields: VersionedFields) {
     this.$fullTypeName = composeSuiType(
       Versioned.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::versioned::Versioned`
     this.$typeArgs = typeArgs
 
@@ -84,7 +84,10 @@ export class Versioned implements StructClass {
     const reifiedBcs = Versioned.bcs
     return {
       typeName: Versioned.$typeName,
-      fullTypeName: composeSuiType(Versioned.$typeName, ...[]) as `0x2::versioned::Versioned`,
+      fullTypeName: composeSuiType(
+        Versioned.$typeName,
+        ...[],
+      ) as `0x2::versioned::Versioned`,
       typeArgs: [] as [],
       isPhantom: Versioned.$isPhantom,
       reifiedTypeArgs: [],
@@ -175,7 +178,7 @@ export class Versioned implements StructClass {
   static fromJSON(json: Record<string, any>): Versioned {
     if (json.$typeName !== Versioned.$typeName) {
       throw new Error(
-        `not a Versioned json object: expected '${Versioned.$typeName}' but got '${json.$typeName}'`
+        `not a Versioned json object: expected '${Versioned.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -204,7 +207,7 @@ export class Versioned implements StructClass {
       return Versioned.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -265,7 +268,7 @@ export class VersionChangeCap implements StructClass {
   private constructor(typeArgs: [], fields: VersionChangeCapFields) {
     this.$fullTypeName = composeSuiType(
       VersionChangeCap.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::versioned::VersionChangeCap`
     this.$typeArgs = typeArgs
 
@@ -279,7 +282,7 @@ export class VersionChangeCap implements StructClass {
       typeName: VersionChangeCap.$typeName,
       fullTypeName: composeSuiType(
         VersionChangeCap.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::versioned::VersionChangeCap`,
       typeArgs: [] as [],
       isPhantom: VersionChangeCap.$isPhantom,
@@ -371,7 +374,7 @@ export class VersionChangeCap implements StructClass {
   static fromJSON(json: Record<string, any>): VersionChangeCap {
     if (json.$typeName !== VersionChangeCap.$typeName) {
       throw new Error(
-        `not a VersionChangeCap json object: expected '${VersionChangeCap.$typeName}' but got '${json.$typeName}'`
+        `not a VersionChangeCap json object: expected '${VersionChangeCap.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -400,7 +403,7 @@ export class VersionChangeCap implements StructClass {
       return VersionChangeCap.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

@@ -7,28 +7,28 @@
  * the number of bits in the fractional part--in this case 64 bits for each.
  */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  phantom,
 } from '../../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../../_framework/util'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== UQ64_64 =============================== */
 
@@ -73,7 +73,10 @@ export class UQ64_64 implements StructClass {
   readonly pos0: ToField<'u128'>
 
   private constructor(typeArgs: [], fields: UQ64_64Fields) {
-    this.$fullTypeName = composeSuiType(UQ64_64.$typeName, ...typeArgs) as `0x1::uq64_64::UQ64_64`
+    this.$fullTypeName = composeSuiType(
+      UQ64_64.$typeName,
+      ...typeArgs,
+    ) as `0x1::uq64_64::UQ64_64`
     this.$typeArgs = typeArgs
 
     this.pos0 = fields.pos0
@@ -83,7 +86,10 @@ export class UQ64_64 implements StructClass {
     const reifiedBcs = UQ64_64.bcs
     return {
       typeName: UQ64_64.$typeName,
-      fullTypeName: composeSuiType(UQ64_64.$typeName, ...[]) as `0x1::uq64_64::UQ64_64`,
+      fullTypeName: composeSuiType(
+        UQ64_64.$typeName,
+        ...[],
+      ) as `0x1::uq64_64::UQ64_64`,
       typeArgs: [] as [],
       isPhantom: UQ64_64.$isPhantom,
       reifiedTypeArgs: [],
@@ -169,7 +175,7 @@ export class UQ64_64 implements StructClass {
   static fromJSON(json: Record<string, any>): UQ64_64 {
     if (json.$typeName !== UQ64_64.$typeName) {
       throw new Error(
-        `not a UQ64_64 json object: expected '${UQ64_64.$typeName}' but got '${json.$typeName}'`
+        `not a UQ64_64 json object: expected '${UQ64_64.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -198,7 +204,7 @@ export class UQ64_64 implements StructClass {
       return UQ64_64.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

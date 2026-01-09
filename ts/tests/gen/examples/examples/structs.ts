@@ -1,33 +1,33 @@
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 import { getTypeOrigin } from '../../_envs'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  fieldToJSON,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  fieldToJSON,
-  phantom,
   vector,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { String } from '../../std/ascii/structs'
 import { Option } from '../../std/option/structs'
 import { String as StringString } from '../../std/string/structs'
 import { ID, UID } from '../../sui/object/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== ExampleStruct =============================== */
 
@@ -54,8 +54,9 @@ export type ExampleStructJSON = {
 export class ExampleStruct implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::examples::ExampleStruct` =
-    `${getTypeOrigin('examples', 'examples::ExampleStruct')}::examples::ExampleStruct` as const
+  static readonly $typeName: `${string}::examples::ExampleStruct` = `${
+    getTypeOrigin('examples', 'examples::ExampleStruct')
+  }::examples::ExampleStruct` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -69,7 +70,7 @@ export class ExampleStruct implements StructClass {
   private constructor(typeArgs: [], fields: ExampleStructFields) {
     this.$fullTypeName = composeSuiType(
       ExampleStruct.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${string}::examples::ExampleStruct`
     this.$typeArgs = typeArgs
 
@@ -82,7 +83,7 @@ export class ExampleStruct implements StructClass {
       typeName: ExampleStruct.$typeName,
       fullTypeName: composeSuiType(
         ExampleStruct.$typeName,
-        ...[]
+        ...[],
       ) as `${string}::examples::ExampleStruct`,
       typeArgs: [] as [],
       isPhantom: ExampleStruct.$isPhantom,
@@ -169,7 +170,7 @@ export class ExampleStruct implements StructClass {
   static fromJSON(json: Record<string, any>): ExampleStruct {
     if (json.$typeName !== ExampleStruct.$typeName) {
       throw new Error(
-        `not a ExampleStruct json object: expected '${ExampleStruct.$typeName}' but got '${json.$typeName}'`
+        `not a ExampleStruct json object: expected '${ExampleStruct.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -198,7 +199,7 @@ export class ExampleStruct implements StructClass {
       return ExampleStruct.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -216,10 +217,8 @@ export class ExampleStruct implements StructClass {
 
 export function isSpecialTypesStruct(type: string): boolean {
   type = compressSuiType(type)
-  return (
-    type ===
-    `${getTypeOrigin('examples', 'examples::SpecialTypesStruct')}::examples::SpecialTypesStruct`
-  )
+  return type
+    === `${getTypeOrigin('examples', 'examples::SpecialTypesStruct')}::examples::SpecialTypesStruct`
 }
 
 export interface SpecialTypesStructFields {
@@ -256,8 +255,9 @@ export type SpecialTypesStructJSON = {
 export class SpecialTypesStruct implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::examples::SpecialTypesStruct` =
-    `${getTypeOrigin('examples', 'examples::SpecialTypesStruct')}::examples::SpecialTypesStruct` as const
+  static readonly $typeName: `${string}::examples::SpecialTypesStruct` = `${
+    getTypeOrigin('examples', 'examples::SpecialTypesStruct')
+  }::examples::SpecialTypesStruct` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -279,7 +279,7 @@ export class SpecialTypesStruct implements StructClass {
   private constructor(typeArgs: [], fields: SpecialTypesStructFields) {
     this.$fullTypeName = composeSuiType(
       SpecialTypesStruct.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${string}::examples::SpecialTypesStruct`
     this.$typeArgs = typeArgs
 
@@ -300,7 +300,7 @@ export class SpecialTypesStruct implements StructClass {
       typeName: SpecialTypesStruct.$typeName,
       fullTypeName: composeSuiType(
         SpecialTypesStruct.$typeName,
-        ...[]
+        ...[],
       ) as `${string}::examples::SpecialTypesStruct`,
       typeArgs: [] as [],
       isPhantom: SpecialTypesStruct.$isPhantom,
@@ -385,7 +385,7 @@ export class SpecialTypesStruct implements StructClass {
       vectorOfU64: decodeFromFieldsWithTypes(vector('u64'), item.fields.vector_of_u64),
       vectorOfObjects: decodeFromFieldsWithTypes(
         vector(ExampleStruct.reified()),
-        item.fields.vector_of_objects
+        item.fields.vector_of_objects,
       ),
       idField: decodeFromFieldsWithTypes(ID.reified(), item.fields.id_field),
       address: decodeFromFieldsWithTypes('address', item.fields.address),
@@ -406,7 +406,7 @@ export class SpecialTypesStruct implements StructClass {
       vectorOfU64: fieldToJSON<Vector<'u64'>>(`vector<u64>`, this.vectorOfU64),
       vectorOfObjects: fieldToJSON<Vector<ExampleStruct>>(
         `vector<${ExampleStruct.$typeName}>`,
-        this.vectorOfObjects
+        this.vectorOfObjects,
       ),
       idField: this.idField,
       address: this.address,
@@ -436,7 +436,7 @@ export class SpecialTypesStruct implements StructClass {
   static fromJSON(json: Record<string, any>): SpecialTypesStruct {
     if (json.$typeName !== SpecialTypesStruct.$typeName) {
       throw new Error(
-        `not a SpecialTypesStruct json object: expected '${SpecialTypesStruct.$typeName}' but got '${json.$typeName}'`
+        `not a SpecialTypesStruct json object: expected '${SpecialTypesStruct.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -465,7 +465,7 @@ export class SpecialTypesStruct implements StructClass {
       return SpecialTypesStruct.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

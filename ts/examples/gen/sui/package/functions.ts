@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, obj, pure } from '../../_framework/util'
 
 /**
  * Claim a Publisher object.
@@ -49,7 +49,7 @@ export function burnPublisher(tx: Transaction, self: TransactionObjectInput): Tr
 export function fromPackage(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::from_package`,
@@ -62,7 +62,7 @@ export function fromPackage(
 export function fromModule(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::from_module`,
@@ -156,7 +156,7 @@ export function receiptCap(tx: Transaction, receipt: TransactionObjectInput): Tr
  */
 export function receiptPackage(
   tx: Transaction,
-  receipt: TransactionObjectInput
+  receipt: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::receipt_package`,
@@ -213,7 +213,7 @@ export function depOnlyPolicy(tx: Transaction): TransactionResult {
  */
 export function onlyAdditiveUpgrades(
   tx: Transaction,
-  cap: TransactionObjectInput
+  cap: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::only_additive_upgrades`,
@@ -281,7 +281,10 @@ export interface CommitUpgradeArgs {
 export function commitUpgrade(tx: Transaction, args: CommitUpgradeArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::commit_upgrade`,
-    arguments: [obj(tx, args.cap), obj(tx, args.receipt)],
+    arguments: [
+      obj(tx, args.cap),
+      obj(tx, args.receipt),
+    ],
   })
 }
 
@@ -293,6 +296,9 @@ export interface RestrictArgs {
 export function restrict(tx: Transaction, args: RestrictArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::restrict`,
-    arguments: [obj(tx, args.cap), pure(tx, args.policy, `u8`)],
+    arguments: [
+      obj(tx, args.cap),
+      pure(tx, args.policy, `u8`),
+    ],
   })
 }
