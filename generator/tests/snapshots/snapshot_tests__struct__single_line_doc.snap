@@ -61,7 +61,7 @@ export class DocumentedStruct implements StructClass {
       fromJSON: (json: Record<string, any>) => DocumentedStruct.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => DocumentedStruct.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => DocumentedStruct.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => DocumentedStruct.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => DocumentedStruct.fetch(client, id),
       new: (fields: DocumentedStructFields) => {
         return new DocumentedStruct([], fields)
       },
@@ -166,15 +166,12 @@ export class DocumentedStruct implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<DocumentedStruct> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching DocumentedStruct object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isDocumentedStruct(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<DocumentedStruct> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isDocumentedStruct(res.type)) {
       throw new Error(`object at id ${id} is not a DocumentedStruct object`)
     }
 
-    return DocumentedStruct.fromSuiObjectData(res.data)
+    return DocumentedStruct.fromBcs(res.bcsBytes)
   }
 }

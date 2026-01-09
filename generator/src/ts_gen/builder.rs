@@ -651,7 +651,13 @@ fn emit_combined_imports_with_enums(
     let util_path = format!("{}/util", framework_path);
     imports.add_named_many(
         &util_path,
-        &["FieldsWithTypes", "composeSuiType", "compressSuiType"],
+        &[
+            "FieldsWithTypes",
+            "composeSuiType",
+            "compressSuiType",
+            "SupportedSuiClient",
+            "fetchObjectBcs",
+        ],
     );
 
     // parseTypeName is only needed for structs/enums with type params (used in fromSuiObjectData)
@@ -692,7 +698,7 @@ fn emit_combined_imports_with_enums(
     // Sui client imports
     imports.add_named_many(
         "@mysten/sui/client",
-        &["SuiClient", "SuiObjectData", "SuiParsedData"],
+        &["SuiObjectData", "SuiParsedData"],
     );
 
     // Sui utils imports

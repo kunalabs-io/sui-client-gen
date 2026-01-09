@@ -18,9 +18,15 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== UQ32_32 =============================== */
@@ -79,7 +85,7 @@ export class UQ32_32 implements StructClass {
       fromJSON: (json: Record<string, any>) => UQ32_32.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => UQ32_32.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => UQ32_32.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => UQ32_32.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => UQ32_32.fetch(client, id),
       new: (fields: UQ32_32Fields) => {
         return new UQ32_32([], fields)
       },
@@ -186,15 +192,12 @@ export class UQ32_32 implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<UQ32_32> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching UQ32_32 object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isUQ32_32(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<UQ32_32> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isUQ32_32(res.type)) {
       throw new Error(`object at id ${id} is not a UQ32_32 object`)
     }
 
-    return UQ32_32.fromSuiObjectData(res.data)
+    return UQ32_32.fromBcs(res.bcsBytes)
   }
 }

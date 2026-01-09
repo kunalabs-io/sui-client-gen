@@ -58,7 +58,7 @@ export class Bar implements StructClass {
       fromJSON: (json: Record<string, any>) => Bar.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Bar.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Bar.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Bar.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Bar.fetch(client, id),
       new: (fields: BarFields) => {
         return new Bar([], fields)
       },
@@ -163,15 +163,12 @@ export class Bar implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Bar> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Bar object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isBar(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Bar> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isBar(res.type)) {
       throw new Error(`object at id ${id} is not a Bar object`)
     }
 
-    return Bar.fromSuiObjectData(res.data)
+    return Bar.fromBcs(res.bcsBytes)
   }
 }

@@ -96,7 +96,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
       fromJSON: (json: Record<string, any>) => WithSpecialTypes.fromJSON([T, U], json),
       fromSuiParsedData: (content: SuiParsedData) => WithSpecialTypes.fromSuiParsedData([T, U], content),
       fromSuiObjectData: (content: SuiObjectData) => WithSpecialTypes.fromSuiObjectData([T, U], content),
-      fetch: async (client: SuiClient, id: string) => WithSpecialTypes.fetch(client, [T, U], id),
+      fetch: async (client: SupportedSuiClient, id: string) => WithSpecialTypes.fetch(client, [T, U], id),
       new: (fields: WithSpecialTypesFields<ToPhantomTypeArgument<T>, ToTypeArgument<U>>) => {
         return new WithSpecialTypes([extractType(T), extractType(U)], fields)
       },
@@ -308,18 +308,15 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArgs: [T, U],
     id: string
   ): Promise<WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching WithSpecialTypes object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isWithSpecialTypes(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isWithSpecialTypes(res.type)) {
       throw new Error(`object at id ${id} is not a WithSpecialTypes object`)
     }
 
-    return WithSpecialTypes.fromSuiObjectData(typeArgs, res.data)
+    return WithSpecialTypes.fromBcs(typeArgs, res.bcsBytes)
   }
 }

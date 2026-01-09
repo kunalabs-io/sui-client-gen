@@ -46,12 +46,14 @@ import {
 } from '../../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Permit =============================== */
@@ -116,7 +118,7 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Permit.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Permit.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Permit.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => Permit.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Permit.fetch(client, T, id),
       new: (fields: PermitFields<ToPhantomTypeArgument<T>>) => {
         return new Permit([extractType(T)], fields)
       },
@@ -269,18 +271,15 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<Permit<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Permit object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isPermit(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isPermit(res.type)) {
       throw new Error(`object at id ${id} is not a Permit object`)
     }
 
-    return Permit.fromSuiObjectData(typeArg, res.data)
+    return Permit.fromBcs(typeArg, res.bcsBytes)
   }
 }

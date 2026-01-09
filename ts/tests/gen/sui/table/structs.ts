@@ -35,13 +35,15 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Table =============================== */
@@ -121,7 +123,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
       fromJSON: (json: Record<string, any>) => Table.fromJSON([K, V], json),
       fromSuiParsedData: (content: SuiParsedData) => Table.fromSuiParsedData([K, V], content),
       fromSuiObjectData: (content: SuiObjectData) => Table.fromSuiObjectData([K, V], content),
-      fetch: async (client: SuiClient, id: string) => Table.fetch(client, [K, V], id),
+      fetch: async (client: SupportedSuiClient, id: string) => Table.fetch(client, [K, V], id),
       new: (fields: TableFields<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>) => {
         return new Table([extractType(K), extractType(V)], fields)
       },
@@ -301,18 +303,15 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
     K extends PhantomReified<PhantomTypeArgument>,
     V extends PhantomReified<PhantomTypeArgument>,
   >(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArgs: [K, V],
     id: string
   ): Promise<Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Table object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isTable(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isTable(res.type)) {
       throw new Error(`object at id ${id} is not a Table object`)
     }
 
-    return Table.fromSuiObjectData(typeArgs, res.data)
+    return Table.fromBcs(typeArgs, res.bcsBytes)
   }
 }

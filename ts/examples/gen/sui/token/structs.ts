@@ -42,8 +42,10 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { Balance } from '../balance/structs'
@@ -51,7 +53,7 @@ import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
 import { VecSet } from '../vec-set/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== Token =============================== */
@@ -121,7 +123,7 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Token.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Token.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Token.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => Token.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Token.fetch(client, T, id),
       new: (fields: TokenFields<ToPhantomTypeArgument<T>>) => {
         return new Token([extractType(T)], fields)
       },
@@ -279,19 +281,16 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<Token<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Token object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isToken(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isToken(res.type)) {
       throw new Error(`object at id ${id} is not a Token object`)
     }
 
-    return Token.fromSuiObjectData(typeArg, res.data)
+    return Token.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -363,7 +362,7 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
       fromJSON: (json: Record<string, any>) => TokenPolicyCap.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => TokenPolicyCap.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => TokenPolicyCap.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => TokenPolicyCap.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => TokenPolicyCap.fetch(client, T, id),
       new: (fields: TokenPolicyCapFields<ToPhantomTypeArgument<T>>) => {
         return new TokenPolicyCap([extractType(T)], fields)
       },
@@ -521,19 +520,16 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<TokenPolicyCap<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching TokenPolicyCap object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isTokenPolicyCap(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isTokenPolicyCap(res.type)) {
       throw new Error(`object at id ${id} is not a TokenPolicyCap object`)
     }
 
-    return TokenPolicyCap.fromSuiObjectData(typeArg, res.data)
+    return TokenPolicyCap.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -641,7 +637,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => TokenPolicy.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => TokenPolicy.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => TokenPolicy.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => TokenPolicy.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => TokenPolicy.fetch(client, T, id),
       new: (fields: TokenPolicyFields<ToPhantomTypeArgument<T>>) => {
         return new TokenPolicy([extractType(T)], fields)
       },
@@ -813,19 +809,16 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<TokenPolicy<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching TokenPolicy object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isTokenPolicy(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isTokenPolicy(res.type)) {
       throw new Error(`object at id ${id} is not a TokenPolicy object`)
     }
 
-    return TokenPolicy.fromSuiObjectData(typeArg, res.data)
+    return TokenPolicy.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -944,7 +937,7 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
       fromJSON: (json: Record<string, any>) => ActionRequest.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => ActionRequest.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => ActionRequest.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => ActionRequest.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => ActionRequest.fetch(client, T, id),
       new: (fields: ActionRequestFields<ToPhantomTypeArgument<T>>) => {
         return new ActionRequest([extractType(T)], fields)
       },
@@ -1145,19 +1138,16 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<ActionRequest<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching ActionRequest object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isActionRequest(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isActionRequest(res.type)) {
       throw new Error(`object at id ${id} is not a ActionRequest object`)
     }
 
-    return ActionRequest.fromSuiObjectData(typeArg, res.data)
+    return ActionRequest.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -1224,7 +1214,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => RuleKey.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => RuleKey.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => RuleKey.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => RuleKey.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => RuleKey.fetch(client, T, id),
       new: (fields: RuleKeyFields<ToPhantomTypeArgument<T>>) => {
         return new RuleKey([extractType(T)], fields)
       },
@@ -1377,19 +1367,16 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<RuleKey<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching RuleKey object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isRuleKey(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isRuleKey(res.type)) {
       throw new Error(`object at id ${id} is not a RuleKey object`)
     }
 
-    return RuleKey.fromSuiObjectData(typeArg, res.data)
+    return RuleKey.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -1475,7 +1462,8 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
         TokenPolicyCreated.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) =>
         TokenPolicyCreated.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => TokenPolicyCreated.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) =>
+        TokenPolicyCreated.fetch(client, T, id),
       new: (fields: TokenPolicyCreatedFields<ToPhantomTypeArgument<T>>) => {
         return new TokenPolicyCreated([extractType(T)], fields)
       },
@@ -1633,18 +1621,15 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<TokenPolicyCreated<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching TokenPolicyCreated object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isTokenPolicyCreated(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isTokenPolicyCreated(res.type)) {
       throw new Error(`object at id ${id} is not a TokenPolicyCreated object`)
     }
 
-    return TokenPolicyCreated.fromSuiObjectData(typeArg, res.data)
+    return TokenPolicyCreated.fromBcs(typeArg, res.bcsBytes)
   }
 }

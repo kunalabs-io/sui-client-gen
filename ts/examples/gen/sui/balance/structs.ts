@@ -23,12 +23,14 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Supply =============================== */
@@ -93,7 +95,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Supply.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Supply.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Supply.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => Supply.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Supply.fetch(client, T, id),
       new: (fields: SupplyFields<ToPhantomTypeArgument<T>>) => {
         return new Supply([extractType(T)], fields)
       },
@@ -246,19 +248,16 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<Supply<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Supply object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isSupply(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isSupply(res.type)) {
       throw new Error(`object at id ${id} is not a Supply object`)
     }
 
-    return Supply.fromSuiObjectData(typeArg, res.data)
+    return Supply.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -324,7 +323,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Balance.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Balance.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Balance.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => Balance.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Balance.fetch(client, T, id),
       new: (fields: BalanceFields<ToPhantomTypeArgument<T>>) => {
         return new Balance([extractType(T)], fields)
       },
@@ -477,18 +476,15 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<Balance<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Balance object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isBalance(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isBalance(res.type)) {
       throw new Error(`object at id ${id} is not a Balance object`)
     }
 
-    return Balance.fromSuiObjectData(typeArg, res.data)
+    return Balance.fromBcs(typeArg, res.bcsBytes)
   }
 }

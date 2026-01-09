@@ -14,10 +14,16 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Clock =============================== */
@@ -95,7 +101,7 @@ export class Clock implements StructClass {
       fromJSON: (json: Record<string, any>) => Clock.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Clock.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Clock.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Clock.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Clock.fetch(client, id),
       new: (fields: ClockFields) => {
         return new Clock([], fields)
       },
@@ -207,15 +213,12 @@ export class Clock implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Clock> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Clock object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isClock(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Clock> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isClock(res.type)) {
       throw new Error(`object at id ${id} is not a Clock object`)
     }
 
-    return Clock.fromSuiObjectData(res.data)
+    return Clock.fromBcs(res.bcsBytes)
   }
 }

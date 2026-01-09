@@ -24,8 +24,10 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { String as StringAscii } from '../../std/ascii/structs'
@@ -35,7 +37,7 @@ import { Balance, Supply } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { Url } from '../url/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Coin =============================== */
@@ -100,7 +102,7 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Coin.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Coin.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Coin.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => Coin.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Coin.fetch(client, T, id),
       new: (fields: CoinFields<ToPhantomTypeArgument<T>>) => {
         return new Coin([extractType(T)], fields)
       },
@@ -258,19 +260,16 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<Coin<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Coin object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isCoin(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isCoin(res.type)) {
       throw new Error(`object at id ${id} is not a Coin object`)
     }
 
-    return Coin.fromSuiObjectData(typeArg, res.data)
+    return Coin.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -374,7 +373,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
       fromJSON: (json: Record<string, any>) => CoinMetadata.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => CoinMetadata.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => CoinMetadata.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => CoinMetadata.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => CoinMetadata.fetch(client, T, id),
       new: (fields: CoinMetadataFields<ToPhantomTypeArgument<T>>) => {
         return new CoinMetadata([extractType(T)], fields)
       },
@@ -552,19 +551,16 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<CoinMetadata<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching CoinMetadata object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isCoinMetadata(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isCoinMetadata(res.type)) {
       throw new Error(`object at id ${id} is not a CoinMetadata object`)
     }
 
-    return CoinMetadata.fromSuiObjectData(typeArg, res.data)
+    return CoinMetadata.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -646,7 +642,8 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
         RegulatedCoinMetadata.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) =>
         RegulatedCoinMetadata.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => RegulatedCoinMetadata.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) =>
+        RegulatedCoinMetadata.fetch(client, T, id),
       new: (fields: RegulatedCoinMetadataFields<ToPhantomTypeArgument<T>>) => {
         return new RegulatedCoinMetadata([extractType(T)], fields)
       },
@@ -811,19 +808,16 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<RegulatedCoinMetadata<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching RegulatedCoinMetadata object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isRegulatedCoinMetadata(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isRegulatedCoinMetadata(res.type)) {
       throw new Error(`object at id ${id} is not a RegulatedCoinMetadata object`)
     }
 
-    return RegulatedCoinMetadata.fromSuiObjectData(typeArg, res.data)
+    return RegulatedCoinMetadata.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -895,7 +889,7 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => TreasuryCap.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => TreasuryCap.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => TreasuryCap.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => TreasuryCap.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => TreasuryCap.fetch(client, T, id),
       new: (fields: TreasuryCapFields<ToPhantomTypeArgument<T>>) => {
         return new TreasuryCap([extractType(T)], fields)
       },
@@ -1053,19 +1047,16 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<TreasuryCap<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching TreasuryCap object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isTreasuryCap(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isTreasuryCap(res.type)) {
       throw new Error(`object at id ${id} is not a TreasuryCap object`)
     }
 
-    return TreasuryCap.fromSuiObjectData(typeArg, res.data)
+    return TreasuryCap.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -1140,7 +1131,7 @@ export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => DenyCapV2.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => DenyCapV2.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => DenyCapV2.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => DenyCapV2.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => DenyCapV2.fetch(client, T, id),
       new: (fields: DenyCapV2Fields<ToPhantomTypeArgument<T>>) => {
         return new DenyCapV2([extractType(T)], fields)
       },
@@ -1298,19 +1289,16 @@ export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<DenyCapV2<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching DenyCapV2 object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isDenyCapV2(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isDenyCapV2(res.type)) {
       throw new Error(`object at id ${id} is not a DenyCapV2 object`)
     }
 
-    return DenyCapV2.fromSuiObjectData(typeArg, res.data)
+    return DenyCapV2.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -1375,7 +1363,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
       fromJSON: (json: Record<string, any>) => CurrencyCreated.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => CurrencyCreated.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => CurrencyCreated.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => CurrencyCreated.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => CurrencyCreated.fetch(client, T, id),
       new: (fields: CurrencyCreatedFields<ToPhantomTypeArgument<T>>) => {
         return new CurrencyCreated([extractType(T)], fields)
       },
@@ -1528,19 +1516,16 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<CurrencyCreated<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching CurrencyCreated object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isCurrencyCreated(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isCurrencyCreated(res.type)) {
       throw new Error(`object at id ${id} is not a CurrencyCreated object`)
     }
 
-    return CurrencyCreated.fromSuiObjectData(typeArg, res.data)
+    return CurrencyCreated.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -1606,7 +1591,7 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => DenyCap.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => DenyCap.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => DenyCap.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => DenyCap.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => DenyCap.fetch(client, T, id),
       new: (fields: DenyCapFields<ToPhantomTypeArgument<T>>) => {
         return new DenyCap([extractType(T)], fields)
       },
@@ -1759,18 +1744,15 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<DenyCap<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching DenyCap object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isDenyCap(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isDenyCap(res.type)) {
       throw new Error(`object at id ${id} is not a DenyCap object`)
     }
 
-    return DenyCap.fromSuiObjectData(typeArg, res.data)
+    return DenyCap.fromBcs(typeArg, res.bcsBytes)
   }
 }

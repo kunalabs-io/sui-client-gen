@@ -17,13 +17,15 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { ID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Receiving =============================== */
@@ -99,7 +101,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Receiving.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Receiving.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Receiving.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => Receiving.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Receiving.fetch(client, T, id),
       new: (fields: ReceivingFields<ToPhantomTypeArgument<T>>) => {
         return new Receiving([extractType(T)], fields)
       },
@@ -257,18 +259,15 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<Receiving<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Receiving object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isReceiving(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isReceiving(res.type)) {
       throw new Error(`object at id ${id} is not a Receiving object`)
     }
 
-    return Receiving.fromSuiObjectData(typeArg, res.data)
+    return Receiving.fromBcs(typeArg, res.bcsBytes)
   }
 }

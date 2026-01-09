@@ -58,7 +58,7 @@ export class ACL implements StructClass {
       fromJSON: (json: Record<string, any>) => ACL.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ACL.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => ACL.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => ACL.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => ACL.fetch(client, id),
       new: (fields: ACLFields) => {
         return new ACL([], fields)
       },
@@ -163,15 +163,12 @@ export class ACL implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<ACL> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching ACL object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isACL(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<ACL> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isACL(res.type)) {
       throw new Error(`object at id ${id} is not a ACL object`)
     }
 
-    return ACL.fromSuiObjectData(res.data)
+    return ACL.fromBcs(res.bcsBytes)
   }
 }

@@ -17,13 +17,15 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { Bag } from '../bag/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== OwnerKey =============================== */
@@ -94,7 +96,7 @@ export class OwnerKey implements StructClass {
       fromJSON: (json: Record<string, any>) => OwnerKey.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => OwnerKey.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => OwnerKey.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => OwnerKey.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => OwnerKey.fetch(client, id),
       new: (fields: OwnerKeyFields) => {
         return new OwnerKey([], fields)
       },
@@ -204,16 +206,13 @@ export class OwnerKey implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<OwnerKey> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching OwnerKey object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isOwnerKey(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<OwnerKey> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isOwnerKey(res.type)) {
       throw new Error(`object at id ${id} is not a OwnerKey object`)
     }
 
-    return OwnerKey.fromSuiObjectData(res.data)
+    return OwnerKey.fromBcs(res.bcsBytes)
   }
 }
 
@@ -279,7 +278,7 @@ export class Owner implements StructClass {
       fromJSON: (json: Record<string, any>) => Owner.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Owner.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Owner.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Owner.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Owner.fetch(client, id),
       new: (fields: OwnerFields) => {
         return new Owner([], fields)
       },
@@ -394,16 +393,13 @@ export class Owner implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Owner> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Owner object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isOwner(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Owner> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isOwner(res.type)) {
       throw new Error(`object at id ${id} is not a Owner object`)
     }
 
-    return Owner.fromSuiObjectData(res.data)
+    return Owner.fromBcs(res.bcsBytes)
   }
 }
 
@@ -468,7 +464,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => MetadataKey.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => MetadataKey.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => MetadataKey.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => MetadataKey.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => MetadataKey.fetch(client, T, id),
       new: (fields: MetadataKeyFields<ToPhantomTypeArgument<T>>) => {
         return new MetadataKey([extractType(T)], fields)
       },
@@ -621,19 +617,16 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<MetadataKey<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching MetadataKey object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isMetadataKey(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isMetadataKey(res.type)) {
       throw new Error(`object at id ${id} is not a MetadataKey object`)
     }
 
-    return MetadataKey.fromSuiObjectData(typeArg, res.data)
+    return MetadataKey.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -698,7 +691,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Metadata.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Metadata.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Metadata.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => Metadata.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Metadata.fetch(client, T, id),
       new: (fields: MetadataFields<ToPhantomTypeArgument<T>>) => {
         return new Metadata([extractType(T)], fields)
       },
@@ -851,18 +844,15 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<Metadata<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Metadata object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isMetadata(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isMetadata(res.type)) {
       throw new Error(`object at id ${id} is not a Metadata object`)
     }
 
-    return Metadata.fromSuiObjectData(typeArg, res.data)
+    return Metadata.fromBcs(typeArg, res.bcsBytes)
   }
 }

@@ -13,12 +13,18 @@ import {
   phantom,
   vector,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { UID } from '../object/structs'
 import { Versioned } from '../versioned/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Random =============================== */
@@ -78,7 +84,7 @@ export class Random implements StructClass {
       fromJSON: (json: Record<string, any>) => Random.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Random.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Random.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Random.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Random.fetch(client, id),
       new: (fields: RandomFields) => {
         return new Random([], fields)
       },
@@ -190,16 +196,13 @@ export class Random implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Random> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Random object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isRandom(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Random> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isRandom(res.type)) {
       throw new Error(`object at id ${id} is not a Random object`)
     }
 
-    return Random.fromSuiObjectData(res.data)
+    return Random.fromBcs(res.bcsBytes)
   }
 }
 
@@ -265,7 +268,7 @@ export class RandomInner implements StructClass {
       fromJSON: (json: Record<string, any>) => RandomInner.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => RandomInner.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => RandomInner.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => RandomInner.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => RandomInner.fetch(client, id),
       new: (fields: RandomInnerFields) => {
         return new RandomInner([], fields)
       },
@@ -387,16 +390,13 @@ export class RandomInner implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<RandomInner> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching RandomInner object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isRandomInner(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<RandomInner> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isRandomInner(res.type)) {
       throw new Error(`object at id ${id} is not a RandomInner object`)
     }
 
-    return RandomInner.fromSuiObjectData(res.data)
+    return RandomInner.fromBcs(res.bcsBytes)
   }
 }
 
@@ -463,7 +463,7 @@ export class RandomGenerator implements StructClass {
       fromJSON: (json: Record<string, any>) => RandomGenerator.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => RandomGenerator.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => RandomGenerator.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => RandomGenerator.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => RandomGenerator.fetch(client, id),
       new: (fields: RandomGeneratorFields) => {
         return new RandomGenerator([], fields)
       },
@@ -580,15 +580,12 @@ export class RandomGenerator implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<RandomGenerator> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching RandomGenerator object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isRandomGenerator(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<RandomGenerator> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isRandomGenerator(res.type)) {
       throw new Error(`object at id ${id} is not a RandomGenerator object`)
     }
 
-    return RandomGenerator.fromSuiObjectData(res.data)
+    return RandomGenerator.fromBcs(res.bcsBytes)
   }
 }

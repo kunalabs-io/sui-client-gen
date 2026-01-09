@@ -19,13 +19,15 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { Table } from '../table/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== TableVec =============================== */
@@ -91,7 +93,7 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
       fromJSON: (json: Record<string, any>) => TableVec.fromJSON(Element, json),
       fromSuiParsedData: (content: SuiParsedData) => TableVec.fromSuiParsedData(Element, content),
       fromSuiObjectData: (content: SuiObjectData) => TableVec.fromSuiObjectData(Element, content),
-      fetch: async (client: SuiClient, id: string) => TableVec.fetch(client, Element, id),
+      fetch: async (client: SupportedSuiClient, id: string) => TableVec.fetch(client, Element, id),
       new: (fields: TableVecFields<ToPhantomTypeArgument<Element>>) => {
         return new TableVec([extractType(Element)], fields)
       },
@@ -247,18 +249,15 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
   }
 
   static async fetch<Element extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: Element,
     id: string
   ): Promise<TableVec<ToPhantomTypeArgument<Element>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching TableVec object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isTableVec(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isTableVec(res.type)) {
       throw new Error(`object at id ${id} is not a TableVec object`)
     }
 
-    return TableVec.fromSuiObjectData(typeArg, res.data)
+    return TableVec.fromBcs(typeArg, res.bcsBytes)
   }
 }

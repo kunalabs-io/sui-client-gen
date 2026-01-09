@@ -61,7 +61,7 @@ export class EscapedDoc implements StructClass {
       fromJSON: (json: Record<string, any>) => EscapedDoc.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => EscapedDoc.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => EscapedDoc.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => EscapedDoc.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => EscapedDoc.fetch(client, id),
       new: (fields: EscapedDocFields) => {
         return new EscapedDoc([], fields)
       },
@@ -166,15 +166,12 @@ export class EscapedDoc implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<EscapedDoc> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching EscapedDoc object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isEscapedDoc(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<EscapedDoc> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isEscapedDoc(res.type)) {
       throw new Error(`object at id ${id} is not a EscapedDoc object`)
     }
 
-    return EscapedDoc.fromSuiObjectData(res.data)
+    return EscapedDoc.fromBcs(res.bcsBytes)
   }
 }

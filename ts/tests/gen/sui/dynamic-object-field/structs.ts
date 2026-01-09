@@ -25,12 +25,14 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Wrapper =============================== */
@@ -91,7 +93,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Wrapper.fromJSON(Name, json),
       fromSuiParsedData: (content: SuiParsedData) => Wrapper.fromSuiParsedData(Name, content),
       fromSuiObjectData: (content: SuiObjectData) => Wrapper.fromSuiObjectData(Name, content),
-      fetch: async (client: SuiClient, id: string) => Wrapper.fetch(client, Name, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Wrapper.fetch(client, Name, id),
       new: (fields: WrapperFields<ToTypeArgument<Name>>) => {
         return new Wrapper([extractType(Name)], fields)
       },
@@ -246,18 +248,15 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
   }
 
   static async fetch<Name extends Reified<TypeArgument, any>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: Name,
     id: string
   ): Promise<Wrapper<ToTypeArgument<Name>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Wrapper object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isWrapper(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isWrapper(res.type)) {
       throw new Error(`object at id ${id} is not a Wrapper object`)
     }
 
-    return Wrapper.fromSuiObjectData(typeArg, res.data)
+    return Wrapper.fromBcs(typeArg, res.bcsBytes)
   }
 }

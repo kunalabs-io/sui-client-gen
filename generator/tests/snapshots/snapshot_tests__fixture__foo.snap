@@ -99,7 +99,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Foo.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Foo.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Foo.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => Foo.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Foo.fetch(client, T, id),
       new: (fields: FooFields<ToTypeArgument<T>>) => {
         return new Foo([extractType(T)], fields)
       },
@@ -317,18 +317,15 @@ export class Foo<T extends TypeArgument> implements StructClass {
   }
 
   static async fetch<T extends Reified<TypeArgument, any>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<Foo<ToTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Foo object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isFoo(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isFoo(res.type)) {
       throw new Error(`object at id ${id} is not a Foo object`)
     }
 
-    return Foo.fromSuiObjectData(typeArg, res.data)
+    return Foo.fromBcs(typeArg, res.bcsBytes)
   }
 }

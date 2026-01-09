@@ -17,13 +17,15 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== AccumulatorRoot =============================== */
@@ -82,7 +84,7 @@ export class AccumulatorRoot implements StructClass {
       fromJSON: (json: Record<string, any>) => AccumulatorRoot.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => AccumulatorRoot.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => AccumulatorRoot.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => AccumulatorRoot.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => AccumulatorRoot.fetch(client, id),
       new: (fields: AccumulatorRootFields) => {
         return new AccumulatorRoot([], fields)
       },
@@ -189,16 +191,13 @@ export class AccumulatorRoot implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<AccumulatorRoot> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching AccumulatorRoot object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isAccumulatorRoot(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<AccumulatorRoot> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isAccumulatorRoot(res.type)) {
       throw new Error(`object at id ${id} is not a AccumulatorRoot object`)
     }
 
-    return AccumulatorRoot.fromSuiObjectData(res.data)
+    return AccumulatorRoot.fromBcs(res.bcsBytes)
   }
 }
 
@@ -259,7 +258,7 @@ export class U128 implements StructClass {
       fromJSON: (json: Record<string, any>) => U128.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => U128.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => U128.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => U128.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => U128.fetch(client, id),
       new: (fields: U128Fields) => {
         return new U128([], fields)
       },
@@ -366,16 +365,13 @@ export class U128 implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<U128> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching U128 object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isU128(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<U128> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isU128(res.type)) {
       throw new Error(`object at id ${id} is not a U128 object`)
     }
 
-    return U128.fromSuiObjectData(res.data)
+    return U128.fromBcs(res.bcsBytes)
   }
 }
 
@@ -441,7 +437,7 @@ export class Key<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Key.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Key.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Key.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => Key.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Key.fetch(client, T, id),
       new: (fields: KeyFields<ToPhantomTypeArgument<T>>) => {
         return new Key([extractType(T)], fields)
       },
@@ -597,18 +593,15 @@ export class Key<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<Key<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Key object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isKey(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isKey(res.type)) {
       throw new Error(`object at id ${id} is not a Key object`)
     }
 
-    return Key.fromSuiObjectData(typeArg, res.data)
+    return Key.fromBcs(typeArg, res.bcsBytes)
   }
 }

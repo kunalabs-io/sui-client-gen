@@ -20,15 +20,17 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { Balance, Supply } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== PoolCreationEvent =============================== */
@@ -88,7 +90,7 @@ export class PoolCreationEvent implements StructClass {
       fromJSON: (json: Record<string, any>) => PoolCreationEvent.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => PoolCreationEvent.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => PoolCreationEvent.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => PoolCreationEvent.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => PoolCreationEvent.fetch(client, id),
       new: (fields: PoolCreationEventFields) => {
         return new PoolCreationEvent([], fields)
       },
@@ -195,16 +197,13 @@ export class PoolCreationEvent implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<PoolCreationEvent> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching PoolCreationEvent object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isPoolCreationEvent(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<PoolCreationEvent> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isPoolCreationEvent(res.type)) {
       throw new Error(`object at id ${id} is not a PoolCreationEvent object`)
     }
 
-    return PoolCreationEvent.fromSuiObjectData(res.data)
+    return PoolCreationEvent.fromBcs(res.bcsBytes)
   }
 }
 
@@ -279,7 +278,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       fromJSON: (json: Record<string, any>) => LP.fromJSON([A, B], json),
       fromSuiParsedData: (content: SuiParsedData) => LP.fromSuiParsedData([A, B], content),
       fromSuiObjectData: (content: SuiObjectData) => LP.fromSuiObjectData([A, B], content),
-      fetch: async (client: SuiClient, id: string) => LP.fetch(client, [A, B], id),
+      fetch: async (client: SupportedSuiClient, id: string) => LP.fetch(client, [A, B], id),
       new: (fields: LPFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>) => {
         return new LP([extractType(A), extractType(B)], fields)
       },
@@ -448,19 +447,16 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
   >(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArgs: [A, B],
     id: string
   ): Promise<LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching LP object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isLP(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isLP(res.type)) {
       throw new Error(`object at id ${id} is not a LP object`)
     }
 
-    return LP.fromSuiObjectData(typeArgs, res.data)
+    return LP.fromBcs(typeArgs, res.bcsBytes)
   }
 }
 
@@ -565,7 +561,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       fromJSON: (json: Record<string, any>) => Pool.fromJSON([A, B], json),
       fromSuiParsedData: (content: SuiParsedData) => Pool.fromSuiParsedData([A, B], content),
       fromSuiObjectData: (content: SuiObjectData) => Pool.fromSuiObjectData([A, B], content),
-      fetch: async (client: SuiClient, id: string) => Pool.fetch(client, [A, B], id),
+      fetch: async (client: SupportedSuiClient, id: string) => Pool.fetch(client, [A, B], id),
       new: (fields: PoolFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>) => {
         return new Pool([extractType(A), extractType(B)], fields)
       },
@@ -788,19 +784,16 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
   >(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArgs: [A, B],
     id: string
   ): Promise<Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Pool object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isPool(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isPool(res.type)) {
       throw new Error(`object at id ${id} is not a Pool object`)
     }
 
-    return Pool.fromSuiObjectData(typeArgs, res.data)
+    return Pool.fromBcs(typeArgs, res.bcsBytes)
   }
 }
 
@@ -868,7 +861,7 @@ export class PoolRegistry implements StructClass {
       fromJSON: (json: Record<string, any>) => PoolRegistry.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => PoolRegistry.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => PoolRegistry.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => PoolRegistry.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => PoolRegistry.fetch(client, id),
       new: (fields: PoolRegistryFields) => {
         return new PoolRegistry([], fields)
       },
@@ -989,16 +982,13 @@ export class PoolRegistry implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<PoolRegistry> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching PoolRegistry object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isPoolRegistry(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<PoolRegistry> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isPoolRegistry(res.type)) {
       throw new Error(`object at id ${id} is not a PoolRegistry object`)
     }
 
-    return PoolRegistry.fromSuiObjectData(res.data)
+    return PoolRegistry.fromBcs(res.bcsBytes)
   }
 }
 
@@ -1063,7 +1053,7 @@ export class PoolRegistryItem implements StructClass {
       fromJSON: (json: Record<string, any>) => PoolRegistryItem.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => PoolRegistryItem.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => PoolRegistryItem.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => PoolRegistryItem.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => PoolRegistryItem.fetch(client, id),
       new: (fields: PoolRegistryItemFields) => {
         return new PoolRegistryItem([], fields)
       },
@@ -1175,16 +1165,13 @@ export class PoolRegistryItem implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<PoolRegistryItem> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching PoolRegistryItem object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isPoolRegistryItem(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<PoolRegistryItem> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isPoolRegistryItem(res.type)) {
       throw new Error(`object at id ${id} is not a PoolRegistryItem object`)
     }
 
-    return PoolRegistryItem.fromSuiObjectData(res.data)
+    return PoolRegistryItem.fromBcs(res.bcsBytes)
   }
 }
 
@@ -1246,7 +1233,7 @@ export class AdminCap implements StructClass {
       fromJSON: (json: Record<string, any>) => AdminCap.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => AdminCap.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => AdminCap.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => AdminCap.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => AdminCap.fetch(client, id),
       new: (fields: AdminCapFields) => {
         return new AdminCap([], fields)
       },
@@ -1353,15 +1340,12 @@ export class AdminCap implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<AdminCap> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching AdminCap object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isAdminCap(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<AdminCap> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isAdminCap(res.type)) {
       throw new Error(`object at id ${id} is not a AdminCap object`)
     }
 
-    return AdminCap.fromSuiObjectData(res.data)
+    return AdminCap.fromBcs(res.bcsBytes)
   }
 }

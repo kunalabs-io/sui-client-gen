@@ -11,11 +11,17 @@ import {
   phantom,
   vector,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { Option } from '../../std/option/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== PCREntry =============================== */
@@ -75,7 +81,7 @@ export class PCREntry implements StructClass {
       fromJSON: (json: Record<string, any>) => PCREntry.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => PCREntry.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => PCREntry.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => PCREntry.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => PCREntry.fetch(client, id),
       new: (fields: PCREntryFields) => {
         return new PCREntry([], fields)
       },
@@ -187,16 +193,13 @@ export class PCREntry implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<PCREntry> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching PCREntry object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isPCREntry(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<PCREntry> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isPCREntry(res.type)) {
       throw new Error(`object at id ${id} is not a PCREntry object`)
     }
 
-    return PCREntry.fromSuiObjectData(res.data)
+    return PCREntry.fromBcs(res.bcsBytes)
   }
 }
 
@@ -307,7 +310,8 @@ export class NitroAttestationDocument implements StructClass {
         NitroAttestationDocument.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) =>
         NitroAttestationDocument.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => NitroAttestationDocument.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) =>
+        NitroAttestationDocument.fetch(client, id),
       new: (fields: NitroAttestationDocumentFields) => {
         return new NitroAttestationDocument([], fields)
       },
@@ -449,20 +453,12 @@ export class NitroAttestationDocument implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<NitroAttestationDocument> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(
-        `error fetching NitroAttestationDocument object at id ${id}: ${res.error.code}`
-      )
-    }
-    if (
-      res.data?.bcs?.dataType !== 'moveObject' ||
-      !isNitroAttestationDocument(res.data.bcs.type)
-    ) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<NitroAttestationDocument> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isNitroAttestationDocument(res.type)) {
       throw new Error(`object at id ${id} is not a NitroAttestationDocument object`)
     }
 
-    return NitroAttestationDocument.fromSuiObjectData(res.data)
+    return NitroAttestationDocument.fromBcs(res.bcsBytes)
   }
 }

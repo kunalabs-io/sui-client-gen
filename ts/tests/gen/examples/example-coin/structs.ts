@@ -11,11 +11,17 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { TreasuryCap } from '../../sui/coin/structs'
 import { UID } from '../../sui/object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== EXAMPLE_COIN =============================== */
@@ -78,7 +84,7 @@ export class EXAMPLE_COIN implements StructClass {
       fromJSON: (json: Record<string, any>) => EXAMPLE_COIN.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => EXAMPLE_COIN.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => EXAMPLE_COIN.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => EXAMPLE_COIN.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => EXAMPLE_COIN.fetch(client, id),
       new: (fields: EXAMPLE_COINFields) => {
         return new EXAMPLE_COIN([], fields)
       },
@@ -185,16 +191,13 @@ export class EXAMPLE_COIN implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<EXAMPLE_COIN> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching EXAMPLE_COIN object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isEXAMPLE_COIN(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<EXAMPLE_COIN> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isEXAMPLE_COIN(res.type)) {
       throw new Error(`object at id ${id} is not a EXAMPLE_COIN object`)
     }
 
-    return EXAMPLE_COIN.fromSuiObjectData(res.data)
+    return EXAMPLE_COIN.fromBcs(res.bcsBytes)
   }
 }
 
@@ -255,7 +258,7 @@ export class Faucet implements StructClass {
       fromJSON: (json: Record<string, any>) => Faucet.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Faucet.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Faucet.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Faucet.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Faucet.fetch(client, id),
       new: (fields: FaucetFields) => {
         return new Faucet([], fields)
       },
@@ -370,15 +373,12 @@ export class Faucet implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Faucet> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Faucet object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isFaucet(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Faucet> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isFaucet(res.type)) {
       throw new Error(`object at id ${id} is not a Faucet object`)
     }
 
-    return Faucet.fromSuiObjectData(res.data)
+    return Faucet.fromBcs(res.bcsBytes)
   }
 }

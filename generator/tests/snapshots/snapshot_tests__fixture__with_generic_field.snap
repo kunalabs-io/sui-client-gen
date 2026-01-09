@@ -63,7 +63,7 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => WithGenericField.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => WithGenericField.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => WithGenericField.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => WithGenericField.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => WithGenericField.fetch(client, T, id),
       new: (fields: WithGenericFieldFields<ToTypeArgument<T>>) => {
         return new WithGenericField([extractType(T)], fields)
       },
@@ -221,18 +221,15 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
   }
 
   static async fetch<T extends Reified<TypeArgument, any>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<WithGenericField<ToTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching WithGenericField object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isWithGenericField(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isWithGenericField(res.type)) {
       throw new Error(`object at id ${id} is not a WithGenericField object`)
     }
 
-    return WithGenericField.fromSuiObjectData(typeArg, res.data)
+    return WithGenericField.fromBcs(typeArg, res.bcsBytes)
   }
 }

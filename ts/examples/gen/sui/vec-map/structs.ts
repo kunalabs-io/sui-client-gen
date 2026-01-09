@@ -19,13 +19,15 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== VecMap =============================== */
@@ -101,7 +103,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
       fromJSON: (json: Record<string, any>) => VecMap.fromJSON([K, V], json),
       fromSuiParsedData: (content: SuiParsedData) => VecMap.fromSuiParsedData([K, V], content),
       fromSuiObjectData: (content: SuiObjectData) => VecMap.fromSuiObjectData([K, V], content),
-      fetch: async (client: SuiClient, id: string) => VecMap.fetch(client, [K, V], id),
+      fetch: async (client: SupportedSuiClient, id: string) => VecMap.fetch(client, [K, V], id),
       new: (fields: VecMapFields<ToTypeArgument<K>, ToTypeArgument<V>>) => {
         return new VecMap([extractType(K), extractType(V)], fields)
       },
@@ -268,19 +270,16 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
   }
 
   static async fetch<K extends Reified<TypeArgument, any>, V extends Reified<TypeArgument, any>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArgs: [K, V],
     id: string
   ): Promise<VecMap<ToTypeArgument<K>, ToTypeArgument<V>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching VecMap object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isVecMap(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isVecMap(res.type)) {
       throw new Error(`object at id ${id} is not a VecMap object`)
     }
 
-    return VecMap.fromSuiObjectData(typeArgs, res.data)
+    return VecMap.fromBcs(typeArgs, res.bcsBytes)
   }
 }
 
@@ -353,7 +352,7 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
       fromJSON: (json: Record<string, any>) => Entry.fromJSON([K, V], json),
       fromSuiParsedData: (content: SuiParsedData) => Entry.fromSuiParsedData([K, V], content),
       fromSuiObjectData: (content: SuiObjectData) => Entry.fromSuiObjectData([K, V], content),
-      fetch: async (client: SuiClient, id: string) => Entry.fetch(client, [K, V], id),
+      fetch: async (client: SupportedSuiClient, id: string) => Entry.fetch(client, [K, V], id),
       new: (fields: EntryFields<ToTypeArgument<K>, ToTypeArgument<V>>) => {
         return new Entry([extractType(K), extractType(V)], fields)
       },
@@ -513,18 +512,15 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
   }
 
   static async fetch<K extends Reified<TypeArgument, any>, V extends Reified<TypeArgument, any>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArgs: [K, V],
     id: string
   ): Promise<Entry<ToTypeArgument<K>, ToTypeArgument<V>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Entry object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isEntry(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isEntry(res.type)) {
       throw new Error(`object at id ${id} is not a Entry object`)
     }
 
-    return Entry.fromSuiObjectData(typeArgs, res.data)
+    return Entry.fromBcs(typeArgs, res.bcsBytes)
   }
 }

@@ -10,10 +10,16 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== VerifiedIssuer =============================== */
@@ -88,7 +94,7 @@ export class VerifiedIssuer implements StructClass {
       fromJSON: (json: Record<string, any>) => VerifiedIssuer.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => VerifiedIssuer.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => VerifiedIssuer.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => VerifiedIssuer.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => VerifiedIssuer.fetch(client, id),
       new: (fields: VerifiedIssuerFields) => {
         return new VerifiedIssuer([], fields)
       },
@@ -208,15 +214,12 @@ export class VerifiedIssuer implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<VerifiedIssuer> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching VerifiedIssuer object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isVerifiedIssuer(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<VerifiedIssuer> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isVerifiedIssuer(res.type)) {
       throw new Error(`object at id ${id} is not a VerifiedIssuer object`)
     }
 
-    return VerifiedIssuer.fromSuiObjectData(res.data)
+    return VerifiedIssuer.fromBcs(res.bcsBytes)
   }
 }

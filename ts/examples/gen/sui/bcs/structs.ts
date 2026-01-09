@@ -45,10 +45,16 @@ import {
   phantom,
   vector,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== BCS =============================== */
@@ -106,7 +112,7 @@ export class BCS implements StructClass {
       fromJSON: (json: Record<string, any>) => BCS.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => BCS.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => BCS.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => BCS.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => BCS.fetch(client, id),
       new: (fields: BCSFields) => {
         return new BCS([], fields)
       },
@@ -213,15 +219,12 @@ export class BCS implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<BCS> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching BCS object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isBCS(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<BCS> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isBCS(res.type)) {
       throw new Error(`object at id ${id} is not a BCS object`)
     }
 
-    return BCS.fromSuiObjectData(res.data)
+    return BCS.fromBcs(res.bcsBytes)
   }
 }

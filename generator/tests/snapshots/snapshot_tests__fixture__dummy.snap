@@ -58,7 +58,7 @@ export class Dummy implements StructClass {
       fromJSON: (json: Record<string, any>) => Dummy.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Dummy.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Dummy.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Dummy.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Dummy.fetch(client, id),
       new: (fields: DummyFields) => {
         return new Dummy([], fields)
       },
@@ -163,15 +163,12 @@ export class Dummy implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Dummy> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Dummy object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isDummy(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Dummy> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isDummy(res.type)) {
       throw new Error(`object at id ${id} is not a Dummy object`)
     }
 
-    return Dummy.fromSuiObjectData(res.data)
+    return Dummy.fromBcs(res.bcsBytes)
   }
 }

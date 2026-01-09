@@ -11,9 +11,15 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Scalar =============================== */
@@ -66,7 +72,7 @@ export class Scalar implements StructClass {
       fromJSON: (json: Record<string, any>) => Scalar.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Scalar.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Scalar.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Scalar.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Scalar.fetch(client, id),
       new: (fields: ScalarFields) => {
         return new Scalar([], fields)
       },
@@ -173,16 +179,13 @@ export class Scalar implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Scalar> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Scalar object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isScalar(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Scalar> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isScalar(res.type)) {
       throw new Error(`object at id ${id} is not a Scalar object`)
     }
 
-    return Scalar.fromSuiObjectData(res.data)
+    return Scalar.fromBcs(res.bcsBytes)
   }
 }
 
@@ -236,7 +239,7 @@ export class G1 implements StructClass {
       fromJSON: (json: Record<string, any>) => G1.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => G1.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => G1.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => G1.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => G1.fetch(client, id),
       new: (fields: G1Fields) => {
         return new G1([], fields)
       },
@@ -343,16 +346,13 @@ export class G1 implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<G1> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching G1 object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isG1(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<G1> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isG1(res.type)) {
       throw new Error(`object at id ${id} is not a G1 object`)
     }
 
-    return G1.fromSuiObjectData(res.data)
+    return G1.fromBcs(res.bcsBytes)
   }
 }
 
@@ -406,7 +406,7 @@ export class G2 implements StructClass {
       fromJSON: (json: Record<string, any>) => G2.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => G2.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => G2.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => G2.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => G2.fetch(client, id),
       new: (fields: G2Fields) => {
         return new G2([], fields)
       },
@@ -513,16 +513,13 @@ export class G2 implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<G2> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching G2 object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isG2(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<G2> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isG2(res.type)) {
       throw new Error(`object at id ${id} is not a G2 object`)
     }
 
-    return G2.fromSuiObjectData(res.data)
+    return G2.fromBcs(res.bcsBytes)
   }
 }
 
@@ -576,7 +573,7 @@ export class GT implements StructClass {
       fromJSON: (json: Record<string, any>) => GT.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => GT.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => GT.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => GT.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => GT.fetch(client, id),
       new: (fields: GTFields) => {
         return new GT([], fields)
       },
@@ -683,16 +680,13 @@ export class GT implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<GT> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching GT object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isGT(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<GT> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isGT(res.type)) {
       throw new Error(`object at id ${id} is not a GT object`)
     }
 
-    return GT.fromSuiObjectData(res.data)
+    return GT.fromBcs(res.bcsBytes)
   }
 }
 
@@ -752,7 +746,7 @@ export class UncompressedG1 implements StructClass {
       fromJSON: (json: Record<string, any>) => UncompressedG1.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => UncompressedG1.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => UncompressedG1.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => UncompressedG1.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => UncompressedG1.fetch(client, id),
       new: (fields: UncompressedG1Fields) => {
         return new UncompressedG1([], fields)
       },
@@ -859,15 +853,12 @@ export class UncompressedG1 implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<UncompressedG1> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching UncompressedG1 object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isUncompressedG1(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<UncompressedG1> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isUncompressedG1(res.type)) {
       throw new Error(`object at id ${id} is not a UncompressedG1 object`)
     }
 
-    return UncompressedG1.fromSuiObjectData(res.data)
+    return UncompressedG1.fromBcs(res.bcsBytes)
   }
 }

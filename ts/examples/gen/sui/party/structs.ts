@@ -9,10 +9,16 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { VecMap } from '../vec-map/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== Party =============================== */
@@ -81,7 +87,7 @@ export class Party implements StructClass {
       fromJSON: (json: Record<string, any>) => Party.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Party.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Party.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Party.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Party.fetch(client, id),
       new: (fields: PartyFields) => {
         return new Party([], fields)
       },
@@ -202,16 +208,13 @@ export class Party implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Party> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Party object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isParty(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Party> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isParty(res.type)) {
       throw new Error(`object at id ${id} is not a Party object`)
     }
 
-    return Party.fromSuiObjectData(res.data)
+    return Party.fromBcs(res.bcsBytes)
   }
 }
 
@@ -272,7 +275,7 @@ export class Permissions implements StructClass {
       fromJSON: (json: Record<string, any>) => Permissions.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Permissions.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Permissions.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Permissions.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Permissions.fetch(client, id),
       new: (fields: PermissionsFields) => {
         return new Permissions([], fields)
       },
@@ -379,15 +382,12 @@ export class Permissions implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Permissions> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Permissions object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isPermissions(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Permissions> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isPermissions(res.type)) {
       throw new Error(`object at id ${id} is not a Permissions object`)
     }
 
-    return Permissions.fromSuiObjectData(res.data)
+    return Permissions.fromBcs(res.bcsBytes)
   }
 }

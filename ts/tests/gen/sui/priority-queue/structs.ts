@@ -21,13 +21,15 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== PriorityQueue =============================== */
@@ -98,7 +100,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => PriorityQueue.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => PriorityQueue.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => PriorityQueue.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => PriorityQueue.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => PriorityQueue.fetch(client, T, id),
       new: (fields: PriorityQueueFields<ToTypeArgument<T>>) => {
         return new PriorityQueue([extractType(T)], fields)
       },
@@ -256,19 +258,16 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
   }
 
   static async fetch<T extends Reified<TypeArgument, any>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<PriorityQueue<ToTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching PriorityQueue object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isPriorityQueue(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isPriorityQueue(res.type)) {
       throw new Error(`object at id ${id} is not a PriorityQueue object`)
     }
 
-    return PriorityQueue.fromSuiObjectData(typeArg, res.data)
+    return PriorityQueue.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -331,7 +330,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Entry.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Entry.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Entry.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => Entry.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Entry.fetch(client, T, id),
       new: (fields: EntryFields<ToTypeArgument<T>>) => {
         return new Entry([extractType(T)], fields)
       },
@@ -491,18 +490,15 @@ export class Entry<T extends TypeArgument> implements StructClass {
   }
 
   static async fetch<T extends Reified<TypeArgument, any>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<Entry<ToTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Entry object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isEntry(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isEntry(res.type)) {
       throw new Error(`object at id ${id} is not a Entry object`)
     }
 
-    return Entry.fromSuiObjectData(typeArg, res.data)
+    return Entry.fromBcs(typeArg, res.bcsBytes)
   }
 }
