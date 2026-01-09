@@ -118,7 +118,8 @@ The generated code has the following structure:
 │    │   └── ...
 │    └── init.ts
 ├── <other packages from gen.toml>
-└── .eslintrc.json
+├── .prettierignore
+└── .eslintignore
 ```
 
 **`_framework`** directory contains functions and utilities required for the operation of the generated SDK, including the environment management runtime (`env.ts`).
@@ -135,7 +136,7 @@ Each **`<package>`** directory contains a separate directory for each of its mod
 
 Each module directory further contains `functions.ts` and `structs.ts` corresponding to the functions and structs defined in the module.
 
-**`.eslintrc.json`** is generated in order to turn off the `@typescript-eslint/ban-types` rule which breaks the generated code.
+**`.prettierignore`** and **`.eslintignore`** are generated to prevent linters and formatters from processing the generated code. The generated code is already properly formatted.
 
 ## Environment Switching
 

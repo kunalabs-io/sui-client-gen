@@ -185,7 +185,8 @@ Transitive dependencies are written under:
 ```text
 <out>/
   gen.toml                      (user-provided, not generated)
-  .eslintrc.json                (generated)
+  .prettierignore               (generated - excludes gen dir from formatters)
+  .eslintignore                 (generated - excludes gen dir from linters)
   _framework/                   (generated runtime support)
     loader.ts
     reified.ts

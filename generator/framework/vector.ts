@@ -4,6 +4,7 @@ import {
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
   extractType,
+  fieldToJSON,
   Reified,
   toBcs,
   ToField,
@@ -13,7 +14,6 @@ import {
   TypeArgument,
   VectorClass,
   VectorClassReified,
-  fieldToJSON,
 } from './reified'
 import { composeSuiType, FieldsWithTypes } from './util'
 
@@ -55,7 +55,7 @@ export class Vector<T extends TypeArgument> implements VectorClass {
       typeName: Vector.$typeName,
       fullTypeName: composeSuiType(
         Vector.$typeName,
-        ...[extractType(T)]
+        ...[extractType(T)],
       ) as `vector<${ToTypeStr<ToTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
       isPhantom: Vector.$isPhantom,
@@ -83,23 +83,23 @@ export class Vector<T extends TypeArgument> implements VectorClass {
 
   static fromFields<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    elements: any[]
+    elements: any[],
   ): Vector<ToTypeArgument<T>> {
     return Vector.reified(typeArg).new(elements.map(element => decodeFromFields(typeArg, element)))
   }
 
   static fromFieldsWithTypes<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): Vector<ToTypeArgument<T>> {
     return Vector.reified(typeArg).new(
-      (item as unknown as any[]).map((field: any) => decodeFromFieldsWithTypes(typeArg, field))
+      (item as unknown as any[]).map((field: any) => decodeFromFieldsWithTypes(typeArg, field)),
     )
   }
 
   static fromBcs<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    data: Uint8Array
+    data: Uint8Array,
   ): Vector<ToTypeArgument<T>> {
     return Vector.fromFields(typeArg, Vector.bcs(toBcs(typeArg)).parse(data))
   }
@@ -118,14 +118,14 @@ export class Vector<T extends TypeArgument> implements VectorClass {
 
   static fromJSONField<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    field: any[]
+    field: any[],
   ): Vector<ToTypeArgument<T>> {
     return Vector.reified(typeArg).new(field.map(field => decodeFromJSONField(typeArg, field)))
   }
 
   static fromJSON<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    json: any
+    json: any,
   ): Vector<ToTypeArgument<T>> {
     if (json.$typeName !== Vector.$typeName) {
       throw new Error('not a vector json object')
@@ -136,8 +136,7 @@ export class Vector<T extends TypeArgument> implements VectorClass {
 }
 
 export function vector<T extends Reified<TypeArgument, any>>(
-  T: T
+  T: T,
 ): VectorClassReified<Vector<ToTypeArgument<T>>, VectorElements<ToTypeArgument<T>>> {
   return Vector.r(T)
 }
-
