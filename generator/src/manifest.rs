@@ -13,6 +13,8 @@ const CONFIG_NAME: &str = "config";
 const ENVIRONMENTS_NAME: &str = "environments";
 const DEP_REPLACEMENTS_PREFIX: &str = "dep-replacements";
 
+const MIGRATION_URL: &str = "https://github.com/kunalabs-io/sui-client-gen";
+
 /// Default environments that have known chain IDs.
 pub const DEFAULT_ENVIRONMENTS: &[&str] = &["mainnet", "testnet"];
 
@@ -82,6 +84,48 @@ pub struct GenManifest {
     pub dep_replacements: DepReplacements,
 }
 
+/// Detects if the manifest uses the old format and returns an error with migration instructions.
+/// Old format indicators:
+/// - `rpc` field in [config] (now use `environment` + optional `graphql`)
+/// - `id = "0x..."` in package specs (now use `on-chain = true`)
+fn detect_old_manifest_format(table: &toml::map::Map<String, toml::Value>) -> Result<()> {
+    let mut indicators = Vec::new();
+
+    // Check for `rpc` in [config]
+    if let Some(toml::Value::Table(config)) = table.get(CONFIG_NAME) {
+        if config.contains_key("rpc") {
+            indicators.push("'rpc' field in [config] (replaced by 'environment' + optional 'graphql')");
+        }
+    }
+
+    // Check for `id = "..."` in any package under [packages]
+    if let Some(toml::Value::Table(packages)) = table.get(PACKAGES_NAME) {
+        for (pkg_name, pkg_value) in packages {
+            if let toml::Value::Table(pkg_table) = pkg_value {
+                if pkg_table.contains_key("id") {
+                    indicators.push("'id' field in package spec (replaced by 'on-chain = true')");
+                    // Log which package for clarity
+                    let _ = pkg_name; // Used for detection, specific package name not needed in message
+                    break; // One indicator is enough
+                }
+            }
+        }
+    }
+
+    if !indicators.is_empty() {
+        bail!(
+            "This manifest appears to use an outdated format.\n\n\
+             Detected:\n  - {}\n\n\
+             The gen.toml format has changed significantly. Please see the README for the new format:\n\
+             {}",
+            indicators.join("\n  - "),
+            MIGRATION_URL
+        );
+    }
+
+    Ok(())
+}
+
 pub fn parse_gen_manifest_from_file(path: &Path) -> Result<GenManifest> {
     let file_contents = if path.is_file() {
         std::fs::read_to_string(path)
@@ -98,6 +142,9 @@ pub fn parse_gen_manifest(manifest_string: &str) -> Result<GenManifest> {
 
     match tval {
         toml::Value::Table(mut table) => {
+            // Check for old manifest format before proceeding
+            detect_old_manifest_format(&table)?;
+
             if !table.contains_key(PACKAGES_NAME) {
                 bail!("Missing [packages] section in manifest")
             };
@@ -866,5 +913,61 @@ mod tests {
         let production = act.dep_replacements.get("production").unwrap();
         assert_eq!(production.len(), 1);
         assert!(production.contains_key(&PackageName::new("dep_b").unwrap()));
+    }
+
+    #[test]
+    fn test_old_manifest_format_with_rpc() {
+        let manifest_str = r#"
+        [config]
+        rpc = "https://fullnode.devnet.sui.io:443"
+
+        [packages]
+        AMM = { local = "../move/amm" }
+        "#;
+
+        let result = parse_gen_manifest(manifest_str);
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("outdated format"), "Expected outdated format error, got: {}", err);
+        assert!(err.contains("'rpc' field"), "Expected mention of rpc field, got: {}", err);
+        assert!(err.contains("github.com/kunalabs-io/sui-client-gen"), "Expected migration URL, got: {}", err);
+    }
+
+    #[test]
+    fn test_old_manifest_format_with_id() {
+        let manifest_str = r#"
+        [config]
+        environment = "mainnet"
+
+        [packages]
+        FooPackage = { id = "0x12345" }
+        "#;
+
+        let result = parse_gen_manifest(manifest_str);
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("outdated format"), "Expected outdated format error, got: {}", err);
+        assert!(err.contains("'id' field"), "Expected mention of id field, got: {}", err);
+        assert!(err.contains("github.com/kunalabs-io/sui-client-gen"), "Expected migration URL, got: {}", err);
+    }
+
+    #[test]
+    fn test_old_manifest_format_with_both_indicators() {
+        let manifest_str = r#"
+        [config]
+        rpc = "https://fullnode.devnet.sui.io:443"
+
+        [packages]
+        DeepBook = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/deepbook", rev = "releases/sui-v1.4.0-release" }
+        AMM = { local = "../move/amm" }
+        FooPackage = { id = "0x12345" }
+        "#;
+
+        let result = parse_gen_manifest(manifest_str);
+        assert!(result.is_err());
+        let err = result.unwrap_err().to_string();
+        assert!(err.contains("outdated format"), "Expected outdated format error, got: {}", err);
+        assert!(err.contains("'rpc' field"), "Expected mention of rpc field, got: {}", err);
+        assert!(err.contains("'id' field"), "Expected mention of id field, got: {}", err);
     }
 }
