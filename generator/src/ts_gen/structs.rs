@@ -1140,6 +1140,14 @@ impl StructIR {
                   throw new Error(`object at id ${{id}} is not a {name} object`)
                 }}
 
+                const gotTypeArgs = parseTypeName(res.type).typeArgs
+                if (gotTypeArgs.length !== {num_type_params}) {{
+                  throw new Error(
+                    `type argument mismatch: expected {num_type_params} type arguments but got '${{gotTypeArgs.length}}'`
+                  )
+                }}
+                {type_arg_checks}
+
                 return {name}.fromBcs({type_args_for_call}, res.bcsBytes)
               }}
             }}"#,
