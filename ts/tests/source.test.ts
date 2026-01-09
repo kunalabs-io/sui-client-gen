@@ -2,7 +2,7 @@ import { Transaction } from '@mysten/sui/transactions'
 import { SuiClient } from '@mysten/sui/client'
 import { SerialTransactionExecutor } from '@mysten/sui/transactions'
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519'
-import { fromB64, fromBase64 } from '@mysten/sui/utils'
+import { fromBase64 } from '@mysten/sui/utils'
 import { it, expect, describe, afterAll, expectTypeOf } from 'vitest'
 import {
   Bar,
@@ -44,7 +44,7 @@ import { Action, isWrapped, Wrapped } from '../examples/gen/examples/enums/struc
 import { getOriginalId } from '../examples/gen/_envs'
 
 const keypair = Ed25519Keypair.fromSecretKey(
-  fromB64('AMVT58FaLF2tJtg/g8X2z1/vG0FvNn0jvRu9X2Wl8F+u').slice(1)
+  fromBase64('AMVT58FaLF2tJtg/g8X2z1/vG0FvNn0jvRu9X2Wl8F+u').slice(1)
 ) // address: 0x8becfafb14c111fc08adee6cc9afa95a863d1bf133f796626eec353f98ea8507
 
 const client = new SuiClient({
@@ -206,7 +206,7 @@ it.concurrent('creates and decodes an object with object as type param', async (
     other: StructFromOtherModule.r.new({ dummyField: false }),
   })
 
-  const de = Foo.fromBcs(Bar.reified(), fromB64(foo.data.bcs.bcsBytes))
+  const de = Foo.fromBcs(Bar.reified(), fromBase64(foo.data.bcs.bcsBytes))
 
   expect(de).toEqual(exp)
   expect(Foo.fromFieldsWithTypes(Bar.reified(), foo.data.content)).toEqual(exp)
@@ -361,7 +361,7 @@ it.concurrent('creates and decodes Foo with vector of objects as type param', as
     other: StructFromOtherModule.r.new({ dummyField: false }),
   })
 
-  const de = Foo.fromBcs(reifiedT, fromB64(foo.data.bcs.bcsBytes))
+  const de = Foo.fromBcs(reifiedT, fromBase64(foo.data.bcs.bcsBytes))
 
   expect(de).toEqual(exp)
 
@@ -406,7 +406,7 @@ it.concurrent('decodes special-cased types correctly', async () => {
     throw new Error(`not a moveObject`)
   }
 
-  const fromBcs = WithSpecialTypes.r(...reifiedArgs).fromBcs(fromB64(obj.data.bcs.bcsBytes))
+  const fromBcs = WithSpecialTypes.r(...reifiedArgs).fromBcs(fromBase64(obj.data.bcs.bcsBytes))
   const fromFieldsWithTypes = WithSpecialTypes.r(...reifiedArgs).fromFieldsWithTypes(
     obj.data.content
   )
@@ -488,7 +488,7 @@ it.concurrent('decodes special-cased types as generics correctly', async () => {
   const uid = (obj.data.content.fields as { uid: { id: string } }).uid.id
 
   const fromBcs = WithSpecialTypesAsGenerics.r(...reifiedArgs).fromBcs(
-    fromB64(obj.data.bcs.bcsBytes)
+    fromBase64(obj.data.bcs.bcsBytes)
   )
   const fromFieldsWithTypes = WithSpecialTypesAsGenerics.r(...reifiedArgs).fromFieldsWithTypes(
     obj.data.content
@@ -965,7 +965,7 @@ it.concurrent('decodes address field correctly', async () => {
     other: StructFromOtherModule.r.new({ dummyField: false }),
   })
 
-  expect(Foo.fromBcs('address', fromB64(foo.data.bcs.bcsBytes))).toEqual(exp)
+  expect(Foo.fromBcs('address', fromBase64(foo.data.bcs.bcsBytes))).toEqual(exp)
   expect(Foo.fromFieldsWithTypes('address', foo.data.content)).toEqual(exp)
   expect(Foo.fromSuiParsedData('address', foo.data.content)).toEqual(exp)
   expect(await Foo.fetch(client, 'address', id)).toEqual(exp)
