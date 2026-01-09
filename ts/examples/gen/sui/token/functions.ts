@@ -3,7 +3,12 @@ import { String } from '../../_dependencies/std/string/structs'
 import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, option, pure } from '../../_framework/util'
 import { Balance } from '../balance/structs'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 /**
  * Create a new `TokenPolicy` and a matching `TokenPolicyCap`.
@@ -12,7 +17,11 @@ import { Transaction, TransactionArgument, TransactionObjectInput } from '@myste
  * `TreasuryCap` guarantees full ownership over the currency, and is unique,
  * hence it is safe to use it for authorization.
  */
-export function newPolicy(tx: Transaction, typeArg: string, treasuryCap: TransactionObjectInput) {
+export function newPolicy(
+  tx: Transaction,
+  typeArg: string,
+  treasuryCap: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::new_policy`,
     typeArguments: [typeArg],
@@ -24,7 +33,11 @@ export function newPolicy(tx: Transaction, typeArg: string, treasuryCap: Transac
  * Share the `TokenPolicy`. Due to `key`-only restriction, it must be
  * shared after initialization.
  */
-export function sharePolicy(tx: Transaction, typeArg: string, policy: TransactionObjectInput) {
+export function sharePolicy(
+  tx: Transaction,
+  typeArg: string,
+  policy: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::share_policy`,
     typeArguments: [typeArg],
@@ -42,7 +55,7 @@ export interface TransferArgs {
  * "transfer" action. The `ActionRequest` contains the `recipient` field
  * to be used in verification.
  */
-export function transfer(tx: Transaction, typeArg: string, args: TransferArgs) {
+export function transfer(tx: Transaction, typeArg: string, args: TransferArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::transfer`,
     typeArguments: [typeArg],
@@ -58,7 +71,11 @@ export function transfer(tx: Transaction, typeArg: string, args: TransferArgs) {
  * Spend action requires `confirm_request_mut` to be called to confirm the
  * request and join the spent balance with the `TokenPolicy.spent_balance`.
  */
-export function spend(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
+export function spend(
+  tx: Transaction,
+  typeArg: string,
+  t: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::spend`,
     typeArguments: [typeArg],
@@ -70,7 +87,11 @@ export function spend(tx: Transaction, typeArg: string, t: TransactionObjectInpu
  * Convert `Token` into an open `Coin`. Creates an `ActionRequest` for the
  * "to_coin" action.
  */
-export function toCoin(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
+export function toCoin(
+  tx: Transaction,
+  typeArg: string,
+  t: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::to_coin`,
     typeArguments: [typeArg],
@@ -82,7 +103,11 @@ export function toCoin(tx: Transaction, typeArg: string, t: TransactionObjectInp
  * Convert an open `Coin` into a `Token`. Creates an `ActionRequest` for
  * the "from_coin" action.
  */
-export function fromCoin(tx: Transaction, typeArg: string, coin: TransactionObjectInput) {
+export function fromCoin(
+  tx: Transaction,
+  typeArg: string,
+  coin: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::from_coin`,
     typeArguments: [typeArg],
@@ -96,7 +121,7 @@ export interface JoinArgs {
 }
 
 /** Join two `Token`s into one, always available. */
-export function join(tx: Transaction, typeArg: string, args: JoinArgs) {
+export function join(tx: Transaction, typeArg: string, args: JoinArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::join`,
     typeArguments: [typeArg],
@@ -113,7 +138,7 @@ export interface SplitArgs {
  * Split a `Token` with `amount`.
  * Aborts if the `Token.balance` is lower than `amount`.
  */
-export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
+export function split(tx: Transaction, typeArg: string, args: SplitArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::split`,
     typeArguments: [typeArg],
@@ -122,7 +147,7 @@ export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
 }
 
 /** Create a zero `Token`. */
-export function zero(tx: Transaction, typeArg: string) {
+export function zero(tx: Transaction, typeArg: string): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::zero`,
     typeArguments: [typeArg],
@@ -134,7 +159,11 @@ export function zero(tx: Transaction, typeArg: string) {
  * Destroy an empty `Token`, fails if the balance is non-zero.
  * Aborts if the `Token.balance` is not zero.
  */
-export function destroyZero(tx: Transaction, typeArg: string, token: TransactionObjectInput) {
+export function destroyZero(
+  tx: Transaction,
+  typeArg: string,
+  token: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::destroy_zero`,
     typeArguments: [typeArg],
@@ -143,7 +172,11 @@ export function destroyZero(tx: Transaction, typeArg: string, token: Transaction
 }
 
 /** Transfer the `Token` to the transaction sender. */
-export function keep(tx: Transaction, typeArg: string, token: TransactionObjectInput) {
+export function keep(
+  tx: Transaction,
+  typeArg: string,
+  token: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::keep`,
     typeArguments: [typeArg],
@@ -162,7 +195,11 @@ export interface NewRequestArgs {
  * Create a new `ActionRequest`.
  * Publicly available method to allow for custom actions.
  */
-export function newRequest(tx: Transaction, typeArg: string, args: NewRequestArgs) {
+export function newRequest(
+  tx: Transaction,
+  typeArg: string,
+  args: NewRequestArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::new_request`,
     typeArguments: [typeArg],
@@ -192,7 +229,11 @@ export interface ConfirmRequestArgs {
  * - action contains `spent_balance` (use `confirm_request_mut`)
  * - the `ActionRequest` does not meet the `TokenPolicy` rules for the action
  */
-export function confirmRequest(tx: Transaction, typeArg: string, args: ConfirmRequestArgs) {
+export function confirmRequest(
+  tx: Transaction,
+  typeArg: string,
+  args: ConfirmRequestArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::confirm_request`,
     typeArguments: [typeArg],
@@ -215,7 +256,11 @@ export interface ConfirmRequestMutArgs {
  *
  * See `confirm_request` for the list of abort conditions.
  */
-export function confirmRequestMut(tx: Transaction, typeArg: string, args: ConfirmRequestMutArgs) {
+export function confirmRequestMut(
+  tx: Transaction,
+  typeArg: string,
+  args: ConfirmRequestMutArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::confirm_request_mut`,
     typeArguments: [typeArg],
@@ -241,7 +286,7 @@ export function confirmWithPolicyCap(
   tx: Transaction,
   typeArg: string,
   args: ConfirmWithPolicyCapArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::confirm_with_policy_cap`,
     typeArguments: [typeArg],
@@ -266,7 +311,7 @@ export function confirmWithTreasuryCap(
   tx: Transaction,
   typeArg: string,
   args: ConfirmWithTreasuryCapArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::confirm_with_treasury_cap`,
     typeArguments: [typeArg],
@@ -285,7 +330,11 @@ export interface AddApprovalArgs {
  * be used to add arbitrary approvals to the request (not only the ones
  * required by the `TokenPolicy`).
  */
-export function addApproval(tx: Transaction, typeArgs: [string, string], args: AddApprovalArgs) {
+export function addApproval(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: AddApprovalArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::add_approval`,
     typeArguments: typeArgs,
@@ -314,7 +363,7 @@ export function addRuleConfig(
   tx: Transaction,
   typeArgs: [string, string, string],
   args: AddRuleConfigArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::add_rule_config`,
     typeArguments: typeArgs,
@@ -345,7 +394,7 @@ export function ruleConfig(
   tx: Transaction,
   typeArgs: [string, string, string],
   args: RuleConfigArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::rule_config`,
     typeArguments: typeArgs,
@@ -373,7 +422,7 @@ export function ruleConfigMut(
   tx: Transaction,
   typeArgs: [string, string, string],
   args: RuleConfigMutArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::rule_config_mut`,
     typeArguments: typeArgs,
@@ -402,7 +451,7 @@ export function removeRuleConfig(
   tx: Transaction,
   typeArgs: [string, string, string],
   args: RemoveRuleConfigArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::remove_rule_config`,
     typeArguments: typeArgs,
@@ -418,7 +467,7 @@ export function hasRuleConfig(
   tx: Transaction,
   typeArgs: [string, string],
   self: TransactionObjectInput
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::has_rule_config`,
     typeArguments: typeArgs,
@@ -434,7 +483,7 @@ export function hasRuleConfigWithType(
   tx: Transaction,
   typeArgs: [string, string, string],
   self: TransactionObjectInput
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::has_rule_config_with_type`,
     typeArguments: typeArgs,
@@ -454,7 +503,7 @@ export interface AllowArgs {
  *
  * Aborts if the `TokenPolicyCap` is not matching the `TokenPolicy`.
  */
-export function allow(tx: Transaction, typeArg: string, args: AllowArgs) {
+export function allow(tx: Transaction, typeArg: string, args: AllowArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::allow`,
     typeArguments: [typeArg],
@@ -478,7 +527,7 @@ export interface DisallowArgs {
  *
  * Aborts if the `TokenPolicyCap` is not matching the `TokenPolicy`.
  */
-export function disallow(tx: Transaction, typeArg: string, args: DisallowArgs) {
+export function disallow(tx: Transaction, typeArg: string, args: DisallowArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::disallow`,
     typeArguments: [typeArg],
@@ -505,7 +554,7 @@ export function addRuleForAction(
   tx: Transaction,
   typeArgs: [string, string],
   args: AddRuleForActionArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::add_rule_for_action`,
     typeArguments: typeArgs,
@@ -533,7 +582,7 @@ export function removeRuleForAction(
   tx: Transaction,
   typeArgs: [string, string],
   args: RemoveRuleForActionArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::remove_rule_for_action`,
     typeArguments: typeArgs,
@@ -551,7 +600,7 @@ export interface MintArgs {
 }
 
 /** Mint a `Token` with a given `amount` using the `TreasuryCap`. */
-export function mint(tx: Transaction, typeArg: string, args: MintArgs) {
+export function mint(tx: Transaction, typeArg: string, args: MintArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::mint`,
     typeArguments: [typeArg],
@@ -565,7 +614,7 @@ export interface BurnArgs {
 }
 
 /** Burn a `Token` using the `TreasuryCap`. */
-export function burn(tx: Transaction, typeArg: string, args: BurnArgs) {
+export function burn(tx: Transaction, typeArg: string, args: BurnArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::burn`,
     typeArguments: [typeArg],
@@ -582,7 +631,7 @@ export interface FlushArgs {
  * Flush the `TokenPolicy.spent_balance` into the `TreasuryCap`. This
  * action is only available to the `TreasuryCap` owner.
  */
-export function flush(tx: Transaction, typeArg: string, args: FlushArgs) {
+export function flush(tx: Transaction, typeArg: string, args: FlushArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::flush`,
     typeArguments: [typeArg],
@@ -596,7 +645,11 @@ export interface IsAllowedArgs {
 }
 
 /** Check whether an action is present in the rules VecMap. */
-export function isAllowed(tx: Transaction, typeArg: string, args: IsAllowedArgs) {
+export function isAllowed(
+  tx: Transaction,
+  typeArg: string,
+  args: IsAllowedArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::is_allowed`,
     typeArguments: [typeArg],
@@ -610,7 +663,7 @@ export interface RulesArgs {
 }
 
 /** Returns the rules required for a specific action. */
-export function rules(tx: Transaction, typeArg: string, args: RulesArgs) {
+export function rules(tx: Transaction, typeArg: string, args: RulesArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::rules`,
     typeArguments: [typeArg],
@@ -619,7 +672,11 @@ export function rules(tx: Transaction, typeArg: string, args: RulesArgs) {
 }
 
 /** Returns the `spent_balance` of the `TokenPolicy`. */
-export function spentBalance(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function spentBalance(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::spent_balance`,
     typeArguments: [typeArg],
@@ -628,7 +685,11 @@ export function spentBalance(tx: Transaction, typeArg: string, self: Transaction
 }
 
 /** Returns the `balance` of the `Token`. */
-export function value(tx: Transaction, typeArg: string, t: TransactionObjectInput) {
+export function value(
+  tx: Transaction,
+  typeArg: string,
+  t: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::value`,
     typeArguments: [typeArg],
@@ -637,7 +698,7 @@ export function value(tx: Transaction, typeArg: string, t: TransactionObjectInpu
 }
 
 /** Name of the Transfer action. */
-export function transferAction(tx: Transaction) {
+export function transferAction(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::transfer_action`,
     arguments: [],
@@ -645,7 +706,7 @@ export function transferAction(tx: Transaction) {
 }
 
 /** Name of the `Spend` action. */
-export function spendAction(tx: Transaction) {
+export function spendAction(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::spend_action`,
     arguments: [],
@@ -653,7 +714,7 @@ export function spendAction(tx: Transaction) {
 }
 
 /** Name of the `ToCoin` action. */
-export function toCoinAction(tx: Transaction) {
+export function toCoinAction(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::to_coin_action`,
     arguments: [],
@@ -661,7 +722,7 @@ export function toCoinAction(tx: Transaction) {
 }
 
 /** Name of the `FromCoin` action. */
-export function fromCoinAction(tx: Transaction) {
+export function fromCoinAction(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::from_coin_action`,
     arguments: [],
@@ -669,7 +730,11 @@ export function fromCoinAction(tx: Transaction) {
 }
 
 /** The Action in the `ActionRequest`. */
-export function action(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function action(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::action`,
     typeArguments: [typeArg],
@@ -678,7 +743,11 @@ export function action(tx: Transaction, typeArg: string, self: TransactionObject
 }
 
 /** Amount of the `ActionRequest`. */
-export function amount(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function amount(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::amount`,
     typeArguments: [typeArg],
@@ -687,7 +756,11 @@ export function amount(tx: Transaction, typeArg: string, self: TransactionObject
 }
 
 /** Sender of the `ActionRequest`. */
-export function sender(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function sender(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::sender`,
     typeArguments: [typeArg],
@@ -696,7 +769,11 @@ export function sender(tx: Transaction, typeArg: string, self: TransactionObject
 }
 
 /** Recipient of the `ActionRequest`. */
-export function recipient(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function recipient(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::recipient`,
     typeArguments: [typeArg],
@@ -705,7 +782,11 @@ export function recipient(tx: Transaction, typeArg: string, self: TransactionObj
 }
 
 /** Approvals of the `ActionRequest`. */
-export function approvals(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function approvals(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::approvals`,
     typeArguments: [typeArg],
@@ -714,7 +795,11 @@ export function approvals(tx: Transaction, typeArg: string, self: TransactionObj
 }
 
 /** Burned balance of the `ActionRequest`. */
-export function spent(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function spent(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::spent`,
     typeArguments: [typeArg],
@@ -730,7 +815,7 @@ export function spent(tx: Transaction, typeArg: string, self: TransactionObjectI
  * The goal of `is_protected` is to potentially allow Rules store a mutable
  * version of their configuration and mutate state on user action.
  */
-export function key(tx: Transaction, typeArg: string) {
+export function key(tx: Transaction, typeArg: string): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::token::key`,
     typeArguments: [typeArg],

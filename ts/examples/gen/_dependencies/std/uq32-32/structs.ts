@@ -51,14 +51,14 @@ export type UQ32_32Reified = Reified<UQ32_32, UQ32_32Fields>
 export class UQ32_32 implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x1::uq32_32::UQ32_32` as const
+  static readonly $typeName: `0x1::uq32_32::UQ32_32` = `0x1::uq32_32::UQ32_32` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = UQ32_32.$typeName
+  readonly $typeName: typeof UQ32_32.$typeName = UQ32_32.$typeName
   readonly $fullTypeName: `0x1::uq32_32::UQ32_32`
   readonly $typeArgs: []
-  readonly $isPhantom = UQ32_32.$isPhantom
+  readonly $isPhantom: typeof UQ32_32.$isPhantom = UQ32_32.$isPhantom
 
   readonly pos0: ToField<'u64'>
 
@@ -93,7 +93,7 @@ export class UQ32_32 implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): UQ32_32Reified {
     return UQ32_32.reified()
   }
 
@@ -101,7 +101,7 @@ export class UQ32_32 implements StructClass {
     return phantom(UQ32_32.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<UQ32_32>> {
     return UQ32_32.phantom()
   }
 
@@ -140,13 +140,13 @@ export class UQ32_32 implements StructClass {
     return UQ32_32.fromFields(UQ32_32.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       pos0: this.pos0.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

@@ -47,14 +47,14 @@ export type ObjectBagReified = Reified<ObjectBag, ObjectBagFields>
 export class ObjectBag implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::object_bag::ObjectBag` as const
+  static readonly $typeName: `0x2::object_bag::ObjectBag` = `0x2::object_bag::ObjectBag` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = ObjectBag.$typeName
+  readonly $typeName: typeof ObjectBag.$typeName = ObjectBag.$typeName
   readonly $fullTypeName: `0x2::object_bag::ObjectBag`
   readonly $typeArgs: []
-  readonly $isPhantom = ObjectBag.$isPhantom
+  readonly $isPhantom: typeof ObjectBag.$isPhantom = ObjectBag.$isPhantom
 
   /** the ID of this bag */
   readonly id: ToField<UID>
@@ -96,7 +96,7 @@ export class ObjectBag implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): ObjectBagReified {
     return ObjectBag.reified()
   }
 
@@ -104,7 +104,7 @@ export class ObjectBag implements StructClass {
     return phantom(ObjectBag.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<ObjectBag>> {
     return ObjectBag.phantom()
   }
 
@@ -146,14 +146,14 @@ export class ObjectBag implements StructClass {
     return ObjectBag.fromFields(ObjectBag.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       size: this.size.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

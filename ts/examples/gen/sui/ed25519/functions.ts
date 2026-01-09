@@ -1,6 +1,11 @@
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 export interface Ed25519VerifyArgs {
   signature: Array<number | TransactionArgument> | TransactionArgument
@@ -16,7 +21,7 @@ export interface Ed25519VerifyArgs {
  * If the signature is a valid Ed25519 signature of the message and public key, return true.
  * Otherwise, return false.
  */
-export function ed25519Verify(tx: Transaction, args: Ed25519VerifyArgs) {
+export function ed25519Verify(tx: Transaction, args: Ed25519VerifyArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::ed25519::ed25519_verify`,
     arguments: [

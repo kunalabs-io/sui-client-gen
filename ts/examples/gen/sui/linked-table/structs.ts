@@ -66,14 +66,15 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
 {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::linked_table::LinkedTable` as const
+  static readonly $typeName: `0x2::linked_table::LinkedTable` =
+    `0x2::linked_table::LinkedTable` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, true] as const
 
-  readonly $typeName = LinkedTable.$typeName
+  readonly $typeName: typeof LinkedTable.$typeName = LinkedTable.$typeName
   readonly $fullTypeName: `0x2::linked_table::LinkedTable<${ToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
   readonly $typeArgs: [ToTypeStr<K>, PhantomToTypeStr<V>]
-  readonly $isPhantom = LinkedTable.$isPhantom
+  readonly $isPhantom: typeof LinkedTable.$isPhantom = LinkedTable.$isPhantom
 
   /** the ID of this table */
   readonly id: ToField<UID>
@@ -134,7 +135,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
     }
   }
 
-  static get r() {
+  static get r(): typeof LinkedTable.reified {
     return LinkedTable.reified
   }
 
@@ -148,7 +149,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
     return phantom(LinkedTable.reified(K, V))
   }
 
-  static get p() {
+  static get p(): typeof LinkedTable.phantom {
     return LinkedTable.phantom
   }
 
@@ -213,7 +214,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
     return LinkedTable.fromFields(typeArgs, LinkedTable.bcs(toBcs(typeArgs[0])).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       size: this.size.toString(),
@@ -222,7 +223,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -354,14 +355,14 @@ export type NodeReified<K extends TypeArgument, V extends TypeArgument> = Reifie
 export class Node<K extends TypeArgument, V extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::linked_table::Node` as const
+  static readonly $typeName: `0x2::linked_table::Node` = `0x2::linked_table::Node` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const
 
-  readonly $typeName = Node.$typeName
+  readonly $typeName: typeof Node.$typeName = Node.$typeName
   readonly $fullTypeName: `0x2::linked_table::Node<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
   readonly $typeArgs: [ToTypeStr<K>, ToTypeStr<V>]
-  readonly $isPhantom = Node.$isPhantom
+  readonly $isPhantom: typeof Node.$isPhantom = Node.$isPhantom
 
   /** the previous key */
   readonly prev: ToField<Option<K>>
@@ -415,7 +416,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
     }
   }
 
-  static get r() {
+  static get r(): typeof Node.reified {
     return Node.reified
   }
 
@@ -426,7 +427,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
     return phantom(Node.reified(K, V))
   }
 
-  static get p() {
+  static get p(): typeof Node.phantom {
     return Node.phantom
   }
 
@@ -482,7 +483,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
     return Node.fromFields(typeArgs, Node.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       prev: fieldToJSON<Option<K>>(`${Option.$typeName}<${this.$typeArgs[0]}>`, this.prev),
       next: fieldToJSON<Option<K>>(`${Option.$typeName}<${this.$typeArgs[0]}>`, this.next),
@@ -490,7 +491,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

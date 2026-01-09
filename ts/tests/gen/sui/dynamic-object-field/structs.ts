@@ -51,14 +51,15 @@ export type WrapperReified<Name extends TypeArgument> = Reified<Wrapper<Name>, W
 export class Wrapper<Name extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::dynamic_object_field::Wrapper` as const
+  static readonly $typeName: `0x2::dynamic_object_field::Wrapper` =
+    `0x2::dynamic_object_field::Wrapper` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
-  readonly $typeName = Wrapper.$typeName
+  readonly $typeName: typeof Wrapper.$typeName = Wrapper.$typeName
   readonly $fullTypeName: `0x2::dynamic_object_field::Wrapper<${ToTypeStr<Name>}>`
   readonly $typeArgs: [ToTypeStr<Name>]
-  readonly $isPhantom = Wrapper.$isPhantom
+  readonly $isPhantom: typeof Wrapper.$isPhantom = Wrapper.$isPhantom
 
   readonly name: ToField<Name>
 
@@ -101,7 +102,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Wrapper.reified {
     return Wrapper.reified
   }
 
@@ -111,7 +112,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
     return phantom(Wrapper.reified(Name))
   }
 
-  static get p() {
+  static get p(): typeof Wrapper.phantom {
     return Wrapper.phantom
   }
 
@@ -162,13 +163,13 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
     return Wrapper.fromFields(typeArg, Wrapper.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       name: fieldToJSON<Name>(`${this.$typeArgs[0]}`, this.name),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

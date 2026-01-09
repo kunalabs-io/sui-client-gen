@@ -1,8 +1,13 @@
 import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
-export function new_(tx: Transaction, length: bigint | TransactionArgument) {
+export function new_(tx: Transaction, length: bigint | TransactionArgument): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::bit_vector::new`,
     arguments: [pure(tx, length, `u64`)],
@@ -15,7 +20,7 @@ export interface SetArgs {
 }
 
 /** Set the bit at `bit_index` in the `bitvector` regardless of its previous state. */
-export function set(tx: Transaction, args: SetArgs) {
+export function set(tx: Transaction, args: SetArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::bit_vector::set`,
     arguments: [obj(tx, args.bitvector), pure(tx, args.bitIndex, `u64`)],
@@ -28,7 +33,7 @@ export interface UnsetArgs {
 }
 
 /** Unset the bit at `bit_index` in the `bitvector` regardless of its previous state. */
-export function unset(tx: Transaction, args: UnsetArgs) {
+export function unset(tx: Transaction, args: UnsetArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::bit_vector::unset`,
     arguments: [obj(tx, args.bitvector), pure(tx, args.bitIndex, `u64`)],
@@ -44,7 +49,7 @@ export interface ShiftLeftArgs {
  * Shift the `bitvector` left by `amount`. If `amount` is greater than the
  * bitvector's length the bitvector will be zeroed out.
  */
-export function shiftLeft(tx: Transaction, args: ShiftLeftArgs) {
+export function shiftLeft(tx: Transaction, args: ShiftLeftArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::bit_vector::shift_left`,
     arguments: [obj(tx, args.bitvector), pure(tx, args.amount, `u64`)],
@@ -60,7 +65,7 @@ export interface IsIndexSetArgs {
  * Return the value of the bit at `bit_index` in the `bitvector`. `true`
  * represents "1" and `false` represents a 0
  */
-export function isIndexSet(tx: Transaction, args: IsIndexSetArgs) {
+export function isIndexSet(tx: Transaction, args: IsIndexSetArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::bit_vector::is_index_set`,
     arguments: [obj(tx, args.bitvector), pure(tx, args.bitIndex, `u64`)],
@@ -68,7 +73,7 @@ export function isIndexSet(tx: Transaction, args: IsIndexSetArgs) {
 }
 
 /** Return the length (number of usable bits) of this bitvector */
-export function length(tx: Transaction, bitvector: TransactionObjectInput) {
+export function length(tx: Transaction, bitvector: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::bit_vector::length`,
     arguments: [obj(tx, bitvector)],
@@ -88,7 +93,7 @@ export interface LongestSetSequenceStartingAtArgs {
 export function longestSetSequenceStartingAt(
   tx: Transaction,
   args: LongestSetSequenceStartingAtArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::bit_vector::longest_set_sequence_starting_at`,
     arguments: [obj(tx, args.bitvector), pure(tx, args.startIndex, `u64`)],

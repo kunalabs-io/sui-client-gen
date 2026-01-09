@@ -57,14 +57,14 @@ export type VecMapReified<K extends TypeArgument, V extends TypeArgument> = Reif
 export class VecMap<K extends TypeArgument, V extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::vec_map::VecMap` as const
+  static readonly $typeName: `0x2::vec_map::VecMap` = `0x2::vec_map::VecMap` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const
 
-  readonly $typeName = VecMap.$typeName
+  readonly $typeName: typeof VecMap.$typeName = VecMap.$typeName
   readonly $fullTypeName: `0x2::vec_map::VecMap<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
   readonly $typeArgs: [ToTypeStr<K>, ToTypeStr<V>]
-  readonly $isPhantom = VecMap.$isPhantom
+  readonly $isPhantom: typeof VecMap.$isPhantom = VecMap.$isPhantom
 
   readonly contents: ToField<Vector<Entry<K, V>>>
 
@@ -111,7 +111,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
     }
   }
 
-  static get r() {
+  static get r(): typeof VecMap.reified {
     return VecMap.reified
   }
 
@@ -122,7 +122,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
     return phantom(VecMap.reified(K, V))
   }
 
-  static get p() {
+  static get p(): typeof VecMap.phantom {
     return VecMap.phantom
   }
 
@@ -178,7 +178,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
     )
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       contents: fieldToJSON<Vector<Entry<K, V>>>(
         `vector<${Entry.$typeName}<${this.$typeArgs[0]}, ${this.$typeArgs[1]}>>`,
@@ -187,7 +187,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -304,14 +304,14 @@ export type EntryReified<K extends TypeArgument, V extends TypeArgument> = Reifi
 export class Entry<K extends TypeArgument, V extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::vec_map::Entry` as const
+  static readonly $typeName: `0x2::vec_map::Entry` = `0x2::vec_map::Entry` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const
 
-  readonly $typeName = Entry.$typeName
+  readonly $typeName: typeof Entry.$typeName = Entry.$typeName
   readonly $fullTypeName: `0x2::vec_map::Entry<${ToTypeStr<K>}, ${ToTypeStr<V>}>`
   readonly $typeArgs: [ToTypeStr<K>, ToTypeStr<V>]
-  readonly $isPhantom = Entry.$isPhantom
+  readonly $isPhantom: typeof Entry.$isPhantom = Entry.$isPhantom
 
   readonly key: ToField<K>
   readonly value: ToField<V>
@@ -360,7 +360,7 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
     }
   }
 
-  static get r() {
+  static get r(): typeof Entry.reified {
     return Entry.reified
   }
 
@@ -371,7 +371,7 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
     return phantom(Entry.reified(K, V))
   }
 
-  static get p() {
+  static get p(): typeof Entry.phantom {
     return Entry.phantom
   }
 
@@ -424,14 +424,14 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
     return Entry.fromFields(typeArgs, Entry.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       key: fieldToJSON<K>(`${this.$typeArgs[0]}`, this.key),
       value: fieldToJSON<V>(`${this.$typeArgs[1]}`, this.value),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

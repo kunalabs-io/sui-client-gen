@@ -1,7 +1,12 @@
 import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj as obj_, pure } from '../../_framework/util'
 import { ID } from '../object/structs'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 export interface TransferArgs {
   obj: GenericArg
@@ -17,7 +22,7 @@ export interface TransferArgs {
  * that `T` is an object defined in the module where `transfer` is invoked. Use
  * `public_transfer` to transfer an object with `store` outside of its module.
  */
-export function transfer(tx: Transaction, typeArg: string, args: TransferArgs) {
+export function transfer(tx: Transaction, typeArg: string, args: TransferArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer::transfer`,
     typeArguments: [typeArg],
@@ -37,7 +42,11 @@ export interface PublicTransferArgs {
  * (though they will be retrievable at a future date once new features are added).
  * The object must have `store` to be transferred outside of its module.
  */
-export function publicTransfer(tx: Transaction, typeArg: string, args: PublicTransferArgs) {
+export function publicTransfer(
+  tx: Transaction,
+  typeArg: string,
+  args: PublicTransferArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer::public_transfer`,
     typeArguments: [typeArg],
@@ -64,7 +73,11 @@ export interface PartyTransferArgs {
  * is an object defined in the module where `transfer` is invoked. Use `public_party_transfer`
  * to transfer an object with `store` outside of its module.
  */
-export function partyTransfer(tx: Transaction, typeArg: string, args: PartyTransferArgs) {
+export function partyTransfer(
+  tx: Transaction,
+  typeArg: string,
+  args: PartyTransferArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer::party_transfer`,
     typeArguments: [typeArg],
@@ -93,7 +106,7 @@ export function publicPartyTransfer(
   tx: Transaction,
   typeArg: string,
   args: PublicPartyTransferArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer::public_party_transfer`,
     typeArguments: [typeArg],
@@ -108,7 +121,7 @@ export function publicPartyTransfer(
  * that `T` is an object defined in the module where `freeze_object` is invoked. Use
  * `public_freeze_object` to freeze an object with `store` outside of its module.
  */
-export function freezeObject(tx: Transaction, typeArg: string, obj: GenericArg) {
+export function freezeObject(tx: Transaction, typeArg: string, obj: GenericArg): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer::freeze_object`,
     typeArguments: [typeArg],
@@ -121,7 +134,11 @@ export function freezeObject(tx: Transaction, typeArg: string, obj: GenericArg) 
  * mutated.
  * The object must have `store` to be frozen outside of its module.
  */
-export function publicFreezeObject(tx: Transaction, typeArg: string, obj: GenericArg) {
+export function publicFreezeObject(
+  tx: Transaction,
+  typeArg: string,
+  obj: GenericArg
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer::public_freeze_object`,
     typeArguments: [typeArg],
@@ -138,7 +155,7 @@ export function publicFreezeObject(tx: Transaction, typeArg: string, obj: Generi
  * that `T` is an object defined in the module where `share_object` is invoked. Use
  * `public_share_object` to share an object with `store` outside of its module.
  */
-export function shareObject(tx: Transaction, typeArg: string, obj: GenericArg) {
+export function shareObject(tx: Transaction, typeArg: string, obj: GenericArg): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer::share_object`,
     typeArguments: [typeArg],
@@ -153,7 +170,11 @@ export function shareObject(tx: Transaction, typeArg: string, obj: GenericArg) {
  * transaction. This restriction may be relaxed in the future.
  * The object must have `store` to be shared outside of its module.
  */
-export function publicShareObject(tx: Transaction, typeArg: string, obj: GenericArg) {
+export function publicShareObject(
+  tx: Transaction,
+  typeArg: string,
+  obj: GenericArg
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer::public_share_object`,
     typeArguments: [typeArg],
@@ -174,7 +195,7 @@ export interface ReceiveArgs {
  * that `T` is an object defined in the module where `receive` is invoked. Use
  * `public_receive` to receivne an object with `store` outside of its module.
  */
-export function receive(tx: Transaction, typeArg: string, args: ReceiveArgs) {
+export function receive(tx: Transaction, typeArg: string, args: ReceiveArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer::receive`,
     typeArguments: [typeArg],
@@ -193,7 +214,11 @@ export interface PublicReceiveArgs {
  * argument to receive and return the referenced owned object of type `T`.
  * The object must have `store` to be received outside of its defining module.
  */
-export function publicReceive(tx: Transaction, typeArg: string, args: PublicReceiveArgs) {
+export function publicReceive(
+  tx: Transaction,
+  typeArg: string,
+  args: PublicReceiveArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer::public_receive`,
     typeArguments: [typeArg],
@@ -206,7 +231,7 @@ export function receivingObjectId(
   tx: Transaction,
   typeArg: string,
   receiving: TransactionObjectInput
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer::receiving_object_id`,
     typeArguments: [typeArg],
@@ -214,7 +239,11 @@ export function receivingObjectId(
   })
 }
 
-export function freezeObjectImpl(tx: Transaction, typeArg: string, obj: GenericArg) {
+export function freezeObjectImpl(
+  tx: Transaction,
+  typeArg: string,
+  obj: GenericArg
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer::freeze_object_impl`,
     typeArguments: [typeArg],
@@ -222,7 +251,11 @@ export function freezeObjectImpl(tx: Transaction, typeArg: string, obj: GenericA
   })
 }
 
-export function shareObjectImpl(tx: Transaction, typeArg: string, obj: GenericArg) {
+export function shareObjectImpl(
+  tx: Transaction,
+  typeArg: string,
+  obj: GenericArg
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer::share_object_impl`,
     typeArguments: [typeArg],
@@ -237,7 +270,11 @@ export interface PartyTransferImplArgs {
   permissions: Array<bigint | TransactionArgument> | TransactionArgument
 }
 
-export function partyTransferImpl(tx: Transaction, typeArg: string, args: PartyTransferImplArgs) {
+export function partyTransferImpl(
+  tx: Transaction,
+  typeArg: string,
+  args: PartyTransferImplArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer::party_transfer_impl`,
     typeArguments: [typeArg],
@@ -255,7 +292,11 @@ export interface TransferImplArgs {
   recipient: string | TransactionArgument
 }
 
-export function transferImpl(tx: Transaction, typeArg: string, args: TransferImplArgs) {
+export function transferImpl(
+  tx: Transaction,
+  typeArg: string,
+  args: TransferImplArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer::transfer_impl`,
     typeArguments: [typeArg],
@@ -269,7 +310,11 @@ export interface ReceiveImplArgs {
   version: bigint | TransactionArgument
 }
 
-export function receiveImpl(tx: Transaction, typeArg: string, args: ReceiveImplArgs) {
+export function receiveImpl(
+  tx: Transaction,
+  typeArg: string,
+  args: ReceiveImplArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer::receive_impl`,
     typeArguments: [typeArg],

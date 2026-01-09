@@ -38,14 +38,14 @@ export type ScalarReified = Reified<Scalar, ScalarFields>
 export class Scalar implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::bls12381::Scalar` as const
+  static readonly $typeName: `0x2::bls12381::Scalar` = `0x2::bls12381::Scalar` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Scalar.$typeName
+  readonly $typeName: typeof Scalar.$typeName = Scalar.$typeName
   readonly $fullTypeName: `0x2::bls12381::Scalar`
   readonly $typeArgs: []
-  readonly $isPhantom = Scalar.$isPhantom
+  readonly $isPhantom: typeof Scalar.$isPhantom = Scalar.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -80,7 +80,7 @@ export class Scalar implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): ScalarReified {
     return Scalar.reified()
   }
 
@@ -88,7 +88,7 @@ export class Scalar implements StructClass {
     return phantom(Scalar.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Scalar>> {
     return Scalar.phantom()
   }
 
@@ -127,13 +127,13 @@ export class Scalar implements StructClass {
     return Scalar.fromFields(Scalar.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -205,14 +205,14 @@ export type G1Reified = Reified<G1, G1Fields>
 export class G1 implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::bls12381::G1` as const
+  static readonly $typeName: `0x2::bls12381::G1` = `0x2::bls12381::G1` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = G1.$typeName
+  readonly $typeName: typeof G1.$typeName = G1.$typeName
   readonly $fullTypeName: `0x2::bls12381::G1`
   readonly $typeArgs: []
-  readonly $isPhantom = G1.$isPhantom
+  readonly $isPhantom: typeof G1.$isPhantom = G1.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -247,7 +247,7 @@ export class G1 implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): G1Reified {
     return G1.reified()
   }
 
@@ -255,7 +255,7 @@ export class G1 implements StructClass {
     return phantom(G1.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<G1>> {
     return G1.phantom()
   }
 
@@ -294,13 +294,13 @@ export class G1 implements StructClass {
     return G1.fromFields(G1.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -372,14 +372,14 @@ export type G2Reified = Reified<G2, G2Fields>
 export class G2 implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::bls12381::G2` as const
+  static readonly $typeName: `0x2::bls12381::G2` = `0x2::bls12381::G2` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = G2.$typeName
+  readonly $typeName: typeof G2.$typeName = G2.$typeName
   readonly $fullTypeName: `0x2::bls12381::G2`
   readonly $typeArgs: []
-  readonly $isPhantom = G2.$isPhantom
+  readonly $isPhantom: typeof G2.$isPhantom = G2.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -414,7 +414,7 @@ export class G2 implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): G2Reified {
     return G2.reified()
   }
 
@@ -422,7 +422,7 @@ export class G2 implements StructClass {
     return phantom(G2.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<G2>> {
     return G2.phantom()
   }
 
@@ -461,13 +461,13 @@ export class G2 implements StructClass {
     return G2.fromFields(G2.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -539,14 +539,14 @@ export type GTReified = Reified<GT, GTFields>
 export class GT implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::bls12381::GT` as const
+  static readonly $typeName: `0x2::bls12381::GT` = `0x2::bls12381::GT` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = GT.$typeName
+  readonly $typeName: typeof GT.$typeName = GT.$typeName
   readonly $fullTypeName: `0x2::bls12381::GT`
   readonly $typeArgs: []
-  readonly $isPhantom = GT.$isPhantom
+  readonly $isPhantom: typeof GT.$isPhantom = GT.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -581,7 +581,7 @@ export class GT implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): GTReified {
     return GT.reified()
   }
 
@@ -589,7 +589,7 @@ export class GT implements StructClass {
     return phantom(GT.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<GT>> {
     return GT.phantom()
   }
 
@@ -628,13 +628,13 @@ export class GT implements StructClass {
     return GT.fromFields(GT.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -706,14 +706,15 @@ export type UncompressedG1Reified = Reified<UncompressedG1, UncompressedG1Fields
 export class UncompressedG1 implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::bls12381::UncompressedG1` as const
+  static readonly $typeName: `0x2::bls12381::UncompressedG1` =
+    `0x2::bls12381::UncompressedG1` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = UncompressedG1.$typeName
+  readonly $typeName: typeof UncompressedG1.$typeName = UncompressedG1.$typeName
   readonly $fullTypeName: `0x2::bls12381::UncompressedG1`
   readonly $typeArgs: []
-  readonly $isPhantom = UncompressedG1.$isPhantom
+  readonly $isPhantom: typeof UncompressedG1.$isPhantom = UncompressedG1.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -754,7 +755,7 @@ export class UncompressedG1 implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): UncompressedG1Reified {
     return UncompressedG1.reified()
   }
 
@@ -762,7 +763,7 @@ export class UncompressedG1 implements StructClass {
     return phantom(UncompressedG1.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<UncompressedG1>> {
     return UncompressedG1.phantom()
   }
 
@@ -801,13 +802,13 @@ export class UncompressedG1 implements StructClass {
     return UncompressedG1.fromFields(UncompressedG1.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

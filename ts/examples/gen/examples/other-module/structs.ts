@@ -43,15 +43,15 @@ export type StructFromOtherModuleReified = Reified<
 export class StructFromOtherModule implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName =
+  static readonly $typeName: `${string}::other_module::StructFromOtherModule` =
     `${getTypeOrigin('examples', 'other_module::StructFromOtherModule')}::other_module::StructFromOtherModule` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = StructFromOtherModule.$typeName
+  readonly $typeName: typeof StructFromOtherModule.$typeName = StructFromOtherModule.$typeName
   readonly $fullTypeName: `${string}::other_module::StructFromOtherModule`
   readonly $typeArgs: []
-  readonly $isPhantom = StructFromOtherModule.$isPhantom
+  readonly $isPhantom: typeof StructFromOtherModule.$isPhantom = StructFromOtherModule.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -96,7 +96,7 @@ export class StructFromOtherModule implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): StructFromOtherModuleReified {
     return StructFromOtherModule.reified()
   }
 
@@ -104,7 +104,7 @@ export class StructFromOtherModule implements StructClass {
     return phantom(StructFromOtherModule.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<StructFromOtherModule>> {
     return StructFromOtherModule.phantom()
   }
 
@@ -143,13 +143,13 @@ export class StructFromOtherModule implements StructClass {
     return StructFromOtherModule.fromFields(StructFromOtherModule.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -226,15 +226,15 @@ export type AddedInAnUpgradeReified = Reified<AddedInAnUpgrade, AddedInAnUpgrade
 export class AddedInAnUpgrade implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName =
+  static readonly $typeName: `${string}::other_module::AddedInAnUpgrade` =
     `${getTypeOrigin('examples', 'other_module::AddedInAnUpgrade')}::other_module::AddedInAnUpgrade` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = AddedInAnUpgrade.$typeName
+  readonly $typeName: typeof AddedInAnUpgrade.$typeName = AddedInAnUpgrade.$typeName
   readonly $fullTypeName: `${string}::other_module::AddedInAnUpgrade`
   readonly $typeArgs: []
-  readonly $isPhantom = AddedInAnUpgrade.$isPhantom
+  readonly $isPhantom: typeof AddedInAnUpgrade.$isPhantom = AddedInAnUpgrade.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -275,7 +275,7 @@ export class AddedInAnUpgrade implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): AddedInAnUpgradeReified {
     return AddedInAnUpgrade.reified()
   }
 
@@ -283,7 +283,7 @@ export class AddedInAnUpgrade implements StructClass {
     return phantom(AddedInAnUpgrade.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<AddedInAnUpgrade>> {
     return AddedInAnUpgrade.phantom()
   }
 
@@ -322,13 +322,13 @@ export class AddedInAnUpgrade implements StructClass {
     return AddedInAnUpgrade.fromFields(AddedInAnUpgrade.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

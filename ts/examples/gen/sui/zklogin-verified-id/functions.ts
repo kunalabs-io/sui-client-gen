@@ -1,10 +1,15 @@
 import { String } from '../../_dependencies/std/string/structs'
 import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 /** Returns the address associated with the given VerifiedID */
-export function owner(tx: Transaction, verifiedId: TransactionObjectInput) {
+export function owner(tx: Transaction, verifiedId: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::owner`,
     arguments: [obj(tx, verifiedId)],
@@ -12,7 +17,10 @@ export function owner(tx: Transaction, verifiedId: TransactionObjectInput) {
 }
 
 /** Returns the name of the key claim associated with the given VerifiedID */
-export function keyClaimName(tx: Transaction, verifiedId: TransactionObjectInput) {
+export function keyClaimName(
+  tx: Transaction,
+  verifiedId: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::key_claim_name`,
     arguments: [obj(tx, verifiedId)],
@@ -20,7 +28,10 @@ export function keyClaimName(tx: Transaction, verifiedId: TransactionObjectInput
 }
 
 /** Returns the value of the key claim associated with the given VerifiedID */
-export function keyClaimValue(tx: Transaction, verifiedId: TransactionObjectInput) {
+export function keyClaimValue(
+  tx: Transaction,
+  verifiedId: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::key_claim_value`,
     arguments: [obj(tx, verifiedId)],
@@ -28,7 +39,7 @@ export function keyClaimValue(tx: Transaction, verifiedId: TransactionObjectInpu
 }
 
 /** Returns the issuer associated with the given VerifiedID */
-export function issuer(tx: Transaction, verifiedId: TransactionObjectInput) {
+export function issuer(tx: Transaction, verifiedId: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::issuer`,
     arguments: [obj(tx, verifiedId)],
@@ -36,7 +47,7 @@ export function issuer(tx: Transaction, verifiedId: TransactionObjectInput) {
 }
 
 /** Returns the audience (wallet) associated with the given VerifiedID */
-export function audience(tx: Transaction, verifiedId: TransactionObjectInput) {
+export function audience(tx: Transaction, verifiedId: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::audience`,
     arguments: [obj(tx, verifiedId)],
@@ -44,7 +55,7 @@ export function audience(tx: Transaction, verifiedId: TransactionObjectInput) {
 }
 
 /** Delete a VerifiedID */
-export function delete_(tx: Transaction, verifiedId: TransactionObjectInput) {
+export function delete_(tx: Transaction, verifiedId: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::delete`,
     arguments: [obj(tx, verifiedId)],
@@ -60,7 +71,7 @@ export interface VerifyZkloginIdArgs {
 }
 
 /** This function has been disabled. */
-export function verifyZkloginId(tx: Transaction, args: VerifyZkloginIdArgs) {
+export function verifyZkloginId(tx: Transaction, args: VerifyZkloginIdArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::verify_zklogin_id`,
     arguments: [
@@ -83,7 +94,7 @@ export interface CheckZkloginIdArgs {
 }
 
 /** This function has been disabled. */
-export function checkZkloginId(tx: Transaction, args: CheckZkloginIdArgs) {
+export function checkZkloginId(tx: Transaction, args: CheckZkloginIdArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::check_zklogin_id`,
     arguments: [
@@ -113,7 +124,10 @@ export interface CheckZkloginIdInternalArgs {
  * string or if the inputs are longer than the allowed upper bounds: `kc_name` must be at most 32 characters,
  * `kc_value` must be at most 115 characters and `aud` must be at most 145 characters.
  */
-export function checkZkloginIdInternal(tx: Transaction, args: CheckZkloginIdInternalArgs) {
+export function checkZkloginIdInternal(
+  tx: Transaction,
+  args: CheckZkloginIdInternalArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::check_zklogin_id_internal`,
     arguments: [

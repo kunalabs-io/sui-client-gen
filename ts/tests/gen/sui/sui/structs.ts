@@ -42,14 +42,14 @@ export type SUIReified = Reified<SUI, SUIFields>
 export class SUI implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::sui::SUI` as const
+  static readonly $typeName: `0x2::sui::SUI` = `0x2::sui::SUI` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = SUI.$typeName
+  readonly $typeName: typeof SUI.$typeName = SUI.$typeName
   readonly $fullTypeName: `0x2::sui::SUI`
   readonly $typeArgs: []
-  readonly $isPhantom = SUI.$isPhantom
+  readonly $isPhantom: typeof SUI.$isPhantom = SUI.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -84,7 +84,7 @@ export class SUI implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): SUIReified {
     return SUI.reified()
   }
 
@@ -92,7 +92,7 @@ export class SUI implements StructClass {
     return phantom(SUI.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<SUI>> {
     return SUI.phantom()
   }
 
@@ -131,13 +131,13 @@ export class SUI implements StructClass {
     return SUI.fromFields(SUI.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

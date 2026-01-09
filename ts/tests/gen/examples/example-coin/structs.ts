@@ -43,15 +43,15 @@ export type EXAMPLE_COINReified = Reified<EXAMPLE_COIN, EXAMPLE_COINFields>
 export class EXAMPLE_COIN implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName =
+  static readonly $typeName: `${string}::example_coin::EXAMPLE_COIN` =
     `${getTypeOrigin('examples', 'example_coin::EXAMPLE_COIN')}::example_coin::EXAMPLE_COIN` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = EXAMPLE_COIN.$typeName
+  readonly $typeName: typeof EXAMPLE_COIN.$typeName = EXAMPLE_COIN.$typeName
   readonly $fullTypeName: `${string}::example_coin::EXAMPLE_COIN`
   readonly $typeArgs: []
-  readonly $isPhantom = EXAMPLE_COIN.$isPhantom
+  readonly $isPhantom: typeof EXAMPLE_COIN.$isPhantom = EXAMPLE_COIN.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -92,7 +92,7 @@ export class EXAMPLE_COIN implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): EXAMPLE_COINReified {
     return EXAMPLE_COIN.reified()
   }
 
@@ -100,7 +100,7 @@ export class EXAMPLE_COIN implements StructClass {
     return phantom(EXAMPLE_COIN.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<EXAMPLE_COIN>> {
     return EXAMPLE_COIN.phantom()
   }
 
@@ -139,13 +139,13 @@ export class EXAMPLE_COIN implements StructClass {
     return EXAMPLE_COIN.fromFields(EXAMPLE_COIN.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -218,15 +218,15 @@ export type FaucetReified = Reified<Faucet, FaucetFields>
 export class Faucet implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName =
+  static readonly $typeName: `${string}::example_coin::Faucet` =
     `${getTypeOrigin('examples', 'example_coin::Faucet')}::example_coin::Faucet` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Faucet.$typeName
+  readonly $typeName: typeof Faucet.$typeName = Faucet.$typeName
   readonly $fullTypeName: `${string}::example_coin::Faucet`
   readonly $typeArgs: []
-  readonly $isPhantom = Faucet.$isPhantom
+  readonly $isPhantom: typeof Faucet.$isPhantom = Faucet.$isPhantom
 
   readonly id: ToField<UID>
   readonly cap: ToField<TreasuryCap<ToPhantom<EXAMPLE_COIN>>>
@@ -266,7 +266,7 @@ export class Faucet implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): FaucetReified {
     return Faucet.reified()
   }
 
@@ -274,7 +274,7 @@ export class Faucet implements StructClass {
     return phantom(Faucet.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Faucet>> {
     return Faucet.phantom()
   }
 
@@ -319,14 +319,14 @@ export class Faucet implements StructClass {
     return Faucet.fromFields(Faucet.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       cap: this.cap.toJSONField(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

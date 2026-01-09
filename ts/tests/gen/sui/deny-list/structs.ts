@@ -53,14 +53,14 @@ export type DenyListReified = Reified<DenyList, DenyListFields>
 export class DenyList implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::deny_list::DenyList` as const
+  static readonly $typeName: `0x2::deny_list::DenyList` = `0x2::deny_list::DenyList` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = DenyList.$typeName
+  readonly $typeName: typeof DenyList.$typeName = DenyList.$typeName
   readonly $fullTypeName: `0x2::deny_list::DenyList`
   readonly $typeArgs: []
-  readonly $isPhantom = DenyList.$isPhantom
+  readonly $isPhantom: typeof DenyList.$isPhantom = DenyList.$isPhantom
 
   readonly id: ToField<UID>
   /** The individual deny lists. */
@@ -101,7 +101,7 @@ export class DenyList implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): DenyListReified {
     return DenyList.reified()
   }
 
@@ -109,7 +109,7 @@ export class DenyList implements StructClass {
     return phantom(DenyList.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<DenyList>> {
     return DenyList.phantom()
   }
 
@@ -151,14 +151,14 @@ export class DenyList implements StructClass {
     return DenyList.fromFields(DenyList.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       lists: this.lists.toJSONField(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -235,14 +235,15 @@ export type ConfigWriteCapReified = Reified<ConfigWriteCap, ConfigWriteCapFields
 export class ConfigWriteCap implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::deny_list::ConfigWriteCap` as const
+  static readonly $typeName: `0x2::deny_list::ConfigWriteCap` =
+    `0x2::deny_list::ConfigWriteCap` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = ConfigWriteCap.$typeName
+  readonly $typeName: typeof ConfigWriteCap.$typeName = ConfigWriteCap.$typeName
   readonly $fullTypeName: `0x2::deny_list::ConfigWriteCap`
   readonly $typeArgs: []
-  readonly $isPhantom = ConfigWriteCap.$isPhantom
+  readonly $isPhantom: typeof ConfigWriteCap.$isPhantom = ConfigWriteCap.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -283,7 +284,7 @@ export class ConfigWriteCap implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): ConfigWriteCapReified {
     return ConfigWriteCap.reified()
   }
 
@@ -291,7 +292,7 @@ export class ConfigWriteCap implements StructClass {
     return phantom(ConfigWriteCap.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<ConfigWriteCap>> {
     return ConfigWriteCap.phantom()
   }
 
@@ -330,13 +331,13 @@ export class ConfigWriteCap implements StructClass {
     return ConfigWriteCap.fromFields(ConfigWriteCap.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -413,14 +414,14 @@ export type ConfigKeyReified = Reified<ConfigKey, ConfigKeyFields>
 export class ConfigKey implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::deny_list::ConfigKey` as const
+  static readonly $typeName: `0x2::deny_list::ConfigKey` = `0x2::deny_list::ConfigKey` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = ConfigKey.$typeName
+  readonly $typeName: typeof ConfigKey.$typeName = ConfigKey.$typeName
   readonly $fullTypeName: `0x2::deny_list::ConfigKey`
   readonly $typeArgs: []
-  readonly $isPhantom = ConfigKey.$isPhantom
+  readonly $isPhantom: typeof ConfigKey.$isPhantom = ConfigKey.$isPhantom
 
   readonly perTypeIndex: ToField<'u64'>
   readonly perTypeKey: ToField<Vector<'u8'>>
@@ -460,7 +461,7 @@ export class ConfigKey implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): ConfigKeyReified {
     return ConfigKey.reified()
   }
 
@@ -468,7 +469,7 @@ export class ConfigKey implements StructClass {
     return phantom(ConfigKey.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<ConfigKey>> {
     return ConfigKey.phantom()
   }
 
@@ -510,14 +511,14 @@ export class ConfigKey implements StructClass {
     return ConfigKey.fromFields(ConfigKey.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       perTypeIndex: this.perTypeIndex.toString(),
       perTypeKey: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.perTypeKey),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -591,14 +592,14 @@ export type AddressKeyReified = Reified<AddressKey, AddressKeyFields>
 export class AddressKey implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::deny_list::AddressKey` as const
+  static readonly $typeName: `0x2::deny_list::AddressKey` = `0x2::deny_list::AddressKey` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = AddressKey.$typeName
+  readonly $typeName: typeof AddressKey.$typeName = AddressKey.$typeName
   readonly $fullTypeName: `0x2::deny_list::AddressKey`
   readonly $typeArgs: []
-  readonly $isPhantom = AddressKey.$isPhantom
+  readonly $isPhantom: typeof AddressKey.$isPhantom = AddressKey.$isPhantom
 
   readonly pos0: ToField<'address'>
 
@@ -636,7 +637,7 @@ export class AddressKey implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): AddressKeyReified {
     return AddressKey.reified()
   }
 
@@ -644,7 +645,7 @@ export class AddressKey implements StructClass {
     return phantom(AddressKey.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<AddressKey>> {
     return AddressKey.phantom()
   }
 
@@ -686,13 +687,13 @@ export class AddressKey implements StructClass {
     return AddressKey.fromFields(AddressKey.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       pos0: this.pos0,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -765,14 +766,15 @@ export type GlobalPauseKeyReified = Reified<GlobalPauseKey, GlobalPauseKeyFields
 export class GlobalPauseKey implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::deny_list::GlobalPauseKey` as const
+  static readonly $typeName: `0x2::deny_list::GlobalPauseKey` =
+    `0x2::deny_list::GlobalPauseKey` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = GlobalPauseKey.$typeName
+  readonly $typeName: typeof GlobalPauseKey.$typeName = GlobalPauseKey.$typeName
   readonly $fullTypeName: `0x2::deny_list::GlobalPauseKey`
   readonly $typeArgs: []
-  readonly $isPhantom = GlobalPauseKey.$isPhantom
+  readonly $isPhantom: typeof GlobalPauseKey.$isPhantom = GlobalPauseKey.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -813,7 +815,7 @@ export class GlobalPauseKey implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): GlobalPauseKeyReified {
     return GlobalPauseKey.reified()
   }
 
@@ -821,7 +823,7 @@ export class GlobalPauseKey implements StructClass {
     return phantom(GlobalPauseKey.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<GlobalPauseKey>> {
     return GlobalPauseKey.phantom()
   }
 
@@ -860,13 +862,13 @@ export class GlobalPauseKey implements StructClass {
     return GlobalPauseKey.fromFields(GlobalPauseKey.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -943,14 +945,15 @@ export type PerTypeConfigCreatedReified = Reified<PerTypeConfigCreated, PerTypeC
 export class PerTypeConfigCreated implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::deny_list::PerTypeConfigCreated` as const
+  static readonly $typeName: `0x2::deny_list::PerTypeConfigCreated` =
+    `0x2::deny_list::PerTypeConfigCreated` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = PerTypeConfigCreated.$typeName
+  readonly $typeName: typeof PerTypeConfigCreated.$typeName = PerTypeConfigCreated.$typeName
   readonly $fullTypeName: `0x2::deny_list::PerTypeConfigCreated`
   readonly $typeArgs: []
-  readonly $isPhantom = PerTypeConfigCreated.$isPhantom
+  readonly $isPhantom: typeof PerTypeConfigCreated.$isPhantom = PerTypeConfigCreated.$isPhantom
 
   readonly key: ToField<ConfigKey>
   readonly configId: ToField<ID>
@@ -997,7 +1000,7 @@ export class PerTypeConfigCreated implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): PerTypeConfigCreatedReified {
     return PerTypeConfigCreated.reified()
   }
 
@@ -1005,7 +1008,7 @@ export class PerTypeConfigCreated implements StructClass {
     return phantom(PerTypeConfigCreated.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<PerTypeConfigCreated>> {
     return PerTypeConfigCreated.phantom()
   }
 
@@ -1047,14 +1050,14 @@ export class PerTypeConfigCreated implements StructClass {
     return PerTypeConfigCreated.fromFields(PerTypeConfigCreated.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       key: this.key.toJSONField(),
       configId: this.configId,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1141,14 +1144,14 @@ export type PerTypeListReified = Reified<PerTypeList, PerTypeListFields>
 export class PerTypeList implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::deny_list::PerTypeList` as const
+  static readonly $typeName: `0x2::deny_list::PerTypeList` = `0x2::deny_list::PerTypeList` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = PerTypeList.$typeName
+  readonly $typeName: typeof PerTypeList.$typeName = PerTypeList.$typeName
   readonly $fullTypeName: `0x2::deny_list::PerTypeList`
   readonly $typeArgs: []
-  readonly $isPhantom = PerTypeList.$isPhantom
+  readonly $isPhantom: typeof PerTypeList.$isPhantom = PerTypeList.$isPhantom
 
   readonly id: ToField<UID>
   /**
@@ -1199,7 +1202,7 @@ export class PerTypeList implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): PerTypeListReified {
     return PerTypeList.reified()
   }
 
@@ -1207,7 +1210,7 @@ export class PerTypeList implements StructClass {
     return phantom(PerTypeList.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<PerTypeList>> {
     return PerTypeList.phantom()
   }
 
@@ -1264,7 +1267,7 @@ export class PerTypeList implements StructClass {
     return PerTypeList.fromFields(PerTypeList.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       deniedCount: this.deniedCount.toJSONField(),
@@ -1272,7 +1275,7 @@ export class PerTypeList implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

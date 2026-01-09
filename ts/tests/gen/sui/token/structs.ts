@@ -78,14 +78,14 @@ export type TokenReified<T extends PhantomTypeArgument> = Reified<Token<T>, Toke
 export class Token<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::token::Token` as const
+  static readonly $typeName: `0x2::token::Token` = `0x2::token::Token` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = Token.$typeName
+  readonly $typeName: typeof Token.$typeName = Token.$typeName
   readonly $fullTypeName: `0x2::token::Token<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = Token.$isPhantom
+  readonly $isPhantom: typeof Token.$isPhantom = Token.$isPhantom
 
   readonly id: ToField<UID>
   /** The Balance of the `Token`. */
@@ -131,7 +131,7 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Token.reified {
     return Token.reified
   }
 
@@ -141,7 +141,7 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
     return phantom(Token.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof Token.phantom {
     return Token.phantom
   }
 
@@ -193,14 +193,14 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
     return Token.fromFields(typeArg, Token.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       balance: this.balance.toJSONField(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -318,14 +318,14 @@ export type TokenPolicyCapReified<T extends PhantomTypeArgument> = Reified<
 export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::token::TokenPolicyCap` as const
+  static readonly $typeName: `0x2::token::TokenPolicyCap` = `0x2::token::TokenPolicyCap` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = TokenPolicyCap.$typeName
+  readonly $typeName: typeof TokenPolicyCap.$typeName = TokenPolicyCap.$typeName
   readonly $fullTypeName: `0x2::token::TokenPolicyCap<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = TokenPolicyCap.$isPhantom
+  readonly $isPhantom: typeof TokenPolicyCap.$isPhantom = TokenPolicyCap.$isPhantom
 
   readonly id: ToField<UID>
   readonly for: ToField<ID>
@@ -370,7 +370,7 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
     }
   }
 
-  static get r() {
+  static get r(): typeof TokenPolicyCap.reified {
     return TokenPolicyCap.reified
   }
 
@@ -380,7 +380,7 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
     return phantom(TokenPolicyCap.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof TokenPolicyCap.phantom {
     return TokenPolicyCap.phantom
   }
 
@@ -432,14 +432,14 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
     return TokenPolicyCap.fromFields(typeArg, TokenPolicyCap.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       for: this.for,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -578,14 +578,14 @@ export type TokenPolicyReified<T extends PhantomTypeArgument> = Reified<
 export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::token::TokenPolicy` as const
+  static readonly $typeName: `0x2::token::TokenPolicy` = `0x2::token::TokenPolicy` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = TokenPolicy.$typeName
+  readonly $typeName: typeof TokenPolicy.$typeName = TokenPolicy.$typeName
   readonly $fullTypeName: `0x2::token::TokenPolicy<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = TokenPolicy.$isPhantom
+  readonly $isPhantom: typeof TokenPolicy.$isPhantom = TokenPolicy.$isPhantom
 
   readonly id: ToField<UID>
   /**
@@ -645,7 +645,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof TokenPolicy.reified {
     return TokenPolicy.reified
   }
 
@@ -655,7 +655,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
     return phantom(TokenPolicy.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof TokenPolicy.phantom {
     return TokenPolicy.phantom
   }
 
@@ -716,7 +716,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
     return TokenPolicy.fromFields(typeArg, TokenPolicy.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       spentBalance: this.spentBalance.toJSONField(),
@@ -724,7 +724,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -868,14 +868,14 @@ export type ActionRequestReified<T extends PhantomTypeArgument> = Reified<
 export class ActionRequest<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::token::ActionRequest` as const
+  static readonly $typeName: `0x2::token::ActionRequest` = `0x2::token::ActionRequest` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = ActionRequest.$typeName
+  readonly $typeName: typeof ActionRequest.$typeName = ActionRequest.$typeName
   readonly $fullTypeName: `0x2::token::ActionRequest<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = ActionRequest.$isPhantom
+  readonly $isPhantom: typeof ActionRequest.$isPhantom = ActionRequest.$isPhantom
 
   /**
    * Name of the Action to look up in the Policy. Name can be one of the
@@ -945,7 +945,7 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
     }
   }
 
-  static get r() {
+  static get r(): typeof ActionRequest.reified {
     return ActionRequest.reified
   }
 
@@ -955,7 +955,7 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
     return phantom(ActionRequest.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof ActionRequest.phantom {
     return ActionRequest.phantom
   }
 
@@ -1036,7 +1036,7 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
     return ActionRequest.fromFields(typeArg, ActionRequest.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       name: this.name,
       amount: this.amount.toString(),
@@ -1050,7 +1050,7 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1172,14 +1172,14 @@ export type RuleKeyReified<T extends PhantomTypeArgument> = Reified<RuleKey<T>, 
 export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::token::RuleKey` as const
+  static readonly $typeName: `0x2::token::RuleKey` = `0x2::token::RuleKey` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = RuleKey.$typeName
+  readonly $typeName: typeof RuleKey.$typeName = RuleKey.$typeName
   readonly $fullTypeName: `0x2::token::RuleKey<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = RuleKey.$isPhantom
+  readonly $isPhantom: typeof RuleKey.$isPhantom = RuleKey.$isPhantom
 
   readonly isProtected: ToField<'bool'>
 
@@ -1222,7 +1222,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof RuleKey.reified {
     return RuleKey.reified
   }
 
@@ -1232,7 +1232,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
     return phantom(RuleKey.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof RuleKey.phantom {
     return RuleKey.phantom
   }
 
@@ -1281,13 +1281,13 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
     return RuleKey.fromFields(typeArg, RuleKey.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       isProtected: this.isProtected,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1410,14 +1410,15 @@ export type TokenPolicyCreatedReified<T extends PhantomTypeArgument> = Reified<
 export class TokenPolicyCreated<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::token::TokenPolicyCreated` as const
+  static readonly $typeName: `0x2::token::TokenPolicyCreated` =
+    `0x2::token::TokenPolicyCreated` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = TokenPolicyCreated.$typeName
+  readonly $typeName: typeof TokenPolicyCreated.$typeName = TokenPolicyCreated.$typeName
   readonly $fullTypeName: `0x2::token::TokenPolicyCreated<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = TokenPolicyCreated.$isPhantom
+  readonly $isPhantom: typeof TokenPolicyCreated.$isPhantom = TokenPolicyCreated.$isPhantom
 
   /** ID of the `TokenPolicy` that was created. */
   readonly id: ToField<ID>
@@ -1471,7 +1472,7 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
     }
   }
 
-  static get r() {
+  static get r(): typeof TokenPolicyCreated.reified {
     return TokenPolicyCreated.reified
   }
 
@@ -1481,7 +1482,7 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
     return phantom(TokenPolicyCreated.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof TokenPolicyCreated.phantom {
     return TokenPolicyCreated.phantom
   }
 
@@ -1533,14 +1534,14 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
     return TokenPolicyCreated.fromFields(typeArg, TokenPolicyCreated.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       isMutable: this.isMutable,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

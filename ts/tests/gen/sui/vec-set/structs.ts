@@ -53,14 +53,14 @@ export type VecSetReified<K extends TypeArgument> = Reified<VecSet<K>, VecSetFie
 export class VecSet<K extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::vec_set::VecSet` as const
+  static readonly $typeName: `0x2::vec_set::VecSet` = `0x2::vec_set::VecSet` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
-  readonly $typeName = VecSet.$typeName
+  readonly $typeName: typeof VecSet.$typeName = VecSet.$typeName
   readonly $fullTypeName: `0x2::vec_set::VecSet<${ToTypeStr<K>}>`
   readonly $typeArgs: [ToTypeStr<K>]
-  readonly $isPhantom = VecSet.$isPhantom
+  readonly $isPhantom: typeof VecSet.$isPhantom = VecSet.$isPhantom
 
   readonly contents: ToField<Vector<K>>
 
@@ -101,7 +101,7 @@ export class VecSet<K extends TypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof VecSet.reified {
     return VecSet.reified
   }
 
@@ -111,7 +111,7 @@ export class VecSet<K extends TypeArgument> implements StructClass {
     return phantom(VecSet.reified(K))
   }
 
-  static get p() {
+  static get p(): typeof VecSet.phantom {
     return VecSet.phantom
   }
 
@@ -162,13 +162,13 @@ export class VecSet<K extends TypeArgument> implements StructClass {
     return VecSet.fromFields(typeArg, VecSet.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       contents: fieldToJSON<Vector<K>>(`vector<${this.$typeArgs[0]}>`, this.contents),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

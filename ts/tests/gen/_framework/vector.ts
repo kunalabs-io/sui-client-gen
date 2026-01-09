@@ -64,7 +64,7 @@ export class Vector<T extends TypeArgument> implements VectorClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Vector.reified {
     return Vector.reified
   }
 
@@ -95,11 +95,11 @@ export class Vector<T extends TypeArgument> implements VectorClass {
     return Vector.fromFields(typeArg, Vector.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): any[] {
     return this.elements.map(element => fieldToJSON(this.$typeArgs[0], element))
   }
 
-  toJSON() {
+  toJSON(): { $typeName: string; $typeArgs: string[]; elements: any[] } {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,

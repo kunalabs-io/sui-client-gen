@@ -62,14 +62,15 @@ export type ClaimedReified = Reified<Claimed, ClaimedFields>
 export class Claimed implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::derived_object::Claimed` as const
+  static readonly $typeName: `0x2::derived_object::Claimed` =
+    `0x2::derived_object::Claimed` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Claimed.$typeName
+  readonly $typeName: typeof Claimed.$typeName = Claimed.$typeName
   readonly $fullTypeName: `0x2::derived_object::Claimed`
   readonly $typeArgs: []
-  readonly $isPhantom = Claimed.$isPhantom
+  readonly $isPhantom: typeof Claimed.$isPhantom = Claimed.$isPhantom
 
   readonly pos0: ToField<ID>
 
@@ -107,7 +108,7 @@ export class Claimed implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): ClaimedReified {
     return Claimed.reified()
   }
 
@@ -115,7 +116,7 @@ export class Claimed implements StructClass {
     return phantom(Claimed.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Claimed>> {
     return Claimed.phantom()
   }
 
@@ -154,13 +155,13 @@ export class Claimed implements StructClass {
     return Claimed.fromFields(Claimed.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       pos0: this.pos0,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -236,14 +237,15 @@ export type DerivedObjectKeyReified<K extends TypeArgument> = Reified<
 export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::derived_object::DerivedObjectKey` as const
+  static readonly $typeName: `0x2::derived_object::DerivedObjectKey` =
+    `0x2::derived_object::DerivedObjectKey` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
-  readonly $typeName = DerivedObjectKey.$typeName
+  readonly $typeName: typeof DerivedObjectKey.$typeName = DerivedObjectKey.$typeName
   readonly $fullTypeName: `0x2::derived_object::DerivedObjectKey<${ToTypeStr<K>}>`
   readonly $typeArgs: [ToTypeStr<K>]
-  readonly $isPhantom = DerivedObjectKey.$isPhantom
+  readonly $isPhantom: typeof DerivedObjectKey.$isPhantom = DerivedObjectKey.$isPhantom
 
   readonly pos0: ToField<K>
 
@@ -287,7 +289,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof DerivedObjectKey.reified {
     return DerivedObjectKey.reified
   }
 
@@ -297,7 +299,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
     return phantom(DerivedObjectKey.reified(K))
   }
 
-  static get p() {
+  static get p(): typeof DerivedObjectKey.phantom {
     return DerivedObjectKey.phantom
   }
 
@@ -348,13 +350,13 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
     return DerivedObjectKey.fromFields(typeArg, DerivedObjectKey.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       pos0: fieldToJSON<K>(`${this.$typeArgs[0]}`, this.pos0),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -472,7 +474,8 @@ export type ClaimedStatusFields = ClaimedStatusReservedFields
 export type ClaimedStatusReified = Reified<ClaimedStatusVariant, ClaimedStatusFields>
 
 export class ClaimedStatus {
-  static readonly $typeName = `0x2::derived_object::ClaimedStatus` as const
+  static readonly $typeName: `0x2::derived_object::ClaimedStatus` =
+    `0x2::derived_object::ClaimedStatus` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -500,7 +503,7 @@ export class ClaimedStatus {
     } as ClaimedStatusReified
   }
 
-  static get r() {
+  static get r(): typeof ClaimedStatus.reified {
     return ClaimedStatus.reified
   }
 
@@ -508,7 +511,7 @@ export class ClaimedStatus {
     return phantom(ClaimedStatus.reified())
   }
 
-  static get p() {
+  static get p(): typeof ClaimedStatus.phantom {
     return ClaimedStatus.phantom
   }
 
@@ -591,16 +594,17 @@ export type ClaimedStatusReservedFields = Record<string, never>
 export class ClaimedStatusReserved implements EnumVariantClass {
   __EnumVariantClass = true as const
 
-  static readonly $typeName = ClaimedStatus.$typeName
-  static readonly $numTypeParams = ClaimedStatus.$numTypeParams
-  static readonly $isPhantom = ClaimedStatus.$isPhantom
-  static readonly $variantName = 'Reserved'
+  static readonly $typeName: typeof ClaimedStatus.$typeName = ClaimedStatus.$typeName
+  static readonly $numTypeParams: typeof ClaimedStatus.$numTypeParams = ClaimedStatus.$numTypeParams
+  static readonly $isPhantom: typeof ClaimedStatus.$isPhantom = ClaimedStatus.$isPhantom
+  static readonly $variantName = 'Reserved' as const
 
-  readonly $typeName = ClaimedStatusReserved.$typeName
+  readonly $typeName: typeof ClaimedStatusReserved.$typeName = ClaimedStatusReserved.$typeName
   readonly $fullTypeName: `${typeof ClaimedStatus.$typeName}`
   readonly $typeArgs: []
-  readonly $isPhantom = ClaimedStatus.$isPhantom
-  readonly $variantName = ClaimedStatusReserved.$variantName
+  readonly $isPhantom: typeof ClaimedStatus.$isPhantom = ClaimedStatus.$isPhantom
+  readonly $variantName: typeof ClaimedStatusReserved.$variantName =
+    ClaimedStatusReserved.$variantName
 
   constructor(typeArgs: [], fields: ClaimedStatusReservedFields) {
     this.$fullTypeName = composeSuiType(
@@ -610,11 +614,11 @@ export class ClaimedStatusReserved implements EnumVariantClass {
     this.$typeArgs = typeArgs
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return { $kind: this.$variantName }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,

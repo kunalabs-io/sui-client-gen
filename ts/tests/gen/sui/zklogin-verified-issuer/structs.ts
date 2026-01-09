@@ -47,14 +47,15 @@ export type VerifiedIssuerReified = Reified<VerifiedIssuer, VerifiedIssuerFields
 export class VerifiedIssuer implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::zklogin_verified_issuer::VerifiedIssuer` as const
+  static readonly $typeName: `0x2::zklogin_verified_issuer::VerifiedIssuer` =
+    `0x2::zklogin_verified_issuer::VerifiedIssuer` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = VerifiedIssuer.$typeName
+  readonly $typeName: typeof VerifiedIssuer.$typeName = VerifiedIssuer.$typeName
   readonly $fullTypeName: `0x2::zklogin_verified_issuer::VerifiedIssuer`
   readonly $typeArgs: []
-  readonly $isPhantom = VerifiedIssuer.$isPhantom
+  readonly $isPhantom: typeof VerifiedIssuer.$isPhantom = VerifiedIssuer.$isPhantom
 
   /** The ID of this VerifiedIssuer */
   readonly id: ToField<UID>
@@ -102,7 +103,7 @@ export class VerifiedIssuer implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): VerifiedIssuerReified {
     return VerifiedIssuer.reified()
   }
 
@@ -110,7 +111,7 @@ export class VerifiedIssuer implements StructClass {
     return phantom(VerifiedIssuer.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<VerifiedIssuer>> {
     return VerifiedIssuer.phantom()
   }
 
@@ -158,7 +159,7 @@ export class VerifiedIssuer implements StructClass {
     return VerifiedIssuer.fromFields(VerifiedIssuer.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       owner: this.owner,
@@ -166,7 +167,7 @@ export class VerifiedIssuer implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

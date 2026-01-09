@@ -1,14 +1,19 @@
 import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, pure, vector } from '../../_framework/util'
 import { Entry } from './structs'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 /** Create a new priority queue from the input entry vectors. */
 export function new_(
   tx: Transaction,
   typeArg: string,
   entries: Array<TransactionObjectInput> | TransactionArgument
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::priority_queue::new`,
     typeArguments: [typeArg],
@@ -17,7 +22,11 @@ export function new_(
 }
 
 /** Pop the entry with the highest priority value. */
-export function popMax(tx: Transaction, typeArg: string, pq: TransactionObjectInput) {
+export function popMax(
+  tx: Transaction,
+  typeArg: string,
+  pq: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::priority_queue::pop_max`,
     typeArguments: [typeArg],
@@ -32,7 +41,7 @@ export interface InsertArgs {
 }
 
 /** Insert a new entry into the queue. */
-export function insert(tx: Transaction, typeArg: string, args: InsertArgs) {
+export function insert(tx: Transaction, typeArg: string, args: InsertArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::priority_queue::insert`,
     typeArguments: [typeArg],
@@ -49,7 +58,7 @@ export interface NewEntryArgs {
   value: GenericArg
 }
 
-export function newEntry(tx: Transaction, typeArg: string, args: NewEntryArgs) {
+export function newEntry(tx: Transaction, typeArg: string, args: NewEntryArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::priority_queue::new_entry`,
     typeArguments: [typeArg],
@@ -62,7 +71,11 @@ export interface CreateEntriesArgs {
   v: Array<GenericArg> | TransactionArgument
 }
 
-export function createEntries(tx: Transaction, typeArg: string, args: CreateEntriesArgs) {
+export function createEntries(
+  tx: Transaction,
+  typeArg: string,
+  args: CreateEntriesArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::priority_queue::create_entries`,
     typeArguments: [typeArg],
@@ -79,7 +92,7 @@ export function restoreHeapRecursive(
   tx: Transaction,
   typeArg: string,
   args: RestoreHeapRecursiveArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::priority_queue::restore_heap_recursive`,
     typeArguments: [typeArg],
@@ -104,7 +117,7 @@ export function maxHeapifyRecursive(
   tx: Transaction,
   typeArg: string,
   args: MaxHeapifyRecursiveArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::priority_queue::max_heapify_recursive`,
     typeArguments: [typeArg],
@@ -116,7 +129,11 @@ export function maxHeapifyRecursive(
   })
 }
 
-export function priorities(tx: Transaction, typeArg: string, pq: TransactionObjectInput) {
+export function priorities(
+  tx: Transaction,
+  typeArg: string,
+  pq: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::priority_queue::priorities`,
     typeArguments: [typeArg],

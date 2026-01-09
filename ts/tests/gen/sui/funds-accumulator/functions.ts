@@ -1,13 +1,18 @@
 import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 /** Returns the owner, either a sender's address or an object, of the withdrawal. */
 export function withdrawalOwner(
   tx: Transaction,
   typeArg: string,
   withdrawal: TransactionObjectInput
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::withdrawal_owner`,
     typeArguments: [typeArg],
@@ -20,7 +25,7 @@ export function withdrawalLimit(
   tx: Transaction,
   typeArg: string,
   withdrawal: TransactionObjectInput
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::withdrawal_limit`,
     typeArguments: [typeArg],
@@ -34,7 +39,11 @@ export interface WithdrawalSplitArgs {
 }
 
 /** Split a `Withdrawal` and take a sub-withdrawal from it with the specified sub-limit. */
-export function withdrawalSplit(tx: Transaction, typeArg: string, args: WithdrawalSplitArgs) {
+export function withdrawalSplit(
+  tx: Transaction,
+  typeArg: string,
+  args: WithdrawalSplitArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::withdrawal_split`,
     typeArguments: [typeArg],
@@ -52,7 +61,11 @@ export interface WithdrawalJoinArgs {
  * Aborts with `EOwnerMismatch` if the owners are not equal.
  * Aborts with `EOverflow` if the resulting limit would overflow `u256`.
  */
-export function withdrawalJoin(tx: Transaction, typeArg: string, args: WithdrawalJoinArgs) {
+export function withdrawalJoin(
+  tx: Transaction,
+  typeArg: string,
+  args: WithdrawalJoinArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::withdrawal_join`,
     typeArguments: [typeArg],
@@ -60,7 +73,11 @@ export function withdrawalJoin(tx: Transaction, typeArg: string, args: Withdrawa
   })
 }
 
-export function redeem(tx: Transaction, typeArg: string, withdrawal: TransactionObjectInput) {
+export function redeem(
+  tx: Transaction,
+  typeArg: string,
+  withdrawal: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::redeem`,
     typeArguments: [typeArg],
@@ -73,7 +90,11 @@ export interface WithdrawFromObjectArgs {
   limit: bigint | TransactionArgument
 }
 
-export function withdrawFromObject(tx: Transaction, typeArg: string, args: WithdrawFromObjectArgs) {
+export function withdrawFromObject(
+  tx: Transaction,
+  typeArg: string,
+  args: WithdrawFromObjectArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::withdraw_from_object`,
     typeArguments: [typeArg],
@@ -86,7 +107,7 @@ export interface AddImplArgs {
   recipient: string | TransactionArgument
 }
 
-export function addImpl(tx: Transaction, typeArg: string, args: AddImplArgs) {
+export function addImpl(tx: Transaction, typeArg: string, args: AddImplArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::add_impl`,
     typeArguments: [typeArg],
@@ -99,7 +120,11 @@ export interface WithdrawImplArgs {
   value: bigint | TransactionArgument
 }
 
-export function withdrawImpl(tx: Transaction, typeArg: string, args: WithdrawImplArgs) {
+export function withdrawImpl(
+  tx: Transaction,
+  typeArg: string,
+  args: WithdrawImplArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::withdraw_impl`,
     typeArguments: [typeArg],
@@ -117,7 +142,7 @@ export function addToAccumulatorAddress(
   tx: Transaction,
   typeArg: string,
   args: AddToAccumulatorAddressArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::add_to_accumulator_address`,
     typeArguments: [typeArg],
@@ -139,7 +164,7 @@ export function withdrawFromAccumulatorAddress(
   tx: Transaction,
   typeArg: string,
   args: WithdrawFromAccumulatorAddressArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::withdraw_from_accumulator_address`,
     typeArguments: [typeArg],
@@ -156,7 +181,11 @@ export interface CreateWithdrawalArgs {
   limit: bigint | TransactionArgument
 }
 
-export function createWithdrawal(tx: Transaction, typeArg: string, args: CreateWithdrawalArgs) {
+export function createWithdrawal(
+  tx: Transaction,
+  typeArg: string,
+  args: CreateWithdrawalArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::create_withdrawal`,
     typeArguments: [typeArg],

@@ -47,14 +47,15 @@ export type AuthenticatorStateReified = Reified<AuthenticatorState, Authenticato
 export class AuthenticatorState implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::authenticator_state::AuthenticatorState` as const
+  static readonly $typeName: `0x2::authenticator_state::AuthenticatorState` =
+    `0x2::authenticator_state::AuthenticatorState` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = AuthenticatorState.$typeName
+  readonly $typeName: typeof AuthenticatorState.$typeName = AuthenticatorState.$typeName
   readonly $fullTypeName: `0x2::authenticator_state::AuthenticatorState`
   readonly $typeArgs: []
-  readonly $isPhantom = AuthenticatorState.$isPhantom
+  readonly $isPhantom: typeof AuthenticatorState.$isPhantom = AuthenticatorState.$isPhantom
 
   readonly id: ToField<UID>
   readonly version: ToField<'u64'>
@@ -97,7 +98,7 @@ export class AuthenticatorState implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): AuthenticatorStateReified {
     return AuthenticatorState.reified()
   }
 
@@ -105,7 +106,7 @@ export class AuthenticatorState implements StructClass {
     return phantom(AuthenticatorState.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<AuthenticatorState>> {
     return AuthenticatorState.phantom()
   }
 
@@ -147,14 +148,14 @@ export class AuthenticatorState implements StructClass {
     return AuthenticatorState.fromFields(AuthenticatorState.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       version: this.version.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -232,14 +233,16 @@ export type AuthenticatorStateInnerReified = Reified<
 export class AuthenticatorStateInner implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::authenticator_state::AuthenticatorStateInner` as const
+  static readonly $typeName: `0x2::authenticator_state::AuthenticatorStateInner` =
+    `0x2::authenticator_state::AuthenticatorStateInner` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = AuthenticatorStateInner.$typeName
+  readonly $typeName: typeof AuthenticatorStateInner.$typeName = AuthenticatorStateInner.$typeName
   readonly $fullTypeName: `0x2::authenticator_state::AuthenticatorStateInner`
   readonly $typeArgs: []
-  readonly $isPhantom = AuthenticatorStateInner.$isPhantom
+  readonly $isPhantom: typeof AuthenticatorStateInner.$isPhantom =
+    AuthenticatorStateInner.$isPhantom
 
   readonly version: ToField<'u64'>
   /** List of currently active JWKs. */
@@ -287,7 +290,7 @@ export class AuthenticatorStateInner implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): AuthenticatorStateInnerReified {
     return AuthenticatorStateInner.reified()
   }
 
@@ -295,7 +298,7 @@ export class AuthenticatorStateInner implements StructClass {
     return phantom(AuthenticatorStateInner.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<AuthenticatorStateInner>> {
     return AuthenticatorStateInner.phantom()
   }
 
@@ -337,14 +340,14 @@ export class AuthenticatorStateInner implements StructClass {
     return AuthenticatorStateInner.fromFields(AuthenticatorStateInner.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       version: this.version.toString(),
       activeJwks: fieldToJSON<Vector<ActiveJwk>>(`vector<${ActiveJwk.$typeName}>`, this.activeJwks),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -423,14 +426,15 @@ export type JWKReified = Reified<JWK, JWKFields>
 export class JWK implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::authenticator_state::JWK` as const
+  static readonly $typeName: `0x2::authenticator_state::JWK` =
+    `0x2::authenticator_state::JWK` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = JWK.$typeName
+  readonly $typeName: typeof JWK.$typeName = JWK.$typeName
   readonly $fullTypeName: `0x2::authenticator_state::JWK`
   readonly $typeArgs: []
-  readonly $isPhantom = JWK.$isPhantom
+  readonly $isPhantom: typeof JWK.$isPhantom = JWK.$isPhantom
 
   readonly kty: ToField<String>
   readonly e: ToField<String>
@@ -474,7 +478,7 @@ export class JWK implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): JWKReified {
     return JWK.reified()
   }
 
@@ -482,7 +486,7 @@ export class JWK implements StructClass {
     return phantom(JWK.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<JWK>> {
     return JWK.phantom()
   }
 
@@ -530,7 +534,7 @@ export class JWK implements StructClass {
     return JWK.fromFields(JWK.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       kty: this.kty,
       e: this.e,
@@ -539,7 +543,7 @@ export class JWK implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -616,14 +620,15 @@ export type JwkIdReified = Reified<JwkId, JwkIdFields>
 export class JwkId implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::authenticator_state::JwkId` as const
+  static readonly $typeName: `0x2::authenticator_state::JwkId` =
+    `0x2::authenticator_state::JwkId` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = JwkId.$typeName
+  readonly $typeName: typeof JwkId.$typeName = JwkId.$typeName
   readonly $fullTypeName: `0x2::authenticator_state::JwkId`
   readonly $typeArgs: []
-  readonly $isPhantom = JwkId.$isPhantom
+  readonly $isPhantom: typeof JwkId.$isPhantom = JwkId.$isPhantom
 
   readonly iss: ToField<String>
   readonly kid: ToField<String>
@@ -663,7 +668,7 @@ export class JwkId implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): JwkIdReified {
     return JwkId.reified()
   }
 
@@ -671,7 +676,7 @@ export class JwkId implements StructClass {
     return phantom(JwkId.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<JwkId>> {
     return JwkId.phantom()
   }
 
@@ -713,14 +718,14 @@ export class JwkId implements StructClass {
     return JwkId.fromFields(JwkId.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       iss: this.iss,
       kid: this.kid,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -795,14 +800,15 @@ export type ActiveJwkReified = Reified<ActiveJwk, ActiveJwkFields>
 export class ActiveJwk implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::authenticator_state::ActiveJwk` as const
+  static readonly $typeName: `0x2::authenticator_state::ActiveJwk` =
+    `0x2::authenticator_state::ActiveJwk` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = ActiveJwk.$typeName
+  readonly $typeName: typeof ActiveJwk.$typeName = ActiveJwk.$typeName
   readonly $fullTypeName: `0x2::authenticator_state::ActiveJwk`
   readonly $typeArgs: []
-  readonly $isPhantom = ActiveJwk.$isPhantom
+  readonly $isPhantom: typeof ActiveJwk.$isPhantom = ActiveJwk.$isPhantom
 
   readonly jwkId: ToField<JwkId>
   readonly jwk: ToField<JWK>
@@ -847,7 +853,7 @@ export class ActiveJwk implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): ActiveJwkReified {
     return ActiveJwk.reified()
   }
 
@@ -855,7 +861,7 @@ export class ActiveJwk implements StructClass {
     return phantom(ActiveJwk.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<ActiveJwk>> {
     return ActiveJwk.phantom()
   }
 
@@ -900,7 +906,7 @@ export class ActiveJwk implements StructClass {
     return ActiveJwk.fromFields(ActiveJwk.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       jwkId: this.jwkId.toJSONField(),
       jwk: this.jwk.toJSONField(),
@@ -908,7 +914,7 @@ export class ActiveJwk implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

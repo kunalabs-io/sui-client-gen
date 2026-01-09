@@ -118,14 +118,15 @@ export type ExtensionReified = Reified<Extension, ExtensionFields>
 export class Extension implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk_extension::Extension` as const
+  static readonly $typeName: `0x2::kiosk_extension::Extension` =
+    `0x2::kiosk_extension::Extension` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Extension.$typeName
+  readonly $typeName: typeof Extension.$typeName = Extension.$typeName
   readonly $fullTypeName: `0x2::kiosk_extension::Extension`
   readonly $typeArgs: []
-  readonly $isPhantom = Extension.$isPhantom
+  readonly $isPhantom: typeof Extension.$isPhantom = Extension.$isPhantom
 
   /**
    * Storage for the extension, an isolated Bag. By putting the extension
@@ -194,7 +195,7 @@ export class Extension implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): ExtensionReified {
     return Extension.reified()
   }
 
@@ -202,7 +203,7 @@ export class Extension implements StructClass {
     return phantom(Extension.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Extension>> {
     return Extension.phantom()
   }
 
@@ -247,7 +248,7 @@ export class Extension implements StructClass {
     return Extension.fromFields(Extension.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       storage: this.storage.toJSONField(),
       permissions: this.permissions.toString(),
@@ -255,7 +256,7 @@ export class Extension implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -337,14 +338,15 @@ export type ExtensionKeyReified<Ext extends PhantomTypeArgument> = Reified<
 export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk_extension::ExtensionKey` as const
+  static readonly $typeName: `0x2::kiosk_extension::ExtensionKey` =
+    `0x2::kiosk_extension::ExtensionKey` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = ExtensionKey.$typeName
+  readonly $typeName: typeof ExtensionKey.$typeName = ExtensionKey.$typeName
   readonly $fullTypeName: `0x2::kiosk_extension::ExtensionKey<${PhantomToTypeStr<Ext>}>`
   readonly $typeArgs: [PhantomToTypeStr<Ext>]
-  readonly $isPhantom = ExtensionKey.$isPhantom
+  readonly $isPhantom: typeof ExtensionKey.$isPhantom = ExtensionKey.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -387,7 +389,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
     }
   }
 
-  static get r() {
+  static get r(): typeof ExtensionKey.reified {
     return ExtensionKey.reified
   }
 
@@ -397,7 +399,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
     return phantom(ExtensionKey.reified(Ext))
   }
 
-  static get p() {
+  static get p(): typeof ExtensionKey.phantom {
     return ExtensionKey.phantom
   }
 
@@ -446,13 +448,13 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
     return ExtensionKey.fromFields(typeArg, ExtensionKey.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

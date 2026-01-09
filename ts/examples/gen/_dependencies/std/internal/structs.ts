@@ -76,14 +76,14 @@ export type PermitReified<T extends PhantomTypeArgument> = Reified<Permit<T>, Pe
 export class Permit<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x1::internal::Permit` as const
+  static readonly $typeName: `0x1::internal::Permit` = `0x1::internal::Permit` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = Permit.$typeName
+  readonly $typeName: typeof Permit.$typeName = Permit.$typeName
   readonly $fullTypeName: `0x1::internal::Permit<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = Permit.$isPhantom
+  readonly $isPhantom: typeof Permit.$isPhantom = Permit.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -126,7 +126,7 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Permit.reified {
     return Permit.reified
   }
 
@@ -136,7 +136,7 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
     return phantom(Permit.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof Permit.phantom {
     return Permit.phantom
   }
 
@@ -185,13 +185,13 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
     return Permit.fromFields(typeArg, Permit.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

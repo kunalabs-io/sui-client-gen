@@ -44,14 +44,15 @@ export type EventStreamHeadReified = Reified<EventStreamHead, EventStreamHeadFie
 export class EventStreamHead implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::accumulator_settlement::EventStreamHead` as const
+  static readonly $typeName: `0x2::accumulator_settlement::EventStreamHead` =
+    `0x2::accumulator_settlement::EventStreamHead` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = EventStreamHead.$typeName
+  readonly $typeName: typeof EventStreamHead.$typeName = EventStreamHead.$typeName
   readonly $fullTypeName: `0x2::accumulator_settlement::EventStreamHead`
   readonly $typeArgs: []
-  readonly $isPhantom = EventStreamHead.$isPhantom
+  readonly $isPhantom: typeof EventStreamHead.$isPhantom = EventStreamHead.$isPhantom
 
   /** Merkle Mountain Range of all events in the stream. */
   readonly mmr: ToField<Vector<'u256'>>
@@ -99,7 +100,7 @@ export class EventStreamHead implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): EventStreamHeadReified {
     return EventStreamHead.reified()
   }
 
@@ -107,7 +108,7 @@ export class EventStreamHead implements StructClass {
     return phantom(EventStreamHead.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<EventStreamHead>> {
     return EventStreamHead.phantom()
   }
 
@@ -152,7 +153,7 @@ export class EventStreamHead implements StructClass {
     return EventStreamHead.fromFields(EventStreamHead.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       mmr: fieldToJSON<Vector<'u256'>>(`vector<u256>`, this.mmr),
       checkpointSeq: this.checkpointSeq.toString(),
@@ -160,7 +161,7 @@ export class EventStreamHead implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

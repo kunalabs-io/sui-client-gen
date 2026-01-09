@@ -59,14 +59,15 @@ export type WithdrawalReified<T extends PhantomTypeArgument> = Reified<
 export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::funds_accumulator::Withdrawal` as const
+  static readonly $typeName: `0x2::funds_accumulator::Withdrawal` =
+    `0x2::funds_accumulator::Withdrawal` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = Withdrawal.$typeName
+  readonly $typeName: typeof Withdrawal.$typeName = Withdrawal.$typeName
   readonly $fullTypeName: `0x2::funds_accumulator::Withdrawal<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = Withdrawal.$isPhantom
+  readonly $isPhantom: typeof Withdrawal.$isPhantom = Withdrawal.$isPhantom
 
   /** The owner of the funds, either an object or a transaction sender */
   readonly owner: ToField<'address'>
@@ -116,7 +117,7 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Withdrawal.reified {
     return Withdrawal.reified
   }
 
@@ -126,7 +127,7 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
     return phantom(Withdrawal.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof Withdrawal.phantom {
     return Withdrawal.phantom
   }
 
@@ -181,14 +182,14 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
     return Withdrawal.fromFields(typeArg, Withdrawal.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       owner: this.owner,
       limit: this.limit.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

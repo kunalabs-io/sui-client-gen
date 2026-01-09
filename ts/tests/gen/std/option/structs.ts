@@ -55,16 +55,16 @@ export type OptionReified<Element extends TypeArgument> = Reified<
 export class Option<Element extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x1::option::Option` as const
+  static readonly $typeName: `0x1::option::Option` = `0x1::option::Option` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
   __inner: Element = null as unknown as Element // for type checking in reified.ts
 
-  readonly $typeName = Option.$typeName
+  readonly $typeName: typeof Option.$typeName = Option.$typeName
   readonly $fullTypeName: `0x1::option::Option<${ToTypeStr<Element>}>`
   readonly $typeArgs: [ToTypeStr<Element>]
-  readonly $isPhantom = Option.$isPhantom
+  readonly $isPhantom: typeof Option.$isPhantom = Option.$isPhantom
 
   readonly vec: ToField<Vector<Element>>
 
@@ -107,7 +107,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Option.reified {
     return Option.reified
   }
 
@@ -117,7 +117,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
     return phantom(Option.reified(Element))
   }
 
-  static get p() {
+  static get p(): typeof Option.phantom {
     return Option.phantom
   }
 
@@ -168,13 +168,13 @@ export class Option<Element extends TypeArgument> implements StructClass {
     return Option.fromFields(typeArg, Option.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       vec: fieldToJSON<Vector<Element>>(`vector<${this.$typeArgs[0]}>`, this.vec),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

@@ -56,14 +56,14 @@ export type ReferentReified<T extends TypeArgument> = Reified<Referent<T>, Refer
 export class Referent<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::borrow::Referent` as const
+  static readonly $typeName: `0x2::borrow::Referent` = `0x2::borrow::Referent` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
-  readonly $typeName = Referent.$typeName
+  readonly $typeName: typeof Referent.$typeName = Referent.$typeName
   readonly $fullTypeName: `0x2::borrow::Referent<${ToTypeStr<T>}>`
   readonly $typeArgs: [ToTypeStr<T>]
-  readonly $isPhantom = Referent.$isPhantom
+  readonly $isPhantom: typeof Referent.$isPhantom = Referent.$isPhantom
 
   readonly id: ToField<'address'>
   readonly value: ToField<Option<T>>
@@ -106,7 +106,7 @@ export class Referent<T extends TypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Referent.reified {
     return Referent.reified
   }
 
@@ -116,7 +116,7 @@ export class Referent<T extends TypeArgument> implements StructClass {
     return phantom(Referent.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof Referent.phantom {
     return Referent.phantom
   }
 
@@ -173,14 +173,14 @@ export class Referent<T extends TypeArgument> implements StructClass {
     return Referent.fromFields(typeArg, Referent.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       value: fieldToJSON<Option<T>>(`${Option.$typeName}<${this.$typeArgs[0]}>`, this.value),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -292,14 +292,14 @@ export type BorrowReified = Reified<Borrow, BorrowFields>
 export class Borrow implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::borrow::Borrow` as const
+  static readonly $typeName: `0x2::borrow::Borrow` = `0x2::borrow::Borrow` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Borrow.$typeName
+  readonly $typeName: typeof Borrow.$typeName = Borrow.$typeName
   readonly $fullTypeName: `0x2::borrow::Borrow`
   readonly $typeArgs: []
-  readonly $isPhantom = Borrow.$isPhantom
+  readonly $isPhantom: typeof Borrow.$isPhantom = Borrow.$isPhantom
 
   readonly ref: ToField<'address'>
   readonly obj: ToField<ID>
@@ -336,7 +336,7 @@ export class Borrow implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): BorrowReified {
     return Borrow.reified()
   }
 
@@ -344,7 +344,7 @@ export class Borrow implements StructClass {
     return phantom(Borrow.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Borrow>> {
     return Borrow.phantom()
   }
 
@@ -389,14 +389,14 @@ export class Borrow implements StructClass {
     return Borrow.fromFields(Borrow.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       ref: this.ref,
       obj: this.obj,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

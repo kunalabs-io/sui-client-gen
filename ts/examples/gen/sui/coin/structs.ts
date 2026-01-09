@@ -58,14 +58,14 @@ export type CoinReified<T extends PhantomTypeArgument> = Reified<Coin<T>, CoinFi
 export class Coin<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin::Coin` as const
+  static readonly $typeName: `0x2::coin::Coin` = `0x2::coin::Coin` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = Coin.$typeName
+  readonly $typeName: typeof Coin.$typeName = Coin.$typeName
   readonly $fullTypeName: `0x2::coin::Coin<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = Coin.$isPhantom
+  readonly $isPhantom: typeof Coin.$isPhantom = Coin.$isPhantom
 
   readonly id: ToField<UID>
   readonly balance: ToField<Balance<T>>
@@ -110,7 +110,7 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Coin.reified {
     return Coin.reified
   }
 
@@ -120,7 +120,7 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
     return phantom(Coin.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof Coin.phantom {
     return Coin.phantom
   }
 
@@ -172,14 +172,14 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
     return Coin.fromFields(typeArg, Coin.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       balance: this.balance.toJSONField(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -311,14 +311,14 @@ export type CoinMetadataReified<T extends PhantomTypeArgument> = Reified<
 export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin::CoinMetadata` as const
+  static readonly $typeName: `0x2::coin::CoinMetadata` = `0x2::coin::CoinMetadata` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = CoinMetadata.$typeName
+  readonly $typeName: typeof CoinMetadata.$typeName = CoinMetadata.$typeName
   readonly $fullTypeName: `0x2::coin::CoinMetadata<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = CoinMetadata.$isPhantom
+  readonly $isPhantom: typeof CoinMetadata.$isPhantom = CoinMetadata.$isPhantom
 
   readonly id: ToField<UID>
   /**
@@ -381,7 +381,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
     }
   }
 
-  static get r() {
+  static get r(): typeof CoinMetadata.reified {
     return CoinMetadata.reified
   }
 
@@ -391,7 +391,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
     return phantom(CoinMetadata.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof CoinMetadata.phantom {
     return CoinMetadata.phantom
   }
 
@@ -455,7 +455,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
     return CoinMetadata.fromFields(typeArg, CoinMetadata.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       decimals: this.decimals,
@@ -466,7 +466,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -591,14 +591,15 @@ export type RegulatedCoinMetadataReified<T extends PhantomTypeArgument> = Reifie
 export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin::RegulatedCoinMetadata` as const
+  static readonly $typeName: `0x2::coin::RegulatedCoinMetadata` =
+    `0x2::coin::RegulatedCoinMetadata` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = RegulatedCoinMetadata.$typeName
+  readonly $typeName: typeof RegulatedCoinMetadata.$typeName = RegulatedCoinMetadata.$typeName
   readonly $fullTypeName: `0x2::coin::RegulatedCoinMetadata<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = RegulatedCoinMetadata.$isPhantom
+  readonly $isPhantom: typeof RegulatedCoinMetadata.$isPhantom = RegulatedCoinMetadata.$isPhantom
 
   readonly id: ToField<UID>
   /** The ID of the coin's CoinMetadata object. */
@@ -651,7 +652,7 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
     }
   }
 
-  static get r() {
+  static get r(): typeof RegulatedCoinMetadata.reified {
     return RegulatedCoinMetadata.reified
   }
 
@@ -661,7 +662,7 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
     return phantom(RegulatedCoinMetadata.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof RegulatedCoinMetadata.phantom {
     return RegulatedCoinMetadata.phantom
   }
 
@@ -716,7 +717,7 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
     return RegulatedCoinMetadata.fromFields(typeArg, RegulatedCoinMetadata.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       coinMetadataObject: this.coinMetadataObject,
@@ -724,7 +725,7 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -845,14 +846,14 @@ export type TreasuryCapReified<T extends PhantomTypeArgument> = Reified<
 export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin::TreasuryCap` as const
+  static readonly $typeName: `0x2::coin::TreasuryCap` = `0x2::coin::TreasuryCap` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = TreasuryCap.$typeName
+  readonly $typeName: typeof TreasuryCap.$typeName = TreasuryCap.$typeName
   readonly $fullTypeName: `0x2::coin::TreasuryCap<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = TreasuryCap.$isPhantom
+  readonly $isPhantom: typeof TreasuryCap.$isPhantom = TreasuryCap.$isPhantom
 
   readonly id: ToField<UID>
   readonly totalSupply: ToField<Supply<T>>
@@ -897,7 +898,7 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof TreasuryCap.reified {
     return TreasuryCap.reified
   }
 
@@ -907,7 +908,7 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
     return phantom(TreasuryCap.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof TreasuryCap.phantom {
     return TreasuryCap.phantom
   }
 
@@ -959,14 +960,14 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
     return TreasuryCap.fromFields(typeArg, TreasuryCap.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       totalSupply: this.totalSupply.toJSONField(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1087,14 +1088,14 @@ export type DenyCapV2Reified<T extends PhantomTypeArgument> = Reified<
 export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin::DenyCapV2` as const
+  static readonly $typeName: `0x2::coin::DenyCapV2` = `0x2::coin::DenyCapV2` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = DenyCapV2.$typeName
+  readonly $typeName: typeof DenyCapV2.$typeName = DenyCapV2.$typeName
   readonly $fullTypeName: `0x2::coin::DenyCapV2<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = DenyCapV2.$isPhantom
+  readonly $isPhantom: typeof DenyCapV2.$isPhantom = DenyCapV2.$isPhantom
 
   readonly id: ToField<UID>
   readonly allowGlobalPause: ToField<'bool'>
@@ -1139,7 +1140,7 @@ export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof DenyCapV2.reified {
     return DenyCapV2.reified
   }
 
@@ -1149,7 +1150,7 @@ export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
     return phantom(DenyCapV2.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof DenyCapV2.phantom {
     return DenyCapV2.phantom
   }
 
@@ -1201,14 +1202,14 @@ export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
     return DenyCapV2.fromFields(typeArg, DenyCapV2.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       allowGlobalPause: this.allowGlobalPause,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1321,14 +1322,14 @@ export type CurrencyCreatedReified<T extends PhantomTypeArgument> = Reified<
 export class CurrencyCreated<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin::CurrencyCreated` as const
+  static readonly $typeName: `0x2::coin::CurrencyCreated` = `0x2::coin::CurrencyCreated` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = CurrencyCreated.$typeName
+  readonly $typeName: typeof CurrencyCreated.$typeName = CurrencyCreated.$typeName
   readonly $fullTypeName: `0x2::coin::CurrencyCreated<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = CurrencyCreated.$isPhantom
+  readonly $isPhantom: typeof CurrencyCreated.$isPhantom = CurrencyCreated.$isPhantom
 
   readonly decimals: ToField<'u8'>
 
@@ -1371,7 +1372,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
     }
   }
 
-  static get r() {
+  static get r(): typeof CurrencyCreated.reified {
     return CurrencyCreated.reified
   }
 
@@ -1381,7 +1382,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
     return phantom(CurrencyCreated.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof CurrencyCreated.phantom {
     return CurrencyCreated.phantom
   }
 
@@ -1430,13 +1431,13 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
     return CurrencyCreated.fromFields(typeArg, CurrencyCreated.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       decimals: this.decimals,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1549,14 +1550,14 @@ export type DenyCapReified<T extends PhantomTypeArgument> = Reified<DenyCap<T>, 
 export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::coin::DenyCap` as const
+  static readonly $typeName: `0x2::coin::DenyCap` = `0x2::coin::DenyCap` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = DenyCap.$typeName
+  readonly $typeName: typeof DenyCap.$typeName = DenyCap.$typeName
   readonly $fullTypeName: `0x2::coin::DenyCap<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = DenyCap.$isPhantom
+  readonly $isPhantom: typeof DenyCap.$isPhantom = DenyCap.$isPhantom
 
   readonly id: ToField<UID>
 
@@ -1599,7 +1600,7 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof DenyCap.reified {
     return DenyCap.reified
   }
 
@@ -1609,7 +1610,7 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
     return phantom(DenyCap.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof DenyCap.phantom {
     return DenyCap.phantom
   }
 
@@ -1658,13 +1659,13 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
     return DenyCap.fromFields(typeArg, DenyCap.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

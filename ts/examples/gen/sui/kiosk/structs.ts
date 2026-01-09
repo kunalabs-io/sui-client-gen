@@ -155,14 +155,14 @@ export type KioskReified = Reified<Kiosk, KioskFields>
 export class Kiosk implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::Kiosk` as const
+  static readonly $typeName: `0x2::kiosk::Kiosk` = `0x2::kiosk::Kiosk` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Kiosk.$typeName
+  readonly $typeName: typeof Kiosk.$typeName = Kiosk.$typeName
   readonly $fullTypeName: `0x2::kiosk::Kiosk`
   readonly $typeArgs: []
-  readonly $isPhantom = Kiosk.$isPhantom
+  readonly $isPhantom: typeof Kiosk.$isPhantom = Kiosk.$isPhantom
 
   readonly id: ToField<UID>
   /** Balance of the Kiosk - all profits from sales go here. */
@@ -221,7 +221,7 @@ export class Kiosk implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): KioskReified {
     return Kiosk.reified()
   }
 
@@ -229,7 +229,7 @@ export class Kiosk implements StructClass {
     return phantom(Kiosk.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Kiosk>> {
     return Kiosk.phantom()
   }
 
@@ -286,7 +286,7 @@ export class Kiosk implements StructClass {
     return Kiosk.fromFields(Kiosk.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       profits: this.profits.toJSONField(),
@@ -296,7 +296,7 @@ export class Kiosk implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -377,14 +377,14 @@ export type KioskOwnerCapReified = Reified<KioskOwnerCap, KioskOwnerCapFields>
 export class KioskOwnerCap implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::KioskOwnerCap` as const
+  static readonly $typeName: `0x2::kiosk::KioskOwnerCap` = `0x2::kiosk::KioskOwnerCap` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = KioskOwnerCap.$typeName
+  readonly $typeName: typeof KioskOwnerCap.$typeName = KioskOwnerCap.$typeName
   readonly $fullTypeName: `0x2::kiosk::KioskOwnerCap`
   readonly $typeArgs: []
-  readonly $isPhantom = KioskOwnerCap.$isPhantom
+  readonly $isPhantom: typeof KioskOwnerCap.$isPhantom = KioskOwnerCap.$isPhantom
 
   readonly id: ToField<UID>
   readonly for: ToField<ID>
@@ -424,7 +424,7 @@ export class KioskOwnerCap implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): KioskOwnerCapReified {
     return KioskOwnerCap.reified()
   }
 
@@ -432,7 +432,7 @@ export class KioskOwnerCap implements StructClass {
     return phantom(KioskOwnerCap.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<KioskOwnerCap>> {
     return KioskOwnerCap.phantom()
   }
 
@@ -474,14 +474,14 @@ export class KioskOwnerCap implements StructClass {
     return KioskOwnerCap.fromFields(KioskOwnerCap.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       for: this.for,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -574,14 +574,14 @@ export type PurchaseCapReified<T extends PhantomTypeArgument> = Reified<
 export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::PurchaseCap` as const
+  static readonly $typeName: `0x2::kiosk::PurchaseCap` = `0x2::kiosk::PurchaseCap` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = PurchaseCap.$typeName
+  readonly $typeName: typeof PurchaseCap.$typeName = PurchaseCap.$typeName
   readonly $fullTypeName: `0x2::kiosk::PurchaseCap<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = PurchaseCap.$isPhantom
+  readonly $isPhantom: typeof PurchaseCap.$isPhantom = PurchaseCap.$isPhantom
 
   readonly id: ToField<UID>
   /** ID of the `Kiosk` the cap belongs to. */
@@ -633,7 +633,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof PurchaseCap.reified {
     return PurchaseCap.reified
   }
 
@@ -643,7 +643,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
     return phantom(PurchaseCap.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof PurchaseCap.phantom {
     return PurchaseCap.phantom
   }
 
@@ -701,7 +701,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
     return PurchaseCap.fromFields(typeArg, PurchaseCap.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       kioskId: this.kioskId,
@@ -710,7 +710,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -827,14 +827,14 @@ export type BorrowReified = Reified<Borrow, BorrowFields>
 export class Borrow implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::Borrow` as const
+  static readonly $typeName: `0x2::kiosk::Borrow` = `0x2::kiosk::Borrow` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Borrow.$typeName
+  readonly $typeName: typeof Borrow.$typeName = Borrow.$typeName
   readonly $fullTypeName: `0x2::kiosk::Borrow`
   readonly $typeArgs: []
-  readonly $isPhantom = Borrow.$isPhantom
+  readonly $isPhantom: typeof Borrow.$isPhantom = Borrow.$isPhantom
 
   readonly kioskId: ToField<ID>
   readonly itemId: ToField<ID>
@@ -871,7 +871,7 @@ export class Borrow implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): BorrowReified {
     return Borrow.reified()
   }
 
@@ -879,7 +879,7 @@ export class Borrow implements StructClass {
     return phantom(Borrow.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Borrow>> {
     return Borrow.phantom()
   }
 
@@ -921,14 +921,14 @@ export class Borrow implements StructClass {
     return Borrow.fromFields(Borrow.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       kioskId: this.kioskId,
       itemId: this.itemId,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1002,14 +1002,14 @@ export type ItemReified = Reified<Item, ItemFields>
 export class Item implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::Item` as const
+  static readonly $typeName: `0x2::kiosk::Item` = `0x2::kiosk::Item` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Item.$typeName
+  readonly $typeName: typeof Item.$typeName = Item.$typeName
   readonly $fullTypeName: `0x2::kiosk::Item`
   readonly $typeArgs: []
-  readonly $isPhantom = Item.$isPhantom
+  readonly $isPhantom: typeof Item.$isPhantom = Item.$isPhantom
 
   readonly id: ToField<ID>
 
@@ -1044,7 +1044,7 @@ export class Item implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): ItemReified {
     return Item.reified()
   }
 
@@ -1052,7 +1052,7 @@ export class Item implements StructClass {
     return phantom(Item.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Item>> {
     return Item.phantom()
   }
 
@@ -1091,13 +1091,13 @@ export class Item implements StructClass {
     return Item.fromFields(Item.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1174,14 +1174,14 @@ export type ListingReified = Reified<Listing, ListingFields>
 export class Listing implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::Listing` as const
+  static readonly $typeName: `0x2::kiosk::Listing` = `0x2::kiosk::Listing` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Listing.$typeName
+  readonly $typeName: typeof Listing.$typeName = Listing.$typeName
   readonly $fullTypeName: `0x2::kiosk::Listing`
   readonly $typeArgs: []
-  readonly $isPhantom = Listing.$isPhantom
+  readonly $isPhantom: typeof Listing.$isPhantom = Listing.$isPhantom
 
   readonly id: ToField<ID>
   readonly isExclusive: ToField<'bool'>
@@ -1218,7 +1218,7 @@ export class Listing implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): ListingReified {
     return Listing.reified()
   }
 
@@ -1226,7 +1226,7 @@ export class Listing implements StructClass {
     return phantom(Listing.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Listing>> {
     return Listing.phantom()
   }
 
@@ -1268,14 +1268,14 @@ export class Listing implements StructClass {
     return Listing.fromFields(Listing.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       isExclusive: this.isExclusive,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1353,14 +1353,14 @@ export type LockReified = Reified<Lock, LockFields>
 export class Lock implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::Lock` as const
+  static readonly $typeName: `0x2::kiosk::Lock` = `0x2::kiosk::Lock` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Lock.$typeName
+  readonly $typeName: typeof Lock.$typeName = Lock.$typeName
   readonly $fullTypeName: `0x2::kiosk::Lock`
   readonly $typeArgs: []
-  readonly $isPhantom = Lock.$isPhantom
+  readonly $isPhantom: typeof Lock.$isPhantom = Lock.$isPhantom
 
   readonly id: ToField<ID>
 
@@ -1395,7 +1395,7 @@ export class Lock implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): LockReified {
     return Lock.reified()
   }
 
@@ -1403,7 +1403,7 @@ export class Lock implements StructClass {
     return phantom(Lock.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Lock>> {
     return Lock.phantom()
   }
 
@@ -1442,13 +1442,13 @@ export class Lock implements StructClass {
     return Lock.fromFields(Lock.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1530,14 +1530,14 @@ export type ItemListedReified<T extends PhantomTypeArgument> = Reified<
 export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::ItemListed` as const
+  static readonly $typeName: `0x2::kiosk::ItemListed` = `0x2::kiosk::ItemListed` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = ItemListed.$typeName
+  readonly $typeName: typeof ItemListed.$typeName = ItemListed.$typeName
   readonly $fullTypeName: `0x2::kiosk::ItemListed<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = ItemListed.$isPhantom
+  readonly $isPhantom: typeof ItemListed.$isPhantom = ItemListed.$isPhantom
 
   readonly kiosk: ToField<ID>
   readonly id: ToField<ID>
@@ -1584,7 +1584,7 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof ItemListed.reified {
     return ItemListed.reified
   }
 
@@ -1594,7 +1594,7 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
     return phantom(ItemListed.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof ItemListed.phantom {
     return ItemListed.phantom
   }
 
@@ -1649,7 +1649,7 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
     return ItemListed.fromFields(typeArg, ItemListed.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       kiosk: this.kiosk,
       id: this.id,
@@ -1657,7 +1657,7 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1784,14 +1784,14 @@ export type ItemPurchasedReified<T extends PhantomTypeArgument> = Reified<
 export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::ItemPurchased` as const
+  static readonly $typeName: `0x2::kiosk::ItemPurchased` = `0x2::kiosk::ItemPurchased` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = ItemPurchased.$typeName
+  readonly $typeName: typeof ItemPurchased.$typeName = ItemPurchased.$typeName
   readonly $fullTypeName: `0x2::kiosk::ItemPurchased<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = ItemPurchased.$isPhantom
+  readonly $isPhantom: typeof ItemPurchased.$isPhantom = ItemPurchased.$isPhantom
 
   readonly kiosk: ToField<ID>
   readonly id: ToField<ID>
@@ -1838,7 +1838,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
     }
   }
 
-  static get r() {
+  static get r(): typeof ItemPurchased.reified {
     return ItemPurchased.reified
   }
 
@@ -1848,7 +1848,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
     return phantom(ItemPurchased.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof ItemPurchased.phantom {
     return ItemPurchased.phantom
   }
 
@@ -1903,7 +1903,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
     return ItemPurchased.fromFields(typeArg, ItemPurchased.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       kiosk: this.kiosk,
       id: this.id,
@@ -1911,7 +1911,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -2030,14 +2030,14 @@ export type ItemDelistedReified<T extends PhantomTypeArgument> = Reified<
 export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::kiosk::ItemDelisted` as const
+  static readonly $typeName: `0x2::kiosk::ItemDelisted` = `0x2::kiosk::ItemDelisted` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = ItemDelisted.$typeName
+  readonly $typeName: typeof ItemDelisted.$typeName = ItemDelisted.$typeName
   readonly $fullTypeName: `0x2::kiosk::ItemDelisted<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = ItemDelisted.$isPhantom
+  readonly $isPhantom: typeof ItemDelisted.$isPhantom = ItemDelisted.$isPhantom
 
   readonly kiosk: ToField<ID>
   readonly id: ToField<ID>
@@ -2082,7 +2082,7 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
     }
   }
 
-  static get r() {
+  static get r(): typeof ItemDelisted.reified {
     return ItemDelisted.reified
   }
 
@@ -2092,7 +2092,7 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
     return phantom(ItemDelisted.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof ItemDelisted.phantom {
     return ItemDelisted.phantom
   }
 
@@ -2144,14 +2144,14 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
     return ItemDelisted.fromFields(typeArg, ItemDelisted.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       kiosk: this.kiosk,
       id: this.id,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

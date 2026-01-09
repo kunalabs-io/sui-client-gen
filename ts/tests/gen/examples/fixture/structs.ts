@@ -59,15 +59,15 @@ export type DummyReified = Reified<Dummy, DummyFields>
 export class Dummy implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName =
+  static readonly $typeName: `${string}::fixture::Dummy` =
     `${getTypeOrigin('examples', 'fixture::Dummy')}::fixture::Dummy` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Dummy.$typeName
+  readonly $typeName: typeof Dummy.$typeName = Dummy.$typeName
   readonly $fullTypeName: `${string}::fixture::Dummy`
   readonly $typeArgs: []
-  readonly $isPhantom = Dummy.$isPhantom
+  readonly $isPhantom: typeof Dummy.$isPhantom = Dummy.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -102,7 +102,7 @@ export class Dummy implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): DummyReified {
     return Dummy.reified()
   }
 
@@ -110,7 +110,7 @@ export class Dummy implements StructClass {
     return phantom(Dummy.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Dummy>> {
     return Dummy.phantom()
   }
 
@@ -149,13 +149,13 @@ export class Dummy implements StructClass {
     return Dummy.fromFields(Dummy.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -233,15 +233,15 @@ export type WithGenericFieldReified<T extends TypeArgument> = Reified<
 export class WithGenericField<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName =
+  static readonly $typeName: `${string}::fixture::WithGenericField` =
     `${getTypeOrigin('examples', 'fixture::WithGenericField')}::fixture::WithGenericField` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
-  readonly $typeName = WithGenericField.$typeName
+  readonly $typeName: typeof WithGenericField.$typeName = WithGenericField.$typeName
   readonly $fullTypeName: `${string}::fixture::WithGenericField<${ToTypeStr<T>}>`
   readonly $typeArgs: [ToTypeStr<T>]
-  readonly $isPhantom = WithGenericField.$isPhantom
+  readonly $isPhantom: typeof WithGenericField.$isPhantom = WithGenericField.$isPhantom
 
   readonly id: ToField<UID>
   readonly genericField: ToField<T>
@@ -287,7 +287,7 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof WithGenericField.reified {
     return WithGenericField.reified
   }
 
@@ -297,7 +297,7 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
     return phantom(WithGenericField.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof WithGenericField.phantom {
     return WithGenericField.phantom
   }
 
@@ -351,14 +351,14 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
     return WithGenericField.fromFields(typeArg, WithGenericField.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       genericField: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.genericField),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -468,14 +468,15 @@ export type BarReified = Reified<Bar, BarFields>
 export class Bar implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('examples', 'fixture::Bar')}::fixture::Bar` as const
+  static readonly $typeName: `${string}::fixture::Bar` =
+    `${getTypeOrigin('examples', 'fixture::Bar')}::fixture::Bar` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Bar.$typeName
+  readonly $typeName: typeof Bar.$typeName = Bar.$typeName
   readonly $fullTypeName: `${string}::fixture::Bar`
   readonly $typeArgs: []
-  readonly $isPhantom = Bar.$isPhantom
+  readonly $isPhantom: typeof Bar.$isPhantom = Bar.$isPhantom
 
   readonly value: ToField<'u64'>
 
@@ -510,7 +511,7 @@ export class Bar implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): BarReified {
     return Bar.reified()
   }
 
@@ -518,7 +519,7 @@ export class Bar implements StructClass {
     return phantom(Bar.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Bar>> {
     return Bar.phantom()
   }
 
@@ -557,13 +558,13 @@ export class Bar implements StructClass {
     return Bar.fromFields(Bar.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       value: this.value.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -643,15 +644,15 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
 {
   __StructClass = true as const
 
-  static readonly $typeName =
+  static readonly $typeName: `${string}::fixture::WithTwoGenerics` =
     `${getTypeOrigin('examples', 'fixture::WithTwoGenerics')}::fixture::WithTwoGenerics` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const
 
-  readonly $typeName = WithTwoGenerics.$typeName
+  readonly $typeName: typeof WithTwoGenerics.$typeName = WithTwoGenerics.$typeName
   readonly $fullTypeName: `${string}::fixture::WithTwoGenerics<${ToTypeStr<T>}, ${ToTypeStr<U>}>`
   readonly $typeArgs: [ToTypeStr<T>, ToTypeStr<U>]
-  readonly $isPhantom = WithTwoGenerics.$isPhantom
+  readonly $isPhantom: typeof WithTwoGenerics.$isPhantom = WithTwoGenerics.$isPhantom
 
   readonly genericField1: ToField<T>
   readonly genericField2: ToField<U>
@@ -704,7 +705,7 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
     }
   }
 
-  static get r() {
+  static get r(): typeof WithTwoGenerics.reified {
     return WithTwoGenerics.reified
   }
 
@@ -715,7 +716,7 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
     return phantom(WithTwoGenerics.reified(T, U))
   }
 
-  static get p() {
+  static get p(): typeof WithTwoGenerics.phantom {
     return WithTwoGenerics.phantom
   }
 
@@ -774,14 +775,14 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
     )
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       genericField1: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.genericField1),
       genericField2: fieldToJSON<U>(`${this.$typeArgs[1]}`, this.genericField2),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -907,14 +908,15 @@ export type FooReified<T extends TypeArgument> = Reified<Foo<T>, FooFields<T>>
 export class Foo<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('examples', 'fixture::Foo')}::fixture::Foo` as const
+  static readonly $typeName: `${string}::fixture::Foo` =
+    `${getTypeOrigin('examples', 'fixture::Foo')}::fixture::Foo` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
-  readonly $typeName = Foo.$typeName
+  readonly $typeName: typeof Foo.$typeName = Foo.$typeName
   readonly $fullTypeName: `${string}::fixture::Foo<${ToTypeStr<T>}>`
   readonly $typeArgs: [ToTypeStr<T>]
-  readonly $isPhantom = Foo.$isPhantom
+  readonly $isPhantom: typeof Foo.$isPhantom = Foo.$isPhantom
 
   readonly id: ToField<UID>
   readonly generic: ToField<T>
@@ -983,7 +985,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Foo.reified {
     return Foo.reified
   }
 
@@ -993,7 +995,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
     return phantom(Foo.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof Foo.phantom {
     return Foo.phantom
   }
 
@@ -1140,7 +1142,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
     return Foo.fromFields(typeArg, Foo.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       generic: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.generic),
@@ -1167,7 +1169,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1331,15 +1333,15 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
 {
   __StructClass = true as const
 
-  static readonly $typeName =
+  static readonly $typeName: `${string}::fixture::WithSpecialTypes` =
     `${getTypeOrigin('examples', 'fixture::WithSpecialTypes')}::fixture::WithSpecialTypes` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, false] as const
 
-  readonly $typeName = WithSpecialTypes.$typeName
+  readonly $typeName: typeof WithSpecialTypes.$typeName = WithSpecialTypes.$typeName
   readonly $fullTypeName: `${string}::fixture::WithSpecialTypes<${PhantomToTypeStr<T>}, ${ToTypeStr<U>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>, ToTypeStr<U>]
-  readonly $isPhantom = WithSpecialTypes.$isPhantom
+  readonly $isPhantom: typeof WithSpecialTypes.$isPhantom = WithSpecialTypes.$isPhantom
 
   readonly id: ToField<UID>
   readonly string: ToField<String>
@@ -1417,7 +1419,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     }
   }
 
-  static get r() {
+  static get r(): typeof WithSpecialTypes.reified {
     return WithSpecialTypes.reified
   }
 
@@ -1431,7 +1433,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     return phantom(WithSpecialTypes.reified(T, U))
   }
 
-  static get p() {
+  static get p(): typeof WithSpecialTypes.phantom {
     return WithSpecialTypes.phantom
   }
 
@@ -1541,7 +1543,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     )
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       string: this.string,
@@ -1565,7 +1567,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1740,12 +1742,13 @@ export class WithSpecialTypesAsGenerics<
 {
   __StructClass = true as const
 
-  static readonly $typeName =
+  static readonly $typeName: `${string}::fixture::WithSpecialTypesAsGenerics` =
     `${getTypeOrigin('examples', 'fixture::WithSpecialTypesAsGenerics')}::fixture::WithSpecialTypesAsGenerics` as const
   static readonly $numTypeParams = 8
   static readonly $isPhantom = [false, false, false, false, false, false, false, false] as const
 
-  readonly $typeName = WithSpecialTypesAsGenerics.$typeName
+  readonly $typeName: typeof WithSpecialTypesAsGenerics.$typeName =
+    WithSpecialTypesAsGenerics.$typeName
   readonly $fullTypeName: `${string}::fixture::WithSpecialTypesAsGenerics<${ToTypeStr<T0>}, ${ToTypeStr<T1>}, ${ToTypeStr<T2>}, ${ToTypeStr<T3>}, ${ToTypeStr<T4>}, ${ToTypeStr<T5>}, ${ToTypeStr<T6>}, ${ToTypeStr<T7>}>`
   readonly $typeArgs: [
     ToTypeStr<T0>,
@@ -1757,7 +1760,8 @@ export class WithSpecialTypesAsGenerics<
     ToTypeStr<T6>,
     ToTypeStr<T7>,
   ]
-  readonly $isPhantom = WithSpecialTypesAsGenerics.$isPhantom
+  readonly $isPhantom: typeof WithSpecialTypesAsGenerics.$isPhantom =
+    WithSpecialTypesAsGenerics.$isPhantom
 
   readonly id: ToField<UID>
   readonly string: ToField<T0>
@@ -1923,7 +1927,7 @@ export class WithSpecialTypesAsGenerics<
     }
   }
 
-  static get r() {
+  static get r(): typeof WithSpecialTypesAsGenerics.reified {
     return WithSpecialTypesAsGenerics.reified
   }
 
@@ -1962,7 +1966,7 @@ export class WithSpecialTypesAsGenerics<
     return phantom(WithSpecialTypesAsGenerics.reified(T0, T1, T2, T3, T4, T5, T6, T7))
   }
 
-  static get p() {
+  static get p(): typeof WithSpecialTypesAsGenerics.phantom {
     return WithSpecialTypesAsGenerics.phantom
   }
 
@@ -2142,7 +2146,7 @@ export class WithSpecialTypesAsGenerics<
     )
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       string: fieldToJSON<T0>(`${this.$typeArgs[0]}`, this.string),
@@ -2156,7 +2160,7 @@ export class WithSpecialTypesAsGenerics<
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -2388,15 +2392,17 @@ export type WithSpecialTypesInVectorsReified<T extends TypeArgument> = Reified<
 export class WithSpecialTypesInVectors<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName =
+  static readonly $typeName: `${string}::fixture::WithSpecialTypesInVectors` =
     `${getTypeOrigin('examples', 'fixture::WithSpecialTypesInVectors')}::fixture::WithSpecialTypesInVectors` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
-  readonly $typeName = WithSpecialTypesInVectors.$typeName
+  readonly $typeName: typeof WithSpecialTypesInVectors.$typeName =
+    WithSpecialTypesInVectors.$typeName
   readonly $fullTypeName: `${string}::fixture::WithSpecialTypesInVectors<${ToTypeStr<T>}>`
   readonly $typeArgs: [ToTypeStr<T>]
-  readonly $isPhantom = WithSpecialTypesInVectors.$isPhantom
+  readonly $isPhantom: typeof WithSpecialTypesInVectors.$isPhantom =
+    WithSpecialTypesInVectors.$isPhantom
 
   readonly id: ToField<UID>
   readonly string: ToField<Vector<String>>
@@ -2456,7 +2462,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     }
   }
 
-  static get r() {
+  static get r(): typeof WithSpecialTypesInVectors.reified {
     return WithSpecialTypesInVectors.reified
   }
 
@@ -2466,7 +2472,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     return phantom(WithSpecialTypesInVectors.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof WithSpecialTypesInVectors.phantom {
     return WithSpecialTypesInVectors.phantom
   }
 
@@ -2545,7 +2551,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     )
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       string: fieldToJSON<Vector<String>>(`vector<${String.$typeName}>`, this.string),
@@ -2563,7 +2569,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

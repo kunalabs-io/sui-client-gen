@@ -55,14 +55,14 @@ export type PublisherReified = Reified<Publisher, PublisherFields>
 export class Publisher implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::package::Publisher` as const
+  static readonly $typeName: `0x2::package::Publisher` = `0x2::package::Publisher` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Publisher.$typeName
+  readonly $typeName: typeof Publisher.$typeName = Publisher.$typeName
   readonly $fullTypeName: `0x2::package::Publisher`
   readonly $typeArgs: []
-  readonly $isPhantom = Publisher.$isPhantom
+  readonly $isPhantom: typeof Publisher.$isPhantom = Publisher.$isPhantom
 
   readonly id: ToField<UID>
   readonly package: ToField<String>
@@ -104,7 +104,7 @@ export class Publisher implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): PublisherReified {
     return Publisher.reified()
   }
 
@@ -112,7 +112,7 @@ export class Publisher implements StructClass {
     return phantom(Publisher.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Publisher>> {
     return Publisher.phantom()
   }
 
@@ -157,7 +157,7 @@ export class Publisher implements StructClass {
     return Publisher.fromFields(Publisher.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       package: this.package,
@@ -165,7 +165,7 @@ export class Publisher implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -249,14 +249,14 @@ export type UpgradeCapReified = Reified<UpgradeCap, UpgradeCapFields>
 export class UpgradeCap implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::package::UpgradeCap` as const
+  static readonly $typeName: `0x2::package::UpgradeCap` = `0x2::package::UpgradeCap` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = UpgradeCap.$typeName
+  readonly $typeName: typeof UpgradeCap.$typeName = UpgradeCap.$typeName
   readonly $fullTypeName: `0x2::package::UpgradeCap`
   readonly $typeArgs: []
-  readonly $isPhantom = UpgradeCap.$isPhantom
+  readonly $isPhantom: typeof UpgradeCap.$isPhantom = UpgradeCap.$isPhantom
 
   readonly id: ToField<UID>
   /** (Mutable) ID of the package that can be upgraded. */
@@ -306,7 +306,7 @@ export class UpgradeCap implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): UpgradeCapReified {
     return UpgradeCap.reified()
   }
 
@@ -314,7 +314,7 @@ export class UpgradeCap implements StructClass {
     return phantom(UpgradeCap.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<UpgradeCap>> {
     return UpgradeCap.phantom()
   }
 
@@ -362,7 +362,7 @@ export class UpgradeCap implements StructClass {
     return UpgradeCap.fromFields(UpgradeCap.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       package: this.package,
@@ -371,7 +371,7 @@ export class UpgradeCap implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -469,14 +469,14 @@ export type UpgradeTicketReified = Reified<UpgradeTicket, UpgradeTicketFields>
 export class UpgradeTicket implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::package::UpgradeTicket` as const
+  static readonly $typeName: `0x2::package::UpgradeTicket` = `0x2::package::UpgradeTicket` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = UpgradeTicket.$typeName
+  readonly $typeName: typeof UpgradeTicket.$typeName = UpgradeTicket.$typeName
   readonly $fullTypeName: `0x2::package::UpgradeTicket`
   readonly $typeArgs: []
-  readonly $isPhantom = UpgradeTicket.$isPhantom
+  readonly $isPhantom: typeof UpgradeTicket.$isPhantom = UpgradeTicket.$isPhantom
 
   /** (Immutable) ID of the `UpgradeCap` this originated from. */
   readonly cap: ToField<ID>
@@ -530,7 +530,7 @@ export class UpgradeTicket implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): UpgradeTicketReified {
     return UpgradeTicket.reified()
   }
 
@@ -538,7 +538,7 @@ export class UpgradeTicket implements StructClass {
     return phantom(UpgradeTicket.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<UpgradeTicket>> {
     return UpgradeTicket.phantom()
   }
 
@@ -586,7 +586,7 @@ export class UpgradeTicket implements StructClass {
     return UpgradeTicket.fromFields(UpgradeTicket.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       cap: this.cap,
       package: this.package,
@@ -595,7 +595,7 @@ export class UpgradeTicket implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -679,14 +679,15 @@ export type UpgradeReceiptReified = Reified<UpgradeReceipt, UpgradeReceiptFields
 export class UpgradeReceipt implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::package::UpgradeReceipt` as const
+  static readonly $typeName: `0x2::package::UpgradeReceipt` =
+    `0x2::package::UpgradeReceipt` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = UpgradeReceipt.$typeName
+  readonly $typeName: typeof UpgradeReceipt.$typeName = UpgradeReceipt.$typeName
   readonly $fullTypeName: `0x2::package::UpgradeReceipt`
   readonly $typeArgs: []
-  readonly $isPhantom = UpgradeReceipt.$isPhantom
+  readonly $isPhantom: typeof UpgradeReceipt.$isPhantom = UpgradeReceipt.$isPhantom
 
   /** (Immutable) ID of the `UpgradeCap` this originated from. */
   readonly cap: ToField<ID>
@@ -731,7 +732,7 @@ export class UpgradeReceipt implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): UpgradeReceiptReified {
     return UpgradeReceipt.reified()
   }
 
@@ -739,7 +740,7 @@ export class UpgradeReceipt implements StructClass {
     return phantom(UpgradeReceipt.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<UpgradeReceipt>> {
     return UpgradeReceipt.phantom()
   }
 
@@ -781,14 +782,14 @@ export class UpgradeReceipt implements StructClass {
     return UpgradeReceipt.fromFields(UpgradeReceipt.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       cap: this.cap,
       package: this.package,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

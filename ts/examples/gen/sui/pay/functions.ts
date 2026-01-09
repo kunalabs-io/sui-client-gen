@@ -1,10 +1,19 @@
 import { getPublishedAt } from '../../_envs'
 import { obj, pure, vector } from '../../_framework/util'
 import { Coin } from '../coin/structs'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 /** Transfer `c` to the sender of the current transaction */
-export function keep(tx: Transaction, typeArg: string, c: TransactionObjectInput) {
+export function keep(
+  tx: Transaction,
+  typeArg: string,
+  c: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::keep`,
     typeArguments: [typeArg],
@@ -21,7 +30,7 @@ export interface SplitArgs {
  * Split `coin` to two coins, one with balance `split_amount`,
  * and the remaining balance is left in `coin`.
  */
-export function split(tx: Transaction, typeArg: string, args: SplitArgs) {
+export function split(tx: Transaction, typeArg: string, args: SplitArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::split`,
     typeArguments: [typeArg],
@@ -38,7 +47,7 @@ export interface SplitVecArgs {
  * Split coin `self` into multiple coins, each with balance specified
  * in `split_amounts`. Remaining balance is left in `self`.
  */
-export function splitVec(tx: Transaction, typeArg: string, args: SplitVecArgs) {
+export function splitVec(tx: Transaction, typeArg: string, args: SplitVecArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::split_vec`,
     typeArguments: [typeArg],
@@ -56,7 +65,11 @@ export interface SplitAndTransferArgs {
  * Send `amount` units of `c` to `recipient`
  * Aborts with `sui::balance::ENotEnough` if `amount` is greater than the balance in `c`
  */
-export function splitAndTransfer(tx: Transaction, typeArg: string, args: SplitAndTransferArgs) {
+export function splitAndTransfer(
+  tx: Transaction,
+  typeArg: string,
+  args: SplitAndTransferArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::split_and_transfer`,
     typeArguments: [typeArg],
@@ -73,7 +86,11 @@ export interface DivideAndKeepArgs {
  * Divide coin `self` into `n - 1` coins with equal balances. If the balance is
  * not evenly divisible by `n`, the remainder is left in `self`.
  */
-export function divideAndKeep(tx: Transaction, typeArg: string, args: DivideAndKeepArgs) {
+export function divideAndKeep(
+  tx: Transaction,
+  typeArg: string,
+  args: DivideAndKeepArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::divide_and_keep`,
     typeArguments: [typeArg],
@@ -90,7 +107,7 @@ export interface JoinArgs {
  * Join `coin` into `self`. Re-exports `coin::join` function.
  * Deprecated: you should call `coin.join(other)` directly.
  */
-export function join(tx: Transaction, typeArg: string, args: JoinArgs) {
+export function join(tx: Transaction, typeArg: string, args: JoinArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::join`,
     typeArguments: [typeArg],
@@ -104,7 +121,7 @@ export interface JoinVecArgs {
 }
 
 /** Join everything in `coins` with `self` */
-export function joinVec(tx: Transaction, typeArg: string, args: JoinVecArgs) {
+export function joinVec(tx: Transaction, typeArg: string, args: JoinVecArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::join_vec`,
     typeArguments: [typeArg],
@@ -118,7 +135,11 @@ export interface JoinVecAndTransferArgs {
 }
 
 /** Join a vector of `Coin` into a single object and transfer it to `receiver`. */
-export function joinVecAndTransfer(tx: Transaction, typeArg: string, args: JoinVecAndTransferArgs) {
+export function joinVecAndTransfer(
+  tx: Transaction,
+  typeArg: string,
+  args: JoinVecAndTransferArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::join_vec_and_transfer`,
     typeArguments: [typeArg],

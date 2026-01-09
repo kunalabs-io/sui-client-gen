@@ -28,7 +28,7 @@ interface _StructClass {
 export class StructClassLoader {
   private map: Map<string, _StructClass> = new Map()
 
-  register(...classes: _StructClass[]) {
+  register(...classes: _StructClass[]): void {
     for (const cls of classes) {
       this.map.set(cls.$typeName, cls)
     }
@@ -84,5 +84,5 @@ export class StructClassLoader {
   }
 }
 
-export const loader = new StructClassLoader()
+export const loader: StructClassLoader = new StructClassLoader()
 registerClasses(loader)

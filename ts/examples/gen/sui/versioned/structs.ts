@@ -46,14 +46,14 @@ export type VersionedReified = Reified<Versioned, VersionedFields>
 export class Versioned implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::versioned::Versioned` as const
+  static readonly $typeName: `0x2::versioned::Versioned` = `0x2::versioned::Versioned` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Versioned.$typeName
+  readonly $typeName: typeof Versioned.$typeName = Versioned.$typeName
   readonly $fullTypeName: `0x2::versioned::Versioned`
   readonly $typeArgs: []
-  readonly $isPhantom = Versioned.$isPhantom
+  readonly $isPhantom: typeof Versioned.$isPhantom = Versioned.$isPhantom
 
   readonly id: ToField<UID>
   readonly version: ToField<'u64'>
@@ -93,7 +93,7 @@ export class Versioned implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): VersionedReified {
     return Versioned.reified()
   }
 
@@ -101,7 +101,7 @@ export class Versioned implements StructClass {
     return phantom(Versioned.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Versioned>> {
     return Versioned.phantom()
   }
 
@@ -143,14 +143,14 @@ export class Versioned implements StructClass {
     return Versioned.fromFields(Versioned.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       version: this.version.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -228,14 +228,15 @@ export type VersionChangeCapReified = Reified<VersionChangeCap, VersionChangeCap
 export class VersionChangeCap implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::versioned::VersionChangeCap` as const
+  static readonly $typeName: `0x2::versioned::VersionChangeCap` =
+    `0x2::versioned::VersionChangeCap` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = VersionChangeCap.$typeName
+  readonly $typeName: typeof VersionChangeCap.$typeName = VersionChangeCap.$typeName
   readonly $fullTypeName: `0x2::versioned::VersionChangeCap`
   readonly $typeArgs: []
-  readonly $isPhantom = VersionChangeCap.$isPhantom
+  readonly $isPhantom: typeof VersionChangeCap.$isPhantom = VersionChangeCap.$isPhantom
 
   readonly versionedId: ToField<ID>
   readonly oldVersion: ToField<'u64'>
@@ -278,7 +279,7 @@ export class VersionChangeCap implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): VersionChangeCapReified {
     return VersionChangeCap.reified()
   }
 
@@ -286,7 +287,7 @@ export class VersionChangeCap implements StructClass {
     return phantom(VersionChangeCap.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<VersionChangeCap>> {
     return VersionChangeCap.phantom()
   }
 
@@ -328,14 +329,14 @@ export class VersionChangeCap implements StructClass {
     return VersionChangeCap.fromFields(VersionChangeCap.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       versionedId: this.versionedId,
       oldVersion: this.oldVersion.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

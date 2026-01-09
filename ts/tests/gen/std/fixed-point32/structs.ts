@@ -52,14 +52,15 @@ export type FixedPoint32Reified = Reified<FixedPoint32, FixedPoint32Fields>
 export class FixedPoint32 implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x1::fixed_point32::FixedPoint32` as const
+  static readonly $typeName: `0x1::fixed_point32::FixedPoint32` =
+    `0x1::fixed_point32::FixedPoint32` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = FixedPoint32.$typeName
+  readonly $typeName: typeof FixedPoint32.$typeName = FixedPoint32.$typeName
   readonly $fullTypeName: `0x1::fixed_point32::FixedPoint32`
   readonly $typeArgs: []
-  readonly $isPhantom = FixedPoint32.$isPhantom
+  readonly $isPhantom: typeof FixedPoint32.$isPhantom = FixedPoint32.$isPhantom
 
   readonly value: ToField<'u64'>
 
@@ -100,7 +101,7 @@ export class FixedPoint32 implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): FixedPoint32Reified {
     return FixedPoint32.reified()
   }
 
@@ -108,7 +109,7 @@ export class FixedPoint32 implements StructClass {
     return phantom(FixedPoint32.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<FixedPoint32>> {
     return FixedPoint32.phantom()
   }
 
@@ -147,13 +148,13 @@ export class FixedPoint32 implements StructClass {
     return FixedPoint32.fromFields(FixedPoint32.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       value: this.value.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

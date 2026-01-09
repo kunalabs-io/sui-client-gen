@@ -45,7 +45,7 @@ import * as zkloginVerifiedId from './zklogin-verified-id/structs'
 import * as zkloginVerifiedIssuer from './zklogin-verified-issuer/structs'
 import { StructClassLoader } from '../_framework/loader'
 
-export function registerClasses(loader: StructClassLoader) {
+export function registerClasses(loader: StructClassLoader): void {
   loader.register(accumulator.AccumulatorRoot)
   loader.register(accumulator.U128)
   loader.register(accumulator.Key)

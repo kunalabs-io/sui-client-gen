@@ -58,14 +58,15 @@ export type PriorityQueueReified<T extends TypeArgument> = Reified<
 export class PriorityQueue<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::priority_queue::PriorityQueue` as const
+  static readonly $typeName: `0x2::priority_queue::PriorityQueue` =
+    `0x2::priority_queue::PriorityQueue` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
-  readonly $typeName = PriorityQueue.$typeName
+  readonly $typeName: typeof PriorityQueue.$typeName = PriorityQueue.$typeName
   readonly $fullTypeName: `0x2::priority_queue::PriorityQueue<${ToTypeStr<T>}>`
   readonly $typeArgs: [ToTypeStr<T>]
-  readonly $isPhantom = PriorityQueue.$isPhantom
+  readonly $isPhantom: typeof PriorityQueue.$isPhantom = PriorityQueue.$isPhantom
 
   readonly entries: ToField<Vector<Entry<T>>>
 
@@ -108,7 +109,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof PriorityQueue.reified {
     return PriorityQueue.reified
   }
 
@@ -118,7 +119,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
     return phantom(PriorityQueue.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof PriorityQueue.phantom {
     return PriorityQueue.phantom
   }
 
@@ -169,7 +170,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
     return PriorityQueue.fromFields(typeArg, PriorityQueue.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       entries: fieldToJSON<Vector<Entry<T>>>(
         `vector<${Entry.$typeName}<${this.$typeArgs[0]}>>`,
@@ -178,7 +179,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -288,14 +289,14 @@ export type EntryReified<T extends TypeArgument> = Reified<Entry<T>, EntryFields
 export class Entry<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::priority_queue::Entry` as const
+  static readonly $typeName: `0x2::priority_queue::Entry` = `0x2::priority_queue::Entry` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
-  readonly $typeName = Entry.$typeName
+  readonly $typeName: typeof Entry.$typeName = Entry.$typeName
   readonly $fullTypeName: `0x2::priority_queue::Entry<${ToTypeStr<T>}>`
   readonly $typeArgs: [ToTypeStr<T>]
-  readonly $isPhantom = Entry.$isPhantom
+  readonly $isPhantom: typeof Entry.$isPhantom = Entry.$isPhantom
 
   readonly priority: ToField<'u64'>
   readonly value: ToField<T>
@@ -338,7 +339,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Entry.reified {
     return Entry.reified
   }
 
@@ -348,7 +349,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
     return phantom(Entry.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof Entry.phantom {
     return Entry.phantom
   }
 
@@ -402,14 +403,14 @@ export class Entry<T extends TypeArgument> implements StructClass {
     return Entry.fromFields(typeArg, Entry.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       priority: this.priority.toString(),
       value: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.value),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

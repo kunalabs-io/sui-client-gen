@@ -66,14 +66,14 @@ export type FieldReified<Name extends TypeArgument, Value extends TypeArgument> 
 export class Field<Name extends TypeArgument, Value extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::dynamic_field::Field` as const
+  static readonly $typeName: `0x2::dynamic_field::Field` = `0x2::dynamic_field::Field` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const
 
-  readonly $typeName = Field.$typeName
+  readonly $typeName: typeof Field.$typeName = Field.$typeName
   readonly $fullTypeName: `0x2::dynamic_field::Field<${ToTypeStr<Name>}, ${ToTypeStr<Value>}>`
   readonly $typeArgs: [ToTypeStr<Name>, ToTypeStr<Value>]
-  readonly $isPhantom = Field.$isPhantom
+  readonly $isPhantom: typeof Field.$isPhantom = Field.$isPhantom
 
   /**
    * Determined by the hash of the object ID, the field name value and it's type,
@@ -137,7 +137,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     }
   }
 
-  static get r() {
+  static get r(): typeof Field.reified {
     return Field.reified
   }
 
@@ -148,7 +148,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     return phantom(Field.reified(Name, Value))
   }
 
-  static get p() {
+  static get p(): typeof Field.phantom {
     return Field.phantom
   }
 
@@ -210,7 +210,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     return Field.fromFields(typeArgs, Field.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       name: fieldToJSON<Name>(`${this.$typeArgs[0]}`, this.name),
@@ -218,7 +218,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

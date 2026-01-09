@@ -43,14 +43,14 @@ export type CurveReified = Reified<Curve, CurveFields>
 export class Curve implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::groth16::Curve` as const
+  static readonly $typeName: `0x2::groth16::Curve` = `0x2::groth16::Curve` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Curve.$typeName
+  readonly $typeName: typeof Curve.$typeName = Curve.$typeName
   readonly $fullTypeName: `0x2::groth16::Curve`
   readonly $typeArgs: []
-  readonly $isPhantom = Curve.$isPhantom
+  readonly $isPhantom: typeof Curve.$isPhantom = Curve.$isPhantom
 
   readonly id: ToField<'u8'>
 
@@ -85,7 +85,7 @@ export class Curve implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): CurveReified {
     return Curve.reified()
   }
 
@@ -93,7 +93,7 @@ export class Curve implements StructClass {
     return phantom(Curve.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Curve>> {
     return Curve.phantom()
   }
 
@@ -132,13 +132,13 @@ export class Curve implements StructClass {
     return Curve.fromFields(Curve.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -214,14 +214,15 @@ export type PreparedVerifyingKeyReified = Reified<PreparedVerifyingKey, Prepared
 export class PreparedVerifyingKey implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::groth16::PreparedVerifyingKey` as const
+  static readonly $typeName: `0x2::groth16::PreparedVerifyingKey` =
+    `0x2::groth16::PreparedVerifyingKey` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = PreparedVerifyingKey.$typeName
+  readonly $typeName: typeof PreparedVerifyingKey.$typeName = PreparedVerifyingKey.$typeName
   readonly $fullTypeName: `0x2::groth16::PreparedVerifyingKey`
   readonly $typeArgs: []
-  readonly $isPhantom = PreparedVerifyingKey.$isPhantom
+  readonly $isPhantom: typeof PreparedVerifyingKey.$isPhantom = PreparedVerifyingKey.$isPhantom
 
   readonly vkGammaAbcG1Bytes: ToField<Vector<'u8'>>
   readonly alphaG1BetaG2Bytes: ToField<Vector<'u8'>>
@@ -272,7 +273,7 @@ export class PreparedVerifyingKey implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): PreparedVerifyingKeyReified {
     return PreparedVerifyingKey.reified()
   }
 
@@ -280,7 +281,7 @@ export class PreparedVerifyingKey implements StructClass {
     return phantom(PreparedVerifyingKey.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<PreparedVerifyingKey>> {
     return PreparedVerifyingKey.phantom()
   }
 
@@ -331,7 +332,7 @@ export class PreparedVerifyingKey implements StructClass {
     return PreparedVerifyingKey.fromFields(PreparedVerifyingKey.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       vkGammaAbcG1Bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.vkGammaAbcG1Bytes),
       alphaG1BetaG2Bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.alphaG1BetaG2Bytes),
@@ -340,7 +341,7 @@ export class PreparedVerifyingKey implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -418,14 +419,15 @@ export type PublicProofInputsReified = Reified<PublicProofInputs, PublicProofInp
 export class PublicProofInputs implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::groth16::PublicProofInputs` as const
+  static readonly $typeName: `0x2::groth16::PublicProofInputs` =
+    `0x2::groth16::PublicProofInputs` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = PublicProofInputs.$typeName
+  readonly $typeName: typeof PublicProofInputs.$typeName = PublicProofInputs.$typeName
   readonly $fullTypeName: `0x2::groth16::PublicProofInputs`
   readonly $typeArgs: []
-  readonly $isPhantom = PublicProofInputs.$isPhantom
+  readonly $isPhantom: typeof PublicProofInputs.$isPhantom = PublicProofInputs.$isPhantom
 
   readonly bytes: ToField<Vector<'u8'>>
 
@@ -466,7 +468,7 @@ export class PublicProofInputs implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): PublicProofInputsReified {
     return PublicProofInputs.reified()
   }
 
@@ -474,7 +476,7 @@ export class PublicProofInputs implements StructClass {
     return phantom(PublicProofInputs.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<PublicProofInputs>> {
     return PublicProofInputs.phantom()
   }
 
@@ -513,13 +515,13 @@ export class PublicProofInputs implements StructClass {
     return PublicProofInputs.fromFields(PublicProofInputs.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -592,14 +594,14 @@ export type ProofPointsReified = Reified<ProofPoints, ProofPointsFields>
 export class ProofPoints implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::groth16::ProofPoints` as const
+  static readonly $typeName: `0x2::groth16::ProofPoints` = `0x2::groth16::ProofPoints` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = ProofPoints.$typeName
+  readonly $typeName: typeof ProofPoints.$typeName = ProofPoints.$typeName
   readonly $fullTypeName: `0x2::groth16::ProofPoints`
   readonly $typeArgs: []
-  readonly $isPhantom = ProofPoints.$isPhantom
+  readonly $isPhantom: typeof ProofPoints.$isPhantom = ProofPoints.$isPhantom
 
   readonly bytes: ToField<Vector<'u8'>>
 
@@ -637,7 +639,7 @@ export class ProofPoints implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): ProofPointsReified {
     return ProofPoints.reified()
   }
 
@@ -645,7 +647,7 @@ export class ProofPoints implements StructClass {
     return phantom(ProofPoints.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<ProofPoints>> {
     return ProofPoints.phantom()
   }
 
@@ -684,13 +686,13 @@ export class ProofPoints implements StructClass {
     return ProofPoints.fromFields(ProofPoints.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

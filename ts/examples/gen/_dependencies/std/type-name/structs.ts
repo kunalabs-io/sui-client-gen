@@ -48,14 +48,14 @@ export type TypeNameReified = Reified<TypeName, TypeNameFields>
 export class TypeName implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x1::type_name::TypeName` as const
+  static readonly $typeName: `0x1::type_name::TypeName` = `0x1::type_name::TypeName` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = TypeName.$typeName
+  readonly $typeName: typeof TypeName.$typeName = TypeName.$typeName
   readonly $fullTypeName: `0x1::type_name::TypeName`
   readonly $typeArgs: []
-  readonly $isPhantom = TypeName.$isPhantom
+  readonly $isPhantom: typeof TypeName.$isPhantom = TypeName.$isPhantom
 
   /**
    * String representation of the type. All types are represented
@@ -102,7 +102,7 @@ export class TypeName implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): TypeNameReified {
     return TypeName.reified()
   }
 
@@ -110,7 +110,7 @@ export class TypeName implements StructClass {
     return phantom(TypeName.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<TypeName>> {
     return TypeName.phantom()
   }
 
@@ -149,13 +149,13 @@ export class TypeName implements StructClass {
     return TypeName.fromFields(TypeName.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       name: this.name,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

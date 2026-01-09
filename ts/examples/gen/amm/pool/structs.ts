@@ -49,15 +49,15 @@ export type PoolCreationEventReified = Reified<PoolCreationEvent, PoolCreationEv
 export class PoolCreationEvent implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName =
+  static readonly $typeName: `${string}::pool::PoolCreationEvent` =
     `${getTypeOrigin('amm', 'pool::PoolCreationEvent')}::pool::PoolCreationEvent` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = PoolCreationEvent.$typeName
+  readonly $typeName: typeof PoolCreationEvent.$typeName = PoolCreationEvent.$typeName
   readonly $fullTypeName: `${string}::pool::PoolCreationEvent`
   readonly $typeArgs: []
-  readonly $isPhantom = PoolCreationEvent.$isPhantom
+  readonly $isPhantom: typeof PoolCreationEvent.$isPhantom = PoolCreationEvent.$isPhantom
 
   readonly poolId: ToField<ID>
 
@@ -98,7 +98,7 @@ export class PoolCreationEvent implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): PoolCreationEventReified {
     return PoolCreationEvent.reified()
   }
 
@@ -106,7 +106,7 @@ export class PoolCreationEvent implements StructClass {
     return phantom(PoolCreationEvent.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<PoolCreationEvent>> {
     return PoolCreationEvent.phantom()
   }
 
@@ -145,13 +145,13 @@ export class PoolCreationEvent implements StructClass {
     return PoolCreationEvent.fromFields(PoolCreationEvent.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       poolId: this.poolId,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -229,14 +229,15 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('amm', 'pool::LP')}::pool::LP` as const
+  static readonly $typeName: `${string}::pool::LP` =
+    `${getTypeOrigin('amm', 'pool::LP')}::pool::LP` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, true] as const
 
-  readonly $typeName = LP.$typeName
+  readonly $typeName: typeof LP.$typeName = LP.$typeName
   readonly $fullTypeName: `${string}::pool::LP<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
   readonly $typeArgs: [PhantomToTypeStr<A>, PhantomToTypeStr<B>]
-  readonly $isPhantom = LP.$isPhantom
+  readonly $isPhantom: typeof LP.$isPhantom = LP.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -286,7 +287,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     }
   }
 
-  static get r() {
+  static get r(): typeof LP.reified {
     return LP.reified
   }
 
@@ -297,7 +298,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     return phantom(LP.reified(A, B))
   }
 
-  static get p() {
+  static get p(): typeof LP.phantom {
     return LP.phantom
   }
 
@@ -352,13 +353,13 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     return LP.fromFields(typeArgs, LP.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -494,14 +495,15 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('amm', 'pool::Pool')}::pool::Pool` as const
+  static readonly $typeName: `${string}::pool::Pool` =
+    `${getTypeOrigin('amm', 'pool::Pool')}::pool::Pool` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, true] as const
 
-  readonly $typeName = Pool.$typeName
+  readonly $typeName: typeof Pool.$typeName = Pool.$typeName
   readonly $fullTypeName: `${string}::pool::Pool<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
   readonly $typeArgs: [PhantomToTypeStr<A>, PhantomToTypeStr<B>]
-  readonly $isPhantom = Pool.$isPhantom
+  readonly $isPhantom: typeof Pool.$isPhantom = Pool.$isPhantom
 
   readonly id: ToField<UID>
   readonly balanceA: ToField<Balance<A>>
@@ -569,7 +571,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     }
   }
 
-  static get r() {
+  static get r(): typeof Pool.reified {
     return Pool.reified
   }
 
@@ -583,7 +585,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     return phantom(Pool.reified(A, B))
   }
 
-  static get p() {
+  static get p(): typeof Pool.phantom {
     return Pool.phantom
   }
 
@@ -668,7 +670,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     return Pool.fromFields(typeArgs, Pool.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       balanceA: this.balanceA.toJSONField(),
@@ -680,7 +682,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -818,15 +820,15 @@ export type PoolRegistryReified = Reified<PoolRegistry, PoolRegistryFields>
 export class PoolRegistry implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName =
+  static readonly $typeName: `${string}::pool::PoolRegistry` =
     `${getTypeOrigin('amm', 'pool::PoolRegistry')}::pool::PoolRegistry` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = PoolRegistry.$typeName
+  readonly $typeName: typeof PoolRegistry.$typeName = PoolRegistry.$typeName
   readonly $fullTypeName: `${string}::pool::PoolRegistry`
   readonly $typeArgs: []
-  readonly $isPhantom = PoolRegistry.$isPhantom
+  readonly $isPhantom: typeof PoolRegistry.$isPhantom = PoolRegistry.$isPhantom
 
   readonly id: ToField<UID>
   readonly table: ToField<Table<ToPhantom<PoolRegistryItem>, 'bool'>>
@@ -869,7 +871,7 @@ export class PoolRegistry implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): PoolRegistryReified {
     return PoolRegistry.reified()
   }
 
@@ -877,7 +879,7 @@ export class PoolRegistry implements StructClass {
     return phantom(PoolRegistry.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<PoolRegistry>> {
     return PoolRegistry.phantom()
   }
 
@@ -925,14 +927,14 @@ export class PoolRegistry implements StructClass {
     return PoolRegistry.fromFields(PoolRegistry.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       table: this.table.toJSONField(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1010,15 +1012,15 @@ export type PoolRegistryItemReified = Reified<PoolRegistryItem, PoolRegistryItem
 export class PoolRegistryItem implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName =
+  static readonly $typeName: `${string}::pool::PoolRegistryItem` =
     `${getTypeOrigin('amm', 'pool::PoolRegistryItem')}::pool::PoolRegistryItem` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = PoolRegistryItem.$typeName
+  readonly $typeName: typeof PoolRegistryItem.$typeName = PoolRegistryItem.$typeName
   readonly $fullTypeName: `${string}::pool::PoolRegistryItem`
   readonly $typeArgs: []
-  readonly $isPhantom = PoolRegistryItem.$isPhantom
+  readonly $isPhantom: typeof PoolRegistryItem.$isPhantom = PoolRegistryItem.$isPhantom
 
   readonly a: ToField<TypeName>
   readonly b: ToField<TypeName>
@@ -1061,7 +1063,7 @@ export class PoolRegistryItem implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): PoolRegistryItemReified {
     return PoolRegistryItem.reified()
   }
 
@@ -1069,7 +1071,7 @@ export class PoolRegistryItem implements StructClass {
     return phantom(PoolRegistryItem.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<PoolRegistryItem>> {
     return PoolRegistryItem.phantom()
   }
 
@@ -1111,14 +1113,14 @@ export class PoolRegistryItem implements StructClass {
     return PoolRegistryItem.fromFields(PoolRegistryItem.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       a: this.a,
       b: this.b,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1196,14 +1198,15 @@ export type AdminCapReified = Reified<AdminCap, AdminCapFields>
 export class AdminCap implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('amm', 'pool::AdminCap')}::pool::AdminCap` as const
+  static readonly $typeName: `${string}::pool::AdminCap` =
+    `${getTypeOrigin('amm', 'pool::AdminCap')}::pool::AdminCap` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = AdminCap.$typeName
+  readonly $typeName: typeof AdminCap.$typeName = AdminCap.$typeName
   readonly $fullTypeName: `${string}::pool::AdminCap`
   readonly $typeArgs: []
-  readonly $isPhantom = AdminCap.$isPhantom
+  readonly $isPhantom: typeof AdminCap.$isPhantom = AdminCap.$isPhantom
 
   readonly id: ToField<UID>
 
@@ -1241,7 +1244,7 @@ export class AdminCap implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): AdminCapReified {
     return AdminCap.reified()
   }
 
@@ -1249,7 +1252,7 @@ export class AdminCap implements StructClass {
     return phantom(AdminCap.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<AdminCap>> {
     return AdminCap.phantom()
   }
 
@@ -1288,13 +1291,13 @@ export class AdminCap implements StructClass {
     return AdminCap.fromFields(AdminCap.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

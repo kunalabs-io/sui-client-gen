@@ -1,6 +1,11 @@
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 export interface Secp256k1EcrecoverArgs {
   signature: Array<number | TransactionArgument> | TransactionArgument
@@ -20,7 +25,10 @@ export interface Secp256k1EcrecoverArgs {
  * key, otherwise throw error. This is similar to ecrecover in Ethereum, can only be
  * applied to Secp256k1 signatures. May abort with `EFailToRecoverPubKey` or `EInvalidSignature`.
  */
-export function secp256k1Ecrecover(tx: Transaction, args: Secp256k1EcrecoverArgs) {
+export function secp256k1Ecrecover(
+  tx: Transaction,
+  args: Secp256k1EcrecoverArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::ecdsa_k1::secp256k1_ecrecover`,
     arguments: [
@@ -40,7 +48,7 @@ export function secp256k1Ecrecover(tx: Transaction, args: Secp256k1EcrecoverArgs
 export function decompressPubkey(
   tx: Transaction,
   pubkey: Array<number | TransactionArgument> | TransactionArgument
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::ecdsa_k1::decompress_pubkey`,
     arguments: [pure(tx, pubkey, `vector<u8>`)],
@@ -65,7 +73,7 @@ export interface Secp256k1VerifyArgs {
  *
  * If the signature is valid to the pubkey and hashed message, return true. Else false.
  */
-export function secp256k1Verify(tx: Transaction, args: Secp256k1VerifyArgs) {
+export function secp256k1Verify(tx: Transaction, args: Secp256k1VerifyArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::ecdsa_k1::secp256k1_verify`,
     arguments: [
