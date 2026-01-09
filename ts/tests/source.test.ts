@@ -3,7 +3,7 @@ import { SuiClient } from '@mysten/sui/client'
 import { SerialTransactionExecutor } from '@mysten/sui/transactions'
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519'
 import { fromB64, fromBase64 } from '@mysten/sui/utils'
-import { it, expect, describe, afterAll } from 'vitest'
+import { it, expect, describe, afterAll, expectTypeOf } from 'vitest'
 import {
   Bar,
   Dummy,
@@ -31,7 +31,7 @@ import { newUnsafeFromBytes } from './gen/sui/url/functions'
 import { new_ as newUid, idFromAddress } from './gen/sui/object/functions'
 import { zero } from './gen/sui/balance/functions'
 import { Balance } from './gen/sui/balance/structs'
-import { extractType, phantom, vector } from './gen/_framework/reified'
+import { extractType, phantom, ToJSON, vector } from './gen/_framework/reified'
 import { SUI } from './gen/sui/sui/structs'
 import { Option } from './gen/std/option/structs'
 import { String as Utf8String } from './gen/std/string/structs'
@@ -1215,4 +1215,119 @@ it.concurrent('handles enums correctly', async () => {
   // Deserialize from JSON
   const fromJSON = wrappedReified.fromJSON(asJSON)
   expect(fromJSON).toEqual(exp)
+})
+
+// Type-level tests for JSON types using vitest's expectTypeOf
+// These verify at compile-time that the generated types are correct.
+// If any type is wrong, TypeScript will error during `pnpm check`.
+describe('JSON type definitions (compile-time checks)', () => {
+  it('should have correct types for simple struct toJSON()', () => {
+    const dummy = Dummy.r.new({ dummyField: true })
+    const json = dummy.toJSON()
+
+    // Verify individual field types
+    expectTypeOf(json.$typeName).toEqualTypeOf<typeof Dummy.$typeName>()
+    expectTypeOf(json.$typeArgs).toEqualTypeOf<[]>()
+    expectTypeOf(json.dummyField).toEqualTypeOf<boolean>()
+
+    expect(json.dummyField).toBe(true)
+  })
+
+  it('should have correct types for struct with value field (u64 → string)', () => {
+    const bar = Bar.r.new({ value: 100n })
+    const json = bar.toJSON()
+
+    // Bar has a u64 field which serializes to string
+    expectTypeOf(json.$typeName).toEqualTypeOf<typeof Bar.$typeName>()
+    expectTypeOf(json.$typeArgs).toEqualTypeOf<[]>()
+    expectTypeOf(json.value).toEqualTypeOf<string>() // u64 → string in JSON
+
+    expect(json.value).toBe('100')
+  })
+
+  it('should have correct types for generic struct with concrete types', () => {
+    const obj = WithTwoGenerics.reified(Bar.reified(), 'u8').new({
+      genericField1: Bar.r.new({ value: 100n }),
+      genericField2: 42,
+    })
+    const json = obj.toJSON()
+
+    // Verify nested struct field has correct shape (Bar → { value: string })
+    expectTypeOf(json.genericField1.value).toEqualTypeOf<string>()
+    // Verify primitive field has correct type (u8 → number)
+    expectTypeOf(json.genericField2).toEqualTypeOf<number>()
+
+    expect(json.genericField1.value).toBe('100')
+    expect(json.genericField2).toBe(42)
+  })
+
+  it('should have correct types for toJSONField() with exact shape', () => {
+    const bar = Bar.r.new({ value: 100n })
+    const field = bar.toJSONField()
+
+    // toJSONField() returns just the fields, no $typeName/$typeArgs
+    expectTypeOf(field.value).toEqualTypeOf<string>()
+
+    expect(field.value).toBe('100')
+  })
+
+  it('should have correct types for generic struct toJSONField()', () => {
+    const obj = WithGenericField.reified(Bar.reified()).new({
+      id: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+      genericField: Bar.r.new({ value: 200n }),
+    })
+    const field = obj.toJSONField()
+
+    // Verify exact field types
+    expectTypeOf(field.id).toEqualTypeOf<string>() // UID → string
+    expectTypeOf(field.genericField.value).toEqualTypeOf<string>() // Bar.value → string
+
+    expect(field.genericField.value).toBe('200')
+  })
+
+  it('should handle nested generics with correct nested types', () => {
+    const inner = WithTwoGenerics.reified(Bar.reified(), 'u8').new({
+      genericField1: Bar.r.new({ value: 50n }),
+      genericField2: 10,
+    })
+    const outer = WithTwoGenerics.reified(WithTwoGenerics.reified(Bar.reified(), 'u8'), 'u16').new({
+      genericField1: inner,
+      genericField2: 20,
+    })
+
+    const json = outer.toJSON()
+
+    // Nested structure: outer.genericField1 is WithTwoGenerics<Bar, 'u8'>
+    expectTypeOf(json.genericField1.genericField1.value).toEqualTypeOf<string>() // Bar.value → string
+    expectTypeOf(json.genericField1.genericField2).toEqualTypeOf<number>() // u8 → number
+    expectTypeOf(json.genericField2).toEqualTypeOf<number>() // u16 → number
+
+    expect(json.genericField1.genericField1.value).toBe('50')
+    expect(json.genericField1.genericField2).toBe(10)
+    expect(json.genericField2).toBe(20)
+  })
+
+  it('should have correct array types for vectors', () => {
+    const bars = [Bar.r.new({ value: 1n }), Bar.r.new({ value: 2n }), Bar.r.new({ value: 3n })]
+
+    const jsonBars = bars.map(b => b.toJSONField())
+
+    // Array elements should have value: string
+    expectTypeOf(jsonBars[0].value).toEqualTypeOf<string>()
+
+    expect(jsonBars.map(j => j.value)).toEqual(['1', '2', '3'])
+  })
+
+  it('should serialize primitive types correctly', () => {
+    // Test all primitive JSON mappings using values
+    const boolVal = true as ToJSON<'bool'>
+    const u8Val = 1 as ToJSON<'u8'>
+    const u64Val = '1' as ToJSON<'u64'>
+    const addressVal = '0x1' as ToJSON<'address'>
+
+    expectTypeOf(boolVal).toEqualTypeOf<boolean>()
+    expectTypeOf(u8Val).toEqualTypeOf<number>()
+    expectTypeOf(u64Val).toEqualTypeOf<string>() // Large ints → string
+    expectTypeOf(addressVal).toEqualTypeOf<string>()
+  })
 })
