@@ -468,6 +468,22 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a WithGenericField object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return WithGenericField.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -914,6 +930,22 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
       throw new Error(`object at id ${id} is not a WithTwoGenerics object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return WithTwoGenerics.fromBcs(typeArgs, res.bcsBytes)
   }
 }
@@ -1355,6 +1387,22 @@ export class Foo<T extends TypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a Foo object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return Foo.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -1760,6 +1808,22 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     const res = await fetchObjectBcs(client, id)
     if (!isWithSpecialTypes(res.type)) {
       throw new Error(`object at id ${id} is not a WithSpecialTypes object`)
+    }
+
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
     }
 
     return WithSpecialTypes.fromBcs(typeArgs, res.bcsBytes)
@@ -2486,6 +2550,22 @@ export class WithSpecialTypesAsGenerics<
       throw new Error(`object at id ${id} is not a WithSpecialTypesAsGenerics object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 8) {
+      throw new Error(
+        `type argument mismatch: expected 8 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 8; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return WithSpecialTypesAsGenerics.fromBcs(typeArgs, res.bcsBytes)
   }
 }
@@ -2805,6 +2885,22 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     const res = await fetchObjectBcs(client, id)
     if (!isWithSpecialTypesInVectors(res.type)) {
       throw new Error(`object at id ${id} is not a WithSpecialTypesInVectors object`)
+    }
+
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
     }
 
     return WithSpecialTypesInVectors.fromBcs(typeArg, res.bcsBytes)

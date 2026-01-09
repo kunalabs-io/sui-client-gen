@@ -838,6 +838,22 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a PurchaseCap object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return PurchaseCap.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -1833,6 +1849,22 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a ItemListed object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return ItemListed.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -2098,6 +2130,22 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
       throw new Error(`object at id ${id} is not a ItemPurchased object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return ItemPurchased.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -2345,6 +2393,22 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
     const res = await fetchObjectBcs(client, id)
     if (!isItemDelisted(res.type)) {
       throw new Error(`object at id ${id} is not a ItemDelisted object`)
+    }
+
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
     }
 
     return ItemDelisted.fromBcs(typeArg, res.bcsBytes)

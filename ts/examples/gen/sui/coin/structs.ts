@@ -280,6 +280,22 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a Coin object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return Coin.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -585,6 +601,22 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
       throw new Error(`object at id ${id} is not a CoinMetadata object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return CoinMetadata.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -854,6 +886,22 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
       throw new Error(`object at id ${id} is not a RegulatedCoinMetadata object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return RegulatedCoinMetadata.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -1101,6 +1149,22 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
     const res = await fetchObjectBcs(client, id)
     if (!isTreasuryCap(res.type)) {
       throw new Error(`object at id ${id} is not a TreasuryCap object`)
+    }
+
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
     }
 
     return TreasuryCap.fromBcs(typeArg, res.bcsBytes)
@@ -1355,6 +1419,22 @@ export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a DenyCapV2 object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return DenyCapV2.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -1589,6 +1669,22 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
     const res = await fetchObjectBcs(client, id)
     if (!isCurrencyCreated(res.type)) {
       throw new Error(`object at id ${id} is not a CurrencyCreated object`)
+    }
+
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
     }
 
     return CurrencyCreated.fromBcs(typeArg, res.bcsBytes)
@@ -1826,6 +1922,22 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
     const res = await fetchObjectBcs(client, id)
     if (!isDenyCap(res.type)) {
       throw new Error(`object at id ${id} is not a DenyCap object`)
+    }
+
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
     }
 
     return DenyCap.fromBcs(typeArg, res.bcsBytes)

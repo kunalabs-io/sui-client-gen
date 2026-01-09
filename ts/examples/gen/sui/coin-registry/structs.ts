@@ -662,6 +662,22 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a CurrencyKey object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return CurrencyKey.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -1088,6 +1104,22 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a MetadataCap object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return MetadataCap.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -1320,6 +1352,22 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
     const res = await fetchObjectBcs(client, id)
     if (!isBorrow(res.type)) {
       throw new Error(`object at id ${id} is not a Borrow object`)
+    }
+
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
     }
 
     return Borrow.fromBcs(typeArg, res.bcsBytes)
@@ -1702,6 +1750,22 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a Currency object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return Currency.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -1965,6 +2029,22 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
     const res = await fetchObjectBcs(client, id)
     if (!isCurrencyInitializer(res.type)) {
       throw new Error(`object at id ${id} is not a CurrencyInitializer object`)
+    }
+
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
     }
 
     return CurrencyInitializer.fromBcs(typeArg, res.bcsBytes)

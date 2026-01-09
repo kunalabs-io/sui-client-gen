@@ -301,6 +301,22 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
       throw new Error(`object at id ${id} is not a Token object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return Token.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -548,6 +564,22 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
     const res = await fetchObjectBcs(client, id)
     if (!isTokenPolicyCap(res.type)) {
       throw new Error(`object at id ${id} is not a TokenPolicyCap object`)
+    }
+
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
     }
 
     return TokenPolicyCap.fromBcs(typeArg, res.bcsBytes)
@@ -848,6 +880,22 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
     const res = await fetchObjectBcs(client, id)
     if (!isTokenPolicy(res.type)) {
       throw new Error(`object at id ${id} is not a TokenPolicy object`)
+    }
+
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
     }
 
     return TokenPolicy.fromBcs(typeArg, res.bcsBytes)
@@ -1193,6 +1241,22 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
       throw new Error(`object at id ${id} is not a ActionRequest object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return ActionRequest.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -1429,6 +1493,22 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
     const res = await fetchObjectBcs(client, id)
     if (!isRuleKey(res.type)) {
       throw new Error(`object at id ${id} is not a RuleKey object`)
+    }
+
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
     }
 
     return RuleKey.fromBcs(typeArg, res.bcsBytes)
@@ -1694,6 +1774,22 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
     const res = await fetchObjectBcs(client, id)
     if (!isTokenPolicyCreated(res.type)) {
       throw new Error(`object at id ${id} is not a TokenPolicyCreated object`)
+    }
+
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
     }
 
     return TokenPolicyCreated.fromBcs(typeArg, res.bcsBytes)
