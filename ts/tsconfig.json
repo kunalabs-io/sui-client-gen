@@ -17,6 +17,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "isolatedDeclarations": true,
+    "declaration": true, 
   },
   "include": [
     "examples/",

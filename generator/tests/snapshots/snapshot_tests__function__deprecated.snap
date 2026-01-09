@@ -4,14 +4,14 @@ expression: output
 ---
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
-import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
+import { Transaction, TransactionArgument, TransactionResult } from '@mysten/sui/transactions'
 
 /**
  * This function is deprecated
  *
  * @deprecated
  */
-export function deprecatedSimple(tx: Transaction, ) {
+export function deprecatedSimple(tx: Transaction, ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::fixture::deprecated_simple`,
     arguments: [],
@@ -23,7 +23,7 @@ export function deprecatedSimple(tx: Transaction, ) {
  *
  * @deprecated Use `new_function` instead
  */
-export function deprecatedWithNote(tx: Transaction, value: bigint | TransactionArgument) {
+export function deprecatedWithNote(tx: Transaction, value: bigint | TransactionArgument): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::fixture::deprecated_with_note`,
     arguments: [pure(tx, value, `u64`)],
@@ -43,7 +43,7 @@ export interface DeprecatedWithArgsArgs {
  *
  * @deprecated Use `new_function_with_args` instead
  */
-export function deprecatedWithArgs(tx: Transaction, args: DeprecatedWithArgsArgs) {
+export function deprecatedWithArgs(tx: Transaction, args: DeprecatedWithArgsArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::fixture::deprecated_with_args`,
     arguments: [

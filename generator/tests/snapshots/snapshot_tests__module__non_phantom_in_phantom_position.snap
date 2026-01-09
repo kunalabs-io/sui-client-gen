@@ -55,14 +55,14 @@ export type WitTableReified<T0 extends PhantomTypeArgument, T1 extends TypeArgum
 export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T2 extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::wit_table::WitTable` as const
+  static readonly $typeName: `${string}::wit_table::WitTable` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::wit_table::WitTable` as const
   static readonly $numTypeParams = 3
   static readonly $isPhantom = [true, false, true] as const
 
-  readonly $typeName = WitTable.$typeName
+  readonly $typeName: typeof WitTable.$typeName = WitTable.$typeName
   readonly $fullTypeName: `${string}::wit_table::WitTable<${PhantomToTypeStr<T0>}, ${ToTypeStr<T1>}, ${PhantomToTypeStr<T2>}>`
   readonly $typeArgs: [PhantomToTypeStr<T0>, ToTypeStr<T1>, PhantomToTypeStr<T2>]
-  readonly $isPhantom = WitTable.$isPhantom
+  readonly $isPhantom: typeof WitTable.$isPhantom = WitTable.$isPhantom
 
   readonly id: ToField<UID>
   readonly table: ToField<Table<ToPhantom<T1>, T2>>
@@ -107,7 +107,7 @@ export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T
     }
   }
 
-  static get r() {
+  static get r(): typeof WitTable.reified {
     return WitTable.reified
   }
 
@@ -117,7 +117,7 @@ export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T
     return phantom(WitTable.reified(T0, T1, T2))
   }
 
-  static get p() {
+  static get p(): typeof WitTable.phantom {
     return WitTable.phantom
   }
 
@@ -170,14 +170,14 @@ export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T
     return WitTable.fromFields(typeArgs, WitTable.bcs(toBcs(typeArgs[1])).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       table: this.table.toJSONField(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

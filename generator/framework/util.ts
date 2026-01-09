@@ -43,7 +43,7 @@ export type GenericArg =
 export function splitGenericParameters(
   str: string,
   genericSeparators: [string, string] = ['<', '>']
-) {
+): string[] {
   const [left, right] = genericSeparators
   const tok: string[] = []
   let word = ''
@@ -281,7 +281,7 @@ export function option(tx: Transaction, type: string, arg: GenericArg | null): T
   })
 }
 
-export function generic(tx: Transaction, type: string, arg: GenericArg) {
+export function generic(tx: Transaction, type: string, arg: GenericArg): TransactionArgument {
   if (typeArgIsPure(type)) {
     return pure(tx, arg as PureArg | TransactionArgument, type)
   } else {
@@ -305,7 +305,7 @@ export function vector(
   tx: Transaction,
   itemType: string,
   items: Array<GenericArg> | TransactionArgument
-) {
+): TransactionArgument {
   if (typeof items === 'function') {
     throw new Error('Transaction plugins are not supported')
   }

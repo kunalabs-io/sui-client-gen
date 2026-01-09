@@ -19,14 +19,14 @@ export type WithTwoGenericsReified<T extends TypeArgument, U extends TypeArgumen
 export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithTwoGenerics` as const
+  static readonly $typeName: `${string}::fixture::WithTwoGenerics` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithTwoGenerics` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, false] as const
 
-  readonly $typeName = WithTwoGenerics.$typeName
+  readonly $typeName: typeof WithTwoGenerics.$typeName = WithTwoGenerics.$typeName
   readonly $fullTypeName: `${string}::fixture::WithTwoGenerics<${ToTypeStr<T>}, ${ToTypeStr<U>}>`
   readonly $typeArgs: [ToTypeStr<T>, ToTypeStr<U>]
-  readonly $isPhantom = WithTwoGenerics.$isPhantom
+  readonly $isPhantom: typeof WithTwoGenerics.$isPhantom = WithTwoGenerics.$isPhantom
 
   readonly genericField1: ToField<T>
   readonly genericField2: ToField<U>
@@ -71,7 +71,7 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> imp
     }
   }
 
-  static get r() {
+  static get r(): typeof WithTwoGenerics.reified {
     return WithTwoGenerics.reified
   }
 
@@ -81,7 +81,7 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> imp
     return phantom(WithTwoGenerics.reified(T, U))
   }
 
-  static get p() {
+  static get p(): typeof WithTwoGenerics.phantom {
     return WithTwoGenerics.phantom
   }
 
@@ -134,14 +134,14 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> imp
     return WithTwoGenerics.fromFields(typeArgs, WithTwoGenerics.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       genericField1: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.genericField1),
       genericField2: fieldToJSON<U>(`${this.$typeArgs[1]}`, this.genericField2),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

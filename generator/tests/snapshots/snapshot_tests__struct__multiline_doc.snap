@@ -28,14 +28,14 @@ export type MultilineDocReified = Reified<MultilineDoc, MultilineDocFields>
 export class MultilineDoc implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::MultilineDoc` as const
+  static readonly $typeName: `${string}::test::MultilineDoc` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::MultilineDoc` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = MultilineDoc.$typeName
+  readonly $typeName: typeof MultilineDoc.$typeName = MultilineDoc.$typeName
   readonly $fullTypeName: `${string}::test::MultilineDoc`
   readonly $typeArgs: []
-  readonly $isPhantom = MultilineDoc.$isPhantom
+  readonly $isPhantom: typeof MultilineDoc.$isPhantom = MultilineDoc.$isPhantom
 
   /**
    * This field has
@@ -81,7 +81,7 @@ export class MultilineDoc implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): MultilineDocReified {
     return MultilineDoc.reified()
   }
 
@@ -89,7 +89,7 @@ export class MultilineDoc implements StructClass {
     return phantom(MultilineDoc.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<MultilineDoc>> {
     return MultilineDoc.phantom()
   }
 
@@ -128,13 +128,13 @@ export class MultilineDoc implements StructClass {
     return MultilineDoc.fromFields(MultilineDoc.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       data: this.data.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

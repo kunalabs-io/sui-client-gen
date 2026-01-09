@@ -30,14 +30,14 @@ export type WithSpecialTypesReified<T extends PhantomTypeArgument, U extends Typ
 export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithSpecialTypes` as const
+  static readonly $typeName: `${string}::fixture::WithSpecialTypes` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithSpecialTypes` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, false] as const
 
-  readonly $typeName = WithSpecialTypes.$typeName
+  readonly $typeName: typeof WithSpecialTypes.$typeName = WithSpecialTypes.$typeName
   readonly $fullTypeName: `${string}::fixture::WithSpecialTypes<${PhantomToTypeStr<T>}, ${ToTypeStr<U>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>, ToTypeStr<U>]
-  readonly $isPhantom = WithSpecialTypes.$isPhantom
+  readonly $isPhantom: typeof WithSpecialTypes.$isPhantom = WithSpecialTypes.$isPhantom
 
   readonly id: ToField<UID>
   readonly string: ToField<String>
@@ -104,7 +104,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     }
   }
 
-  static get r() {
+  static get r(): typeof WithSpecialTypes.reified {
     return WithSpecialTypes.reified
   }
 
@@ -114,7 +114,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     return phantom(WithSpecialTypes.reified(T, U))
   }
 
-  static get p() {
+  static get p(): typeof WithSpecialTypes.phantom {
     return WithSpecialTypes.phantom
   }
 
@@ -200,7 +200,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     return WithSpecialTypes.fromFields(typeArgs, WithSpecialTypes.bcs(toBcs(typeArgs[1])).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       string: this.string,
@@ -218,7 +218,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

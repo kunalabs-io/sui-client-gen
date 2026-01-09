@@ -301,7 +301,7 @@ export function extractType(reified: Reified<TypeArgument, any> | PhantomReified
   throw new Error('unreachable')
 }
 
-export function decodeFromFields(reified: Reified<TypeArgument, any>, field: any) {
+export function decodeFromFields(reified: Reified<TypeArgument, any>, field: any): any {
   switch (reified) {
     case 'bool':
     case 'u8':
@@ -339,7 +339,7 @@ export function decodeFromFields(reified: Reified<TypeArgument, any>, field: any
   }
 }
 
-export function decodeFromFieldsWithTypes(reified: Reified<TypeArgument, any>, item: any) {
+export function decodeFromFieldsWithTypes(reified: Reified<TypeArgument, any>, item: any): any {
   switch (reified) {
     case 'bool':
     case 'u8':
@@ -381,7 +381,7 @@ export function assertReifiedTypeArgsMatch(
   fullType: string,
   typeArgs: string[],
   reifiedTypeArgs: Array<Reified<TypeArgument, any> | PhantomReified<string>>
-) {
+): void {
   if (reifiedTypeArgs.length !== typeArgs.length) {
     throw new Error(
       `provided item has mismatching number of type argments ${fullType} (expected ${reifiedTypeArgs.length}, got ${typeArgs.length}))`
@@ -401,7 +401,7 @@ export function assertReifiedTypeArgsMatch(
 export function assertFieldsWithTypesArgsMatch(
   item: FieldsWithTypes,
   reifiedTypeArgs: Array<Reified<TypeArgument, any> | PhantomReified<string>>
-) {
+): void {
   const { typeArgs: itemTypeArgs } = parseTypeName(item.type)
   assertReifiedTypeArgsMatch(item.type, itemTypeArgs, reifiedTypeArgs)
 }
@@ -442,7 +442,7 @@ export function fieldToJSON<T extends TypeArgument>(type: string, field: ToField
   }
 }
 
-export function decodeFromJSONField(typeArg: Reified<TypeArgument, any>, field: any) {
+export function decodeFromJSONField(typeArg: Reified<TypeArgument, any>, field: any): any {
   switch (typeArg) {
     case 'bool':
     case 'u8':

@@ -274,6 +274,7 @@ impl EnumIR {
             let to_type_args = self.emit_to_type_args();
             let extract_types = self.emit_extract_types();
             let full_type_as_type = self.emit_full_type_as_type();
+            let full_type_as_type_for_static = self.emit_full_type_as_type_for_static();
             let type_args_as_type = self.emit_type_args_as_type();
             let bcs_section = self.emit_bcs_section();
             let reified_bcs_init = self.emit_reified_bcs_init();
@@ -291,7 +292,7 @@ impl EnumIR {
 
             formatdoc! {r#"
                 export class {name} {{
-                  static readonly $typeName = `{full_type_template}` as const
+                  static readonly $typeName: {full_type_as_type_for_static} = `{full_type_template}` as const
                   static readonly $numTypeParams = {num_type_params}
                   static readonly $isPhantom = {is_phantom_array} as const
 
@@ -326,7 +327,7 @@ impl EnumIR {
                     }} as {name}Reified{to_type_args}
                   }}
 
-                  static get r() {{
+                  static get r(): typeof {name}.reified {{
                     return {name}.reified
                   }}
 
@@ -336,7 +337,7 @@ impl EnumIR {
                     return phantom({name}.reified({reified_arg_names}))
                   }}
 
-                  static get p() {{
+                  static get p(): typeof {name}.phantom {{
                     return {name}.phantom
                   }}
 
@@ -445,6 +446,7 @@ impl EnumIR {
     fn emit_factory_class_no_type_params(&self) -> String {
         let name = &self.name;
         let full_type_template = self.full_type_name_template();
+        let full_type_as_type_for_static = self.emit_full_type_as_type_for_static();
         let bcs_section = self.emit_bcs_section_no_type_params();
         let new_switch_cases = self.emit_new_switch_cases_no_type_params();
         let from_fields_switch = self.emit_from_fields_switch_no_type_params();
@@ -454,7 +456,7 @@ impl EnumIR {
 
         formatdoc! {r#"
             export class {name} {{
-              static readonly $typeName = `{full_type_template}` as const
+              static readonly $typeName: {full_type_as_type_for_static} = `{full_type_template}` as const
               static readonly $numTypeParams = 0
               static readonly $isPhantom = [] as const
 
@@ -481,7 +483,7 @@ impl EnumIR {
                 }} as {name}Reified
               }}
 
-              static get r() {{
+              static get r(): typeof {name}.reified {{
                 return {name}.reified
               }}
 
@@ -489,7 +491,7 @@ impl EnumIR {
                 return phantom({name}.reified())
               }}
 
-              static get p() {{
+              static get p(): typeof {name}.phantom {{
                 return {name}.phantom
               }}
 
@@ -578,16 +580,16 @@ impl EnumIR {
                 {{
                   __EnumVariantClass = true as const
 
-                  static readonly $typeName = {enum_name}.$typeName
-                  static readonly $numTypeParams = {enum_name}.$numTypeParams
-                  static readonly $isPhantom = {enum_name}.$isPhantom
-                  static readonly $variantName = '{variant_name}'
+                  static readonly $typeName: typeof {enum_name}.$typeName = {enum_name}.$typeName
+                  static readonly $numTypeParams: typeof {enum_name}.$numTypeParams = {enum_name}.$numTypeParams
+                  static readonly $isPhantom: typeof {enum_name}.$isPhantom = {enum_name}.$isPhantom
+                  static readonly $variantName = '{variant_name}' as const
 
-                  readonly $typeName = {class_name}.$typeName
+                  readonly $typeName: typeof {class_name}.$typeName = {class_name}.$typeName
                   readonly $fullTypeName: `${{typeof {enum_name}.$typeName}}{variant_full_type_name}`
                   readonly $typeArgs: [{type_args_string}]
-                  readonly $isPhantom = {enum_name}.$isPhantom
-                  readonly $variantName = {class_name}.$variantName
+                  readonly $isPhantom: typeof {enum_name}.$isPhantom = {enum_name}.$isPhantom
+                  readonly $variantName: typeof {class_name}.$variantName = {class_name}.$variantName
 
                   constructor(typeArgs: [{type_args_string}], fields: {class_name}Fields) {{
                     this.$fullTypeName = composeSuiType(
@@ -597,11 +599,11 @@ impl EnumIR {
                     this.$typeArgs = typeArgs
                   }}
 
-                  toJSONField() {{
+                  toJSONField(): Record<string, any> {{
                     return {{ $kind: this.$variantName }}
                   }}
 
-                  toJSON() {{
+                  toJSON(): Record<string, any> {{
                     return {{
                       $typeName: this.$typeName,
                       $typeArgs: this.$typeArgs,
@@ -637,16 +639,16 @@ impl EnumIR {
                 {{
                   __EnumVariantClass = true as const
 
-                  static readonly $typeName = {enum_name}.$typeName
-                  static readonly $numTypeParams = {enum_name}.$numTypeParams
-                  static readonly $isPhantom = {enum_name}.$isPhantom
-                  static readonly $variantName = '{variant_name}'
+                  static readonly $typeName: typeof {enum_name}.$typeName = {enum_name}.$typeName
+                  static readonly $numTypeParams: typeof {enum_name}.$numTypeParams = {enum_name}.$numTypeParams
+                  static readonly $isPhantom: typeof {enum_name}.$isPhantom = {enum_name}.$isPhantom
+                  static readonly $variantName = '{variant_name}' as const
 
-                  readonly $typeName = {class_name}.$typeName
+                  readonly $typeName: typeof {class_name}.$typeName = {class_name}.$typeName
                   readonly $fullTypeName: `${{typeof {enum_name}.$typeName}}{variant_full_type_name}`
                   readonly $typeArgs: [{type_args_string}]
-                  readonly $isPhantom = {enum_name}.$isPhantom
-                  readonly $variantName = {class_name}.$variantName
+                  readonly $isPhantom: typeof {enum_name}.$isPhantom = {enum_name}.$isPhantom
+                  readonly $variantName: typeof {class_name}.$variantName = {class_name}.$variantName
 
                 {field_declarations}
 
@@ -660,14 +662,14 @@ impl EnumIR {
                 {field_assignments}
                   }}
 
-                  toJSONField() {{
+                  toJSONField(): Record<string, any> {{
                     return {{
                       $kind: this.$variantName,
                 {to_json_fields}
                     }}
                   }}
 
-                  toJSON() {{
+                  toJSON(): Record<string, any> {{
                     return {{
                       $typeName: this.$typeName,
                       $typeArgs: this.$typeArgs,
@@ -1107,6 +1109,16 @@ impl EnumIR {
                     })
                     .collect();
                 format!("{}<{}>`", base_type, type_strs.join(", "))
+            }
+            PackageInfo::Dynamic { .. } => "string".to_string(),
+        }
+    }
+
+    fn emit_full_type_as_type_for_static(&self) -> String {
+        // For static $typeName property, use simpler type without generic parameters
+        match &self.package_info {
+            PackageInfo::System { address } => {
+                format!("`{}::{}`", address, self.module_enum_path)
             }
             PackageInfo::Dynamic { .. } => "string".to_string(),
         }

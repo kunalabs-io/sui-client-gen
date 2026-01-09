@@ -4,9 +4,9 @@ expression: output
 ---
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
-import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
+import { Transaction, TransactionArgument, TransactionResult } from '@mysten/sui/transactions'
 
-export function createBar(tx: Transaction, value: bigint | TransactionArgument) {
+export function createBar(tx: Transaction, value: bigint | TransactionArgument): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::fixture::create_bar`,
     arguments: [pure(tx, value, `u64`)],

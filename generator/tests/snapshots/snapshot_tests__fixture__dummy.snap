@@ -18,14 +18,14 @@ export type DummyReified = Reified<Dummy, DummyFields>
 export class Dummy implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Dummy` as const
+  static readonly $typeName: `${string}::fixture::Dummy` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Dummy` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Dummy.$typeName
+  readonly $typeName: typeof Dummy.$typeName = Dummy.$typeName
   readonly $fullTypeName: `${string}::fixture::Dummy`
   readonly $typeArgs: []
-  readonly $isPhantom = Dummy.$isPhantom
+  readonly $isPhantom: typeof Dummy.$isPhantom = Dummy.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -66,7 +66,7 @@ export class Dummy implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): DummyReified {
     return Dummy.reified()
   }
 
@@ -74,7 +74,7 @@ export class Dummy implements StructClass {
     return phantom(Dummy.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Dummy>> {
     return Dummy.phantom()
   }
 
@@ -113,13 +113,13 @@ export class Dummy implements StructClass {
     return Dummy.fromFields(Dummy.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

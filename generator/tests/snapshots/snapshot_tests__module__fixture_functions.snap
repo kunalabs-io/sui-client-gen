@@ -4,16 +4,16 @@ expression: output
 ---
 import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, pure } from '../../_framework/util'
-import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
+import { Transaction, TransactionArgument, TransactionResult } from '@mysten/sui/transactions'
 
-export function createBar(tx: Transaction, value: bigint | TransactionArgument) {
+export function createBar(tx: Transaction, value: bigint | TransactionArgument): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::fixture::create_bar`,
     arguments: [pure(tx, value, `u64`)],
   })
 }
 
-export function createWithGenericField(tx: Transaction, typeArg: string, genericField: GenericArg) {
+export function createWithGenericField(tx: Transaction, typeArg: string, genericField: GenericArg): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::fixture::create_with_generic_field`,
     typeArguments: [typeArg],
@@ -26,7 +26,7 @@ export interface CreateWithTwoGenericsArgs {
   genericField2: GenericArg
 }
 
-export function createWithTwoGenerics(tx: Transaction, typeArgs: [string, string], args: CreateWithTwoGenericsArgs) {
+export function createWithTwoGenerics(tx: Transaction, typeArgs: [string, string], args: CreateWithTwoGenericsArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::fixture::create_with_two_generics`,
     typeArguments: typeArgs,

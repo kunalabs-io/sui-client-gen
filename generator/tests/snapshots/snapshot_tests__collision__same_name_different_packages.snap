@@ -20,14 +20,14 @@ export type MultiCoinHolderReified = Reified<MultiCoinHolder, MultiCoinHolderFie
 export class MultiCoinHolder implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::collision::MultiCoinHolder` as const
+  static readonly $typeName: `${string}::collision::MultiCoinHolder` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::collision::MultiCoinHolder` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = MultiCoinHolder.$typeName
+  readonly $typeName: typeof MultiCoinHolder.$typeName = MultiCoinHolder.$typeName
   readonly $fullTypeName: `${string}::collision::MultiCoinHolder`
   readonly $typeArgs: []
-  readonly $isPhantom = MultiCoinHolder.$isPhantom
+  readonly $isPhantom: typeof MultiCoinHolder.$isPhantom = MultiCoinHolder.$isPhantom
 
   readonly id: ToField<UID>
   readonly suiCoin: ToField<Coin<ToPhantom<SUI>>>
@@ -72,7 +72,7 @@ export class MultiCoinHolder implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): MultiCoinHolderReified {
     return MultiCoinHolder.reified()
   }
 
@@ -80,7 +80,7 @@ export class MultiCoinHolder implements StructClass {
     return phantom(MultiCoinHolder.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<MultiCoinHolder>> {
     return MultiCoinHolder.phantom()
   }
 
@@ -125,7 +125,7 @@ export class MultiCoinHolder implements StructClass {
     return MultiCoinHolder.fromFields(MultiCoinHolder.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       suiCoin: this.suiCoin.toJSONField(),
@@ -133,7 +133,7 @@ export class MultiCoinHolder implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
