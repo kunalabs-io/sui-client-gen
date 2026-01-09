@@ -41,7 +41,8 @@ pnpm run build:example    # Build example project
 pnpm run check            # TypeScript type check
 pnpm run lint             # ESLint
 pnpm run lint:fix         # ESLint with auto-fix
-pnpm run test             # Run vitest
+pnpm run test             # Run vitest (single run)
+pnpm run test:watch       # Run vitest in watch mode
 ```
 
 **Slow commands - avoid during iteration:**
