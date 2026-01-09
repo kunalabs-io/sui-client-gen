@@ -19,14 +19,14 @@ export type WithGenericFieldReified<T extends TypeArgument> = Reified<WithGeneri
 export class WithGenericField<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithGenericField` as const
+  static readonly $typeName: `${string}::fixture::WithGenericField` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithGenericField` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
-  readonly $typeName = WithGenericField.$typeName
+  readonly $typeName: typeof WithGenericField.$typeName = WithGenericField.$typeName
   readonly $fullTypeName: `${string}::fixture::WithGenericField<${ToTypeStr<T>}>`
   readonly $typeArgs: [ToTypeStr<T>]
-  readonly $isPhantom = WithGenericField.$isPhantom
+  readonly $isPhantom: typeof WithGenericField.$isPhantom = WithGenericField.$isPhantom
 
   readonly id: ToField<UID>
   readonly genericField: ToField<T>
@@ -71,7 +71,7 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof WithGenericField.reified {
     return WithGenericField.reified
   }
 
@@ -81,7 +81,7 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
     return phantom(WithGenericField.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof WithGenericField.phantom {
     return WithGenericField.phantom
   }
 
@@ -135,14 +135,14 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
                 return WithGenericField.fromFields(typeArg, WithGenericField.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       genericField: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.genericField),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

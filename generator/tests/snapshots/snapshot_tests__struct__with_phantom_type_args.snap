@@ -18,14 +18,14 @@ export type ACLReified = Reified<ACL, ACLFields>
 export class ACL implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::acl::ACL` as const
+  static readonly $typeName: `${string}::acl::ACL` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::acl::ACL` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = ACL.$typeName
+  readonly $typeName: typeof ACL.$typeName = ACL.$typeName
   readonly $fullTypeName: `${string}::acl::ACL`
   readonly $typeArgs: []
-  readonly $isPhantom = ACL.$isPhantom
+  readonly $isPhantom: typeof ACL.$isPhantom = ACL.$isPhantom
 
   readonly permissions: ToField<LinkedTable<'address', 'u128'>>
 
@@ -66,7 +66,7 @@ export class ACL implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): ACLReified {
     return ACL.reified()
   }
 
@@ -74,7 +74,7 @@ export class ACL implements StructClass {
     return phantom(ACL.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<ACL>> {
     return ACL.phantom()
   }
 
@@ -113,13 +113,13 @@ export class ACL implements StructClass {
     return ACL.fromFields(ACL.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       permissions: this.permissions.toJSONField(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

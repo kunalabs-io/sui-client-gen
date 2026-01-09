@@ -31,14 +31,14 @@ export type FooReified<T extends TypeArgument> = Reified<Foo<T>, FooFields<T>>
 export class Foo<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Foo` as const
+  static readonly $typeName: `${string}::fixture::Foo` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Foo` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
-  readonly $typeName = Foo.$typeName
+  readonly $typeName: typeof Foo.$typeName = Foo.$typeName
   readonly $fullTypeName: `${string}::fixture::Foo<${ToTypeStr<T>}>`
   readonly $typeArgs: [ToTypeStr<T>]
-  readonly $isPhantom = Foo.$isPhantom
+  readonly $isPhantom: typeof Foo.$isPhantom = Foo.$isPhantom
 
   readonly id: ToField<UID>
   readonly generic: ToField<T>
@@ -107,7 +107,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Foo.reified {
     return Foo.reified
   }
 
@@ -117,7 +117,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
     return phantom(Foo.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof Foo.phantom {
     return Foo.phantom
   }
 
@@ -207,7 +207,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
                 return Foo.fromFields(typeArg, Foo.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       generic: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.generic),
@@ -226,7 +226,7 @@ export class Foo<T extends TypeArgument> implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

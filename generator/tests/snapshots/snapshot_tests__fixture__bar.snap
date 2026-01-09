@@ -18,14 +18,14 @@ export type BarReified = Reified<Bar, BarFields>
 export class Bar implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Bar` as const
+  static readonly $typeName: `${string}::fixture::Bar` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Bar` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Bar.$typeName
+  readonly $typeName: typeof Bar.$typeName = Bar.$typeName
   readonly $fullTypeName: `${string}::fixture::Bar`
   readonly $typeArgs: []
-  readonly $isPhantom = Bar.$isPhantom
+  readonly $isPhantom: typeof Bar.$isPhantom = Bar.$isPhantom
 
   readonly value: ToField<'u64'>
 
@@ -66,7 +66,7 @@ export class Bar implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): BarReified {
     return Bar.reified()
   }
 
@@ -74,7 +74,7 @@ export class Bar implements StructClass {
     return phantom(Bar.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Bar>> {
     return Bar.phantom()
   }
 
@@ -113,13 +113,13 @@ export class Bar implements StructClass {
     return Bar.fromFields(Bar.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       value: this.value.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

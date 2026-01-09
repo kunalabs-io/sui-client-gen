@@ -10,7 +10,12 @@ import {
   vector
 } from '../../_framework/util'
 import { Bar } from './structs'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult
+} from '@mysten/sui/transactions'
 
 export interface CreateSpecialInVectorsArgs {
   string: Array<string | TransactionArgument> | TransactionArgument
@@ -21,7 +26,7 @@ export interface CreateSpecialInVectorsArgs {
   optionGeneric: Array<GenericArg | null> | TransactionArgument
 }
 
-export function createSpecialInVectors(tx: Transaction, typeArg: string, args: CreateSpecialInVectorsArgs) {
+export function createSpecialInVectors(tx: Transaction, typeArg: string, args: CreateSpecialInVectorsArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::fixture::create_special_in_vectors`,
     typeArguments: [typeArg],

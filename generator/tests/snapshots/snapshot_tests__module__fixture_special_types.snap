@@ -75,14 +75,14 @@ export type WithSpecialTypesReified<T extends PhantomTypeArgument, U extends Typ
 export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithSpecialTypes` as const
+  static readonly $typeName: `${string}::fixture::WithSpecialTypes` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithSpecialTypes` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, false] as const
 
-  readonly $typeName = WithSpecialTypes.$typeName
+  readonly $typeName: typeof WithSpecialTypes.$typeName = WithSpecialTypes.$typeName
   readonly $fullTypeName: `${string}::fixture::WithSpecialTypes<${PhantomToTypeStr<T>}, ${ToTypeStr<U>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>, ToTypeStr<U>]
-  readonly $isPhantom = WithSpecialTypes.$isPhantom
+  readonly $isPhantom: typeof WithSpecialTypes.$isPhantom = WithSpecialTypes.$isPhantom
 
   readonly id: ToField<UID>
   readonly string: ToField<String>
@@ -149,7 +149,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     }
   }
 
-  static get r() {
+  static get r(): typeof WithSpecialTypes.reified {
     return WithSpecialTypes.reified
   }
 
@@ -159,7 +159,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     return phantom(WithSpecialTypes.reified(T, U))
   }
 
-  static get p() {
+  static get p(): typeof WithSpecialTypes.phantom {
     return WithSpecialTypes.phantom
   }
 
@@ -245,7 +245,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     return WithSpecialTypes.fromFields(typeArgs, WithSpecialTypes.bcs(toBcs(typeArgs[1])).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       string: this.string,
@@ -263,7 +263,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -388,14 +388,14 @@ export type WithSpecialTypesInVectorsReified<T extends TypeArgument> = Reified<W
 export class WithSpecialTypesInVectors<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithSpecialTypesInVectors` as const
+  static readonly $typeName: `${string}::fixture::WithSpecialTypesInVectors` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithSpecialTypesInVectors` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
-  readonly $typeName = WithSpecialTypesInVectors.$typeName
+  readonly $typeName: typeof WithSpecialTypesInVectors.$typeName = WithSpecialTypesInVectors.$typeName
   readonly $fullTypeName: `${string}::fixture::WithSpecialTypesInVectors<${ToTypeStr<T>}>`
   readonly $typeArgs: [ToTypeStr<T>]
-  readonly $isPhantom = WithSpecialTypesInVectors.$isPhantom
+  readonly $isPhantom: typeof WithSpecialTypesInVectors.$isPhantom = WithSpecialTypesInVectors.$isPhantom
 
   readonly id: ToField<UID>
   readonly string: ToField<Vector<String>>
@@ -450,7 +450,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     }
   }
 
-  static get r() {
+  static get r(): typeof WithSpecialTypesInVectors.reified {
     return WithSpecialTypesInVectors.reified
   }
 
@@ -460,7 +460,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     return phantom(WithSpecialTypesInVectors.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof WithSpecialTypesInVectors.phantom {
     return WithSpecialTypesInVectors.phantom
   }
 
@@ -529,7 +529,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
                 return WithSpecialTypesInVectors.fromFields(typeArg, WithSpecialTypesInVectors.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       string: fieldToJSON<Vector<String>>(`vector<${String.$typeName}>`, this.string),
@@ -541,7 +541,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

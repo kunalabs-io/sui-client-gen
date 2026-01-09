@@ -522,14 +522,14 @@ impl StructIR {
             export class {name} implements StructClass {{
               __StructClass = true as const
 
-              static readonly $typeName = `{full_type_template}` as const
+              static readonly $typeName: {full_type_as_type} = `{full_type_template}` as const
               static readonly $numTypeParams = 0
               static readonly $isPhantom = [] as const
 
-              readonly $typeName = {name}.$typeName
+              readonly $typeName: typeof {name}.$typeName = {name}.$typeName
               readonly $fullTypeName: {full_type_as_type}
               readonly $typeArgs: []
-              readonly $isPhantom = {name}.$isPhantom
+              readonly $isPhantom: typeof {name}.$isPhantom = {name}.$isPhantom
 
             {field_decls}
 
@@ -570,7 +570,7 @@ impl StructIR {
                 }}
               }}
 
-              static get r() {{
+              static get r(): {name}Reified {{
                 return {name}.reified()
               }}
 
@@ -578,7 +578,7 @@ impl StructIR {
                 return phantom({name}.reified())
               }}
 
-              static get p() {{
+              static get p(): PhantomReified<ToTypeStr<{name}>> {{
                 return {name}.phantom()
               }}
 
@@ -617,13 +617,13 @@ impl StructIR {
                 return {name}.fromFields({name}.bcs.parse(data))
               }}
 
-              toJSONField() {{
+              toJSONField(): Record<string, any> {{
                 return {{
             {to_json_fields}
                 }}
               }}
 
-              toJSON() {{
+              toJSON(): Record<string, any> {{
                 return {{ $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }}
               }}
 
@@ -698,6 +698,7 @@ impl StructIR {
 
     fn emit_class_with_type_params(&self) -> String {
         let full_type_template = self.full_type_name_template();
+        let full_type_as_type_no_generics = self.full_type_name_as_type();
 
         // Build various type-param-related strings
         let type_param_extends = self.emit_type_param_extends();
@@ -914,14 +915,14 @@ impl StructIR {
             export class {name}{type_param_extends} implements StructClass {{
               __StructClass = true as const
 
-              static readonly $typeName = `{full_type_template}` as const
+              static readonly $typeName: {full_type_as_type_no_generics} = `{full_type_template}` as const
               static readonly $numTypeParams = {num_type_params}
               static readonly $isPhantom = {is_phantom_array} as const
             {inner_fields_section}
-              readonly $typeName = {name}.$typeName
+              readonly $typeName: typeof {name}.$typeName = {name}.$typeName
               readonly $fullTypeName: {full_type_name_with_generics}
               readonly $typeArgs: {type_args_field_type}
-              readonly $isPhantom = {name}.$isPhantom
+              readonly $isPhantom: typeof {name}.$isPhantom = {name}.$isPhantom
 
             {field_decls}
 
@@ -964,7 +965,7 @@ impl StructIR {
                 }}
               }}
 
-              static get r() {{
+              static get r(): typeof {name}.reified {{
                 return {name}.reified
               }}
 
@@ -974,7 +975,7 @@ impl StructIR {
                 return phantom({name}.reified({reified_arg_names}))
               }}
 
-              static get p() {{
+              static get p(): typeof {name}.phantom {{
                 return {name}.phantom
               }}
 
@@ -1010,13 +1011,13 @@ impl StructIR {
                 {from_bcs_body}
               }}
 
-              toJSONField() {{
+              toJSONField(): Record<string, any> {{
                 return {{
             {to_json_fields}
                 }}
               }}
 
-              toJSON() {{
+              toJSON(): Record<string, any> {{
                 return {{ $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }}
               }}
 

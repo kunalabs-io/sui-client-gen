@@ -109,7 +109,7 @@ impl PackageInitIR {
             {imports}
             import {{ StructClassLoader }} from '{framework}/loader'
 
-            export function registerClasses(loader: StructClassLoader) {{
+            export function registerClasses(loader: StructClassLoader): void {{
             {registrations}
             }}
         ",
@@ -199,7 +199,7 @@ impl InitLoaderIR {
             .collect();
 
         sections.push(formatdoc! {"
-            export function registerClasses({param}: StructClassLoader) {{
+            export function registerClasses({param}: StructClassLoader): void {{
             {body}
             }}",
             param = param_name,

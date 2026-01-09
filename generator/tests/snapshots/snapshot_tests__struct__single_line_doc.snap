@@ -20,14 +20,14 @@ export type DocumentedStructReified = Reified<DocumentedStruct, DocumentedStruct
 export class DocumentedStruct implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::DocumentedStruct` as const
+  static readonly $typeName: `${string}::test::DocumentedStruct` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::DocumentedStruct` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = DocumentedStruct.$typeName
+  readonly $typeName: typeof DocumentedStruct.$typeName = DocumentedStruct.$typeName
   readonly $fullTypeName: `${string}::test::DocumentedStruct`
   readonly $typeArgs: []
-  readonly $isPhantom = DocumentedStruct.$isPhantom
+  readonly $isPhantom: typeof DocumentedStruct.$isPhantom = DocumentedStruct.$isPhantom
 
   /** The value field */
   readonly value: ToField<'u64'>
@@ -69,7 +69,7 @@ export class DocumentedStruct implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): DocumentedStructReified {
     return DocumentedStruct.reified()
   }
 
@@ -77,7 +77,7 @@ export class DocumentedStruct implements StructClass {
     return phantom(DocumentedStruct.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<DocumentedStruct>> {
     return DocumentedStruct.phantom()
   }
 
@@ -116,13 +116,13 @@ export class DocumentedStruct implements StructClass {
     return DocumentedStruct.fromFields(DocumentedStruct.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       value: this.value.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

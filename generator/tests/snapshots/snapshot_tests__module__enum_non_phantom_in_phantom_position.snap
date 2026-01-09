@@ -64,7 +64,7 @@ export type ContainerReified<T1 extends TypeArgument, T2 extends PhantomTypeArgu
 >
 
 export class Container {
-  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::Container` as const
+  static readonly $typeName: string = `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::Container` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, true] as const
 
@@ -105,7 +105,7 @@ export class Container {
     } as ContainerReified<ToTypeArgument<T1>, ToPhantomTypeArgument<T2>>
   }
 
-  static get r() {
+  static get r(): typeof Container.reified {
     return Container.reified
   }
 
@@ -115,7 +115,7 @@ export class Container {
     return phantom(Container.reified(T1, T2))
   }
 
-  static get p() {
+  static get p(): typeof Container.phantom {
     return Container.phantom
   }
 
@@ -234,16 +234,16 @@ export class ContainerEmpty<T1 extends TypeArgument, T2 extends PhantomTypeArgum
 {
   __EnumVariantClass = true as const
 
-  static readonly $typeName = Container.$typeName
-  static readonly $numTypeParams = Container.$numTypeParams
-  static readonly $isPhantom = Container.$isPhantom
-  static readonly $variantName = 'Empty'
+  static readonly $typeName: typeof Container.$typeName = Container.$typeName
+  static readonly $numTypeParams: typeof Container.$numTypeParams = Container.$numTypeParams
+  static readonly $isPhantom: typeof Container.$isPhantom = Container.$isPhantom
+  static readonly $variantName = 'Empty' as const
 
-  readonly $typeName = ContainerEmpty.$typeName
+  readonly $typeName: typeof ContainerEmpty.$typeName = ContainerEmpty.$typeName
   readonly $fullTypeName: `${typeof Container.$typeName}<${ToTypeStr<T1>}, ${PhantomToTypeStr<T2>}>`
   readonly $typeArgs: [ToTypeStr<T1>, PhantomToTypeStr<T2>]
-  readonly $isPhantom = Container.$isPhantom
-  readonly $variantName = ContainerEmpty.$variantName
+  readonly $isPhantom: typeof Container.$isPhantom = Container.$isPhantom
+  readonly $variantName: typeof ContainerEmpty.$variantName = ContainerEmpty.$variantName
 
   constructor(typeArgs: [ToTypeStr<T1>, PhantomToTypeStr<T2>], fields: ContainerEmptyFields) {
     this.$fullTypeName = composeSuiType(
@@ -253,11 +253,11 @@ export class ContainerEmpty<T1 extends TypeArgument, T2 extends PhantomTypeArgum
     this.$typeArgs = typeArgs
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return { $kind: this.$variantName }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,
@@ -276,16 +276,16 @@ export class ContainerWithTable<T1 extends TypeArgument, T2 extends PhantomTypeA
 {
   __EnumVariantClass = true as const
 
-  static readonly $typeName = Container.$typeName
-  static readonly $numTypeParams = Container.$numTypeParams
-  static readonly $isPhantom = Container.$isPhantom
-  static readonly $variantName = 'WithTable'
+  static readonly $typeName: typeof Container.$typeName = Container.$typeName
+  static readonly $numTypeParams: typeof Container.$numTypeParams = Container.$numTypeParams
+  static readonly $isPhantom: typeof Container.$isPhantom = Container.$isPhantom
+  static readonly $variantName = 'WithTable' as const
 
-  readonly $typeName = ContainerWithTable.$typeName
+  readonly $typeName: typeof ContainerWithTable.$typeName = ContainerWithTable.$typeName
   readonly $fullTypeName: `${typeof Container.$typeName}<${ToTypeStr<T1>}, ${PhantomToTypeStr<T2>}>`
   readonly $typeArgs: [ToTypeStr<T1>, PhantomToTypeStr<T2>]
-  readonly $isPhantom = Container.$isPhantom
-  readonly $variantName = ContainerWithTable.$variantName
+  readonly $isPhantom: typeof Container.$isPhantom = Container.$isPhantom
+  readonly $variantName: typeof ContainerWithTable.$variantName = ContainerWithTable.$variantName
 
   readonly table: ToField<Table<ToPhantom<T1>, T2>>
 
@@ -299,14 +299,14 @@ export class ContainerWithTable<T1 extends TypeArgument, T2 extends PhantomTypeA
     this.table = fields.table
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       $kind: this.$variantName,
       table: fieldToJSON<Table<ToPhantom<T1>, T2>>(`${Table.$typeName}<${this.$typeArgs[0]}, ${this.$typeArgs[1]}>`, this.table),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,

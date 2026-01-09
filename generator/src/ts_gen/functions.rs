@@ -278,7 +278,7 @@ impl FunctionIR {
         };
 
         format!(
-            "export function {}(tx: Transaction, {})",
+            "export function {}(tx: Transaction, {}): TransactionResult",
             self.ts_name, all_params
         )
     }
@@ -520,7 +520,7 @@ pub fn emit_function_imports(functions: &[FunctionIR], framework_path: &str) -> 
     // Transaction types
     imports.add_named_many(
         "@mysten/sui/transactions",
-        &["Transaction", "TransactionArgument"],
+        &["Transaction", "TransactionArgument", "TransactionResult"],
     );
 
     let needs_object_input = functions.iter().any(|f| {

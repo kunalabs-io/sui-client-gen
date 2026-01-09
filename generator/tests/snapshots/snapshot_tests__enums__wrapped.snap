@@ -24,14 +24,14 @@ export type WrappedReified<T extends TypeArgument, U extends TypeArgument, V ext
 export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `${getTypeOrigin('examples', 'example::ExampleStruct')}::enums::Wrapped` as const
+  static readonly $typeName: `${string}::enums::Wrapped` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::enums::Wrapped` as const
   static readonly $numTypeParams = 3
   static readonly $isPhantom = [false, false, false] as const
 
-  readonly $typeName = Wrapped.$typeName
+  readonly $typeName: typeof Wrapped.$typeName = Wrapped.$typeName
   readonly $fullTypeName: `${string}::enums::Wrapped<${ToTypeStr<T>}, ${ToTypeStr<U>}, ${ToTypeStr<V>}>`
   readonly $typeArgs: [ToTypeStr<T>, ToTypeStr<U>, ToTypeStr<V>]
-  readonly $isPhantom = Wrapped.$isPhantom
+  readonly $isPhantom: typeof Wrapped.$isPhantom = Wrapped.$isPhantom
 
   readonly id: ToField<UID>
   readonly t: ToField<T>
@@ -86,7 +86,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     }
   }
 
-  static get r() {
+  static get r(): typeof Wrapped.reified {
     return Wrapped.reified
   }
 
@@ -96,7 +96,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     return phantom(Wrapped.reified(T, U, V))
   }
 
-  static get p() {
+  static get p(): typeof Wrapped.phantom {
     return Wrapped.phantom
   }
 
@@ -164,7 +164,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     return Wrapped.fromFields(typeArgs, Wrapped.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1]), toBcs(typeArgs[2])).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       t: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.t),
@@ -176,7 +176,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
