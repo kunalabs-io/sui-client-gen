@@ -11,8 +11,8 @@
     "lint:fix": "eslint examples/ tests/ --fix",
     "test": "vitest run --test-timeout=15000",
     "test:watch": "vitest --test-timeout=15000",
-    "gen:example": "cd examples/gen && cargo run -- --clean",
-    "gen:tests": "cd tests/gen && cargo run -- --clean",
+    "gen:example": "cd examples/gen && cargo run --release -- --clean",
+    "gen:tests": "cd tests/gen && cargo run --release -- --clean",
     "gen:all": "pnpm run -r gen:example & pnpm run -r gen:tests & wait"
   },
   "type": "module",
