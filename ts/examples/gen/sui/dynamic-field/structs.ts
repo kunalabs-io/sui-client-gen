@@ -12,6 +12,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeArgument,
   ToTypeStr,
   TypeArgument,
@@ -61,6 +62,17 @@ export type FieldReified<Name extends TypeArgument, Value extends TypeArgument> 
   Field<Name, Value>,
   FieldFields<Name, Value>
 >
+
+export type FieldJSONField<Name extends TypeArgument, Value extends TypeArgument> = {
+  id: string
+  name: ToJSON<Name>
+  value: ToJSON<Value>
+}
+
+export type FieldJSON<Name extends TypeArgument, Value extends TypeArgument> = {
+  $typeName: typeof Field.$typeName
+  $typeArgs: [ToTypeStr<Name>, ToTypeStr<Value>]
+} & FieldJSONField<Name, Value>
 
 /** Internal object used for storing the field and value */
 export class Field<Name extends TypeArgument, Value extends TypeArgument> implements StructClass {
@@ -210,7 +222,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     return Field.fromFields(typeArgs, Field.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): FieldJSONField<Name, Value> {
     return {
       id: this.id,
       name: fieldToJSON<Name>(`${this.$typeArgs[0]}`, this.name),
@@ -218,7 +230,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): FieldJSON<Name, Value> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

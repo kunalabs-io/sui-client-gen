@@ -5,6 +5,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   assertFieldsWithTypesArgsMatch,
@@ -40,6 +41,15 @@ export interface AccumulatorRootFields {
 }
 
 export type AccumulatorRootReified = Reified<AccumulatorRoot, AccumulatorRootFields>
+
+export type AccumulatorRootJSONField = {
+  id: string
+}
+
+export type AccumulatorRootJSON = {
+  $typeName: typeof AccumulatorRoot.$typeName
+  $typeArgs: []
+} & AccumulatorRootJSONField
 
 export class AccumulatorRoot implements StructClass {
   __StructClass = true as const
@@ -140,13 +150,13 @@ export class AccumulatorRoot implements StructClass {
     return AccumulatorRoot.fromFields(AccumulatorRoot.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): AccumulatorRootJSONField {
     return {
       id: this.id,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): AccumulatorRootJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -214,6 +224,15 @@ export interface U128Fields {
 }
 
 export type U128Reified = Reified<U128, U128Fields>
+
+export type U128JSONField = {
+  value: string
+}
+
+export type U128JSON = {
+  $typeName: typeof U128.$typeName
+  $typeArgs: []
+} & U128JSONField
 
 /**
  * Storage for 128-bit accumulator values.
@@ -314,13 +333,13 @@ export class U128 implements StructClass {
     return U128.fromFields(U128.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): U128JSONField {
     return {
       value: this.value.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): U128JSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -388,6 +407,15 @@ export interface KeyFields<T extends PhantomTypeArgument> {
 }
 
 export type KeyReified<T extends PhantomTypeArgument> = Reified<Key<T>, KeyFields<T>>
+
+export type KeyJSONField<T extends PhantomTypeArgument> = {
+  address: string
+}
+
+export type KeyJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof Key.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & KeyJSONField<T>
 
 /**
  * `Key` is used only for computing the field id of accumulator objects.
@@ -508,13 +536,13 @@ export class Key<T extends PhantomTypeArgument> implements StructClass {
     return Key.fromFields(typeArg, Key.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): KeyJSONField<T> {
     return {
       address: this.address,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): KeyJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

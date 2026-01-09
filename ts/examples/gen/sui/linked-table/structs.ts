@@ -11,6 +11,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeArgument,
   ToTypeStr,
@@ -60,6 +61,18 @@ export type LinkedTableReified<K extends TypeArgument, V extends PhantomTypeArgu
   LinkedTable<K, V>,
   LinkedTableFields<K, V>
 >
+
+export type LinkedTableJSONField<K extends TypeArgument, V extends PhantomTypeArgument> = {
+  id: string
+  size: string
+  head: ToJSON<K> | null
+  tail: ToJSON<K> | null
+}
+
+export type LinkedTableJSON<K extends TypeArgument, V extends PhantomTypeArgument> = {
+  $typeName: typeof LinkedTable.$typeName
+  $typeArgs: [ToTypeStr<K>, PhantomToTypeStr<V>]
+} & LinkedTableJSONField<K, V>
 
 export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
   implements StructClass
@@ -214,7 +227,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
     return LinkedTable.fromFields(typeArgs, LinkedTable.bcs(toBcs(typeArgs[0])).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): LinkedTableJSONField<K, V> {
     return {
       id: this.id,
       size: this.size.toString(),
@@ -223,7 +236,7 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): LinkedTableJSON<K, V> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -351,6 +364,17 @@ export type NodeReified<K extends TypeArgument, V extends TypeArgument> = Reifie
   Node<K, V>,
   NodeFields<K, V>
 >
+
+export type NodeJSONField<K extends TypeArgument, V extends TypeArgument> = {
+  prev: ToJSON<K> | null
+  next: ToJSON<K> | null
+  value: ToJSON<V>
+}
+
+export type NodeJSON<K extends TypeArgument, V extends TypeArgument> = {
+  $typeName: typeof Node.$typeName
+  $typeArgs: [ToTypeStr<K>, ToTypeStr<V>]
+} & NodeJSONField<K, V>
 
 export class Node<K extends TypeArgument, V extends TypeArgument> implements StructClass {
   __StructClass = true as const
@@ -483,7 +507,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
     return Node.fromFields(typeArgs, Node.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): NodeJSONField<K, V> {
     return {
       prev: fieldToJSON<Option<K>>(`${Option.$typeName}<${this.$typeArgs[0]}>`, this.prev),
       next: fieldToJSON<Option<K>>(`${Option.$typeName}<${this.$typeArgs[0]}>`, this.next),
@@ -491,7 +515,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): NodeJSON<K, V> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

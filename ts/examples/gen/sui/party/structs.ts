@@ -3,6 +3,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -36,6 +37,16 @@ export interface PartyFields {
 }
 
 export type PartyReified = Reified<Party, PartyFields>
+
+export type PartyJSONField = {
+  default: ToJSON<Permissions>
+  members: ToJSON<VecMap<'address', Permissions>>
+}
+
+export type PartyJSON = {
+  $typeName: typeof Party.$typeName
+  $typeArgs: []
+} & PartyJSONField
 
 /**
  * The permissions that apply to a party object. If the transaction sender has an entry in
@@ -154,14 +165,14 @@ export class Party implements StructClass {
     return Party.fromFields(Party.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): PartyJSONField {
     return {
       default: this.default.toJSONField(),
       members: this.members.toJSONField(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): PartyJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -230,6 +241,15 @@ export interface PermissionsFields {
 }
 
 export type PermissionsReified = Reified<Permissions, PermissionsFields>
+
+export type PermissionsJSONField = {
+  pos0: string
+}
+
+export type PermissionsJSON = {
+  $typeName: typeof Permissions.$typeName
+  $typeArgs: []
+} & PermissionsJSONField
 
 /**
  * The permissions that a party has. The permissions are a bitset of the `READ`, `WRITE`,
@@ -330,13 +350,13 @@ export class Permissions implements StructClass {
     return Permissions.fromFields(Permissions.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): PermissionsJSONField {
     return {
       pos0: this.pos0.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): PermissionsJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

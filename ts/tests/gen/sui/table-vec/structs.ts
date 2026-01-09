@@ -7,6 +7,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   assertFieldsWithTypesArgsMatch,
@@ -46,6 +47,15 @@ export type TableVecReified<Element extends PhantomTypeArgument> = Reified<
   TableVec<Element>,
   TableVecFields<Element>
 >
+
+export type TableVecJSONField<Element extends PhantomTypeArgument> = {
+  contents: ToJSON<Table<'u64', Element>>
+}
+
+export type TableVecJSON<Element extends PhantomTypeArgument> = {
+  $typeName: typeof TableVec.$typeName
+  $typeArgs: [PhantomToTypeStr<Element>]
+} & TableVecJSONField<Element>
 
 export class TableVec<Element extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
@@ -163,13 +173,13 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
     return TableVec.fromFields(typeArg, TableVec.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): TableVecJSONField<Element> {
     return {
       contents: this.contents.toJSONField(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): TableVecJSON<Element> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

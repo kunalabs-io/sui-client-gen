@@ -5,6 +5,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -44,6 +45,15 @@ export interface TypeNameFields {
 }
 
 export type TypeNameReified = Reified<TypeName, TypeNameFields>
+
+export type TypeNameJSONField = {
+  name: string
+}
+
+export type TypeNameJSON = {
+  $typeName: typeof TypeName.$typeName
+  $typeArgs: []
+} & TypeNameJSONField
 
 export class TypeName implements StructClass {
   __StructClass = true as const
@@ -149,13 +159,13 @@ export class TypeName implements StructClass {
     return TypeName.fromFields(TypeName.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): TypeNameJSONField {
     return {
       name: this.name,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): TypeNameJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

@@ -5,6 +5,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -34,6 +35,15 @@ export interface ScalarFields {
 }
 
 export type ScalarReified = Reified<Scalar, ScalarFields>
+
+export type ScalarJSONField = {
+  dummyField: boolean
+}
+
+export type ScalarJSON = {
+  $typeName: typeof Scalar.$typeName
+  $typeArgs: []
+} & ScalarJSONField
 
 export class Scalar implements StructClass {
   __StructClass = true as const
@@ -127,13 +137,13 @@ export class Scalar implements StructClass {
     return Scalar.fromFields(Scalar.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ScalarJSONField {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ScalarJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -201,6 +211,15 @@ export interface G1Fields {
 }
 
 export type G1Reified = Reified<G1, G1Fields>
+
+export type G1JSONField = {
+  dummyField: boolean
+}
+
+export type G1JSON = {
+  $typeName: typeof G1.$typeName
+  $typeArgs: []
+} & G1JSONField
 
 export class G1 implements StructClass {
   __StructClass = true as const
@@ -294,13 +313,13 @@ export class G1 implements StructClass {
     return G1.fromFields(G1.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): G1JSONField {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): G1JSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -368,6 +387,15 @@ export interface G2Fields {
 }
 
 export type G2Reified = Reified<G2, G2Fields>
+
+export type G2JSONField = {
+  dummyField: boolean
+}
+
+export type G2JSON = {
+  $typeName: typeof G2.$typeName
+  $typeArgs: []
+} & G2JSONField
 
 export class G2 implements StructClass {
   __StructClass = true as const
@@ -461,13 +489,13 @@ export class G2 implements StructClass {
     return G2.fromFields(G2.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): G2JSONField {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): G2JSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -535,6 +563,15 @@ export interface GTFields {
 }
 
 export type GTReified = Reified<GT, GTFields>
+
+export type GTJSONField = {
+  dummyField: boolean
+}
+
+export type GTJSON = {
+  $typeName: typeof GT.$typeName
+  $typeArgs: []
+} & GTJSONField
 
 export class GT implements StructClass {
   __StructClass = true as const
@@ -628,13 +665,13 @@ export class GT implements StructClass {
     return GT.fromFields(GT.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): GTJSONField {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): GTJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -702,6 +739,15 @@ export interface UncompressedG1Fields {
 }
 
 export type UncompressedG1Reified = Reified<UncompressedG1, UncompressedG1Fields>
+
+export type UncompressedG1JSONField = {
+  dummyField: boolean
+}
+
+export type UncompressedG1JSON = {
+  $typeName: typeof UncompressedG1.$typeName
+  $typeArgs: []
+} & UncompressedG1JSONField
 
 export class UncompressedG1 implements StructClass {
   __StructClass = true as const
@@ -802,13 +848,13 @@ export class UncompressedG1 implements StructClass {
     return UncompressedG1.fromFields(UncompressedG1.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): UncompressedG1JSONField {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): UncompressedG1JSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

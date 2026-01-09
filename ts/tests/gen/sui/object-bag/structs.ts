@@ -10,6 +10,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -43,6 +44,16 @@ export interface ObjectBagFields {
 }
 
 export type ObjectBagReified = Reified<ObjectBag, ObjectBagFields>
+
+export type ObjectBagJSONField = {
+  id: string
+  size: string
+}
+
+export type ObjectBagJSON = {
+  $typeName: typeof ObjectBag.$typeName
+  $typeArgs: []
+} & ObjectBagJSONField
 
 export class ObjectBag implements StructClass {
   __StructClass = true as const
@@ -146,14 +157,14 @@ export class ObjectBag implements StructClass {
     return ObjectBag.fromFields(ObjectBag.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ObjectBagJSONField {
     return {
       id: this.id,
       size: this.size.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ObjectBagJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

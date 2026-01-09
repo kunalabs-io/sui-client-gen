@@ -7,6 +7,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   assertFieldsWithTypesArgsMatch,
@@ -44,6 +45,15 @@ export interface ElementFields<T extends PhantomTypeArgument> {
 }
 
 export type ElementReified<T extends PhantomTypeArgument> = Reified<Element<T>, ElementFields<T>>
+
+export type ElementJSONField<T extends PhantomTypeArgument> = {
+  bytes: number[]
+}
+
+export type ElementJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof Element.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & ElementJSONField<T>
 
 export class Element<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
@@ -157,13 +167,13 @@ export class Element<T extends PhantomTypeArgument> implements StructClass {
     return Element.fromFields(typeArg, Element.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ElementJSONField<T> {
     return {
       bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ElementJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

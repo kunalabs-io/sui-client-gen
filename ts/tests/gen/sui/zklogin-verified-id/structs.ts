@@ -3,6 +3,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -45,6 +46,20 @@ export interface VerifiedIDFields {
 }
 
 export type VerifiedIDReified = Reified<VerifiedID, VerifiedIDFields>
+
+export type VerifiedIDJSONField = {
+  id: string
+  owner: string
+  keyClaimName: string
+  keyClaimValue: string
+  issuer: string
+  audience: string
+}
+
+export type VerifiedIDJSON = {
+  $typeName: typeof VerifiedID.$typeName
+  $typeArgs: []
+} & VerifiedIDJSONField
 
 /** Possession of a VerifiedID proves that the user's address was created using zklogin and the given parameters. */
 export class VerifiedID implements StructClass {
@@ -180,7 +195,7 @@ export class VerifiedID implements StructClass {
     return VerifiedID.fromFields(VerifiedID.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): VerifiedIDJSONField {
     return {
       id: this.id,
       owner: this.owner,
@@ -191,7 +206,7 @@ export class VerifiedID implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): VerifiedIDJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

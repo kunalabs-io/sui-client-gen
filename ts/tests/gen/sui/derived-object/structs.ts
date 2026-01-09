@@ -19,6 +19,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeArgument,
   ToTypeStr,
   TypeArgument,
@@ -57,6 +58,15 @@ export interface ClaimedFields {
 }
 
 export type ClaimedReified = Reified<Claimed, ClaimedFields>
+
+export type ClaimedJSONField = {
+  pos0: string
+}
+
+export type ClaimedJSON = {
+  $typeName: typeof Claimed.$typeName
+  $typeArgs: []
+} & ClaimedJSONField
 
 /** Added as a DF to the parent's UID, to mark an ID as claimed. */
 export class Claimed implements StructClass {
@@ -155,13 +165,13 @@ export class Claimed implements StructClass {
     return Claimed.fromFields(Claimed.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ClaimedJSONField {
     return {
       pos0: this.pos0,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ClaimedJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -232,6 +242,15 @@ export type DerivedObjectKeyReified<K extends TypeArgument> = Reified<
   DerivedObjectKey<K>,
   DerivedObjectKeyFields<K>
 >
+
+export type DerivedObjectKeyJSONField<K extends TypeArgument> = {
+  pos0: ToJSON<K>
+}
+
+export type DerivedObjectKeyJSON<K extends TypeArgument> = {
+  $typeName: typeof DerivedObjectKey.$typeName
+  $typeArgs: [ToTypeStr<K>]
+} & DerivedObjectKeyJSONField<K>
 
 /** An internal key to protect from generating the same UID twice (e.g. collide with DFs) */
 export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
@@ -350,13 +369,13 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
     return DerivedObjectKey.fromFields(typeArg, DerivedObjectKey.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): DerivedObjectKeyJSONField<K> {
     return {
       pos0: fieldToJSON<K>(`${this.$typeArgs[0]}`, this.pos0),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): DerivedObjectKeyJSON<K> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -462,6 +481,8 @@ export function isClaimedStatus(type: string): boolean {
 }
 
 export type ClaimedStatusVariant = ClaimedStatusReserved
+
+export type ClaimedStatusVariantJSON = ClaimedStatusReservedJSON
 
 export type ClaimedStatusVariantName = 'Reserved'
 
@@ -591,6 +612,16 @@ export class ClaimedStatus {
 /** The UID has been claimed and cannot be re-claimed or used. */
 export type ClaimedStatusReservedFields = Record<string, never>
 
+export type ClaimedStatusReservedJSONField = {
+  $kind: 'Reserved'
+}
+
+export type ClaimedStatusReservedJSON = {
+  $typeName: typeof ClaimedStatus.$typeName
+  $typeArgs: []
+  $variantName: 'Reserved'
+} & ClaimedStatusReservedJSONField
+
 export class ClaimedStatusReserved implements EnumVariantClass {
   __EnumVariantClass = true as const
 
@@ -614,11 +645,11 @@ export class ClaimedStatusReserved implements EnumVariantClass {
     this.$typeArgs = typeArgs
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ClaimedStatusReservedJSONField {
     return { $kind: this.$variantName }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ClaimedStatusReservedJSON {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,

@@ -3,6 +3,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -36,6 +37,16 @@ export interface BitVectorFields {
 }
 
 export type BitVectorReified = Reified<BitVector, BitVectorFields>
+
+export type BitVectorJSONField = {
+  length: string
+  bitField: boolean[]
+}
+
+export type BitVectorJSON = {
+  $typeName: typeof BitVector.$typeName
+  $typeArgs: []
+} & BitVectorJSONField
 
 export class BitVector implements StructClass {
   __StructClass = true as const
@@ -137,14 +148,14 @@ export class BitVector implements StructClass {
     return BitVector.fromFields(BitVector.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): BitVectorJSONField {
     return {
       length: this.length.toString(),
       bitField: fieldToJSON<Vector<'bool'>>(`vector<bool>`, this.bitField),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): BitVectorJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

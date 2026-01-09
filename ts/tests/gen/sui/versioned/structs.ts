@@ -3,6 +3,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -34,6 +35,16 @@ export interface VersionedFields {
 }
 
 export type VersionedReified = Reified<Versioned, VersionedFields>
+
+export type VersionedJSONField = {
+  id: string
+  version: string
+}
+
+export type VersionedJSON = {
+  $typeName: typeof Versioned.$typeName
+  $typeArgs: []
+} & VersionedJSONField
 
 /**
  * A wrapper type that supports versioning of the inner type.
@@ -143,14 +154,14 @@ export class Versioned implements StructClass {
     return Versioned.fromFields(Versioned.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): VersionedJSONField {
     return {
       id: this.id,
       version: this.version.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): VersionedJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -220,6 +231,16 @@ export interface VersionChangeCapFields {
 }
 
 export type VersionChangeCapReified = Reified<VersionChangeCap, VersionChangeCapFields>
+
+export type VersionChangeCapJSONField = {
+  versionedId: string
+  oldVersion: string
+}
+
+export type VersionChangeCapJSON = {
+  $typeName: typeof VersionChangeCap.$typeName
+  $typeArgs: []
+} & VersionChangeCapJSONField
 
 /**
  * Represents a hot potato object generated when we take out the dynamic field.
@@ -329,14 +350,14 @@ export class VersionChangeCap implements StructClass {
     return VersionChangeCap.fromFields(VersionChangeCap.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): VersionChangeCapJSONField {
     return {
       versionedId: this.versionedId,
       oldVersion: this.oldVersion.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): VersionChangeCapJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

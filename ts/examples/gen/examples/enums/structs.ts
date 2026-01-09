@@ -8,6 +8,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeArgument,
   ToTypeStr,
@@ -64,6 +65,25 @@ export type WrappedReified<
   U extends TypeArgument,
   V extends TypeArgument,
 > = Reified<Wrapped<T, U, V>, WrappedFields<T, U, V>>
+
+export type WrappedJSONField<
+  T extends TypeArgument,
+  U extends TypeArgument,
+  V extends TypeArgument,
+> = {
+  id: string
+  t: ToJSON<T>
+  u: ToJSON<U>
+  v: ToJSON<V>
+  stop: ToJSON<ActionVariant<'u64', ToPhantom<SUI>>>
+  pause: ToJSON<ActionVariant<'u64', ToPhantom<SUI>>>
+  jump: ToJSON<ActionVariant<'u64', ToPhantom<SUI>>>
+}
+
+export type WrappedJSON<T extends TypeArgument, U extends TypeArgument, V extends TypeArgument> = {
+  $typeName: typeof Wrapped.$typeName
+  $typeArgs: [ToTypeStr<T>, ToTypeStr<U>, ToTypeStr<V>]
+} & WrappedJSONField<T, U, V>
 
 export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends TypeArgument>
   implements StructClass
@@ -254,7 +274,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     )
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): WrappedJSONField<T, U, V> {
     return {
       id: this.id,
       t: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.t),
@@ -266,7 +286,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): WrappedJSON<T, U, V> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -396,6 +416,11 @@ export type ActionVariant<T extends TypeArgument, U extends PhantomTypeArgument>
   | ActionStop<T, U>
   | ActionPause<T, U>
   | ActionJump<T, U>
+
+export type ActionVariantJSON<T extends TypeArgument, U extends PhantomTypeArgument> =
+  | ActionStopJSON<T, U>
+  | ActionPauseJSON<T, U>
+  | ActionJumpJSON<T, U>
 
 export type ActionVariantName = 'Stop' | 'Pause' | 'Jump'
 
@@ -641,6 +666,16 @@ export class Action {
 
 export type ActionStopFields = Record<string, never>
 
+export type ActionStopJSONField<T extends TypeArgument, U extends PhantomTypeArgument> = {
+  $kind: 'Stop'
+}
+
+export type ActionStopJSON<T extends TypeArgument, U extends PhantomTypeArgument> = {
+  $typeName: typeof Action.$typeName
+  $typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>]
+  $variantName: 'Stop'
+} & ActionStopJSONField<T, U>
+
 export class ActionStop<T extends TypeArgument, U extends PhantomTypeArgument>
   implements EnumVariantClass
 {
@@ -665,11 +700,11 @@ export class ActionStop<T extends TypeArgument, U extends PhantomTypeArgument>
     this.$typeArgs = typeArgs
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ActionStopJSONField<T, U> {
     return { $kind: this.$variantName }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ActionStopJSON<T, U> {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,
@@ -685,6 +720,20 @@ export interface ActionPauseFields<T extends TypeArgument, U extends PhantomType
   phantomField: ToField<Balance<U>>
   reifiedField: ToField<Option<'u64'>>
 }
+
+export type ActionPauseJSONField<T extends TypeArgument, U extends PhantomTypeArgument> = {
+  $kind: 'Pause'
+  duration: number
+  genericField: ToJSON<T>
+  phantomField: ToJSON<Balance<U>>
+  reifiedField: string | null
+}
+
+export type ActionPauseJSON<T extends TypeArgument, U extends PhantomTypeArgument> = {
+  $typeName: typeof Action.$typeName
+  $typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>]
+  $variantName: 'Pause'
+} & ActionPauseJSONField<T, U>
 
 export class ActionPause<T extends TypeArgument, U extends PhantomTypeArgument>
   implements EnumVariantClass
@@ -720,7 +769,7 @@ export class ActionPause<T extends TypeArgument, U extends PhantomTypeArgument>
     this.reifiedField = fields.reifiedField
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ActionPauseJSONField<T, U> {
     return {
       $kind: this.$variantName,
       duration: fieldToJSON<'u32'>(`u32`, this.duration),
@@ -733,7 +782,7 @@ export class ActionPause<T extends TypeArgument, U extends PhantomTypeArgument>
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ActionPauseJSON<T, U> {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,
@@ -749,6 +798,17 @@ export type ActionJumpFields<T extends TypeArgument, U extends PhantomTypeArgume
   ToField<Balance<U>>,
   ToField<Option<'u64'>>,
 ]
+
+export type ActionJumpJSONField<T extends TypeArgument, U extends PhantomTypeArgument> = {
+  $kind: 'Jump'
+  vec: [string, ToJSON<T>, ToJSON<Balance<U>>, string | null]
+}
+
+export type ActionJumpJSON<T extends TypeArgument, U extends PhantomTypeArgument> = {
+  $typeName: typeof Action.$typeName
+  $typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>]
+  $variantName: 'Jump'
+} & ActionJumpJSONField<T, U>
 
 export class ActionJump<T extends TypeArgument, U extends PhantomTypeArgument>
   implements EnumVariantClass
@@ -784,7 +844,7 @@ export class ActionJump<T extends TypeArgument, U extends PhantomTypeArgument>
     this[3] = fields[3]
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ActionJumpJSONField<T, U> {
     return {
       $kind: this.$variantName,
       vec: [
@@ -796,7 +856,7 @@ export class ActionJump<T extends TypeArgument, U extends PhantomTypeArgument>
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ActionJumpJSON<T, U> {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,

@@ -3,6 +3,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeArgument,
   ToTypeStr,
   TypeArgument,
@@ -42,6 +43,15 @@ export interface VecSetFields<K extends TypeArgument> {
 }
 
 export type VecSetReified<K extends TypeArgument> = Reified<VecSet<K>, VecSetFields<K>>
+
+export type VecSetJSONField<K extends TypeArgument> = {
+  contents: ToJSON<K>[]
+}
+
+export type VecSetJSON<K extends TypeArgument> = {
+  $typeName: typeof VecSet.$typeName
+  $typeArgs: [ToTypeStr<K>]
+} & VecSetJSONField<K>
 
 /**
  * A set data structure backed by a vector. The set is guaranteed not to
@@ -162,13 +172,13 @@ export class VecSet<K extends TypeArgument> implements StructClass {
     return VecSet.fromFields(typeArg, VecSet.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): VecSetJSONField<K> {
     return {
       contents: fieldToJSON<Vector<K>>(`vector<${this.$typeArgs[0]}>`, this.contents),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): VecSetJSON<K> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

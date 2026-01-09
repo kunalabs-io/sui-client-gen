@@ -5,6 +5,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -34,6 +35,15 @@ export interface IDFields {
 }
 
 export type IDReified = Reified<ID, IDFields>
+
+export type IDJSONField = {
+  bytes: string
+}
+
+export type IDJSON = {
+  $typeName: typeof ID.$typeName
+  $typeArgs: []
+} & IDJSONField
 
 /**
  * An object ID. This is used to reference Sui Objects.
@@ -138,13 +148,13 @@ export class ID implements StructClass {
     return ID.fromFields(ID.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): IDJSONField {
     return {
       bytes: this.bytes,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): IDJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -212,6 +222,15 @@ export interface UIDFields {
 }
 
 export type UIDReified = Reified<UID, UIDFields>
+
+export type UIDJSONField = {
+  id: string
+}
+
+export type UIDJSON = {
+  $typeName: typeof UID.$typeName
+  $typeArgs: []
+} & UIDJSONField
 
 /**
  * Globally unique IDs that define an object's ID in storage. Any Sui Object, that is a struct
@@ -313,13 +332,13 @@ export class UID implements StructClass {
     return UID.fromFields(UID.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): UIDJSONField {
     return {
       id: this.id,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): UIDJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

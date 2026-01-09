@@ -14,6 +14,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   assertFieldsWithTypesArgsMatch,
@@ -53,6 +54,16 @@ export interface CoinFields<T extends PhantomTypeArgument> {
 }
 
 export type CoinReified<T extends PhantomTypeArgument> = Reified<Coin<T>, CoinFields<T>>
+
+export type CoinJSONField<T extends PhantomTypeArgument> = {
+  id: string
+  balance: ToJSON<Balance<T>>
+}
+
+export type CoinJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof Coin.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & CoinJSONField<T>
 
 /** A coin of type `T` worth `value`. Transferable and storable */
 export class Coin<T extends PhantomTypeArgument> implements StructClass {
@@ -172,14 +183,14 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
     return Coin.fromFields(typeArg, Coin.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): CoinJSONField<T> {
     return {
       id: this.id,
       balance: this.balance.toJSONField(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): CoinJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -303,6 +314,20 @@ export type CoinMetadataReified<T extends PhantomTypeArgument> = Reified<
   CoinMetadata<T>,
   CoinMetadataFields<T>
 >
+
+export type CoinMetadataJSONField<T extends PhantomTypeArgument> = {
+  id: string
+  decimals: number
+  name: string
+  symbol: string
+  description: string
+  iconUrl: string | null
+}
+
+export type CoinMetadataJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof CoinMetadata.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & CoinMetadataJSONField<T>
 
 /**
  * Each Coin type T created through `create_currency` function will have a
@@ -455,7 +480,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
     return CoinMetadata.fromFields(typeArg, CoinMetadata.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): CoinMetadataJSONField<T> {
     return {
       id: this.id,
       decimals: this.decimals,
@@ -466,7 +491,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): CoinMetadataJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -583,6 +608,17 @@ export type RegulatedCoinMetadataReified<T extends PhantomTypeArgument> = Reifie
   RegulatedCoinMetadata<T>,
   RegulatedCoinMetadataFields<T>
 >
+
+export type RegulatedCoinMetadataJSONField<T extends PhantomTypeArgument> = {
+  id: string
+  coinMetadataObject: string
+  denyCapObject: string
+}
+
+export type RegulatedCoinMetadataJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof RegulatedCoinMetadata.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & RegulatedCoinMetadataJSONField<T>
 
 /**
  * Similar to CoinMetadata, but created only for regulated coins that use the DenyList.
@@ -717,7 +753,7 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
     return RegulatedCoinMetadata.fromFields(typeArg, RegulatedCoinMetadata.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): RegulatedCoinMetadataJSONField<T> {
     return {
       id: this.id,
       coinMetadataObject: this.coinMetadataObject,
@@ -725,7 +761,7 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): RegulatedCoinMetadataJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -838,6 +874,16 @@ export type TreasuryCapReified<T extends PhantomTypeArgument> = Reified<
   TreasuryCap<T>,
   TreasuryCapFields<T>
 >
+
+export type TreasuryCapJSONField<T extends PhantomTypeArgument> = {
+  id: string
+  totalSupply: ToJSON<Supply<T>>
+}
+
+export type TreasuryCapJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof TreasuryCap.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & TreasuryCapJSONField<T>
 
 /**
  * Capability allowing the bearer to mint and burn
@@ -960,14 +1006,14 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
     return TreasuryCap.fromFields(typeArg, TreasuryCap.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): TreasuryCapJSONField<T> {
     return {
       id: this.id,
       totalSupply: this.totalSupply.toJSONField(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): TreasuryCapJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1077,6 +1123,16 @@ export type DenyCapV2Reified<T extends PhantomTypeArgument> = Reified<
   DenyCapV2<T>,
   DenyCapV2Fields<T>
 >
+
+export type DenyCapV2JSONField<T extends PhantomTypeArgument> = {
+  id: string
+  allowGlobalPause: boolean
+}
+
+export type DenyCapV2JSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof DenyCapV2.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & DenyCapV2JSONField<T>
 
 /**
  * Capability allowing the bearer to deny addresses from using the currency's coins--
@@ -1202,14 +1258,14 @@ export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
     return DenyCapV2.fromFields(typeArg, DenyCapV2.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): DenyCapV2JSONField<T> {
     return {
       id: this.id,
       allowGlobalPause: this.allowGlobalPause,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): DenyCapV2JSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1318,6 +1374,15 @@ export type CurrencyCreatedReified<T extends PhantomTypeArgument> = Reified<
   CurrencyCreated<T>,
   CurrencyCreatedFields<T>
 >
+
+export type CurrencyCreatedJSONField<T extends PhantomTypeArgument> = {
+  decimals: number
+}
+
+export type CurrencyCreatedJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof CurrencyCreated.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & CurrencyCreatedJSONField<T>
 
 export class CurrencyCreated<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
@@ -1431,13 +1496,13 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
     return CurrencyCreated.fromFields(typeArg, CurrencyCreated.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): CurrencyCreatedJSONField<T> {
     return {
       decimals: this.decimals,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): CurrencyCreatedJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1542,6 +1607,15 @@ export interface DenyCapFields<T extends PhantomTypeArgument> {
 }
 
 export type DenyCapReified<T extends PhantomTypeArgument> = Reified<DenyCap<T>, DenyCapFields<T>>
+
+export type DenyCapJSONField<T extends PhantomTypeArgument> = {
+  id: string
+}
+
+export type DenyCapJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof DenyCap.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & DenyCapJSONField<T>
 
 /**
  * Capability allowing the bearer to freeze addresses, preventing those addresses from
@@ -1659,13 +1733,13 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
     return DenyCap.fromFields(typeArg, DenyCap.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): DenyCapJSONField<T> {
     return {
       id: this.id,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): DenyCapJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

@@ -5,6 +5,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -40,6 +41,16 @@ export interface RandomFields {
 }
 
 export type RandomReified = Reified<Random, RandomFields>
+
+export type RandomJSONField = {
+  id: string
+  inner: ToJSON<Versioned>
+}
+
+export type RandomJSON = {
+  $typeName: typeof Random.$typeName
+  $typeArgs: []
+} & RandomJSONField
 
 /**
  * Singleton shared object which stores the global randomness state.
@@ -142,14 +153,14 @@ export class Random implements StructClass {
     return Random.fromFields(Random.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): RandomJSONField {
     return {
       id: this.id,
       inner: this.inner.toJSONField(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): RandomJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -221,6 +232,18 @@ export interface RandomInnerFields {
 }
 
 export type RandomInnerReified = Reified<RandomInner, RandomInnerFields>
+
+export type RandomInnerJSONField = {
+  version: string
+  epoch: string
+  randomnessRound: string
+  randomBytes: number[]
+}
+
+export type RandomInnerJSON = {
+  $typeName: typeof RandomInner.$typeName
+  $typeArgs: []
+} & RandomInnerJSONField
 
 export class RandomInner implements StructClass {
   __StructClass = true as const
@@ -332,7 +355,7 @@ export class RandomInner implements StructClass {
     return RandomInner.fromFields(RandomInner.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): RandomInnerJSONField {
     return {
       version: this.version.toString(),
       epoch: this.epoch.toString(),
@@ -341,7 +364,7 @@ export class RandomInner implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): RandomInnerJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -414,6 +437,17 @@ export interface RandomGeneratorFields {
 }
 
 export type RandomGeneratorReified = Reified<RandomGenerator, RandomGeneratorFields>
+
+export type RandomGeneratorJSONField = {
+  seed: number[]
+  counter: number
+  buffer: number[]
+}
+
+export type RandomGeneratorJSON = {
+  $typeName: typeof RandomGenerator.$typeName
+  $typeArgs: []
+} & RandomGeneratorJSONField
 
 /** Unique randomness generator, derived from the global randomness. */
 export class RandomGenerator implements StructClass {
@@ -525,7 +559,7 @@ export class RandomGenerator implements StructClass {
     return RandomGenerator.fromFields(RandomGenerator.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): RandomGeneratorJSONField {
     return {
       seed: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.seed),
       counter: this.counter,
@@ -533,7 +567,7 @@ export class RandomGenerator implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): RandomGeneratorJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

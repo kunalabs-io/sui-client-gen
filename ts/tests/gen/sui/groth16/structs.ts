@@ -3,6 +3,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -35,6 +36,15 @@ export interface CurveFields {
 }
 
 export type CurveReified = Reified<Curve, CurveFields>
+
+export type CurveJSONField = {
+  id: number
+}
+
+export type CurveJSON = {
+  $typeName: typeof Curve.$typeName
+  $typeArgs: []
+} & CurveJSONField
 
 /**
  * Represents an elliptic curve construction to be used in the verifier. Currently we support BLS12-381 and BN254.
@@ -132,13 +142,13 @@ export class Curve implements StructClass {
     return Curve.fromFields(Curve.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): CurveJSONField {
     return {
       id: this.id,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): CurveJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -209,6 +219,18 @@ export interface PreparedVerifyingKeyFields {
 }
 
 export type PreparedVerifyingKeyReified = Reified<PreparedVerifyingKey, PreparedVerifyingKeyFields>
+
+export type PreparedVerifyingKeyJSONField = {
+  vkGammaAbcG1Bytes: number[]
+  alphaG1BetaG2Bytes: number[]
+  gammaG2NegPcBytes: number[]
+  deltaG2NegPcBytes: number[]
+}
+
+export type PreparedVerifyingKeyJSON = {
+  $typeName: typeof PreparedVerifyingKey.$typeName
+  $typeArgs: []
+} & PreparedVerifyingKeyJSONField
 
 /** A `PreparedVerifyingKey` consisting of four components in serialized form. */
 export class PreparedVerifyingKey implements StructClass {
@@ -332,7 +354,7 @@ export class PreparedVerifyingKey implements StructClass {
     return PreparedVerifyingKey.fromFields(PreparedVerifyingKey.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): PreparedVerifyingKeyJSONField {
     return {
       vkGammaAbcG1Bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.vkGammaAbcG1Bytes),
       alphaG1BetaG2Bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.alphaG1BetaG2Bytes),
@@ -341,7 +363,7 @@ export class PreparedVerifyingKey implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): PreparedVerifyingKeyJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -414,6 +436,15 @@ export interface PublicProofInputsFields {
 }
 
 export type PublicProofInputsReified = Reified<PublicProofInputs, PublicProofInputsFields>
+
+export type PublicProofInputsJSONField = {
+  bytes: number[]
+}
+
+export type PublicProofInputsJSON = {
+  $typeName: typeof PublicProofInputs.$typeName
+  $typeArgs: []
+} & PublicProofInputsJSONField
 
 /** A `PublicProofInputs` wrapper around its serialized bytes. */
 export class PublicProofInputs implements StructClass {
@@ -515,13 +546,13 @@ export class PublicProofInputs implements StructClass {
     return PublicProofInputs.fromFields(PublicProofInputs.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): PublicProofInputsJSONField {
     return {
       bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): PublicProofInputsJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -589,6 +620,15 @@ export interface ProofPointsFields {
 }
 
 export type ProofPointsReified = Reified<ProofPoints, ProofPointsFields>
+
+export type ProofPointsJSONField = {
+  bytes: number[]
+}
+
+export type ProofPointsJSON = {
+  $typeName: typeof ProofPoints.$typeName
+  $typeArgs: []
+} & ProofPointsJSONField
 
 /** A `ProofPoints` wrapper around the serialized form of three proof points. */
 export class ProofPoints implements StructClass {
@@ -686,13 +726,13 @@ export class ProofPoints implements StructClass {
     return ProofPoints.fromFields(ProofPoints.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ProofPointsJSONField {
     return {
       bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ProofPointsJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

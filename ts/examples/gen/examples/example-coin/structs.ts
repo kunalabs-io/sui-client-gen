@@ -4,6 +4,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   ToTypeStr as ToPhantom,
   decodeFromFields,
@@ -39,6 +40,15 @@ export interface EXAMPLE_COINFields {
 }
 
 export type EXAMPLE_COINReified = Reified<EXAMPLE_COIN, EXAMPLE_COINFields>
+
+export type EXAMPLE_COINJSONField = {
+  dummyField: boolean
+}
+
+export type EXAMPLE_COINJSON = {
+  $typeName: typeof EXAMPLE_COIN.$typeName
+  $typeArgs: []
+} & EXAMPLE_COINJSONField
 
 export class EXAMPLE_COIN implements StructClass {
   __StructClass = true as const
@@ -139,13 +149,13 @@ export class EXAMPLE_COIN implements StructClass {
     return EXAMPLE_COIN.fromFields(EXAMPLE_COIN.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): EXAMPLE_COINJSONField {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): EXAMPLE_COINJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -214,6 +224,16 @@ export interface FaucetFields {
 }
 
 export type FaucetReified = Reified<Faucet, FaucetFields>
+
+export type FaucetJSONField = {
+  id: string
+  cap: ToJSON<TreasuryCap<ToPhantom<EXAMPLE_COIN>>>
+}
+
+export type FaucetJSON = {
+  $typeName: typeof Faucet.$typeName
+  $typeArgs: []
+} & FaucetJSONField
 
 export class Faucet implements StructClass {
   __StructClass = true as const
@@ -319,14 +339,14 @@ export class Faucet implements StructClass {
     return Faucet.fromFields(Faucet.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): FaucetJSONField {
     return {
       id: this.id,
       cap: this.cap.toJSONField(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): FaucetJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

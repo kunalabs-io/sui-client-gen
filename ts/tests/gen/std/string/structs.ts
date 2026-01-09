@@ -8,6 +8,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -40,6 +41,15 @@ export interface StringFields {
 }
 
 export type StringReified = Reified<String, StringFields>
+
+export type StringJSONField = {
+  bytes: number[]
+}
+
+export type StringJSON = {
+  $typeName: typeof String.$typeName
+  $typeArgs: []
+} & StringJSONField
 
 /**
  * A `String` holds a sequence of bytes which is guaranteed to be in utf8
@@ -137,13 +147,13 @@ export class String implements StructClass {
     return String.fromFields(String.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): StringJSONField {
     return {
       bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): StringJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

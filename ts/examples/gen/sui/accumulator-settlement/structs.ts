@@ -3,6 +3,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -40,6 +41,17 @@ export interface EventStreamHeadFields {
 }
 
 export type EventStreamHeadReified = Reified<EventStreamHead, EventStreamHeadFields>
+
+export type EventStreamHeadJSONField = {
+  mmr: string[]
+  checkpointSeq: string
+  numEvents: string
+}
+
+export type EventStreamHeadJSON = {
+  $typeName: typeof EventStreamHead.$typeName
+  $typeArgs: []
+} & EventStreamHeadJSONField
 
 export class EventStreamHead implements StructClass {
   __StructClass = true as const
@@ -153,7 +165,7 @@ export class EventStreamHead implements StructClass {
     return EventStreamHead.fromFields(EventStreamHead.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): EventStreamHeadJSONField {
     return {
       mmr: fieldToJSON<Vector<'u256'>>(`vector<u256>`, this.mmr),
       checkpointSeq: this.checkpointSeq.toString(),
@@ -161,7 +173,7 @@ export class EventStreamHead implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): EventStreamHeadJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

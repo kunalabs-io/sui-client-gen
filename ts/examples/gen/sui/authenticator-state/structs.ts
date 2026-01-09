@@ -4,6 +4,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -38,6 +39,16 @@ export interface AuthenticatorStateFields {
 }
 
 export type AuthenticatorStateReified = Reified<AuthenticatorState, AuthenticatorStateFields>
+
+export type AuthenticatorStateJSONField = {
+  id: string
+  version: string
+}
+
+export type AuthenticatorStateJSON = {
+  $typeName: typeof AuthenticatorState.$typeName
+  $typeArgs: []
+} & AuthenticatorStateJSONField
 
 /**
  * Singleton shared object which stores the global authenticator state.
@@ -148,14 +159,14 @@ export class AuthenticatorState implements StructClass {
     return AuthenticatorState.fromFields(AuthenticatorState.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): AuthenticatorStateJSONField {
     return {
       id: this.id,
       version: this.version.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): AuthenticatorStateJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -229,6 +240,16 @@ export type AuthenticatorStateInnerReified = Reified<
   AuthenticatorStateInner,
   AuthenticatorStateInnerFields
 >
+
+export type AuthenticatorStateInnerJSONField = {
+  version: string
+  activeJwks: ToJSON<ActiveJwk>[]
+}
+
+export type AuthenticatorStateInnerJSON = {
+  $typeName: typeof AuthenticatorStateInner.$typeName
+  $typeArgs: []
+} & AuthenticatorStateInnerJSONField
 
 export class AuthenticatorStateInner implements StructClass {
   __StructClass = true as const
@@ -340,14 +361,14 @@ export class AuthenticatorStateInner implements StructClass {
     return AuthenticatorStateInner.fromFields(AuthenticatorStateInner.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): AuthenticatorStateInnerJSONField {
     return {
       version: this.version.toString(),
       activeJwks: fieldToJSON<Vector<ActiveJwk>>(`vector<${ActiveJwk.$typeName}>`, this.activeJwks),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): AuthenticatorStateInnerJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -421,6 +442,18 @@ export interface JWKFields {
 }
 
 export type JWKReified = Reified<JWK, JWKFields>
+
+export type JWKJSONField = {
+  kty: string
+  e: string
+  n: string
+  alg: string
+}
+
+export type JWKJSON = {
+  $typeName: typeof JWK.$typeName
+  $typeArgs: []
+} & JWKJSONField
 
 /** Must match the JWK struct in fastcrypto-zkp */
 export class JWK implements StructClass {
@@ -534,7 +567,7 @@ export class JWK implements StructClass {
     return JWK.fromFields(JWK.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): JWKJSONField {
     return {
       kty: this.kty,
       e: this.e,
@@ -543,7 +576,7 @@ export class JWK implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): JWKJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -615,6 +648,16 @@ export interface JwkIdFields {
 }
 
 export type JwkIdReified = Reified<JwkId, JwkIdFields>
+
+export type JwkIdJSONField = {
+  iss: string
+  kid: string
+}
+
+export type JwkIdJSON = {
+  $typeName: typeof JwkId.$typeName
+  $typeArgs: []
+} & JwkIdJSONField
 
 /** Must match the JwkId struct in fastcrypto-zkp */
 export class JwkId implements StructClass {
@@ -718,14 +761,14 @@ export class JwkId implements StructClass {
     return JwkId.fromFields(JwkId.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): JwkIdJSONField {
     return {
       iss: this.iss,
       kid: this.kid,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): JwkIdJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -796,6 +839,17 @@ export interface ActiveJwkFields {
 }
 
 export type ActiveJwkReified = Reified<ActiveJwk, ActiveJwkFields>
+
+export type ActiveJwkJSONField = {
+  jwkId: ToJSON<JwkId>
+  jwk: ToJSON<JWK>
+  epoch: string
+}
+
+export type ActiveJwkJSON = {
+  $typeName: typeof ActiveJwk.$typeName
+  $typeArgs: []
+} & ActiveJwkJSONField
 
 export class ActiveJwk implements StructClass {
   __StructClass = true as const
@@ -906,7 +960,7 @@ export class ActiveJwk implements StructClass {
     return ActiveJwk.fromFields(ActiveJwk.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ActiveJwkJSONField {
     return {
       jwkId: this.jwkId.toJSONField(),
       jwk: this.jwk.toJSONField(),
@@ -914,7 +968,7 @@ export class ActiveJwk implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ActiveJwkJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

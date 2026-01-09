@@ -37,6 +37,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -69,6 +70,15 @@ export interface BCSFields {
 }
 
 export type BCSReified = Reified<BCS, BCSFields>
+
+export type BCSJSONField = {
+  bytes: number[]
+}
+
+export type BCSJSON = {
+  $typeName: typeof BCS.$typeName
+  $typeArgs: []
+} & BCSJSONField
 
 /**
  * A helper struct that saves resources on operations. For better
@@ -167,13 +177,13 @@ export class BCS implements StructClass {
     return BCS.fromFields(BCS.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): BCSJSONField {
     return {
       bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): BCSJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
