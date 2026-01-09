@@ -7,6 +7,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   assertFieldsWithTypesArgsMatch,
@@ -50,6 +51,16 @@ export type WithdrawalReified<T extends PhantomTypeArgument> = Reified<
   Withdrawal<T>,
   WithdrawalFields<T>
 >
+
+export type WithdrawalJSONField<T extends PhantomTypeArgument> = {
+  owner: string
+  limit: string
+}
+
+export type WithdrawalJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof Withdrawal.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & WithdrawalJSONField<T>
 
 /**
  * Allows for withdrawing funds from a given address. The `Withdrawal` can be created in PTBs for
@@ -182,14 +193,14 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
     return Withdrawal.fromFields(typeArg, Withdrawal.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): WithdrawalJSONField<T> {
     return {
       owner: this.owner,
       limit: this.limit.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): WithdrawalJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

@@ -3,6 +3,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -47,6 +48,19 @@ export interface TxContextFields {
 }
 
 export type TxContextReified = Reified<TxContext, TxContextFields>
+
+export type TxContextJSONField = {
+  sender: string
+  txHash: number[]
+  epoch: string
+  epochTimestampMs: string
+  idsCreated: string
+}
+
+export type TxContextJSON = {
+  $typeName: typeof TxContext.$typeName
+  $typeArgs: []
+} & TxContextJSONField
 
 /**
  * Information about the transaction currently being executed.
@@ -179,7 +193,7 @@ export class TxContext implements StructClass {
     return TxContext.fromFields(TxContext.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): TxContextJSONField {
     return {
       sender: this.sender,
       txHash: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.txHash),
@@ -189,7 +203,7 @@ export class TxContext implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): TxContextJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

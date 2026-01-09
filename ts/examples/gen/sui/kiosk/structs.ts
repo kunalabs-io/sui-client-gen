@@ -87,6 +87,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   ToTypeStr as ToPhantom,
@@ -145,6 +146,19 @@ export interface KioskFields {
 }
 
 export type KioskReified = Reified<Kiosk, KioskFields>
+
+export type KioskJSONField = {
+  id: string
+  profits: ToJSON<Balance<ToPhantom<SUI>>>
+  owner: string
+  itemCount: number
+  allowExtensions: boolean
+}
+
+export type KioskJSON = {
+  $typeName: typeof Kiosk.$typeName
+  $typeArgs: []
+} & KioskJSONField
 
 /**
  * An object which allows selling collectibles within "kiosk" ecosystem.
@@ -286,7 +300,7 @@ export class Kiosk implements StructClass {
     return Kiosk.fromFields(Kiosk.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): KioskJSONField {
     return {
       id: this.id,
       profits: this.profits.toJSONField(),
@@ -296,7 +310,7 @@ export class Kiosk implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): KioskJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -369,6 +383,16 @@ export interface KioskOwnerCapFields {
 }
 
 export type KioskOwnerCapReified = Reified<KioskOwnerCap, KioskOwnerCapFields>
+
+export type KioskOwnerCapJSONField = {
+  id: string
+  for: string
+}
+
+export type KioskOwnerCapJSON = {
+  $typeName: typeof KioskOwnerCap.$typeName
+  $typeArgs: []
+} & KioskOwnerCapJSONField
 
 /**
  * A Capability granting the bearer a right to `place` and `take` items
@@ -474,14 +498,14 @@ export class KioskOwnerCap implements StructClass {
     return KioskOwnerCap.fromFields(KioskOwnerCap.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): KioskOwnerCapJSONField {
     return {
       id: this.id,
       for: this.for,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): KioskOwnerCapJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -559,6 +583,18 @@ export type PurchaseCapReified<T extends PhantomTypeArgument> = Reified<
   PurchaseCap<T>,
   PurchaseCapFields<T>
 >
+
+export type PurchaseCapJSONField<T extends PhantomTypeArgument> = {
+  id: string
+  kioskId: string
+  itemId: string
+  minPrice: string
+}
+
+export type PurchaseCapJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof PurchaseCap.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & PurchaseCapJSONField<T>
 
 /**
  * A capability which locks an item and gives a permission to
@@ -701,7 +737,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
     return PurchaseCap.fromFields(typeArg, PurchaseCap.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): PurchaseCapJSONField<T> {
     return {
       id: this.id,
       kioskId: this.kioskId,
@@ -710,7 +746,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): PurchaseCapJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -820,6 +856,16 @@ export interface BorrowFields {
 
 export type BorrowReified = Reified<Borrow, BorrowFields>
 
+export type BorrowJSONField = {
+  kioskId: string
+  itemId: string
+}
+
+export type BorrowJSON = {
+  $typeName: typeof Borrow.$typeName
+  $typeArgs: []
+} & BorrowJSONField
+
 /**
  * Hot potato to ensure an item was returned after being taken using
  * the `borrow_val` call.
@@ -921,14 +967,14 @@ export class Borrow implements StructClass {
     return Borrow.fromFields(Borrow.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): BorrowJSONField {
     return {
       kioskId: this.kioskId,
       itemId: this.itemId,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): BorrowJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -997,6 +1043,15 @@ export interface ItemFields {
 }
 
 export type ItemReified = Reified<Item, ItemFields>
+
+export type ItemJSONField = {
+  id: string
+}
+
+export type ItemJSON = {
+  $typeName: typeof Item.$typeName
+  $typeArgs: []
+} & ItemJSONField
 
 /** Dynamic field key for an item placed into the kiosk. */
 export class Item implements StructClass {
@@ -1091,13 +1146,13 @@ export class Item implements StructClass {
     return Item.fromFields(Item.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ItemJSONField {
     return {
       id: this.id,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ItemJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1166,6 +1221,16 @@ export interface ListingFields {
 }
 
 export type ListingReified = Reified<Listing, ListingFields>
+
+export type ListingJSONField = {
+  id: string
+  isExclusive: boolean
+}
+
+export type ListingJSON = {
+  $typeName: typeof Listing.$typeName
+  $typeArgs: []
+} & ListingJSONField
 
 /**
  * Dynamic field key for an active offer to purchase the T. If an
@@ -1268,14 +1333,14 @@ export class Listing implements StructClass {
     return Listing.fromFields(Listing.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ListingJSONField {
     return {
       id: this.id,
       isExclusive: this.isExclusive,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ListingJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1344,6 +1409,15 @@ export interface LockFields {
 }
 
 export type LockReified = Reified<Lock, LockFields>
+
+export type LockJSONField = {
+  id: string
+}
+
+export type LockJSON = {
+  $typeName: typeof Lock.$typeName
+  $typeArgs: []
+} & LockJSONField
 
 /**
  * Dynamic field key which marks that an item is locked in the `Kiosk` and
@@ -1442,13 +1516,13 @@ export class Lock implements StructClass {
     return Lock.fromFields(Lock.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): LockJSONField {
     return {
       id: this.id,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): LockJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1521,6 +1595,17 @@ export type ItemListedReified<T extends PhantomTypeArgument> = Reified<
   ItemListed<T>,
   ItemListedFields<T>
 >
+
+export type ItemListedJSONField<T extends PhantomTypeArgument> = {
+  kiosk: string
+  id: string
+  price: string
+}
+
+export type ItemListedJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof ItemListed.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & ItemListedJSONField<T>
 
 /**
  * Emitted when an item was listed by the safe owner. Can be used
@@ -1649,7 +1734,7 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
     return ItemListed.fromFields(typeArg, ItemListed.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ItemListedJSONField<T> {
     return {
       kiosk: this.kiosk,
       id: this.id,
@@ -1657,7 +1742,7 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ItemListedJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1769,6 +1854,17 @@ export type ItemPurchasedReified<T extends PhantomTypeArgument> = Reified<
   ItemPurchased<T>,
   ItemPurchasedFields<T>
 >
+
+export type ItemPurchasedJSONField<T extends PhantomTypeArgument> = {
+  kiosk: string
+  id: string
+  price: string
+}
+
+export type ItemPurchasedJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof ItemPurchased.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & ItemPurchasedJSONField<T>
 
 /**
  * Emitted when an item was purchased from the `Kiosk`. Can be used
@@ -1903,7 +1999,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
     return ItemPurchased.fromFields(typeArg, ItemPurchased.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ItemPurchasedJSONField<T> {
     return {
       kiosk: this.kiosk,
       id: this.id,
@@ -1911,7 +2007,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ItemPurchasedJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -2022,6 +2118,16 @@ export type ItemDelistedReified<T extends PhantomTypeArgument> = Reified<
   ItemDelisted<T>,
   ItemDelistedFields<T>
 >
+
+export type ItemDelistedJSONField<T extends PhantomTypeArgument> = {
+  kiosk: string
+  id: string
+}
+
+export type ItemDelistedJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof ItemDelisted.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & ItemDelistedJSONField<T>
 
 /**
  * Emitted when an item was delisted by the safe owner. Can be used
@@ -2144,14 +2250,14 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
     return ItemDelisted.fromFields(typeArg, ItemDelisted.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ItemDelistedJSONField<T> {
     return {
       kiosk: this.kiosk,
       id: this.id,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ItemDelistedJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

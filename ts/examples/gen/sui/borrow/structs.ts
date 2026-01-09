@@ -12,6 +12,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeArgument,
   ToTypeStr,
   TypeArgument,
@@ -51,6 +52,16 @@ export interface ReferentFields<T extends TypeArgument> {
 }
 
 export type ReferentReified<T extends TypeArgument> = Reified<Referent<T>, ReferentFields<T>>
+
+export type ReferentJSONField<T extends TypeArgument> = {
+  id: string
+  value: ToJSON<T> | null
+}
+
+export type ReferentJSON<T extends TypeArgument> = {
+  $typeName: typeof Referent.$typeName
+  $typeArgs: [ToTypeStr<T>]
+} & ReferentJSONField<T>
 
 /** An object wrapping a `T` and providing the borrow API. */
 export class Referent<T extends TypeArgument> implements StructClass {
@@ -173,14 +184,14 @@ export class Referent<T extends TypeArgument> implements StructClass {
     return Referent.fromFields(typeArg, Referent.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ReferentJSONField<T> {
     return {
       id: this.id,
       value: fieldToJSON<Option<T>>(`${Option.$typeName}<${this.$typeArgs[0]}>`, this.value),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ReferentJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -288,6 +299,16 @@ export interface BorrowFields {
 
 export type BorrowReified = Reified<Borrow, BorrowFields>
 
+export type BorrowJSONField = {
+  ref: string
+  obj: string
+}
+
+export type BorrowJSON = {
+  $typeName: typeof Borrow.$typeName
+  $typeArgs: []
+} & BorrowJSONField
+
 /** A hot potato making sure the object is put back once borrowed. */
 export class Borrow implements StructClass {
   __StructClass = true as const
@@ -389,14 +410,14 @@ export class Borrow implements StructClass {
     return Borrow.fromFields(Borrow.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): BorrowJSONField {
     return {
       ref: this.ref,
       obj: this.obj,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): BorrowJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

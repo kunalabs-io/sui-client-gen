@@ -6,6 +6,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -35,6 +36,15 @@ export interface UrlFields {
 }
 
 export type UrlReified = Reified<Url, UrlFields>
+
+export type UrlJSONField = {
+  url: string
+}
+
+export type UrlJSON = {
+  $typeName: typeof Url.$typeName
+  $typeArgs: []
+} & UrlJSONField
 
 /** Standard Uniform Resource Locator (URL) string. */
 export class Url implements StructClass {
@@ -129,13 +139,13 @@ export class Url implements StructClass {
     return Url.fromFields(Url.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): UrlJSONField {
     return {
       url: this.url,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): UrlJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

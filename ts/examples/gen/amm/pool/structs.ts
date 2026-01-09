@@ -7,6 +7,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   ToTypeStr as ToPhantom,
@@ -45,6 +46,15 @@ export interface PoolCreationEventFields {
 }
 
 export type PoolCreationEventReified = Reified<PoolCreationEvent, PoolCreationEventFields>
+
+export type PoolCreationEventJSONField = {
+  poolId: string
+}
+
+export type PoolCreationEventJSON = {
+  $typeName: typeof PoolCreationEvent.$typeName
+  $typeArgs: []
+} & PoolCreationEventJSONField
 
 export class PoolCreationEvent implements StructClass {
   __StructClass = true as const
@@ -145,13 +155,13 @@ export class PoolCreationEvent implements StructClass {
     return PoolCreationEvent.fromFields(PoolCreationEvent.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): PoolCreationEventJSONField {
     return {
       poolId: this.poolId,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): PoolCreationEventJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -222,6 +232,15 @@ export type LPReified<A extends PhantomTypeArgument, B extends PhantomTypeArgume
   LP<A, B>,
   LPFields<A, B>
 >
+
+export type LPJSONField<A extends PhantomTypeArgument, B extends PhantomTypeArgument> = {
+  dummyField: boolean
+}
+
+export type LPJSON<A extends PhantomTypeArgument, B extends PhantomTypeArgument> = {
+  $typeName: typeof LP.$typeName
+  $typeArgs: [PhantomToTypeStr<A>, PhantomToTypeStr<B>]
+} & LPJSONField<A, B>
 
 /** Pool LP token witness. */
 export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
@@ -353,13 +372,13 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     return LP.fromFields(typeArgs, LP.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): LPJSONField<A, B> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): LPJSON<A, B> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -488,6 +507,21 @@ export type PoolReified<A extends PhantomTypeArgument, B extends PhantomTypeArgu
   Pool<A, B>,
   PoolFields<A, B>
 >
+
+export type PoolJSONField<A extends PhantomTypeArgument, B extends PhantomTypeArgument> = {
+  id: string
+  balanceA: ToJSON<Balance<A>>
+  balanceB: ToJSON<Balance<B>>
+  lpSupply: ToJSON<Supply<ToPhantom<LP<A, B>>>>
+  lpFeeBps: string
+  adminFeePct: string
+  adminFeeBalance: ToJSON<Balance<ToPhantom<LP<A, B>>>>
+}
+
+export type PoolJSON<A extends PhantomTypeArgument, B extends PhantomTypeArgument> = {
+  $typeName: typeof Pool.$typeName
+  $typeArgs: [PhantomToTypeStr<A>, PhantomToTypeStr<B>]
+} & PoolJSONField<A, B>
 
 /** Pool represents an AMM Pool. */
 export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
@@ -670,7 +704,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     return Pool.fromFields(typeArgs, Pool.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): PoolJSONField<A, B> {
     return {
       id: this.id,
       balanceA: this.balanceA.toJSONField(),
@@ -682,7 +716,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): PoolJSON<A, B> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -813,6 +847,16 @@ export interface PoolRegistryFields {
 
 export type PoolRegistryReified = Reified<PoolRegistry, PoolRegistryFields>
 
+export type PoolRegistryJSONField = {
+  id: string
+  table: ToJSON<Table<ToPhantom<PoolRegistryItem>, 'bool'>>
+}
+
+export type PoolRegistryJSON = {
+  $typeName: typeof PoolRegistry.$typeName
+  $typeArgs: []
+} & PoolRegistryJSONField
+
 /**
  * `PoolRegistry` stores a table of all pools created which is used to guarantee
  * that only one pool per currency pair can exist.
@@ -927,14 +971,14 @@ export class PoolRegistry implements StructClass {
     return PoolRegistry.fromFields(PoolRegistry.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): PoolRegistryJSONField {
     return {
       id: this.id,
       table: this.table.toJSONField(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): PoolRegistryJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1007,6 +1051,16 @@ export interface PoolRegistryItemFields {
 }
 
 export type PoolRegistryItemReified = Reified<PoolRegistryItem, PoolRegistryItemFields>
+
+export type PoolRegistryItemJSONField = {
+  a: string
+  b: string
+}
+
+export type PoolRegistryItemJSON = {
+  $typeName: typeof PoolRegistryItem.$typeName
+  $typeArgs: []
+} & PoolRegistryItemJSONField
 
 /** An item in the `PoolRegistry` table. Represents a pool's currency pair. */
 export class PoolRegistryItem implements StructClass {
@@ -1113,14 +1167,14 @@ export class PoolRegistryItem implements StructClass {
     return PoolRegistryItem.fromFields(PoolRegistryItem.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): PoolRegistryItemJSONField {
     return {
       a: this.a,
       b: this.b,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): PoolRegistryItemJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1189,6 +1243,15 @@ export interface AdminCapFields {
 }
 
 export type AdminCapReified = Reified<AdminCap, AdminCapFields>
+
+export type AdminCapJSONField = {
+  id: string
+}
+
+export type AdminCapJSON = {
+  $typeName: typeof AdminCap.$typeName
+  $typeArgs: []
+} & AdminCapJSONField
 
 /**
  * Capability allowing the bearer to execute admin operations on the pools
@@ -1291,13 +1354,13 @@ export class AdminCap implements StructClass {
     return AdminCap.fromFields(AdminCap.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): AdminCapJSONField {
     return {
       id: this.id,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): AdminCapJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

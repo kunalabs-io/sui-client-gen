@@ -10,6 +10,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeArgument,
   ToTypeStr,
   TypeArgument,
@@ -47,6 +48,15 @@ export interface WrapperFields<Name extends TypeArgument> {
 }
 
 export type WrapperReified<Name extends TypeArgument> = Reified<Wrapper<Name>, WrapperFields<Name>>
+
+export type WrapperJSONField<Name extends TypeArgument> = {
+  name: ToJSON<Name>
+}
+
+export type WrapperJSON<Name extends TypeArgument> = {
+  $typeName: typeof Wrapper.$typeName
+  $typeArgs: [ToTypeStr<Name>]
+} & WrapperJSONField<Name>
 
 export class Wrapper<Name extends TypeArgument> implements StructClass {
   __StructClass = true as const
@@ -163,13 +173,13 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
     return Wrapper.fromFields(typeArg, Wrapper.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): WrapperJSONField<Name> {
     return {
       name: fieldToJSON<Name>(`${this.$typeArgs[0]}`, this.name),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): WrapperJSON<Name> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

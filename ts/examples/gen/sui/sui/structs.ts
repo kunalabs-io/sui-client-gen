@@ -8,6 +8,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -37,6 +38,15 @@ export interface SUIFields {
 }
 
 export type SUIReified = Reified<SUI, SUIFields>
+
+export type SUIJSONField = {
+  dummyField: boolean
+}
+
+export type SUIJSON = {
+  $typeName: typeof SUI.$typeName
+  $typeArgs: []
+} & SUIJSONField
 
 /** Name of the coin */
 export class SUI implements StructClass {
@@ -131,13 +141,13 @@ export class SUI implements StructClass {
     return SUI.fromFields(SUI.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): SUIJSONField {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): SUIJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

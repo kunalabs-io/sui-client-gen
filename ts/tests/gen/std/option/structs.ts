@@ -5,6 +5,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeArgument,
   ToTypeStr,
   TypeArgument,
@@ -47,6 +48,15 @@ export type OptionReified<Element extends TypeArgument> = Reified<
   Option<Element>,
   OptionFields<Element>
 >
+
+export type OptionJSONField<Element extends TypeArgument> = {
+  vec: ToJSON<Element>[]
+}
+
+export type OptionJSON<Element extends TypeArgument> = {
+  $typeName: typeof Option.$typeName
+  $typeArgs: [ToTypeStr<Element>]
+} & OptionJSONField<Element>
 
 /**
  * Abstraction of a value that may or may not be present. Implemented with a vector of size
@@ -168,13 +178,13 @@ export class Option<Element extends TypeArgument> implements StructClass {
     return Option.fromFields(typeArg, Option.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): OptionJSONField<Element> {
     return {
       vec: fieldToJSON<Vector<Element>>(`vector<${this.$typeArgs[0]}>`, this.vec),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): OptionJSON<Element> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

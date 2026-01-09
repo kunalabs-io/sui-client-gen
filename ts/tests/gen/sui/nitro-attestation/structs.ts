@@ -3,6 +3,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -37,6 +38,16 @@ export interface PCREntryFields {
 }
 
 export type PCREntryReified = Reified<PCREntry, PCREntryFields>
+
+export type PCREntryJSONField = {
+  index: number
+  value: number[]
+}
+
+export type PCREntryJSON = {
+  $typeName: typeof PCREntry.$typeName
+  $typeArgs: []
+} & PCREntryJSONField
 
 /** Represents a PCR entry with an index and value. */
 export class PCREntry implements StructClass {
@@ -140,14 +151,14 @@ export class PCREntry implements StructClass {
     return PCREntry.fromFields(PCREntry.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): PCREntryJSONField {
     return {
       index: this.index,
       value: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.value),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): PCREntryJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -238,6 +249,21 @@ export type NitroAttestationDocumentReified = Reified<
   NitroAttestationDocument,
   NitroAttestationDocumentFields
 >
+
+export type NitroAttestationDocumentJSONField = {
+  moduleId: number[]
+  timestamp: string
+  digest: number[]
+  pcrs: ToJSON<PCREntry>[]
+  publicKey: number[] | null
+  userData: number[] | null
+  nonce: number[] | null
+}
+
+export type NitroAttestationDocumentJSON = {
+  $typeName: typeof NitroAttestationDocument.$typeName
+  $typeArgs: []
+} & NitroAttestationDocumentJSONField
 
 /** Nitro Attestation Document defined for AWS. */
 export class NitroAttestationDocument implements StructClass {
@@ -387,7 +413,7 @@ export class NitroAttestationDocument implements StructClass {
     return NitroAttestationDocument.fromFields(NitroAttestationDocument.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): NitroAttestationDocumentJSONField {
     return {
       moduleId: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.moduleId),
       timestamp: this.timestamp.toString(),
@@ -402,7 +428,7 @@ export class NitroAttestationDocument implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): NitroAttestationDocumentJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

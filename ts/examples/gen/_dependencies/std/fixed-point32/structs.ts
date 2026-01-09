@@ -8,6 +8,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -37,6 +38,15 @@ export interface FixedPoint32Fields {
 }
 
 export type FixedPoint32Reified = Reified<FixedPoint32, FixedPoint32Fields>
+
+export type FixedPoint32JSONField = {
+  value: string
+}
+
+export type FixedPoint32JSON = {
+  $typeName: typeof FixedPoint32.$typeName
+  $typeArgs: []
+} & FixedPoint32JSONField
 
 /**
  * Define a fixed-point numeric type with 32 fractional bits.
@@ -148,13 +158,13 @@ export class FixedPoint32 implements StructClass {
     return FixedPoint32.fromFields(FixedPoint32.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): FixedPoint32JSONField {
     return {
       value: this.value.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): FixedPoint32JSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

@@ -8,6 +8,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -40,6 +41,15 @@ export interface StringFields {
 }
 
 export type StringReified = Reified<String, StringFields>
+
+export type StringJSONField = {
+  bytes: number[]
+}
+
+export type StringJSON = {
+  $typeName: typeof String.$typeName
+  $typeArgs: []
+} & StringJSONField
 
 /**
  * The `String` struct holds a vector of bytes that all represent
@@ -140,13 +150,13 @@ export class String implements StructClass {
     return String.fromFields(String.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): StringJSONField {
     return {
       bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): StringJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -214,6 +224,15 @@ export interface CharFields {
 }
 
 export type CharReified = Reified<Char, CharFields>
+
+export type CharJSONField = {
+  byte: number
+}
+
+export type CharJSON = {
+  $typeName: typeof Char.$typeName
+  $typeArgs: []
+} & CharJSONField
 
 /** An ASCII character. */
 export class Char implements StructClass {
@@ -308,13 +327,13 @@ export class Char implements StructClass {
     return Char.fromFields(Char.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): CharJSONField {
     return {
       byte: this.byte,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): CharJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

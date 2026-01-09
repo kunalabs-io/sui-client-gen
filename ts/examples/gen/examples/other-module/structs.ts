@@ -4,6 +4,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -39,6 +40,15 @@ export type StructFromOtherModuleReified = Reified<
   StructFromOtherModule,
   StructFromOtherModuleFields
 >
+
+export type StructFromOtherModuleJSONField = {
+  dummyField: boolean
+}
+
+export type StructFromOtherModuleJSON = {
+  $typeName: typeof StructFromOtherModule.$typeName
+  $typeArgs: []
+} & StructFromOtherModuleJSONField
 
 export class StructFromOtherModule implements StructClass {
   __StructClass = true as const
@@ -143,13 +153,13 @@ export class StructFromOtherModule implements StructClass {
     return StructFromOtherModule.fromFields(StructFromOtherModule.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): StructFromOtherModuleJSONField {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): StructFromOtherModuleJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -222,6 +232,15 @@ export interface AddedInAnUpgradeFields {
 }
 
 export type AddedInAnUpgradeReified = Reified<AddedInAnUpgrade, AddedInAnUpgradeFields>
+
+export type AddedInAnUpgradeJSONField = {
+  dummyField: boolean
+}
+
+export type AddedInAnUpgradeJSON = {
+  $typeName: typeof AddedInAnUpgrade.$typeName
+  $typeArgs: []
+} & AddedInAnUpgradeJSONField
 
 export class AddedInAnUpgrade implements StructClass {
   __StructClass = true as const
@@ -322,13 +341,13 @@ export class AddedInAnUpgrade implements StructClass {
     return AddedInAnUpgrade.fromFields(AddedInAnUpgrade.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): AddedInAnUpgradeJSONField {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): AddedInAnUpgradeJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

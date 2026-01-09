@@ -7,6 +7,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -40,6 +41,15 @@ export interface ExampleStructFields {
 }
 
 export type ExampleStructReified = Reified<ExampleStruct, ExampleStructFields>
+
+export type ExampleStructJSONField = {
+  dummyField: boolean
+}
+
+export type ExampleStructJSON = {
+  $typeName: typeof ExampleStruct.$typeName
+  $typeArgs: []
+} & ExampleStructJSONField
 
 export class ExampleStruct implements StructClass {
   __StructClass = true as const
@@ -140,13 +150,13 @@ export class ExampleStruct implements StructClass {
     return ExampleStruct.fromFields(ExampleStruct.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ExampleStructJSONField {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ExampleStructJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -225,6 +235,23 @@ export interface SpecialTypesStructFields {
 }
 
 export type SpecialTypesStructReified = Reified<SpecialTypesStruct, SpecialTypesStructFields>
+
+export type SpecialTypesStructJSONField = {
+  id: string
+  asciiString: string
+  utf8String: string
+  vectorOfU64: string[]
+  vectorOfObjects: ToJSON<ExampleStruct>[]
+  idField: string
+  address: string
+  optionSome: string | null
+  optionNone: string | null
+}
+
+export type SpecialTypesStructJSON = {
+  $typeName: typeof SpecialTypesStruct.$typeName
+  $typeArgs: []
+} & SpecialTypesStructJSONField
 
 export class SpecialTypesStruct implements StructClass {
   __StructClass = true as const
@@ -371,7 +398,7 @@ export class SpecialTypesStruct implements StructClass {
     return SpecialTypesStruct.fromFields(SpecialTypesStruct.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): SpecialTypesStructJSONField {
     return {
       id: this.id,
       asciiString: this.asciiString,
@@ -388,7 +415,7 @@ export class SpecialTypesStruct implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): SpecialTypesStructJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

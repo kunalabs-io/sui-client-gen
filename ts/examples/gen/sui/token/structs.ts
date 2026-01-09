@@ -29,6 +29,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   assertFieldsWithTypesArgsMatch,
@@ -70,6 +71,16 @@ export interface TokenFields<T extends PhantomTypeArgument> {
 }
 
 export type TokenReified<T extends PhantomTypeArgument> = Reified<Token<T>, TokenFields<T>>
+
+export type TokenJSONField<T extends PhantomTypeArgument> = {
+  id: string
+  balance: ToJSON<Balance<T>>
+}
+
+export type TokenJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof Token.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & TokenJSONField<T>
 
 /**
  * A single `Token` with `Balance` inside. Can only be owned by an address,
@@ -193,14 +204,14 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
     return Token.fromFields(typeArg, Token.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): TokenJSONField<T> {
     return {
       id: this.id,
       balance: this.balance.toJSONField(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): TokenJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -310,6 +321,16 @@ export type TokenPolicyCapReified<T extends PhantomTypeArgument> = Reified<
   TokenPolicyCap<T>,
   TokenPolicyCapFields<T>
 >
+
+export type TokenPolicyCapJSONField<T extends PhantomTypeArgument> = {
+  id: string
+  for: string
+}
+
+export type TokenPolicyCapJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof TokenPolicyCap.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & TokenPolicyCapJSONField<T>
 
 /**
  * A Capability that manages a single `TokenPolicy` specified in the `for`
@@ -432,14 +453,14 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
     return TokenPolicyCap.fromFields(typeArg, TokenPolicyCap.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): TokenPolicyCapJSONField<T> {
     return {
       id: this.id,
       for: this.for,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): TokenPolicyCapJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -563,6 +584,17 @@ export type TokenPolicyReified<T extends PhantomTypeArgument> = Reified<
   TokenPolicy<T>,
   TokenPolicyFields<T>
 >
+
+export type TokenPolicyJSONField<T extends PhantomTypeArgument> = {
+  id: string
+  spentBalance: ToJSON<Balance<T>>
+  rules: ToJSON<VecMap<String, VecSet<TypeName>>>
+}
+
+export type TokenPolicyJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof TokenPolicy.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & TokenPolicyJSONField<T>
 
 /**
  * `TokenPolicy` represents a set of rules that define what actions can be
@@ -716,7 +748,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
     return TokenPolicy.fromFields(typeArg, TokenPolicy.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): TokenPolicyJSONField<T> {
     return {
       id: this.id,
       spentBalance: this.spentBalance.toJSONField(),
@@ -724,7 +756,7 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): TokenPolicyJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -859,6 +891,20 @@ export type ActionRequestReified<T extends PhantomTypeArgument> = Reified<
   ActionRequest<T>,
   ActionRequestFields<T>
 >
+
+export type ActionRequestJSONField<T extends PhantomTypeArgument> = {
+  name: string
+  amount: string
+  sender: string
+  recipient: string | null
+  spentBalance: ToJSON<Balance<T>> | null
+  approvals: ToJSON<VecSet<TypeName>>
+}
+
+export type ActionRequestJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof ActionRequest.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & ActionRequestJSONField<T>
 
 /**
  * A request to perform an "Action" on a token. Stores the information
@@ -1036,7 +1082,7 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
     return ActionRequest.fromFields(typeArg, ActionRequest.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ActionRequestJSONField<T> {
     return {
       name: this.name,
       amount: this.amount.toString(),
@@ -1050,7 +1096,7 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ActionRequestJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1163,6 +1209,15 @@ export interface RuleKeyFields<T extends PhantomTypeArgument> {
 }
 
 export type RuleKeyReified<T extends PhantomTypeArgument> = Reified<RuleKey<T>, RuleKeyFields<T>>
+
+export type RuleKeyJSONField<T extends PhantomTypeArgument> = {
+  isProtected: boolean
+}
+
+export type RuleKeyJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof RuleKey.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & RuleKeyJSONField<T>
 
 /**
  * Dynamic field key for the `TokenPolicy` to store the `Config` for a
@@ -1281,13 +1336,13 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
     return RuleKey.fromFields(typeArg, RuleKey.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): RuleKeyJSONField<T> {
     return {
       isProtected: this.isProtected,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): RuleKeyJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1401,6 +1456,16 @@ export type TokenPolicyCreatedReified<T extends PhantomTypeArgument> = Reified<
   TokenPolicyCreated<T>,
   TokenPolicyCreatedFields<T>
 >
+
+export type TokenPolicyCreatedJSONField<T extends PhantomTypeArgument> = {
+  id: string
+  isMutable: boolean
+}
+
+export type TokenPolicyCreatedJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof TokenPolicyCreated.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & TokenPolicyCreatedJSONField<T>
 
 /**
  * An event emitted when a `TokenPolicy` is created and shared. Because
@@ -1534,14 +1599,14 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
     return TokenPolicyCreated.fromFields(typeArg, TokenPolicyCreated.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): TokenPolicyCreatedJSONField<T> {
     return {
       id: this.id,
       isMutable: this.isMutable,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): TokenPolicyCreatedJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

@@ -13,6 +13,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   assertFieldsWithTypesArgsMatch,
@@ -57,6 +58,15 @@ export interface CoinRegistryFields {
 }
 
 export type CoinRegistryReified = Reified<CoinRegistry, CoinRegistryFields>
+
+export type CoinRegistryJSONField = {
+  id: string
+}
+
+export type CoinRegistryJSON = {
+  $typeName: typeof CoinRegistry.$typeName
+  $typeArgs: []
+} & CoinRegistryJSONField
 
 /**
  * System object found at address `0xc` that stores coin data for all
@@ -162,13 +172,13 @@ export class CoinRegistry implements StructClass {
     return CoinRegistry.fromFields(CoinRegistry.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): CoinRegistryJSONField {
     return {
       id: this.id,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): CoinRegistryJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -237,6 +247,16 @@ export interface ExtraFieldFields {
 }
 
 export type ExtraFieldReified = Reified<ExtraField, ExtraFieldFields>
+
+export type ExtraFieldJSONField = {
+  pos0: string
+  pos1: number[]
+}
+
+export type ExtraFieldJSON = {
+  $typeName: typeof ExtraField.$typeName
+  $typeArgs: []
+} & ExtraFieldJSONField
 
 /**
  * Store only object that enables more flexible coin data
@@ -344,14 +364,14 @@ export class ExtraField implements StructClass {
     return ExtraField.fromFields(ExtraField.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ExtraFieldJSONField {
     return {
       pos0: this.pos0,
       pos1: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.pos1),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ExtraFieldJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -423,6 +443,15 @@ export type CurrencyKeyReified<T extends PhantomTypeArgument> = Reified<
   CurrencyKey<T>,
   CurrencyKeyFields<T>
 >
+
+export type CurrencyKeyJSONField<T extends PhantomTypeArgument> = {
+  dummyField: boolean
+}
+
+export type CurrencyKeyJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof CurrencyKey.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & CurrencyKeyJSONField<T>
 
 /** Key used to derive addresses when creating `Currency<T>` objects. */
 export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
@@ -538,13 +567,13 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
     return CurrencyKey.fromFields(typeArg, CurrencyKey.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): CurrencyKeyJSONField<T> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): CurrencyKeyJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -650,6 +679,15 @@ export interface LegacyMetadataKeyFields {
 
 export type LegacyMetadataKeyReified = Reified<LegacyMetadataKey, LegacyMetadataKeyFields>
 
+export type LegacyMetadataKeyJSONField = {
+  dummyField: boolean
+}
+
+export type LegacyMetadataKeyJSON = {
+  $typeName: typeof LegacyMetadataKey.$typeName
+  $typeArgs: []
+} & LegacyMetadataKeyJSONField
+
 /** Key used to store the legacy `CoinMetadata` for a `Currency`. */
 export class LegacyMetadataKey implements StructClass {
   __StructClass = true as const
@@ -750,13 +788,13 @@ export class LegacyMetadataKey implements StructClass {
     return LegacyMetadataKey.fromFields(LegacyMetadataKey.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): LegacyMetadataKeyJSONField {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): LegacyMetadataKeyJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -827,6 +865,15 @@ export type MetadataCapReified<T extends PhantomTypeArgument> = Reified<
   MetadataCap<T>,
   MetadataCapFields<T>
 >
+
+export type MetadataCapJSONField<T extends PhantomTypeArgument> = {
+  id: string
+}
+
+export type MetadataCapJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof MetadataCap.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & MetadataCapJSONField<T>
 
 /**
  * Capability object that gates metadata (name, description, icon_url, symbol)
@@ -946,13 +993,13 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
     return MetadataCap.fromFields(typeArg, MetadataCap.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): MetadataCapJSONField<T> {
     return {
       id: this.id,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): MetadataCapJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1057,6 +1104,15 @@ export interface BorrowFields<T extends PhantomTypeArgument> {
 }
 
 export type BorrowReified<T extends PhantomTypeArgument> = Reified<Borrow<T>, BorrowFields<T>>
+
+export type BorrowJSONField<T extends PhantomTypeArgument> = {
+  dummyField: boolean
+}
+
+export type BorrowJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof Borrow.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & BorrowJSONField<T>
 
 /** Potato callback for the legacy `CoinMetadata` borrowing. */
 export class Borrow<T extends PhantomTypeArgument> implements StructClass {
@@ -1171,13 +1227,13 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
     return Borrow.fromFields(typeArg, Borrow.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): BorrowJSONField<T> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): BorrowJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1306,6 +1362,25 @@ export interface CurrencyFields<T extends PhantomTypeArgument> {
 }
 
 export type CurrencyReified<T extends PhantomTypeArgument> = Reified<Currency<T>, CurrencyFields<T>>
+
+export type CurrencyJSONField<T extends PhantomTypeArgument> = {
+  id: string
+  decimals: number
+  name: string
+  symbol: string
+  description: string
+  iconUrl: string
+  supply: ToJSON<SupplyStateVariant<T>> | null
+  regulated: ToJSON<RegulatedStateVariant>
+  treasuryCapId: string | null
+  metadataCapId: ToJSON<MetadataCapStateVariant>
+  extraFields: ToJSON<VecMap<String, ExtraField>>
+}
+
+export type CurrencyJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof Currency.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & CurrencyJSONField<T>
 
 /**
  * Currency stores metadata such as name, symbol, decimals, icon_url and description,
@@ -1503,7 +1578,7 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
     return Currency.fromFields(typeArg, Currency.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): CurrencyJSONField<T> {
     return {
       id: this.id,
       decimals: this.decimals,
@@ -1525,7 +1600,7 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): CurrencyJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1648,6 +1723,17 @@ export type CurrencyInitializerReified<T extends PhantomTypeArgument> = Reified<
   CurrencyInitializer<T>,
   CurrencyInitializerFields<T>
 >
+
+export type CurrencyInitializerJSONField<T extends PhantomTypeArgument> = {
+  currency: ToJSON<Currency<T>>
+  extraFields: ToJSON<Bag>
+  isOtw: boolean
+}
+
+export type CurrencyInitializerJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof CurrencyInitializer.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & CurrencyInitializerJSONField<T>
 
 /**
  * Hot potato wrapper to enforce registration after "new_currency" data creation.
@@ -1782,7 +1868,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
     return CurrencyInitializer.fromFields(typeArg, CurrencyInitializer.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): CurrencyInitializerJSONField<T> {
     return {
       currency: this.currency.toJSONField(),
       extraFields: this.extraFields.toJSONField(),
@@ -1790,7 +1876,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): CurrencyInitializerJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1903,6 +1989,11 @@ export type SupplyStateVariant<T extends PhantomTypeArgument> =
   | SupplyStateFixed<T>
   | SupplyStateBurnOnly<T>
   | SupplyStateUnknown<T>
+
+export type SupplyStateVariantJSON<T extends PhantomTypeArgument> =
+  | SupplyStateFixedJSON<T>
+  | SupplyStateBurnOnlyJSON<T>
+  | SupplyStateUnknownJSON<T>
 
 export type SupplyStateVariantName = 'Fixed' | 'BurnOnly' | 'Unknown'
 
@@ -2099,6 +2190,17 @@ export class SupplyState {
 /** Coin has a fixed supply with the given Supply object. */
 export type SupplyStateFixedFields<T extends PhantomTypeArgument> = [ToField<Supply<T>>]
 
+export type SupplyStateFixedJSONField<T extends PhantomTypeArgument> = {
+  $kind: 'Fixed'
+  vec: [ToJSON<Supply<T>>]
+}
+
+export type SupplyStateFixedJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof SupplyState.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+  $variantName: 'Fixed'
+} & SupplyStateFixedJSONField<T>
+
 export class SupplyStateFixed<T extends PhantomTypeArgument> implements EnumVariantClass {
   __EnumVariantClass = true as const
 
@@ -2125,14 +2227,14 @@ export class SupplyStateFixed<T extends PhantomTypeArgument> implements EnumVari
     this[0] = fields[0]
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): SupplyStateFixedJSONField<T> {
     return {
       $kind: this.$variantName,
       vec: [fieldToJSON<Supply<T>>(`${Supply.$typeName}<${this.$typeArgs[0]}>`, this[0])],
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): SupplyStateFixedJSON<T> {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,
@@ -2144,6 +2246,17 @@ export class SupplyStateFixed<T extends PhantomTypeArgument> implements EnumVari
 
 /** Coin has a supply that can ONLY decrease. */
 export type SupplyStateBurnOnlyFields<T extends PhantomTypeArgument> = [ToField<Supply<T>>]
+
+export type SupplyStateBurnOnlyJSONField<T extends PhantomTypeArgument> = {
+  $kind: 'BurnOnly'
+  vec: [ToJSON<Supply<T>>]
+}
+
+export type SupplyStateBurnOnlyJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof SupplyState.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+  $variantName: 'BurnOnly'
+} & SupplyStateBurnOnlyJSONField<T>
 
 export class SupplyStateBurnOnly<T extends PhantomTypeArgument> implements EnumVariantClass {
   __EnumVariantClass = true as const
@@ -2171,14 +2284,14 @@ export class SupplyStateBurnOnly<T extends PhantomTypeArgument> implements EnumV
     this[0] = fields[0]
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): SupplyStateBurnOnlyJSONField<T> {
     return {
       $kind: this.$variantName,
       vec: [fieldToJSON<Supply<T>>(`${Supply.$typeName}<${this.$typeArgs[0]}>`, this[0])],
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): SupplyStateBurnOnlyJSON<T> {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,
@@ -2190,6 +2303,16 @@ export class SupplyStateBurnOnly<T extends PhantomTypeArgument> implements EnumV
 
 /** Supply information is not yet known or registered. */
 export type SupplyStateUnknownFields = Record<string, never>
+
+export type SupplyStateUnknownJSONField<T extends PhantomTypeArgument> = {
+  $kind: 'Unknown'
+}
+
+export type SupplyStateUnknownJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof SupplyState.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+  $variantName: 'Unknown'
+} & SupplyStateUnknownJSONField<T>
 
 export class SupplyStateUnknown<T extends PhantomTypeArgument> implements EnumVariantClass {
   __EnumVariantClass = true as const
@@ -2213,11 +2336,11 @@ export class SupplyStateUnknown<T extends PhantomTypeArgument> implements EnumVa
     this.$typeArgs = typeArgs
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): SupplyStateUnknownJSONField<T> {
     return { $kind: this.$variantName }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): SupplyStateUnknownJSON<T> {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,
@@ -2245,6 +2368,11 @@ export type RegulatedStateVariant =
   | RegulatedStateRegulated
   | RegulatedStateUnregulated
   | RegulatedStateUnknown
+
+export type RegulatedStateVariantJSON =
+  | RegulatedStateRegulatedJSON
+  | RegulatedStateUnregulatedJSON
+  | RegulatedStateUnknownJSON
 
 export type RegulatedStateVariantName = 'Regulated' | 'Unregulated' | 'Unknown'
 
@@ -2426,6 +2554,19 @@ export interface RegulatedStateRegulatedFields {
   variant: ToField<'u8'>
 }
 
+export type RegulatedStateRegulatedJSONField = {
+  $kind: 'Regulated'
+  cap: string
+  allowGlobalPause: boolean | null
+  variant: number
+}
+
+export type RegulatedStateRegulatedJSON = {
+  $typeName: typeof RegulatedState.$typeName
+  $typeArgs: []
+  $variantName: 'Regulated'
+} & RegulatedStateRegulatedJSONField
+
 export class RegulatedStateRegulated implements EnumVariantClass {
   __EnumVariantClass = true as const
 
@@ -2458,7 +2599,7 @@ export class RegulatedStateRegulated implements EnumVariantClass {
     this.variant = fields.variant
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): RegulatedStateRegulatedJSONField {
     return {
       $kind: this.$variantName,
       cap: fieldToJSON<ID>(`${ID.$typeName}`, this.cap),
@@ -2470,7 +2611,7 @@ export class RegulatedStateRegulated implements EnumVariantClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): RegulatedStateRegulatedJSON {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,
@@ -2482,6 +2623,16 @@ export class RegulatedStateRegulated implements EnumVariantClass {
 
 /** The coin has been created without deny list. */
 export type RegulatedStateUnregulatedFields = Record<string, never>
+
+export type RegulatedStateUnregulatedJSONField = {
+  $kind: 'Unregulated'
+}
+
+export type RegulatedStateUnregulatedJSON = {
+  $typeName: typeof RegulatedState.$typeName
+  $typeArgs: []
+  $variantName: 'Unregulated'
+} & RegulatedStateUnregulatedJSONField
 
 export class RegulatedStateUnregulated implements EnumVariantClass {
   __EnumVariantClass = true as const
@@ -2508,11 +2659,11 @@ export class RegulatedStateUnregulated implements EnumVariantClass {
     this.$typeArgs = typeArgs
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): RegulatedStateUnregulatedJSONField {
     return { $kind: this.$variantName }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): RegulatedStateUnregulatedJSON {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,
@@ -2527,6 +2678,16 @@ export class RegulatedStateUnregulated implements EnumVariantClass {
  * Result of a legacy migration for that coin (from `coin.move` constructors)
  */
 export type RegulatedStateUnknownFields = Record<string, never>
+
+export type RegulatedStateUnknownJSONField = {
+  $kind: 'Unknown'
+}
+
+export type RegulatedStateUnknownJSON = {
+  $typeName: typeof RegulatedState.$typeName
+  $typeArgs: []
+  $variantName: 'Unknown'
+} & RegulatedStateUnknownJSONField
 
 export class RegulatedStateUnknown implements EnumVariantClass {
   __EnumVariantClass = true as const
@@ -2552,11 +2713,11 @@ export class RegulatedStateUnknown implements EnumVariantClass {
     this.$typeArgs = typeArgs
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): RegulatedStateUnknownJSONField {
     return { $kind: this.$variantName }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): RegulatedStateUnknownJSON {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,
@@ -2579,6 +2740,11 @@ export type MetadataCapStateVariant =
   | MetadataCapStateClaimed
   | MetadataCapStateUnclaimed
   | MetadataCapStateDeleted
+
+export type MetadataCapStateVariantJSON =
+  | MetadataCapStateClaimedJSON
+  | MetadataCapStateUnclaimedJSON
+  | MetadataCapStateDeletedJSON
 
 export type MetadataCapStateVariantName = 'Claimed' | 'Unclaimed' | 'Deleted'
 
@@ -2734,6 +2900,17 @@ export class MetadataCapState {
 /** The metadata cap has been claimed. */
 export type MetadataCapStateClaimedFields = [ToField<ID>]
 
+export type MetadataCapStateClaimedJSONField = {
+  $kind: 'Claimed'
+  vec: [string]
+}
+
+export type MetadataCapStateClaimedJSON = {
+  $typeName: typeof MetadataCapState.$typeName
+  $typeArgs: []
+  $variantName: 'Claimed'
+} & MetadataCapStateClaimedJSONField
+
 export class MetadataCapStateClaimed implements EnumVariantClass {
   __EnumVariantClass = true as const
 
@@ -2762,14 +2939,14 @@ export class MetadataCapStateClaimed implements EnumVariantClass {
     this[0] = fields[0]
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): MetadataCapStateClaimedJSONField {
     return {
       $kind: this.$variantName,
       vec: [this[0]],
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): MetadataCapStateClaimedJSON {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,
@@ -2781,6 +2958,16 @@ export class MetadataCapStateClaimed implements EnumVariantClass {
 
 /** The metadata cap has not been claimed. */
 export type MetadataCapStateUnclaimedFields = Record<string, never>
+
+export type MetadataCapStateUnclaimedJSONField = {
+  $kind: 'Unclaimed'
+}
+
+export type MetadataCapStateUnclaimedJSON = {
+  $typeName: typeof MetadataCapState.$typeName
+  $typeArgs: []
+  $variantName: 'Unclaimed'
+} & MetadataCapStateUnclaimedJSONField
 
 export class MetadataCapStateUnclaimed implements EnumVariantClass {
   __EnumVariantClass = true as const
@@ -2807,11 +2994,11 @@ export class MetadataCapStateUnclaimed implements EnumVariantClass {
     this.$typeArgs = typeArgs
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): MetadataCapStateUnclaimedJSONField {
     return { $kind: this.$variantName }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): MetadataCapStateUnclaimedJSON {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,
@@ -2823,6 +3010,16 @@ export class MetadataCapStateUnclaimed implements EnumVariantClass {
 
 /** The metadata cap has been claimed and then deleted. */
 export type MetadataCapStateDeletedFields = Record<string, never>
+
+export type MetadataCapStateDeletedJSONField = {
+  $kind: 'Deleted'
+}
+
+export type MetadataCapStateDeletedJSON = {
+  $typeName: typeof MetadataCapState.$typeName
+  $typeArgs: []
+  $variantName: 'Deleted'
+} & MetadataCapStateDeletedJSONField
 
 export class MetadataCapStateDeleted implements EnumVariantClass {
   __EnumVariantClass = true as const
@@ -2848,11 +3045,11 @@ export class MetadataCapStateDeleted implements EnumVariantClass {
     this.$typeArgs = typeArgs
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): MetadataCapStateDeletedJSONField {
     return { $kind: this.$variantName }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): MetadataCapStateDeletedJSON {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,

@@ -45,6 +45,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   assertFieldsWithTypesArgsMatch,
@@ -109,6 +110,17 @@ export interface ExtensionFields {
 }
 
 export type ExtensionReified = Reified<Extension, ExtensionFields>
+
+export type ExtensionJSONField = {
+  storage: ToJSON<Bag>
+  permissions: string
+  isEnabled: boolean
+}
+
+export type ExtensionJSON = {
+  $typeName: typeof Extension.$typeName
+  $typeArgs: []
+} & ExtensionJSONField
 
 /**
  * The Extension struct contains the data used by the extension and the
@@ -248,7 +260,7 @@ export class Extension implements StructClass {
     return Extension.fromFields(Extension.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ExtensionJSONField {
     return {
       storage: this.storage.toJSONField(),
       permissions: this.permissions.toString(),
@@ -256,7 +268,7 @@ export class Extension implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ExtensionJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -329,6 +341,15 @@ export type ExtensionKeyReified<Ext extends PhantomTypeArgument> = Reified<
   ExtensionKey<Ext>,
   ExtensionKeyFields<Ext>
 >
+
+export type ExtensionKeyJSONField<Ext extends PhantomTypeArgument> = {
+  dummyField: boolean
+}
+
+export type ExtensionKeyJSON<Ext extends PhantomTypeArgument> = {
+  $typeName: typeof ExtensionKey.$typeName
+  $typeArgs: [PhantomToTypeStr<Ext>]
+} & ExtensionKeyJSONField<Ext>
 
 /**
  * The `ExtensionKey` is a typed dynamic field key used to store the
@@ -448,13 +469,13 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
     return ExtensionKey.fromFields(typeArg, ExtensionKey.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ExtensionKeyJSONField<Ext> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ExtensionKeyJSON<Ext> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

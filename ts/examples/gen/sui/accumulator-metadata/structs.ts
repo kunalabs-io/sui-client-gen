@@ -5,6 +5,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   assertFieldsWithTypesArgsMatch,
@@ -40,6 +41,15 @@ export interface OwnerKeyFields {
 }
 
 export type OwnerKeyReified = Reified<OwnerKey, OwnerKeyFields>
+
+export type OwnerKeyJSONField = {
+  owner: string
+}
+
+export type OwnerKeyJSON = {
+  $typeName: typeof OwnerKey.$typeName
+  $typeArgs: []
+} & OwnerKeyJSONField
 
 /**
  * === Accumulator metadata ===
@@ -155,13 +165,13 @@ export class OwnerKey implements StructClass {
     return OwnerKey.fromFields(OwnerKey.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): OwnerKeyJSONField {
     return {
       owner: this.owner,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): OwnerKeyJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -231,6 +241,16 @@ export interface OwnerFields {
 }
 
 export type OwnerReified = Reified<Owner, OwnerFields>
+
+export type OwnerJSONField = {
+  balances: ToJSON<Bag>
+  owner: string
+}
+
+export type OwnerJSON = {
+  $typeName: typeof Owner.$typeName
+  $typeArgs: []
+} & OwnerJSONField
 
 /**
  * An owner field, to which all AccumulatorMetadata fields for the owner are
@@ -341,14 +361,14 @@ export class Owner implements StructClass {
     return Owner.fromFields(Owner.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): OwnerJSONField {
     return {
       balances: this.balances.toJSONField(),
       owner: this.owner,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): OwnerJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -420,6 +440,15 @@ export type MetadataKeyReified<T extends PhantomTypeArgument> = Reified<
   MetadataKey<T>,
   MetadataKeyFields<T>
 >
+
+export type MetadataKeyJSONField<T extends PhantomTypeArgument> = {
+  dummyField: boolean
+}
+
+export type MetadataKeyJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof MetadataKey.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & MetadataKeyJSONField<T>
 
 export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
@@ -534,13 +563,13 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
     return MetadataKey.fromFields(typeArg, MetadataKey.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): MetadataKeyJSONField<T> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): MetadataKeyJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -646,6 +675,15 @@ export interface MetadataFields<T extends PhantomTypeArgument> {
 }
 
 export type MetadataReified<T extends PhantomTypeArgument> = Reified<Metadata<T>, MetadataFields<T>>
+
+export type MetadataJSONField<T extends PhantomTypeArgument> = {
+  fields: ToJSON<Bag>
+}
+
+export type MetadataJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof Metadata.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & MetadataJSONField<T>
 
 /** A metadata field for a balance field with type T. */
 export class Metadata<T extends PhantomTypeArgument> implements StructClass {
@@ -762,13 +800,13 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
     return Metadata.fromFields(typeArg, Metadata.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): MetadataJSONField<T> {
     return {
       fields: this.fields.toJSONField(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): MetadataJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

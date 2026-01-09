@@ -6,6 +6,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeArgument,
   ToTypeStr,
@@ -48,6 +49,15 @@ export type ConfigReified<WriteCap extends PhantomTypeArgument> = Reified<
   Config<WriteCap>,
   ConfigFields<WriteCap>
 >
+
+export type ConfigJSONField<WriteCap extends PhantomTypeArgument> = {
+  id: string
+}
+
+export type ConfigJSON<WriteCap extends PhantomTypeArgument> = {
+  $typeName: typeof Config.$typeName
+  $typeArgs: [PhantomToTypeStr<WriteCap>]
+} & ConfigJSONField<WriteCap>
 
 export class Config<WriteCap extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
@@ -161,13 +171,13 @@ export class Config<WriteCap extends PhantomTypeArgument> implements StructClass
     return Config.fromFields(typeArg, Config.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ConfigJSONField<WriteCap> {
     return {
       id: this.id,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ConfigJSON<WriteCap> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -275,6 +285,15 @@ export type SettingReified<Value extends TypeArgument> = Reified<
   Setting<Value>,
   SettingFields<Value>
 >
+
+export type SettingJSONField<Value extends TypeArgument> = {
+  data: ToJSON<SettingData<Value>> | null
+}
+
+export type SettingJSON<Value extends TypeArgument> = {
+  $typeName: typeof Setting.$typeName
+  $typeArgs: [ToTypeStr<Value>]
+} & SettingJSONField<Value>
 
 export class Setting<Value extends TypeArgument> implements StructClass {
   __StructClass = true as const
@@ -393,7 +412,7 @@ export class Setting<Value extends TypeArgument> implements StructClass {
     return Setting.fromFields(typeArg, Setting.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): SettingJSONField<Value> {
     return {
       data: fieldToJSON<Option<SettingData<Value>>>(
         `${Option.$typeName}<${SettingData.$typeName}<${this.$typeArgs[0]}>>`,
@@ -402,7 +421,7 @@ export class Setting<Value extends TypeArgument> implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): SettingJSON<Value> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -512,6 +531,17 @@ export type SettingDataReified<Value extends TypeArgument> = Reified<
   SettingData<Value>,
   SettingDataFields<Value>
 >
+
+export type SettingDataJSONField<Value extends TypeArgument> = {
+  newerValueEpoch: string
+  newerValue: ToJSON<Value> | null
+  olderValueOpt: ToJSON<Value> | null
+}
+
+export type SettingDataJSON<Value extends TypeArgument> = {
+  $typeName: typeof SettingData.$typeName
+  $typeArgs: [ToTypeStr<Value>]
+} & SettingDataJSONField<Value>
 
 export class SettingData<Value extends TypeArgument> implements StructClass {
   __StructClass = true as const
@@ -640,7 +670,7 @@ export class SettingData<Value extends TypeArgument> implements StructClass {
     return SettingData.fromFields(typeArg, SettingData.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): SettingDataJSONField<Value> {
     return {
       newerValueEpoch: this.newerValueEpoch.toString(),
       newerValue: fieldToJSON<Option<Value>>(
@@ -654,7 +684,7 @@ export class SettingData<Value extends TypeArgument> implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): SettingDataJSON<Value> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

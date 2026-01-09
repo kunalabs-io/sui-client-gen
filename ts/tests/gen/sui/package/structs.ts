@@ -9,6 +9,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -45,6 +46,17 @@ export interface PublisherFields {
 }
 
 export type PublisherReified = Reified<Publisher, PublisherFields>
+
+export type PublisherJSONField = {
+  id: string
+  package: string
+  moduleName: string
+}
+
+export type PublisherJSON = {
+  $typeName: typeof Publisher.$typeName
+  $typeArgs: []
+} & PublisherJSONField
 
 /**
  * This type can only be created in the transaction that
@@ -157,7 +169,7 @@ export class Publisher implements StructClass {
     return Publisher.fromFields(Publisher.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): PublisherJSONField {
     return {
       id: this.id,
       package: this.package,
@@ -165,7 +177,7 @@ export class Publisher implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): PublisherJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -244,6 +256,18 @@ export interface UpgradeCapFields {
 }
 
 export type UpgradeCapReified = Reified<UpgradeCap, UpgradeCapFields>
+
+export type UpgradeCapJSONField = {
+  id: string
+  package: string
+  version: string
+  policy: number
+}
+
+export type UpgradeCapJSON = {
+  $typeName: typeof UpgradeCap.$typeName
+  $typeArgs: []
+} & UpgradeCapJSONField
 
 /** Capability controlling the ability to upgrade a package. */
 export class UpgradeCap implements StructClass {
@@ -362,7 +386,7 @@ export class UpgradeCap implements StructClass {
     return UpgradeCap.fromFields(UpgradeCap.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): UpgradeCapJSONField {
     return {
       id: this.id,
       package: this.package,
@@ -371,7 +395,7 @@ export class UpgradeCap implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): UpgradeCapJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -455,6 +479,18 @@ export interface UpgradeTicketFields {
 }
 
 export type UpgradeTicketReified = Reified<UpgradeTicket, UpgradeTicketFields>
+
+export type UpgradeTicketJSONField = {
+  cap: string
+  package: string
+  policy: number
+  digest: number[]
+}
+
+export type UpgradeTicketJSON = {
+  $typeName: typeof UpgradeTicket.$typeName
+  $typeArgs: []
+} & UpgradeTicketJSONField
 
 /**
  * Permission to perform a particular upgrade (for a fixed version of
@@ -586,7 +622,7 @@ export class UpgradeTicket implements StructClass {
     return UpgradeTicket.fromFields(UpgradeTicket.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): UpgradeTicketJSONField {
     return {
       cap: this.cap,
       package: this.package,
@@ -595,7 +631,7 @@ export class UpgradeTicket implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): UpgradeTicketJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -669,6 +705,16 @@ export interface UpgradeReceiptFields {
 }
 
 export type UpgradeReceiptReified = Reified<UpgradeReceipt, UpgradeReceiptFields>
+
+export type UpgradeReceiptJSONField = {
+  cap: string
+  package: string
+}
+
+export type UpgradeReceiptJSON = {
+  $typeName: typeof UpgradeReceipt.$typeName
+  $typeArgs: []
+} & UpgradeReceiptJSONField
 
 /**
  * Issued as a result of a successful upgrade, containing the
@@ -782,14 +828,14 @@ export class UpgradeReceipt implements StructClass {
     return UpgradeReceipt.fromFields(UpgradeReceipt.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): UpgradeReceiptJSONField {
     return {
       cap: this.cap,
       package: this.package,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): UpgradeReceiptJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

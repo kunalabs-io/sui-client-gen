@@ -8,6 +8,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -45,6 +46,16 @@ export interface ClockFields {
 }
 
 export type ClockReified = Reified<Clock, ClockFields>
+
+export type ClockJSONField = {
+  id: string
+  timestampMs: string
+}
+
+export type ClockJSON = {
+  $typeName: typeof Clock.$typeName
+  $typeArgs: []
+} & ClockJSONField
 
 /**
  * Singleton shared object that exposes time to Move calls.  This
@@ -159,14 +170,14 @@ export class Clock implements StructClass {
     return Clock.fromFields(Clock.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ClockJSONField {
     return {
       id: this.id,
       timestampMs: this.timestampMs.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ClockJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

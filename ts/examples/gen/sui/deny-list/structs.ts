@@ -9,6 +9,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   ToTypeStr as ToPhantom,
   decodeFromFields,
@@ -48,6 +49,16 @@ export interface DenyListFields {
 }
 
 export type DenyListReified = Reified<DenyList, DenyListFields>
+
+export type DenyListJSONField = {
+  id: string
+  lists: ToJSON<Bag>
+}
+
+export type DenyListJSON = {
+  $typeName: typeof DenyList.$typeName
+  $typeArgs: []
+} & DenyListJSONField
 
 /** A shared object that stores the addresses that are blocked for a given core type. */
 export class DenyList implements StructClass {
@@ -151,14 +162,14 @@ export class DenyList implements StructClass {
     return DenyList.fromFields(DenyList.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): DenyListJSONField {
     return {
       id: this.id,
       lists: this.lists.toJSONField(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): DenyListJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -227,6 +238,15 @@ export interface ConfigWriteCapFields {
 }
 
 export type ConfigWriteCapReified = Reified<ConfigWriteCap, ConfigWriteCapFields>
+
+export type ConfigWriteCapJSONField = {
+  dummyField: boolean
+}
+
+export type ConfigWriteCapJSON = {
+  $typeName: typeof ConfigWriteCap.$typeName
+  $typeArgs: []
+} & ConfigWriteCapJSONField
 
 /**
  * The capability used to write to the deny list config. Ensures that the Configs for the
@@ -331,13 +351,13 @@ export class ConfigWriteCap implements StructClass {
     return ConfigWriteCap.fromFields(ConfigWriteCap.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ConfigWriteCapJSONField {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ConfigWriteCapJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -406,6 +426,16 @@ export interface ConfigKeyFields {
 }
 
 export type ConfigKeyReified = Reified<ConfigKey, ConfigKeyFields>
+
+export type ConfigKeyJSONField = {
+  perTypeIndex: string
+  perTypeKey: number[]
+}
+
+export type ConfigKeyJSON = {
+  $typeName: typeof ConfigKey.$typeName
+  $typeArgs: []
+} & ConfigKeyJSONField
 
 /**
  * The dynamic object field key used to store the `Config` for a given type, essentially a
@@ -511,14 +541,14 @@ export class ConfigKey implements StructClass {
     return ConfigKey.fromFields(ConfigKey.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ConfigKeyJSONField {
     return {
       perTypeIndex: this.perTypeIndex.toString(),
       perTypeKey: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.perTypeKey),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ConfigKeyJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -587,6 +617,15 @@ export interface AddressKeyFields {
 }
 
 export type AddressKeyReified = Reified<AddressKey, AddressKeyFields>
+
+export type AddressKeyJSONField = {
+  pos0: string
+}
+
+export type AddressKeyJSON = {
+  $typeName: typeof AddressKey.$typeName
+  $typeArgs: []
+} & AddressKeyJSONField
 
 /** The setting key used to store the deny list for a given address in the `Config`. */
 export class AddressKey implements StructClass {
@@ -687,13 +726,13 @@ export class AddressKey implements StructClass {
     return AddressKey.fromFields(AddressKey.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): AddressKeyJSONField {
     return {
       pos0: this.pos0,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): AddressKeyJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -761,6 +800,15 @@ export interface GlobalPauseKeyFields {
 }
 
 export type GlobalPauseKeyReified = Reified<GlobalPauseKey, GlobalPauseKeyFields>
+
+export type GlobalPauseKeyJSONField = {
+  dummyField: boolean
+}
+
+export type GlobalPauseKeyJSON = {
+  $typeName: typeof GlobalPauseKey.$typeName
+  $typeArgs: []
+} & GlobalPauseKeyJSONField
 
 /** The setting key used to store the global pause setting in the `Config`. */
 export class GlobalPauseKey implements StructClass {
@@ -862,13 +910,13 @@ export class GlobalPauseKey implements StructClass {
     return GlobalPauseKey.fromFields(GlobalPauseKey.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): GlobalPauseKeyJSONField {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): GlobalPauseKeyJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -937,6 +985,16 @@ export interface PerTypeConfigCreatedFields {
 }
 
 export type PerTypeConfigCreatedReified = Reified<PerTypeConfigCreated, PerTypeConfigCreatedFields>
+
+export type PerTypeConfigCreatedJSONField = {
+  key: ToJSON<ConfigKey>
+  configId: string
+}
+
+export type PerTypeConfigCreatedJSON = {
+  $typeName: typeof PerTypeConfigCreated.$typeName
+  $typeArgs: []
+} & PerTypeConfigCreatedJSONField
 
 /**
  * The event emitted when a new `Config` is created for a given type. This can be useful for
@@ -1050,14 +1108,14 @@ export class PerTypeConfigCreated implements StructClass {
     return PerTypeConfigCreated.fromFields(PerTypeConfigCreated.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): PerTypeConfigCreatedJSONField {
     return {
       key: this.key.toJSONField(),
       configId: this.configId,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): PerTypeConfigCreatedJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1139,6 +1197,17 @@ export interface PerTypeListFields {
 }
 
 export type PerTypeListReified = Reified<PerTypeList, PerTypeListFields>
+
+export type PerTypeListJSONField = {
+  id: string
+  deniedCount: ToJSON<Table<'address', 'u64'>>
+  deniedAddresses: ToJSON<Table<ToPhantom<Vector<'u8'>>, ToPhantom<VecSet<'address'>>>>
+}
+
+export type PerTypeListJSON = {
+  $typeName: typeof PerTypeList.$typeName
+  $typeArgs: []
+} & PerTypeListJSONField
 
 /** Stores the addresses that are denied for a given core type. */
 export class PerTypeList implements StructClass {
@@ -1267,7 +1336,7 @@ export class PerTypeList implements StructClass {
     return PerTypeList.fromFields(PerTypeList.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): PerTypeListJSONField {
     return {
       id: this.id,
       deniedCount: this.deniedCount.toJSONField(),
@@ -1275,7 +1344,7 @@ export class PerTypeList implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): PerTypeListJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

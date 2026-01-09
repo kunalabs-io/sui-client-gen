@@ -12,6 +12,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -41,6 +42,15 @@ export interface UQ64_64Fields {
 }
 
 export type UQ64_64Reified = Reified<UQ64_64, UQ64_64Fields>
+
+export type UQ64_64JSONField = {
+  pos0: string
+}
+
+export type UQ64_64JSON = {
+  $typeName: typeof UQ64_64.$typeName
+  $typeArgs: []
+} & UQ64_64JSONField
 
 /**
  * A fixed-point numeric type with 64 integer bits and 64 fractional bits, represented by an
@@ -140,13 +150,13 @@ export class UQ64_64 implements StructClass {
     return UQ64_64.fromFields(UQ64_64.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): UQ64_64JSONField {
     return {
       pos0: this.pos0.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): UQ64_64JSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

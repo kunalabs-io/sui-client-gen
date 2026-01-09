@@ -23,6 +23,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   assertFieldsWithTypesArgsMatch,
@@ -64,6 +65,16 @@ export type TableReified<K extends PhantomTypeArgument, V extends PhantomTypeArg
   Table<K, V>,
   TableFields<K, V>
 >
+
+export type TableJSONField<K extends PhantomTypeArgument, V extends PhantomTypeArgument> = {
+  id: string
+  size: string
+}
+
+export type TableJSON<K extends PhantomTypeArgument, V extends PhantomTypeArgument> = {
+  $typeName: typeof Table.$typeName
+  $typeArgs: [PhantomToTypeStr<K>, PhantomToTypeStr<V>]
+} & TableJSONField<K, V>
 
 export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
   implements StructClass
@@ -203,14 +214,14 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
     return Table.fromFields(typeArgs, Table.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): TableJSONField<K, V> {
     return {
       id: this.id,
       size: this.size.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): TableJSON<K, V> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

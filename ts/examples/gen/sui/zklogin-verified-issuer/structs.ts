@@ -4,6 +4,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -39,6 +40,17 @@ export interface VerifiedIssuerFields {
 }
 
 export type VerifiedIssuerReified = Reified<VerifiedIssuer, VerifiedIssuerFields>
+
+export type VerifiedIssuerJSONField = {
+  id: string
+  owner: string
+  issuer: string
+}
+
+export type VerifiedIssuerJSON = {
+  $typeName: typeof VerifiedIssuer.$typeName
+  $typeArgs: []
+} & VerifiedIssuerJSONField
 
 /**
  * Possession of a VerifiedIssuer proves that the user's address was created using zklogin and with the given issuer
@@ -159,7 +171,7 @@ export class VerifiedIssuer implements StructClass {
     return VerifiedIssuer.fromFields(VerifiedIssuer.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): VerifiedIssuerJSONField {
     return {
       id: this.id,
       owner: this.owner,
@@ -167,7 +179,7 @@ export class VerifiedIssuer implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): VerifiedIssuerJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

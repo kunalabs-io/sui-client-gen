@@ -5,6 +5,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeArgument,
   ToTypeStr,
   TypeArgument,
@@ -47,6 +48,15 @@ export type PriorityQueueReified<T extends TypeArgument> = Reified<
   PriorityQueue<T>,
   PriorityQueueFields<T>
 >
+
+export type PriorityQueueJSONField<T extends TypeArgument> = {
+  entries: ToJSON<Entry<T>>[]
+}
+
+export type PriorityQueueJSON<T extends TypeArgument> = {
+  $typeName: typeof PriorityQueue.$typeName
+  $typeArgs: [ToTypeStr<T>]
+} & PriorityQueueJSONField<T>
 
 /**
  * Struct representing a priority queue. The `entries` vector represents a max
@@ -170,7 +180,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
     return PriorityQueue.fromFields(typeArg, PriorityQueue.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): PriorityQueueJSONField<T> {
     return {
       entries: fieldToJSON<Vector<Entry<T>>>(
         `vector<${Entry.$typeName}<${this.$typeArgs[0]}>>`,
@@ -179,7 +189,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): PriorityQueueJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -285,6 +295,16 @@ export interface EntryFields<T extends TypeArgument> {
 }
 
 export type EntryReified<T extends TypeArgument> = Reified<Entry<T>, EntryFields<T>>
+
+export type EntryJSONField<T extends TypeArgument> = {
+  priority: string
+  value: ToJSON<T>
+}
+
+export type EntryJSON<T extends TypeArgument> = {
+  $typeName: typeof Entry.$typeName
+  $typeArgs: [ToTypeStr<T>]
+} & EntryJSONField<T>
 
 export class Entry<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
@@ -403,14 +423,14 @@ export class Entry<T extends TypeArgument> implements StructClass {
     return Entry.fromFields(typeArg, Entry.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): EntryJSONField<T> {
     return {
       priority: this.priority.toString(),
       value: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.value),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): EntryJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

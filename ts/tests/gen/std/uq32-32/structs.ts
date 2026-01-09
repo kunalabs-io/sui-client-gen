@@ -12,6 +12,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -41,6 +42,15 @@ export interface UQ32_32Fields {
 }
 
 export type UQ32_32Reified = Reified<UQ32_32, UQ32_32Fields>
+
+export type UQ32_32JSONField = {
+  pos0: string
+}
+
+export type UQ32_32JSON = {
+  $typeName: typeof UQ32_32.$typeName
+  $typeArgs: []
+} & UQ32_32JSONField
 
 /**
  * A fixed-point numeric type with 32 integer bits and 32 fractional bits, represented by an
@@ -140,13 +150,13 @@ export class UQ32_32 implements StructClass {
     return UQ32_32.fromFields(UQ32_32.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): UQ32_32JSONField {
     return {
       pos0: this.pos0.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): UQ32_32JSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

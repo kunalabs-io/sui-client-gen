@@ -29,6 +29,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   ToTypeStr as ToPhantom,
@@ -91,6 +92,18 @@ export type TransferRequestReified<T extends PhantomTypeArgument> = Reified<
   TransferRequest<T>,
   TransferRequestFields<T>
 >
+
+export type TransferRequestJSONField<T extends PhantomTypeArgument> = {
+  item: string
+  paid: string
+  from: string
+  receipts: ToJSON<VecSet<TypeName>>
+}
+
+export type TransferRequestJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof TransferRequest.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & TransferRequestJSONField<T>
 
 /**
  * A "Hot Potato" forcing the buyer to get a transfer permission
@@ -241,7 +254,7 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
     return TransferRequest.fromFields(typeArg, TransferRequest.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): TransferRequestJSONField<T> {
     return {
       item: this.item,
       paid: this.paid.toString(),
@@ -250,7 +263,7 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): TransferRequestJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -375,6 +388,17 @@ export type TransferPolicyReified<T extends PhantomTypeArgument> = Reified<
   TransferPolicy<T>,
   TransferPolicyFields<T>
 >
+
+export type TransferPolicyJSONField<T extends PhantomTypeArgument> = {
+  id: string
+  balance: ToJSON<Balance<ToPhantom<SUI>>>
+  rules: ToJSON<VecSet<TypeName>>
+}
+
+export type TransferPolicyJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof TransferPolicy.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & TransferPolicyJSONField<T>
 
 /**
  * A unique capability that allows the owner of the `T` to authorize
@@ -521,7 +545,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
     return TransferPolicy.fromFields(typeArg, TransferPolicy.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): TransferPolicyJSONField<T> {
     return {
       id: this.id,
       balance: this.balance.toJSONField(),
@@ -529,7 +553,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): TransferPolicyJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -640,6 +664,16 @@ export type TransferPolicyCapReified<T extends PhantomTypeArgument> = Reified<
   TransferPolicyCap<T>,
   TransferPolicyCapFields<T>
 >
+
+export type TransferPolicyCapJSONField<T extends PhantomTypeArgument> = {
+  id: string
+  policyId: string
+}
+
+export type TransferPolicyCapJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof TransferPolicyCap.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & TransferPolicyCapJSONField<T>
 
 /**
  * A Capability granting the owner permission to add/remove rules as well
@@ -767,14 +801,14 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructC
     return TransferPolicyCap.fromFields(typeArg, TransferPolicyCap.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): TransferPolicyCapJSONField<T> {
     return {
       id: this.id,
       policyId: this.policyId,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): TransferPolicyCapJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -883,6 +917,15 @@ export type TransferPolicyCreatedReified<T extends PhantomTypeArgument> = Reifie
   TransferPolicyCreated<T>,
   TransferPolicyCreatedFields<T>
 >
+
+export type TransferPolicyCreatedJSONField<T extends PhantomTypeArgument> = {
+  id: string
+}
+
+export type TransferPolicyCreatedJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof TransferPolicyCreated.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & TransferPolicyCreatedJSONField<T>
 
 /**
  * Event that is emitted when a publisher creates a new `TransferPolicyCap`
@@ -1005,13 +1048,13 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> implements Str
     return TransferPolicyCreated.fromFields(typeArg, TransferPolicyCreated.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): TransferPolicyCreatedJSONField<T> {
     return {
       id: this.id,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): TransferPolicyCreatedJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1121,6 +1164,15 @@ export type TransferPolicyDestroyedReified<T extends PhantomTypeArgument> = Reif
   TransferPolicyDestroyed<T>,
   TransferPolicyDestroyedFields<T>
 >
+
+export type TransferPolicyDestroyedJSONField<T extends PhantomTypeArgument> = {
+  id: string
+}
+
+export type TransferPolicyDestroyedJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof TransferPolicyDestroyed.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & TransferPolicyDestroyedJSONField<T>
 
 /**
  * Event that is emitted when a publisher destroys a `TransferPolicyCap`.
@@ -1244,13 +1296,13 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements S
     return TransferPolicyDestroyed.fromFields(typeArg, TransferPolicyDestroyed.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): TransferPolicyDestroyedJSONField<T> {
     return {
       id: this.id,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): TransferPolicyDestroyedJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1357,6 +1409,15 @@ export interface RuleKeyFields<T extends PhantomTypeArgument> {
 }
 
 export type RuleKeyReified<T extends PhantomTypeArgument> = Reified<RuleKey<T>, RuleKeyFields<T>>
+
+export type RuleKeyJSONField<T extends PhantomTypeArgument> = {
+  dummyField: boolean
+}
+
+export type RuleKeyJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof RuleKey.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & RuleKeyJSONField<T>
 
 /** Key to store "Rule" configuration for a specific `TransferPolicy`. */
 export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
@@ -1472,13 +1533,13 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
     return RuleKey.fromFields(typeArg, RuleKey.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): RuleKeyJSONField<T> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): RuleKeyJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

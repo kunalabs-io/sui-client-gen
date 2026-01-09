@@ -5,6 +5,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   assertFieldsWithTypesArgsMatch,
@@ -44,6 +45,16 @@ export type ReceivingReified<T extends PhantomTypeArgument> = Reified<
   Receiving<T>,
   ReceivingFields<T>
 >
+
+export type ReceivingJSONField<T extends PhantomTypeArgument> = {
+  id: string
+  version: string
+}
+
+export type ReceivingJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof Receiving.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & ReceivingJSONField<T>
 
 /**
  * This represents the ability to `receive` an object of type `T`.
@@ -171,14 +182,14 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
     return Receiving.fromFields(typeArg, Receiving.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): ReceivingJSONField<T> {
     return {
       id: this.id,
       version: this.version.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): ReceivingJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

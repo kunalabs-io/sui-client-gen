@@ -17,6 +17,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   assertFieldsWithTypesArgsMatch,
@@ -61,6 +62,17 @@ export interface DisplayFields<T extends PhantomTypeArgument> {
 }
 
 export type DisplayReified<T extends PhantomTypeArgument> = Reified<Display<T>, DisplayFields<T>>
+
+export type DisplayJSONField<T extends PhantomTypeArgument> = {
+  id: string
+  fields: ToJSON<VecMap<String, String>>
+  version: number
+}
+
+export type DisplayJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof Display.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & DisplayJSONField<T>
 
 /**
  * The Display<T> object. Defines the way a T instance should be
@@ -215,7 +227,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
     return Display.fromFields(typeArg, Display.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): DisplayJSONField<T> {
     return {
       id: this.id,
       fields: this.fields.toJSONField(),
@@ -223,7 +235,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): DisplayJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -333,6 +345,15 @@ export type DisplayCreatedReified<T extends PhantomTypeArgument> = Reified<
   DisplayCreated<T>,
   DisplayCreatedFields<T>
 >
+
+export type DisplayCreatedJSONField<T extends PhantomTypeArgument> = {
+  id: string
+}
+
+export type DisplayCreatedJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof DisplayCreated.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & DisplayCreatedJSONField<T>
 
 /**
  * Event: emitted when a new Display object has been created for type T.
@@ -455,13 +476,13 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
     return DisplayCreated.fromFields(typeArg, DisplayCreated.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): DisplayCreatedJSONField<T> {
     return {
       id: this.id,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): DisplayCreatedJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -571,6 +592,17 @@ export type VersionUpdatedReified<T extends PhantomTypeArgument> = Reified<
   VersionUpdated<T>,
   VersionUpdatedFields<T>
 >
+
+export type VersionUpdatedJSONField<T extends PhantomTypeArgument> = {
+  id: string
+  version: number
+  fields: ToJSON<VecMap<String, String>>
+}
+
+export type VersionUpdatedJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof VersionUpdated.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & VersionUpdatedJSONField<T>
 
 /** Version of Display got updated - */
 export class VersionUpdated<T extends PhantomTypeArgument> implements StructClass {
@@ -699,7 +731,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
     return VersionUpdated.fromFields(typeArg, VersionUpdated.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): VersionUpdatedJSONField<T> {
     return {
       id: this.id,
       version: this.version,
@@ -707,7 +739,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): VersionUpdatedJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

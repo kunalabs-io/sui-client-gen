@@ -26,6 +26,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeStr,
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -59,6 +60,16 @@ export interface BagFields {
 }
 
 export type BagReified = Reified<Bag, BagFields>
+
+export type BagJSONField = {
+  id: string
+  size: string
+}
+
+export type BagJSON = {
+  $typeName: typeof Bag.$typeName
+  $typeArgs: []
+} & BagJSONField
 
 export class Bag implements StructClass {
   __StructClass = true as const
@@ -159,14 +170,14 @@ export class Bag implements StructClass {
     return Bag.fromFields(Bag.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): BagJSONField {
     return {
       id: this.id,
       size: this.size.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): BagJSON {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

@@ -34,6 +34,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   assertFieldsWithTypesArgsMatch,
@@ -68,6 +69,15 @@ export interface PermitFields<T extends PhantomTypeArgument> {
 }
 
 export type PermitReified<T extends PhantomTypeArgument> = Reified<Permit<T>, PermitFields<T>>
+
+export type PermitJSONField<T extends PhantomTypeArgument> = {
+  dummyField: boolean
+}
+
+export type PermitJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof Permit.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & PermitJSONField<T>
 
 /**
  * A privileged witness of the `T` type.
@@ -185,13 +195,13 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
     return Permit.fromFields(typeArg, Permit.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): PermitJSONField<T> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): PermitJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

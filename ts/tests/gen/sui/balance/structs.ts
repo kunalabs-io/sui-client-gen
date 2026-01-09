@@ -11,6 +11,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
   assertFieldsWithTypesArgsMatch,
@@ -45,6 +46,15 @@ export interface SupplyFields<T extends PhantomTypeArgument> {
 }
 
 export type SupplyReified<T extends PhantomTypeArgument> = Reified<Supply<T>, SupplyFields<T>>
+
+export type SupplyJSONField<T extends PhantomTypeArgument> = {
+  value: string
+}
+
+export type SupplyJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof Supply.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & SupplyJSONField<T>
 
 /**
  * A Supply of T. Used for minting and burning.
@@ -162,13 +172,13 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
     return Supply.fromFields(typeArg, Supply.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): SupplyJSONField<T> {
     return {
       value: this.value.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): SupplyJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -273,6 +283,15 @@ export interface BalanceFields<T extends PhantomTypeArgument> {
 }
 
 export type BalanceReified<T extends PhantomTypeArgument> = Reified<Balance<T>, BalanceFields<T>>
+
+export type BalanceJSONField<T extends PhantomTypeArgument> = {
+  value: string
+}
+
+export type BalanceJSON<T extends PhantomTypeArgument> = {
+  $typeName: typeof Balance.$typeName
+  $typeArgs: [PhantomToTypeStr<T>]
+} & BalanceJSONField<T>
 
 /**
  * Storable balance - an inner struct of a Coin type.
@@ -390,13 +409,13 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
     return Balance.fromFields(typeArg, Balance.bcs.parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): BalanceJSONField<T> {
     return {
       value: this.value.toString(),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): BalanceJSON<T> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

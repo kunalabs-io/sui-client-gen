@@ -3,6 +3,7 @@ import {
   Reified,
   StructClass,
   ToField,
+  ToJSON,
   ToTypeArgument,
   ToTypeStr,
   TypeArgument,
@@ -45,6 +46,15 @@ export type VecMapReified<K extends TypeArgument, V extends TypeArgument> = Reif
   VecMap<K, V>,
   VecMapFields<K, V>
 >
+
+export type VecMapJSONField<K extends TypeArgument, V extends TypeArgument> = {
+  contents: ToJSON<Entry<K, V>>[]
+}
+
+export type VecMapJSON<K extends TypeArgument, V extends TypeArgument> = {
+  $typeName: typeof VecMap.$typeName
+  $typeArgs: [ToTypeStr<K>, ToTypeStr<V>]
+} & VecMapJSONField<K, V>
 
 /**
  * A map data structure backed by a vector. The map is guaranteed not to contain duplicate keys, but entries
@@ -178,7 +188,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
     )
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): VecMapJSONField<K, V> {
     return {
       contents: fieldToJSON<Vector<Entry<K, V>>>(
         `vector<${Entry.$typeName}<${this.$typeArgs[0]}, ${this.$typeArgs[1]}>>`,
@@ -187,7 +197,7 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): VecMapJSON<K, V> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -299,6 +309,16 @@ export type EntryReified<K extends TypeArgument, V extends TypeArgument> = Reifi
   Entry<K, V>,
   EntryFields<K, V>
 >
+
+export type EntryJSONField<K extends TypeArgument, V extends TypeArgument> = {
+  key: ToJSON<K>
+  value: ToJSON<V>
+}
+
+export type EntryJSON<K extends TypeArgument, V extends TypeArgument> = {
+  $typeName: typeof Entry.$typeName
+  $typeArgs: [ToTypeStr<K>, ToTypeStr<V>]
+} & EntryJSONField<K, V>
 
 /** An entry in the map */
 export class Entry<K extends TypeArgument, V extends TypeArgument> implements StructClass {
@@ -424,14 +444,14 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
     return Entry.fromFields(typeArgs, Entry.bcs(toBcs(typeArgs[0]), toBcs(typeArgs[1])).parse(data))
   }
 
-  toJSONField(): Record<string, any> {
+  toJSONField(): EntryJSONField<K, V> {
     return {
       key: fieldToJSON<K>(`${this.$typeArgs[0]}`, this.key),
       value: fieldToJSON<V>(`${this.$typeArgs[1]}`, this.value),
     }
   }
 
-  toJSON(): Record<string, any> {
+  toJSON(): EntryJSON<K, V> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
