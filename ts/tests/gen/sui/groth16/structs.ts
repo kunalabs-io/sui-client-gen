@@ -1,28 +1,28 @@
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  fieldToJSON,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  fieldToJSON,
-  phantom,
   vector,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Curve =============================== */
 
@@ -65,7 +65,10 @@ export class Curve implements StructClass {
   readonly id: ToField<'u8'>
 
   private constructor(typeArgs: [], fields: CurveFields) {
-    this.$fullTypeName = composeSuiType(Curve.$typeName, ...typeArgs) as `0x2::groth16::Curve`
+    this.$fullTypeName = composeSuiType(
+      Curve.$typeName,
+      ...typeArgs,
+    ) as `0x2::groth16::Curve`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -75,7 +78,10 @@ export class Curve implements StructClass {
     const reifiedBcs = Curve.bcs
     return {
       typeName: Curve.$typeName,
-      fullTypeName: composeSuiType(Curve.$typeName, ...[]) as `0x2::groth16::Curve`,
+      fullTypeName: composeSuiType(
+        Curve.$typeName,
+        ...[],
+      ) as `0x2::groth16::Curve`,
       typeArgs: [] as [],
       isPhantom: Curve.$isPhantom,
       reifiedTypeArgs: [],
@@ -161,7 +167,7 @@ export class Curve implements StructClass {
   static fromJSON(json: Record<string, any>): Curve {
     if (json.$typeName !== Curve.$typeName) {
       throw new Error(
-        `not a Curve json object: expected '${Curve.$typeName}' but got '${json.$typeName}'`
+        `not a Curve json object: expected '${Curve.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -190,7 +196,7 @@ export class Curve implements StructClass {
       return Curve.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -254,7 +260,7 @@ export class PreparedVerifyingKey implements StructClass {
   private constructor(typeArgs: [], fields: PreparedVerifyingKeyFields) {
     this.$fullTypeName = composeSuiType(
       PreparedVerifyingKey.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::groth16::PreparedVerifyingKey`
     this.$typeArgs = typeArgs
 
@@ -270,7 +276,7 @@ export class PreparedVerifyingKey implements StructClass {
       typeName: PreparedVerifyingKey.$typeName,
       fullTypeName: composeSuiType(
         PreparedVerifyingKey.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::groth16::PreparedVerifyingKey`,
       typeArgs: [] as [],
       isPhantom: PreparedVerifyingKey.$isPhantom,
@@ -343,7 +349,7 @@ export class PreparedVerifyingKey implements StructClass {
       vkGammaAbcG1Bytes: decodeFromFieldsWithTypes(vector('u8'), item.fields.vk_gamma_abc_g1_bytes),
       alphaG1BetaG2Bytes: decodeFromFieldsWithTypes(
         vector('u8'),
-        item.fields.alpha_g1_beta_g2_bytes
+        item.fields.alpha_g1_beta_g2_bytes,
       ),
       gammaG2NegPcBytes: decodeFromFieldsWithTypes(vector('u8'), item.fields.gamma_g2_neg_pc_bytes),
       deltaG2NegPcBytes: decodeFromFieldsWithTypes(vector('u8'), item.fields.delta_g2_neg_pc_bytes),
@@ -379,7 +385,7 @@ export class PreparedVerifyingKey implements StructClass {
   static fromJSON(json: Record<string, any>): PreparedVerifyingKey {
     if (json.$typeName !== PreparedVerifyingKey.$typeName) {
       throw new Error(
-        `not a PreparedVerifyingKey json object: expected '${PreparedVerifyingKey.$typeName}' but got '${json.$typeName}'`
+        `not a PreparedVerifyingKey json object: expected '${PreparedVerifyingKey.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -392,7 +398,7 @@ export class PreparedVerifyingKey implements StructClass {
     }
     if (!isPreparedVerifyingKey(content.type)) {
       throw new Error(
-        `object at ${(content.fields as any).id} is not a PreparedVerifyingKey object`
+        `object at ${(content.fields as any).id} is not a PreparedVerifyingKey object`,
       )
     }
     return PreparedVerifyingKey.fromFieldsWithTypes(content)
@@ -410,7 +416,7 @@ export class PreparedVerifyingKey implements StructClass {
       return PreparedVerifyingKey.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -465,7 +471,7 @@ export class PublicProofInputs implements StructClass {
   private constructor(typeArgs: [], fields: PublicProofInputsFields) {
     this.$fullTypeName = composeSuiType(
       PublicProofInputs.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::groth16::PublicProofInputs`
     this.$typeArgs = typeArgs
 
@@ -478,7 +484,7 @@ export class PublicProofInputs implements StructClass {
       typeName: PublicProofInputs.$typeName,
       fullTypeName: composeSuiType(
         PublicProofInputs.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::groth16::PublicProofInputs`,
       typeArgs: [] as [],
       isPhantom: PublicProofInputs.$isPhantom,
@@ -565,7 +571,7 @@ export class PublicProofInputs implements StructClass {
   static fromJSON(json: Record<string, any>): PublicProofInputs {
     if (json.$typeName !== PublicProofInputs.$typeName) {
       throw new Error(
-        `not a PublicProofInputs json object: expected '${PublicProofInputs.$typeName}' but got '${json.$typeName}'`
+        `not a PublicProofInputs json object: expected '${PublicProofInputs.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -594,7 +600,7 @@ export class PublicProofInputs implements StructClass {
       return PublicProofInputs.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -648,7 +654,7 @@ export class ProofPoints implements StructClass {
   private constructor(typeArgs: [], fields: ProofPointsFields) {
     this.$fullTypeName = composeSuiType(
       ProofPoints.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::groth16::ProofPoints`
     this.$typeArgs = typeArgs
 
@@ -659,7 +665,10 @@ export class ProofPoints implements StructClass {
     const reifiedBcs = ProofPoints.bcs
     return {
       typeName: ProofPoints.$typeName,
-      fullTypeName: composeSuiType(ProofPoints.$typeName, ...[]) as `0x2::groth16::ProofPoints`,
+      fullTypeName: composeSuiType(
+        ProofPoints.$typeName,
+        ...[],
+      ) as `0x2::groth16::ProofPoints`,
       typeArgs: [] as [],
       isPhantom: ProofPoints.$isPhantom,
       reifiedTypeArgs: [],
@@ -745,7 +754,7 @@ export class ProofPoints implements StructClass {
   static fromJSON(json: Record<string, any>): ProofPoints {
     if (json.$typeName !== ProofPoints.$typeName) {
       throw new Error(
-        `not a ProofPoints json object: expected '${ProofPoints.$typeName}' but got '${json.$typeName}'`
+        `not a ProofPoints json object: expected '${ProofPoints.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -774,7 +783,7 @@ export class ProofPoints implements StructClass {
       return ProofPoints.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

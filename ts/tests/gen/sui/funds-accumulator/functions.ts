@@ -1,17 +1,17 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, obj, pure } from '../../_framework/util'
 
 /** Returns the owner, either a sender's address or an object, of the withdrawal. */
 export function withdrawalOwner(
   tx: Transaction,
   typeArg: string,
-  withdrawal: TransactionObjectInput
+  withdrawal: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::withdrawal_owner`,
@@ -24,7 +24,7 @@ export function withdrawalOwner(
 export function withdrawalLimit(
   tx: Transaction,
   typeArg: string,
-  withdrawal: TransactionObjectInput
+  withdrawal: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::withdrawal_limit`,
@@ -42,12 +42,15 @@ export interface WithdrawalSplitArgs {
 export function withdrawalSplit(
   tx: Transaction,
   typeArg: string,
-  args: WithdrawalSplitArgs
+  args: WithdrawalSplitArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::withdrawal_split`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.withdrawal), pure(tx, args.subLimit, `u256`)],
+    arguments: [
+      obj(tx, args.withdrawal),
+      pure(tx, args.subLimit, `u256`),
+    ],
   })
 }
 
@@ -64,19 +67,22 @@ export interface WithdrawalJoinArgs {
 export function withdrawalJoin(
   tx: Transaction,
   typeArg: string,
-  args: WithdrawalJoinArgs
+  args: WithdrawalJoinArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::withdrawal_join`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.withdrawal), obj(tx, args.other)],
+    arguments: [
+      obj(tx, args.withdrawal),
+      obj(tx, args.other),
+    ],
   })
 }
 
 export function redeem(
   tx: Transaction,
   typeArg: string,
-  withdrawal: TransactionObjectInput
+  withdrawal: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::redeem`,
@@ -93,12 +99,15 @@ export interface WithdrawFromObjectArgs {
 export function withdrawFromObject(
   tx: Transaction,
   typeArg: string,
-  args: WithdrawFromObjectArgs
+  args: WithdrawFromObjectArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::withdraw_from_object`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.obj), pure(tx, args.limit, `u256`)],
+    arguments: [
+      obj(tx, args.obj),
+      pure(tx, args.limit, `u256`),
+    ],
   })
 }
 
@@ -111,7 +120,10 @@ export function addImpl(tx: Transaction, typeArg: string, args: AddImplArgs): Tr
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::add_impl`,
     typeArguments: [typeArg],
-    arguments: [generic(tx, `${typeArg}`, args.value), pure(tx, args.recipient, `address`)],
+    arguments: [
+      generic(tx, `${typeArg}`, args.value),
+      pure(tx, args.recipient, `address`),
+    ],
   })
 }
 
@@ -123,12 +135,15 @@ export interface WithdrawImplArgs {
 export function withdrawImpl(
   tx: Transaction,
   typeArg: string,
-  args: WithdrawImplArgs
+  args: WithdrawImplArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::withdraw_impl`,
     typeArguments: [typeArg],
-    arguments: [pure(tx, args.owner, `address`), pure(tx, args.value, `u256`)],
+    arguments: [
+      pure(tx, args.owner, `address`),
+      pure(tx, args.value, `u256`),
+    ],
   })
 }
 
@@ -141,7 +156,7 @@ export interface AddToAccumulatorAddressArgs {
 export function addToAccumulatorAddress(
   tx: Transaction,
   typeArg: string,
-  args: AddToAccumulatorAddressArgs
+  args: AddToAccumulatorAddressArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::add_to_accumulator_address`,
@@ -163,7 +178,7 @@ export interface WithdrawFromAccumulatorAddressArgs {
 export function withdrawFromAccumulatorAddress(
   tx: Transaction,
   typeArg: string,
-  args: WithdrawFromAccumulatorAddressArgs
+  args: WithdrawFromAccumulatorAddressArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::withdraw_from_accumulator_address`,
@@ -184,11 +199,14 @@ export interface CreateWithdrawalArgs {
 export function createWithdrawal(
   tx: Transaction,
   typeArg: string,
-  args: CreateWithdrawalArgs
+  args: CreateWithdrawalArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::funds_accumulator::create_withdrawal`,
     typeArguments: [typeArg],
-    arguments: [pure(tx, args.owner, `address`), pure(tx, args.limit, `u256`)],
+    arguments: [
+      pure(tx, args.owner, `address`),
+      pure(tx, args.limit, `u256`),
+    ],
   })
 }

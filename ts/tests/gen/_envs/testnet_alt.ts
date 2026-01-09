@@ -2,7 +2,7 @@ import type { EnvConfig } from '../_framework/env'
 
 export const testnetAltEnv: EnvConfig = {
   packages: {
-    std: {
+    'std': {
       originalId: '0x1',
       publishedAt: '0x1',
       typeOrigins: {
@@ -18,7 +18,7 @@ export const testnetAltEnv: EnvConfig = {
         'uq64_64::UQ64_64': '0x1',
       },
     },
-    sui: {
+    'sui': {
       originalId: '0x2',
       publishedAt: '0x2',
       typeOrigins: {

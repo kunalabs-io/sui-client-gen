@@ -1,6 +1,6 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionResult } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, pure } from '../../_framework/util'
 
 /**
  * Emit a custom Move event, sending the data offchain.
@@ -29,7 +29,7 @@ export function emit(tx: Transaction, typeArg: string, event: GenericArg): Trans
 export function emitAuthenticated(
   tx: Transaction,
   typeArg: string,
-  event: GenericArg
+  event: GenericArg,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::event::emit_authenticated`,
@@ -47,7 +47,7 @@ export interface EmitAuthenticatedImplArgs {
 export function emitAuthenticatedImpl(
   tx: Transaction,
   typeArgs: [string, string],
-  args: EmitAuthenticatedImplArgs
+  args: EmitAuthenticatedImplArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::event::emit_authenticated_impl`,

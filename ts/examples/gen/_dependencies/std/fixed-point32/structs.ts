@@ -3,28 +3,28 @@
  * a 32-bit fractional part.
  */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  phantom,
 } from '../../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../../_framework/util'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== FixedPoint32 =============================== */
 
@@ -77,7 +77,7 @@ export class FixedPoint32 implements StructClass {
   private constructor(typeArgs: [], fields: FixedPoint32Fields) {
     this.$fullTypeName = composeSuiType(
       FixedPoint32.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x1::fixed_point32::FixedPoint32`
     this.$typeArgs = typeArgs
 
@@ -90,7 +90,7 @@ export class FixedPoint32 implements StructClass {
       typeName: FixedPoint32.$typeName,
       fullTypeName: composeSuiType(
         FixedPoint32.$typeName,
-        ...[]
+        ...[],
       ) as `0x1::fixed_point32::FixedPoint32`,
       typeArgs: [] as [],
       isPhantom: FixedPoint32.$isPhantom,
@@ -177,7 +177,7 @@ export class FixedPoint32 implements StructClass {
   static fromJSON(json: Record<string, any>): FixedPoint32 {
     if (json.$typeName !== FixedPoint32.$typeName) {
       throw new Error(
-        `not a FixedPoint32 json object: expected '${FixedPoint32.$typeName}' but got '${json.$typeName}'`
+        `not a FixedPoint32 json object: expected '${FixedPoint32.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -206,7 +206,7 @@ export class FixedPoint32 implements StructClass {
       return FixedPoint32.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

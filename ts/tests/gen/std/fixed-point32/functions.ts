@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { obj, pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { obj, pure } from '../../_framework/util'
 
 export interface MultiplyU64Args {
   val: bigint | TransactionArgument
@@ -20,7 +20,10 @@ export interface MultiplyU64Args {
 export function multiplyU64(tx: Transaction, args: MultiplyU64Args): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::fixed_point32::multiply_u64`,
-    arguments: [pure(tx, args.val, `u64`), obj(tx, args.multiplier)],
+    arguments: [
+      pure(tx, args.val, `u64`),
+      obj(tx, args.multiplier),
+    ],
   })
 }
 
@@ -37,7 +40,10 @@ export interface DivideU64Args {
 export function divideU64(tx: Transaction, args: DivideU64Args): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::fixed_point32::divide_u64`,
-    arguments: [pure(tx, args.val, `u64`), obj(tx, args.divisor)],
+    arguments: [
+      pure(tx, args.val, `u64`),
+      obj(tx, args.divisor),
+    ],
   })
 }
 
@@ -60,18 +66,21 @@ export interface CreateFromRationalArgs {
  */
 export function createFromRational(
   tx: Transaction,
-  args: CreateFromRationalArgs
+  args: CreateFromRationalArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::fixed_point32::create_from_rational`,
-    arguments: [pure(tx, args.numerator, `u64`), pure(tx, args.denominator, `u64`)],
+    arguments: [
+      pure(tx, args.numerator, `u64`),
+      pure(tx, args.denominator, `u64`),
+    ],
   })
 }
 
 /** Create a fixedpoint value from a raw value. */
 export function createFromRawValue(
   tx: Transaction,
-  value: bigint | TransactionArgument
+  value: bigint | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::fixed_point32::create_from_raw_value`,

@@ -3,28 +3,28 @@
  * It has 9 decimals, and the smallest unit (10^-9) is called "mist".
  */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== SUI =============================== */
 
@@ -64,7 +64,10 @@ export class SUI implements StructClass {
   readonly dummyField: ToField<'bool'>
 
   private constructor(typeArgs: [], fields: SUIFields) {
-    this.$fullTypeName = composeSuiType(SUI.$typeName, ...typeArgs) as `0x2::sui::SUI`
+    this.$fullTypeName = composeSuiType(
+      SUI.$typeName,
+      ...typeArgs,
+    ) as `0x2::sui::SUI`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -74,7 +77,10 @@ export class SUI implements StructClass {
     const reifiedBcs = SUI.bcs
     return {
       typeName: SUI.$typeName,
-      fullTypeName: composeSuiType(SUI.$typeName, ...[]) as `0x2::sui::SUI`,
+      fullTypeName: composeSuiType(
+        SUI.$typeName,
+        ...[],
+      ) as `0x2::sui::SUI`,
       typeArgs: [] as [],
       isPhantom: SUI.$isPhantom,
       reifiedTypeArgs: [],
@@ -160,7 +166,7 @@ export class SUI implements StructClass {
   static fromJSON(json: Record<string, any>): SUI {
     if (json.$typeName !== SUI.$typeName) {
       throw new Error(
-        `not a SUI json object: expected '${SUI.$typeName}' but got '${json.$typeName}'`
+        `not a SUI json object: expected '${SUI.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -189,7 +195,7 @@ export class SUI implements StructClass {
       return SUI.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

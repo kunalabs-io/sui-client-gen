@@ -1,12 +1,12 @@
-import { getPublishedAt } from '../../_envs'
-import { obj, pure } from '../../_framework/util'
-import { String } from '../../std/string/structs'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { obj, pure } from '../../_framework/util'
+import { String } from '../../std/string/structs'
 
 /** Returns the address associated with the given VerifiedID */
 export function owner(tx: Transaction, verifiedId: TransactionObjectInput): TransactionResult {
@@ -19,7 +19,7 @@ export function owner(tx: Transaction, verifiedId: TransactionObjectInput): Tran
 /** Returns the name of the key claim associated with the given VerifiedID */
 export function keyClaimName(
   tx: Transaction,
-  verifiedId: TransactionObjectInput
+  verifiedId: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::key_claim_name`,
@@ -30,7 +30,7 @@ export function keyClaimName(
 /** Returns the value of the key claim associated with the given VerifiedID */
 export function keyClaimValue(
   tx: Transaction,
-  verifiedId: TransactionObjectInput
+  verifiedId: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::key_claim_value`,
@@ -126,7 +126,7 @@ export interface CheckZkloginIdInternalArgs {
  */
 export function checkZkloginIdInternal(
   tx: Transaction,
-  args: CheckZkloginIdInternalArgs
+  args: CheckZkloginIdInternalArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::zklogin_verified_id::check_zklogin_id_internal`,

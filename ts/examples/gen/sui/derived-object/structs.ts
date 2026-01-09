@@ -13,38 +13,38 @@
  * which derived addresses have been claimed to prevent duplicates.
  */
 
+import { bcs, BcsType } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
-  EnumVariantClass,
-  PhantomReified,
-  Reified,
-  StructClass,
-  ToField,
-  ToJSON,
-  ToTypeArgument,
-  ToTypeStr,
-  TypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
   decodeFromFieldsWithTypes,
   decodeFromJSONField,
+  EnumVariantClass,
   extractType,
   fieldToJSON,
   phantom,
+  PhantomReified,
+  Reified,
+  StructClass,
   toBcs,
+  ToField,
+  ToJSON,
+  ToTypeArgument,
+  ToTypeStr,
+  TypeArgument,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
   parseTypeName,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { ID } from '../object/structs'
-import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Claimed =============================== */
 
@@ -87,7 +87,7 @@ export class Claimed implements StructClass {
   private constructor(typeArgs: [], fields: ClaimedFields) {
     this.$fullTypeName = composeSuiType(
       Claimed.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::derived_object::Claimed`
     this.$typeArgs = typeArgs
 
@@ -98,7 +98,10 @@ export class Claimed implements StructClass {
     const reifiedBcs = Claimed.bcs
     return {
       typeName: Claimed.$typeName,
-      fullTypeName: composeSuiType(Claimed.$typeName, ...[]) as `0x2::derived_object::Claimed`,
+      fullTypeName: composeSuiType(
+        Claimed.$typeName,
+        ...[],
+      ) as `0x2::derived_object::Claimed`,
       typeArgs: [] as [],
       isPhantom: Claimed.$isPhantom,
       reifiedTypeArgs: [],
@@ -184,7 +187,7 @@ export class Claimed implements StructClass {
   static fromJSON(json: Record<string, any>): Claimed {
     if (json.$typeName !== Claimed.$typeName) {
       throw new Error(
-        `not a Claimed json object: expected '${Claimed.$typeName}' but got '${json.$typeName}'`
+        `not a Claimed json object: expected '${Claimed.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -213,7 +216,7 @@ export class Claimed implements StructClass {
       return Claimed.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -271,7 +274,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
   private constructor(typeArgs: [ToTypeStr<K>], fields: DerivedObjectKeyFields<K>) {
     this.$fullTypeName = composeSuiType(
       DerivedObjectKey.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::derived_object::DerivedObjectKey<${ToTypeStr<K>}>`
     this.$typeArgs = typeArgs
 
@@ -279,14 +282,14 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
   }
 
   static reified<K extends Reified<TypeArgument, any>>(
-    K: K
+    K: K,
   ): DerivedObjectKeyReified<ToTypeArgument<K>> {
     const reifiedBcs = DerivedObjectKey.bcs(toBcs(K))
     return {
       typeName: DerivedObjectKey.$typeName,
       fullTypeName: composeSuiType(
         DerivedObjectKey.$typeName,
-        ...[extractType(K)]
+        ...[extractType(K)],
       ) as `0x2::derived_object::DerivedObjectKey<${ToTypeStr<ToTypeArgument<K>>}>`,
       typeArgs: [extractType(K)] as [ToTypeStr<ToTypeArgument<K>>],
       isPhantom: DerivedObjectKey.$isPhantom,
@@ -313,7 +316,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
   }
 
   static phantom<K extends Reified<TypeArgument, any>>(
-    K: K
+    K: K,
   ): PhantomReified<ToTypeStr<DerivedObjectKey<ToTypeArgument<K>>>> {
     return phantom(DerivedObjectKey.reified(K))
   }
@@ -340,7 +343,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
 
   static fromFields<K extends Reified<TypeArgument, any>>(
     typeArg: K,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): DerivedObjectKey<ToTypeArgument<K>> {
     return DerivedObjectKey.reified(typeArg).new({
       pos0: decodeFromFields(typeArg, fields.pos0),
@@ -349,7 +352,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
 
   static fromFieldsWithTypes<K extends Reified<TypeArgument, any>>(
     typeArg: K,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): DerivedObjectKey<ToTypeArgument<K>> {
     if (!isDerivedObjectKey(item.type)) {
       throw new Error('not a DerivedObjectKey type')
@@ -363,7 +366,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
 
   static fromBcs<K extends Reified<TypeArgument, any>>(
     typeArg: K,
-    data: Uint8Array
+    data: Uint8Array,
   ): DerivedObjectKey<ToTypeArgument<K>> {
     const typeArgs = [typeArg]
     return DerivedObjectKey.fromFields(typeArg, DerivedObjectKey.bcs(toBcs(typeArg)).parse(data))
@@ -381,7 +384,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
 
   static fromJSONField<K extends Reified<TypeArgument, any>>(
     typeArg: K,
-    field: any
+    field: any,
   ): DerivedObjectKey<ToTypeArgument<K>> {
     return DerivedObjectKey.reified(typeArg).new({
       pos0: decodeFromJSONField(typeArg, field.pos0),
@@ -390,17 +393,17 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
 
   static fromJSON<K extends Reified<TypeArgument, any>>(
     typeArg: K,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): DerivedObjectKey<ToTypeArgument<K>> {
     if (json.$typeName !== DerivedObjectKey.$typeName) {
       throw new Error(
-        `not a DerivedObjectKey json object: expected '${DerivedObjectKey.$typeName}' but got '${json.$typeName}'`
+        `not a DerivedObjectKey json object: expected '${DerivedObjectKey.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(DerivedObjectKey.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return DerivedObjectKey.fromJSONField(typeArg, json)
@@ -408,7 +411,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
 
   static fromSuiParsedData<K extends Reified<TypeArgument, any>>(
     typeArg: K,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): DerivedObjectKey<ToTypeArgument<K>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -421,7 +424,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
 
   static fromSuiObjectData<K extends Reified<TypeArgument, any>>(
     typeArg: K,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): DerivedObjectKey<ToTypeArgument<K>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isDerivedObjectKey(data.bcs.type)) {
@@ -431,7 +434,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -439,7 +442,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -450,14 +453,14 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
       return DerivedObjectKey.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<K extends Reified<TypeArgument, any>>(
     client: SupportedSuiClient,
     typeArg: K,
-    id: string
+    id: string,
   ): Promise<DerivedObjectKey<ToTypeArgument<K>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isDerivedObjectKey(res.type)) {
@@ -467,7 +470,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -475,7 +478,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }
@@ -508,7 +511,10 @@ export function isClaimedStatusVariantName(variant: string): variant is ClaimedS
 
 export type ClaimedStatusFields = ClaimedStatusReservedFields
 
-export type ClaimedStatusReified = Reified<ClaimedStatusVariant, ClaimedStatusFields>
+export type ClaimedStatusReified = Reified<
+  ClaimedStatusVariant,
+  ClaimedStatusFields
+>
 
 export class ClaimedStatus {
   static readonly $typeName: `0x2::derived_object::ClaimedStatus` =
@@ -617,7 +623,7 @@ export class ClaimedStatus {
   static fromJSON(typeArgs: [], json: Record<string, any>): ClaimedStatusVariant {
     if (json.$typeName !== ClaimedStatus.$typeName) {
       throw new Error(
-        `not a ClaimedStatus json object: expected '${ClaimedStatus.$typeName}' but got '${json.$typeName}'`
+        `not a ClaimedStatus json object: expected '${ClaimedStatus.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -656,7 +662,7 @@ export class ClaimedStatusReserved implements EnumVariantClass {
   constructor(typeArgs: [], fields: ClaimedStatusReservedFields) {
     this.$fullTypeName = composeSuiType(
       ClaimedStatus.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${typeof ClaimedStatus.$typeName}`
     this.$typeArgs = typeArgs
   }

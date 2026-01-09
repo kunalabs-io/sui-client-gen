@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { obj, pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { obj, pure } from '../../_framework/util'
 
 export interface V2AddArgs {
   denyList: TransactionObjectInput
@@ -54,7 +54,7 @@ export interface V2ContainsCurrentEpochArgs {
 
 export function v2ContainsCurrentEpoch(
   tx: Transaction,
-  args: V2ContainsCurrentEpochArgs
+  args: V2ContainsCurrentEpochArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::deny_list::v2_contains_current_epoch`,
@@ -76,7 +76,7 @@ export interface V2ContainsNextEpochArgs {
 
 export function v2ContainsNextEpoch(
   tx: Transaction,
-  args: V2ContainsNextEpochArgs
+  args: V2ContainsNextEpochArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::deny_list::v2_contains_next_epoch`,
@@ -97,7 +97,7 @@ export interface V2EnableGlobalPauseArgs {
 
 export function v2EnableGlobalPause(
   tx: Transaction,
-  args: V2EnableGlobalPauseArgs
+  args: V2EnableGlobalPauseArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::deny_list::v2_enable_global_pause`,
@@ -117,7 +117,7 @@ export interface V2DisableGlobalPauseArgs {
 
 export function v2DisableGlobalPause(
   tx: Transaction,
-  args: V2DisableGlobalPauseArgs
+  args: V2DisableGlobalPauseArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::deny_list::v2_disable_global_pause`,
@@ -137,7 +137,7 @@ export interface V2IsGlobalPauseEnabledCurrentEpochArgs {
 
 export function v2IsGlobalPauseEnabledCurrentEpoch(
   tx: Transaction,
-  args: V2IsGlobalPauseEnabledCurrentEpochArgs
+  args: V2IsGlobalPauseEnabledCurrentEpochArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::deny_list::v2_is_global_pause_enabled_current_epoch`,
@@ -157,7 +157,7 @@ export interface V2IsGlobalPauseEnabledNextEpochArgs {
 
 export function v2IsGlobalPauseEnabledNextEpoch(
   tx: Transaction,
-  args: V2IsGlobalPauseEnabledNextEpochArgs
+  args: V2IsGlobalPauseEnabledNextEpochArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::deny_list::v2_is_global_pause_enabled_next_epoch`,
@@ -211,7 +211,7 @@ export interface BorrowPerTypeConfigMutArgs {
 
 export function borrowPerTypeConfigMut(
   tx: Transaction,
-  args: BorrowPerTypeConfigMutArgs
+  args: BorrowPerTypeConfigMutArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::deny_list::borrow_per_type_config_mut`,
@@ -231,7 +231,7 @@ export interface BorrowPerTypeConfigArgs {
 
 export function borrowPerTypeConfig(
   tx: Transaction,
-  args: BorrowPerTypeConfigArgs
+  args: BorrowPerTypeConfigArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::deny_list::borrow_per_type_config`,
@@ -333,7 +333,7 @@ export interface V1PerTypeListRemoveArgs {
 
 export function v1PerTypeListRemove(
   tx: Transaction,
-  args: V1PerTypeListRemoveArgs
+  args: V1PerTypeListRemoveArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::deny_list::v1_per_type_list_remove`,
@@ -373,7 +373,7 @@ export interface V1PerTypeListContainsArgs {
 
 export function v1PerTypeListContains(
   tx: Transaction,
-  args: V1PerTypeListContainsArgs
+  args: V1PerTypeListContainsArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::deny_list::v1_per_type_list_contains`,

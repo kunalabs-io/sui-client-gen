@@ -1,4 +1,14 @@
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  extractType,
+  phantom,
   PhantomReified,
   PhantomToTypeStr,
   PhantomTypeArgument,
@@ -8,26 +18,16 @@ import {
   ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
-  assertFieldsWithTypesArgsMatch,
-  assertReifiedTypeArgsMatch,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  extractType,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
   parseTypeName,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { ID } from '../object/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Receiving =============================== */
 
@@ -83,7 +83,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: ReceivingFields<T>) {
     this.$fullTypeName = composeSuiType(
       Receiving.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::transfer::Receiving<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
@@ -92,14 +92,14 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): ReceivingReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Receiving.bcs
     return {
       typeName: Receiving.$typeName,
       fullTypeName: composeSuiType(
         Receiving.$typeName,
-        ...[extractType(T)]
+        ...[extractType(T)],
       ) as `0x2::transfer::Receiving<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       isPhantom: Receiving.$isPhantom,
@@ -125,7 +125,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static phantom<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): PhantomReified<ToTypeStr<Receiving<ToPhantomTypeArgument<T>>>> {
     return phantom(Receiving.reified(T))
   }
@@ -152,7 +152,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): Receiving<ToPhantomTypeArgument<T>> {
     return Receiving.reified(typeArg).new({
       id: decodeFromFields(ID.reified(), fields.id),
@@ -162,7 +162,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): Receiving<ToPhantomTypeArgument<T>> {
     if (!isReceiving(item.type)) {
       throw new Error('not a Receiving type')
@@ -177,7 +177,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
 
   static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: Uint8Array
+    data: Uint8Array,
   ): Receiving<ToPhantomTypeArgument<T>> {
     return Receiving.fromFields(typeArg, Receiving.bcs.parse(data))
   }
@@ -195,7 +195,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    field: any
+    field: any,
   ): Receiving<ToPhantomTypeArgument<T>> {
     return Receiving.reified(typeArg).new({
       id: decodeFromJSONField(ID.reified(), field.id),
@@ -205,17 +205,17 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): Receiving<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Receiving.$typeName) {
       throw new Error(
-        `not a Receiving json object: expected '${Receiving.$typeName}' but got '${json.$typeName}'`
+        `not a Receiving json object: expected '${Receiving.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Receiving.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return Receiving.fromJSONField(typeArg, json)
@@ -223,7 +223,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): Receiving<ToPhantomTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -236,7 +236,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): Receiving<ToPhantomTypeArgument<T>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isReceiving(data.bcs.type)) {
@@ -246,7 +246,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -254,7 +254,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -265,14 +265,14 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
       return Receiving.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SupportedSuiClient,
     typeArg: T,
-    id: string
+    id: string,
   ): Promise<Receiving<ToPhantomTypeArgument<T>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isReceiving(res.type)) {
@@ -282,7 +282,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -290,7 +290,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }

@@ -1,12 +1,12 @@
-import { getPublishedAt } from '../../_envs'
-import { obj, pure } from '../../_framework/util'
-import { String as String1 } from './structs'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { obj, pure } from '../../_framework/util'
+import { String as String1 } from './structs'
 
 /** Convert a `byte` into a `Char` that is checked to make sure it is valid ASCII. */
 export function char_(tx: Transaction, byte_: number | TransactionArgument): TransactionResult {
@@ -22,7 +22,7 @@ export function char_(tx: Transaction, byte_: number | TransactionArgument): Tra
  */
 export function string(
   tx: Transaction,
-  bytes: Array<number | TransactionArgument> | TransactionArgument
+  bytes: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::string`,
@@ -37,7 +37,7 @@ export function string(
  */
 export function tryString(
   tx: Transaction,
-  bytes: Array<number | TransactionArgument> | TransactionArgument
+  bytes: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::try_string`,
@@ -51,7 +51,7 @@ export function tryString(
  */
 export function allCharactersPrintable(
   tx: Transaction,
-  string: string | TransactionArgument
+  string: string | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::all_characters_printable`,
@@ -68,7 +68,10 @@ export interface PushCharArgs {
 export function pushChar(tx: Transaction, args: PushCharArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::push_char`,
-    arguments: [pure(tx, args.string, `${String1.$typeName}`), obj(tx, args.char)],
+    arguments: [
+      pure(tx, args.string, `${String1.$typeName}`),
+      obj(tx, args.char),
+    ],
   })
 }
 
@@ -151,7 +154,7 @@ export function asBytes(tx: Transaction, string: string | TransactionArgument): 
 /** Unpack the `string` to get its backing bytes */
 export function intoBytes(
   tx: Transaction,
-  string: string | TransactionArgument
+  string: string | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::into_bytes`,
@@ -184,7 +187,7 @@ export function isValidChar(tx: Transaction, b: number | TransactionArgument): T
  */
 export function isPrintableChar(
   tx: Transaction,
-  byte_: number | TransactionArgument
+  byte_: number | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::is_printable_char`,
@@ -203,7 +206,7 @@ export function isEmpty(tx: Transaction, string: string | TransactionArgument): 
 /** Convert a `string` to its uppercase equivalent. */
 export function toUppercase(
   tx: Transaction,
-  string: string | TransactionArgument
+  string: string | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::to_uppercase`,
@@ -214,7 +217,7 @@ export function toUppercase(
 /** Convert a `string` to its lowercase equivalent. */
 export function toLowercase(
   tx: Transaction,
-  string: string | TransactionArgument
+  string: string | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::to_lowercase`,
@@ -245,7 +248,7 @@ export function indexOf(tx: Transaction, args: IndexOfArgs): TransactionResult {
 /** Convert a `char` to its lowercase equivalent. */
 export function charToUppercase(
   tx: Transaction,
-  byte_: number | TransactionArgument
+  byte_: number | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::char_to_uppercase`,
@@ -256,7 +259,7 @@ export function charToUppercase(
 /** Convert a `char` to its lowercase equivalent. */
 export function charToLowercase(
   tx: Transaction,
-  byte_: number | TransactionArgument
+  byte_: number | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::ascii::char_to_lowercase`,

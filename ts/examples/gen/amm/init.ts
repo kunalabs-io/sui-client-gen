@@ -1,5 +1,5 @@
-import * as pool from './pool/structs'
 import { StructClassLoader } from '../_framework/loader'
+import * as pool from './pool/structs'
 
 export function registerClasses(loader: StructClassLoader): void {
   loader.register(pool.PoolCreationEvent)

@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { obj } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { obj } from '../../_framework/util'
 
 export function init(tx: Transaction, otw: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
@@ -23,7 +23,7 @@ export function faucetMint(tx: Transaction, faucet: TransactionObjectInput): Tra
 
 export function faucetMintBalance(
   tx: Transaction,
-  faucet: TransactionObjectInput
+  faucet: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::example_coin::faucet_mint_balance`,

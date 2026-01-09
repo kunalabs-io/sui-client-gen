@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { obj, pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { obj, pure } from '../../_framework/util'
 
 /** Return the `Curve` value indicating that the BLS12-381 construction should be used in a given function. */
 export function bls12381(tx: Transaction): TransactionResult {
@@ -57,7 +57,7 @@ export function pvkToBytes(tx: Transaction, pvk: TransactionObjectInput): Transa
  */
 export function publicProofInputsFromBytes(
   tx: Transaction,
-  bytes: Array<number | TransactionArgument> | TransactionArgument
+  bytes: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::groth16::public_proof_inputs_from_bytes`,
@@ -68,7 +68,7 @@ export function publicProofInputsFromBytes(
 /** Creates a Groth16 `ProofPoints` from bytes. */
 export function proofPointsFromBytes(
   tx: Transaction,
-  bytes: Array<number | TransactionArgument> | TransactionArgument
+  bytes: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::groth16::proof_points_from_bytes`,
@@ -91,11 +91,14 @@ export interface PrepareVerifyingKeyArgs {
  */
 export function prepareVerifyingKey(
   tx: Transaction,
-  args: PrepareVerifyingKeyArgs
+  args: PrepareVerifyingKeyArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::groth16::prepare_verifying_key`,
-    arguments: [obj(tx, args.curve), pure(tx, args.verifyingKey, `vector<u8>`)],
+    arguments: [
+      obj(tx, args.curve),
+      pure(tx, args.verifyingKey, `vector<u8>`),
+    ],
   })
 }
 
@@ -107,11 +110,14 @@ export interface PrepareVerifyingKeyInternalArgs {
 /** Native functions that flattens the inputs into an array and passes to the Rust native function. May abort with `EInvalidVerifyingKey` or `EInvalidCurve`. */
 export function prepareVerifyingKeyInternal(
   tx: Transaction,
-  args: PrepareVerifyingKeyInternalArgs
+  args: PrepareVerifyingKeyInternalArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::groth16::prepare_verifying_key_internal`,
-    arguments: [pure(tx, args.curve, `u8`), pure(tx, args.verifyingKey, `vector<u8>`)],
+    arguments: [
+      pure(tx, args.curve, `u8`),
+      pure(tx, args.verifyingKey, `vector<u8>`),
+    ],
   })
 }
 
@@ -132,7 +138,7 @@ export interface VerifyGroth16ProofArgs {
  */
 export function verifyGroth16Proof(
   tx: Transaction,
-  args: VerifyGroth16ProofArgs
+  args: VerifyGroth16ProofArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::groth16::verify_groth16_proof`,
@@ -158,7 +164,7 @@ export interface VerifyGroth16ProofInternalArgs {
 /** Native functions that flattens the inputs into arrays of vectors and passed to the Rust native function. May abort with `EInvalidCurve` or `ETooManyPublicInputs`. */
 export function verifyGroth16ProofInternal(
   tx: Transaction,
-  args: VerifyGroth16ProofInternalArgs
+  args: VerifyGroth16ProofInternalArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::groth16::verify_groth16_proof_internal`,

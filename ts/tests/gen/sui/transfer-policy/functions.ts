@@ -1,13 +1,13 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, obj, pure } from '../../_framework/util'
-import { Option } from '../../std/option/structs'
-import { ID } from '../object/structs'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, obj, pure } from '../../_framework/util'
+import { Option } from '../../std/option/structs'
+import { ID } from '../object/structs'
 
 export interface NewRequestArgs {
   item: string | TransactionArgument
@@ -24,7 +24,7 @@ export interface NewRequestArgs {
 export function newRequest(
   tx: Transaction,
   typeArg: string,
-  args: NewRequestArgs
+  args: NewRequestArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::new_request`,
@@ -46,7 +46,7 @@ export function newRequest(
 export function new_(
   tx: Transaction,
   typeArg: string,
-  pub: TransactionObjectInput
+  pub: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::new`,
@@ -63,7 +63,7 @@ export function new_(
 export function default_(
   tx: Transaction,
   typeArg: string,
-  pub: TransactionObjectInput
+  pub: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::default`,
@@ -106,12 +106,15 @@ export interface DestroyAndWithdrawArgs {
 export function destroyAndWithdraw(
   tx: Transaction,
   typeArg: string,
-  args: DestroyAndWithdrawArgs
+  args: DestroyAndWithdrawArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::destroy_and_withdraw`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), obj(tx, args.cap)],
+    arguments: [
+      obj(tx, args.self),
+      obj(tx, args.cap),
+    ],
   })
 }
 
@@ -131,12 +134,15 @@ export interface ConfirmRequestArgs {
 export function confirmRequest(
   tx: Transaction,
   typeArg: string,
-  args: ConfirmRequestArgs
+  args: ConfirmRequestArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::confirm_request`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), obj(tx, args.request)],
+    arguments: [
+      obj(tx, args.self),
+      obj(tx, args.request),
+    ],
   })
 }
 
@@ -161,7 +167,7 @@ export interface AddRuleArgs {
 export function addRule(
   tx: Transaction,
   typeArgs: [string, string, string],
-  args: AddRuleArgs
+  args: AddRuleArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::add_rule`,
@@ -184,12 +190,15 @@ export interface GetRuleArgs {
 export function getRule(
   tx: Transaction,
   typeArgs: [string, string, string],
-  args: GetRuleArgs
+  args: GetRuleArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::get_rule`,
     typeArguments: typeArgs,
-    arguments: [generic(tx, `${typeArgs[1]}`, args.rule), obj(tx, args.policy)],
+    arguments: [
+      generic(tx, `${typeArgs[1]}`, args.rule),
+      obj(tx, args.policy),
+    ],
   })
 }
 
@@ -203,12 +212,16 @@ export interface AddToBalanceArgs {
 export function addToBalance(
   tx: Transaction,
   typeArgs: [string, string],
-  args: AddToBalanceArgs
+  args: AddToBalanceArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::add_to_balance`,
     typeArguments: typeArgs,
-    arguments: [generic(tx, `${typeArgs[1]}`, args.rule), obj(tx, args.policy), obj(tx, args.coin)],
+    arguments: [
+      generic(tx, `${typeArgs[1]}`, args.rule),
+      obj(tx, args.policy),
+      obj(tx, args.coin),
+    ],
   })
 }
 
@@ -224,12 +237,15 @@ export interface AddReceiptArgs {
 export function addReceipt(
   tx: Transaction,
   typeArgs: [string, string],
-  args: AddReceiptArgs
+  args: AddReceiptArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::add_receipt`,
     typeArguments: typeArgs,
-    arguments: [generic(tx, `${typeArgs[1]}`, args.rule), obj(tx, args.request)],
+    arguments: [
+      generic(tx, `${typeArgs[1]}`, args.rule),
+      obj(tx, args.request),
+    ],
   })
 }
 
@@ -237,7 +253,7 @@ export function addReceipt(
 export function hasRule(
   tx: Transaction,
   typeArgs: [string, string],
-  policy: TransactionObjectInput
+  policy: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::has_rule`,
@@ -255,12 +271,15 @@ export interface RemoveRuleArgs {
 export function removeRule(
   tx: Transaction,
   typeArgs: [string, string, string],
-  args: RemoveRuleArgs
+  args: RemoveRuleArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::remove_rule`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.policy), obj(tx, args.cap)],
+    arguments: [
+      obj(tx, args.policy),
+      obj(tx, args.cap),
+    ],
   })
 }
 
@@ -268,7 +287,7 @@ export function removeRule(
 export function uid(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::uid`,
@@ -289,12 +308,15 @@ export interface UidMutAsOwnerArgs {
 export function uidMutAsOwner(
   tx: Transaction,
   typeArg: string,
-  args: UidMutAsOwnerArgs
+  args: UidMutAsOwnerArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::uid_mut_as_owner`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), obj(tx, args.cap)],
+    arguments: [
+      obj(tx, args.self),
+      obj(tx, args.cap),
+    ],
   })
 }
 
@@ -302,7 +324,7 @@ export function uidMutAsOwner(
 export function rules(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::rules`,
@@ -315,7 +337,7 @@ export function rules(
 export function item(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::item`,
@@ -328,7 +350,7 @@ export function item(
 export function paid(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::paid`,
@@ -341,7 +363,7 @@ export function paid(
 export function from(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::transfer_policy::from`,

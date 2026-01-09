@@ -1,18 +1,18 @@
-import { getPublishedAt } from '../../_envs'
-import { obj, pure, vector } from '../../_framework/util'
-import { Coin } from '../coin/structs'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { obj, pure, vector } from '../../_framework/util'
+import { Coin } from '../coin/structs'
 
 /** Transfer `c` to the sender of the current transaction */
 export function keep(
   tx: Transaction,
   typeArg: string,
-  c: TransactionObjectInput
+  c: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::keep`,
@@ -34,7 +34,10 @@ export function split(tx: Transaction, typeArg: string, args: SplitArgs): Transa
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::split`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.coin), pure(tx, args.splitAmount, `u64`)],
+    arguments: [
+      obj(tx, args.coin),
+      pure(tx, args.splitAmount, `u64`),
+    ],
   })
 }
 
@@ -51,7 +54,10 @@ export function splitVec(tx: Transaction, typeArg: string, args: SplitVecArgs): 
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::split_vec`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), pure(tx, args.splitAmounts, `vector<u64>`)],
+    arguments: [
+      obj(tx, args.self),
+      pure(tx, args.splitAmounts, `vector<u64>`),
+    ],
   })
 }
 
@@ -68,12 +74,16 @@ export interface SplitAndTransferArgs {
 export function splitAndTransfer(
   tx: Transaction,
   typeArg: string,
-  args: SplitAndTransferArgs
+  args: SplitAndTransferArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::split_and_transfer`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.c), pure(tx, args.amount, `u64`), pure(tx, args.recipient, `address`)],
+    arguments: [
+      obj(tx, args.c),
+      pure(tx, args.amount, `u64`),
+      pure(tx, args.recipient, `address`),
+    ],
   })
 }
 
@@ -89,12 +99,15 @@ export interface DivideAndKeepArgs {
 export function divideAndKeep(
   tx: Transaction,
   typeArg: string,
-  args: DivideAndKeepArgs
+  args: DivideAndKeepArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::divide_and_keep`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), pure(tx, args.n, `u64`)],
+    arguments: [
+      obj(tx, args.self),
+      pure(tx, args.n, `u64`),
+    ],
   })
 }
 
@@ -111,7 +124,10 @@ export function join(tx: Transaction, typeArg: string, args: JoinArgs): Transact
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::join`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), obj(tx, args.coin)],
+    arguments: [
+      obj(tx, args.self),
+      obj(tx, args.coin),
+    ],
   })
 }
 
@@ -125,7 +141,10 @@ export function joinVec(tx: Transaction, typeArg: string, args: JoinVecArgs): Tr
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::join_vec`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), vector(tx, `${Coin.$typeName}<${typeArg}>`, args.coins)],
+    arguments: [
+      obj(tx, args.self),
+      vector(tx, `${Coin.$typeName}<${typeArg}>`, args.coins),
+    ],
   })
 }
 
@@ -138,7 +157,7 @@ export interface JoinVecAndTransferArgs {
 export function joinVecAndTransfer(
   tx: Transaction,
   typeArg: string,
-  args: JoinVecAndTransferArgs
+  args: JoinVecAndTransferArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::pay::join_vec_and_transfer`,

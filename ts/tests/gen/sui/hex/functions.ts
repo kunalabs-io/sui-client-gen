@@ -1,16 +1,16 @@
-import { getPublishedAt } from '../../_envs'
-import { pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { pure } from '../../_framework/util'
 
 /** Encode `bytes` in lowercase hex */
 export function encode(
   tx: Transaction,
-  bytes: Array<number | TransactionArgument> | TransactionArgument
+  bytes: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::hex::encode`,
@@ -28,7 +28,7 @@ export function encode(
  */
 export function decode(
   tx: Transaction,
-  hex: Array<number | TransactionArgument> | TransactionArgument
+  hex: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::hex::decode`,

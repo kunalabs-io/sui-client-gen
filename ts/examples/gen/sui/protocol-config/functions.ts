@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { pure } from '../../_framework/util'
 
 /**
  * Checks if a specific protocol feature flag is enabled.
@@ -34,7 +34,7 @@ import {
  */
 export function isFeatureEnabled(
   tx: Transaction,
-  featureFlagName: Array<number | TransactionArgument> | TransactionArgument
+  featureFlagName: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::protocol_config::is_feature_enabled`,

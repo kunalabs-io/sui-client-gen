@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, obj, pure } from '../../_framework/util'
 
 export interface AddArgs {
   object: TransactionObjectInput
@@ -43,12 +43,15 @@ export interface BorrowArgs {
 export function borrow(
   tx: Transaction,
   typeArgs: [string, string],
-  args: BorrowArgs
+  args: BorrowArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::borrow`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
+    arguments: [
+      obj(tx, args.object),
+      generic(tx, `${typeArgs[0]}`, args.name),
+    ],
   })
 }
 
@@ -66,12 +69,15 @@ export interface BorrowMutArgs {
 export function borrowMut(
   tx: Transaction,
   typeArgs: [string, string],
-  args: BorrowMutArgs
+  args: BorrowMutArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::borrow_mut`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
+    arguments: [
+      obj(tx, args.object),
+      generic(tx, `${typeArgs[0]}`, args.name),
+    ],
   })
 }
 
@@ -90,12 +96,15 @@ export interface RemoveArgs {
 export function remove(
   tx: Transaction,
   typeArgs: [string, string],
-  args: RemoveArgs
+  args: RemoveArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::remove`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
+    arguments: [
+      obj(tx, args.object),
+      generic(tx, `${typeArgs[0]}`, args.name),
+    ],
   })
 }
 
@@ -112,7 +121,10 @@ export function exists_(tx: Transaction, typeArg: string, args: Exists_Args): Tr
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::exists_`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.object), generic(tx, `${typeArg}`, args.name)],
+    arguments: [
+      obj(tx, args.object),
+      generic(tx, `${typeArg}`, args.name),
+    ],
   })
 }
 
@@ -125,12 +137,15 @@ export interface RemoveIfExistsArgs {
 export function removeIfExists(
   tx: Transaction,
   typeArgs: [string, string],
-  args: RemoveIfExistsArgs
+  args: RemoveIfExistsArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::remove_if_exists`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
+    arguments: [
+      obj(tx, args.object),
+      generic(tx, `${typeArgs[0]}`, args.name),
+    ],
   })
 }
 
@@ -146,12 +161,15 @@ export interface ExistsWithTypeArgs {
 export function existsWithType(
   tx: Transaction,
   typeArgs: [string, string],
-  args: ExistsWithTypeArgs
+  args: ExistsWithTypeArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::exists_with_type`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.object), generic(tx, `${typeArgs[0]}`, args.name)],
+    arguments: [
+      obj(tx, args.object),
+      generic(tx, `${typeArgs[0]}`, args.name),
+    ],
   })
 }
 
@@ -163,12 +181,15 @@ export interface FieldInfoArgs {
 export function fieldInfo(
   tx: Transaction,
   typeArg: string,
-  args: FieldInfoArgs
+  args: FieldInfoArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::field_info`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.object), generic(tx, `${typeArg}`, args.name)],
+    arguments: [
+      obj(tx, args.object),
+      generic(tx, `${typeArg}`, args.name),
+    ],
   })
 }
 
@@ -180,12 +201,15 @@ export interface FieldInfoMutArgs {
 export function fieldInfoMut(
   tx: Transaction,
   typeArg: string,
-  args: FieldInfoMutArgs
+  args: FieldInfoMutArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::field_info_mut`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.object), generic(tx, `${typeArg}`, args.name)],
+    arguments: [
+      obj(tx, args.object),
+      generic(tx, `${typeArg}`, args.name),
+    ],
   })
 }
 
@@ -198,12 +222,15 @@ export interface HashTypeAndKeyArgs {
 export function hashTypeAndKey(
   tx: Transaction,
   typeArg: string,
-  args: HashTypeAndKeyArgs
+  args: HashTypeAndKeyArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::hash_type_and_key`,
     typeArguments: [typeArg],
-    arguments: [pure(tx, args.parent, `address`), generic(tx, `${typeArg}`, args.k)],
+    arguments: [
+      pure(tx, args.parent, `address`),
+      generic(tx, `${typeArg}`, args.k),
+    ],
   })
 }
 
@@ -215,12 +242,15 @@ export interface AddChildObjectArgs {
 export function addChildObject(
   tx: Transaction,
   typeArg: string,
-  args: AddChildObjectArgs
+  args: AddChildObjectArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::add_child_object`,
     typeArguments: [typeArg],
-    arguments: [pure(tx, args.parent, `address`), generic(tx, `${typeArg}`, args.child)],
+    arguments: [
+      pure(tx, args.parent, `address`),
+      generic(tx, `${typeArg}`, args.child),
+    ],
   })
 }
 
@@ -238,12 +268,15 @@ export interface BorrowChildObjectArgs {
 export function borrowChildObject(
   tx: Transaction,
   typeArg: string,
-  args: BorrowChildObjectArgs
+  args: BorrowChildObjectArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::borrow_child_object`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.object), pure(tx, args.id, `address`)],
+    arguments: [
+      obj(tx, args.object),
+      pure(tx, args.id, `address`),
+    ],
   })
 }
 
@@ -255,12 +288,15 @@ export interface BorrowChildObjectMutArgs {
 export function borrowChildObjectMut(
   tx: Transaction,
   typeArg: string,
-  args: BorrowChildObjectMutArgs
+  args: BorrowChildObjectMutArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::borrow_child_object_mut`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.object), pure(tx, args.id, `address`)],
+    arguments: [
+      obj(tx, args.object),
+      pure(tx, args.id, `address`),
+    ],
   })
 }
 
@@ -277,12 +313,15 @@ export interface RemoveChildObjectArgs {
 export function removeChildObject(
   tx: Transaction,
   typeArg: string,
-  args: RemoveChildObjectArgs
+  args: RemoveChildObjectArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::remove_child_object`,
     typeArguments: [typeArg],
-    arguments: [pure(tx, args.parent, `address`), pure(tx, args.id, `address`)],
+    arguments: [
+      pure(tx, args.parent, `address`),
+      pure(tx, args.id, `address`),
+    ],
   })
 }
 
@@ -294,7 +333,10 @@ export interface HasChildObjectArgs {
 export function hasChildObject(tx: Transaction, args: HasChildObjectArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::has_child_object`,
-    arguments: [pure(tx, args.parent, `address`), pure(tx, args.id, `address`)],
+    arguments: [
+      pure(tx, args.parent, `address`),
+      pure(tx, args.id, `address`),
+    ],
   })
 }
 
@@ -306,11 +348,14 @@ export interface HasChildObjectWithTyArgs {
 export function hasChildObjectWithTy(
   tx: Transaction,
   typeArg: string,
-  args: HasChildObjectWithTyArgs
+  args: HasChildObjectWithTyArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::dynamic_field::has_child_object_with_ty`,
     typeArguments: [typeArg],
-    arguments: [pure(tx, args.parent, `address`), pure(tx, args.id, `address`)],
+    arguments: [
+      pure(tx, args.parent, `address`),
+      pure(tx, args.id, `address`),
+    ],
   })
 }

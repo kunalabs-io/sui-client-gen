@@ -1,17 +1,17 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, obj, pure } from '../../_framework/util'
 
 /** Get the amount stored in a `Balance`. */
 export function value(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::balance::value`,
@@ -24,7 +24,7 @@ export function value(
 export function supplyValue(
   tx: Transaction,
   typeArg: string,
-  supply: TransactionObjectInput
+  supply: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::balance::supply_value`,
@@ -51,12 +51,15 @@ export interface IncreaseSupplyArgs {
 export function increaseSupply(
   tx: Transaction,
   typeArg: string,
-  args: IncreaseSupplyArgs
+  args: IncreaseSupplyArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::balance::increase_supply`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), pure(tx, args.value, `u64`)],
+    arguments: [
+      obj(tx, args.self),
+      pure(tx, args.value, `u64`),
+    ],
   })
 }
 
@@ -69,12 +72,15 @@ export interface DecreaseSupplyArgs {
 export function decreaseSupply(
   tx: Transaction,
   typeArg: string,
-  args: DecreaseSupplyArgs
+  args: DecreaseSupplyArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::balance::decrease_supply`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), obj(tx, args.balance)],
+    arguments: [
+      obj(tx, args.self),
+      obj(tx, args.balance),
+    ],
   })
 }
 
@@ -97,7 +103,10 @@ export function join(tx: Transaction, typeArg: string, args: JoinArgs): Transact
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::balance::join`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), obj(tx, args.balance)],
+    arguments: [
+      obj(tx, args.self),
+      obj(tx, args.balance),
+    ],
   })
 }
 
@@ -111,7 +120,10 @@ export function split(tx: Transaction, typeArg: string, args: SplitArgs): Transa
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::balance::split`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), pure(tx, args.value, `u64`)],
+    arguments: [
+      obj(tx, args.self),
+      pure(tx, args.value, `u64`),
+    ],
   })
 }
 
@@ -119,7 +131,7 @@ export function split(tx: Transaction, typeArg: string, args: SplitArgs): Transa
 export function withdrawAll(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::balance::withdraw_all`,
@@ -132,7 +144,7 @@ export function withdrawAll(
 export function destroyZero(
   tx: Transaction,
   typeArg: string,
-  balance: TransactionObjectInput
+  balance: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::balance::destroy_zero`,
@@ -150,12 +162,15 @@ export interface SendFundsArgs {
 export function sendFunds(
   tx: Transaction,
   typeArg: string,
-  args: SendFundsArgs
+  args: SendFundsArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::balance::send_funds`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.balance), pure(tx, args.recipient, `address`)],
+    arguments: [
+      obj(tx, args.balance),
+      pure(tx, args.recipient, `address`),
+    ],
   })
 }
 
@@ -166,7 +181,7 @@ export function sendFunds(
 export function redeemFunds(
   tx: Transaction,
   typeArg: string,
-  withdrawal: TransactionObjectInput
+  withdrawal: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::balance::redeem_funds`,
@@ -184,12 +199,15 @@ export interface WithdrawFundsFromObjectArgs {
 export function withdrawFundsFromObject(
   tx: Transaction,
   typeArg: string,
-  args: WithdrawFundsFromObjectArgs
+  args: WithdrawFundsFromObjectArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::balance::withdraw_funds_from_object`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.obj), pure(tx, args.value, `u64`)],
+    arguments: [
+      obj(tx, args.obj),
+      pure(tx, args.value, `u64`),
+    ],
   })
 }
 
@@ -209,7 +227,7 @@ export function createSupplyInternal(tx: Transaction, typeArg: string): Transact
 export function createStakingRewards(
   tx: Transaction,
   typeArg: string,
-  value: bigint | TransactionArgument
+  value: bigint | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::balance::create_staking_rewards`,
@@ -226,7 +244,7 @@ export function createStakingRewards(
 export function destroyStorageRebates(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::balance::destroy_storage_rebates`,
@@ -239,7 +257,7 @@ export function destroyStorageRebates(
 export function destroySupply(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::balance::destroy_supply`,

@@ -1,27 +1,27 @@
 /** Sui object identifiers */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== ID =============================== */
 
@@ -68,7 +68,10 @@ export class ID implements StructClass {
   readonly bytes: ToField<'address'>
 
   private constructor(typeArgs: [], fields: IDFields) {
-    this.$fullTypeName = composeSuiType(ID.$typeName, ...typeArgs) as `0x2::object::ID`
+    this.$fullTypeName = composeSuiType(
+      ID.$typeName,
+      ...typeArgs,
+    ) as `0x2::object::ID`
     this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
@@ -78,7 +81,10 @@ export class ID implements StructClass {
     const reifiedBcs = ID.bcs
     return {
       typeName: ID.$typeName,
-      fullTypeName: composeSuiType(ID.$typeName, ...[]) as `0x2::object::ID`,
+      fullTypeName: composeSuiType(
+        ID.$typeName,
+        ...[],
+      ) as `0x2::object::ID`,
       typeArgs: [] as [],
       isPhantom: ID.$isPhantom,
       reifiedTypeArgs: [],
@@ -167,7 +173,7 @@ export class ID implements StructClass {
   static fromJSON(json: Record<string, any>): ID {
     if (json.$typeName !== ID.$typeName) {
       throw new Error(
-        `not a ID json object: expected '${ID.$typeName}' but got '${json.$typeName}'`
+        `not a ID json object: expected '${ID.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -196,7 +202,7 @@ export class ID implements StructClass {
       return ID.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -255,7 +261,10 @@ export class UID implements StructClass {
   readonly id: ToField<ID>
 
   private constructor(typeArgs: [], fields: UIDFields) {
-    this.$fullTypeName = composeSuiType(UID.$typeName, ...typeArgs) as `0x2::object::UID`
+    this.$fullTypeName = composeSuiType(
+      UID.$typeName,
+      ...typeArgs,
+    ) as `0x2::object::UID`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -265,7 +274,10 @@ export class UID implements StructClass {
     const reifiedBcs = UID.bcs
     return {
       typeName: UID.$typeName,
-      fullTypeName: composeSuiType(UID.$typeName, ...[]) as `0x2::object::UID`,
+      fullTypeName: composeSuiType(
+        UID.$typeName,
+        ...[],
+      ) as `0x2::object::UID`,
       typeArgs: [] as [],
       isPhantom: UID.$isPhantom,
       reifiedTypeArgs: [],
@@ -351,7 +363,7 @@ export class UID implements StructClass {
   static fromJSON(json: Record<string, any>): UID {
     if (json.$typeName !== UID.$typeName) {
       throw new Error(
-        `not a UID json object: expected '${UID.$typeName}' but got '${json.$typeName}'`
+        `not a UID json object: expected '${UID.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -380,7 +392,7 @@ export class UID implements StructClass {
       return UID.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

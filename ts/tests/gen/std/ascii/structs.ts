@@ -3,31 +3,31 @@
  * that characters are valid ASCII, and that strings consist of only valid ASCII characters.
  */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  fieldToJSON,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  fieldToJSON,
-  phantom,
   vector,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== String =============================== */
 
@@ -73,7 +73,10 @@ export class String implements StructClass {
   readonly bytes: ToField<Vector<'u8'>>
 
   private constructor(typeArgs: [], fields: StringFields) {
-    this.$fullTypeName = composeSuiType(String.$typeName, ...typeArgs) as `0x1::ascii::String`
+    this.$fullTypeName = composeSuiType(
+      String.$typeName,
+      ...typeArgs,
+    ) as `0x1::ascii::String`
     this.$typeArgs = typeArgs
 
     this.bytes = fields.bytes
@@ -83,7 +86,10 @@ export class String implements StructClass {
     const reifiedBcs = String.bcs
     return {
       typeName: String.$typeName,
-      fullTypeName: composeSuiType(String.$typeName, ...[]) as `0x1::ascii::String`,
+      fullTypeName: composeSuiType(
+        String.$typeName,
+        ...[],
+      ) as `0x1::ascii::String`,
       typeArgs: [] as [],
       isPhantom: String.$isPhantom,
       reifiedTypeArgs: [],
@@ -169,7 +175,7 @@ export class String implements StructClass {
   static fromJSON(json: Record<string, any>): String {
     if (json.$typeName !== String.$typeName) {
       throw new Error(
-        `not a String json object: expected '${String.$typeName}' but got '${json.$typeName}'`
+        `not a String json object: expected '${String.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -198,7 +204,7 @@ export class String implements StructClass {
       return String.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -250,7 +256,10 @@ export class Char implements StructClass {
   readonly byte: ToField<'u8'>
 
   private constructor(typeArgs: [], fields: CharFields) {
-    this.$fullTypeName = composeSuiType(Char.$typeName, ...typeArgs) as `0x1::ascii::Char`
+    this.$fullTypeName = composeSuiType(
+      Char.$typeName,
+      ...typeArgs,
+    ) as `0x1::ascii::Char`
     this.$typeArgs = typeArgs
 
     this.byte = fields.byte
@@ -260,7 +269,10 @@ export class Char implements StructClass {
     const reifiedBcs = Char.bcs
     return {
       typeName: Char.$typeName,
-      fullTypeName: composeSuiType(Char.$typeName, ...[]) as `0x1::ascii::Char`,
+      fullTypeName: composeSuiType(
+        Char.$typeName,
+        ...[],
+      ) as `0x1::ascii::Char`,
       typeArgs: [] as [],
       isPhantom: Char.$isPhantom,
       reifiedTypeArgs: [],
@@ -346,7 +358,7 @@ export class Char implements StructClass {
   static fromJSON(json: Record<string, any>): Char {
     if (json.$typeName !== Char.$typeName) {
       throw new Error(
-        `not a Char json object: expected '${Char.$typeName}' but got '${json.$typeName}'`
+        `not a Char json object: expected '${Char.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -375,7 +387,7 @@ export class Char implements StructClass {
       return Char.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

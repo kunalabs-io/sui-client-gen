@@ -1,26 +1,26 @@
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { VecMap } from '../vec-map/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== Party =============================== */
 
@@ -75,7 +75,10 @@ export class Party implements StructClass {
   readonly members: ToField<VecMap<'address', Permissions>>
 
   private constructor(typeArgs: [], fields: PartyFields) {
-    this.$fullTypeName = composeSuiType(Party.$typeName, ...typeArgs) as `0x2::party::Party`
+    this.$fullTypeName = composeSuiType(
+      Party.$typeName,
+      ...typeArgs,
+    ) as `0x2::party::Party`
     this.$typeArgs = typeArgs
 
     this.default = fields.default
@@ -86,7 +89,10 @@ export class Party implements StructClass {
     const reifiedBcs = Party.bcs
     return {
       typeName: Party.$typeName,
-      fullTypeName: composeSuiType(Party.$typeName, ...[]) as `0x2::party::Party`,
+      fullTypeName: composeSuiType(
+        Party.$typeName,
+        ...[],
+      ) as `0x2::party::Party`,
       typeArgs: [] as [],
       isPhantom: Party.$isPhantom,
       reifiedTypeArgs: [],
@@ -126,7 +132,7 @@ export class Party implements StructClass {
           input: (val: string) => fromHex(val),
           output: (val: Uint8Array) => toHex(val),
         }),
-        Permissions.bcs
+        Permissions.bcs,
       ),
     })
   }
@@ -156,7 +162,7 @@ export class Party implements StructClass {
       default: decodeFromFieldsWithTypes(Permissions.reified(), item.fields.default),
       members: decodeFromFieldsWithTypes(
         VecMap.reified('address', Permissions.reified()),
-        item.fields.members
+        item.fields.members,
       ),
     })
   }
@@ -186,7 +192,7 @@ export class Party implements StructClass {
   static fromJSON(json: Record<string, any>): Party {
     if (json.$typeName !== Party.$typeName) {
       throw new Error(
-        `not a Party json object: expected '${Party.$typeName}' but got '${json.$typeName}'`
+        `not a Party json object: expected '${Party.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -215,7 +221,7 @@ export class Party implements StructClass {
       return Party.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -272,7 +278,7 @@ export class Permissions implements StructClass {
   private constructor(typeArgs: [], fields: PermissionsFields) {
     this.$fullTypeName = composeSuiType(
       Permissions.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::party::Permissions`
     this.$typeArgs = typeArgs
 
@@ -283,7 +289,10 @@ export class Permissions implements StructClass {
     const reifiedBcs = Permissions.bcs
     return {
       typeName: Permissions.$typeName,
-      fullTypeName: composeSuiType(Permissions.$typeName, ...[]) as `0x2::party::Permissions`,
+      fullTypeName: composeSuiType(
+        Permissions.$typeName,
+        ...[],
+      ) as `0x2::party::Permissions`,
       typeArgs: [] as [],
       isPhantom: Permissions.$isPhantom,
       reifiedTypeArgs: [],
@@ -369,7 +378,7 @@ export class Permissions implements StructClass {
   static fromJSON(json: Record<string, any>): Permissions {
     if (json.$typeName !== Permissions.$typeName) {
       throw new Error(
-        `not a Permissions json object: expected '${Permissions.$typeName}' but got '${json.$typeName}'`
+        `not a Permissions json object: expected '${Permissions.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -398,7 +407,7 @@ export class Permissions implements StructClass {
       return Permissions.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

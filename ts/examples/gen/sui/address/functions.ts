@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { pure } from '../../_framework/util'
 
 /**
  * Convert `a` into a u256 by interpreting `a` as the bytes of a big-endian integer
@@ -35,7 +35,7 @@ export function fromU256(tx: Transaction, n: bigint | TransactionArgument): Tran
  */
 export function fromBytes(
   tx: Transaction,
-  bytes: Array<number | TransactionArgument> | TransactionArgument
+  bytes: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::address::from_bytes`,
@@ -77,7 +77,7 @@ export function toString(tx: Transaction, a: string | TransactionArgument): Tran
  */
 export function fromAsciiBytes(
   tx: Transaction,
-  bytes: Array<number | TransactionArgument> | TransactionArgument
+  bytes: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::address::from_ascii_bytes`,

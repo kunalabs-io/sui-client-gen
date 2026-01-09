@@ -1,3 +1,9 @@
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 import { String as String1 } from '../../_dependencies/std/ascii/structs'
 import { Option } from '../../_dependencies/std/option/structs'
 import { String } from '../../_dependencies/std/string/structs'
@@ -5,12 +11,6 @@ import { getPublishedAt } from '../../_envs'
 import { obj, pure, vector } from '../../_framework/util'
 import { ID } from '../../sui/object/structs'
 import { ExampleStruct } from './structs'
-import {
-  Transaction,
-  TransactionArgument,
-  TransactionObjectInput,
-  TransactionResult,
-} from '@mysten/sui/transactions'
 
 export function createExampleStruct(tx: Transaction): TransactionResult {
   return tx.moveCall({

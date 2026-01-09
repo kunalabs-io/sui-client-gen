@@ -4,7 +4,15 @@
  * list.
  */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  fieldToJSON,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
@@ -12,28 +20,20 @@ import {
   ToJSON,
   ToTypeStr,
   ToTypeStr as ToPhantom,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  fieldToJSON,
-  phantom,
   vector,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { Bag } from '../bag/structs'
 import { ID, UID } from '../object/structs'
 import { Table } from '../table/structs'
 import { VecSet } from '../vec-set/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== DenyList =============================== */
 
@@ -80,7 +80,7 @@ export class DenyList implements StructClass {
   private constructor(typeArgs: [], fields: DenyListFields) {
     this.$fullTypeName = composeSuiType(
       DenyList.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::deny_list::DenyList`
     this.$typeArgs = typeArgs
 
@@ -92,7 +92,10 @@ export class DenyList implements StructClass {
     const reifiedBcs = DenyList.bcs
     return {
       typeName: DenyList.$typeName,
-      fullTypeName: composeSuiType(DenyList.$typeName, ...[]) as `0x2::deny_list::DenyList`,
+      fullTypeName: composeSuiType(
+        DenyList.$typeName,
+        ...[],
+      ) as `0x2::deny_list::DenyList`,
       typeArgs: [] as [],
       isPhantom: DenyList.$isPhantom,
       reifiedTypeArgs: [],
@@ -183,7 +186,7 @@ export class DenyList implements StructClass {
   static fromJSON(json: Record<string, any>): DenyList {
     if (json.$typeName !== DenyList.$typeName) {
       throw new Error(
-        `not a DenyList json object: expected '${DenyList.$typeName}' but got '${json.$typeName}'`
+        `not a DenyList json object: expected '${DenyList.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -212,7 +215,7 @@ export class DenyList implements StructClass {
       return DenyList.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -270,7 +273,7 @@ export class ConfigWriteCap implements StructClass {
   private constructor(typeArgs: [], fields: ConfigWriteCapFields) {
     this.$fullTypeName = composeSuiType(
       ConfigWriteCap.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::deny_list::ConfigWriteCap`
     this.$typeArgs = typeArgs
 
@@ -283,7 +286,7 @@ export class ConfigWriteCap implements StructClass {
       typeName: ConfigWriteCap.$typeName,
       fullTypeName: composeSuiType(
         ConfigWriteCap.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::deny_list::ConfigWriteCap`,
       typeArgs: [] as [],
       isPhantom: ConfigWriteCap.$isPhantom,
@@ -370,7 +373,7 @@ export class ConfigWriteCap implements StructClass {
   static fromJSON(json: Record<string, any>): ConfigWriteCap {
     if (json.$typeName !== ConfigWriteCap.$typeName) {
       throw new Error(
-        `not a ConfigWriteCap json object: expected '${ConfigWriteCap.$typeName}' but got '${json.$typeName}'`
+        `not a ConfigWriteCap json object: expected '${ConfigWriteCap.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -399,7 +402,7 @@ export class ConfigWriteCap implements StructClass {
       return ConfigWriteCap.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -459,7 +462,7 @@ export class ConfigKey implements StructClass {
   private constructor(typeArgs: [], fields: ConfigKeyFields) {
     this.$fullTypeName = composeSuiType(
       ConfigKey.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::deny_list::ConfigKey`
     this.$typeArgs = typeArgs
 
@@ -471,7 +474,10 @@ export class ConfigKey implements StructClass {
     const reifiedBcs = ConfigKey.bcs
     return {
       typeName: ConfigKey.$typeName,
-      fullTypeName: composeSuiType(ConfigKey.$typeName, ...[]) as `0x2::deny_list::ConfigKey`,
+      fullTypeName: composeSuiType(
+        ConfigKey.$typeName,
+        ...[],
+      ) as `0x2::deny_list::ConfigKey`,
       typeArgs: [] as [],
       isPhantom: ConfigKey.$isPhantom,
       reifiedTypeArgs: [],
@@ -562,7 +568,7 @@ export class ConfigKey implements StructClass {
   static fromJSON(json: Record<string, any>): ConfigKey {
     if (json.$typeName !== ConfigKey.$typeName) {
       throw new Error(
-        `not a ConfigKey json object: expected '${ConfigKey.$typeName}' but got '${json.$typeName}'`
+        `not a ConfigKey json object: expected '${ConfigKey.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -591,7 +597,7 @@ export class ConfigKey implements StructClass {
       return ConfigKey.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -645,7 +651,7 @@ export class AddressKey implements StructClass {
   private constructor(typeArgs: [], fields: AddressKeyFields) {
     this.$fullTypeName = composeSuiType(
       AddressKey.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::deny_list::AddressKey`
     this.$typeArgs = typeArgs
 
@@ -656,7 +662,10 @@ export class AddressKey implements StructClass {
     const reifiedBcs = AddressKey.bcs
     return {
       typeName: AddressKey.$typeName,
-      fullTypeName: composeSuiType(AddressKey.$typeName, ...[]) as `0x2::deny_list::AddressKey`,
+      fullTypeName: composeSuiType(
+        AddressKey.$typeName,
+        ...[],
+      ) as `0x2::deny_list::AddressKey`,
       typeArgs: [] as [],
       isPhantom: AddressKey.$isPhantom,
       reifiedTypeArgs: [],
@@ -745,7 +754,7 @@ export class AddressKey implements StructClass {
   static fromJSON(json: Record<string, any>): AddressKey {
     if (json.$typeName !== AddressKey.$typeName) {
       throw new Error(
-        `not a AddressKey json object: expected '${AddressKey.$typeName}' but got '${json.$typeName}'`
+        `not a AddressKey json object: expected '${AddressKey.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -774,7 +783,7 @@ export class AddressKey implements StructClass {
       return AddressKey.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -829,7 +838,7 @@ export class GlobalPauseKey implements StructClass {
   private constructor(typeArgs: [], fields: GlobalPauseKeyFields) {
     this.$fullTypeName = composeSuiType(
       GlobalPauseKey.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::deny_list::GlobalPauseKey`
     this.$typeArgs = typeArgs
 
@@ -842,7 +851,7 @@ export class GlobalPauseKey implements StructClass {
       typeName: GlobalPauseKey.$typeName,
       fullTypeName: composeSuiType(
         GlobalPauseKey.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::deny_list::GlobalPauseKey`,
       typeArgs: [] as [],
       isPhantom: GlobalPauseKey.$isPhantom,
@@ -929,7 +938,7 @@ export class GlobalPauseKey implements StructClass {
   static fromJSON(json: Record<string, any>): GlobalPauseKey {
     if (json.$typeName !== GlobalPauseKey.$typeName) {
       throw new Error(
-        `not a GlobalPauseKey json object: expected '${GlobalPauseKey.$typeName}' but got '${json.$typeName}'`
+        `not a GlobalPauseKey json object: expected '${GlobalPauseKey.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -958,7 +967,7 @@ export class GlobalPauseKey implements StructClass {
       return GlobalPauseKey.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -1019,7 +1028,7 @@ export class PerTypeConfigCreated implements StructClass {
   private constructor(typeArgs: [], fields: PerTypeConfigCreatedFields) {
     this.$fullTypeName = composeSuiType(
       PerTypeConfigCreated.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::deny_list::PerTypeConfigCreated`
     this.$typeArgs = typeArgs
 
@@ -1033,7 +1042,7 @@ export class PerTypeConfigCreated implements StructClass {
       typeName: PerTypeConfigCreated.$typeName,
       fullTypeName: composeSuiType(
         PerTypeConfigCreated.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::deny_list::PerTypeConfigCreated`,
       typeArgs: [] as [],
       isPhantom: PerTypeConfigCreated.$isPhantom,
@@ -1129,7 +1138,7 @@ export class PerTypeConfigCreated implements StructClass {
   static fromJSON(json: Record<string, any>): PerTypeConfigCreated {
     if (json.$typeName !== PerTypeConfigCreated.$typeName) {
       throw new Error(
-        `not a PerTypeConfigCreated json object: expected '${PerTypeConfigCreated.$typeName}' but got '${json.$typeName}'`
+        `not a PerTypeConfigCreated json object: expected '${PerTypeConfigCreated.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -1142,7 +1151,7 @@ export class PerTypeConfigCreated implements StructClass {
     }
     if (!isPerTypeConfigCreated(content.type)) {
       throw new Error(
-        `object at ${(content.fields as any).id} is not a PerTypeConfigCreated object`
+        `object at ${(content.fields as any).id} is not a PerTypeConfigCreated object`,
       )
     }
     return PerTypeConfigCreated.fromFieldsWithTypes(content)
@@ -1160,7 +1169,7 @@ export class PerTypeConfigCreated implements StructClass {
       return PerTypeConfigCreated.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -1238,7 +1247,7 @@ export class PerTypeList implements StructClass {
   private constructor(typeArgs: [], fields: PerTypeListFields) {
     this.$fullTypeName = composeSuiType(
       PerTypeList.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::deny_list::PerTypeList`
     this.$typeArgs = typeArgs
 
@@ -1251,7 +1260,10 @@ export class PerTypeList implements StructClass {
     const reifiedBcs = PerTypeList.bcs
     return {
       typeName: PerTypeList.$typeName,
-      fullTypeName: composeSuiType(PerTypeList.$typeName, ...[]) as `0x2::deny_list::PerTypeList`,
+      fullTypeName: composeSuiType(
+        PerTypeList.$typeName,
+        ...[],
+      ) as `0x2::deny_list::PerTypeList`,
       typeArgs: [] as [],
       isPhantom: PerTypeList.$isPhantom,
       reifiedTypeArgs: [],
@@ -1305,11 +1317,11 @@ export class PerTypeList implements StructClass {
       id: decodeFromFields(UID.reified(), fields.id),
       deniedCount: decodeFromFields(
         Table.reified(phantom('address'), phantom('u64')),
-        fields.denied_count
+        fields.denied_count,
       ),
       deniedAddresses: decodeFromFields(
         Table.reified(phantom(vector('u8')), phantom(VecSet.reified('address'))),
-        fields.denied_addresses
+        fields.denied_addresses,
       ),
     })
   }
@@ -1323,11 +1335,11 @@ export class PerTypeList implements StructClass {
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       deniedCount: decodeFromFieldsWithTypes(
         Table.reified(phantom('address'), phantom('u64')),
-        item.fields.denied_count
+        item.fields.denied_count,
       ),
       deniedAddresses: decodeFromFieldsWithTypes(
         Table.reified(phantom(vector('u8')), phantom(VecSet.reified('address'))),
-        item.fields.denied_addresses
+        item.fields.denied_addresses,
       ),
     })
   }
@@ -1353,11 +1365,11 @@ export class PerTypeList implements StructClass {
       id: decodeFromJSONField(UID.reified(), field.id),
       deniedCount: decodeFromJSONField(
         Table.reified(phantom('address'), phantom('u64')),
-        field.deniedCount
+        field.deniedCount,
       ),
       deniedAddresses: decodeFromJSONField(
         Table.reified(phantom(vector('u8')), phantom(VecSet.reified('address'))),
-        field.deniedAddresses
+        field.deniedAddresses,
       ),
     })
   }
@@ -1365,7 +1377,7 @@ export class PerTypeList implements StructClass {
   static fromJSON(json: Record<string, any>): PerTypeList {
     if (json.$typeName !== PerTypeList.$typeName) {
       throw new Error(
-        `not a PerTypeList json object: expected '${PerTypeList.$typeName}' but got '${json.$typeName}'`
+        `not a PerTypeList json object: expected '${PerTypeList.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -1394,7 +1406,7 @@ export class PerTypeList implements StructClass {
       return PerTypeList.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

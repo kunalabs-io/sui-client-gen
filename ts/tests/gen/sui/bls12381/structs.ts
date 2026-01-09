@@ -1,27 +1,27 @@
 /** Group operations of BLS12-381. */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Scalar =============================== */
 
@@ -60,7 +60,10 @@ export class Scalar implements StructClass {
   readonly dummyField: ToField<'bool'>
 
   private constructor(typeArgs: [], fields: ScalarFields) {
-    this.$fullTypeName = composeSuiType(Scalar.$typeName, ...typeArgs) as `0x2::bls12381::Scalar`
+    this.$fullTypeName = composeSuiType(
+      Scalar.$typeName,
+      ...typeArgs,
+    ) as `0x2::bls12381::Scalar`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -70,7 +73,10 @@ export class Scalar implements StructClass {
     const reifiedBcs = Scalar.bcs
     return {
       typeName: Scalar.$typeName,
-      fullTypeName: composeSuiType(Scalar.$typeName, ...[]) as `0x2::bls12381::Scalar`,
+      fullTypeName: composeSuiType(
+        Scalar.$typeName,
+        ...[],
+      ) as `0x2::bls12381::Scalar`,
       typeArgs: [] as [],
       isPhantom: Scalar.$isPhantom,
       reifiedTypeArgs: [],
@@ -156,7 +162,7 @@ export class Scalar implements StructClass {
   static fromJSON(json: Record<string, any>): Scalar {
     if (json.$typeName !== Scalar.$typeName) {
       throw new Error(
-        `not a Scalar json object: expected '${Scalar.$typeName}' but got '${json.$typeName}'`
+        `not a Scalar json object: expected '${Scalar.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -185,7 +191,7 @@ export class Scalar implements StructClass {
       return Scalar.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -236,7 +242,10 @@ export class G1 implements StructClass {
   readonly dummyField: ToField<'bool'>
 
   private constructor(typeArgs: [], fields: G1Fields) {
-    this.$fullTypeName = composeSuiType(G1.$typeName, ...typeArgs) as `0x2::bls12381::G1`
+    this.$fullTypeName = composeSuiType(
+      G1.$typeName,
+      ...typeArgs,
+    ) as `0x2::bls12381::G1`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -246,7 +255,10 @@ export class G1 implements StructClass {
     const reifiedBcs = G1.bcs
     return {
       typeName: G1.$typeName,
-      fullTypeName: composeSuiType(G1.$typeName, ...[]) as `0x2::bls12381::G1`,
+      fullTypeName: composeSuiType(
+        G1.$typeName,
+        ...[],
+      ) as `0x2::bls12381::G1`,
       typeArgs: [] as [],
       isPhantom: G1.$isPhantom,
       reifiedTypeArgs: [],
@@ -332,7 +344,7 @@ export class G1 implements StructClass {
   static fromJSON(json: Record<string, any>): G1 {
     if (json.$typeName !== G1.$typeName) {
       throw new Error(
-        `not a G1 json object: expected '${G1.$typeName}' but got '${json.$typeName}'`
+        `not a G1 json object: expected '${G1.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -361,7 +373,7 @@ export class G1 implements StructClass {
       return G1.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -412,7 +424,10 @@ export class G2 implements StructClass {
   readonly dummyField: ToField<'bool'>
 
   private constructor(typeArgs: [], fields: G2Fields) {
-    this.$fullTypeName = composeSuiType(G2.$typeName, ...typeArgs) as `0x2::bls12381::G2`
+    this.$fullTypeName = composeSuiType(
+      G2.$typeName,
+      ...typeArgs,
+    ) as `0x2::bls12381::G2`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -422,7 +437,10 @@ export class G2 implements StructClass {
     const reifiedBcs = G2.bcs
     return {
       typeName: G2.$typeName,
-      fullTypeName: composeSuiType(G2.$typeName, ...[]) as `0x2::bls12381::G2`,
+      fullTypeName: composeSuiType(
+        G2.$typeName,
+        ...[],
+      ) as `0x2::bls12381::G2`,
       typeArgs: [] as [],
       isPhantom: G2.$isPhantom,
       reifiedTypeArgs: [],
@@ -508,7 +526,7 @@ export class G2 implements StructClass {
   static fromJSON(json: Record<string, any>): G2 {
     if (json.$typeName !== G2.$typeName) {
       throw new Error(
-        `not a G2 json object: expected '${G2.$typeName}' but got '${json.$typeName}'`
+        `not a G2 json object: expected '${G2.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -537,7 +555,7 @@ export class G2 implements StructClass {
       return G2.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -588,7 +606,10 @@ export class GT implements StructClass {
   readonly dummyField: ToField<'bool'>
 
   private constructor(typeArgs: [], fields: GTFields) {
-    this.$fullTypeName = composeSuiType(GT.$typeName, ...typeArgs) as `0x2::bls12381::GT`
+    this.$fullTypeName = composeSuiType(
+      GT.$typeName,
+      ...typeArgs,
+    ) as `0x2::bls12381::GT`
     this.$typeArgs = typeArgs
 
     this.dummyField = fields.dummyField
@@ -598,7 +619,10 @@ export class GT implements StructClass {
     const reifiedBcs = GT.bcs
     return {
       typeName: GT.$typeName,
-      fullTypeName: composeSuiType(GT.$typeName, ...[]) as `0x2::bls12381::GT`,
+      fullTypeName: composeSuiType(
+        GT.$typeName,
+        ...[],
+      ) as `0x2::bls12381::GT`,
       typeArgs: [] as [],
       isPhantom: GT.$isPhantom,
       reifiedTypeArgs: [],
@@ -684,7 +708,7 @@ export class GT implements StructClass {
   static fromJSON(json: Record<string, any>): GT {
     if (json.$typeName !== GT.$typeName) {
       throw new Error(
-        `not a GT json object: expected '${GT.$typeName}' but got '${json.$typeName}'`
+        `not a GT json object: expected '${GT.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -713,7 +737,7 @@ export class GT implements StructClass {
       return GT.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -767,7 +791,7 @@ export class UncompressedG1 implements StructClass {
   private constructor(typeArgs: [], fields: UncompressedG1Fields) {
     this.$fullTypeName = composeSuiType(
       UncompressedG1.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::bls12381::UncompressedG1`
     this.$typeArgs = typeArgs
 
@@ -780,7 +804,7 @@ export class UncompressedG1 implements StructClass {
       typeName: UncompressedG1.$typeName,
       fullTypeName: composeSuiType(
         UncompressedG1.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::bls12381::UncompressedG1`,
       typeArgs: [] as [],
       isPhantom: UncompressedG1.$isPhantom,
@@ -867,7 +891,7 @@ export class UncompressedG1 implements StructClass {
   static fromJSON(json: Record<string, any>): UncompressedG1 {
     if (json.$typeName !== UncompressedG1.$typeName) {
       throw new Error(
-        `not a UncompressedG1 json object: expected '${UncompressedG1.$typeName}' but got '${json.$typeName}'`
+        `not a UncompressedG1 json object: expected '${UncompressedG1.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -896,7 +920,7 @@ export class UncompressedG1 implements StructClass {
       return UncompressedG1.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

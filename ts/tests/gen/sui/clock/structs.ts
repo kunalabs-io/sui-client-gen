@@ -3,29 +3,29 @@
  * shared object that is created at 0x6 during genesis.
  */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { UID } from '../object/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Clock =============================== */
 
@@ -89,7 +89,10 @@ export class Clock implements StructClass {
   readonly timestampMs: ToField<'u64'>
 
   private constructor(typeArgs: [], fields: ClockFields) {
-    this.$fullTypeName = composeSuiType(Clock.$typeName, ...typeArgs) as `0x2::clock::Clock`
+    this.$fullTypeName = composeSuiType(
+      Clock.$typeName,
+      ...typeArgs,
+    ) as `0x2::clock::Clock`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -100,7 +103,10 @@ export class Clock implements StructClass {
     const reifiedBcs = Clock.bcs
     return {
       typeName: Clock.$typeName,
-      fullTypeName: composeSuiType(Clock.$typeName, ...[]) as `0x2::clock::Clock`,
+      fullTypeName: composeSuiType(
+        Clock.$typeName,
+        ...[],
+      ) as `0x2::clock::Clock`,
       typeArgs: [] as [],
       isPhantom: Clock.$isPhantom,
       reifiedTypeArgs: [],
@@ -191,7 +197,7 @@ export class Clock implements StructClass {
   static fromJSON(json: Record<string, any>): Clock {
     if (json.$typeName !== Clock.$typeName) {
       throw new Error(
-        `not a Clock json object: expected '${Clock.$typeName}' but got '${json.$typeName}'`
+        `not a Clock json object: expected '${Clock.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -220,7 +226,7 @@ export class Clock implements StructClass {
       return Clock.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

@@ -1,28 +1,28 @@
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  fieldToJSON,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  fieldToJSON,
-  phantom,
   vector,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== EventStreamHead =============================== */
 
@@ -76,7 +76,7 @@ export class EventStreamHead implements StructClass {
   private constructor(typeArgs: [], fields: EventStreamHeadFields) {
     this.$fullTypeName = composeSuiType(
       EventStreamHead.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::accumulator_settlement::EventStreamHead`
     this.$typeArgs = typeArgs
 
@@ -91,7 +91,7 @@ export class EventStreamHead implements StructClass {
       typeName: EventStreamHead.$typeName,
       fullTypeName: composeSuiType(
         EventStreamHead.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::accumulator_settlement::EventStreamHead`,
       typeArgs: [] as [],
       isPhantom: EventStreamHead.$isPhantom,
@@ -188,7 +188,7 @@ export class EventStreamHead implements StructClass {
   static fromJSON(json: Record<string, any>): EventStreamHead {
     if (json.$typeName !== EventStreamHead.$typeName) {
       throw new Error(
-        `not a EventStreamHead json object: expected '${EventStreamHead.$typeName}' but got '${json.$typeName}'`
+        `not a EventStreamHead json object: expected '${EventStreamHead.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -217,7 +217,7 @@ export class EventStreamHead implements StructClass {
       return EventStreamHead.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { pure } from '../../_framework/util'
 
 /**
  * Hash an arbitrary binary `message` to a class group element to be used as input for `vdf_verify`.
@@ -14,7 +14,7 @@ import {
  */
 export function hashToInput(
   tx: Transaction,
-  message: Array<number | TransactionArgument> | TransactionArgument
+  message: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vdf::hash_to_input`,
@@ -25,7 +25,7 @@ export function hashToInput(
 /** The internal functions for `hash_to_input`. */
 export function hashToInputInternal(
   tx: Transaction,
-  message: Array<number | TransactionArgument> | TransactionArgument
+  message: Array<number | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vdf::hash_to_input_internal`,

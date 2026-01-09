@@ -1,13 +1,13 @@
-import { getPublishedAt } from '../../_envs'
-import { obj, pure, vector } from '../../_framework/util'
-import { String } from '../../std/string/structs'
-import { ActiveJwk } from './structs'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { obj, pure, vector } from '../../_framework/util'
+import { String } from '../../std/string/structs'
+import { ActiveJwk } from './structs'
 
 export interface ActiveJwkEqualArgs {
   a: TransactionObjectInput
@@ -17,7 +17,10 @@ export interface ActiveJwkEqualArgs {
 export function activeJwkEqual(tx: Transaction, args: ActiveJwkEqualArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::authenticator_state::active_jwk_equal`,
-    arguments: [obj(tx, args.a), obj(tx, args.b)],
+    arguments: [
+      obj(tx, args.a),
+      obj(tx, args.b),
+    ],
   })
 }
 
@@ -29,7 +32,10 @@ export interface JwkEqualArgs {
 export function jwkEqual(tx: Transaction, args: JwkEqualArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::authenticator_state::jwk_equal`,
-    arguments: [obj(tx, args.a), obj(tx, args.b)],
+    arguments: [
+      obj(tx, args.a),
+      obj(tx, args.b),
+    ],
   })
 }
 
@@ -41,7 +47,10 @@ export interface JwkIdEqualArgs {
 export function jwkIdEqual(tx: Transaction, args: JwkIdEqualArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::authenticator_state::jwk_id_equal`,
-    arguments: [obj(tx, args.a), obj(tx, args.b)],
+    arguments: [
+      obj(tx, args.a),
+      obj(tx, args.b),
+    ],
   })
 }
 
@@ -53,7 +62,10 @@ export interface StringBytesLtArgs {
 export function stringBytesLt(tx: Transaction, args: StringBytesLtArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::authenticator_state::string_bytes_lt`,
-    arguments: [pure(tx, args.a, `${String.$typeName}`), pure(tx, args.b, `${String.$typeName}`)],
+    arguments: [
+      pure(tx, args.a, `${String.$typeName}`),
+      pure(tx, args.b, `${String.$typeName}`),
+    ],
   })
 }
 
@@ -65,7 +77,10 @@ export interface JwkLtArgs {
 export function jwkLt(tx: Transaction, args: JwkLtArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::authenticator_state::jwk_lt`,
-    arguments: [obj(tx, args.a), obj(tx, args.b)],
+    arguments: [
+      obj(tx, args.a),
+      obj(tx, args.b),
+    ],
   })
 }
 
@@ -97,7 +112,7 @@ export function loadInner(tx: Transaction, self: TransactionObjectInput): Transa
 
 export function checkSorted(
   tx: Transaction,
-  newActiveJwks: Array<TransactionObjectInput> | TransactionArgument
+  newActiveJwks: Array<TransactionObjectInput> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::authenticator_state::check_sorted`,
@@ -118,17 +133,20 @@ export interface UpdateAuthenticatorStateArgs {
  */
 export function updateAuthenticatorState(
   tx: Transaction,
-  args: UpdateAuthenticatorStateArgs
+  args: UpdateAuthenticatorStateArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::authenticator_state::update_authenticator_state`,
-    arguments: [obj(tx, args.self), vector(tx, `${ActiveJwk.$typeName}`, args.newActiveJwks)],
+    arguments: [
+      obj(tx, args.self),
+      vector(tx, `${ActiveJwk.$typeName}`, args.newActiveJwks),
+    ],
   })
 }
 
 export function deduplicate(
   tx: Transaction,
-  jwks: Array<TransactionObjectInput> | TransactionArgument
+  jwks: Array<TransactionObjectInput> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::authenticator_state::deduplicate`,
@@ -144,7 +162,10 @@ export interface ExpireJwksArgs {
 export function expireJwks(tx: Transaction, args: ExpireJwksArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::authenticator_state::expire_jwks`,
-    arguments: [obj(tx, args.self), pure(tx, args.minEpoch, `u64`)],
+    arguments: [
+      obj(tx, args.self),
+      pure(tx, args.minEpoch, `u64`),
+    ],
   })
 }
 

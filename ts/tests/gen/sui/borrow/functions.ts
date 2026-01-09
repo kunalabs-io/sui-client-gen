@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, obj } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, obj } from '../../_framework/util'
 
 /** Create a new `Referent` struct */
 export function new_(tx: Transaction, typeArg: string, value: GenericArg): TransactionResult {
@@ -23,7 +23,7 @@ export function new_(tx: Transaction, typeArg: string, value: GenericArg): Trans
 export function borrow(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::borrow::borrow`,
@@ -43,7 +43,11 @@ export function putBack(tx: Transaction, typeArg: string, args: PutBackArgs): Tr
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::borrow::put_back`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), generic(tx, `${typeArg}`, args.value), obj(tx, args.borrow)],
+    arguments: [
+      obj(tx, args.self),
+      generic(tx, `${typeArg}`, args.value),
+      obj(tx, args.borrow),
+    ],
   })
 }
 
@@ -51,7 +55,7 @@ export function putBack(tx: Transaction, typeArg: string, args: PutBackArgs): Tr
 export function destroy(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::borrow::destroy`,

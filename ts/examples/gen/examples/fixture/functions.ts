@@ -1,21 +1,21 @@
-import { String as String1 } from '../../_dependencies/std/ascii/structs'
-import { Option } from '../../_dependencies/std/option/structs'
-import { String } from '../../_dependencies/std/string/structs'
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, obj, option, pure, vector } from '../../_framework/util'
-import { ID } from '../../sui/object/structs'
-import { Bar, WithTwoGenerics } from './structs'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { String as String1 } from '../../_dependencies/std/ascii/structs'
+import { Option } from '../../_dependencies/std/option/structs'
+import { String } from '../../_dependencies/std/string/structs'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, obj, option, pure, vector } from '../../_framework/util'
+import { ID } from '../../sui/object/structs'
+import { Bar, WithTwoGenerics } from './structs'
 
 export function createWithGenericField(
   tx: Transaction,
   typeArg: string,
-  genericField: GenericArg
+  genericField: GenericArg,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::fixture::create_with_generic_field`,
@@ -39,7 +39,7 @@ export interface CreateWithTwoGenericsArgs {
 export function createWithTwoGenerics(
   tx: Transaction,
   typeArgs: [string, string],
-  args: CreateWithTwoGenericsArgs
+  args: CreateWithTwoGenericsArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::fixture::create_with_two_generics`,
@@ -69,7 +69,7 @@ export interface CreateFooArgs {
 export function createFoo(
   tx: Transaction,
   typeArgs: [string, string],
-  args: CreateFooArgs
+  args: CreateFooArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::fixture::create_foo`,
@@ -87,8 +87,10 @@ export function createFoo(
       obj(tx, args.twoGenericsReifiedNested),
       vector(
         tx,
-        `${WithTwoGenerics.$typeName}<${Bar.$typeName}, vector<${WithTwoGenerics.$typeName}<${typeArgs[0]}, u8>>>`,
-        args.twoGenericsNestedVec
+        `${WithTwoGenerics.$typeName}<${Bar.$typeName}, vector<${WithTwoGenerics.$typeName}<${
+          typeArgs[0]
+        }, u8>>>`,
+        args.twoGenericsNestedVec,
       ),
       obj(tx, args.objRef),
     ],
@@ -113,7 +115,7 @@ export interface CreateSpecialArgs {
 export function createSpecial(
   tx: Transaction,
   typeArgs: [string, string],
-  args: CreateSpecialArgs
+  args: CreateSpecialArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::fixture::create_special`,
@@ -149,7 +151,7 @@ export interface CreateSpecialAsGenericsArgs {
 export function createSpecialAsGenerics(
   tx: Transaction,
   typeArgs: [string, string, string, string, string, string, string, string],
-  args: CreateSpecialAsGenericsArgs
+  args: CreateSpecialAsGenericsArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::fixture::create_special_as_generics`,
@@ -179,7 +181,7 @@ export interface CreateSpecialInVectorsArgs {
 export function createSpecialInVectors(
   tx: Transaction,
   typeArg: string,
-  args: CreateSpecialInVectorsArgs
+  args: CreateSpecialInVectorsArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::fixture::create_special_in_vectors`,

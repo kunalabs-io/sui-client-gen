@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { pure } from '../../_framework/util'
 
 /**
  * @param data: Vector of BN254 field elements to hash.
@@ -24,7 +24,7 @@ import {
  */
 export function poseidonBn254(
   tx: Transaction,
-  data: Array<bigint | TransactionArgument> | TransactionArgument
+  data: Array<bigint | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::poseidon::poseidon_bn254`,
@@ -39,7 +39,7 @@ export function poseidonBn254(
  */
 export function poseidonBn254Internal(
   tx: Transaction,
-  data: Array<Array<number | TransactionArgument> | TransactionArgument> | TransactionArgument
+  data: Array<Array<number | TransactionArgument> | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::poseidon::poseidon_bn254_internal`,

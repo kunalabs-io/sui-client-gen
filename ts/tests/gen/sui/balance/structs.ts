@@ -4,7 +4,17 @@
  * custom coins with `Supply` and `Balance`s.
  */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  extractType,
+  phantom,
   PhantomReified,
   PhantomToTypeStr,
   PhantomTypeArgument,
@@ -14,25 +24,15 @@ import {
   ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
-  assertFieldsWithTypesArgsMatch,
-  assertReifiedTypeArgsMatch,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  extractType,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
   parseTypeName,
+  SupportedSuiClient,
 } from '../../_framework/util'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Supply =============================== */
 
@@ -77,7 +77,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: SupplyFields<T>) {
     this.$fullTypeName = composeSuiType(
       Supply.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::balance::Supply<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
@@ -85,14 +85,14 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): SupplyReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Supply.bcs
     return {
       typeName: Supply.$typeName,
       fullTypeName: composeSuiType(
         Supply.$typeName,
-        ...[extractType(T)]
+        ...[extractType(T)],
       ) as `0x2::balance::Supply<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       isPhantom: Supply.$isPhantom,
@@ -118,7 +118,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static phantom<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): PhantomReified<ToTypeStr<Supply<ToPhantomTypeArgument<T>>>> {
     return phantom(Supply.reified(T))
   }
@@ -144,7 +144,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): Supply<ToPhantomTypeArgument<T>> {
     return Supply.reified(typeArg).new({
       value: decodeFromFields('u64', fields.value),
@@ -153,7 +153,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): Supply<ToPhantomTypeArgument<T>> {
     if (!isSupply(item.type)) {
       throw new Error('not a Supply type')
@@ -167,7 +167,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
 
   static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: Uint8Array
+    data: Uint8Array,
   ): Supply<ToPhantomTypeArgument<T>> {
     return Supply.fromFields(typeArg, Supply.bcs.parse(data))
   }
@@ -184,7 +184,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    field: any
+    field: any,
   ): Supply<ToPhantomTypeArgument<T>> {
     return Supply.reified(typeArg).new({
       value: decodeFromJSONField('u64', field.value),
@@ -193,17 +193,17 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): Supply<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Supply.$typeName) {
       throw new Error(
-        `not a Supply json object: expected '${Supply.$typeName}' but got '${json.$typeName}'`
+        `not a Supply json object: expected '${Supply.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Supply.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return Supply.fromJSONField(typeArg, json)
@@ -211,7 +211,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): Supply<ToPhantomTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -224,7 +224,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): Supply<ToPhantomTypeArgument<T>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isSupply(data.bcs.type)) {
@@ -234,7 +234,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -242,7 +242,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -253,14 +253,14 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
       return Supply.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SupportedSuiClient,
     typeArg: T,
-    id: string
+    id: string,
   ): Promise<Supply<ToPhantomTypeArgument<T>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isSupply(res.type)) {
@@ -270,7 +270,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -278,7 +278,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }
@@ -330,7 +330,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: BalanceFields<T>) {
     this.$fullTypeName = composeSuiType(
       Balance.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::balance::Balance<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
@@ -338,14 +338,14 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): BalanceReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Balance.bcs
     return {
       typeName: Balance.$typeName,
       fullTypeName: composeSuiType(
         Balance.$typeName,
-        ...[extractType(T)]
+        ...[extractType(T)],
       ) as `0x2::balance::Balance<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       isPhantom: Balance.$isPhantom,
@@ -371,7 +371,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static phantom<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): PhantomReified<ToTypeStr<Balance<ToPhantomTypeArgument<T>>>> {
     return phantom(Balance.reified(T))
   }
@@ -397,7 +397,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): Balance<ToPhantomTypeArgument<T>> {
     return Balance.reified(typeArg).new({
       value: decodeFromFields('u64', fields.value),
@@ -406,7 +406,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): Balance<ToPhantomTypeArgument<T>> {
     if (!isBalance(item.type)) {
       throw new Error('not a Balance type')
@@ -420,7 +420,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
 
   static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: Uint8Array
+    data: Uint8Array,
   ): Balance<ToPhantomTypeArgument<T>> {
     return Balance.fromFields(typeArg, Balance.bcs.parse(data))
   }
@@ -437,7 +437,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    field: any
+    field: any,
   ): Balance<ToPhantomTypeArgument<T>> {
     return Balance.reified(typeArg).new({
       value: decodeFromJSONField('u64', field.value),
@@ -446,17 +446,17 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): Balance<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Balance.$typeName) {
       throw new Error(
-        `not a Balance json object: expected '${Balance.$typeName}' but got '${json.$typeName}'`
+        `not a Balance json object: expected '${Balance.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Balance.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return Balance.fromJSONField(typeArg, json)
@@ -464,7 +464,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): Balance<ToPhantomTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -477,7 +477,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): Balance<ToPhantomTypeArgument<T>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isBalance(data.bcs.type)) {
@@ -487,7 +487,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -495,7 +495,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -506,14 +506,14 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
       return Balance.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SupportedSuiClient,
     typeArg: T,
-    id: string
+    id: string,
   ): Promise<Balance<ToPhantomTypeArgument<T>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isBalance(res.type)) {
@@ -523,7 +523,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -531,7 +531,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }

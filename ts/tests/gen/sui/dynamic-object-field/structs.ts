@@ -5,15 +5,10 @@
  * for external tools. The difference is otherwise not observable from within Move.
  */
 
+import { bcs, BcsType } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
-  PhantomReified,
-  Reified,
-  StructClass,
-  ToField,
-  ToJSON,
-  ToTypeArgument,
-  ToTypeStr,
-  TypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -22,19 +17,24 @@ import {
   extractType,
   fieldToJSON,
   phantom,
+  PhantomReified,
+  Reified,
+  StructClass,
   toBcs,
+  ToField,
+  ToJSON,
+  ToTypeArgument,
+  ToTypeStr,
+  TypeArgument,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
   parseTypeName,
+  SupportedSuiClient,
 } from '../../_framework/util'
-import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Wrapper =============================== */
 
@@ -76,7 +76,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
   private constructor(typeArgs: [ToTypeStr<Name>], fields: WrapperFields<Name>) {
     this.$fullTypeName = composeSuiType(
       Wrapper.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::dynamic_object_field::Wrapper<${ToTypeStr<Name>}>`
     this.$typeArgs = typeArgs
 
@@ -84,14 +84,14 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
   }
 
   static reified<Name extends Reified<TypeArgument, any>>(
-    Name: Name
+    Name: Name,
   ): WrapperReified<ToTypeArgument<Name>> {
     const reifiedBcs = Wrapper.bcs(toBcs(Name))
     return {
       typeName: Wrapper.$typeName,
       fullTypeName: composeSuiType(
         Wrapper.$typeName,
-        ...[extractType(Name)]
+        ...[extractType(Name)],
       ) as `0x2::dynamic_object_field::Wrapper<${ToTypeStr<ToTypeArgument<Name>>}>`,
       typeArgs: [extractType(Name)] as [ToTypeStr<ToTypeArgument<Name>>],
       isPhantom: Wrapper.$isPhantom,
@@ -117,7 +117,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
   }
 
   static phantom<Name extends Reified<TypeArgument, any>>(
-    Name: Name
+    Name: Name,
   ): PhantomReified<ToTypeStr<Wrapper<ToTypeArgument<Name>>>> {
     return phantom(Wrapper.reified(Name))
   }
@@ -144,7 +144,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
 
   static fromFields<Name extends Reified<TypeArgument, any>>(
     typeArg: Name,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): Wrapper<ToTypeArgument<Name>> {
     return Wrapper.reified(typeArg).new({
       name: decodeFromFields(typeArg, fields.name),
@@ -153,7 +153,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
 
   static fromFieldsWithTypes<Name extends Reified<TypeArgument, any>>(
     typeArg: Name,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): Wrapper<ToTypeArgument<Name>> {
     if (!isWrapper(item.type)) {
       throw new Error('not a Wrapper type')
@@ -167,7 +167,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
 
   static fromBcs<Name extends Reified<TypeArgument, any>>(
     typeArg: Name,
-    data: Uint8Array
+    data: Uint8Array,
   ): Wrapper<ToTypeArgument<Name>> {
     const typeArgs = [typeArg]
     return Wrapper.fromFields(typeArg, Wrapper.bcs(toBcs(typeArg)).parse(data))
@@ -185,7 +185,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
 
   static fromJSONField<Name extends Reified<TypeArgument, any>>(
     typeArg: Name,
-    field: any
+    field: any,
   ): Wrapper<ToTypeArgument<Name>> {
     return Wrapper.reified(typeArg).new({
       name: decodeFromJSONField(typeArg, field.name),
@@ -194,17 +194,17 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
 
   static fromJSON<Name extends Reified<TypeArgument, any>>(
     typeArg: Name,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): Wrapper<ToTypeArgument<Name>> {
     if (json.$typeName !== Wrapper.$typeName) {
       throw new Error(
-        `not a Wrapper json object: expected '${Wrapper.$typeName}' but got '${json.$typeName}'`
+        `not a Wrapper json object: expected '${Wrapper.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Wrapper.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return Wrapper.fromJSONField(typeArg, json)
@@ -212,7 +212,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
 
   static fromSuiParsedData<Name extends Reified<TypeArgument, any>>(
     typeArg: Name,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): Wrapper<ToTypeArgument<Name>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -225,7 +225,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
 
   static fromSuiObjectData<Name extends Reified<TypeArgument, any>>(
     typeArg: Name,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): Wrapper<ToTypeArgument<Name>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isWrapper(data.bcs.type)) {
@@ -235,7 +235,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -243,7 +243,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -254,14 +254,14 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
       return Wrapper.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<Name extends Reified<TypeArgument, any>>(
     client: SupportedSuiClient,
     typeArg: Name,
-    id: string
+    id: string,
   ): Promise<Wrapper<ToTypeArgument<Name>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isWrapper(res.type)) {
@@ -271,7 +271,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -279,7 +279,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }

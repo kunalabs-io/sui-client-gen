@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, pure, vector } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, pure, vector } from '../../_framework/util'
 
 /** Create an empty vector. */
 export function empty(tx: Transaction, typeArg: string): TransactionResult {
@@ -20,7 +20,7 @@ export function empty(tx: Transaction, typeArg: string): TransactionResult {
 export function length(
   tx: Transaction,
   typeArg: string,
-  v: Array<GenericArg> | TransactionArgument
+  v: Array<GenericArg> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::length`,
@@ -42,7 +42,10 @@ export function borrow(tx: Transaction, typeArg: string, args: BorrowArgs): Tran
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::borrow`,
     typeArguments: [typeArg],
-    arguments: [vector(tx, `${typeArg}`, args.v), pure(tx, args.i, `u64`)],
+    arguments: [
+      vector(tx, `${typeArg}`, args.v),
+      pure(tx, args.i, `u64`),
+    ],
   })
 }
 
@@ -56,7 +59,10 @@ export function pushBack(tx: Transaction, typeArg: string, args: PushBackArgs): 
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::push_back`,
     typeArguments: [typeArg],
-    arguments: [vector(tx, `${typeArg}`, args.v), generic(tx, `${typeArg}`, args.e)],
+    arguments: [
+      vector(tx, `${typeArg}`, args.v),
+      generic(tx, `${typeArg}`, args.e),
+    ],
   })
 }
 
@@ -72,12 +78,15 @@ export interface BorrowMutArgs {
 export function borrowMut(
   tx: Transaction,
   typeArg: string,
-  args: BorrowMutArgs
+  args: BorrowMutArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::borrow_mut`,
     typeArguments: [typeArg],
-    arguments: [vector(tx, `${typeArg}`, args.v), pure(tx, args.i, `u64`)],
+    arguments: [
+      vector(tx, `${typeArg}`, args.v),
+      pure(tx, args.i, `u64`),
+    ],
   })
 }
 
@@ -88,7 +97,7 @@ export function borrowMut(
 export function popBack(
   tx: Transaction,
   typeArg: string,
-  v: Array<GenericArg> | TransactionArgument
+  v: Array<GenericArg> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::pop_back`,
@@ -104,7 +113,7 @@ export function popBack(
 export function destroyEmpty(
   tx: Transaction,
   typeArg: string,
-  v: Array<GenericArg> | TransactionArgument
+  v: Array<GenericArg> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::destroy_empty`,
@@ -127,7 +136,11 @@ export function swap(tx: Transaction, typeArg: string, args: SwapArgs): Transact
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::swap`,
     typeArguments: [typeArg],
-    arguments: [vector(tx, `${typeArg}`, args.v), pure(tx, args.i, `u64`), pure(tx, args.j, `u64`)],
+    arguments: [
+      vector(tx, `${typeArg}`, args.v),
+      pure(tx, args.i, `u64`),
+      pure(tx, args.j, `u64`),
+    ],
   })
 }
 
@@ -144,7 +157,7 @@ export function singleton(tx: Transaction, typeArg: string, e: GenericArg): Tran
 export function reverse(
   tx: Transaction,
   typeArg: string,
-  v: Array<GenericArg> | TransactionArgument
+  v: Array<GenericArg> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::reverse`,
@@ -163,7 +176,10 @@ export function append(tx: Transaction, typeArg: string, args: AppendArgs): Tran
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::append`,
     typeArguments: [typeArg],
-    arguments: [vector(tx, `${typeArg}`, args.lhs), vector(tx, `${typeArg}`, args.other)],
+    arguments: [
+      vector(tx, `${typeArg}`, args.lhs),
+      vector(tx, `${typeArg}`, args.other),
+    ],
   })
 }
 
@@ -171,7 +187,7 @@ export function append(tx: Transaction, typeArg: string, args: AppendArgs): Tran
 export function isEmpty(
   tx: Transaction,
   typeArg: string,
-  v: Array<GenericArg> | TransactionArgument
+  v: Array<GenericArg> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::is_empty`,
@@ -193,7 +209,10 @@ export function contains(tx: Transaction, typeArg: string, args: ContainsArgs): 
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::contains`,
     typeArguments: [typeArg],
-    arguments: [vector(tx, `${typeArg}`, args.v), generic(tx, `${typeArg}`, args.e)],
+    arguments: [
+      vector(tx, `${typeArg}`, args.v),
+      generic(tx, `${typeArg}`, args.e),
+    ],
   })
 }
 
@@ -210,7 +229,10 @@ export function indexOf(tx: Transaction, typeArg: string, args: IndexOfArgs): Tr
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::index_of`,
     typeArguments: [typeArg],
-    arguments: [vector(tx, `${typeArg}`, args.v), generic(tx, `${typeArg}`, args.e)],
+    arguments: [
+      vector(tx, `${typeArg}`, args.v),
+      generic(tx, `${typeArg}`, args.e),
+    ],
   })
 }
 
@@ -228,7 +250,10 @@ export function remove(tx: Transaction, typeArg: string, args: RemoveArgs): Tran
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::remove`,
     typeArguments: [typeArg],
-    arguments: [vector(tx, `${typeArg}`, args.v), pure(tx, args.i, `u64`)],
+    arguments: [
+      vector(tx, `${typeArg}`, args.v),
+      pure(tx, args.i, `u64`),
+    ],
   })
 }
 
@@ -270,12 +295,15 @@ export interface SwapRemoveArgs {
 export function swapRemove(
   tx: Transaction,
   typeArg: string,
-  args: SwapRemoveArgs
+  args: SwapRemoveArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::swap_remove`,
     typeArguments: [typeArg],
-    arguments: [vector(tx, `${typeArg}`, args.v), pure(tx, args.i, `u64`)],
+    arguments: [
+      vector(tx, `${typeArg}`, args.v),
+      pure(tx, args.i, `u64`),
+    ],
   })
 }
 
@@ -292,7 +320,10 @@ export function skip(tx: Transaction, typeArg: string, args: SkipArgs): Transact
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::skip`,
     typeArguments: [typeArg],
-    arguments: [vector(tx, `${typeArg}`, args.v), pure(tx, args.n, `u64`)],
+    arguments: [
+      vector(tx, `${typeArg}`, args.v),
+      pure(tx, args.n, `u64`),
+    ],
   })
 }
 
@@ -309,7 +340,10 @@ export function take(tx: Transaction, typeArg: string, args: TakeArgs): Transact
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::take`,
     typeArguments: [typeArg],
-    arguments: [vector(tx, `${typeArg}`, args.v), pure(tx, args.n, `u64`)],
+    arguments: [
+      vector(tx, `${typeArg}`, args.v),
+      pure(tx, args.n, `u64`),
+    ],
   })
 }
 
@@ -317,7 +351,7 @@ export function take(tx: Transaction, typeArg: string, args: TakeArgs): Transact
 export function flatten(
   tx: Transaction,
   typeArg: string,
-  v: Array<Array<GenericArg> | TransactionArgument> | TransactionArgument
+  v: Array<Array<GenericArg> | TransactionArgument> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::vector::flatten`,

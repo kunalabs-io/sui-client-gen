@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, obj, pure, vector } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, obj, pure, vector } from '../../_framework/util'
 
 /** Create an empty `VecMap` */
 export function empty(tx: Transaction, typeArgs: [string, string]): TransactionResult {
@@ -29,7 +29,7 @@ export interface InsertArgs {
 export function insert(
   tx: Transaction,
   typeArgs: [string, string],
-  args: InsertArgs
+  args: InsertArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::insert`,
@@ -51,12 +51,15 @@ export interface RemoveArgs {
 export function remove(
   tx: Transaction,
   typeArgs: [string, string],
-  args: RemoveArgs
+  args: RemoveArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::remove`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
+    arguments: [
+      obj(tx, args.self),
+      generic(tx, `${typeArgs[0]}`, args.key),
+    ],
   })
 }
 
@@ -64,7 +67,7 @@ export function remove(
 export function pop(
   tx: Transaction,
   typeArgs: [string, string],
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::pop`,
@@ -85,12 +88,15 @@ export interface GetMutArgs {
 export function getMut(
   tx: Transaction,
   typeArgs: [string, string],
-  args: GetMutArgs
+  args: GetMutArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::get_mut`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
+    arguments: [
+      obj(tx, args.self),
+      generic(tx, `${typeArgs[0]}`, args.key),
+    ],
   })
 }
 
@@ -107,7 +113,10 @@ export function get(tx: Transaction, typeArgs: [string, string], args: GetArgs):
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::get`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
+    arguments: [
+      obj(tx, args.self),
+      generic(tx, `${typeArgs[0]}`, args.key),
+    ],
   })
 }
 
@@ -124,12 +133,15 @@ export interface TryGetArgs {
 export function tryGet(
   tx: Transaction,
   typeArgs: [string, string],
-  args: TryGetArgs
+  args: TryGetArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::try_get`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
+    arguments: [
+      obj(tx, args.self),
+      generic(tx, `${typeArgs[0]}`, args.key),
+    ],
   })
 }
 
@@ -142,12 +154,15 @@ export interface ContainsArgs {
 export function contains(
   tx: Transaction,
   typeArgs: [string, string],
-  args: ContainsArgs
+  args: ContainsArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::contains`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
+    arguments: [
+      obj(tx, args.self),
+      generic(tx, `${typeArgs[0]}`, args.key),
+    ],
   })
 }
 
@@ -155,7 +170,7 @@ export function contains(
 export function length(
   tx: Transaction,
   typeArgs: [string, string],
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::length`,
@@ -168,7 +183,7 @@ export function length(
 export function isEmpty(
   tx: Transaction,
   typeArgs: [string, string],
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::is_empty`,
@@ -181,7 +196,7 @@ export function isEmpty(
 export function destroyEmpty(
   tx: Transaction,
   typeArgs: [string, string],
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::destroy_empty`,
@@ -197,7 +212,7 @@ export function destroyEmpty(
 export function intoKeysValues(
   tx: Transaction,
   typeArgs: [string, string],
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::into_keys_values`,
@@ -221,12 +236,15 @@ export interface FromKeysValuesArgs {
 export function fromKeysValues(
   tx: Transaction,
   typeArgs: [string, string],
-  args: FromKeysValuesArgs
+  args: FromKeysValuesArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::from_keys_values`,
     typeArguments: typeArgs,
-    arguments: [vector(tx, `${typeArgs[0]}`, args.keys), vector(tx, `${typeArgs[1]}`, args.values)],
+    arguments: [
+      vector(tx, `${typeArgs[0]}`, args.keys),
+      vector(tx, `${typeArgs[1]}`, args.values),
+    ],
   })
 }
 
@@ -237,7 +255,7 @@ export function fromKeysValues(
 export function keys(
   tx: Transaction,
   typeArgs: [string, string],
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::keys`,
@@ -258,12 +276,15 @@ export interface GetIdxOptArgs {
 export function getIdxOpt(
   tx: Transaction,
   typeArgs: [string, string],
-  args: GetIdxOptArgs
+  args: GetIdxOptArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::get_idx_opt`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
+    arguments: [
+      obj(tx, args.self),
+      generic(tx, `${typeArgs[0]}`, args.key),
+    ],
   })
 }
 
@@ -279,12 +300,15 @@ export interface GetIdxArgs {
 export function getIdx(
   tx: Transaction,
   typeArgs: [string, string],
-  args: GetIdxArgs
+  args: GetIdxArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::get_idx`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.self), generic(tx, `${typeArgs[0]}`, args.key)],
+    arguments: [
+      obj(tx, args.self),
+      generic(tx, `${typeArgs[0]}`, args.key),
+    ],
   })
 }
 
@@ -301,12 +325,15 @@ export interface GetEntryByIdxArgs {
 export function getEntryByIdx(
   tx: Transaction,
   typeArgs: [string, string],
-  args: GetEntryByIdxArgs
+  args: GetEntryByIdxArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::get_entry_by_idx`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.self), pure(tx, args.idx, `u64`)],
+    arguments: [
+      obj(tx, args.self),
+      pure(tx, args.idx, `u64`),
+    ],
   })
 }
 
@@ -323,12 +350,15 @@ export interface GetEntryByIdxMutArgs {
 export function getEntryByIdxMut(
   tx: Transaction,
   typeArgs: [string, string],
-  args: GetEntryByIdxMutArgs
+  args: GetEntryByIdxMutArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::get_entry_by_idx_mut`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.self), pure(tx, args.idx, `u64`)],
+    arguments: [
+      obj(tx, args.self),
+      pure(tx, args.idx, `u64`),
+    ],
   })
 }
 
@@ -344,12 +374,15 @@ export interface RemoveEntryByIdxArgs {
 export function removeEntryByIdx(
   tx: Transaction,
   typeArgs: [string, string],
-  args: RemoveEntryByIdxArgs
+  args: RemoveEntryByIdxArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::remove_entry_by_idx`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.self), pure(tx, args.idx, `u64`)],
+    arguments: [
+      obj(tx, args.self),
+      pure(tx, args.idx, `u64`),
+    ],
   })
 }
 
@@ -361,7 +394,7 @@ export function removeEntryByIdx(
 export function size(
   tx: Transaction,
   typeArgs: [string, string],
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_map::size`,

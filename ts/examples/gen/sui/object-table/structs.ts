@@ -5,7 +5,17 @@
  * The difference is otherwise not observable from within Move.
  */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  extractType,
+  phantom,
   PhantomReified,
   PhantomToTypeStr,
   PhantomTypeArgument,
@@ -15,26 +25,16 @@ import {
   ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
-  assertFieldsWithTypesArgsMatch,
-  assertReifiedTypeArgsMatch,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  extractType,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
   parseTypeName,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { UID } from '../object/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== ObjectTable =============================== */
 
@@ -50,10 +50,8 @@ export interface ObjectTableFields<K extends PhantomTypeArgument, V extends Phan
   size: ToField<'u64'>
 }
 
-export type ObjectTableReified<
-  K extends PhantomTypeArgument,
-  V extends PhantomTypeArgument,
-> = Reified<ObjectTable<K, V>, ObjectTableFields<K, V>>
+export type ObjectTableReified<K extends PhantomTypeArgument, V extends PhantomTypeArgument> =
+  Reified<ObjectTable<K, V>, ObjectTableFields<K, V>>
 
 export type ObjectTableJSONField<K extends PhantomTypeArgument, V extends PhantomTypeArgument> = {
   id: string
@@ -76,7 +74,9 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
   static readonly $isPhantom = [true, true] as const
 
   readonly $typeName: typeof ObjectTable.$typeName = ObjectTable.$typeName
-  readonly $fullTypeName: `0x2::object_table::ObjectTable<${PhantomToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
+  readonly $fullTypeName: `0x2::object_table::ObjectTable<${PhantomToTypeStr<
+    K
+  >}, ${PhantomToTypeStr<V>}>`
   readonly $typeArgs: [PhantomToTypeStr<K>, PhantomToTypeStr<V>]
   readonly $isPhantom: typeof ObjectTable.$isPhantom = ObjectTable.$isPhantom
 
@@ -87,11 +87,11 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
 
   private constructor(
     typeArgs: [PhantomToTypeStr<K>, PhantomToTypeStr<V>],
-    fields: ObjectTableFields<K, V>
+    fields: ObjectTableFields<K, V>,
   ) {
     this.$fullTypeName = composeSuiType(
       ObjectTable.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::object_table::ObjectTable<${PhantomToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
     this.$typeArgs = typeArgs
 
@@ -102,14 +102,19 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
   static reified<
     K extends PhantomReified<PhantomTypeArgument>,
     V extends PhantomReified<PhantomTypeArgument>,
-  >(K: K, V: V): ObjectTableReified<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
+  >(
+    K: K,
+    V: V,
+  ): ObjectTableReified<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     const reifiedBcs = ObjectTable.bcs
     return {
       typeName: ObjectTable.$typeName,
       fullTypeName: composeSuiType(
         ObjectTable.$typeName,
-        ...[extractType(K), extractType(V)]
-      ) as `0x2::object_table::ObjectTable<${PhantomToTypeStr<ToPhantomTypeArgument<K>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<V>>}>`,
+        ...[extractType(K), extractType(V)],
+      ) as `0x2::object_table::ObjectTable<${PhantomToTypeStr<
+        ToPhantomTypeArgument<K>
+      >}, ${PhantomToTypeStr<ToPhantomTypeArgument<V>>}>`,
       typeArgs: [extractType(K), extractType(V)] as [
         PhantomToTypeStr<ToPhantomTypeArgument<K>>,
         PhantomToTypeStr<ToPhantomTypeArgument<V>>,
@@ -142,7 +147,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     V extends PhantomReified<PhantomTypeArgument>,
   >(
     K: K,
-    V: V
+    V: V,
   ): PhantomReified<ToTypeStr<ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>>> {
     return phantom(ObjectTable.reified(K, V))
   }
@@ -172,7 +177,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     V extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [K, V],
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     return ObjectTable.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromFields(UID.reified(), fields.id),
@@ -185,7 +190,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     V extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [K, V],
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     if (!isObjectTable(item.type)) {
       throw new Error('not a ObjectTable type')
@@ -203,7 +208,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     V extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [K, V],
-    data: Uint8Array
+    data: Uint8Array,
   ): ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     return ObjectTable.fromFields(typeArgs, ObjectTable.bcs.parse(data))
   }
@@ -222,7 +227,10 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
   static fromJSONField<
     K extends PhantomReified<PhantomTypeArgument>,
     V extends PhantomReified<PhantomTypeArgument>,
-  >(typeArgs: [K, V], field: any): ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
+  >(
+    typeArgs: [K, V],
+    field: any,
+  ): ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     return ObjectTable.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       size: decodeFromJSONField('u64', field.size),
@@ -234,17 +242,17 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     V extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [K, V],
-    json: Record<string, any>
+    json: Record<string, any>,
   ): ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     if (json.$typeName !== ObjectTable.$typeName) {
       throw new Error(
-        `not a ObjectTable json object: expected '${ObjectTable.$typeName}' but got '${json.$typeName}'`
+        `not a ObjectTable json object: expected '${ObjectTable.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(ObjectTable.$typeName, ...typeArgs.map(extractType)),
       json.$typeArgs,
-      typeArgs
+      typeArgs,
     )
 
     return ObjectTable.fromJSONField(typeArgs, json)
@@ -255,7 +263,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     V extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [K, V],
-    content: SuiParsedData
+    content: SuiParsedData,
   ): ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -271,7 +279,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     V extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [K, V],
-    data: SuiObjectData
+    data: SuiObjectData,
   ): ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isObjectTable(data.bcs.type)) {
@@ -281,7 +289,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 2) {
         throw new Error(
-          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 2; i++) {
@@ -289,7 +297,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
         const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -300,7 +308,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
       return ObjectTable.fromSuiParsedData(typeArgs, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -310,7 +318,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
   >(
     client: SupportedSuiClient,
     typeArgs: [K, V],
-    id: string
+    id: string,
   ): Promise<ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isObjectTable(res.type)) {
@@ -320,7 +328,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 2) {
       throw new Error(
-        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 2; i++) {
@@ -328,7 +336,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
       const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }

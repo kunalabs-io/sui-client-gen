@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { obj, pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { obj, pure } from '../../_framework/util'
 
 /**
  * The `clock`'s current timestamp as a running total of
@@ -36,10 +36,13 @@ export interface ConsensusCommitPrologueArgs {
 
 export function consensusCommitPrologue(
   tx: Transaction,
-  args: ConsensusCommitPrologueArgs
+  args: ConsensusCommitPrologueArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::clock::consensus_commit_prologue`,
-    arguments: [obj(tx, args.clock), pure(tx, args.timestampMs, `u64`)],
+    arguments: [
+      obj(tx, args.clock),
+      pure(tx, args.timestampMs, `u64`),
+    ],
   })
 }

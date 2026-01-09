@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, obj, vector } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, obj, vector } from '../../_framework/util'
 
 /** Create an empty `VecSet` */
 export function empty(tx: Transaction, typeArg: string): TransactionResult {
@@ -38,7 +38,10 @@ export function insert(tx: Transaction, typeArg: string, args: InsertArgs): Tran
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::insert`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), generic(tx, `${typeArg}`, args.key)],
+    arguments: [
+      obj(tx, args.self),
+      generic(tx, `${typeArg}`, args.key),
+    ],
   })
 }
 
@@ -52,7 +55,10 @@ export function remove(tx: Transaction, typeArg: string, args: RemoveArgs): Tran
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::remove`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), generic(tx, `${typeArg}`, args.key)],
+    arguments: [
+      obj(tx, args.self),
+      generic(tx, `${typeArg}`, args.key),
+    ],
   })
 }
 
@@ -66,7 +72,10 @@ export function contains(tx: Transaction, typeArg: string, args: ContainsArgs): 
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::contains`,
     typeArguments: [typeArg],
-    arguments: [obj(tx, args.self), generic(tx, `${typeArg}`, args.key)],
+    arguments: [
+      obj(tx, args.self),
+      generic(tx, `${typeArg}`, args.key),
+    ],
   })
 }
 
@@ -74,7 +83,7 @@ export function contains(tx: Transaction, typeArg: string, args: ContainsArgs): 
 export function length(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::length`,
@@ -87,7 +96,7 @@ export function length(
 export function isEmpty(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::is_empty`,
@@ -103,7 +112,7 @@ export function isEmpty(
 export function intoKeys(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::into_keys`,
@@ -120,7 +129,7 @@ export function intoKeys(
 export function fromKeys(
   tx: Transaction,
   typeArg: string,
-  keys: Array<GenericArg> | TransactionArgument
+  keys: Array<GenericArg> | TransactionArgument,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::from_keys`,
@@ -137,7 +146,7 @@ export function fromKeys(
 export function keys(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::keys`,
@@ -154,7 +163,7 @@ export function keys(
 export function size(
   tx: Transaction,
   typeArg: string,
-  self: TransactionObjectInput
+  self: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::size`,

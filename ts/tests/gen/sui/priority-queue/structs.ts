@@ -1,14 +1,9 @@
 /** Priority queue implemented using a max heap. */
 
+import { bcs, BcsType } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
-  PhantomReified,
-  Reified,
-  StructClass,
-  ToField,
-  ToJSON,
-  ToTypeArgument,
-  ToTypeStr,
-  TypeArgument,
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
   decodeFromFields,
@@ -17,21 +12,26 @@ import {
   extractType,
   fieldToJSON,
   phantom,
+  PhantomReified,
+  Reified,
+  StructClass,
   toBcs,
+  ToField,
+  ToJSON,
+  ToTypeArgument,
+  ToTypeStr,
+  TypeArgument,
   vector,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
   parseTypeName,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
-import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== PriorityQueue =============================== */
 
@@ -83,7 +83,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
   private constructor(typeArgs: [ToTypeStr<T>], fields: PriorityQueueFields<T>) {
     this.$fullTypeName = composeSuiType(
       PriorityQueue.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::priority_queue::PriorityQueue<${ToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
@@ -91,14 +91,14 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
   }
 
   static reified<T extends Reified<TypeArgument, any>>(
-    T: T
+    T: T,
   ): PriorityQueueReified<ToTypeArgument<T>> {
     const reifiedBcs = PriorityQueue.bcs(toBcs(T))
     return {
       typeName: PriorityQueue.$typeName,
       fullTypeName: composeSuiType(
         PriorityQueue.$typeName,
-        ...[extractType(T)]
+        ...[extractType(T)],
       ) as `0x2::priority_queue::PriorityQueue<${ToTypeStr<ToTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
       isPhantom: PriorityQueue.$isPhantom,
@@ -124,7 +124,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
   }
 
   static phantom<T extends Reified<TypeArgument, any>>(
-    T: T
+    T: T,
   ): PhantomReified<ToTypeStr<PriorityQueue<ToTypeArgument<T>>>> {
     return phantom(PriorityQueue.reified(T))
   }
@@ -151,7 +151,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
 
   static fromFields<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): PriorityQueue<ToTypeArgument<T>> {
     return PriorityQueue.reified(typeArg).new({
       entries: decodeFromFields(vector(Entry.reified(typeArg)), fields.entries),
@@ -160,7 +160,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
 
   static fromFieldsWithTypes<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): PriorityQueue<ToTypeArgument<T>> {
     if (!isPriorityQueue(item.type)) {
       throw new Error('not a PriorityQueue type')
@@ -174,7 +174,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
 
   static fromBcs<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    data: Uint8Array
+    data: Uint8Array,
   ): PriorityQueue<ToTypeArgument<T>> {
     const typeArgs = [typeArg]
     return PriorityQueue.fromFields(typeArg, PriorityQueue.bcs(toBcs(typeArg)).parse(data))
@@ -184,7 +184,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
     return {
       entries: fieldToJSON<Vector<Entry<T>>>(
         `vector<${Entry.$typeName}<${this.$typeArgs[0]}>>`,
-        this.entries
+        this.entries,
       ),
     }
   }
@@ -195,7 +195,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
 
   static fromJSONField<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    field: any
+    field: any,
   ): PriorityQueue<ToTypeArgument<T>> {
     return PriorityQueue.reified(typeArg).new({
       entries: decodeFromJSONField(vector(Entry.reified(typeArg)), field.entries),
@@ -204,17 +204,17 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
 
   static fromJSON<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): PriorityQueue<ToTypeArgument<T>> {
     if (json.$typeName !== PriorityQueue.$typeName) {
       throw new Error(
-        `not a PriorityQueue json object: expected '${PriorityQueue.$typeName}' but got '${json.$typeName}'`
+        `not a PriorityQueue json object: expected '${PriorityQueue.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(PriorityQueue.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return PriorityQueue.fromJSONField(typeArg, json)
@@ -222,7 +222,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
 
   static fromSuiParsedData<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): PriorityQueue<ToTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -235,7 +235,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
 
   static fromSuiObjectData<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): PriorityQueue<ToTypeArgument<T>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isPriorityQueue(data.bcs.type)) {
@@ -245,7 +245,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -253,7 +253,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -264,14 +264,14 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
       return PriorityQueue.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<T extends Reified<TypeArgument, any>>(
     client: SupportedSuiClient,
     typeArg: T,
-    id: string
+    id: string,
   ): Promise<PriorityQueue<ToTypeArgument<T>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isPriorityQueue(res.type)) {
@@ -281,7 +281,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -289,7 +289,7 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }
@@ -340,7 +340,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
   private constructor(typeArgs: [ToTypeStr<T>], fields: EntryFields<T>) {
     this.$fullTypeName = composeSuiType(
       Entry.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::priority_queue::Entry<${ToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
@@ -348,13 +348,15 @@ export class Entry<T extends TypeArgument> implements StructClass {
     this.value = fields.value
   }
 
-  static reified<T extends Reified<TypeArgument, any>>(T: T): EntryReified<ToTypeArgument<T>> {
+  static reified<T extends Reified<TypeArgument, any>>(
+    T: T,
+  ): EntryReified<ToTypeArgument<T>> {
     const reifiedBcs = Entry.bcs(toBcs(T))
     return {
       typeName: Entry.$typeName,
       fullTypeName: composeSuiType(
         Entry.$typeName,
-        ...[extractType(T)]
+        ...[extractType(T)],
       ) as `0x2::priority_queue::Entry<${ToTypeStr<ToTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
       isPhantom: Entry.$isPhantom,
@@ -380,7 +382,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
   }
 
   static phantom<T extends Reified<TypeArgument, any>>(
-    T: T
+    T: T,
   ): PhantomReified<ToTypeStr<Entry<ToTypeArgument<T>>>> {
     return phantom(Entry.reified(T))
   }
@@ -408,7 +410,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
 
   static fromFields<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): Entry<ToTypeArgument<T>> {
     return Entry.reified(typeArg).new({
       priority: decodeFromFields('u64', fields.priority),
@@ -418,7 +420,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
 
   static fromFieldsWithTypes<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): Entry<ToTypeArgument<T>> {
     if (!isEntry(item.type)) {
       throw new Error('not a Entry type')
@@ -433,7 +435,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
 
   static fromBcs<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    data: Uint8Array
+    data: Uint8Array,
   ): Entry<ToTypeArgument<T>> {
     const typeArgs = [typeArg]
     return Entry.fromFields(typeArg, Entry.bcs(toBcs(typeArg)).parse(data))
@@ -452,7 +454,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
 
   static fromJSONField<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    field: any
+    field: any,
   ): Entry<ToTypeArgument<T>> {
     return Entry.reified(typeArg).new({
       priority: decodeFromJSONField('u64', field.priority),
@@ -462,17 +464,17 @@ export class Entry<T extends TypeArgument> implements StructClass {
 
   static fromJSON<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): Entry<ToTypeArgument<T>> {
     if (json.$typeName !== Entry.$typeName) {
       throw new Error(
-        `not a Entry json object: expected '${Entry.$typeName}' but got '${json.$typeName}'`
+        `not a Entry json object: expected '${Entry.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Entry.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return Entry.fromJSONField(typeArg, json)
@@ -480,7 +482,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
 
   static fromSuiParsedData<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): Entry<ToTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -493,7 +495,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
 
   static fromSuiObjectData<T extends Reified<TypeArgument, any>>(
     typeArg: T,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): Entry<ToTypeArgument<T>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isEntry(data.bcs.type)) {
@@ -503,7 +505,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -511,7 +513,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -522,14 +524,14 @@ export class Entry<T extends TypeArgument> implements StructClass {
       return Entry.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<T extends Reified<TypeArgument, any>>(
     client: SupportedSuiClient,
     typeArg: T,
-    id: string
+    id: string,
   ): Promise<Entry<ToTypeArgument<T>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isEntry(res.type)) {
@@ -539,7 +541,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -547,7 +549,7 @@ export class Entry<T extends TypeArgument> implements StructClass {
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }

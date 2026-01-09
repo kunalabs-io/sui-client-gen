@@ -21,29 +21,29 @@
  * empty to be destroyed.
  */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { UID } from '../object/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Bag =============================== */
 
@@ -89,7 +89,10 @@ export class Bag implements StructClass {
   readonly size: ToField<'u64'>
 
   private constructor(typeArgs: [], fields: BagFields) {
-    this.$fullTypeName = composeSuiType(Bag.$typeName, ...typeArgs) as `0x2::bag::Bag`
+    this.$fullTypeName = composeSuiType(
+      Bag.$typeName,
+      ...typeArgs,
+    ) as `0x2::bag::Bag`
     this.$typeArgs = typeArgs
 
     this.id = fields.id
@@ -100,7 +103,10 @@ export class Bag implements StructClass {
     const reifiedBcs = Bag.bcs
     return {
       typeName: Bag.$typeName,
-      fullTypeName: composeSuiType(Bag.$typeName, ...[]) as `0x2::bag::Bag`,
+      fullTypeName: composeSuiType(
+        Bag.$typeName,
+        ...[],
+      ) as `0x2::bag::Bag`,
       typeArgs: [] as [],
       isPhantom: Bag.$isPhantom,
       reifiedTypeArgs: [],
@@ -191,7 +197,7 @@ export class Bag implements StructClass {
   static fromJSON(json: Record<string, any>): Bag {
     if (json.$typeName !== Bag.$typeName) {
       throw new Error(
-        `not a Bag json object: expected '${Bag.$typeName}' but got '${json.$typeName}'`
+        `not a Bag json object: expected '${Bag.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -220,7 +226,7 @@ export class Bag implements StructClass {
       return Bag.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

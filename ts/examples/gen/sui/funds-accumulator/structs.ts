@@ -1,6 +1,16 @@
 /** A module for accumulating funds, i.e. Balance-like types. */
 
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 import {
+  assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  extractType,
+  phantom,
   PhantomReified,
   PhantomToTypeStr,
   PhantomTypeArgument,
@@ -10,25 +20,15 @@ import {
   ToJSON,
   ToPhantomTypeArgument,
   ToTypeStr,
-  assertFieldsWithTypesArgsMatch,
-  assertReifiedTypeArgsMatch,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  extractType,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
   parseTypeName,
+  SupportedSuiClient,
 } from '../../_framework/util'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== Withdrawal =============================== */
 
@@ -91,7 +91,7 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
   private constructor(typeArgs: [PhantomToTypeStr<T>], fields: WithdrawalFields<T>) {
     this.$fullTypeName = composeSuiType(
       Withdrawal.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::funds_accumulator::Withdrawal<${PhantomToTypeStr<T>}>`
     this.$typeArgs = typeArgs
 
@@ -100,14 +100,14 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static reified<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): WithdrawalReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Withdrawal.bcs
     return {
       typeName: Withdrawal.$typeName,
       fullTypeName: composeSuiType(
         Withdrawal.$typeName,
-        ...[extractType(T)]
+        ...[extractType(T)],
       ) as `0x2::funds_accumulator::Withdrawal<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
       typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
       isPhantom: Withdrawal.$isPhantom,
@@ -133,7 +133,7 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static phantom<T extends PhantomReified<PhantomTypeArgument>>(
-    T: T
+    T: T,
   ): PhantomReified<ToTypeStr<Withdrawal<ToPhantomTypeArgument<T>>>> {
     return phantom(Withdrawal.reified(T))
   }
@@ -163,7 +163,7 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFields<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): Withdrawal<ToPhantomTypeArgument<T>> {
     return Withdrawal.reified(typeArg).new({
       owner: decodeFromFields('address', fields.owner),
@@ -173,7 +173,7 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
 
   static fromFieldsWithTypes<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): Withdrawal<ToPhantomTypeArgument<T>> {
     if (!isWithdrawal(item.type)) {
       throw new Error('not a Withdrawal type')
@@ -188,7 +188,7 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
 
   static fromBcs<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: Uint8Array
+    data: Uint8Array,
   ): Withdrawal<ToPhantomTypeArgument<T>> {
     return Withdrawal.fromFields(typeArg, Withdrawal.bcs.parse(data))
   }
@@ -206,7 +206,7 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSONField<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    field: any
+    field: any,
   ): Withdrawal<ToPhantomTypeArgument<T>> {
     return Withdrawal.reified(typeArg).new({
       owner: decodeFromJSONField('address', field.owner),
@@ -216,17 +216,17 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
 
   static fromJSON<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    json: Record<string, any>
+    json: Record<string, any>,
   ): Withdrawal<ToPhantomTypeArgument<T>> {
     if (json.$typeName !== Withdrawal.$typeName) {
       throw new Error(
-        `not a Withdrawal json object: expected '${Withdrawal.$typeName}' but got '${json.$typeName}'`
+        `not a Withdrawal json object: expected '${Withdrawal.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Withdrawal.$typeName, ...[extractType(typeArg)]),
       json.$typeArgs,
-      [typeArg]
+      [typeArg],
     )
 
     return Withdrawal.fromJSONField(typeArg, json)
@@ -234,7 +234,7 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    content: SuiParsedData
+    content: SuiParsedData,
   ): Withdrawal<ToPhantomTypeArgument<T>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -247,7 +247,7 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
 
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
-    data: SuiObjectData
+    data: SuiObjectData,
   ): Withdrawal<ToPhantomTypeArgument<T>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isWithdrawal(data.bcs.type)) {
@@ -257,7 +257,7 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 1) {
         throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 1; i++) {
@@ -265,7 +265,7 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
         const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -276,14 +276,14 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
       return Withdrawal.fromSuiParsedData(typeArg, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: SupportedSuiClient,
     typeArg: T,
-    id: string
+    id: string,
   ): Promise<Withdrawal<ToPhantomTypeArgument<T>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isWithdrawal(res.type)) {
@@ -293,7 +293,7 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
-        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 1; i++) {
@@ -301,7 +301,7 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
       const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }

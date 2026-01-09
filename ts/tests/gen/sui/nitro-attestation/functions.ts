@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { obj, pure } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { obj, pure } from '../../_framework/util'
 
 export interface LoadNitroAttestationArgs {
   attestation: Array<number | TransactionArgument> | TransactionArgument
@@ -21,11 +21,14 @@ export interface LoadNitroAttestationArgs {
  */
 export function loadNitroAttestation(
   tx: Transaction,
-  args: LoadNitroAttestationArgs
+  args: LoadNitroAttestationArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::nitro_attestation::load_nitro_attestation`,
-    arguments: [pure(tx, args.attestation, `vector<u8>`), obj(tx, args.clock)],
+    arguments: [
+      pure(tx, args.attestation, `vector<u8>`),
+      obj(tx, args.clock),
+    ],
   })
 }
 
@@ -104,10 +107,13 @@ export interface LoadNitroAttestationInternalArgs {
 /** Internal native function */
 export function loadNitroAttestationInternal(
   tx: Transaction,
-  args: LoadNitroAttestationInternalArgs
+  args: LoadNitroAttestationInternalArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::nitro_attestation::load_nitro_attestation_internal`,
-    arguments: [pure(tx, args.attestation, `vector<u8>`), pure(tx, args.currentTimestamp, `u64`)],
+    arguments: [
+      pure(tx, args.attestation, `vector<u8>`),
+      pure(tx, args.currentTimestamp, `u64`),
+    ],
   })
 }

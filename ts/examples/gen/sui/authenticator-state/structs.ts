@@ -1,30 +1,30 @@
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import { String } from '../../_dependencies/std/string/structs'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  fieldToJSON,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  fieldToJSON,
-  phantom,
   vector,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { UID } from '../object/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== AuthenticatorState =============================== */
 
@@ -74,7 +74,7 @@ export class AuthenticatorState implements StructClass {
   private constructor(typeArgs: [], fields: AuthenticatorStateFields) {
     this.$fullTypeName = composeSuiType(
       AuthenticatorState.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::authenticator_state::AuthenticatorState`
     this.$typeArgs = typeArgs
 
@@ -88,7 +88,7 @@ export class AuthenticatorState implements StructClass {
       typeName: AuthenticatorState.$typeName,
       fullTypeName: composeSuiType(
         AuthenticatorState.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::authenticator_state::AuthenticatorState`,
       typeArgs: [] as [],
       isPhantom: AuthenticatorState.$isPhantom,
@@ -180,7 +180,7 @@ export class AuthenticatorState implements StructClass {
   static fromJSON(json: Record<string, any>): AuthenticatorState {
     if (json.$typeName !== AuthenticatorState.$typeName) {
       throw new Error(
-        `not a AuthenticatorState json object: expected '${AuthenticatorState.$typeName}' but got '${json.$typeName}'`
+        `not a AuthenticatorState json object: expected '${AuthenticatorState.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -209,7 +209,7 @@ export class AuthenticatorState implements StructClass {
       return AuthenticatorState.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -272,7 +272,7 @@ export class AuthenticatorStateInner implements StructClass {
   private constructor(typeArgs: [], fields: AuthenticatorStateInnerFields) {
     this.$fullTypeName = composeSuiType(
       AuthenticatorStateInner.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::authenticator_state::AuthenticatorStateInner`
     this.$typeArgs = typeArgs
 
@@ -286,7 +286,7 @@ export class AuthenticatorStateInner implements StructClass {
       typeName: AuthenticatorStateInner.$typeName,
       fullTypeName: composeSuiType(
         AuthenticatorStateInner.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::authenticator_state::AuthenticatorStateInner`,
       typeArgs: [] as [],
       isPhantom: AuthenticatorStateInner.$isPhantom,
@@ -382,7 +382,7 @@ export class AuthenticatorStateInner implements StructClass {
   static fromJSON(json: Record<string, any>): AuthenticatorStateInner {
     if (json.$typeName !== AuthenticatorStateInner.$typeName) {
       throw new Error(
-        `not a AuthenticatorStateInner json object: expected '${AuthenticatorStateInner.$typeName}' but got '${json.$typeName}'`
+        `not a AuthenticatorStateInner json object: expected '${AuthenticatorStateInner.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -395,7 +395,7 @@ export class AuthenticatorStateInner implements StructClass {
     }
     if (!isAuthenticatorStateInner(content.type)) {
       throw new Error(
-        `object at ${(content.fields as any).id} is not a AuthenticatorStateInner object`
+        `object at ${(content.fields as any).id} is not a AuthenticatorStateInner object`,
       )
     }
     return AuthenticatorStateInner.fromFieldsWithTypes(content)
@@ -413,7 +413,7 @@ export class AuthenticatorStateInner implements StructClass {
       return AuthenticatorStateInner.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -477,7 +477,7 @@ export class JWK implements StructClass {
   private constructor(typeArgs: [], fields: JWKFields) {
     this.$fullTypeName = composeSuiType(
       JWK.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::authenticator_state::JWK`
     this.$typeArgs = typeArgs
 
@@ -491,7 +491,10 @@ export class JWK implements StructClass {
     const reifiedBcs = JWK.bcs
     return {
       typeName: JWK.$typeName,
-      fullTypeName: composeSuiType(JWK.$typeName, ...[]) as `0x2::authenticator_state::JWK`,
+      fullTypeName: composeSuiType(
+        JWK.$typeName,
+        ...[],
+      ) as `0x2::authenticator_state::JWK`,
       typeArgs: [] as [],
       isPhantom: JWK.$isPhantom,
       reifiedTypeArgs: [],
@@ -592,7 +595,7 @@ export class JWK implements StructClass {
   static fromJSON(json: Record<string, any>): JWK {
     if (json.$typeName !== JWK.$typeName) {
       throw new Error(
-        `not a JWK json object: expected '${JWK.$typeName}' but got '${json.$typeName}'`
+        `not a JWK json object: expected '${JWK.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -621,7 +624,7 @@ export class JWK implements StructClass {
       return JWK.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -679,7 +682,7 @@ export class JwkId implements StructClass {
   private constructor(typeArgs: [], fields: JwkIdFields) {
     this.$fullTypeName = composeSuiType(
       JwkId.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::authenticator_state::JwkId`
     this.$typeArgs = typeArgs
 
@@ -691,7 +694,10 @@ export class JwkId implements StructClass {
     const reifiedBcs = JwkId.bcs
     return {
       typeName: JwkId.$typeName,
-      fullTypeName: composeSuiType(JwkId.$typeName, ...[]) as `0x2::authenticator_state::JwkId`,
+      fullTypeName: composeSuiType(
+        JwkId.$typeName,
+        ...[],
+      ) as `0x2::authenticator_state::JwkId`,
       typeArgs: [] as [],
       isPhantom: JwkId.$isPhantom,
       reifiedTypeArgs: [],
@@ -782,7 +788,7 @@ export class JwkId implements StructClass {
   static fromJSON(json: Record<string, any>): JwkId {
     if (json.$typeName !== JwkId.$typeName) {
       throw new Error(
-        `not a JwkId json object: expected '${JwkId.$typeName}' but got '${json.$typeName}'`
+        `not a JwkId json object: expected '${JwkId.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -811,7 +817,7 @@ export class JwkId implements StructClass {
       return JwkId.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -871,7 +877,7 @@ export class ActiveJwk implements StructClass {
   private constructor(typeArgs: [], fields: ActiveJwkFields) {
     this.$fullTypeName = composeSuiType(
       ActiveJwk.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x2::authenticator_state::ActiveJwk`
     this.$typeArgs = typeArgs
 
@@ -886,7 +892,7 @@ export class ActiveJwk implements StructClass {
       typeName: ActiveJwk.$typeName,
       fullTypeName: composeSuiType(
         ActiveJwk.$typeName,
-        ...[]
+        ...[],
       ) as `0x2::authenticator_state::ActiveJwk`,
       typeArgs: [] as [],
       isPhantom: ActiveJwk.$isPhantom,
@@ -983,7 +989,7 @@ export class ActiveJwk implements StructClass {
   static fromJSON(json: Record<string, any>): ActiveJwk {
     if (json.$typeName !== ActiveJwk.$typeName) {
       throw new Error(
-        `not a ActiveJwk json object: expected '${ActiveJwk.$typeName}' but got '${json.$typeName}'`
+        `not a ActiveJwk json object: expected '${ActiveJwk.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -1012,7 +1018,7 @@ export class ActiveJwk implements StructClass {
       return ActiveJwk.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

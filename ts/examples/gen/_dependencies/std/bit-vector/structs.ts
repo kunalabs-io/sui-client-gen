@@ -1,28 +1,28 @@
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import {
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  fieldToJSON,
+  phantom,
   PhantomReified,
   Reified,
   StructClass,
   ToField,
   ToJSON,
   ToTypeStr,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  fieldToJSON,
-  phantom,
   vector,
 } from '../../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
+  SupportedSuiClient,
 } from '../../../_framework/util'
 import { Vector } from '../../../_framework/vector'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== BitVector =============================== */
 
@@ -66,7 +66,7 @@ export class BitVector implements StructClass {
   private constructor(typeArgs: [], fields: BitVectorFields) {
     this.$fullTypeName = composeSuiType(
       BitVector.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `0x1::bit_vector::BitVector`
     this.$typeArgs = typeArgs
 
@@ -78,7 +78,10 @@ export class BitVector implements StructClass {
     const reifiedBcs = BitVector.bcs
     return {
       typeName: BitVector.$typeName,
-      fullTypeName: composeSuiType(BitVector.$typeName, ...[]) as `0x1::bit_vector::BitVector`,
+      fullTypeName: composeSuiType(
+        BitVector.$typeName,
+        ...[],
+      ) as `0x1::bit_vector::BitVector`,
       typeArgs: [] as [],
       isPhantom: BitVector.$isPhantom,
       reifiedTypeArgs: [],
@@ -169,7 +172,7 @@ export class BitVector implements StructClass {
   static fromJSON(json: Record<string, any>): BitVector {
     if (json.$typeName !== BitVector.$typeName) {
       throw new Error(
-        `not a BitVector json object: expected '${BitVector.$typeName}' but got '${json.$typeName}'`
+        `not a BitVector json object: expected '${BitVector.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -198,7 +201,7 @@ export class BitVector implements StructClass {
       return BitVector.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 

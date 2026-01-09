@@ -1,11 +1,11 @@
-import { getPublishedAt } from '../../_envs'
-import { GenericArg, generic, obj } from '../../_framework/util'
 import {
   Transaction,
   TransactionArgument,
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import { getPublishedAt } from '../../_envs'
+import { generic, GenericArg, obj } from '../../_framework/util'
 
 /** Creates a new, empty table */
 export function new_(tx: Transaction, typeArgs: [string, string]): TransactionResult {
@@ -52,12 +52,15 @@ export interface BorrowArgs {
 export function borrow(
   tx: Transaction,
   typeArgs: [string, string],
-  args: BorrowArgs
+  args: BorrowArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_table::borrow`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.table), generic(tx, `${typeArgs[0]}`, args.k)],
+    arguments: [
+      obj(tx, args.table),
+      generic(tx, `${typeArgs[0]}`, args.k),
+    ],
   })
 }
 
@@ -74,12 +77,15 @@ export interface BorrowMutArgs {
 export function borrowMut(
   tx: Transaction,
   typeArgs: [string, string],
-  args: BorrowMutArgs
+  args: BorrowMutArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_table::borrow_mut`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.table), generic(tx, `${typeArgs[0]}`, args.k)],
+    arguments: [
+      obj(tx, args.table),
+      generic(tx, `${typeArgs[0]}`, args.k),
+    ],
   })
 }
 
@@ -96,12 +102,15 @@ export interface RemoveArgs {
 export function remove(
   tx: Transaction,
   typeArgs: [string, string],
-  args: RemoveArgs
+  args: RemoveArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_table::remove`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.table), generic(tx, `${typeArgs[0]}`, args.k)],
+    arguments: [
+      obj(tx, args.table),
+      generic(tx, `${typeArgs[0]}`, args.k),
+    ],
   })
 }
 
@@ -117,12 +126,15 @@ export interface ContainsArgs {
 export function contains(
   tx: Transaction,
   typeArgs: [string, string],
-  args: ContainsArgs
+  args: ContainsArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_table::contains`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.table), generic(tx, `${typeArgs[0]}`, args.k)],
+    arguments: [
+      obj(tx, args.table),
+      generic(tx, `${typeArgs[0]}`, args.k),
+    ],
   })
 }
 
@@ -130,7 +142,7 @@ export function contains(
 export function length(
   tx: Transaction,
   typeArgs: [string, string],
-  table: TransactionObjectInput
+  table: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_table::length`,
@@ -143,7 +155,7 @@ export function length(
 export function isEmpty(
   tx: Transaction,
   typeArgs: [string, string],
-  table: TransactionObjectInput
+  table: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_table::is_empty`,
@@ -159,7 +171,7 @@ export function isEmpty(
 export function destroyEmpty(
   tx: Transaction,
   typeArgs: [string, string],
-  table: TransactionObjectInput
+  table: TransactionObjectInput,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_table::destroy_empty`,
@@ -180,11 +192,14 @@ export interface ValueIdArgs {
 export function valueId(
   tx: Transaction,
   typeArgs: [string, string],
-  args: ValueIdArgs
+  args: ValueIdArgs,
 ): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_table::value_id`,
     typeArguments: typeArgs,
-    arguments: [obj(tx, args.table), generic(tx, `${typeArgs[0]}`, args.k)],
+    arguments: [
+      obj(tx, args.table),
+      generic(tx, `${typeArgs[0]}`, args.k),
+    ],
   })
 }

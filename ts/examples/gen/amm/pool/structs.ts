@@ -1,6 +1,16 @@
+import { bcs } from '@mysten/sui/bcs'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { fromBase64 } from '@mysten/sui/utils'
 import { TypeName } from '../../_dependencies/std/type-name/structs'
 import { getTypeOrigin } from '../../_envs'
 import {
+  assertFieldsWithTypesArgsMatch,
+  assertReifiedTypeArgsMatch,
+  decodeFromFields,
+  decodeFromFieldsWithTypes,
+  decodeFromJSONField,
+  extractType,
+  phantom,
   PhantomReified,
   PhantomToTypeStr,
   PhantomTypeArgument,
@@ -11,28 +21,18 @@ import {
   ToPhantomTypeArgument,
   ToTypeStr,
   ToTypeStr as ToPhantom,
-  assertFieldsWithTypesArgsMatch,
-  assertReifiedTypeArgsMatch,
-  decodeFromFields,
-  decodeFromFieldsWithTypes,
-  decodeFromJSONField,
-  extractType,
-  phantom,
 } from '../../_framework/reified'
 import {
-  FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
   fetchObjectBcs,
+  FieldsWithTypes,
   parseTypeName,
+  SupportedSuiClient,
 } from '../../_framework/util'
 import { Balance, Supply } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
-import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== PoolCreationEvent =============================== */
 
@@ -59,8 +59,9 @@ export type PoolCreationEventJSON = {
 export class PoolCreationEvent implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::pool::PoolCreationEvent` =
-    `${getTypeOrigin('amm', 'pool::PoolCreationEvent')}::pool::PoolCreationEvent` as const
+  static readonly $typeName: `${string}::pool::PoolCreationEvent` = `${
+    getTypeOrigin('amm', 'pool::PoolCreationEvent')
+  }::pool::PoolCreationEvent` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -74,7 +75,7 @@ export class PoolCreationEvent implements StructClass {
   private constructor(typeArgs: [], fields: PoolCreationEventFields) {
     this.$fullTypeName = composeSuiType(
       PoolCreationEvent.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${string}::pool::PoolCreationEvent`
     this.$typeArgs = typeArgs
 
@@ -87,7 +88,7 @@ export class PoolCreationEvent implements StructClass {
       typeName: PoolCreationEvent.$typeName,
       fullTypeName: composeSuiType(
         PoolCreationEvent.$typeName,
-        ...[]
+        ...[],
       ) as `${string}::pool::PoolCreationEvent`,
       typeArgs: [] as [],
       isPhantom: PoolCreationEvent.$isPhantom,
@@ -174,7 +175,7 @@ export class PoolCreationEvent implements StructClass {
   static fromJSON(json: Record<string, any>): PoolCreationEvent {
     if (json.$typeName !== PoolCreationEvent.$typeName) {
       throw new Error(
-        `not a PoolCreationEvent json object: expected '${PoolCreationEvent.$typeName}' but got '${json.$typeName}'`
+        `not a PoolCreationEvent json object: expected '${PoolCreationEvent.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -203,7 +204,7 @@ export class PoolCreationEvent implements StructClass {
       return PoolCreationEvent.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -248,8 +249,9 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::pool::LP` =
-    `${getTypeOrigin('amm', 'pool::LP')}::pool::LP` as const
+  static readonly $typeName: `${string}::pool::LP` = `${
+    getTypeOrigin('amm', 'pool::LP')
+  }::pool::LP` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, true] as const
 
@@ -262,11 +264,11 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 
   private constructor(
     typeArgs: [PhantomToTypeStr<A>, PhantomToTypeStr<B>],
-    fields: LPFields<A, B>
+    fields: LPFields<A, B>,
   ) {
     this.$fullTypeName = composeSuiType(
       LP.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${string}::pool::LP<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
     this.$typeArgs = typeArgs
 
@@ -276,14 +278,19 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   static reified<
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
-  >(A: A, B: B): LPReified<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
+  >(
+    A: A,
+    B: B,
+  ): LPReified<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     const reifiedBcs = LP.bcs
     return {
       typeName: LP.$typeName,
       fullTypeName: composeSuiType(
         LP.$typeName,
-        ...[extractType(A), extractType(B)]
-      ) as `${string}::pool::LP<${PhantomToTypeStr<ToPhantomTypeArgument<A>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<B>>}>`,
+        ...[extractType(A), extractType(B)],
+      ) as `${string}::pool::LP<${PhantomToTypeStr<ToPhantomTypeArgument<A>>}, ${PhantomToTypeStr<
+        ToPhantomTypeArgument<B>
+      >}>`,
       typeArgs: [extractType(A), extractType(B)] as [
         PhantomToTypeStr<ToPhantomTypeArgument<A>>,
         PhantomToTypeStr<ToPhantomTypeArgument<B>>,
@@ -313,7 +320,10 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   static phantom<
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
-  >(A: A, B: B): PhantomReified<ToTypeStr<LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>>> {
+  >(
+    A: A,
+    B: B,
+  ): PhantomReified<ToTypeStr<LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>>> {
     return phantom(LP.reified(A, B))
   }
 
@@ -341,7 +351,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     B extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [A, B],
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return LP.reified(typeArgs[0], typeArgs[1]).new({
       dummyField: decodeFromFields('bool', fields.dummy_field),
@@ -353,7 +363,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     B extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [A, B],
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     if (!isLP(item.type)) {
       throw new Error('not a LP type')
@@ -368,7 +378,10 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   static fromBcs<
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
-  >(typeArgs: [A, B], data: Uint8Array): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
+  >(
+    typeArgs: [A, B],
+    data: Uint8Array,
+  ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return LP.fromFields(typeArgs, LP.bcs.parse(data))
   }
 
@@ -385,7 +398,10 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   static fromJSONField<
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
-  >(typeArgs: [A, B], field: any): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
+  >(
+    typeArgs: [A, B],
+    field: any,
+  ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return LP.reified(typeArgs[0], typeArgs[1]).new({
       dummyField: decodeFromJSONField('bool', field.dummyField),
     })
@@ -396,17 +412,17 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     B extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [A, B],
-    json: Record<string, any>
+    json: Record<string, any>,
   ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     if (json.$typeName !== LP.$typeName) {
       throw new Error(
-        `not a LP json object: expected '${LP.$typeName}' but got '${json.$typeName}'`
+        `not a LP json object: expected '${LP.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(LP.$typeName, ...typeArgs.map(extractType)),
       json.$typeArgs,
-      typeArgs
+      typeArgs,
     )
 
     return LP.fromJSONField(typeArgs, json)
@@ -417,7 +433,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     B extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [A, B],
-    content: SuiParsedData
+    content: SuiParsedData,
   ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -431,7 +447,10 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   static fromSuiObjectData<
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
-  >(typeArgs: [A, B], data: SuiObjectData): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
+  >(
+    typeArgs: [A, B],
+    data: SuiObjectData,
+  ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isLP(data.bcs.type)) {
         throw new Error(`object at is not a LP object`)
@@ -440,7 +459,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 2) {
         throw new Error(
-          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 2; i++) {
@@ -448,7 +467,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
         const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -459,7 +478,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       return LP.fromSuiParsedData(typeArgs, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -469,7 +488,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   >(
     client: SupportedSuiClient,
     typeArgs: [A, B],
-    id: string
+    id: string,
   ): Promise<LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isLP(res.type)) {
@@ -479,7 +498,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 2) {
       throw new Error(
-        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 2; i++) {
@@ -487,7 +506,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }
@@ -545,8 +564,9 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::pool::Pool` =
-    `${getTypeOrigin('amm', 'pool::Pool')}::pool::Pool` as const
+  static readonly $typeName: `${string}::pool::Pool` = `${
+    getTypeOrigin('amm', 'pool::Pool')
+  }::pool::Pool` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, true] as const
 
@@ -571,11 +591,11 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 
   private constructor(
     typeArgs: [PhantomToTypeStr<A>, PhantomToTypeStr<B>],
-    fields: PoolFields<A, B>
+    fields: PoolFields<A, B>,
   ) {
     this.$fullTypeName = composeSuiType(
       Pool.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${string}::pool::Pool<${PhantomToTypeStr<A>}, ${PhantomToTypeStr<B>}>`
     this.$typeArgs = typeArgs
 
@@ -591,14 +611,19 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   static reified<
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
-  >(A: A, B: B): PoolReified<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
+  >(
+    A: A,
+    B: B,
+  ): PoolReified<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     const reifiedBcs = Pool.bcs
     return {
       typeName: Pool.$typeName,
       fullTypeName: composeSuiType(
         Pool.$typeName,
-        ...[extractType(A), extractType(B)]
-      ) as `${string}::pool::Pool<${PhantomToTypeStr<ToPhantomTypeArgument<A>>}, ${PhantomToTypeStr<ToPhantomTypeArgument<B>>}>`,
+        ...[extractType(A), extractType(B)],
+      ) as `${string}::pool::Pool<${PhantomToTypeStr<ToPhantomTypeArgument<A>>}, ${PhantomToTypeStr<
+        ToPhantomTypeArgument<B>
+      >}>`,
       typeArgs: [extractType(A), extractType(B)] as [
         PhantomToTypeStr<ToPhantomTypeArgument<A>>,
         PhantomToTypeStr<ToPhantomTypeArgument<B>>,
@@ -630,7 +655,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     B extends PhantomReified<PhantomTypeArgument>,
   >(
     A: A,
-    B: B
+    B: B,
   ): PhantomReified<ToTypeStr<Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>>> {
     return phantom(Pool.reified(A, B))
   }
@@ -665,7 +690,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     B extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [A, B],
-    fields: Record<string, any>
+    fields: Record<string, any>,
   ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return Pool.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromFields(UID.reified(), fields.id),
@@ -673,13 +698,13 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       balanceB: decodeFromFields(Balance.reified(typeArgs[1]), fields.balance_b),
       lpSupply: decodeFromFields(
         Supply.reified(phantom(LP.reified(typeArgs[0], typeArgs[1]))),
-        fields.lp_supply
+        fields.lp_supply,
       ),
       lpFeeBps: decodeFromFields('u64', fields.lp_fee_bps),
       adminFeePct: decodeFromFields('u64', fields.admin_fee_pct),
       adminFeeBalance: decodeFromFields(
         Balance.reified(phantom(LP.reified(typeArgs[0], typeArgs[1]))),
-        fields.admin_fee_balance
+        fields.admin_fee_balance,
       ),
     })
   }
@@ -689,7 +714,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     B extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [A, B],
-    item: FieldsWithTypes
+    item: FieldsWithTypes,
   ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     if (!isPool(item.type)) {
       throw new Error('not a Pool type')
@@ -702,13 +727,13 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       balanceB: decodeFromFieldsWithTypes(Balance.reified(typeArgs[1]), item.fields.balance_b),
       lpSupply: decodeFromFieldsWithTypes(
         Supply.reified(phantom(LP.reified(typeArgs[0], typeArgs[1]))),
-        item.fields.lp_supply
+        item.fields.lp_supply,
       ),
       lpFeeBps: decodeFromFieldsWithTypes('u64', item.fields.lp_fee_bps),
       adminFeePct: decodeFromFieldsWithTypes('u64', item.fields.admin_fee_pct),
       adminFeeBalance: decodeFromFieldsWithTypes(
         Balance.reified(phantom(LP.reified(typeArgs[0], typeArgs[1]))),
-        item.fields.admin_fee_balance
+        item.fields.admin_fee_balance,
       ),
     })
   }
@@ -716,7 +741,10 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   static fromBcs<
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
-  >(typeArgs: [A, B], data: Uint8Array): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
+  >(
+    typeArgs: [A, B],
+    data: Uint8Array,
+  ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return Pool.fromFields(typeArgs, Pool.bcs.parse(data))
   }
 
@@ -739,20 +767,23 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   static fromJSONField<
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
-  >(typeArgs: [A, B], field: any): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
+  >(
+    typeArgs: [A, B],
+    field: any,
+  ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     return Pool.reified(typeArgs[0], typeArgs[1]).new({
       id: decodeFromJSONField(UID.reified(), field.id),
       balanceA: decodeFromJSONField(Balance.reified(typeArgs[0]), field.balanceA),
       balanceB: decodeFromJSONField(Balance.reified(typeArgs[1]), field.balanceB),
       lpSupply: decodeFromJSONField(
         Supply.reified(phantom(LP.reified(typeArgs[0], typeArgs[1]))),
-        field.lpSupply
+        field.lpSupply,
       ),
       lpFeeBps: decodeFromJSONField('u64', field.lpFeeBps),
       adminFeePct: decodeFromJSONField('u64', field.adminFeePct),
       adminFeeBalance: decodeFromJSONField(
         Balance.reified(phantom(LP.reified(typeArgs[0], typeArgs[1]))),
-        field.adminFeeBalance
+        field.adminFeeBalance,
       ),
     })
   }
@@ -762,17 +793,17 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     B extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [A, B],
-    json: Record<string, any>
+    json: Record<string, any>,
   ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     if (json.$typeName !== Pool.$typeName) {
       throw new Error(
-        `not a Pool json object: expected '${Pool.$typeName}' but got '${json.$typeName}'`
+        `not a Pool json object: expected '${Pool.$typeName}' but got '${json.$typeName}'`,
       )
     }
     assertReifiedTypeArgsMatch(
       composeSuiType(Pool.$typeName, ...typeArgs.map(extractType)),
       json.$typeArgs,
-      typeArgs
+      typeArgs,
     )
 
     return Pool.fromJSONField(typeArgs, json)
@@ -783,7 +814,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     B extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [A, B],
-    content: SuiParsedData
+    content: SuiParsedData,
   ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -799,7 +830,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     B extends PhantomReified<PhantomTypeArgument>,
   >(
     typeArgs: [A, B],
-    data: SuiObjectData
+    data: SuiObjectData,
   ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isPool(data.bcs.type)) {
@@ -809,7 +840,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
       if (gotTypeArgs.length !== 2) {
         throw new Error(
-          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
+          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
         )
       }
       for (let i = 0; i < 2; i++) {
@@ -817,7 +848,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
         const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
         if (gotTypeArg !== expectedTypeArg) {
           throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
           )
         }
       }
@@ -828,7 +859,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       return Pool.fromSuiParsedData(typeArgs, data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -838,7 +869,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   >(
     client: SupportedSuiClient,
     typeArgs: [A, B],
-    id: string
+    id: string,
   ): Promise<Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>> {
     const res = await fetchObjectBcs(client, id)
     if (!isPool(res.type)) {
@@ -848,7 +879,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     const gotTypeArgs = parseTypeName(res.type).typeArgs
     if (gotTypeArgs.length !== 2) {
       throw new Error(
-        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
+        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
       )
     }
     for (let i = 0; i < 2; i++) {
@@ -856,7 +887,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
       if (gotTypeArg !== expectedTypeArg) {
         throw new Error(
-          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
         )
       }
     }
@@ -896,8 +927,9 @@ export type PoolRegistryJSON = {
 export class PoolRegistry implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::pool::PoolRegistry` =
-    `${getTypeOrigin('amm', 'pool::PoolRegistry')}::pool::PoolRegistry` as const
+  static readonly $typeName: `${string}::pool::PoolRegistry` = `${
+    getTypeOrigin('amm', 'pool::PoolRegistry')
+  }::pool::PoolRegistry` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -912,7 +944,7 @@ export class PoolRegistry implements StructClass {
   private constructor(typeArgs: [], fields: PoolRegistryFields) {
     this.$fullTypeName = composeSuiType(
       PoolRegistry.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${string}::pool::PoolRegistry`
     this.$typeArgs = typeArgs
 
@@ -926,7 +958,7 @@ export class PoolRegistry implements StructClass {
       typeName: PoolRegistry.$typeName,
       fullTypeName: composeSuiType(
         PoolRegistry.$typeName,
-        ...[]
+        ...[],
       ) as `${string}::pool::PoolRegistry`,
       typeArgs: [] as [],
       isPhantom: PoolRegistry.$isPhantom,
@@ -980,7 +1012,7 @@ export class PoolRegistry implements StructClass {
       id: decodeFromFields(UID.reified(), fields.id),
       table: decodeFromFields(
         Table.reified(phantom(PoolRegistryItem.reified()), phantom('bool')),
-        fields.table
+        fields.table,
       ),
     })
   }
@@ -994,7 +1026,7 @@ export class PoolRegistry implements StructClass {
       id: decodeFromFieldsWithTypes(UID.reified(), item.fields.id),
       table: decodeFromFieldsWithTypes(
         Table.reified(phantom(PoolRegistryItem.reified()), phantom('bool')),
-        item.fields.table
+        item.fields.table,
       ),
     })
   }
@@ -1019,7 +1051,7 @@ export class PoolRegistry implements StructClass {
       id: decodeFromJSONField(UID.reified(), field.id),
       table: decodeFromJSONField(
         Table.reified(phantom(PoolRegistryItem.reified()), phantom('bool')),
-        field.table
+        field.table,
       ),
     })
   }
@@ -1027,7 +1059,7 @@ export class PoolRegistry implements StructClass {
   static fromJSON(json: Record<string, any>): PoolRegistry {
     if (json.$typeName !== PoolRegistry.$typeName) {
       throw new Error(
-        `not a PoolRegistry json object: expected '${PoolRegistry.$typeName}' but got '${json.$typeName}'`
+        `not a PoolRegistry json object: expected '${PoolRegistry.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -1056,7 +1088,7 @@ export class PoolRegistry implements StructClass {
       return PoolRegistry.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -1098,8 +1130,9 @@ export type PoolRegistryItemJSON = {
 export class PoolRegistryItem implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::pool::PoolRegistryItem` =
-    `${getTypeOrigin('amm', 'pool::PoolRegistryItem')}::pool::PoolRegistryItem` as const
+  static readonly $typeName: `${string}::pool::PoolRegistryItem` = `${
+    getTypeOrigin('amm', 'pool::PoolRegistryItem')
+  }::pool::PoolRegistryItem` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -1114,7 +1147,7 @@ export class PoolRegistryItem implements StructClass {
   private constructor(typeArgs: [], fields: PoolRegistryItemFields) {
     this.$fullTypeName = composeSuiType(
       PoolRegistryItem.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${string}::pool::PoolRegistryItem`
     this.$typeArgs = typeArgs
 
@@ -1128,7 +1161,7 @@ export class PoolRegistryItem implements StructClass {
       typeName: PoolRegistryItem.$typeName,
       fullTypeName: composeSuiType(
         PoolRegistryItem.$typeName,
-        ...[]
+        ...[],
       ) as `${string}::pool::PoolRegistryItem`,
       typeArgs: [] as [],
       isPhantom: PoolRegistryItem.$isPhantom,
@@ -1220,7 +1253,7 @@ export class PoolRegistryItem implements StructClass {
   static fromJSON(json: Record<string, any>): PoolRegistryItem {
     if (json.$typeName !== PoolRegistryItem.$typeName) {
       throw new Error(
-        `not a PoolRegistryItem json object: expected '${PoolRegistryItem.$typeName}' but got '${json.$typeName}'`
+        `not a PoolRegistryItem json object: expected '${PoolRegistryItem.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -1249,7 +1282,7 @@ export class PoolRegistryItem implements StructClass {
       return PoolRegistryItem.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
@@ -1293,8 +1326,9 @@ export type AdminCapJSON = {
 export class AdminCap implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::pool::AdminCap` =
-    `${getTypeOrigin('amm', 'pool::AdminCap')}::pool::AdminCap` as const
+  static readonly $typeName: `${string}::pool::AdminCap` = `${
+    getTypeOrigin('amm', 'pool::AdminCap')
+  }::pool::AdminCap` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -1308,7 +1342,7 @@ export class AdminCap implements StructClass {
   private constructor(typeArgs: [], fields: AdminCapFields) {
     this.$fullTypeName = composeSuiType(
       AdminCap.$typeName,
-      ...typeArgs
+      ...typeArgs,
     ) as `${string}::pool::AdminCap`
     this.$typeArgs = typeArgs
 
@@ -1319,7 +1353,10 @@ export class AdminCap implements StructClass {
     const reifiedBcs = AdminCap.bcs
     return {
       typeName: AdminCap.$typeName,
-      fullTypeName: composeSuiType(AdminCap.$typeName, ...[]) as `${string}::pool::AdminCap`,
+      fullTypeName: composeSuiType(
+        AdminCap.$typeName,
+        ...[],
+      ) as `${string}::pool::AdminCap`,
       typeArgs: [] as [],
       isPhantom: AdminCap.$isPhantom,
       reifiedTypeArgs: [],
@@ -1405,7 +1442,7 @@ export class AdminCap implements StructClass {
   static fromJSON(json: Record<string, any>): AdminCap {
     if (json.$typeName !== AdminCap.$typeName) {
       throw new Error(
-        `not a AdminCap json object: expected '${AdminCap.$typeName}' but got '${json.$typeName}'`
+        `not a AdminCap json object: expected '${AdminCap.$typeName}' but got '${json.$typeName}'`,
       )
     }
 
@@ -1434,7 +1471,7 @@ export class AdminCap implements StructClass {
       return AdminCap.fromSuiParsedData(data.content)
     }
     throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
+      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
     )
   }
 
