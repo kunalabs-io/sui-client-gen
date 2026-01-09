@@ -9,7 +9,7 @@ import * as uq3232 from './uq32-32/structs'
 import * as uq6464 from './uq64-64/structs'
 import { StructClassLoader } from '../../_framework/loader'
 
-export function registerClasses(loader: StructClassLoader) {
+export function registerClasses(loader: StructClassLoader): void {
   loader.register(ascii.String)
   loader.register(ascii.Char)
   loader.register(bitVector.BitVector)

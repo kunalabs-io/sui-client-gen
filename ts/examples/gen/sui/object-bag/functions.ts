@@ -1,9 +1,14 @@
 import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj } from '../../_framework/util'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 /** Creates a new, empty bag */
-export function new_(tx: Transaction) {
+export function new_(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_bag::new`,
     arguments: [],
@@ -21,7 +26,7 @@ export interface AddArgs {
  * Aborts with `sui::dynamic_field::EFieldAlreadyExists` if the bag already has an entry with
  * that key `k: K`.
  */
-export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs) {
+export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_bag::add`,
     typeArguments: typeArgs,
@@ -45,7 +50,11 @@ export interface BorrowArgs {
  * Aborts with `sui::dynamic_field::EFieldTypeMismatch` if the bag has an entry for the key, but
  * the value does not have the specified type.
  */
-export function borrow(tx: Transaction, typeArgs: [string, string], args: BorrowArgs) {
+export function borrow(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: BorrowArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_bag::borrow`,
     typeArguments: typeArgs,
@@ -65,7 +74,11 @@ export interface BorrowMutArgs {
  * Aborts with `sui::dynamic_field::EFieldTypeMismatch` if the bag has an entry for the key, but
  * the value does not have the specified type.
  */
-export function borrowMut(tx: Transaction, typeArgs: [string, string], args: BorrowMutArgs) {
+export function borrowMut(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: BorrowMutArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_bag::borrow_mut`,
     typeArguments: typeArgs,
@@ -85,7 +98,11 @@ export interface RemoveArgs {
  * Aborts with `sui::dynamic_field::EFieldTypeMismatch` if the bag has an entry for the key, but
  * the value does not have the specified type.
  */
-export function remove(tx: Transaction, typeArgs: [string, string], args: RemoveArgs) {
+export function remove(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: RemoveArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_bag::remove`,
     typeArguments: typeArgs,
@@ -99,7 +116,7 @@ export interface ContainsArgs {
 }
 
 /** Returns true iff there is an value associated with the key `k: K` in the bag `bag: &ObjectBag` */
-export function contains(tx: Transaction, typeArg: string, args: ContainsArgs) {
+export function contains(tx: Transaction, typeArg: string, args: ContainsArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_bag::contains`,
     typeArguments: [typeArg],
@@ -120,7 +137,7 @@ export function containsWithType(
   tx: Transaction,
   typeArgs: [string, string],
   args: ContainsWithTypeArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_bag::contains_with_type`,
     typeArguments: typeArgs,
@@ -129,7 +146,7 @@ export function containsWithType(
 }
 
 /** Returns the size of the bag, the number of key-value pairs */
-export function length(tx: Transaction, bag: TransactionObjectInput) {
+export function length(tx: Transaction, bag: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_bag::length`,
     arguments: [obj(tx, bag)],
@@ -137,7 +154,7 @@ export function length(tx: Transaction, bag: TransactionObjectInput) {
 }
 
 /** Returns true iff the bag is empty (if `length` returns `0`) */
-export function isEmpty(tx: Transaction, bag: TransactionObjectInput) {
+export function isEmpty(tx: Transaction, bag: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_bag::is_empty`,
     arguments: [obj(tx, bag)],
@@ -148,7 +165,7 @@ export function isEmpty(tx: Transaction, bag: TransactionObjectInput) {
  * Destroys an empty bag
  * Aborts with `EBagNotEmpty` if the bag still contains values
  */
-export function destroyEmpty(tx: Transaction, bag: TransactionObjectInput) {
+export function destroyEmpty(tx: Transaction, bag: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_bag::destroy_empty`,
     arguments: [obj(tx, bag)],
@@ -164,7 +181,7 @@ export interface ValueIdArgs {
  * Returns the ID of the object associated with the key if the bag has an entry with key `k: K`
  * Returns none otherwise
  */
-export function valueId(tx: Transaction, typeArg: string, args: ValueIdArgs) {
+export function valueId(tx: Transaction, typeArg: string, args: ValueIdArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::object_bag::value_id`,
     typeArguments: [typeArg],

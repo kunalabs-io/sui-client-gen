@@ -53,14 +53,14 @@ export type SupplyReified<T extends PhantomTypeArgument> = Reified<Supply<T>, Su
 export class Supply<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::balance::Supply` as const
+  static readonly $typeName: `0x2::balance::Supply` = `0x2::balance::Supply` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = Supply.$typeName
+  readonly $typeName: typeof Supply.$typeName = Supply.$typeName
   readonly $fullTypeName: `0x2::balance::Supply<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = Supply.$isPhantom
+  readonly $isPhantom: typeof Supply.$isPhantom = Supply.$isPhantom
 
   readonly value: ToField<'u64'>
 
@@ -103,7 +103,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Supply.reified {
     return Supply.reified
   }
 
@@ -113,7 +113,7 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
     return phantom(Supply.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof Supply.phantom {
     return Supply.phantom
   }
 
@@ -162,13 +162,13 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
     return Supply.fromFields(typeArg, Supply.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       value: this.value.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -281,14 +281,14 @@ export type BalanceReified<T extends PhantomTypeArgument> = Reified<Balance<T>, 
 export class Balance<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::balance::Balance` as const
+  static readonly $typeName: `0x2::balance::Balance` = `0x2::balance::Balance` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = Balance.$typeName
+  readonly $typeName: typeof Balance.$typeName = Balance.$typeName
   readonly $fullTypeName: `0x2::balance::Balance<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = Balance.$isPhantom
+  readonly $isPhantom: typeof Balance.$isPhantom = Balance.$isPhantom
 
   readonly value: ToField<'u64'>
 
@@ -331,7 +331,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Balance.reified {
     return Balance.reified
   }
 
@@ -341,7 +341,7 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
     return phantom(Balance.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof Balance.phantom {
     return Balance.phantom
   }
 
@@ -390,13 +390,13 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
     return Balance.fromFields(typeArg, Balance.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       value: this.value.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

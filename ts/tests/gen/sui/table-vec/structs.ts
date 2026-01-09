@@ -50,14 +50,14 @@ export type TableVecReified<Element extends PhantomTypeArgument> = Reified<
 export class TableVec<Element extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::table_vec::TableVec` as const
+  static readonly $typeName: `0x2::table_vec::TableVec` = `0x2::table_vec::TableVec` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = TableVec.$typeName
+  readonly $typeName: typeof TableVec.$typeName = TableVec.$typeName
   readonly $fullTypeName: `0x2::table_vec::TableVec<${PhantomToTypeStr<Element>}>`
   readonly $typeArgs: [PhantomToTypeStr<Element>]
-  readonly $isPhantom = TableVec.$isPhantom
+  readonly $isPhantom: typeof TableVec.$isPhantom = TableVec.$isPhantom
 
   /** The contents of the table vector. */
   readonly contents: ToField<Table<'u64', Element>>
@@ -101,7 +101,7 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
     }
   }
 
-  static get r() {
+  static get r(): typeof TableVec.reified {
     return TableVec.reified
   }
 
@@ -111,7 +111,7 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
     return phantom(TableVec.reified(Element))
   }
 
-  static get p() {
+  static get p(): typeof TableVec.phantom {
     return TableVec.phantom
   }
 
@@ -163,13 +163,13 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
     return TableVec.fromFields(typeArg, TableVec.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       contents: this.contents.toJSONField(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

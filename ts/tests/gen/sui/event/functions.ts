@@ -1,6 +1,6 @@
 import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, pure } from '../../_framework/util'
-import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
+import { Transaction, TransactionArgument, TransactionResult } from '@mysten/sui/transactions'
 
 /**
  * Emit a custom Move event, sending the data offchain.
@@ -11,7 +11,7 @@ import { Transaction, TransactionArgument } from '@mysten/sui/transactions'
  * The type `T` is the main way to index the event, and can contain
  * phantom parameters, eg `emit(MyEvent<phantom T>)`.
  */
-export function emit(tx: Transaction, typeArg: string, event: GenericArg) {
+export function emit(tx: Transaction, typeArg: string, event: GenericArg): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::event::emit`,
     typeArguments: [typeArg],
@@ -26,7 +26,11 @@ export function emit(tx: Transaction, typeArg: string, event: GenericArg) {
  * defines the event type `T`.
  * Only the package that defines the type `T` can emit authenticated events to this stream.
  */
-export function emitAuthenticated(tx: Transaction, typeArg: string, event: GenericArg) {
+export function emitAuthenticated(
+  tx: Transaction,
+  typeArg: string,
+  event: GenericArg
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::event::emit_authenticated`,
     typeArguments: [typeArg],
@@ -44,7 +48,7 @@ export function emitAuthenticatedImpl(
   tx: Transaction,
   typeArgs: [string, string],
   args: EmitAuthenticatedImplArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::event::emit_authenticated_impl`,
     typeArguments: typeArgs,

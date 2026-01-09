@@ -5,9 +5,14 @@ import { getPublishedAt } from '../../_envs'
 import { obj, pure, vector } from '../../_framework/util'
 import { ID } from '../../sui/object/structs'
 import { ExampleStruct } from './structs'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
-export function createExampleStruct(tx: Transaction) {
+export function createExampleStruct(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::examples::create_example_struct`,
     arguments: [],
@@ -25,7 +30,7 @@ export interface SpecialTypesArgs {
   optionNone: bigint | TransactionArgument | null
 }
 
-export function specialTypes(tx: Transaction, args: SpecialTypesArgs) {
+export function specialTypes(tx: Transaction, args: SpecialTypesArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('examples')}::examples::special_types`,
     arguments: [

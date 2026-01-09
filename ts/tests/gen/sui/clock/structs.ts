@@ -59,14 +59,14 @@ export type ClockReified = Reified<Clock, ClockFields>
 export class Clock implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::clock::Clock` as const
+  static readonly $typeName: `0x2::clock::Clock` = `0x2::clock::Clock` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Clock.$typeName
+  readonly $typeName: typeof Clock.$typeName = Clock.$typeName
   readonly $fullTypeName: `0x2::clock::Clock`
   readonly $typeArgs: []
-  readonly $isPhantom = Clock.$isPhantom
+  readonly $isPhantom: typeof Clock.$isPhantom = Clock.$isPhantom
 
   readonly id: ToField<UID>
   /**
@@ -109,7 +109,7 @@ export class Clock implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): ClockReified {
     return Clock.reified()
   }
 
@@ -117,7 +117,7 @@ export class Clock implements StructClass {
     return phantom(Clock.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Clock>> {
     return Clock.phantom()
   }
 
@@ -159,14 +159,14 @@ export class Clock implements StructClass {
     return Clock.fromFields(Clock.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       timestampMs: this.timestampMs.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

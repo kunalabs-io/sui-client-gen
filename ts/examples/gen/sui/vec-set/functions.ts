@@ -1,9 +1,14 @@
 import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, vector } from '../../_framework/util'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 /** Create an empty `VecSet` */
-export function empty(tx: Transaction, typeArg: string) {
+export function empty(tx: Transaction, typeArg: string): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::empty`,
     typeArguments: [typeArg],
@@ -12,7 +17,7 @@ export function empty(tx: Transaction, typeArg: string) {
 }
 
 /** Create a singleton `VecSet` that only contains one element. */
-export function singleton(tx: Transaction, typeArg: string, key: GenericArg) {
+export function singleton(tx: Transaction, typeArg: string, key: GenericArg): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::singleton`,
     typeArguments: [typeArg],
@@ -29,7 +34,7 @@ export interface InsertArgs {
  * Insert a `key` into self.
  * Aborts if `key` is already present in `self`.
  */
-export function insert(tx: Transaction, typeArg: string, args: InsertArgs) {
+export function insert(tx: Transaction, typeArg: string, args: InsertArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::insert`,
     typeArguments: [typeArg],
@@ -43,7 +48,7 @@ export interface RemoveArgs {
 }
 
 /** Remove the entry `key` from self. Aborts if `key` is not present in `self`. */
-export function remove(tx: Transaction, typeArg: string, args: RemoveArgs) {
+export function remove(tx: Transaction, typeArg: string, args: RemoveArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::remove`,
     typeArguments: [typeArg],
@@ -57,7 +62,7 @@ export interface ContainsArgs {
 }
 
 /** Return true if `self` contains an entry for `key`, false otherwise */
-export function contains(tx: Transaction, typeArg: string, args: ContainsArgs) {
+export function contains(tx: Transaction, typeArg: string, args: ContainsArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::contains`,
     typeArguments: [typeArg],
@@ -66,7 +71,11 @@ export function contains(tx: Transaction, typeArg: string, args: ContainsArgs) {
 }
 
 /** Return the number of entries in `self` */
-export function length(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function length(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::length`,
     typeArguments: [typeArg],
@@ -75,7 +84,11 @@ export function length(tx: Transaction, typeArg: string, self: TransactionObject
 }
 
 /** Return true if `self` has 0 elements, false otherwise */
-export function isEmpty(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function isEmpty(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::is_empty`,
     typeArguments: [typeArg],
@@ -87,7 +100,11 @@ export function isEmpty(tx: Transaction, typeArg: string, self: TransactionObjec
  * Unpack `self` into vectors of keys.
  * The output keys are stored in insertion order, *not* sorted.
  */
-export function intoKeys(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function intoKeys(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::into_keys`,
     typeArguments: [typeArg],
@@ -104,7 +121,7 @@ export function fromKeys(
   tx: Transaction,
   typeArg: string,
   keys: Array<GenericArg> | TransactionArgument
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::from_keys`,
     typeArguments: [typeArg],
@@ -117,7 +134,11 @@ export function fromKeys(
  * without unpacking. The contents are stored in insertion order,
  * *not* sorted.
  */
-export function keys(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function keys(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::keys`,
     typeArguments: [typeArg],
@@ -130,7 +151,11 @@ export function keys(tx: Transaction, typeArg: string, self: TransactionObjectIn
  *
  * @deprecated Renamed to `length` for consistency.
  */
-export function size(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function size(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::vec_set::size`,
     typeArguments: [typeArg],

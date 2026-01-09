@@ -1,6 +1,11 @@
 import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 export interface AccumulatorRootOwnerExistsArgs {
   accumulatorRoot: TransactionObjectInput
@@ -11,7 +16,10 @@ export interface AccumulatorRootOwnerExistsArgs {
  * === Owner functions ===
  * Check if there is an owner field attached to the accumulator root.
  */
-export function accumulatorRootOwnerExists(tx: Transaction, args: AccumulatorRootOwnerExistsArgs) {
+export function accumulatorRootOwnerExists(
+  tx: Transaction,
+  args: AccumulatorRootOwnerExistsArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_root_owner_exists`,
     arguments: [obj(tx, args.accumulatorRoot), pure(tx, args.owner, `address`)],
@@ -27,7 +35,7 @@ export interface AccumulatorRootBorrowOwnerMutArgs {
 export function accumulatorRootBorrowOwnerMut(
   tx: Transaction,
   args: AccumulatorRootBorrowOwnerMutArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_root_borrow_owner_mut`,
     arguments: [obj(tx, args.accumulatorRoot), pure(tx, args.owner, `address`)],
@@ -40,7 +48,10 @@ export interface AccumulatorRootAttachOwnerArgs {
 }
 
 /** Attach an owner field to the accumulator root. */
-export function accumulatorRootAttachOwner(tx: Transaction, args: AccumulatorRootAttachOwnerArgs) {
+export function accumulatorRootAttachOwner(
+  tx: Transaction,
+  args: AccumulatorRootAttachOwnerArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_root_attach_owner`,
     arguments: [obj(tx, args.accumulatorRoot), obj(tx, args.owner)],
@@ -53,7 +64,10 @@ export interface AccumulatorRootDetachOwnerArgs {
 }
 
 /** Detach an owner field from the accumulator root. */
-export function accumulatorRootDetachOwner(tx: Transaction, args: AccumulatorRootDetachOwnerArgs) {
+export function accumulatorRootDetachOwner(
+  tx: Transaction,
+  args: AccumulatorRootDetachOwnerArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_root_detach_owner`,
     arguments: [obj(tx, args.accumulatorRoot), pure(tx, args.owner, `address`)],
@@ -75,7 +89,7 @@ export function createAccumulatorMetadata(
   tx: Transaction,
   typeArg: string,
   args: CreateAccumulatorMetadataArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::accumulator_metadata::create_accumulator_metadata`,
     typeArguments: [typeArg],
@@ -98,7 +112,7 @@ export function removeAccumulatorMetadata(
   tx: Transaction,
   typeArg: string,
   args: RemoveAccumulatorMetadataArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::accumulator_metadata::remove_accumulator_metadata`,
     typeArguments: [typeArg],
@@ -116,7 +130,7 @@ export function accumulatorOwnerAttachMetadata(
   tx: Transaction,
   typeArg: string,
   args: AccumulatorOwnerAttachMetadataArgs
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_owner_attach_metadata`,
     typeArguments: [typeArg],
@@ -129,7 +143,7 @@ export function accumulatorOwnerDetachMetadata(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput
-) {
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_owner_detach_metadata`,
     typeArguments: [typeArg],
@@ -138,7 +152,10 @@ export function accumulatorOwnerDetachMetadata(
 }
 
 /** Destroy an owner field. */
-export function accumulatorOwnerDestroy(tx: Transaction, this_: TransactionObjectInput) {
+export function accumulatorOwnerDestroy(
+  tx: Transaction,
+  this_: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_owner_destroy`,
     arguments: [obj(tx, this_)],

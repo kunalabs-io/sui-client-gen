@@ -51,14 +51,14 @@ export type StringReified = Reified<String, StringFields>
 export class String implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x1::ascii::String` as const
+  static readonly $typeName: `0x1::ascii::String` = `0x1::ascii::String` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = String.$typeName
+  readonly $typeName: typeof String.$typeName = String.$typeName
   readonly $fullTypeName: `0x1::ascii::String`
   readonly $typeArgs: []
-  readonly $isPhantom = String.$isPhantom
+  readonly $isPhantom: typeof String.$isPhantom = String.$isPhantom
 
   readonly bytes: ToField<Vector<'u8'>>
 
@@ -93,7 +93,7 @@ export class String implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): StringReified {
     return String.reified()
   }
 
@@ -101,7 +101,7 @@ export class String implements StructClass {
     return phantom(String.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<String>> {
     return String.phantom()
   }
 
@@ -140,13 +140,13 @@ export class String implements StructClass {
     return String.fromFields(String.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -219,14 +219,14 @@ export type CharReified = Reified<Char, CharFields>
 export class Char implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x1::ascii::Char` as const
+  static readonly $typeName: `0x1::ascii::Char` = `0x1::ascii::Char` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Char.$typeName
+  readonly $typeName: typeof Char.$typeName = Char.$typeName
   readonly $fullTypeName: `0x1::ascii::Char`
   readonly $typeArgs: []
-  readonly $isPhantom = Char.$isPhantom
+  readonly $isPhantom: typeof Char.$isPhantom = Char.$isPhantom
 
   readonly byte: ToField<'u8'>
 
@@ -261,7 +261,7 @@ export class Char implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): CharReified {
     return Char.reified()
   }
 
@@ -269,7 +269,7 @@ export class Char implements StructClass {
     return phantom(Char.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Char>> {
     return Char.phantom()
   }
 
@@ -308,13 +308,13 @@ export class Char implements StructClass {
     return Char.fromFields(Char.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       byte: this.byte,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

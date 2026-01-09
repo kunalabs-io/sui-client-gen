@@ -99,14 +99,15 @@ export type TransferRequestReified<T extends PhantomTypeArgument> = Reified<
 export class TransferRequest<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::transfer_policy::TransferRequest` as const
+  static readonly $typeName: `0x2::transfer_policy::TransferRequest` =
+    `0x2::transfer_policy::TransferRequest` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = TransferRequest.$typeName
+  readonly $typeName: typeof TransferRequest.$typeName = TransferRequest.$typeName
   readonly $fullTypeName: `0x2::transfer_policy::TransferRequest<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = TransferRequest.$isPhantom
+  readonly $isPhantom: typeof TransferRequest.$isPhantom = TransferRequest.$isPhantom
 
   /**
    * The ID of the transferred item. Although the `T` has no
@@ -172,7 +173,7 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
     }
   }
 
-  static get r() {
+  static get r(): typeof TransferRequest.reified {
     return TransferRequest.reified
   }
 
@@ -182,7 +183,7 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
     return phantom(TransferRequest.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof TransferRequest.phantom {
     return TransferRequest.phantom
   }
 
@@ -240,7 +241,7 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
     return TransferRequest.fromFields(typeArg, TransferRequest.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       item: this.item,
       paid: this.paid.toString(),
@@ -249,7 +250,7 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -385,14 +386,15 @@ export type TransferPolicyReified<T extends PhantomTypeArgument> = Reified<
 export class TransferPolicy<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::transfer_policy::TransferPolicy` as const
+  static readonly $typeName: `0x2::transfer_policy::TransferPolicy` =
+    `0x2::transfer_policy::TransferPolicy` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = TransferPolicy.$typeName
+  readonly $typeName: typeof TransferPolicy.$typeName = TransferPolicy.$typeName
   readonly $fullTypeName: `0x2::transfer_policy::TransferPolicy<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = TransferPolicy.$isPhantom
+  readonly $isPhantom: typeof TransferPolicy.$isPhantom = TransferPolicy.$isPhantom
 
   readonly id: ToField<UID>
   /**
@@ -451,7 +453,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
     }
   }
 
-  static get r() {
+  static get r(): typeof TransferPolicy.reified {
     return TransferPolicy.reified
   }
 
@@ -461,7 +463,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
     return phantom(TransferPolicy.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof TransferPolicy.phantom {
     return TransferPolicy.phantom
   }
 
@@ -519,7 +521,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
     return TransferPolicy.fromFields(typeArg, TransferPolicy.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       balance: this.balance.toJSONField(),
@@ -527,7 +529,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -646,14 +648,15 @@ export type TransferPolicyCapReified<T extends PhantomTypeArgument> = Reified<
 export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::transfer_policy::TransferPolicyCap` as const
+  static readonly $typeName: `0x2::transfer_policy::TransferPolicyCap` =
+    `0x2::transfer_policy::TransferPolicyCap` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = TransferPolicyCap.$typeName
+  readonly $typeName: typeof TransferPolicyCap.$typeName = TransferPolicyCap.$typeName
   readonly $fullTypeName: `0x2::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = TransferPolicyCap.$isPhantom
+  readonly $isPhantom: typeof TransferPolicyCap.$isPhantom = TransferPolicyCap.$isPhantom
 
   readonly id: ToField<UID>
   readonly policyId: ToField<ID>
@@ -702,7 +705,7 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructC
     }
   }
 
-  static get r() {
+  static get r(): typeof TransferPolicyCap.reified {
     return TransferPolicyCap.reified
   }
 
@@ -712,7 +715,7 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructC
     return phantom(TransferPolicyCap.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof TransferPolicyCap.phantom {
     return TransferPolicyCap.phantom
   }
 
@@ -764,14 +767,14 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructC
     return TransferPolicyCap.fromFields(typeArg, TransferPolicyCap.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       policyId: this.policyId,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -888,14 +891,15 @@ export type TransferPolicyCreatedReified<T extends PhantomTypeArgument> = Reifie
 export class TransferPolicyCreated<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::transfer_policy::TransferPolicyCreated` as const
+  static readonly $typeName: `0x2::transfer_policy::TransferPolicyCreated` =
+    `0x2::transfer_policy::TransferPolicyCreated` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = TransferPolicyCreated.$typeName
+  readonly $typeName: typeof TransferPolicyCreated.$typeName = TransferPolicyCreated.$typeName
   readonly $fullTypeName: `0x2::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = TransferPolicyCreated.$isPhantom
+  readonly $isPhantom: typeof TransferPolicyCreated.$isPhantom = TransferPolicyCreated.$isPhantom
 
   readonly id: ToField<ID>
 
@@ -942,7 +946,7 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> implements Str
     }
   }
 
-  static get r() {
+  static get r(): typeof TransferPolicyCreated.reified {
     return TransferPolicyCreated.reified
   }
 
@@ -952,7 +956,7 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> implements Str
     return phantom(TransferPolicyCreated.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof TransferPolicyCreated.phantom {
     return TransferPolicyCreated.phantom
   }
 
@@ -1001,13 +1005,13 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> implements Str
     return TransferPolicyCreated.fromFields(typeArg, TransferPolicyCreated.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1125,14 +1129,16 @@ export type TransferPolicyDestroyedReified<T extends PhantomTypeArgument> = Reif
 export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::transfer_policy::TransferPolicyDestroyed` as const
+  static readonly $typeName: `0x2::transfer_policy::TransferPolicyDestroyed` =
+    `0x2::transfer_policy::TransferPolicyDestroyed` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = TransferPolicyDestroyed.$typeName
+  readonly $typeName: typeof TransferPolicyDestroyed.$typeName = TransferPolicyDestroyed.$typeName
   readonly $fullTypeName: `0x2::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = TransferPolicyDestroyed.$isPhantom
+  readonly $isPhantom: typeof TransferPolicyDestroyed.$isPhantom =
+    TransferPolicyDestroyed.$isPhantom
 
   readonly id: ToField<ID>
 
@@ -1179,7 +1185,7 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements S
     }
   }
 
-  static get r() {
+  static get r(): typeof TransferPolicyDestroyed.reified {
     return TransferPolicyDestroyed.reified
   }
 
@@ -1189,7 +1195,7 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements S
     return phantom(TransferPolicyDestroyed.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof TransferPolicyDestroyed.phantom {
     return TransferPolicyDestroyed.phantom
   }
 
@@ -1238,13 +1244,13 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements S
     return TransferPolicyDestroyed.fromFields(typeArg, TransferPolicyDestroyed.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -1356,14 +1362,15 @@ export type RuleKeyReified<T extends PhantomTypeArgument> = Reified<RuleKey<T>, 
 export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::transfer_policy::RuleKey` as const
+  static readonly $typeName: `0x2::transfer_policy::RuleKey` =
+    `0x2::transfer_policy::RuleKey` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = RuleKey.$typeName
+  readonly $typeName: typeof RuleKey.$typeName = RuleKey.$typeName
   readonly $fullTypeName: `0x2::transfer_policy::RuleKey<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = RuleKey.$isPhantom
+  readonly $isPhantom: typeof RuleKey.$isPhantom = RuleKey.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -1406,7 +1413,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof RuleKey.reified {
     return RuleKey.reified
   }
 
@@ -1416,7 +1423,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
     return phantom(RuleKey.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof RuleKey.phantom {
     return RuleKey.phantom
   }
 
@@ -1465,13 +1472,13 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
     return RuleKey.fromFields(typeArg, RuleKey.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

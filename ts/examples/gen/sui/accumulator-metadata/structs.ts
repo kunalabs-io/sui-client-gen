@@ -56,14 +56,15 @@ export type OwnerKeyReified = Reified<OwnerKey, OwnerKeyFields>
 export class OwnerKey implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::accumulator_metadata::OwnerKey` as const
+  static readonly $typeName: `0x2::accumulator_metadata::OwnerKey` =
+    `0x2::accumulator_metadata::OwnerKey` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = OwnerKey.$typeName
+  readonly $typeName: typeof OwnerKey.$typeName = OwnerKey.$typeName
   readonly $fullTypeName: `0x2::accumulator_metadata::OwnerKey`
   readonly $typeArgs: []
-  readonly $isPhantom = OwnerKey.$isPhantom
+  readonly $isPhantom: typeof OwnerKey.$isPhantom = OwnerKey.$isPhantom
 
   readonly owner: ToField<'address'>
 
@@ -104,7 +105,7 @@ export class OwnerKey implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): OwnerKeyReified {
     return OwnerKey.reified()
   }
 
@@ -112,7 +113,7 @@ export class OwnerKey implements StructClass {
     return phantom(OwnerKey.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<OwnerKey>> {
     return OwnerKey.phantom()
   }
 
@@ -154,13 +155,13 @@ export class OwnerKey implements StructClass {
     return OwnerKey.fromFields(OwnerKey.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       owner: this.owner,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -238,14 +239,15 @@ export type OwnerReified = Reified<Owner, OwnerFields>
 export class Owner implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::accumulator_metadata::Owner` as const
+  static readonly $typeName: `0x2::accumulator_metadata::Owner` =
+    `0x2::accumulator_metadata::Owner` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Owner.$typeName
+  readonly $typeName: typeof Owner.$typeName = Owner.$typeName
   readonly $fullTypeName: `0x2::accumulator_metadata::Owner`
   readonly $typeArgs: []
-  readonly $isPhantom = Owner.$isPhantom
+  readonly $isPhantom: typeof Owner.$isPhantom = Owner.$isPhantom
 
   /** The individual balances owned by the owner. */
   readonly balances: ToField<Bag>
@@ -286,7 +288,7 @@ export class Owner implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): OwnerReified {
     return Owner.reified()
   }
 
@@ -294,7 +296,7 @@ export class Owner implements StructClass {
     return phantom(Owner.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Owner>> {
     return Owner.phantom()
   }
 
@@ -339,14 +341,14 @@ export class Owner implements StructClass {
     return Owner.fromFields(Owner.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       balances: this.balances.toJSONField(),
       owner: this.owner,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -422,14 +424,15 @@ export type MetadataKeyReified<T extends PhantomTypeArgument> = Reified<
 export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::accumulator_metadata::MetadataKey` as const
+  static readonly $typeName: `0x2::accumulator_metadata::MetadataKey` =
+    `0x2::accumulator_metadata::MetadataKey` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = MetadataKey.$typeName
+  readonly $typeName: typeof MetadataKey.$typeName = MetadataKey.$typeName
   readonly $fullTypeName: `0x2::accumulator_metadata::MetadataKey<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = MetadataKey.$isPhantom
+  readonly $isPhantom: typeof MetadataKey.$isPhantom = MetadataKey.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -472,7 +475,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof MetadataKey.reified {
     return MetadataKey.reified
   }
 
@@ -482,7 +485,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
     return phantom(MetadataKey.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof MetadataKey.phantom {
     return MetadataKey.phantom
   }
 
@@ -531,13 +534,13 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
     return MetadataKey.fromFields(typeArg, MetadataKey.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -648,14 +651,15 @@ export type MetadataReified<T extends PhantomTypeArgument> = Reified<Metadata<T>
 export class Metadata<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::accumulator_metadata::Metadata` as const
+  static readonly $typeName: `0x2::accumulator_metadata::Metadata` =
+    `0x2::accumulator_metadata::Metadata` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = Metadata.$typeName
+  readonly $typeName: typeof Metadata.$typeName = Metadata.$typeName
   readonly $fullTypeName: `0x2::accumulator_metadata::Metadata<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = Metadata.$isPhantom
+  readonly $isPhantom: typeof Metadata.$isPhantom = Metadata.$isPhantom
 
   /** Any per-balance fields we wish to add in the future. */
   readonly fields: ToField<Bag>
@@ -699,7 +703,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Metadata.reified {
     return Metadata.reified
   }
 
@@ -709,7 +713,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
     return phantom(Metadata.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof Metadata.phantom {
     return Metadata.phantom
   }
 
@@ -758,13 +762,13 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
     return Metadata.fromFields(typeArg, Metadata.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       fields: this.fields.toJSONField(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

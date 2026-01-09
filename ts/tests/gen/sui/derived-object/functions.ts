@@ -1,7 +1,12 @@
 import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
 import { ID } from '../object/structs'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 export interface ClaimArgs {
   parent: TransactionObjectInput
@@ -9,7 +14,7 @@ export interface ClaimArgs {
 }
 
 /** Claim a deterministic UID, using the parent's UID & any key. */
-export function claim(tx: Transaction, typeArg: string, args: ClaimArgs) {
+export function claim(tx: Transaction, typeArg: string, args: ClaimArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::derived_object::claim`,
     typeArguments: [typeArg],
@@ -26,7 +31,7 @@ export interface ExistsArgs {
  * Checks if a provided `key` has been claimed for the given parent.
  * Note: If the UID has been deleted through `object::delete`, this will always return true.
  */
-export function exists(tx: Transaction, typeArg: string, args: ExistsArgs) {
+export function exists(tx: Transaction, typeArg: string, args: ExistsArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::derived_object::exists`,
     typeArguments: [typeArg],
@@ -40,7 +45,11 @@ export interface DeriveAddressArgs {
 }
 
 /** Given an ID and a Key, it calculates the derived address. */
-export function deriveAddress(tx: Transaction, typeArg: string, args: DeriveAddressArgs) {
+export function deriveAddress(
+  tx: Transaction,
+  typeArg: string,
+  args: DeriveAddressArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::derived_object::derive_address`,
     typeArguments: [typeArg],

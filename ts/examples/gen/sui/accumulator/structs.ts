@@ -44,14 +44,15 @@ export type AccumulatorRootReified = Reified<AccumulatorRoot, AccumulatorRootFie
 export class AccumulatorRoot implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::accumulator::AccumulatorRoot` as const
+  static readonly $typeName: `0x2::accumulator::AccumulatorRoot` =
+    `0x2::accumulator::AccumulatorRoot` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = AccumulatorRoot.$typeName
+  readonly $typeName: typeof AccumulatorRoot.$typeName = AccumulatorRoot.$typeName
   readonly $fullTypeName: `0x2::accumulator::AccumulatorRoot`
   readonly $typeArgs: []
-  readonly $isPhantom = AccumulatorRoot.$isPhantom
+  readonly $isPhantom: typeof AccumulatorRoot.$isPhantom = AccumulatorRoot.$isPhantom
 
   readonly id: ToField<UID>
 
@@ -92,7 +93,7 @@ export class AccumulatorRoot implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): AccumulatorRootReified {
     return AccumulatorRoot.reified()
   }
 
@@ -100,7 +101,7 @@ export class AccumulatorRoot implements StructClass {
     return phantom(AccumulatorRoot.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<AccumulatorRoot>> {
     return AccumulatorRoot.phantom()
   }
 
@@ -139,13 +140,13 @@ export class AccumulatorRoot implements StructClass {
     return AccumulatorRoot.fromFields(AccumulatorRoot.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -224,14 +225,14 @@ export type U128Reified = Reified<U128, U128Fields>
 export class U128 implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::accumulator::U128` as const
+  static readonly $typeName: `0x2::accumulator::U128` = `0x2::accumulator::U128` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = U128.$typeName
+  readonly $typeName: typeof U128.$typeName = U128.$typeName
   readonly $fullTypeName: `0x2::accumulator::U128`
   readonly $typeArgs: []
-  readonly $isPhantom = U128.$isPhantom
+  readonly $isPhantom: typeof U128.$isPhantom = U128.$isPhantom
 
   readonly value: ToField<'u128'>
 
@@ -266,7 +267,7 @@ export class U128 implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): U128Reified {
     return U128.reified()
   }
 
@@ -274,7 +275,7 @@ export class U128 implements StructClass {
     return phantom(U128.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<U128>> {
     return U128.phantom()
   }
 
@@ -313,13 +314,13 @@ export class U128 implements StructClass {
     return U128.fromFields(U128.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       value: this.value.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -395,14 +396,14 @@ export type KeyReified<T extends PhantomTypeArgument> = Reified<Key<T>, KeyField
 export class Key<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::accumulator::Key` as const
+  static readonly $typeName: `0x2::accumulator::Key` = `0x2::accumulator::Key` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = Key.$typeName
+  readonly $typeName: typeof Key.$typeName = Key.$typeName
   readonly $fullTypeName: `0x2::accumulator::Key<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = Key.$isPhantom
+  readonly $isPhantom: typeof Key.$isPhantom = Key.$isPhantom
 
   readonly address: ToField<'address'>
 
@@ -445,7 +446,7 @@ export class Key<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Key.reified {
     return Key.reified
   }
 
@@ -455,7 +456,7 @@ export class Key<T extends PhantomTypeArgument> implements StructClass {
     return phantom(Key.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof Key.phantom {
     return Key.phantom
   }
 
@@ -507,13 +508,13 @@ export class Key<T extends PhantomTypeArgument> implements StructClass {
     return Key.fromFields(typeArg, Key.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       address: this.address,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

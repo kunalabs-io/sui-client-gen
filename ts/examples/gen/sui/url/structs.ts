@@ -40,14 +40,14 @@ export type UrlReified = Reified<Url, UrlFields>
 export class Url implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::url::Url` as const
+  static readonly $typeName: `0x2::url::Url` = `0x2::url::Url` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Url.$typeName
+  readonly $typeName: typeof Url.$typeName = Url.$typeName
   readonly $fullTypeName: `0x2::url::Url`
   readonly $typeArgs: []
-  readonly $isPhantom = Url.$isPhantom
+  readonly $isPhantom: typeof Url.$isPhantom = Url.$isPhantom
 
   readonly url: ToField<String>
 
@@ -82,7 +82,7 @@ export class Url implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): UrlReified {
     return Url.reified()
   }
 
@@ -90,7 +90,7 @@ export class Url implements StructClass {
     return phantom(Url.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Url>> {
     return Url.phantom()
   }
 
@@ -129,13 +129,13 @@ export class Url implements StructClass {
     return Url.fromFields(Url.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       url: this.url,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

@@ -42,14 +42,15 @@ export type PCREntryReified = Reified<PCREntry, PCREntryFields>
 export class PCREntry implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::nitro_attestation::PCREntry` as const
+  static readonly $typeName: `0x2::nitro_attestation::PCREntry` =
+    `0x2::nitro_attestation::PCREntry` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = PCREntry.$typeName
+  readonly $typeName: typeof PCREntry.$typeName = PCREntry.$typeName
   readonly $fullTypeName: `0x2::nitro_attestation::PCREntry`
   readonly $typeArgs: []
-  readonly $isPhantom = PCREntry.$isPhantom
+  readonly $isPhantom: typeof PCREntry.$isPhantom = PCREntry.$isPhantom
 
   readonly index: ToField<'u8'>
   readonly value: ToField<Vector<'u8'>>
@@ -89,7 +90,7 @@ export class PCREntry implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): PCREntryReified {
     return PCREntry.reified()
   }
 
@@ -97,7 +98,7 @@ export class PCREntry implements StructClass {
     return phantom(PCREntry.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<PCREntry>> {
     return PCREntry.phantom()
   }
 
@@ -139,14 +140,14 @@ export class PCREntry implements StructClass {
     return PCREntry.fromFields(PCREntry.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       index: this.index,
       value: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.value),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -242,14 +243,16 @@ export type NitroAttestationDocumentReified = Reified<
 export class NitroAttestationDocument implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::nitro_attestation::NitroAttestationDocument` as const
+  static readonly $typeName: `0x2::nitro_attestation::NitroAttestationDocument` =
+    `0x2::nitro_attestation::NitroAttestationDocument` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = NitroAttestationDocument.$typeName
+  readonly $typeName: typeof NitroAttestationDocument.$typeName = NitroAttestationDocument.$typeName
   readonly $fullTypeName: `0x2::nitro_attestation::NitroAttestationDocument`
   readonly $typeArgs: []
-  readonly $isPhantom = NitroAttestationDocument.$isPhantom
+  readonly $isPhantom: typeof NitroAttestationDocument.$isPhantom =
+    NitroAttestationDocument.$isPhantom
 
   /** Issuing Nitro hypervisor module ID. */
   readonly moduleId: ToField<Vector<'u8'>>
@@ -319,7 +322,7 @@ export class NitroAttestationDocument implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): NitroAttestationDocumentReified {
     return NitroAttestationDocument.reified()
   }
 
@@ -327,7 +330,7 @@ export class NitroAttestationDocument implements StructClass {
     return phantom(NitroAttestationDocument.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<NitroAttestationDocument>> {
     return NitroAttestationDocument.phantom()
   }
 
@@ -384,7 +387,7 @@ export class NitroAttestationDocument implements StructClass {
     return NitroAttestationDocument.fromFields(NitroAttestationDocument.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       moduleId: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.moduleId),
       timestamp: this.timestamp.toString(),
@@ -399,7 +402,7 @@ export class NitroAttestationDocument implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

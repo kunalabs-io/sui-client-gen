@@ -40,14 +40,14 @@ export type BitVectorReified = Reified<BitVector, BitVectorFields>
 export class BitVector implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x1::bit_vector::BitVector` as const
+  static readonly $typeName: `0x1::bit_vector::BitVector` = `0x1::bit_vector::BitVector` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = BitVector.$typeName
+  readonly $typeName: typeof BitVector.$typeName = BitVector.$typeName
   readonly $fullTypeName: `0x1::bit_vector::BitVector`
   readonly $typeArgs: []
-  readonly $isPhantom = BitVector.$isPhantom
+  readonly $isPhantom: typeof BitVector.$isPhantom = BitVector.$isPhantom
 
   readonly length: ToField<'u64'>
   readonly bitField: ToField<Vector<'bool'>>
@@ -87,7 +87,7 @@ export class BitVector implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): BitVectorReified {
     return BitVector.reified()
   }
 
@@ -95,7 +95,7 @@ export class BitVector implements StructClass {
     return phantom(BitVector.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<BitVector>> {
     return BitVector.phantom()
   }
 
@@ -137,14 +137,14 @@ export class BitVector implements StructClass {
     return BitVector.fromFields(BitVector.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       length: this.length.toString(),
       bitField: fieldToJSON<Vector<'bool'>>(`vector<bool>`, this.bitField),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

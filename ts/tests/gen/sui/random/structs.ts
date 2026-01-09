@@ -48,14 +48,14 @@ export type RandomReified = Reified<Random, RandomFields>
 export class Random implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::random::Random` as const
+  static readonly $typeName: `0x2::random::Random` = `0x2::random::Random` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Random.$typeName
+  readonly $typeName: typeof Random.$typeName = Random.$typeName
   readonly $fullTypeName: `0x2::random::Random`
   readonly $typeArgs: []
-  readonly $isPhantom = Random.$isPhantom
+  readonly $isPhantom: typeof Random.$isPhantom = Random.$isPhantom
 
   readonly id: ToField<UID>
   readonly inner: ToField<Versioned>
@@ -92,7 +92,7 @@ export class Random implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): RandomReified {
     return Random.reified()
   }
 
@@ -100,7 +100,7 @@ export class Random implements StructClass {
     return phantom(Random.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Random>> {
     return Random.phantom()
   }
 
@@ -142,14 +142,14 @@ export class Random implements StructClass {
     return Random.fromFields(Random.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       inner: this.inner.toJSONField(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -225,14 +225,14 @@ export type RandomInnerReified = Reified<RandomInner, RandomInnerFields>
 export class RandomInner implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::random::RandomInner` as const
+  static readonly $typeName: `0x2::random::RandomInner` = `0x2::random::RandomInner` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = RandomInner.$typeName
+  readonly $typeName: typeof RandomInner.$typeName = RandomInner.$typeName
   readonly $fullTypeName: `0x2::random::RandomInner`
   readonly $typeArgs: []
-  readonly $isPhantom = RandomInner.$isPhantom
+  readonly $isPhantom: typeof RandomInner.$isPhantom = RandomInner.$isPhantom
 
   readonly version: ToField<'u64'>
   readonly epoch: ToField<'u64'>
@@ -276,7 +276,7 @@ export class RandomInner implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): RandomInnerReified {
     return RandomInner.reified()
   }
 
@@ -284,7 +284,7 @@ export class RandomInner implements StructClass {
     return phantom(RandomInner.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<RandomInner>> {
     return RandomInner.phantom()
   }
 
@@ -332,7 +332,7 @@ export class RandomInner implements StructClass {
     return RandomInner.fromFields(RandomInner.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       version: this.version.toString(),
       epoch: this.epoch.toString(),
@@ -341,7 +341,7 @@ export class RandomInner implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -419,14 +419,15 @@ export type RandomGeneratorReified = Reified<RandomGenerator, RandomGeneratorFie
 export class RandomGenerator implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::random::RandomGenerator` as const
+  static readonly $typeName: `0x2::random::RandomGenerator` =
+    `0x2::random::RandomGenerator` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = RandomGenerator.$typeName
+  readonly $typeName: typeof RandomGenerator.$typeName = RandomGenerator.$typeName
   readonly $fullTypeName: `0x2::random::RandomGenerator`
   readonly $typeArgs: []
-  readonly $isPhantom = RandomGenerator.$isPhantom
+  readonly $isPhantom: typeof RandomGenerator.$isPhantom = RandomGenerator.$isPhantom
 
   readonly seed: ToField<Vector<'u8'>>
   readonly counter: ToField<'u16'>
@@ -471,7 +472,7 @@ export class RandomGenerator implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): RandomGeneratorReified {
     return RandomGenerator.reified()
   }
 
@@ -479,7 +480,7 @@ export class RandomGenerator implements StructClass {
     return phantom(RandomGenerator.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<RandomGenerator>> {
     return RandomGenerator.phantom()
   }
 
@@ -524,7 +525,7 @@ export class RandomGenerator implements StructClass {
     return RandomGenerator.fromFields(RandomGenerator.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       seed: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.seed),
       counter: this.counter,
@@ -532,7 +533,7 @@ export class RandomGenerator implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

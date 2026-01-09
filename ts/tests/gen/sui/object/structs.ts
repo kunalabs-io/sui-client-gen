@@ -46,14 +46,14 @@ export type IDReified = Reified<ID, IDFields>
 export class ID implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::object::ID` as const
+  static readonly $typeName: `0x2::object::ID` = `0x2::object::ID` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = ID.$typeName
+  readonly $typeName: typeof ID.$typeName = ID.$typeName
   readonly $fullTypeName: `0x2::object::ID`
   readonly $typeArgs: []
-  readonly $isPhantom = ID.$isPhantom
+  readonly $isPhantom: typeof ID.$isPhantom = ID.$isPhantom
 
   readonly bytes: ToField<'address'>
 
@@ -88,7 +88,7 @@ export class ID implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): IDReified {
     return ID.reified()
   }
 
@@ -96,7 +96,7 @@ export class ID implements StructClass {
     return phantom(ID.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<ID>> {
     return ID.phantom()
   }
 
@@ -138,13 +138,13 @@ export class ID implements StructClass {
     return ID.fromFields(ID.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       bytes: this.bytes,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -224,14 +224,14 @@ export type UIDReified = Reified<UID, UIDFields>
 export class UID implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::object::UID` as const
+  static readonly $typeName: `0x2::object::UID` = `0x2::object::UID` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = UID.$typeName
+  readonly $typeName: typeof UID.$typeName = UID.$typeName
   readonly $fullTypeName: `0x2::object::UID`
   readonly $typeArgs: []
-  readonly $isPhantom = UID.$isPhantom
+  readonly $isPhantom: typeof UID.$isPhantom = UID.$isPhantom
 
   readonly id: ToField<ID>
 
@@ -266,7 +266,7 @@ export class UID implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): UIDReified {
     return UID.reified()
   }
 
@@ -274,7 +274,7 @@ export class UID implements StructClass {
     return phantom(UID.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<UID>> {
     return UID.phantom()
   }
 
@@ -313,13 +313,13 @@ export class UID implements StructClass {
     return UID.fromFields(UID.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

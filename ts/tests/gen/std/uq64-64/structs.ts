@@ -51,14 +51,14 @@ export type UQ64_64Reified = Reified<UQ64_64, UQ64_64Fields>
 export class UQ64_64 implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x1::uq64_64::UQ64_64` as const
+  static readonly $typeName: `0x1::uq64_64::UQ64_64` = `0x1::uq64_64::UQ64_64` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = UQ64_64.$typeName
+  readonly $typeName: typeof UQ64_64.$typeName = UQ64_64.$typeName
   readonly $fullTypeName: `0x1::uq64_64::UQ64_64`
   readonly $typeArgs: []
-  readonly $isPhantom = UQ64_64.$isPhantom
+  readonly $isPhantom: typeof UQ64_64.$isPhantom = UQ64_64.$isPhantom
 
   readonly pos0: ToField<'u128'>
 
@@ -93,7 +93,7 @@ export class UQ64_64 implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): UQ64_64Reified {
     return UQ64_64.reified()
   }
 
@@ -101,7 +101,7 @@ export class UQ64_64 implements StructClass {
     return phantom(UQ64_64.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<UQ64_64>> {
     return UQ64_64.phantom()
   }
 
@@ -140,13 +140,13 @@ export class UQ64_64 implements StructClass {
     return UQ64_64.fromFields(UQ64_64.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       pos0: this.pos0.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

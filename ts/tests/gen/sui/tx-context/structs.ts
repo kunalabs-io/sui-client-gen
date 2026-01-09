@@ -56,14 +56,14 @@ export type TxContextReified = Reified<TxContext, TxContextFields>
 export class TxContext implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::tx_context::TxContext` as const
+  static readonly $typeName: `0x2::tx_context::TxContext` = `0x2::tx_context::TxContext` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = TxContext.$typeName
+  readonly $typeName: typeof TxContext.$typeName = TxContext.$typeName
   readonly $fullTypeName: `0x2::tx_context::TxContext`
   readonly $typeArgs: []
-  readonly $isPhantom = TxContext.$isPhantom
+  readonly $isPhantom: typeof TxContext.$isPhantom = TxContext.$isPhantom
 
   /** The address of the user that signed the current transaction */
   readonly sender: ToField<'address'>
@@ -117,7 +117,7 @@ export class TxContext implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): TxContextReified {
     return TxContext.reified()
   }
 
@@ -125,7 +125,7 @@ export class TxContext implements StructClass {
     return phantom(TxContext.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<TxContext>> {
     return TxContext.phantom()
   }
 
@@ -179,7 +179,7 @@ export class TxContext implements StructClass {
     return TxContext.fromFields(TxContext.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       sender: this.sender,
       txHash: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.txHash),
@@ -189,7 +189,7 @@ export class TxContext implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

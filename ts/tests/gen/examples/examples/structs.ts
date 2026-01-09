@@ -44,15 +44,15 @@ export type ExampleStructReified = Reified<ExampleStruct, ExampleStructFields>
 export class ExampleStruct implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName =
+  static readonly $typeName: `${string}::examples::ExampleStruct` =
     `${getTypeOrigin('examples', 'examples::ExampleStruct')}::examples::ExampleStruct` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = ExampleStruct.$typeName
+  readonly $typeName: typeof ExampleStruct.$typeName = ExampleStruct.$typeName
   readonly $fullTypeName: `${string}::examples::ExampleStruct`
   readonly $typeArgs: []
-  readonly $isPhantom = ExampleStruct.$isPhantom
+  readonly $isPhantom: typeof ExampleStruct.$isPhantom = ExampleStruct.$isPhantom
 
   readonly dummyField: ToField<'bool'>
 
@@ -93,7 +93,7 @@ export class ExampleStruct implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): ExampleStructReified {
     return ExampleStruct.reified()
   }
 
@@ -101,7 +101,7 @@ export class ExampleStruct implements StructClass {
     return phantom(ExampleStruct.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<ExampleStruct>> {
     return ExampleStruct.phantom()
   }
 
@@ -140,13 +140,13 @@ export class ExampleStruct implements StructClass {
     return ExampleStruct.fromFields(ExampleStruct.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       dummyField: this.dummyField,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -229,15 +229,15 @@ export type SpecialTypesStructReified = Reified<SpecialTypesStruct, SpecialTypes
 export class SpecialTypesStruct implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName =
+  static readonly $typeName: `${string}::examples::SpecialTypesStruct` =
     `${getTypeOrigin('examples', 'examples::SpecialTypesStruct')}::examples::SpecialTypesStruct` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = SpecialTypesStruct.$typeName
+  readonly $typeName: typeof SpecialTypesStruct.$typeName = SpecialTypesStruct.$typeName
   readonly $fullTypeName: `${string}::examples::SpecialTypesStruct`
   readonly $typeArgs: []
-  readonly $isPhantom = SpecialTypesStruct.$isPhantom
+  readonly $isPhantom: typeof SpecialTypesStruct.$isPhantom = SpecialTypesStruct.$isPhantom
 
   readonly id: ToField<UID>
   readonly asciiString: ToField<String>
@@ -294,7 +294,7 @@ export class SpecialTypesStruct implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): SpecialTypesStructReified {
     return SpecialTypesStruct.reified()
   }
 
@@ -302,7 +302,7 @@ export class SpecialTypesStruct implements StructClass {
     return phantom(SpecialTypesStruct.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<SpecialTypesStruct>> {
     return SpecialTypesStruct.phantom()
   }
 
@@ -371,7 +371,7 @@ export class SpecialTypesStruct implements StructClass {
     return SpecialTypesStruct.fromFields(SpecialTypesStruct.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       asciiString: this.asciiString,
@@ -388,7 +388,7 @@ export class SpecialTypesStruct implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

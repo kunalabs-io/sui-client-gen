@@ -59,14 +59,15 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
 {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::object_table::ObjectTable` as const
+  static readonly $typeName: `0x2::object_table::ObjectTable` =
+    `0x2::object_table::ObjectTable` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, true] as const
 
-  readonly $typeName = ObjectTable.$typeName
+  readonly $typeName: typeof ObjectTable.$typeName = ObjectTable.$typeName
   readonly $fullTypeName: `0x2::object_table::ObjectTable<${PhantomToTypeStr<K>}, ${PhantomToTypeStr<V>}>`
   readonly $typeArgs: [PhantomToTypeStr<K>, PhantomToTypeStr<V>]
-  readonly $isPhantom = ObjectTable.$isPhantom
+  readonly $isPhantom: typeof ObjectTable.$isPhantom = ObjectTable.$isPhantom
 
   /** the ID of this table */
   readonly id: ToField<UID>
@@ -121,7 +122,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     }
   }
 
-  static get r() {
+  static get r(): typeof ObjectTable.reified {
     return ObjectTable.reified
   }
 
@@ -135,7 +136,7 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     return phantom(ObjectTable.reified(K, V))
   }
 
-  static get p() {
+  static get p(): typeof ObjectTable.phantom {
     return ObjectTable.phantom
   }
 
@@ -196,14 +197,14 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     return ObjectTable.fromFields(typeArgs, ObjectTable.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       size: this.size.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

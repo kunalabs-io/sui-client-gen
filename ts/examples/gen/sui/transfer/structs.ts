@@ -57,14 +57,14 @@ export type ReceivingReified<T extends PhantomTypeArgument> = Reified<
 export class Receiving<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::transfer::Receiving` as const
+  static readonly $typeName: `0x2::transfer::Receiving` = `0x2::transfer::Receiving` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = Receiving.$typeName
+  readonly $typeName: typeof Receiving.$typeName = Receiving.$typeName
   readonly $fullTypeName: `0x2::transfer::Receiving<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = Receiving.$isPhantom
+  readonly $isPhantom: typeof Receiving.$isPhantom = Receiving.$isPhantom
 
   readonly id: ToField<ID>
   readonly version: ToField<'u64'>
@@ -109,7 +109,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Receiving.reified {
     return Receiving.reified
   }
 
@@ -119,7 +119,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
     return phantom(Receiving.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof Receiving.phantom {
     return Receiving.phantom
   }
 
@@ -171,14 +171,14 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
     return Receiving.fromFields(typeArg, Receiving.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       version: this.version.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

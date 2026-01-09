@@ -1,6 +1,11 @@
 import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 export interface MultiplyU64Args {
   val: bigint | TransactionArgument
@@ -12,7 +17,7 @@ export interface MultiplyU64Args {
  * fractional part of the product. This will abort if the product
  * overflows.
  */
-export function multiplyU64(tx: Transaction, args: MultiplyU64Args) {
+export function multiplyU64(tx: Transaction, args: MultiplyU64Args): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::fixed_point32::multiply_u64`,
     arguments: [pure(tx, args.val, `u64`), obj(tx, args.multiplier)],
@@ -29,7 +34,7 @@ export interface DivideU64Args {
  * fractional part of the quotient. This will abort if the divisor
  * is zero or if the quotient overflows.
  */
-export function divideU64(tx: Transaction, args: DivideU64Args) {
+export function divideU64(tx: Transaction, args: DivideU64Args): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::fixed_point32::divide_u64`,
     arguments: [pure(tx, args.val, `u64`), obj(tx, args.divisor)],
@@ -53,7 +58,10 @@ export interface CreateFromRationalArgs {
  * very small imprecision in the binary representation could change the
  * rounding, e.g., 0.0125 will round down to 0.012 instead of up to 0.013.
  */
-export function createFromRational(tx: Transaction, args: CreateFromRationalArgs) {
+export function createFromRational(
+  tx: Transaction,
+  args: CreateFromRationalArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::fixed_point32::create_from_rational`,
     arguments: [pure(tx, args.numerator, `u64`), pure(tx, args.denominator, `u64`)],
@@ -61,7 +69,10 @@ export function createFromRational(tx: Transaction, args: CreateFromRationalArgs
 }
 
 /** Create a fixedpoint value from a raw value. */
-export function createFromRawValue(tx: Transaction, value: bigint | TransactionArgument) {
+export function createFromRawValue(
+  tx: Transaction,
+  value: bigint | TransactionArgument
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::fixed_point32::create_from_raw_value`,
     arguments: [pure(tx, value, `u64`)],
@@ -73,7 +84,7 @@ export function createFromRawValue(tx: Transaction, value: bigint | TransactionA
  * adding or subtracting FixedPoint32 values, can be done using the raw
  * values directly.
  */
-export function getRawValue(tx: Transaction, num: TransactionObjectInput) {
+export function getRawValue(tx: Transaction, num: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::fixed_point32::get_raw_value`,
     arguments: [obj(tx, num)],
@@ -81,7 +92,7 @@ export function getRawValue(tx: Transaction, num: TransactionObjectInput) {
 }
 
 /** Returns true if the ratio is zero. */
-export function isZero(tx: Transaction, num: TransactionObjectInput) {
+export function isZero(tx: Transaction, num: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('std')}::fixed_point32::is_zero`,
     arguments: [obj(tx, num)],

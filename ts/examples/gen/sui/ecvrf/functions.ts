@@ -1,6 +1,11 @@
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 export interface EcvrfVerifyArgs {
   hash: Array<number | TransactionArgument> | TransactionArgument
@@ -16,7 +21,7 @@ export interface EcvrfVerifyArgs {
  * @param proof: The proof of validity of the output.
  * Verify a proof for a Ristretto ECVRF. Returns true if the proof is valid and corresponds to the given output. May abort with `EInvalidHashLength`, `EInvalidPublicKeyEncoding` or `EInvalidProofEncoding`.
  */
-export function ecvrfVerify(tx: Transaction, args: EcvrfVerifyArgs) {
+export function ecvrfVerify(tx: Transaction, args: EcvrfVerifyArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::ecvrf::ecvrf_verify`,
     arguments: [

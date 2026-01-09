@@ -70,15 +70,15 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
 {
   __StructClass = true as const
 
-  static readonly $typeName =
+  static readonly $typeName: `${string}::enums::Wrapped` =
     `${getTypeOrigin('examples', 'enums::Wrapped')}::enums::Wrapped` as const
   static readonly $numTypeParams = 3
   static readonly $isPhantom = [false, false, false] as const
 
-  readonly $typeName = Wrapped.$typeName
+  readonly $typeName: typeof Wrapped.$typeName = Wrapped.$typeName
   readonly $fullTypeName: `${string}::enums::Wrapped<${ToTypeStr<T>}, ${ToTypeStr<U>}, ${ToTypeStr<V>}>`
   readonly $typeArgs: [ToTypeStr<T>, ToTypeStr<U>, ToTypeStr<V>]
-  readonly $isPhantom = Wrapped.$isPhantom
+  readonly $isPhantom: typeof Wrapped.$isPhantom = Wrapped.$isPhantom
 
   readonly id: ToField<UID>
   readonly t: ToField<T>
@@ -142,7 +142,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     }
   }
 
-  static get r() {
+  static get r(): typeof Wrapped.reified {
     return Wrapped.reified
   }
 
@@ -158,7 +158,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     return phantom(Wrapped.reified(T, U, V))
   }
 
-  static get p() {
+  static get p(): typeof Wrapped.phantom {
     return Wrapped.phantom
   }
 
@@ -254,7 +254,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     )
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       t: fieldToJSON<T>(`${this.$typeArgs[0]}`, this.t),
@@ -266,7 +266,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -414,7 +414,7 @@ export type ActionReified<T extends TypeArgument, U extends PhantomTypeArgument>
 >
 
 export class Action {
-  static readonly $typeName =
+  static readonly $typeName: string =
     `${getTypeOrigin('examples', 'enums::Action')}::enums::Action` as const
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, true] as const
@@ -462,7 +462,7 @@ export class Action {
     } as ActionReified<ToTypeArgument<T>, ToPhantomTypeArgument<U>>
   }
 
-  static get r() {
+  static get r(): typeof Action.reified {
     return Action.reified
   }
 
@@ -476,7 +476,7 @@ export class Action {
     return phantom(Action.reified(T, U))
   }
 
-  static get p() {
+  static get p(): typeof Action.phantom {
     return Action.phantom
   }
 
@@ -646,16 +646,16 @@ export class ActionStop<T extends TypeArgument, U extends PhantomTypeArgument>
 {
   __EnumVariantClass = true as const
 
-  static readonly $typeName = Action.$typeName
-  static readonly $numTypeParams = Action.$numTypeParams
-  static readonly $isPhantom = Action.$isPhantom
-  static readonly $variantName = 'Stop'
+  static readonly $typeName: typeof Action.$typeName = Action.$typeName
+  static readonly $numTypeParams: typeof Action.$numTypeParams = Action.$numTypeParams
+  static readonly $isPhantom: typeof Action.$isPhantom = Action.$isPhantom
+  static readonly $variantName = 'Stop' as const
 
-  readonly $typeName = ActionStop.$typeName
+  readonly $typeName: typeof ActionStop.$typeName = ActionStop.$typeName
   readonly $fullTypeName: `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
   readonly $typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>]
-  readonly $isPhantom = Action.$isPhantom
-  readonly $variantName = ActionStop.$variantName
+  readonly $isPhantom: typeof Action.$isPhantom = Action.$isPhantom
+  readonly $variantName: typeof ActionStop.$variantName = ActionStop.$variantName
 
   constructor(typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>], fields: ActionStopFields) {
     this.$fullTypeName = composeSuiType(
@@ -665,11 +665,11 @@ export class ActionStop<T extends TypeArgument, U extends PhantomTypeArgument>
     this.$typeArgs = typeArgs
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return { $kind: this.$variantName }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,
@@ -691,16 +691,16 @@ export class ActionPause<T extends TypeArgument, U extends PhantomTypeArgument>
 {
   __EnumVariantClass = true as const
 
-  static readonly $typeName = Action.$typeName
-  static readonly $numTypeParams = Action.$numTypeParams
-  static readonly $isPhantom = Action.$isPhantom
-  static readonly $variantName = 'Pause'
+  static readonly $typeName: typeof Action.$typeName = Action.$typeName
+  static readonly $numTypeParams: typeof Action.$numTypeParams = Action.$numTypeParams
+  static readonly $isPhantom: typeof Action.$isPhantom = Action.$isPhantom
+  static readonly $variantName = 'Pause' as const
 
-  readonly $typeName = ActionPause.$typeName
+  readonly $typeName: typeof ActionPause.$typeName = ActionPause.$typeName
   readonly $fullTypeName: `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
   readonly $typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>]
-  readonly $isPhantom = Action.$isPhantom
-  readonly $variantName = ActionPause.$variantName
+  readonly $isPhantom: typeof Action.$isPhantom = Action.$isPhantom
+  readonly $variantName: typeof ActionPause.$variantName = ActionPause.$variantName
 
   readonly duration: ToField<'u32'>
   readonly genericField: ToField<T>
@@ -720,7 +720,7 @@ export class ActionPause<T extends TypeArgument, U extends PhantomTypeArgument>
     this.reifiedField = fields.reifiedField
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       $kind: this.$variantName,
       duration: fieldToJSON<'u32'>(`u32`, this.duration),
@@ -733,7 +733,7 @@ export class ActionPause<T extends TypeArgument, U extends PhantomTypeArgument>
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,
@@ -755,16 +755,16 @@ export class ActionJump<T extends TypeArgument, U extends PhantomTypeArgument>
 {
   __EnumVariantClass = true as const
 
-  static readonly $typeName = Action.$typeName
-  static readonly $numTypeParams = Action.$numTypeParams
-  static readonly $isPhantom = Action.$isPhantom
-  static readonly $variantName = 'Jump'
+  static readonly $typeName: typeof Action.$typeName = Action.$typeName
+  static readonly $numTypeParams: typeof Action.$numTypeParams = Action.$numTypeParams
+  static readonly $isPhantom: typeof Action.$isPhantom = Action.$isPhantom
+  static readonly $variantName = 'Jump' as const
 
-  readonly $typeName = ActionJump.$typeName
+  readonly $typeName: typeof ActionJump.$typeName = ActionJump.$typeName
   readonly $fullTypeName: `${typeof Action.$typeName}<${ToTypeStr<T>}, ${PhantomToTypeStr<U>}>`
   readonly $typeArgs: [ToTypeStr<T>, PhantomToTypeStr<U>]
-  readonly $isPhantom = Action.$isPhantom
-  readonly $variantName = ActionJump.$variantName
+  readonly $isPhantom: typeof Action.$isPhantom = Action.$isPhantom
+  readonly $variantName: typeof ActionJump.$variantName = ActionJump.$variantName
 
   readonly 0: ToField<'u64'>
   readonly 1: ToField<T>
@@ -784,7 +784,7 @@ export class ActionJump<T extends TypeArgument, U extends PhantomTypeArgument>
     this[3] = fields[3]
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       $kind: this.$variantName,
       vec: [
@@ -796,7 +796,7 @@ export class ActionJump<T extends TypeArgument, U extends PhantomTypeArgument>
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return {
       $typeName: this.$typeName,
       $typeArgs: this.$typeArgs,

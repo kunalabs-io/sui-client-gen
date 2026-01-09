@@ -1,19 +1,24 @@
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 /**
  * Return the address of the user that signed the current
  * transaction
  */
-export function sender(tx: Transaction) {
+export function sender(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::sender`,
     arguments: [],
   })
 }
 
-export function nativeSender(tx: Transaction) {
+export function nativeSender(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::native_sender`,
     arguments: [],
@@ -24,7 +29,7 @@ export function nativeSender(tx: Transaction) {
  * Return the transaction digest (hash of transaction inputs).
  * Please do not use as a source of randomness.
  */
-export function digest(tx: Transaction) {
+export function digest(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::digest`,
     arguments: [],
@@ -32,14 +37,14 @@ export function digest(tx: Transaction) {
 }
 
 /** Return the current epoch */
-export function epoch(tx: Transaction) {
+export function epoch(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::epoch`,
     arguments: [],
   })
 }
 
-export function nativeEpoch(tx: Transaction) {
+export function nativeEpoch(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::native_epoch`,
     arguments: [],
@@ -47,14 +52,14 @@ export function nativeEpoch(tx: Transaction) {
 }
 
 /** Return the epoch start time as a unix timestamp in milliseconds. */
-export function epochTimestampMs(tx: Transaction) {
+export function epochTimestampMs(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::epoch_timestamp_ms`,
     arguments: [],
   })
 }
 
-export function nativeEpochTimestampMs(tx: Transaction) {
+export function nativeEpochTimestampMs(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::native_epoch_timestamp_ms`,
     arguments: [],
@@ -62,7 +67,7 @@ export function nativeEpochTimestampMs(tx: Transaction) {
 }
 
 /** Return the adress of the transaction sponsor or `None` if there was no sponsor. */
-export function sponsor(tx: Transaction) {
+export function sponsor(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::sponsor`,
     arguments: [],
@@ -74,14 +79,14 @@ export function sponsor(tx: Transaction) {
  * occur as the address for a user.
  * In other words, the generated address is a globally unique object ID.
  */
-export function freshObjectAddress(tx: Transaction) {
+export function freshObjectAddress(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::fresh_object_address`,
     arguments: [],
   })
 }
 
-export function freshId(tx: Transaction) {
+export function freshId(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::fresh_id`,
     arguments: [],
@@ -92,14 +97,14 @@ export function freshId(tx: Transaction) {
  * Return the reference gas price in effect for the epoch the transaction
  * is being executed in.
  */
-export function referenceGasPrice(tx: Transaction) {
+export function referenceGasPrice(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::reference_gas_price`,
     arguments: [],
   })
 }
 
-export function nativeRgp(tx: Transaction) {
+export function nativeRgp(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::native_rgp`,
     arguments: [],
@@ -110,42 +115,42 @@ export function nativeRgp(tx: Transaction) {
  * Return the gas price submitted for the current transaction.
  * That is the value the user submitted with the transaction data.
  */
-export function gasPrice(tx: Transaction) {
+export function gasPrice(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::gas_price`,
     arguments: [],
   })
 }
 
-export function nativeGasPrice(tx: Transaction) {
+export function nativeGasPrice(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::native_gas_price`,
     arguments: [],
   })
 }
 
-export function nativeIdsCreated(tx: Transaction) {
+export function nativeIdsCreated(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::native_ids_created`,
     arguments: [],
   })
 }
 
-export function nativeGasBudget(tx: Transaction) {
+export function nativeGasBudget(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::native_gas_budget`,
     arguments: [],
   })
 }
 
-export function optionSponsor(tx: Transaction) {
+export function optionSponsor(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::option_sponsor`,
     arguments: [],
   })
 }
 
-export function nativeSponsor(tx: Transaction) {
+export function nativeSponsor(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::native_sponsor`,
     arguments: [],
@@ -158,7 +163,7 @@ export interface DeriveIdArgs {
 }
 
 /** Native function for deriving an ID via hash(tx_hash || ids_created) */
-export function deriveId(tx: Transaction, args: DeriveIdArgs) {
+export function deriveId(tx: Transaction, args: DeriveIdArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::tx_context::derive_id`,
     arguments: [pure(tx, args.txHash, `vector<u8>`), pure(tx, args.idsCreated, `u64`)],

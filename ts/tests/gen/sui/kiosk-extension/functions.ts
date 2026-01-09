@@ -1,6 +1,11 @@
 import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 export interface AddArgs {
   ext: GenericArg
@@ -14,7 +19,7 @@ export interface AddArgs {
  * extension witness is required to allow extensions define their set of
  * permissions in the custom `add` call.
  */
-export function add(tx: Transaction, typeArg: string, args: AddArgs) {
+export function add(tx: Transaction, typeArg: string, args: AddArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::add`,
     typeArguments: [typeArg],
@@ -37,7 +42,7 @@ export interface DisableArgs {
  * extension completely, it keeps it from performing any protected actions.
  * The storage is still available to the extension (until it's removed).
  */
-export function disable(tx: Transaction, typeArg: string, args: DisableArgs) {
+export function disable(tx: Transaction, typeArg: string, args: DisableArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::disable`,
     typeArguments: [typeArg],
@@ -55,7 +60,7 @@ export interface EnableArgs {
  * `place`, `lock`). By default, all added extensions are enabled. Kiosk
  * owner can disable them via `disable` call.
  */
-export function enable(tx: Transaction, typeArg: string, args: EnableArgs) {
+export function enable(tx: Transaction, typeArg: string, args: EnableArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::enable`,
     typeArguments: [typeArg],
@@ -72,7 +77,7 @@ export interface RemoveArgs {
  * Remove an extension from the Kiosk. Can only be performed by the owner,
  * the extension storage must be empty for the transaction to succeed.
  */
-export function remove(tx: Transaction, typeArg: string, args: RemoveArgs) {
+export function remove(tx: Transaction, typeArg: string, args: RemoveArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::remove`,
     typeArguments: [typeArg],
@@ -89,7 +94,7 @@ export interface StorageArgs {
  * Get immutable access to the extension storage. Can only be performed by
  * the extension as long as the extension is installed.
  */
-export function storage(tx: Transaction, typeArg: string, args: StorageArgs) {
+export function storage(tx: Transaction, typeArg: string, args: StorageArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::storage`,
     typeArguments: [typeArg],
@@ -116,7 +121,11 @@ export interface StorageMutArgs {
  * Extensions should be crafted carefully, and the KioskOwner should be
  * aware of the risks.
  */
-export function storageMut(tx: Transaction, typeArg: string, args: StorageMutArgs) {
+export function storageMut(
+  tx: Transaction,
+  typeArg: string,
+  args: StorageMutArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::storage_mut`,
     typeArguments: [typeArg],
@@ -139,7 +148,11 @@ export interface PlaceArgs {
  * To prevent non-tradable items from being placed into `Kiosk` the method
  * requires a `TransferPolicy` for the placed type to exist.
  */
-export function place(tx: Transaction, typeArgs: [string, string], args: PlaceArgs) {
+export function place(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: PlaceArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::place`,
     typeArguments: typeArgs,
@@ -163,7 +176,11 @@ export interface LockArgs {
  * Protected action: lock an item in the Kiosk. Can be performed by an
  * authorized extension. The extension must have the `lock` permission.
  */
-export function lock(tx: Transaction, typeArgs: [string, string], args: LockArgs) {
+export function lock(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: LockArgs
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::lock`,
     typeArguments: typeArgs,
@@ -177,7 +194,11 @@ export function lock(tx: Transaction, typeArgs: [string, string], args: LockArgs
 }
 
 /** Check whether an extension of type `Ext` is installed. */
-export function isInstalled(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function isInstalled(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::is_installed`,
     typeArguments: [typeArg],
@@ -186,7 +207,11 @@ export function isInstalled(tx: Transaction, typeArg: string, self: TransactionO
 }
 
 /** Check whether an extension of type `Ext` is enabled. */
-export function isEnabled(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function isEnabled(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::is_enabled`,
     typeArguments: [typeArg],
@@ -195,7 +220,11 @@ export function isEnabled(tx: Transaction, typeArg: string, self: TransactionObj
 }
 
 /** Check whether an extension of type `Ext` can `place` into Kiosk. */
-export function canPlace(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function canPlace(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::can_place`,
     typeArguments: [typeArg],
@@ -207,7 +236,11 @@ export function canPlace(tx: Transaction, typeArg: string, self: TransactionObje
  * Check whether an extension of type `Ext` can `lock` items in Kiosk.
  * Locking also enables `place`.
  */
-export function canLock(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function canLock(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::can_lock`,
     typeArguments: [typeArg],
@@ -216,7 +249,11 @@ export function canLock(tx: Transaction, typeArg: string, self: TransactionObjec
 }
 
 /** Internal: get a read-only access to the Extension. */
-export function extension(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function extension(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::extension`,
     typeArguments: [typeArg],
@@ -225,7 +262,11 @@ export function extension(tx: Transaction, typeArg: string, self: TransactionObj
 }
 
 /** Internal: get a mutable access to the Extension. */
-export function extensionMut(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function extensionMut(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::kiosk_extension::extension_mut`,
     typeArguments: [typeArg],

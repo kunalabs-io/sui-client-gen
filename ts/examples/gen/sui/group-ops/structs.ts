@@ -48,14 +48,14 @@ export type ElementReified<T extends PhantomTypeArgument> = Reified<Element<T>, 
 export class Element<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::group_ops::Element` as const
+  static readonly $typeName: `0x2::group_ops::Element` = `0x2::group_ops::Element` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = Element.$typeName
+  readonly $typeName: typeof Element.$typeName = Element.$typeName
   readonly $fullTypeName: `0x2::group_ops::Element<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = Element.$isPhantom
+  readonly $isPhantom: typeof Element.$isPhantom = Element.$isPhantom
 
   readonly bytes: ToField<Vector<'u8'>>
 
@@ -98,7 +98,7 @@ export class Element<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Element.reified {
     return Element.reified
   }
 
@@ -108,7 +108,7 @@ export class Element<T extends PhantomTypeArgument> implements StructClass {
     return phantom(Element.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof Element.phantom {
     return Element.phantom
   }
 
@@ -157,13 +157,13 @@ export class Element<T extends PhantomTypeArgument> implements StructClass {
     return Element.fromFields(typeArg, Element.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

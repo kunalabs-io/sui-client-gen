@@ -78,14 +78,14 @@ export type BCSReified = Reified<BCS, BCSFields>
 export class BCS implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::bcs::BCS` as const
+  static readonly $typeName: `0x2::bcs::BCS` = `0x2::bcs::BCS` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = BCS.$typeName
+  readonly $typeName: typeof BCS.$typeName = BCS.$typeName
   readonly $fullTypeName: `0x2::bcs::BCS`
   readonly $typeArgs: []
-  readonly $isPhantom = BCS.$isPhantom
+  readonly $isPhantom: typeof BCS.$isPhantom = BCS.$isPhantom
 
   readonly bytes: ToField<Vector<'u8'>>
 
@@ -120,7 +120,7 @@ export class BCS implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): BCSReified {
     return BCS.reified()
   }
 
@@ -128,7 +128,7 @@ export class BCS implements StructClass {
     return phantom(BCS.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<BCS>> {
     return BCS.phantom()
   }
 
@@ -167,13 +167,13 @@ export class BCS implements StructClass {
     return BCS.fromFields(BCS.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       bytes: fieldToJSON<Vector<'u8'>>(`vector<u8>`, this.bytes),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

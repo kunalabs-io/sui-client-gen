@@ -88,14 +88,14 @@ export type DisplayReified<T extends PhantomTypeArgument> = Reified<Display<T>, 
 export class Display<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::display::Display` as const
+  static readonly $typeName: `0x2::display::Display` = `0x2::display::Display` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = Display.$typeName
+  readonly $typeName: typeof Display.$typeName = Display.$typeName
   readonly $fullTypeName: `0x2::display::Display<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = Display.$isPhantom
+  readonly $isPhantom: typeof Display.$isPhantom = Display.$isPhantom
 
   readonly id: ToField<UID>
   /**
@@ -147,7 +147,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Display.reified {
     return Display.reified
   }
 
@@ -157,7 +157,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
     return phantom(Display.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof Display.phantom {
     return Display.phantom
   }
 
@@ -215,7 +215,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
     return Display.fromFields(typeArg, Display.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       fields: this.fields.toJSONField(),
@@ -223,7 +223,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -345,14 +345,15 @@ export type DisplayCreatedReified<T extends PhantomTypeArgument> = Reified<
 export class DisplayCreated<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::display::DisplayCreated` as const
+  static readonly $typeName: `0x2::display::DisplayCreated` =
+    `0x2::display::DisplayCreated` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = DisplayCreated.$typeName
+  readonly $typeName: typeof DisplayCreated.$typeName = DisplayCreated.$typeName
   readonly $fullTypeName: `0x2::display::DisplayCreated<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = DisplayCreated.$isPhantom
+  readonly $isPhantom: typeof DisplayCreated.$isPhantom = DisplayCreated.$isPhantom
 
   readonly id: ToField<ID>
 
@@ -395,7 +396,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
     }
   }
 
-  static get r() {
+  static get r(): typeof DisplayCreated.reified {
     return DisplayCreated.reified
   }
 
@@ -405,7 +406,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
     return phantom(DisplayCreated.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof DisplayCreated.phantom {
     return DisplayCreated.phantom
   }
 
@@ -454,13 +455,13 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
     return DisplayCreated.fromFields(typeArg, DisplayCreated.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -575,14 +576,15 @@ export type VersionUpdatedReified<T extends PhantomTypeArgument> = Reified<
 export class VersionUpdated<T extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::display::VersionUpdated` as const
+  static readonly $typeName: `0x2::display::VersionUpdated` =
+    `0x2::display::VersionUpdated` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = VersionUpdated.$typeName
+  readonly $typeName: typeof VersionUpdated.$typeName = VersionUpdated.$typeName
   readonly $fullTypeName: `0x2::display::VersionUpdated<${PhantomToTypeStr<T>}>`
   readonly $typeArgs: [PhantomToTypeStr<T>]
-  readonly $isPhantom = VersionUpdated.$isPhantom
+  readonly $isPhantom: typeof VersionUpdated.$isPhantom = VersionUpdated.$isPhantom
 
   readonly id: ToField<ID>
   readonly version: ToField<'u16'>
@@ -629,7 +631,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
     }
   }
 
-  static get r() {
+  static get r(): typeof VersionUpdated.reified {
     return VersionUpdated.reified
   }
 
@@ -639,7 +641,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
     return phantom(VersionUpdated.reified(T))
   }
 
-  static get p() {
+  static get p(): typeof VersionUpdated.phantom {
     return VersionUpdated.phantom
   }
 
@@ -697,7 +699,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
     return VersionUpdated.fromFields(typeArg, VersionUpdated.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
       version: this.version,
@@ -705,7 +707,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

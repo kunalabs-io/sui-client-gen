@@ -1,6 +1,11 @@
 import { getPublishedAt } from '../../_envs'
 import { GenericArg, generic, obj, pure } from '../../_framework/util'
-import { Transaction, TransactionArgument, TransactionObjectInput } from '@mysten/sui/transactions'
+import {
+  Transaction,
+  TransactionArgument,
+  TransactionObjectInput,
+  TransactionResult,
+} from '@mysten/sui/transactions'
 
 /**
  * Claim a Publisher object.
@@ -8,7 +13,7 @@ import { Transaction, TransactionArgument, TransactionObjectInput } from '@myste
  * constraint there can be only one Publisher object per module
  * but multiple per package (!).
  */
-export function claim(tx: Transaction, typeArg: string, otw: GenericArg) {
+export function claim(tx: Transaction, typeArg: string, otw: GenericArg): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::claim`,
     typeArguments: [typeArg],
@@ -21,7 +26,7 @@ export function claim(tx: Transaction, typeArg: string, otw: GenericArg) {
  * Since this function can only be called in the module initializer,
  * the sender is the publisher.
  */
-export function claimAndKeep(tx: Transaction, typeArg: string, otw: GenericArg) {
+export function claimAndKeep(tx: Transaction, typeArg: string, otw: GenericArg): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::claim_and_keep`,
     typeArguments: [typeArg],
@@ -33,7 +38,7 @@ export function claimAndKeep(tx: Transaction, typeArg: string, otw: GenericArg) 
  * Destroy a Publisher object effectively removing all privileges
  * associated with it.
  */
-export function burnPublisher(tx: Transaction, self: TransactionObjectInput) {
+export function burnPublisher(tx: Transaction, self: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::burn_publisher`,
     arguments: [obj(tx, self)],
@@ -41,7 +46,11 @@ export function burnPublisher(tx: Transaction, self: TransactionObjectInput) {
 }
 
 /** Check whether type belongs to the same package as the publisher object. */
-export function fromPackage(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function fromPackage(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::from_package`,
     typeArguments: [typeArg],
@@ -50,7 +59,11 @@ export function fromPackage(tx: Transaction, typeArg: string, self: TransactionO
 }
 
 /** Check whether a type belongs to the same module as the publisher object. */
-export function fromModule(tx: Transaction, typeArg: string, self: TransactionObjectInput) {
+export function fromModule(
+  tx: Transaction,
+  typeArg: string,
+  self: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::from_module`,
     typeArguments: [typeArg],
@@ -59,7 +72,7 @@ export function fromModule(tx: Transaction, typeArg: string, self: TransactionOb
 }
 
 /** Read the name of the module. */
-export function publishedModule(tx: Transaction, self: TransactionObjectInput) {
+export function publishedModule(tx: Transaction, self: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::published_module`,
     arguments: [obj(tx, self)],
@@ -67,7 +80,7 @@ export function publishedModule(tx: Transaction, self: TransactionObjectInput) {
 }
 
 /** Read the package address string. */
-export function publishedPackage(tx: Transaction, self: TransactionObjectInput) {
+export function publishedPackage(tx: Transaction, self: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::published_package`,
     arguments: [obj(tx, self)],
@@ -81,7 +94,7 @@ export function publishedPackage(tx: Transaction, self: TransactionObjectInput) 
  * Otherwise guaranteed to be the latest version of any given
  * package.
  */
-export function upgradePackage(tx: Transaction, cap: TransactionObjectInput) {
+export function upgradePackage(tx: Transaction, cap: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::upgrade_package`,
     arguments: [obj(tx, cap)],
@@ -92,7 +105,7 @@ export function upgradePackage(tx: Transaction, cap: TransactionObjectInput) {
  * The most recent version of the package, increments by one for each
  * successfully applied upgrade.
  */
-export function version(tx: Transaction, cap: TransactionObjectInput) {
+export function version(tx: Transaction, cap: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::version`,
     arguments: [obj(tx, cap)],
@@ -103,7 +116,7 @@ export function version(tx: Transaction, cap: TransactionObjectInput) {
  * The most permissive kind of upgrade currently supported by this
  * `cap`.
  */
-export function upgradePolicy(tx: Transaction, cap: TransactionObjectInput) {
+export function upgradePolicy(tx: Transaction, cap: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::upgrade_policy`,
     arguments: [obj(tx, cap)],
@@ -111,7 +124,7 @@ export function upgradePolicy(tx: Transaction, cap: TransactionObjectInput) {
 }
 
 /** The package that this ticket is authorized to upgrade */
-export function ticketPackage(tx: Transaction, ticket: TransactionObjectInput) {
+export function ticketPackage(tx: Transaction, ticket: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::ticket_package`,
     arguments: [obj(tx, ticket)],
@@ -119,7 +132,7 @@ export function ticketPackage(tx: Transaction, ticket: TransactionObjectInput) {
 }
 
 /** The kind of upgrade that this ticket authorizes. */
-export function ticketPolicy(tx: Transaction, ticket: TransactionObjectInput) {
+export function ticketPolicy(tx: Transaction, ticket: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::ticket_policy`,
     arguments: [obj(tx, ticket)],
@@ -130,7 +143,7 @@ export function ticketPolicy(tx: Transaction, ticket: TransactionObjectInput) {
  * ID of the `UpgradeCap` that this `receipt` should be used to
  * update.
  */
-export function receiptCap(tx: Transaction, receipt: TransactionObjectInput) {
+export function receiptCap(tx: Transaction, receipt: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::receipt_cap`,
     arguments: [obj(tx, receipt)],
@@ -141,7 +154,10 @@ export function receiptCap(tx: Transaction, receipt: TransactionObjectInput) {
  * ID of the package that was upgraded to: the latest version of
  * the package, as of the upgrade represented by this `receipt`.
  */
-export function receiptPackage(tx: Transaction, receipt: TransactionObjectInput) {
+export function receiptPackage(
+  tx: Transaction,
+  receipt: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::receipt_package`,
     arguments: [obj(tx, receipt)],
@@ -162,7 +178,7 @@ export function receiptPackage(tx: Transaction, receipt: TransactionObjectInput)
  *
  * sha3_256(sort(modules ++ deps))
  */
-export function ticketDigest(tx: Transaction, ticket: TransactionObjectInput) {
+export function ticketDigest(tx: Transaction, ticket: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::ticket_digest`,
     arguments: [obj(tx, ticket)],
@@ -170,21 +186,21 @@ export function ticketDigest(tx: Transaction, ticket: TransactionObjectInput) {
 }
 
 /** Expose the constants representing various upgrade policies */
-export function compatiblePolicy(tx: Transaction) {
+export function compatiblePolicy(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::compatible_policy`,
     arguments: [],
   })
 }
 
-export function additivePolicy(tx: Transaction) {
+export function additivePolicy(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::additive_policy`,
     arguments: [],
   })
 }
 
-export function depOnlyPolicy(tx: Transaction) {
+export function depOnlyPolicy(tx: Transaction): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::dep_only_policy`,
     arguments: [],
@@ -195,7 +211,10 @@ export function depOnlyPolicy(tx: Transaction) {
  * Restrict upgrades through this upgrade `cap` to just add code, or
  * change dependencies.
  */
-export function onlyAdditiveUpgrades(tx: Transaction, cap: TransactionObjectInput) {
+export function onlyAdditiveUpgrades(
+  tx: Transaction,
+  cap: TransactionObjectInput
+): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::only_additive_upgrades`,
     arguments: [obj(tx, cap)],
@@ -206,7 +225,7 @@ export function onlyAdditiveUpgrades(tx: Transaction, cap: TransactionObjectInpu
  * Restrict upgrades through this upgrade `cap` to just change
  * dependencies.
  */
-export function onlyDepUpgrades(tx: Transaction, cap: TransactionObjectInput) {
+export function onlyDepUpgrades(tx: Transaction, cap: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::only_dep_upgrades`,
     arguments: [obj(tx, cap)],
@@ -214,7 +233,7 @@ export function onlyDepUpgrades(tx: Transaction, cap: TransactionObjectInput) {
 }
 
 /** Discard the `UpgradeCap` to make a package immutable. */
-export function makeImmutable(tx: Transaction, cap: TransactionObjectInput) {
+export function makeImmutable(tx: Transaction, cap: TransactionObjectInput): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::make_immutable`,
     arguments: [obj(tx, cap)],
@@ -239,7 +258,7 @@ export interface AuthorizeUpgradeArgs {
  * the parent package must be compatible with the policy in the ticket
  * for the upgrade to succeed.
  */
-export function authorizeUpgrade(tx: Transaction, args: AuthorizeUpgradeArgs) {
+export function authorizeUpgrade(tx: Transaction, args: AuthorizeUpgradeArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::authorize_upgrade`,
     arguments: [
@@ -259,7 +278,7 @@ export interface CommitUpgradeArgs {
  * Consume an `UpgradeReceipt` to update its `UpgradeCap`, finalizing
  * the upgrade.
  */
-export function commitUpgrade(tx: Transaction, args: CommitUpgradeArgs) {
+export function commitUpgrade(tx: Transaction, args: CommitUpgradeArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::commit_upgrade`,
     arguments: [obj(tx, args.cap), obj(tx, args.receipt)],
@@ -271,7 +290,7 @@ export interface RestrictArgs {
   policy: number | TransactionArgument
 }
 
-export function restrict(tx: Transaction, args: RestrictArgs) {
+export function restrict(tx: Transaction, args: RestrictArgs): TransactionResult {
   return tx.moveCall({
     target: `${getPublishedAt('sui')}::package::restrict`,
     arguments: [obj(tx, args.cap), pure(tx, args.policy, `u8`)],

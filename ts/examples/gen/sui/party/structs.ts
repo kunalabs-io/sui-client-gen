@@ -49,14 +49,14 @@ export type PartyReified = Reified<Party, PartyFields>
 export class Party implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::party::Party` as const
+  static readonly $typeName: `0x2::party::Party` = `0x2::party::Party` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Party.$typeName
+  readonly $typeName: typeof Party.$typeName = Party.$typeName
   readonly $fullTypeName: `0x2::party::Party`
   readonly $typeArgs: []
-  readonly $isPhantom = Party.$isPhantom
+  readonly $isPhantom: typeof Party.$isPhantom = Party.$isPhantom
 
   /** The permissions that apply if no specific permissions are set in the `members` map. */
   readonly default: ToField<Permissions>
@@ -95,7 +95,7 @@ export class Party implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): PartyReified {
     return Party.reified()
   }
 
@@ -103,7 +103,7 @@ export class Party implements StructClass {
     return phantom(Party.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Party>> {
     return Party.phantom()
   }
 
@@ -154,14 +154,14 @@ export class Party implements StructClass {
     return Party.fromFields(Party.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       default: this.default.toJSONField(),
       members: this.members.toJSONField(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -238,14 +238,14 @@ export type PermissionsReified = Reified<Permissions, PermissionsFields>
 export class Permissions implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::party::Permissions` as const
+  static readonly $typeName: `0x2::party::Permissions` = `0x2::party::Permissions` as const
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
-  readonly $typeName = Permissions.$typeName
+  readonly $typeName: typeof Permissions.$typeName = Permissions.$typeName
   readonly $fullTypeName: `0x2::party::Permissions`
   readonly $typeArgs: []
-  readonly $isPhantom = Permissions.$isPhantom
+  readonly $isPhantom: typeof Permissions.$isPhantom = Permissions.$isPhantom
 
   readonly pos0: ToField<'u64'>
 
@@ -283,7 +283,7 @@ export class Permissions implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): PermissionsReified {
     return Permissions.reified()
   }
 
@@ -291,7 +291,7 @@ export class Permissions implements StructClass {
     return phantom(Permissions.reified())
   }
 
-  static get p() {
+  static get p(): PhantomReified<ToTypeStr<Permissions>> {
     return Permissions.phantom()
   }
 
@@ -330,13 +330,13 @@ export class Permissions implements StructClass {
     return Permissions.fromFields(Permissions.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       pos0: this.pos0.toString(),
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 

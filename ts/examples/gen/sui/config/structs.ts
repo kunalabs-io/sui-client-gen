@@ -52,14 +52,14 @@ export type ConfigReified<WriteCap extends PhantomTypeArgument> = Reified<
 export class Config<WriteCap extends PhantomTypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::config::Config` as const
+  static readonly $typeName: `0x2::config::Config` = `0x2::config::Config` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [true] as const
 
-  readonly $typeName = Config.$typeName
+  readonly $typeName: typeof Config.$typeName = Config.$typeName
   readonly $fullTypeName: `0x2::config::Config<${PhantomToTypeStr<WriteCap>}>`
   readonly $typeArgs: [PhantomToTypeStr<WriteCap>]
-  readonly $isPhantom = Config.$isPhantom
+  readonly $isPhantom: typeof Config.$isPhantom = Config.$isPhantom
 
   readonly id: ToField<UID>
 
@@ -102,7 +102,7 @@ export class Config<WriteCap extends PhantomTypeArgument> implements StructClass
     }
   }
 
-  static get r() {
+  static get r(): typeof Config.reified {
     return Config.reified
   }
 
@@ -112,7 +112,7 @@ export class Config<WriteCap extends PhantomTypeArgument> implements StructClass
     return phantom(Config.reified(WriteCap))
   }
 
-  static get p() {
+  static get p(): typeof Config.phantom {
     return Config.phantom
   }
 
@@ -161,13 +161,13 @@ export class Config<WriteCap extends PhantomTypeArgument> implements StructClass
     return Config.fromFields(typeArg, Config.bcs.parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       id: this.id,
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -279,14 +279,14 @@ export type SettingReified<Value extends TypeArgument> = Reified<
 export class Setting<Value extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::config::Setting` as const
+  static readonly $typeName: `0x2::config::Setting` = `0x2::config::Setting` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
-  readonly $typeName = Setting.$typeName
+  readonly $typeName: typeof Setting.$typeName = Setting.$typeName
   readonly $fullTypeName: `0x2::config::Setting<${ToTypeStr<Value>}>`
   readonly $typeArgs: [ToTypeStr<Value>]
-  readonly $isPhantom = Setting.$isPhantom
+  readonly $isPhantom: typeof Setting.$isPhantom = Setting.$isPhantom
 
   readonly data: ToField<Option<SettingData<Value>>>
 
@@ -329,7 +329,7 @@ export class Setting<Value extends TypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof Setting.reified {
     return Setting.reified
   }
 
@@ -339,7 +339,7 @@ export class Setting<Value extends TypeArgument> implements StructClass {
     return phantom(Setting.reified(Value))
   }
 
-  static get p() {
+  static get p(): typeof Setting.phantom {
     return Setting.phantom
   }
 
@@ -393,7 +393,7 @@ export class Setting<Value extends TypeArgument> implements StructClass {
     return Setting.fromFields(typeArg, Setting.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       data: fieldToJSON<Option<SettingData<Value>>>(
         `${Option.$typeName}<${SettingData.$typeName}<${this.$typeArgs[0]}>>`,
@@ -402,7 +402,7 @@ export class Setting<Value extends TypeArgument> implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
@@ -516,14 +516,14 @@ export type SettingDataReified<Value extends TypeArgument> = Reified<
 export class SettingData<Value extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName = `0x2::config::SettingData` as const
+  static readonly $typeName: `0x2::config::SettingData` = `0x2::config::SettingData` as const
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
-  readonly $typeName = SettingData.$typeName
+  readonly $typeName: typeof SettingData.$typeName = SettingData.$typeName
   readonly $fullTypeName: `0x2::config::SettingData<${ToTypeStr<Value>}>`
   readonly $typeArgs: [ToTypeStr<Value>]
-  readonly $isPhantom = SettingData.$isPhantom
+  readonly $isPhantom: typeof SettingData.$isPhantom = SettingData.$isPhantom
 
   readonly newerValueEpoch: ToField<'u64'>
   readonly newerValue: ToField<Option<Value>>
@@ -570,7 +570,7 @@ export class SettingData<Value extends TypeArgument> implements StructClass {
     }
   }
 
-  static get r() {
+  static get r(): typeof SettingData.reified {
     return SettingData.reified
   }
 
@@ -580,7 +580,7 @@ export class SettingData<Value extends TypeArgument> implements StructClass {
     return phantom(SettingData.reified(Value))
   }
 
-  static get p() {
+  static get p(): typeof SettingData.phantom {
     return SettingData.phantom
   }
 
@@ -640,7 +640,7 @@ export class SettingData<Value extends TypeArgument> implements StructClass {
     return SettingData.fromFields(typeArg, SettingData.bcs(toBcs(typeArg)).parse(data))
   }
 
-  toJSONField() {
+  toJSONField(): Record<string, any> {
     return {
       newerValueEpoch: this.newerValueEpoch.toString(),
       newerValue: fieldToJSON<Option<Value>>(
@@ -654,7 +654,7 @@ export class SettingData<Value extends TypeArgument> implements StructClass {
     }
   }
 
-  toJSON() {
+  toJSON(): Record<string, any> {
     return { $typeName: this.$typeName, $typeArgs: this.$typeArgs, ...this.toJSONField() }
   }
 
