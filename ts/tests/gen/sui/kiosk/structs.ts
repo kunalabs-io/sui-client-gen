@@ -100,15 +100,17 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { SUI } from '../sui/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== Kiosk =============================== */
@@ -211,7 +213,7 @@ export class Kiosk implements StructClass {
       fromJSON: (json: Record<string, any>) => Kiosk.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Kiosk.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Kiosk.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Kiosk.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Kiosk.fetch(client, id),
       new: (fields: KioskFields) => {
         return new Kiosk([], fields)
       },
@@ -344,16 +346,13 @@ export class Kiosk implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Kiosk> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Kiosk object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isKiosk(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Kiosk> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isKiosk(res.type)) {
       throw new Error(`object at id ${id} is not a Kiosk object`)
     }
 
-    return Kiosk.fromSuiObjectData(res.data)
+    return Kiosk.fromBcs(res.bcsBytes)
   }
 }
 
@@ -417,7 +416,7 @@ export class KioskOwnerCap implements StructClass {
       fromJSON: (json: Record<string, any>) => KioskOwnerCap.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => KioskOwnerCap.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => KioskOwnerCap.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => KioskOwnerCap.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => KioskOwnerCap.fetch(client, id),
       new: (fields: KioskOwnerCapFields) => {
         return new KioskOwnerCap([], fields)
       },
@@ -529,16 +528,13 @@ export class KioskOwnerCap implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<KioskOwnerCap> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching KioskOwnerCap object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isKioskOwnerCap(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<KioskOwnerCap> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isKioskOwnerCap(res.type)) {
       throw new Error(`object at id ${id} is not a KioskOwnerCap object`)
     }
 
-    return KioskOwnerCap.fromSuiObjectData(res.data)
+    return KioskOwnerCap.fromBcs(res.bcsBytes)
   }
 }
 
@@ -629,7 +625,7 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => PurchaseCap.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => PurchaseCap.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => PurchaseCap.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => PurchaseCap.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => PurchaseCap.fetch(client, T, id),
       new: (fields: PurchaseCapFields<ToPhantomTypeArgument<T>>) => {
         return new PurchaseCap([extractType(T)], fields)
       },
@@ -797,19 +793,16 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<PurchaseCap<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching PurchaseCap object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isPurchaseCap(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isPurchaseCap(res.type)) {
       throw new Error(`object at id ${id} is not a PurchaseCap object`)
     }
 
-    return PurchaseCap.fromSuiObjectData(typeArg, res.data)
+    return PurchaseCap.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -870,7 +863,7 @@ export class Borrow implements StructClass {
       fromJSON: (json: Record<string, any>) => Borrow.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Borrow.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Borrow.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Borrow.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Borrow.fetch(client, id),
       new: (fields: BorrowFields) => {
         return new Borrow([], fields)
       },
@@ -982,16 +975,13 @@ export class Borrow implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Borrow> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Borrow object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isBorrow(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Borrow> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isBorrow(res.type)) {
       throw new Error(`object at id ${id} is not a Borrow object`)
     }
 
-    return Borrow.fromSuiObjectData(res.data)
+    return Borrow.fromBcs(res.bcsBytes)
   }
 }
 
@@ -1046,7 +1036,7 @@ export class Item implements StructClass {
       fromJSON: (json: Record<string, any>) => Item.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Item.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Item.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Item.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Item.fetch(client, id),
       new: (fields: ItemFields) => {
         return new Item([], fields)
       },
@@ -1153,16 +1143,13 @@ export class Item implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Item> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Item object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isItem(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Item> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isItem(res.type)) {
       throw new Error(`object at id ${id} is not a Item object`)
     }
 
-    return Item.fromSuiObjectData(res.data)
+    return Item.fromBcs(res.bcsBytes)
   }
 }
 
@@ -1223,7 +1210,7 @@ export class Listing implements StructClass {
       fromJSON: (json: Record<string, any>) => Listing.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Listing.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Listing.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Listing.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Listing.fetch(client, id),
       new: (fields: ListingFields) => {
         return new Listing([], fields)
       },
@@ -1335,16 +1322,13 @@ export class Listing implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Listing> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Listing object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isListing(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Listing> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isListing(res.type)) {
       throw new Error(`object at id ${id} is not a Listing object`)
     }
 
-    return Listing.fromSuiObjectData(res.data)
+    return Listing.fromBcs(res.bcsBytes)
   }
 }
 
@@ -1403,7 +1387,7 @@ export class Lock implements StructClass {
       fromJSON: (json: Record<string, any>) => Lock.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Lock.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Lock.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Lock.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Lock.fetch(client, id),
       new: (fields: LockFields) => {
         return new Lock([], fields)
       },
@@ -1510,16 +1494,13 @@ export class Lock implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Lock> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Lock object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isLock(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Lock> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isLock(res.type)) {
       throw new Error(`object at id ${id} is not a Lock object`)
     }
 
-    return Lock.fromSuiObjectData(res.data)
+    return Lock.fromBcs(res.bcsBytes)
   }
 }
 
@@ -1595,7 +1576,7 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => ItemListed.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => ItemListed.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => ItemListed.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => ItemListed.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => ItemListed.fetch(client, T, id),
       new: (fields: ItemListedFields<ToPhantomTypeArgument<T>>) => {
         return new ItemListed([extractType(T)], fields)
       },
@@ -1758,19 +1739,16 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<ItemListed<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching ItemListed object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isItemListed(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isItemListed(res.type)) {
       throw new Error(`object at id ${id} is not a ItemListed object`)
     }
 
-    return ItemListed.fromSuiObjectData(typeArg, res.data)
+    return ItemListed.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -1852,7 +1830,7 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
       fromJSON: (json: Record<string, any>) => ItemPurchased.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => ItemPurchased.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => ItemPurchased.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => ItemPurchased.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => ItemPurchased.fetch(client, T, id),
       new: (fields: ItemPurchasedFields<ToPhantomTypeArgument<T>>) => {
         return new ItemPurchased([extractType(T)], fields)
       },
@@ -2015,19 +1993,16 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<ItemPurchased<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching ItemPurchased object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isItemPurchased(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isItemPurchased(res.type)) {
       throw new Error(`object at id ${id} is not a ItemPurchased object`)
     }
 
-    return ItemPurchased.fromSuiObjectData(typeArg, res.data)
+    return ItemPurchased.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -2099,7 +2074,7 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
       fromJSON: (json: Record<string, any>) => ItemDelisted.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => ItemDelisted.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => ItemDelisted.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => ItemDelisted.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => ItemDelisted.fetch(client, T, id),
       new: (fields: ItemDelistedFields<ToPhantomTypeArgument<T>>) => {
         return new ItemDelisted([extractType(T)], fields)
       },
@@ -2257,18 +2232,15 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<ItemDelisted<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching ItemDelisted object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isItemDelisted(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isItemDelisted(res.type)) {
       throw new Error(`object at id ${id} is not a ItemDelisted object`)
     }
 
-    return ItemDelisted.fromSuiObjectData(typeArg, res.data)
+    return ItemDelisted.fromBcs(typeArg, res.bcsBytes)
   }
 }

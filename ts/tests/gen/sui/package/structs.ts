@@ -17,12 +17,18 @@ import {
   phantom,
   vector,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { String } from '../../std/ascii/structs'
 import { ID, UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Publisher =============================== */
@@ -90,7 +96,7 @@ export class Publisher implements StructClass {
       fromJSON: (json: Record<string, any>) => Publisher.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Publisher.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Publisher.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Publisher.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Publisher.fetch(client, id),
       new: (fields: PublisherFields) => {
         return new Publisher([], fields)
       },
@@ -207,16 +213,13 @@ export class Publisher implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Publisher> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Publisher object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isPublisher(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Publisher> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isPublisher(res.type)) {
       throw new Error(`object at id ${id} is not a Publisher object`)
     }
 
-    return Publisher.fromSuiObjectData(res.data)
+    return Publisher.fromBcs(res.bcsBytes)
   }
 }
 
@@ -295,7 +298,7 @@ export class UpgradeCap implements StructClass {
       fromJSON: (json: Record<string, any>) => UpgradeCap.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => UpgradeCap.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => UpgradeCap.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => UpgradeCap.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => UpgradeCap.fetch(client, id),
       new: (fields: UpgradeCapFields) => {
         return new UpgradeCap([], fields)
       },
@@ -417,16 +420,13 @@ export class UpgradeCap implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<UpgradeCap> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching UpgradeCap object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isUpgradeCap(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<UpgradeCap> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isUpgradeCap(res.type)) {
       throw new Error(`object at id ${id} is not a UpgradeCap object`)
     }
 
-    return UpgradeCap.fromSuiObjectData(res.data)
+    return UpgradeCap.fromBcs(res.bcsBytes)
   }
 }
 
@@ -522,7 +522,7 @@ export class UpgradeTicket implements StructClass {
       fromJSON: (json: Record<string, any>) => UpgradeTicket.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => UpgradeTicket.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => UpgradeTicket.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => UpgradeTicket.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => UpgradeTicket.fetch(client, id),
       new: (fields: UpgradeTicketFields) => {
         return new UpgradeTicket([], fields)
       },
@@ -644,16 +644,13 @@ export class UpgradeTicket implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<UpgradeTicket> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching UpgradeTicket object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isUpgradeTicket(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<UpgradeTicket> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isUpgradeTicket(res.type)) {
       throw new Error(`object at id ${id} is not a UpgradeTicket object`)
     }
 
-    return UpgradeTicket.fromSuiObjectData(res.data)
+    return UpgradeTicket.fromBcs(res.bcsBytes)
   }
 }
 
@@ -726,7 +723,7 @@ export class UpgradeReceipt implements StructClass {
       fromJSON: (json: Record<string, any>) => UpgradeReceipt.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => UpgradeReceipt.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => UpgradeReceipt.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => UpgradeReceipt.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => UpgradeReceipt.fetch(client, id),
       new: (fields: UpgradeReceiptFields) => {
         return new UpgradeReceipt([], fields)
       },
@@ -838,15 +835,12 @@ export class UpgradeReceipt implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<UpgradeReceipt> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching UpgradeReceipt object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isUpgradeReceipt(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<UpgradeReceipt> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isUpgradeReceipt(res.type)) {
       throw new Error(`object at id ${id} is not a UpgradeReceipt object`)
     }
 
-    return UpgradeReceipt.fromSuiObjectData(res.data)
+    return UpgradeReceipt.fromBcs(res.bcsBytes)
   }
 }

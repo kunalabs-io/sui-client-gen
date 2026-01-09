@@ -12,14 +12,20 @@ import {
   phantom,
   vector,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { String } from '../../std/ascii/structs'
 import { Option } from '../../std/option/structs'
 import { String as StringString } from '../../std/string/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== ExampleStruct =============================== */
@@ -79,7 +85,7 @@ export class ExampleStruct implements StructClass {
       fromJSON: (json: Record<string, any>) => ExampleStruct.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ExampleStruct.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => ExampleStruct.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => ExampleStruct.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => ExampleStruct.fetch(client, id),
       new: (fields: ExampleStructFields) => {
         return new ExampleStruct([], fields)
       },
@@ -186,16 +192,13 @@ export class ExampleStruct implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<ExampleStruct> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching ExampleStruct object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isExampleStruct(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<ExampleStruct> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isExampleStruct(res.type)) {
       throw new Error(`object at id ${id} is not a ExampleStruct object`)
     }
 
-    return ExampleStruct.fromSuiObjectData(res.data)
+    return ExampleStruct.fromBcs(res.bcsBytes)
   }
 }
 
@@ -283,7 +286,7 @@ export class SpecialTypesStruct implements StructClass {
       fromJSON: (json: Record<string, any>) => SpecialTypesStruct.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => SpecialTypesStruct.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => SpecialTypesStruct.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => SpecialTypesStruct.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => SpecialTypesStruct.fetch(client, id),
       new: (fields: SpecialTypesStructFields) => {
         return new SpecialTypesStruct([], fields)
       },
@@ -439,15 +442,12 @@ export class SpecialTypesStruct implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<SpecialTypesStruct> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching SpecialTypesStruct object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isSpecialTypesStruct(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<SpecialTypesStruct> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isSpecialTypesStruct(res.type)) {
       throw new Error(`object at id ${id} is not a SpecialTypesStruct object`)
     }
 
-    return SpecialTypesStruct.fromSuiObjectData(res.data)
+    return SpecialTypesStruct.fromBcs(res.bcsBytes)
   }
 }

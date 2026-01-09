@@ -24,13 +24,15 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== ObjectTable =============================== */
@@ -110,7 +112,8 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
       fromJSON: (json: Record<string, any>) => ObjectTable.fromJSON([K, V], json),
       fromSuiParsedData: (content: SuiParsedData) => ObjectTable.fromSuiParsedData([K, V], content),
       fromSuiObjectData: (content: SuiObjectData) => ObjectTable.fromSuiObjectData([K, V], content),
-      fetch: async (client: SuiClient, id: string) => ObjectTable.fetch(client, [K, V], id),
+      fetch: async (client: SupportedSuiClient, id: string) =>
+        ObjectTable.fetch(client, [K, V], id),
       new: (fields: ObjectTableFields<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>) => {
         return new ObjectTable([extractType(K), extractType(V)], fields)
       },
@@ -293,18 +296,15 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     K extends PhantomReified<PhantomTypeArgument>,
     V extends PhantomReified<PhantomTypeArgument>,
   >(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArgs: [K, V],
     id: string
   ): Promise<ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching ObjectTable object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isObjectTable(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isObjectTable(res.type)) {
       throw new Error(`object at id ${id} is not a ObjectTable object`)
     }
 
-    return ObjectTable.fromSuiObjectData(typeArgs, res.data)
+    return ObjectTable.fromBcs(typeArgs, res.bcsBytes)
   }
 }

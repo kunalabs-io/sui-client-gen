@@ -11,10 +11,16 @@ import {
   phantom,
   vector,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Curve =============================== */
@@ -71,7 +77,7 @@ export class Curve implements StructClass {
       fromJSON: (json: Record<string, any>) => Curve.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Curve.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Curve.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Curve.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Curve.fetch(client, id),
       new: (fields: CurveFields) => {
         return new Curve([], fields)
       },
@@ -178,16 +184,13 @@ export class Curve implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Curve> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Curve object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isCurve(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Curve> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isCurve(res.type)) {
       throw new Error(`object at id ${id} is not a Curve object`)
     }
 
-    return Curve.fromSuiObjectData(res.data)
+    return Curve.fromBcs(res.bcsBytes)
   }
 }
 
@@ -260,7 +263,8 @@ export class PreparedVerifyingKey implements StructClass {
         PreparedVerifyingKey.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) =>
         PreparedVerifyingKey.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => PreparedVerifyingKey.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) =>
+        PreparedVerifyingKey.fetch(client, id),
       new: (fields: PreparedVerifyingKeyFields) => {
         return new PreparedVerifyingKey([], fields)
       },
@@ -387,16 +391,13 @@ export class PreparedVerifyingKey implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<PreparedVerifyingKey> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching PreparedVerifyingKey object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isPreparedVerifyingKey(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<PreparedVerifyingKey> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isPreparedVerifyingKey(res.type)) {
       throw new Error(`object at id ${id} is not a PreparedVerifyingKey object`)
     }
 
-    return PreparedVerifyingKey.fromSuiObjectData(res.data)
+    return PreparedVerifyingKey.fromBcs(res.bcsBytes)
   }
 }
 
@@ -457,7 +458,7 @@ export class PublicProofInputs implements StructClass {
       fromJSON: (json: Record<string, any>) => PublicProofInputs.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => PublicProofInputs.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => PublicProofInputs.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => PublicProofInputs.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => PublicProofInputs.fetch(client, id),
       new: (fields: PublicProofInputsFields) => {
         return new PublicProofInputs([], fields)
       },
@@ -564,16 +565,13 @@ export class PublicProofInputs implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<PublicProofInputs> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching PublicProofInputs object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isPublicProofInputs(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<PublicProofInputs> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isPublicProofInputs(res.type)) {
       throw new Error(`object at id ${id} is not a PublicProofInputs object`)
     }
 
-    return PublicProofInputs.fromSuiObjectData(res.data)
+    return PublicProofInputs.fromBcs(res.bcsBytes)
   }
 }
 
@@ -631,7 +629,7 @@ export class ProofPoints implements StructClass {
       fromJSON: (json: Record<string, any>) => ProofPoints.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ProofPoints.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => ProofPoints.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => ProofPoints.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => ProofPoints.fetch(client, id),
       new: (fields: ProofPointsFields) => {
         return new ProofPoints([], fields)
       },
@@ -738,15 +736,12 @@ export class ProofPoints implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<ProofPoints> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching ProofPoints object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isProofPoints(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<ProofPoints> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isProofPoints(res.type)) {
       throw new Error(`object at id ${id} is not a ProofPoints object`)
     }
 
-    return ProofPoints.fromSuiObjectData(res.data)
+    return ProofPoints.fromBcs(res.bcsBytes)
   }
 }

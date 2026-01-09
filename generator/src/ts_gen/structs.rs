@@ -284,9 +284,9 @@ impl StructIR {
 
         // Util imports
         let util_imports = if self.type_params.is_empty() {
-            "FieldsWithTypes, composeSuiType, compressSuiType"
+            "FieldsWithTypes, composeSuiType, compressSuiType, SupportedSuiClient, fetchObjectBcs"
         } else {
-            "FieldsWithTypes, composeSuiType, compressSuiType, parseTypeName"
+            "FieldsWithTypes, composeSuiType, compressSuiType, parseTypeName, SupportedSuiClient, fetchObjectBcs"
         };
         lines.push(format!(
             "import {{ {} }} from '{}/util'",
@@ -317,8 +317,7 @@ impl StructIR {
             lines.push("import { bcs } from '@mysten/sui/bcs'".to_string());
         }
         lines.push(
-            "import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'"
-                .to_string(),
+            "import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'".to_string(),
         );
 
         // Utils imports - add fromHex/toHex if addresses are used
@@ -563,7 +562,7 @@ impl StructIR {
                   fromJSON: (json: Record<string, any>) => {name}.fromJSON(json),
                   fromSuiParsedData: (content: SuiParsedData) => {name}.fromSuiParsedData(content),
                   fromSuiObjectData: (content: SuiObjectData) => {name}.fromSuiObjectData(content),
-                  fetch: async (client: SuiClient, id: string) => {name}.fetch(client, id),
+                  fetch: async (client: SupportedSuiClient, id: string) => {name}.fetch(client, id),
                   new: (fields: {name}Fields) => {{
                     return new {name}([], fields)
                   }},
@@ -668,16 +667,13 @@ impl StructIR {
                 )
               }}
 
-              static async fetch(client: SuiClient, id: string): Promise<{name}> {{
-                const res = await client.getObject({{ id, options: {{ showBcs: true }} }})
-                if (res.error) {{
-                  throw new Error(`error fetching {name} object at id ${{id}}: ${{res.error.code}}`)
-                }}
-                if (res.data?.bcs?.dataType !== 'moveObject' || !is{name}(res.data.bcs.type)) {{
+              static async fetch(client: SupportedSuiClient, id: string): Promise<{name}> {{
+                const res = await fetchObjectBcs(client, id)
+                if (!is{name}(res.type)) {{
                   throw new Error(`object at id ${{id}} is not a {name} object`)
                 }}
 
-                return {name}.fromSuiObjectData(res.data)
+                return {name}.fromBcs(res.bcsBytes)
               }}
             }}"#,
             name = self.name,
@@ -960,7 +956,7 @@ impl StructIR {
                   fromJSON: (json: Record<string, any>) => {name}.fromJSON({reified_args_for_static}, json),
                   fromSuiParsedData: (content: SuiParsedData) => {name}.fromSuiParsedData({reified_args_for_static}, content),
                   fromSuiObjectData: (content: SuiObjectData) => {name}.fromSuiObjectData({reified_args_for_static}, content),
-                  fetch: async (client: SuiClient, id: string) => {name}.fetch(client, {reified_args_for_static}, id),
+                  fetch: async (client: SupportedSuiClient, id: string) => {name}.fetch(client, {reified_args_for_static}, id),
                   new: (fields: {name}Fields{to_phantom_type_args}) => {{
                     return new {name}([{extract_types}], fields)
                   }},
@@ -1090,19 +1086,16 @@ impl StructIR {
               }}
 
               static async fetch{reified_type_params}(
-                client: SuiClient,
+                client: SupportedSuiClient,
                 {reified_arg_first}
                 id: string
               ): Promise<{name}{to_phantom_type_args}> {{
-                const res = await client.getObject({{ id, options: {{ showBcs: true }} }})
-                if (res.error) {{
-                  throw new Error(`error fetching {name} object at id ${{id}}: ${{res.error.code}}`)
-                }}
-                if (res.data?.bcs?.dataType !== 'moveObject' || !is{name}(res.data.bcs.type)) {{
+                const res = await fetchObjectBcs(client, id)
+                if (!is{name}(res.type)) {{
                   throw new Error(`object at id ${{id}} is not a {name} object`)
                 }}
 
-                return {name}.fromSuiObjectData({type_args_for_call}, res.data)
+                return {name}.fromBcs({type_args_for_call}, res.bcsBytes)
               }}
             }}"#,
             name = self.name,

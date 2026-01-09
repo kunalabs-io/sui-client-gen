@@ -12,9 +12,15 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Url =============================== */
@@ -68,7 +74,7 @@ export class Url implements StructClass {
       fromJSON: (json: Record<string, any>) => Url.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Url.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Url.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Url.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Url.fetch(client, id),
       new: (fields: UrlFields) => {
         return new Url([], fields)
       },
@@ -175,15 +181,12 @@ export class Url implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Url> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Url object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isUrl(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Url> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isUrl(res.type)) {
       throw new Error(`object at id ${id} is not a Url object`)
     }
 
-    return Url.fromSuiObjectData(res.data)
+    return Url.fromBcs(res.bcsBytes)
   }
 }

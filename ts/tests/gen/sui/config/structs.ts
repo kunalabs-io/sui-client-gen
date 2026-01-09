@@ -21,14 +21,16 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { Option } from '../../std/option/structs'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Config =============================== */
@@ -92,7 +94,7 @@ export class Config<WriteCap extends PhantomTypeArgument> implements StructClass
       fromJSON: (json: Record<string, any>) => Config.fromJSON(WriteCap, json),
       fromSuiParsedData: (content: SuiParsedData) => Config.fromSuiParsedData(WriteCap, content),
       fromSuiObjectData: (content: SuiObjectData) => Config.fromSuiObjectData(WriteCap, content),
-      fetch: async (client: SuiClient, id: string) => Config.fetch(client, WriteCap, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Config.fetch(client, WriteCap, id),
       new: (fields: ConfigFields<ToPhantomTypeArgument<WriteCap>>) => {
         return new Config([extractType(WriteCap)], fields)
       },
@@ -245,19 +247,16 @@ export class Config<WriteCap extends PhantomTypeArgument> implements StructClass
   }
 
   static async fetch<WriteCap extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: WriteCap,
     id: string
   ): Promise<Config<ToPhantomTypeArgument<WriteCap>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Config object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isConfig(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isConfig(res.type)) {
       throw new Error(`object at id ${id} is not a Config object`)
     }
 
-    return Config.fromSuiObjectData(typeArg, res.data)
+    return Config.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -322,7 +321,7 @@ export class Setting<Value extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Setting.fromJSON(Value, json),
       fromSuiParsedData: (content: SuiParsedData) => Setting.fromSuiParsedData(Value, content),
       fromSuiObjectData: (content: SuiObjectData) => Setting.fromSuiObjectData(Value, content),
-      fetch: async (client: SuiClient, id: string) => Setting.fetch(client, Value, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Setting.fetch(client, Value, id),
       new: (fields: SettingFields<ToTypeArgument<Value>>) => {
         return new Setting([extractType(Value)], fields)
       },
@@ -483,19 +482,16 @@ export class Setting<Value extends TypeArgument> implements StructClass {
   }
 
   static async fetch<Value extends Reified<TypeArgument, any>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: Value,
     id: string
   ): Promise<Setting<ToTypeArgument<Value>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Setting object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isSetting(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isSetting(res.type)) {
       throw new Error(`object at id ${id} is not a Setting object`)
     }
 
-    return Setting.fromSuiObjectData(typeArg, res.data)
+    return Setting.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -566,7 +562,7 @@ export class SettingData<Value extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => SettingData.fromJSON(Value, json),
       fromSuiParsedData: (content: SuiParsedData) => SettingData.fromSuiParsedData(Value, content),
       fromSuiObjectData: (content: SuiObjectData) => SettingData.fromSuiObjectData(Value, content),
-      fetch: async (client: SuiClient, id: string) => SettingData.fetch(client, Value, id),
+      fetch: async (client: SupportedSuiClient, id: string) => SettingData.fetch(client, Value, id),
       new: (fields: SettingDataFields<ToTypeArgument<Value>>) => {
         return new SettingData([extractType(Value)], fields)
       },
@@ -740,18 +736,15 @@ export class SettingData<Value extends TypeArgument> implements StructClass {
   }
 
   static async fetch<Value extends Reified<TypeArgument, any>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: Value,
     id: string
   ): Promise<SettingData<ToTypeArgument<Value>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching SettingData object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isSettingData(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isSettingData(res.type)) {
       throw new Error(`object at id ${id} is not a SettingData object`)
     }
 
-    return SettingData.fromSuiObjectData(typeArg, res.data)
+    return SettingData.fromBcs(typeArg, res.bcsBytes)
   }
 }

@@ -5,6 +5,18 @@ import {
   TransactionObjectArgument,
   TransactionObjectInput,
 } from '@mysten/sui/transactions'
+import type { SuiClient } from '@mysten/sui/client'
+import type { SuiGrpcClient } from '@mysten/sui/grpc'
+import type { SuiGraphQLClient } from '@mysten/sui/graphql'
+import { fromBase64 } from '@mysten/sui/utils'
+
+/**
+ * Union type of all supported Sui SDK clients.
+ * - SuiClient: JSON-RPC client (default)
+ * - SuiGrpcClient: gRPC client
+ * - SuiGraphQLClient: GraphQL client
+ */
+export type SupportedSuiClient = SuiClient | SuiGrpcClient | SuiGraphQLClient
 
 export interface FieldsWithTypes {
   fields: Record<string, any>
@@ -396,3 +408,169 @@ export function composeSuiType(typeName: string, ...typeArgs: string[]): string 
   }
 }
 
+// ============================================================================
+// Multi-client fetch support (JSON-RPC, gRPC, GraphQL)
+// ============================================================================
+
+/**
+ * Runtime detection for gRPC client.
+ * gRPC clients have a `ledgerService` property.
+ */
+function isGrpcClient(client: unknown): client is SuiGrpcClient {
+  return client != null && typeof client === 'object' && 'ledgerService' in client
+}
+
+/**
+ * Runtime detection for GraphQL client.
+ * GraphQL clients have a `query` method but no `ledgerService`.
+ */
+function isGraphQLClient(client: unknown): client is SuiGraphQLClient {
+  return (
+    client != null &&
+    typeof client === 'object' &&
+    'query' in client &&
+    typeof (client as any).query === 'function' &&
+    !('ledgerService' in client)
+  )
+}
+
+/**
+ * Result of fetching object BCS data from any supported client.
+ */
+export interface FetchObjectBcsResult {
+  /** Raw BCS bytes of the object */
+  bcsBytes: Uint8Array
+  /** Full type string (e.g., "0x2::coin::Coin<0x2::sui::SUI>") */
+  type: string
+}
+
+const GRAPHQL_OBJECT_QUERY = `
+  query GetObjectBcs($id: SuiAddress!) {
+    object(address: $id) {
+      asMoveObject {
+        contents {
+          bcs
+          type { repr }
+        }
+      }
+    }
+  }
+`
+
+interface GraphQLObjectResponse {
+  object: {
+    asMoveObject: {
+      contents: {
+        bcs: string
+        type: { repr: string }
+      }
+    } | null
+  } | null
+}
+
+/**
+ * Fetches object BCS data from any supported Sui client.
+ * Handles JSON-RPC, gRPC, and GraphQL clients transparently.
+ *
+ * @param client - A Sui SDK client (SuiClient, SuiGrpcClient, or SuiGraphQLClient)
+ * @param id - The object ID to fetch
+ * @returns The BCS bytes and type string
+ * @throws Error if object not found, is a package, or fetch fails
+ */
+export async function fetchObjectBcs(
+  client: SupportedSuiClient,
+  id: string
+): Promise<FetchObjectBcsResult> {
+  if (isGrpcClient(client)) {
+    return fetchObjectBcsWithGrpc(client, id)
+  }
+  if (isGraphQLClient(client)) {
+    return fetchObjectBcsWithGraphQL(client, id)
+  }
+  return fetchObjectBcsWithJsonRpc(client as SuiClient, id)
+}
+
+async function fetchObjectBcsWithJsonRpc(
+  client: SuiClient,
+  id: string
+): Promise<FetchObjectBcsResult> {
+  const res = await client.getObject({ id, options: { showBcs: true } })
+
+  if (res.error) {
+    throw new Error(`error fetching object at id ${id}: ${res.error.code}`)
+  }
+
+  if (res.data?.bcs?.dataType !== 'moveObject') {
+    throw new Error(`object at id ${id} is not a Move object`)
+  }
+
+  const bcsData = res.data.bcs
+  return {
+    bcsBytes: fromBase64(bcsData.bcsBytes),
+    type: bcsData.type,
+  }
+}
+
+async function fetchObjectBcsWithGrpc(
+  client: SuiGrpcClient,
+  id: string
+): Promise<FetchObjectBcsResult> {
+  try {
+    const res = await client.ledgerService.getObject({
+      objectId: id,
+      readMask: { paths: ['contents'] },
+    })
+
+    const contents = res.response?.object?.contents
+    if (!contents) {
+      throw new Error(`error fetching object at id ${id}: object not found or not a Move object`)
+    }
+    if (!contents.value || !contents.name) {
+      throw new Error(`error fetching object at id ${id}: no BCS data returned`)
+    }
+
+    return {
+      bcsBytes: contents.value,
+      type: contents.name,
+    }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw error
+    }
+    throw new Error(`error fetching object at id ${id}: ${String(error)}`)
+  }
+}
+
+async function fetchObjectBcsWithGraphQL(
+  client: SuiGraphQLClient,
+  id: string
+): Promise<FetchObjectBcsResult> {
+  const res = await client.query<GraphQLObjectResponse>({
+    query: GRAPHQL_OBJECT_QUERY,
+    variables: { id },
+  })
+
+  if (res.errors && res.errors.length > 0) {
+    throw new Error(`error fetching object at id ${id}: ${JSON.stringify(res.errors)}`)
+  }
+
+  const obj = res.data?.object
+  if (!obj) {
+    throw new Error(`error fetching object at id ${id}: object not found`)
+  }
+
+  const asMoveObject = obj.asMoveObject
+  if (!asMoveObject) {
+    throw new Error(`object at id ${id} is not a Move object`)
+  }
+
+  const contents = asMoveObject.contents
+  if (!contents) {
+    throw new Error(`error fetching object at id ${id}: no contents returned`)
+  }
+
+  return {
+    bcsBytes: fromBase64(contents.bcs),
+    type: contents.type.repr,
+  }
+}

@@ -29,15 +29,17 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { String } from '../../std/string/structs'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Display =============================== */
@@ -137,7 +139,7 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Display.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Display.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Display.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => Display.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Display.fetch(client, T, id),
       new: (fields: DisplayFields<ToPhantomTypeArgument<T>>) => {
         return new Display([extractType(T)], fields)
       },
@@ -303,19 +305,16 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<Display<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Display object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isDisplay(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isDisplay(res.type)) {
       throw new Error(`object at id ${id} is not a Display object`)
     }
 
-    return Display.fromSuiObjectData(typeArg, res.data)
+    return Display.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -388,7 +387,7 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
       fromJSON: (json: Record<string, any>) => DisplayCreated.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => DisplayCreated.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => DisplayCreated.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => DisplayCreated.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => DisplayCreated.fetch(client, T, id),
       new: (fields: DisplayCreatedFields<ToPhantomTypeArgument<T>>) => {
         return new DisplayCreated([extractType(T)], fields)
       },
@@ -541,19 +540,16 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<DisplayCreated<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching DisplayCreated object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isDisplayCreated(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isDisplayCreated(res.type)) {
       throw new Error(`object at id ${id} is not a DisplayCreated object`)
     }
 
-    return DisplayCreated.fromSuiObjectData(typeArg, res.data)
+    return DisplayCreated.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -625,7 +621,7 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
       fromJSON: (json: Record<string, any>) => VersionUpdated.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => VersionUpdated.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => VersionUpdated.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => VersionUpdated.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => VersionUpdated.fetch(client, T, id),
       new: (fields: VersionUpdatedFields<ToPhantomTypeArgument<T>>) => {
         return new VersionUpdated([extractType(T)], fields)
       },
@@ -791,18 +787,15 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<VersionUpdated<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching VersionUpdated object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isVersionUpdated(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isVersionUpdated(res.type)) {
       throw new Error(`object at id ${id} is not a VersionUpdated object`)
     }
 
-    return VersionUpdated.fromSuiObjectData(typeArg, res.data)
+    return VersionUpdated.fromBcs(typeArg, res.bcsBytes)
   }
 }

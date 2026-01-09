@@ -78,7 +78,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
       fromJSON: (json: Record<string, any>) => WithSpecialTypesInVectors.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => WithSpecialTypesInVectors.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => WithSpecialTypesInVectors.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => WithSpecialTypesInVectors.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => WithSpecialTypesInVectors.fetch(client, T, id),
       new: (fields: WithSpecialTypesInVectorsFields<ToTypeArgument<T>>) => {
         return new WithSpecialTypesInVectors([extractType(T)], fields)
       },
@@ -261,18 +261,15 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
   }
 
   static async fetch<T extends Reified<TypeArgument, any>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<WithSpecialTypesInVectors<ToTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching WithSpecialTypesInVectors object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isWithSpecialTypesInVectors(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isWithSpecialTypesInVectors(res.type)) {
       throw new Error(`object at id ${id} is not a WithSpecialTypesInVectors object`)
     }
 
-    return WithSpecialTypesInVectors.fromSuiObjectData(typeArg, res.data)
+    return WithSpecialTypesInVectors.fromBcs(typeArg, res.bcsBytes)
   }
 }

@@ -12,11 +12,17 @@ import {
   phantom,
   vector,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== AuthenticatorState =============================== */
@@ -83,7 +89,7 @@ export class AuthenticatorState implements StructClass {
       fromJSON: (json: Record<string, any>) => AuthenticatorState.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => AuthenticatorState.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => AuthenticatorState.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => AuthenticatorState.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => AuthenticatorState.fetch(client, id),
       new: (fields: AuthenticatorStateFields) => {
         return new AuthenticatorState([], fields)
       },
@@ -195,16 +201,13 @@ export class AuthenticatorState implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<AuthenticatorState> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching AuthenticatorState object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isAuthenticatorState(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<AuthenticatorState> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isAuthenticatorState(res.type)) {
       throw new Error(`object at id ${id} is not a AuthenticatorState object`)
     }
 
-    return AuthenticatorState.fromSuiObjectData(res.data)
+    return AuthenticatorState.fromBcs(res.bcsBytes)
   }
 }
 
@@ -275,7 +278,8 @@ export class AuthenticatorStateInner implements StructClass {
         AuthenticatorStateInner.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) =>
         AuthenticatorStateInner.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => AuthenticatorStateInner.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) =>
+        AuthenticatorStateInner.fetch(client, id),
       new: (fields: AuthenticatorStateInnerFields) => {
         return new AuthenticatorStateInner([], fields)
       },
@@ -389,18 +393,13 @@ export class AuthenticatorStateInner implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<AuthenticatorStateInner> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(
-        `error fetching AuthenticatorStateInner object at id ${id}: ${res.error.code}`
-      )
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isAuthenticatorStateInner(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<AuthenticatorStateInner> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isAuthenticatorStateInner(res.type)) {
       throw new Error(`object at id ${id} is not a AuthenticatorStateInner object`)
     }
 
-    return AuthenticatorStateInner.fromSuiObjectData(res.data)
+    return AuthenticatorStateInner.fromBcs(res.bcsBytes)
   }
 }
 
@@ -467,7 +466,7 @@ export class JWK implements StructClass {
       fromJSON: (json: Record<string, any>) => JWK.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => JWK.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => JWK.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => JWK.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => JWK.fetch(client, id),
       new: (fields: JWKFields) => {
         return new JWK([], fields)
       },
@@ -589,16 +588,13 @@ export class JWK implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<JWK> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching JWK object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isJWK(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<JWK> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isJWK(res.type)) {
       throw new Error(`object at id ${id} is not a JWK object`)
     }
 
-    return JWK.fromSuiObjectData(res.data)
+    return JWK.fromBcs(res.bcsBytes)
   }
 }
 
@@ -659,7 +655,7 @@ export class JwkId implements StructClass {
       fromJSON: (json: Record<string, any>) => JwkId.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => JwkId.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => JwkId.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => JwkId.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => JwkId.fetch(client, id),
       new: (fields: JwkIdFields) => {
         return new JwkId([], fields)
       },
@@ -771,16 +767,13 @@ export class JwkId implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<JwkId> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching JwkId object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isJwkId(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<JwkId> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isJwkId(res.type)) {
       throw new Error(`object at id ${id} is not a JwkId object`)
     }
 
-    return JwkId.fromSuiObjectData(res.data)
+    return JwkId.fromBcs(res.bcsBytes)
   }
 }
 
@@ -846,7 +839,7 @@ export class ActiveJwk implements StructClass {
       fromJSON: (json: Record<string, any>) => ActiveJwk.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ActiveJwk.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => ActiveJwk.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => ActiveJwk.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => ActiveJwk.fetch(client, id),
       new: (fields: ActiveJwkFields) => {
         return new ActiveJwk([], fields)
       },
@@ -963,15 +956,12 @@ export class ActiveJwk implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<ActiveJwk> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching ActiveJwk object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isActiveJwk(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<ActiveJwk> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isActiveJwk(res.type)) {
       throw new Error(`object at id ${id} is not a ActiveJwk object`)
     }
 
-    return ActiveJwk.fromSuiObjectData(res.data)
+    return ActiveJwk.fromBcs(res.bcsBytes)
   }
 }

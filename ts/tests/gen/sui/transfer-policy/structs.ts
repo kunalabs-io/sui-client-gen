@@ -41,8 +41,10 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { TypeName } from '../../std/type-name/structs'
@@ -51,7 +53,7 @@ import { ID, UID } from '../object/structs'
 import { SUI } from '../sui/structs'
 import { VecSet } from '../vec-set/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== TransferRequest =============================== */
@@ -162,7 +164,7 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
       fromJSON: (json: Record<string, any>) => TransferRequest.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => TransferRequest.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => TransferRequest.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => TransferRequest.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => TransferRequest.fetch(client, T, id),
       new: (fields: TransferRequestFields<ToPhantomTypeArgument<T>>) => {
         return new TransferRequest([extractType(T)], fields)
       },
@@ -330,19 +332,16 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<TransferRequest<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching TransferRequest object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferRequest(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isTransferRequest(res.type)) {
       throw new Error(`object at id ${id} is not a TransferRequest object`)
     }
 
-    return TransferRequest.fromSuiObjectData(typeArg, res.data)
+    return TransferRequest.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -444,7 +443,7 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
       fromJSON: (json: Record<string, any>) => TransferPolicy.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => TransferPolicy.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => TransferPolicy.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => TransferPolicy.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => TransferPolicy.fetch(client, T, id),
       new: (fields: TransferPolicyFields<ToPhantomTypeArgument<T>>) => {
         return new TransferPolicy([extractType(T)], fields)
       },
@@ -610,19 +609,16 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<TransferPolicy<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching TransferPolicy object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferPolicy(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isTransferPolicy(res.type)) {
       throw new Error(`object at id ${id} is not a TransferPolicy object`)
     }
 
-    return TransferPolicy.fromSuiObjectData(typeArg, res.data)
+    return TransferPolicy.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -697,7 +693,8 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructC
         TransferPolicyCap.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) =>
         TransferPolicyCap.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => TransferPolicyCap.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) =>
+        TransferPolicyCap.fetch(client, T, id),
       new: (fields: TransferPolicyCapFields<ToPhantomTypeArgument<T>>) => {
         return new TransferPolicyCap([extractType(T)], fields)
       },
@@ -855,19 +852,16 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructC
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<TransferPolicyCap<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching TransferPolicyCap object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferPolicyCap(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isTransferPolicyCap(res.type)) {
       throw new Error(`object at id ${id} is not a TransferPolicyCap object`)
     }
 
-    return TransferPolicyCap.fromSuiObjectData(typeArg, res.data)
+    return TransferPolicyCap.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -939,7 +933,8 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> implements Str
         TransferPolicyCreated.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) =>
         TransferPolicyCreated.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => TransferPolicyCreated.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) =>
+        TransferPolicyCreated.fetch(client, T, id),
       new: (fields: TransferPolicyCreatedFields<ToPhantomTypeArgument<T>>) => {
         return new TransferPolicyCreated([extractType(T)], fields)
       },
@@ -1094,19 +1089,16 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> implements Str
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<TransferPolicyCreated<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching TransferPolicyCreated object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferPolicyCreated(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isTransferPolicyCreated(res.type)) {
       throw new Error(`object at id ${id} is not a TransferPolicyCreated object`)
     }
 
-    return TransferPolicyCreated.fromSuiObjectData(typeArg, res.data)
+    return TransferPolicyCreated.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -1178,7 +1170,8 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements S
         TransferPolicyDestroyed.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) =>
         TransferPolicyDestroyed.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => TransferPolicyDestroyed.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) =>
+        TransferPolicyDestroyed.fetch(client, T, id),
       new: (fields: TransferPolicyDestroyedFields<ToPhantomTypeArgument<T>>) => {
         return new TransferPolicyDestroyed([extractType(T)], fields)
       },
@@ -1333,21 +1326,16 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements S
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<TransferPolicyDestroyed<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(
-        `error fetching TransferPolicyDestroyed object at id ${id}: ${res.error.code}`
-      )
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isTransferPolicyDestroyed(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isTransferPolicyDestroyed(res.type)) {
       throw new Error(`object at id ${id} is not a TransferPolicyDestroyed object`)
     }
 
-    return TransferPolicyDestroyed.fromSuiObjectData(typeArg, res.data)
+    return TransferPolicyDestroyed.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -1410,7 +1398,7 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => RuleKey.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => RuleKey.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => RuleKey.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => RuleKey.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => RuleKey.fetch(client, T, id),
       new: (fields: RuleKeyFields<ToPhantomTypeArgument<T>>) => {
         return new RuleKey([extractType(T)], fields)
       },
@@ -1563,18 +1551,15 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<RuleKey<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching RuleKey object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isRuleKey(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isRuleKey(res.type)) {
       throw new Error(`object at id ${id} is not a RuleKey object`)
     }
 
-    return RuleKey.fromSuiObjectData(typeArg, res.data)
+    return RuleKey.fromBcs(typeArg, res.bcsBytes)
   }
 }

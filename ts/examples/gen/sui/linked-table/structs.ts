@@ -27,13 +27,15 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== LinkedTable =============================== */
@@ -123,7 +125,8 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
       fromJSON: (json: Record<string, any>) => LinkedTable.fromJSON([K, V], json),
       fromSuiParsedData: (content: SuiParsedData) => LinkedTable.fromSuiParsedData([K, V], content),
       fromSuiObjectData: (content: SuiObjectData) => LinkedTable.fromSuiObjectData([K, V], content),
-      fetch: async (client: SuiClient, id: string) => LinkedTable.fetch(client, [K, V], id),
+      fetch: async (client: SupportedSuiClient, id: string) =>
+        LinkedTable.fetch(client, [K, V], id),
       new: (fields: LinkedTableFields<ToTypeArgument<K>, ToPhantomTypeArgument<V>>) => {
         return new LinkedTable([extractType(K), extractType(V)], fields)
       },
@@ -314,19 +317,16 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
     K extends Reified<TypeArgument, any>,
     V extends PhantomReified<PhantomTypeArgument>,
   >(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArgs: [K, V],
     id: string
   ): Promise<LinkedTable<ToTypeArgument<K>, ToPhantomTypeArgument<V>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching LinkedTable object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isLinkedTable(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isLinkedTable(res.type)) {
       throw new Error(`object at id ${id} is not a LinkedTable object`)
     }
 
-    return LinkedTable.fromSuiObjectData(typeArgs, res.data)
+    return LinkedTable.fromBcs(typeArgs, res.bcsBytes)
   }
 }
 
@@ -407,7 +407,7 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
       fromJSON: (json: Record<string, any>) => Node.fromJSON([K, V], json),
       fromSuiParsedData: (content: SuiParsedData) => Node.fromSuiParsedData([K, V], content),
       fromSuiObjectData: (content: SuiObjectData) => Node.fromSuiObjectData([K, V], content),
-      fetch: async (client: SuiClient, id: string) => Node.fetch(client, [K, V], id),
+      fetch: async (client: SupportedSuiClient, id: string) => Node.fetch(client, [K, V], id),
       new: (fields: NodeFields<ToTypeArgument<K>, ToTypeArgument<V>>) => {
         return new Node([extractType(K), extractType(V)], fields)
       },
@@ -572,18 +572,15 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
   }
 
   static async fetch<K extends Reified<TypeArgument, any>, V extends Reified<TypeArgument, any>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArgs: [K, V],
     id: string
   ): Promise<Node<ToTypeArgument<K>, ToTypeArgument<V>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Node object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isNode(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isNode(res.type)) {
       throw new Error(`object at id ${id} is not a Node object`)
     }
 
-    return Node.fromSuiObjectData(typeArgs, res.data)
+    return Node.fromBcs(typeArgs, res.bcsBytes)
   }
 }

@@ -27,13 +27,15 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { UID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Field =============================== */
@@ -126,7 +128,8 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
         Field.fromSuiParsedData([Name, Value], content),
       fromSuiObjectData: (content: SuiObjectData) =>
         Field.fromSuiObjectData([Name, Value], content),
-      fetch: async (client: SuiClient, id: string) => Field.fetch(client, [Name, Value], id),
+      fetch: async (client: SupportedSuiClient, id: string) =>
+        Field.fetch(client, [Name, Value], id),
       new: (fields: FieldFields<ToTypeArgument<Name>, ToTypeArgument<Value>>) => {
         return new Field([extractType(Name), extractType(Value)], fields)
       },
@@ -309,18 +312,15 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     Name extends Reified<TypeArgument, any>,
     Value extends Reified<TypeArgument, any>,
   >(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArgs: [Name, Value],
     id: string
   ): Promise<Field<ToTypeArgument<Name>, ToTypeArgument<Value>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Field object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isField(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isField(res.type)) {
       throw new Error(`object at id ${id} is not a Field object`)
     }
 
-    return Field.fromSuiObjectData(typeArgs, res.data)
+    return Field.fromBcs(typeArgs, res.bcsBytes)
   }
 }

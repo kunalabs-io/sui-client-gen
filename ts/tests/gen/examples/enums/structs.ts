@@ -24,8 +24,10 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { Option } from '../../std/option/structs'
@@ -33,7 +35,7 @@ import { Balance } from '../../sui/balance/structs'
 import { UID } from '../../sui/object/structs'
 import { SUI } from '../../sui/sui/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Wrapped =============================== */
@@ -132,7 +134,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
       fromJSON: (json: Record<string, any>) => Wrapped.fromJSON([T, U, V], json),
       fromSuiParsedData: (content: SuiParsedData) => Wrapped.fromSuiParsedData([T, U, V], content),
       fromSuiObjectData: (content: SuiObjectData) => Wrapped.fromSuiObjectData([T, U, V], content),
-      fetch: async (client: SuiClient, id: string) => Wrapped.fetch(client, [T, U, V], id),
+      fetch: async (client: SupportedSuiClient, id: string) => Wrapped.fetch(client, [T, U, V], id),
       new: (fields: WrappedFields<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>>) => {
         return new Wrapped([extractType(T), extractType(U), extractType(V)], fields)
       },
@@ -370,19 +372,16 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     U extends Reified<TypeArgument, any>,
     V extends Reified<TypeArgument, any>,
   >(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArgs: [T, U, V],
     id: string
   ): Promise<Wrapped<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Wrapped object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isWrapped(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isWrapped(res.type)) {
       throw new Error(`object at id ${id} is not a Wrapped object`)
     }
 
-    return Wrapped.fromSuiObjectData(typeArgs, res.data)
+    return Wrapped.fromBcs(typeArgs, res.bcsBytes)
   }
 }
 

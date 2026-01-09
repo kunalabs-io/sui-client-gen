@@ -18,14 +18,20 @@ import {
   phantom,
   vector,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { Bag } from '../bag/structs'
 import { ID, UID } from '../object/structs'
 import { Table } from '../table/structs'
 import { VecSet } from '../vec-set/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== DenyList =============================== */
@@ -87,7 +93,7 @@ export class DenyList implements StructClass {
       fromJSON: (json: Record<string, any>) => DenyList.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => DenyList.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => DenyList.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => DenyList.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => DenyList.fetch(client, id),
       new: (fields: DenyListFields) => {
         return new DenyList([], fields)
       },
@@ -199,16 +205,13 @@ export class DenyList implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<DenyList> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching DenyList object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isDenyList(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<DenyList> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isDenyList(res.type)) {
       throw new Error(`object at id ${id} is not a DenyList object`)
     }
 
-    return DenyList.fromSuiObjectData(res.data)
+    return DenyList.fromBcs(res.bcsBytes)
   }
 }
 
@@ -272,7 +275,7 @@ export class ConfigWriteCap implements StructClass {
       fromJSON: (json: Record<string, any>) => ConfigWriteCap.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ConfigWriteCap.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => ConfigWriteCap.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => ConfigWriteCap.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => ConfigWriteCap.fetch(client, id),
       new: (fields: ConfigWriteCapFields) => {
         return new ConfigWriteCap([], fields)
       },
@@ -379,16 +382,13 @@ export class ConfigWriteCap implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<ConfigWriteCap> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching ConfigWriteCap object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isConfigWriteCap(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<ConfigWriteCap> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isConfigWriteCap(res.type)) {
       throw new Error(`object at id ${id} is not a ConfigWriteCap object`)
     }
 
-    return ConfigWriteCap.fromSuiObjectData(res.data)
+    return ConfigWriteCap.fromBcs(res.bcsBytes)
   }
 }
 
@@ -452,7 +452,7 @@ export class ConfigKey implements StructClass {
       fromJSON: (json: Record<string, any>) => ConfigKey.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ConfigKey.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => ConfigKey.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => ConfigKey.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => ConfigKey.fetch(client, id),
       new: (fields: ConfigKeyFields) => {
         return new ConfigKey([], fields)
       },
@@ -564,16 +564,13 @@ export class ConfigKey implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<ConfigKey> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching ConfigKey object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isConfigKey(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<ConfigKey> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isConfigKey(res.type)) {
       throw new Error(`object at id ${id} is not a ConfigKey object`)
     }
 
-    return ConfigKey.fromSuiObjectData(res.data)
+    return ConfigKey.fromBcs(res.bcsBytes)
   }
 }
 
@@ -631,7 +628,7 @@ export class AddressKey implements StructClass {
       fromJSON: (json: Record<string, any>) => AddressKey.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => AddressKey.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => AddressKey.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => AddressKey.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => AddressKey.fetch(client, id),
       new: (fields: AddressKeyFields) => {
         return new AddressKey([], fields)
       },
@@ -741,16 +738,13 @@ export class AddressKey implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<AddressKey> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching AddressKey object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isAddressKey(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<AddressKey> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isAddressKey(res.type)) {
       throw new Error(`object at id ${id} is not a AddressKey object`)
     }
 
-    return AddressKey.fromSuiObjectData(res.data)
+    return AddressKey.fromBcs(res.bcsBytes)
   }
 }
 
@@ -811,7 +805,7 @@ export class GlobalPauseKey implements StructClass {
       fromJSON: (json: Record<string, any>) => GlobalPauseKey.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => GlobalPauseKey.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => GlobalPauseKey.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => GlobalPauseKey.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => GlobalPauseKey.fetch(client, id),
       new: (fields: GlobalPauseKeyFields) => {
         return new GlobalPauseKey([], fields)
       },
@@ -918,16 +912,13 @@ export class GlobalPauseKey implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<GlobalPauseKey> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching GlobalPauseKey object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isGlobalPauseKey(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<GlobalPauseKey> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isGlobalPauseKey(res.type)) {
       throw new Error(`object at id ${id} is not a GlobalPauseKey object`)
     }
 
-    return GlobalPauseKey.fromSuiObjectData(res.data)
+    return GlobalPauseKey.fromBcs(res.bcsBytes)
   }
 }
 
@@ -997,7 +988,8 @@ export class PerTypeConfigCreated implements StructClass {
         PerTypeConfigCreated.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) =>
         PerTypeConfigCreated.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => PerTypeConfigCreated.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) =>
+        PerTypeConfigCreated.fetch(client, id),
       new: (fields: PerTypeConfigCreatedFields) => {
         return new PerTypeConfigCreated([], fields)
       },
@@ -1111,16 +1103,13 @@ export class PerTypeConfigCreated implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<PerTypeConfigCreated> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching PerTypeConfigCreated object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isPerTypeConfigCreated(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<PerTypeConfigCreated> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isPerTypeConfigCreated(res.type)) {
       throw new Error(`object at id ${id} is not a PerTypeConfigCreated object`)
     }
 
-    return PerTypeConfigCreated.fromSuiObjectData(res.data)
+    return PerTypeConfigCreated.fromBcs(res.bcsBytes)
   }
 }
 
@@ -1202,7 +1191,7 @@ export class PerTypeList implements StructClass {
       fromJSON: (json: Record<string, any>) => PerTypeList.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => PerTypeList.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => PerTypeList.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => PerTypeList.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => PerTypeList.fetch(client, id),
       new: (fields: PerTypeListFields) => {
         return new PerTypeList([], fields)
       },
@@ -1337,15 +1326,12 @@ export class PerTypeList implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<PerTypeList> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching PerTypeList object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isPerTypeList(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<PerTypeList> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isPerTypeList(res.type)) {
       throw new Error(`object at id ${id} is not a PerTypeList object`)
     }
 
-    return PerTypeList.fromSuiObjectData(res.data)
+    return PerTypeList.fromBcs(res.bcsBytes)
   }
 }

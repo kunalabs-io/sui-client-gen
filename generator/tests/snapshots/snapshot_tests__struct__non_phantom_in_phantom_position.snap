@@ -63,7 +63,7 @@ export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T
       fromJSON: (json: Record<string, any>) => WitTable.fromJSON([T0, T1, T2], json),
       fromSuiParsedData: (content: SuiParsedData) => WitTable.fromSuiParsedData([T0, T1, T2], content),
       fromSuiObjectData: (content: SuiObjectData) => WitTable.fromSuiObjectData([T0, T1, T2], content),
-      fetch: async (client: SuiClient, id: string) => WitTable.fetch(client, [T0, T1, T2], id),
+      fetch: async (client: SupportedSuiClient, id: string) => WitTable.fetch(client, [T0, T1, T2], id),
       new: (fields: WitTableFields<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>, ToPhantomTypeArgument<T2>>) => {
         return new WitTable([extractType(T0), extractType(T1), extractType(T2)], fields)
       },
@@ -220,18 +220,15 @@ export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T
   }
 
   static async fetch<T0 extends PhantomReified<PhantomTypeArgument>, T1 extends Reified<TypeArgument, any>, T2 extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArgs: [T0, T1, T2],
     id: string
   ): Promise<WitTable<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>, ToPhantomTypeArgument<T2>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching WitTable object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isWitTable(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isWitTable(res.type)) {
       throw new Error(`object at id ${id} is not a WitTable object`)
     }
 
-    return WitTable.fromSuiObjectData(typeArgs, res.data)
+    return WitTable.fromBcs(typeArgs, res.bcsBytes)
   }
 }

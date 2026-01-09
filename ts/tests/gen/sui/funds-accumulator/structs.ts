@@ -19,12 +19,14 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== Withdrawal =============================== */
@@ -106,7 +108,7 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Withdrawal.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Withdrawal.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Withdrawal.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => Withdrawal.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Withdrawal.fetch(client, T, id),
       new: (fields: WithdrawalFields<ToPhantomTypeArgument<T>>) => {
         return new Withdrawal([extractType(T)], fields)
       },
@@ -267,18 +269,15 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<Withdrawal<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Withdrawal object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isWithdrawal(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isWithdrawal(res.type)) {
       throw new Error(`object at id ${id} is not a Withdrawal object`)
     }
 
-    return Withdrawal.fromSuiObjectData(typeArg, res.data)
+    return Withdrawal.fromBcs(typeArg, res.bcsBytes)
   }
 }

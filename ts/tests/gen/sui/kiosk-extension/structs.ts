@@ -57,13 +57,15 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { Bag } from '../bag/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Extension =============================== */
@@ -184,7 +186,7 @@ export class Extension implements StructClass {
       fromJSON: (json: Record<string, any>) => Extension.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Extension.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Extension.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Extension.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Extension.fetch(client, id),
       new: (fields: ExtensionFields) => {
         return new Extension([], fields)
       },
@@ -301,16 +303,13 @@ export class Extension implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Extension> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Extension object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isExtension(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Extension> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isExtension(res.type)) {
       throw new Error(`object at id ${id} is not a Extension object`)
     }
 
-    return Extension.fromSuiObjectData(res.data)
+    return Extension.fromBcs(res.bcsBytes)
   }
 }
 
@@ -380,7 +379,7 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
       fromJSON: (json: Record<string, any>) => ExtensionKey.fromJSON(Ext, json),
       fromSuiParsedData: (content: SuiParsedData) => ExtensionKey.fromSuiParsedData(Ext, content),
       fromSuiObjectData: (content: SuiObjectData) => ExtensionKey.fromSuiObjectData(Ext, content),
-      fetch: async (client: SuiClient, id: string) => ExtensionKey.fetch(client, Ext, id),
+      fetch: async (client: SupportedSuiClient, id: string) => ExtensionKey.fetch(client, Ext, id),
       new: (fields: ExtensionKeyFields<ToPhantomTypeArgument<Ext>>) => {
         return new ExtensionKey([extractType(Ext)], fields)
       },
@@ -533,18 +532,15 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
   }
 
   static async fetch<Ext extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: Ext,
     id: string
   ): Promise<ExtensionKey<ToPhantomTypeArgument<Ext>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching ExtensionKey object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isExtensionKey(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isExtensionKey(res.type)) {
       throw new Error(`object at id ${id} is not a ExtensionKey object`)
     }
 
-    return ExtensionKey.fromSuiObjectData(typeArg, res.data)
+    return ExtensionKey.fromBcs(typeArg, res.bcsBytes)
   }
 }

@@ -34,13 +34,15 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { ID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Claimed =============================== */
@@ -97,7 +99,7 @@ export class Claimed implements StructClass {
       fromJSON: (json: Record<string, any>) => Claimed.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Claimed.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Claimed.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Claimed.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Claimed.fetch(client, id),
       new: (fields: ClaimedFields) => {
         return new Claimed([], fields)
       },
@@ -204,16 +206,13 @@ export class Claimed implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Claimed> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Claimed object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isClaimed(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Claimed> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isClaimed(res.type)) {
       throw new Error(`object at id ${id} is not a Claimed object`)
     }
 
-    return Claimed.fromSuiObjectData(res.data)
+    return Claimed.fromBcs(res.bcsBytes)
   }
 }
 
@@ -279,7 +278,8 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => DerivedObjectKey.fromJSON(K, json),
       fromSuiParsedData: (content: SuiParsedData) => DerivedObjectKey.fromSuiParsedData(K, content),
       fromSuiObjectData: (content: SuiObjectData) => DerivedObjectKey.fromSuiObjectData(K, content),
-      fetch: async (client: SuiClient, id: string) => DerivedObjectKey.fetch(client, K, id),
+      fetch: async (client: SupportedSuiClient, id: string) =>
+        DerivedObjectKey.fetch(client, K, id),
       new: (fields: DerivedObjectKeyFields<ToTypeArgument<K>>) => {
         return new DerivedObjectKey([extractType(K)], fields)
       },
@@ -434,19 +434,16 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
   }
 
   static async fetch<K extends Reified<TypeArgument, any>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: K,
     id: string
   ): Promise<DerivedObjectKey<ToTypeArgument<K>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching DerivedObjectKey object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isDerivedObjectKey(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isDerivedObjectKey(res.type)) {
       throw new Error(`object at id ${id} is not a DerivedObjectKey object`)
     }
 
-    return DerivedObjectKey.fromSuiObjectData(typeArg, res.data)
+    return DerivedObjectKey.fromBcs(typeArg, res.bcsBytes)
   }
 }
 

@@ -11,9 +11,15 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== ID =============================== */
@@ -74,7 +80,7 @@ export class ID implements StructClass {
       fromJSON: (json: Record<string, any>) => ID.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ID.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => ID.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => ID.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => ID.fetch(client, id),
       new: (fields: IDFields) => {
         return new ID([], fields)
       },
@@ -184,16 +190,13 @@ export class ID implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<ID> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching ID object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isID(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<ID> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isID(res.type)) {
       throw new Error(`object at id ${id} is not a ID object`)
     }
 
-    return ID.fromSuiObjectData(res.data)
+    return ID.fromBcs(res.bcsBytes)
   }
 }
 
@@ -255,7 +258,7 @@ export class UID implements StructClass {
       fromJSON: (json: Record<string, any>) => UID.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => UID.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => UID.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => UID.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => UID.fetch(client, id),
       new: (fields: UIDFields) => {
         return new UID([], fields)
       },
@@ -362,15 +365,12 @@ export class UID implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<UID> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching UID object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isUID(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<UID> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isUID(res.type)) {
       throw new Error(`object at id ${id} is not a UID object`)
     }
 
-    return UID.fromSuiObjectData(res.data)
+    return UID.fromBcs(res.bcsBytes)
   }
 }

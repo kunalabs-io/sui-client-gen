@@ -26,14 +26,16 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { Option } from '../../std/option/structs'
 import { ID } from '../object/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== Referent =============================== */
@@ -96,7 +98,7 @@ export class Referent<T extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Referent.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Referent.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Referent.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => Referent.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Referent.fetch(client, T, id),
       new: (fields: ReferentFields<ToTypeArgument<T>>) => {
         return new Referent([extractType(T)], fields)
       },
@@ -259,19 +261,16 @@ export class Referent<T extends TypeArgument> implements StructClass {
   }
 
   static async fetch<T extends Reified<TypeArgument, any>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<Referent<ToTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Referent object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isReferent(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isReferent(res.type)) {
       throw new Error(`object at id ${id} is not a Referent object`)
     }
 
-    return Referent.fromSuiObjectData(typeArg, res.data)
+    return Referent.fromBcs(typeArg, res.bcsBytes)
   }
 }
 
@@ -329,7 +328,7 @@ export class Borrow implements StructClass {
       fromJSON: (json: Record<string, any>) => Borrow.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => Borrow.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Borrow.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => Borrow.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Borrow.fetch(client, id),
       new: (fields: BorrowFields) => {
         return new Borrow([], fields)
       },
@@ -444,15 +443,12 @@ export class Borrow implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<Borrow> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Borrow object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isBorrow(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<Borrow> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isBorrow(res.type)) {
       throw new Error(`object at id ${id} is not a Borrow object`)
     }
 
-    return Borrow.fromSuiObjectData(res.data)
+    return Borrow.fromBcs(res.bcsBytes)
   }
 }

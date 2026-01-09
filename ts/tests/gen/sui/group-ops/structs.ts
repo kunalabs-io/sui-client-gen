@@ -21,13 +21,15 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
+  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
+  fetchObjectBcs,
   parseTypeName,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Element =============================== */
@@ -88,7 +90,7 @@ export class Element<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Element.fromJSON(T, json),
       fromSuiParsedData: (content: SuiParsedData) => Element.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Element.fromSuiObjectData(T, content),
-      fetch: async (client: SuiClient, id: string) => Element.fetch(client, T, id),
+      fetch: async (client: SupportedSuiClient, id: string) => Element.fetch(client, T, id),
       new: (fields: ElementFields<ToPhantomTypeArgument<T>>) => {
         return new Element([extractType(T)], fields)
       },
@@ -241,18 +243,15 @@ export class Element<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SuiClient,
+    client: SupportedSuiClient,
     typeArg: T,
     id: string
   ): Promise<Element<ToPhantomTypeArgument<T>>> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching Element object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isElement(res.data.bcs.type)) {
+    const res = await fetchObjectBcs(client, id)
+    if (!isElement(res.type)) {
       throw new Error(`object at id ${id} is not a Element object`)
     }
 
-    return Element.fromSuiObjectData(typeArg, res.data)
+    return Element.fromBcs(typeArg, res.bcsBytes)
   }
 }

@@ -73,7 +73,7 @@ export class MultilineDoc implements StructClass {
       fromJSON: (json: Record<string, any>) => MultilineDoc.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => MultilineDoc.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => MultilineDoc.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => MultilineDoc.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => MultilineDoc.fetch(client, id),
       new: (fields: MultilineDocFields) => {
         return new MultilineDoc([], fields)
       },
@@ -178,15 +178,12 @@ export class MultilineDoc implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<MultilineDoc> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching MultilineDoc object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isMultilineDoc(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<MultilineDoc> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isMultilineDoc(res.type)) {
       throw new Error(`object at id ${id} is not a MultilineDoc object`)
     }
 
-    return MultilineDoc.fromSuiObjectData(res.data)
+    return MultilineDoc.fromBcs(res.bcsBytes)
   }
 }

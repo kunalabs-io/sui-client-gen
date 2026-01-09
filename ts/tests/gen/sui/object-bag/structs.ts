@@ -16,10 +16,16 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== ObjectBag =============================== */
@@ -82,7 +88,7 @@ export class ObjectBag implements StructClass {
       fromJSON: (json: Record<string, any>) => ObjectBag.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => ObjectBag.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => ObjectBag.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => ObjectBag.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => ObjectBag.fetch(client, id),
       new: (fields: ObjectBagFields) => {
         return new ObjectBag([], fields)
       },
@@ -194,15 +200,12 @@ export class ObjectBag implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<ObjectBag> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching ObjectBag object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isObjectBag(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<ObjectBag> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isObjectBag(res.type)) {
       throw new Error(`object at id ${id} is not a ObjectBag object`)
     }
 
-    return ObjectBag.fromSuiObjectData(res.data)
+    return ObjectBag.fromBcs(res.bcsBytes)
   }
 }

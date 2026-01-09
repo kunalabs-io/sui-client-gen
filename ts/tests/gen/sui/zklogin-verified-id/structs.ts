@@ -9,11 +9,17 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { String } from '../../std/string/structs'
 import { UID } from '../object/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 
 /* ============================== VerifiedID =============================== */
@@ -100,7 +106,7 @@ export class VerifiedID implements StructClass {
       fromJSON: (json: Record<string, any>) => VerifiedID.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => VerifiedID.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => VerifiedID.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => VerifiedID.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => VerifiedID.fetch(client, id),
       new: (fields: VerifiedIDFields) => {
         return new VerifiedID([], fields)
       },
@@ -235,15 +241,12 @@ export class VerifiedID implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<VerifiedID> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching VerifiedID object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isVerifiedID(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<VerifiedID> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isVerifiedID(res.type)) {
       throw new Error(`object at id ${id} is not a VerifiedID object`)
     }
 
-    return VerifiedID.fromSuiObjectData(res.data)
+    return VerifiedID.fromBcs(res.bcsBytes)
   }
 }

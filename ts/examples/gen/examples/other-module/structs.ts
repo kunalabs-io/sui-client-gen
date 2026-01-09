@@ -10,9 +10,15 @@ import {
   decodeFromJSONField,
   phantom,
 } from '../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../_framework/util'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== StructFromOtherModule =============================== */
@@ -81,7 +87,8 @@ export class StructFromOtherModule implements StructClass {
         StructFromOtherModule.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) =>
         StructFromOtherModule.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => StructFromOtherModule.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) =>
+        StructFromOtherModule.fetch(client, id),
       new: (fields: StructFromOtherModuleFields) => {
         return new StructFromOtherModule([], fields)
       },
@@ -190,16 +197,13 @@ export class StructFromOtherModule implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<StructFromOtherModule> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching StructFromOtherModule object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isStructFromOtherModule(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<StructFromOtherModule> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isStructFromOtherModule(res.type)) {
       throw new Error(`object at id ${id} is not a StructFromOtherModule object`)
     }
 
-    return StructFromOtherModule.fromSuiObjectData(res.data)
+    return StructFromOtherModule.fromBcs(res.bcsBytes)
   }
 }
 
@@ -263,7 +267,7 @@ export class AddedInAnUpgrade implements StructClass {
       fromJSON: (json: Record<string, any>) => AddedInAnUpgrade.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => AddedInAnUpgrade.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => AddedInAnUpgrade.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => AddedInAnUpgrade.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => AddedInAnUpgrade.fetch(client, id),
       new: (fields: AddedInAnUpgradeFields) => {
         return new AddedInAnUpgrade([], fields)
       },
@@ -370,15 +374,12 @@ export class AddedInAnUpgrade implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<AddedInAnUpgrade> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching AddedInAnUpgrade object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isAddedInAnUpgrade(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<AddedInAnUpgrade> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isAddedInAnUpgrade(res.type)) {
       throw new Error(`object at id ${id} is not a AddedInAnUpgrade object`)
     }
 
-    return AddedInAnUpgrade.fromSuiObjectData(res.data)
+    return AddedInAnUpgrade.fromBcs(res.bcsBytes)
   }
 }

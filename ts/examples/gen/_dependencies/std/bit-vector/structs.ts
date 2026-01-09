@@ -11,10 +11,16 @@ import {
   phantom,
   vector,
 } from '../../../_framework/reified'
-import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../../_framework/util'
+import {
+  FieldsWithTypes,
+  SupportedSuiClient,
+  composeSuiType,
+  compressSuiType,
+  fetchObjectBcs,
+} from '../../../_framework/util'
 import { Vector } from '../../../_framework/vector'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient, SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== BitVector =============================== */
@@ -73,7 +79,7 @@ export class BitVector implements StructClass {
       fromJSON: (json: Record<string, any>) => BitVector.fromJSON(json),
       fromSuiParsedData: (content: SuiParsedData) => BitVector.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => BitVector.fromSuiObjectData(content),
-      fetch: async (client: SuiClient, id: string) => BitVector.fetch(client, id),
+      fetch: async (client: SupportedSuiClient, id: string) => BitVector.fetch(client, id),
       new: (fields: BitVectorFields) => {
         return new BitVector([], fields)
       },
@@ -185,15 +191,12 @@ export class BitVector implements StructClass {
     )
   }
 
-  static async fetch(client: SuiClient, id: string): Promise<BitVector> {
-    const res = await client.getObject({ id, options: { showBcs: true } })
-    if (res.error) {
-      throw new Error(`error fetching BitVector object at id ${id}: ${res.error.code}`)
-    }
-    if (res.data?.bcs?.dataType !== 'moveObject' || !isBitVector(res.data.bcs.type)) {
+  static async fetch(client: SupportedSuiClient, id: string): Promise<BitVector> {
+    const res = await fetchObjectBcs(client, id)
+    if (!isBitVector(res.type)) {
       throw new Error(`object at id ${id} is not a BitVector object`)
     }
 
-    return BitVector.fromSuiObjectData(res.data)
+    return BitVector.fromBcs(res.bcsBytes)
   }
 }
