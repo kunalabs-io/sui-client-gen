@@ -355,6 +355,22 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
       throw new Error(`object at id ${id} is not a TransferRequest object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return TransferRequest.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -644,6 +660,22 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
       throw new Error(`object at id ${id} is not a TransferPolicy object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return TransferPolicy.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -898,6 +930,22 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructC
       throw new Error(`object at id ${id} is not a TransferPolicyCap object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return TransferPolicyCap.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -1143,6 +1191,22 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> implements Str
     const res = await fetchObjectBcs(client, id)
     if (!isTransferPolicyCreated(res.type)) {
       throw new Error(`object at id ${id} is not a TransferPolicyCreated object`)
+    }
+
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
     }
 
     return TransferPolicyCreated.fromBcs(typeArg, res.bcsBytes)
@@ -1393,6 +1457,22 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements S
       throw new Error(`object at id ${id} is not a TransferPolicyDestroyed object`)
     }
 
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
+    }
+
     return TransferPolicyDestroyed.fromBcs(typeArg, res.bcsBytes)
   }
 }
@@ -1626,6 +1706,22 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
     const res = await fetchObjectBcs(client, id)
     if (!isRuleKey(res.type)) {
       throw new Error(`object at id ${id} is not a RuleKey object`)
+    }
+
+    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+        )
+      }
     }
 
     return RuleKey.fromBcs(typeArg, res.bcsBytes)
