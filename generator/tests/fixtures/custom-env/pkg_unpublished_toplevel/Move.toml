@@ -5,3 +5,6 @@ edition = "2024"
 [dependencies]
 pkg_unpublished_transitive = { local = "../pkg_unpublished_transitive" }
 pkg_transitive_legacy = { local = "../PkgTransitiveLegacy" }
+
+[environments]
+testnet_alt = "4c78adac"

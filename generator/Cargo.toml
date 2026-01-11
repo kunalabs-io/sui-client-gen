@@ -21,22 +21,22 @@ reqwest = { version = "0.12", features = ["json"] }
 dprint-plugin-typescript = "0.95"
 dprint-core = "0.67"
 
-sui-move-build = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
-sui-move = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
-sui-package-management = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
-sui-sdk = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
-sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
-move-model-2 = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
-move-core-types = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
-move-binary-format = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
-move-symbol-pool = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
-move-bytecode-utils = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
-move-compiler = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
-move-package = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
-move-command-line-common = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
-move-package-alt = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
-move-package-alt-compilation = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
-sui-package-alt = { git = "https://github.com/MystenLabs/sui/", rev = "mainnet-v1.62.1"}
+sui-move-build = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
+sui-move = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
+sui-package-management = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
+sui-sdk = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
+sui-json-rpc-types = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
+move-model-2 = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
+move-core-types = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
+move-binary-format = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
+move-symbol-pool = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
+move-bytecode-utils = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
+move-compiler = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
+move-package = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
+move-command-line-common = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
+move-package-alt = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
+move-package-alt-compilation = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
+sui-package-alt = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
 
 [dev-dependencies]
 insta = { version = "1.41", features = ["glob"] }

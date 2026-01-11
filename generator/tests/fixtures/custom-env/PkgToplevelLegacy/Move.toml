@@ -4,3 +4,6 @@ edition = "2024"
 
 [addresses]
 pkg_toplevel_legacy = "0x0"
+
+[environments]
+testnet_alt = "4c78adac"

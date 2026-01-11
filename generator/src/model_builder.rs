@@ -14,10 +14,11 @@ use move_core_types::account_address::AccountAddress;
 use move_model_2::model::Model;
 use move_model_2::source_kind::WithSource;
 use move_package_alt::graph::NamedAddress;
+use move_package_alt::package::package_loader::PackageLoader;
 use move_package_alt::package::RootPackage;
 use move_package_alt::schema::{
-    Environment, ExternalDependency, LocalDepInfo, ManifestDependencyInfo, ManifestGitDependency,
-    OnChainDepInfo, PackageName,
+    DefaultDependency, Environment, ExternalDependency, LocalDepInfo, ManifestDependencyInfo,
+    ManifestGitDependency, OnChainDepInfo, PackageName, SystemDependency,
 };
 use move_package_alt_compilation::build_config::BuildConfig;
 use sui_package_alt::SuiFlavor;
@@ -89,7 +90,8 @@ pub async fn build_model(
     let env = Environment::new(environment.to_string(), chain_id.to_string());
 
     // Load root package
-    let root_pkg = RootPackage::<SuiFlavor>::load(temp_dir.path(), env)
+    let root_pkg = PackageLoader::new(temp_dir.path(), env)
+        .load::<SuiFlavor>()
         .await
         .context("Failed to load root package")?;
 
@@ -143,6 +145,7 @@ fn create_stub_package(
     writeln!(manifest, "[package]")?;
     writeln!(manifest, "name = \"{}\"", STUB_PACKAGE_NAME)?;
     writeln!(manifest, "edition = \"2024\"")?;
+    writeln!(manifest, "implicit-dependencies = false")?;
     writeln!(manifest)?;
     writeln!(manifest, "[dependencies]")?;
 
@@ -186,12 +189,42 @@ fn create_stub_package(
 }
 
 /// Format a dependency for the stub Move.toml, converting relative paths to absolute.
-fn format_dependency(dep: &ManifestDependencyInfo, manifest_dir: &Path) -> Result<String> {
+/// Handles DefaultDependency which includes override, rename-from, and modes flags.
+fn format_dependency(dep: &DefaultDependency, manifest_dir: &Path) -> Result<String> {
+    let mut parts = format_dependency_info(&dep.dependency_info, manifest_dir)?;
+
+    // Add override flag if set
+    if dep.is_override {
+        parts.push("override = true".to_string());
+    }
+
+    // Add rename-from if set
+    if let Some(ref rename_from) = dep.rename_from {
+        parts.push(format!("rename-from = \"{}\"", rename_from));
+    }
+
+    // Add modes if set
+    if let Some(ref modes) = dep.modes {
+        if !modes.is_empty() {
+            let modes_str = modes
+                .iter()
+                .map(|m| format!("\"{}\"", m))
+                .collect::<Vec<_>>()
+                .join(", ");
+            parts.push(format!("modes = [{}]", modes_str));
+        }
+    }
+
+    Ok(format!("{{ {} }}", parts.join(", ")))
+}
+
+/// Format the base dependency info into a list of key-value parts.
+fn format_dependency_info(dep: &ManifestDependencyInfo, manifest_dir: &Path) -> Result<Vec<String>> {
     match dep {
         ManifestDependencyInfo::Local(LocalDepInfo { local }) => {
             let absolute_path = fs::canonicalize(manifest_dir.join(local))
                 .with_context(|| format!("Failed to resolve path: {}", local.display()))?;
-            Ok(format!("{{ local = \"{}\" }}", absolute_path.display()))
+            Ok(vec![format!("local = \"{}\"", absolute_path.display())])
         }
         ManifestDependencyInfo::Git(ManifestGitDependency { repo, rev, subdir }) => {
             let mut parts = vec![format!("git = \"{}\"", repo)];
@@ -201,17 +234,18 @@ fn format_dependency(dep: &ManifestDependencyInfo, manifest_dir: &Path) -> Resul
             if !subdir.as_os_str().is_empty() {
                 parts.push(format!("subdir = \"{}\"", subdir.display()));
             }
-            Ok(format!("{{ {} }}", parts.join(", ")))
+            Ok(parts)
         }
         ManifestDependencyInfo::External(ExternalDependency { resolver, data }) => {
             // Format external resolver dependency: { r.<resolver> = <data> }
-            // We need to serialize the data back to inline TOML
             let data_str = format_toml_value(data);
-            Ok(format!("{{ r.{} = {} }}", resolver, data_str))
+            Ok(vec![format!("r.{} = {}", resolver, data_str)])
         }
         ManifestDependencyInfo::OnChain(OnChainDepInfo { .. }) => {
-            // Format on-chain dependency: { on-chain = true }
-            Ok("{ on-chain = true }".to_string())
+            Ok(vec!["on-chain = true".to_string()])
+        }
+        ManifestDependencyInfo::System(SystemDependency { system }) => {
+            Ok(vec![format!("system = \"{}\"", system)])
         }
     }
 }
@@ -267,6 +301,9 @@ fn format_dep_replacement(replacement: &DepReplacement, manifest_dir: &Path) -> 
             ManifestDependencyInfo::OnChain(OnChainDepInfo { .. }) => {
                 parts.push("on-chain = true".to_string());
             }
+            ManifestDependencyInfo::System(SystemDependency { system }) => {
+                parts.push(format!("system = \"{}\"", system));
+            }
         }
     }
 
@@ -307,7 +344,7 @@ fn build_package_info(
     // Get the set of package names from gen.toml
     let gen_package_names: BTreeSet<&PackageName> = gen_packages.keys().collect();
 
-    for pkg_info in root_pkg.packages()? {
+    for pkg_info in root_pkg.packages() {
         let pkg_name = pkg_info.name().clone();
 
         // Skip the stub root package
@@ -450,11 +487,20 @@ mod tests {
     use move_package_alt::schema::ConstTrue;
     use std::path::PathBuf;
 
+    fn make_default_dep(dep_info: ManifestDependencyInfo) -> DefaultDependency {
+        DefaultDependency {
+            dependency_info: dep_info,
+            is_override: false,
+            rename_from: None,
+            modes: None,
+        }
+    }
+
     #[test]
     fn test_format_local_dependency() {
-        let dep = ManifestDependencyInfo::Local(LocalDepInfo {
+        let dep = make_default_dep(ManifestDependencyInfo::Local(LocalDepInfo {
             local: PathBuf::from("../move/examples"),
-        });
+        }));
 
         // This will fail if the path doesn't exist, but tests the format logic
         let manifest_dir = PathBuf::from("/tmp");
@@ -465,11 +511,11 @@ mod tests {
 
     #[test]
     fn test_format_git_dependency() {
-        let dep = ManifestDependencyInfo::Git(ManifestGitDependency {
+        let dep = make_default_dep(ManifestDependencyInfo::Git(ManifestGitDependency {
             repo: "https://github.com/MystenLabs/sui.git".to_string(),
             rev: Some("mainnet-v1.62.1".to_string()),
             subdir: PathBuf::from("crates/sui-framework/packages/sui-framework"),
-        });
+        }));
 
         let manifest_dir = PathBuf::from("/tmp");
         let result = format_dependency(&dep, &manifest_dir).unwrap();
@@ -482,10 +528,10 @@ mod tests {
     #[test]
     fn test_format_external_mvr_dependency() {
         // MVR dependency: { r.mvr = "@namespace/package" }
-        let dep = ManifestDependencyInfo::External(ExternalDependency {
+        let dep = make_default_dep(ManifestDependencyInfo::External(ExternalDependency {
             resolver: "mvr".to_string(),
             data: toml::Value::String("@potatoes/ascii".to_string()),
-        });
+        }));
 
         let manifest_dir = PathBuf::from("/tmp");
         let result = format_dependency(&dep, &manifest_dir).unwrap();
@@ -506,10 +552,10 @@ mod tests {
             }),
         );
 
-        let dep = ManifestDependencyInfo::External(ExternalDependency {
+        let dep = make_default_dep(ManifestDependencyInfo::External(ExternalDependency {
             resolver: "mock-resolver".to_string(),
             data: toml::Value::Table(data_table),
-        });
+        }));
 
         let manifest_dir = PathBuf::from("/tmp");
         let result = format_dependency(&dep, &manifest_dir).unwrap();
@@ -522,13 +568,34 @@ mod tests {
     #[test]
     fn test_format_onchain_dependency() {
         // On-chain dependency: { on-chain = true }
-        let dep = ManifestDependencyInfo::OnChain(OnChainDepInfo {
+        let dep = make_default_dep(ManifestDependencyInfo::OnChain(OnChainDepInfo {
             on_chain: ConstTrue,
-        });
+        }));
 
         let manifest_dir = PathBuf::from("/tmp");
         let result = format_dependency(&dep, &manifest_dir).unwrap();
 
         assert_eq!(result, "{ on-chain = true }");
+    }
+
+    #[test]
+    fn test_format_dependency_with_override() {
+        // Git dependency with override = true
+        let dep = DefaultDependency {
+            dependency_info: ManifestDependencyInfo::Git(ManifestGitDependency {
+                repo: "https://github.com/MystenLabs/sui.git".to_string(),
+                rev: Some("main".to_string()),
+                subdir: PathBuf::new(),
+            }),
+            is_override: true,
+            rename_from: None,
+            modes: None,
+        };
+
+        let manifest_dir = PathBuf::from("/tmp");
+        let result = format_dependency(&dep, &manifest_dir).unwrap();
+
+        assert!(result.contains("override = true"));
+        assert!(result.contains("git = \"https://github.com/MystenLabs/sui.git\""));
     }
 }

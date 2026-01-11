@@ -6,3 +6,4 @@ environment = "testnet"
 amm = { local = "../../../move/amm" }
 examples = { local = "../../../move/examples" }
 sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet-v1.62.1", override = true }
+std = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "mainnet-v1.62.1", override = true }

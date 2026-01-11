@@ -1,3 +1,6 @@
 [package]
 name = "pkg_published_transitive_alt"
 edition = "2024"
+
+[environments]
+testnet_alt = "4c78adac"
