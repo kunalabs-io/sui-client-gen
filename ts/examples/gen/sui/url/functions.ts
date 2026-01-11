@@ -4,9 +4,9 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
-import { String as String1 } from '../../_dependencies/std/ascii/structs'
 import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
+import { String as String1 } from '../../std/ascii/structs'
 
 /** Create a `Url`, with no validation */
 export function newUnsafe(tx: Transaction, url: string | TransactionArgument): TransactionResult {

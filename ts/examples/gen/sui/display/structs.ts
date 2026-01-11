@@ -13,7 +13,6 @@
 import { bcs } from '@mysten/sui/bcs'
 import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
-import { String } from '../../_dependencies/std/string/structs'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -40,6 +39,7 @@ import {
   parseTypeName,
   SupportedSuiClient,
 } from '../../_framework/util'
+import { String } from '../../std/string/structs'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'
 

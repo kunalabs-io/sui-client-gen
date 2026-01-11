@@ -1,7 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
 import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
-import { String } from '../../_dependencies/std/string/structs'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -24,6 +23,7 @@ import {
   SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
+import { String } from '../../std/string/structs'
 import { UID } from '../object/structs'
 
 /* ============================== AuthenticatorState =============================== */

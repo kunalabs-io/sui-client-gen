@@ -1,7 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
 import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
-import { Option } from '../../_dependencies/std/option/structs'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -24,6 +23,7 @@ import {
   SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
+import { Option } from '../../std/option/structs'
 
 /* ============================== PCREntry =============================== */
 

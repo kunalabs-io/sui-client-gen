@@ -1,9 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
 import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
-import { String } from '../../_dependencies/std/ascii/structs'
-import { Option } from '../../_dependencies/std/option/structs'
-import { String as StringString } from '../../_dependencies/std/string/structs'
 import { getTypeOrigin } from '../../_envs'
 import {
   decodeFromFields,
@@ -27,6 +24,9 @@ import {
   SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
+import { String } from '../../std/ascii/structs'
+import { Option } from '../../std/option/structs'
+import { String as StringString } from '../../std/string/structs'
 import { ID, UID } from '../../sui/object/structs'
 
 /* ============================== ExampleStruct =============================== */

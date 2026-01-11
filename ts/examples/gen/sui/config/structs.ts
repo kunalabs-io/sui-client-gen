@@ -1,7 +1,6 @@
 import { bcs, BcsType } from '@mysten/sui/bcs'
 import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
-import { Option } from '../../_dependencies/std/option/structs'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -32,6 +31,7 @@ import {
   parseTypeName,
   SupportedSuiClient,
 } from '../../_framework/util'
+import { Option } from '../../std/option/structs'
 import { UID } from '../object/structs'
 
 /* ============================== Config =============================== */

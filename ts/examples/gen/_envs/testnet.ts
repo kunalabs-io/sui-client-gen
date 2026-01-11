@@ -2,6 +2,22 @@ import type { EnvConfig } from '../_framework/env'
 
 export const testnetEnv: EnvConfig = {
   packages: {
+    'std': {
+      originalId: '0x1',
+      publishedAt: '0x1',
+      typeOrigins: {
+        'ascii::Char': '0x1',
+        'ascii::String': '0x1',
+        'bit_vector::BitVector': '0x1',
+        'fixed_point32::FixedPoint32': '0x1',
+        'internal::Permit': '0x1',
+        'option::Option': '0x1',
+        'string::String': '0x1',
+        'type_name::TypeName': '0x1',
+        'uq32_32::UQ32_32': '0x1',
+        'uq64_64::UQ64_64': '0x1',
+      },
+    },
     'sui': {
       originalId: '0x2',
       publishedAt: '0x2',
@@ -183,22 +199,5 @@ export const testnetEnv: EnvConfig = {
       },
     },
   },
-  dependencies: {
-    'std': {
-      originalId: '0x1',
-      publishedAt: '0x1',
-      typeOrigins: {
-        'ascii::Char': '0x1',
-        'ascii::String': '0x1',
-        'bit_vector::BitVector': '0x1',
-        'fixed_point32::FixedPoint32': '0x1',
-        'internal::Permit': '0x1',
-        'option::Option': '0x1',
-        'string::String': '0x1',
-        'type_name::TypeName': '0x1',
-        'uq32_32::UQ32_32': '0x1',
-        'uq64_64::UQ64_64': '0x1',
-      },
-    },
-  },
+  dependencies: {},
 }

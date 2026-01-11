@@ -4,9 +4,9 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
-import { String } from '../../_dependencies/std/string/structs'
 import { getPublishedAt } from '../../_envs'
 import { obj, pure, vector } from '../../_framework/util'
+import { String } from '../../std/string/structs'
 import { ActiveJwk } from './structs'
 
 export interface ActiveJwkEqualArgs {

@@ -1,9 +1,6 @@
 import { bcs, BcsType } from '@mysten/sui/bcs'
 import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
-import { String as StringAscii } from '../../_dependencies/std/ascii/structs'
-import { Option } from '../../_dependencies/std/option/structs'
-import { String } from '../../_dependencies/std/string/structs'
 import { getTypeOrigin } from '../../_envs'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -38,6 +35,9 @@ import {
   SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
+import { String as StringAscii } from '../../std/ascii/structs'
+import { Option } from '../../std/option/structs'
+import { String } from '../../std/string/structs'
 import { Balance } from '../../sui/balance/structs'
 import { ID, UID } from '../../sui/object/structs'
 import { SUI } from '../../sui/sui/structs'
