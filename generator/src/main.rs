@@ -6,8 +6,6 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 use clap::*;
-use move_package::package_hooks;
-use sui_move_build::SuiPackageHooks;
 
 #[derive(Parser)]
 #[clap(
@@ -54,8 +52,6 @@ struct Args {
 #[tokio::main]
 async fn main() -> Result<()> {
     let args = Args::parse();
-
-    package_hooks::register_package_hooks(Box::new(SuiPackageHooks));
 
     sui_client_gen::driver::run(sui_client_gen::driver::RunOptions {
         manifest_path: PathBuf::from(&args.manifest),

@@ -6,7 +6,7 @@ use anyhow::{bail, Context, Result};
 use std::collections::BTreeMap;
 use std::path::Path;
 
-use move_package_alt::schema::{ManifestDependencyInfo, PackageName};
+use move_package_alt::schema::{DefaultDependency, ManifestDependencyInfo, PackageName};
 
 const PACKAGES_NAME: &str = "packages";
 const CONFIG_NAME: &str = "config";
@@ -57,8 +57,8 @@ pub struct DepReplacement {
 }
 
 /// Package dependencies - maps package name to its dependency specification.
-/// Only source dependencies (local/git) are supported.
-pub type Packages = BTreeMap<PackageName, ManifestDependencyInfo>;
+/// Uses DefaultDependency which includes override, rename-from, and modes flags.
+pub type Packages = BTreeMap<PackageName, DefaultDependency>;
 
 /// Configuration for the code generator.
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -251,7 +251,8 @@ fn parse_packages(tval: toml::Value) -> Result<Packages> {
                     .map_err(|e| anyhow::anyhow!("Invalid package name '{}': {}", pkg_name, e))?;
 
                 // Deserialize using move_package_alt's built-in deserializer
-                let dep: ManifestDependencyInfo = dep_value
+                // DefaultDependency includes override, rename-from, and modes flags
+                let dep: DefaultDependency = dep_value
                     .clone()
                     .try_into()
                     .with_context(|| format!("Error parsing dependency '{}'", pkg_name))?;
@@ -484,15 +485,15 @@ mod tests {
 
         // Check amm package
         let amm = act.packages.get(&PackageName::new("amm").unwrap()).unwrap();
-        assert!(matches!(amm, ManifestDependencyInfo::Local(LocalDepInfo { local }) if local == &PathBuf::from("../move/amm")));
+        assert!(matches!(&amm.dependency_info, ManifestDependencyInfo::Local(LocalDepInfo { local }) if local == &PathBuf::from("../move/amm")));
 
         // Check fixture package
         let fixture = act.packages.get(&PackageName::new("fixture").unwrap()).unwrap();
-        assert!(matches!(fixture, ManifestDependencyInfo::Local(LocalDepInfo { local }) if local == &PathBuf::from("../move/fixture")));
+        assert!(matches!(&fixture.dependency_info, ManifestDependencyInfo::Local(LocalDepInfo { local }) if local == &PathBuf::from("../move/fixture")));
 
         // Check framework package
         let framework = act.packages.get(&PackageName::new("framework").unwrap()).unwrap();
-        match framework {
+        match &framework.dependency_info {
             ManifestDependencyInfo::Git(ManifestGitDependency { repo, rev, subdir }) => {
                 assert_eq!(repo, "https://github.com/MystenLabs/sui.git");
                 assert_eq!(rev, &Some("releases/sui-v1.0.0-release".to_string()));
@@ -564,7 +565,7 @@ mod tests {
 
         // Check ascii package
         let ascii = act.packages.get(&PackageName::new("ascii").unwrap()).unwrap();
-        match ascii {
+        match &ascii.dependency_info {
             ManifestDependencyInfo::External(ext) => {
                 assert_eq!(ext.resolver, "mvr");
                 assert_eq!(ext.data, toml::Value::String("@potatoes/ascii".to_string()));
@@ -574,7 +575,7 @@ mod tests {
 
         // Check codec package
         let codec = act.packages.get(&PackageName::new("codec").unwrap()).unwrap();
-        match codec {
+        match &codec.dependency_info {
             ManifestDependencyInfo::External(ext) => {
                 assert_eq!(ext.resolver, "mvr");
                 assert_eq!(ext.data, toml::Value::String("@potatoes/codec".to_string()));
@@ -599,7 +600,7 @@ mod tests {
 
         // Check the on-chain package
         let pkg = act.packages.get(&PackageName::new("SomePackage").unwrap()).unwrap();
-        assert!(matches!(pkg, ManifestDependencyInfo::OnChain(_)));
+        assert!(matches!(&pkg.dependency_info, ManifestDependencyInfo::OnChain(_)));
     }
 
     #[test]
@@ -620,19 +621,19 @@ mod tests {
         assert_eq!(act.packages.len(), 4);
 
         assert!(matches!(
-            act.packages.get(&PackageName::new("local_pkg").unwrap()),
+            act.packages.get(&PackageName::new("local_pkg").unwrap()).map(|d| &d.dependency_info),
             Some(ManifestDependencyInfo::Local(_))
         ));
         assert!(matches!(
-            act.packages.get(&PackageName::new("git_pkg").unwrap()),
+            act.packages.get(&PackageName::new("git_pkg").unwrap()).map(|d| &d.dependency_info),
             Some(ManifestDependencyInfo::Git(_))
         ));
         assert!(matches!(
-            act.packages.get(&PackageName::new("mvr_pkg").unwrap()),
+            act.packages.get(&PackageName::new("mvr_pkg").unwrap()).map(|d| &d.dependency_info),
             Some(ManifestDependencyInfo::External(_))
         ));
         assert!(matches!(
-            act.packages.get(&PackageName::new("onchain_pkg").unwrap()),
+            act.packages.get(&PackageName::new("onchain_pkg").unwrap()).map(|d| &d.dependency_info),
             Some(ManifestDependencyInfo::OnChain(_))
         ));
     }
