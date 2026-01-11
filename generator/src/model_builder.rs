@@ -13,7 +13,6 @@ use move_compiler::editions::Flavor;
 use move_core_types::account_address::AccountAddress;
 use move_model_2::model::Model;
 use move_model_2::source_kind::WithSource;
-use move_package_alt::graph::NamedAddress;
 use move_package_alt::package::package_loader::PackageLoader;
 use move_package_alt::package::RootPackage;
 use move_package_alt::schema::{
@@ -35,13 +34,6 @@ pub type TypeOriginTable = BTreeMap<AccountAddress, BTreeMap<String, AccountAddr
 
 /// Version table: maps package address -> (origin address -> sequence number)
 pub type VersionTable = BTreeMap<AccountAddress, BTreeMap<AccountAddress, SequenceNumber>>;
-
-/// Package info result: (id_map, published_at, top_level_packages)
-type PackageInfo = (
-    BTreeMap<AccountAddress, PackageName>,
-    BTreeMap<AccountAddress, AccountAddress>,
-    BTreeSet<PackageName>,
-);
 
 /// Result of building a model from the package system.
 pub struct ModelResult {
@@ -95,8 +87,14 @@ pub async fn build_model(
         .await
         .context("Failed to load root package")?;
 
-    // Build package info (id_map, published_at, top_level detection)
-    let (id_map, published_at, top_level_packages) = build_package_info(&root_pkg, packages)?;
+    // Build published_at map (needed for GraphQL queries)
+    let published_at = build_published_at_map(&root_pkg);
+
+    // Build top-level packages set
+    let top_level_packages = build_top_level_packages(&root_pkg, packages);
+
+    // Build id_map from root package (with flexible name matching for legacy packages)
+    let id_map = build_id_map_from_root_pkg(&root_pkg);
 
     // Build Move model
     let build_config = BuildConfig {
@@ -327,58 +325,146 @@ fn format_dep_replacement(replacement: &DepReplacement, manifest_dir: &Path) -> 
     Ok(format!("{{ {} }}", parts.join(", ")))
 }
 
-/// Build package info from the loaded RootPackage.
-///
-/// Returns:
-/// - id_map: package address -> package name
-/// - published_at: original ID -> published-at ID
-/// - top_level_packages: set of package names from gen.toml
-fn build_package_info(
+/// Build the set of top-level package names from gen.toml.
+fn build_top_level_packages(
     root_pkg: &RootPackage<SuiFlavor>,
     gen_packages: &Packages,
-) -> Result<PackageInfo> {
-    let mut id_map: BTreeMap<AccountAddress, PackageName> = BTreeMap::new();
-    let mut published_at: BTreeMap<AccountAddress, AccountAddress> = BTreeMap::new();
-    let mut top_level_packages: BTreeSet<PackageName> = BTreeSet::new();
-
-    // Get the set of package names from gen.toml
+) -> BTreeSet<PackageName> {
     let gen_package_names: BTreeSet<&PackageName> = gen_packages.keys().collect();
 
-    for pkg_info in root_pkg.packages() {
-        let pkg_name = pkg_info.name().clone();
+    root_pkg
+        .packages()
+        .into_iter()
+        .filter(|pkg_info| !pkg_info.is_root())
+        .filter(|pkg_info| gen_package_names.contains(pkg_info.name()))
+        .map(|pkg_info| pkg_info.name().clone())
+        .collect()
+}
 
-        // Skip the stub root package
+/// Build the published_at map from the loaded RootPackage.
+///
+/// Maps original package ID -> published-at ID (for GraphQL queries).
+fn build_published_at_map(
+    root_pkg: &RootPackage<SuiFlavor>,
+) -> BTreeMap<AccountAddress, AccountAddress> {
+    let mut published_at: BTreeMap<AccountAddress, AccountAddress> = BTreeMap::new();
+
+    for pkg_info in root_pkg.packages() {
         if pkg_info.is_root() {
             continue;
         }
 
-        // Determine if this is a top-level package
-        if gen_package_names.contains(&pkg_name) {
-            top_level_packages.insert(pkg_name.clone());
+        // Only process packages with publication info
+        if let Some(pub_info) = pkg_info.published() {
+            published_at.insert(pub_info.original_id.0, pub_info.published_at.0);
+        }
+    }
+
+    published_at
+}
+
+/// Convert a PascalCase or camelCase string to snake_case.
+fn to_snake_case(s: &str) -> String {
+    let mut result = String::new();
+    for (i, c) in s.chars().enumerate() {
+        if c.is_uppercase() {
+            if i > 0 {
+                result.push('_');
+            }
+            result.push(c.to_ascii_lowercase());
+        } else {
+            result.push(c);
+        }
+    }
+    result
+}
+
+/// Build id_map from the root package, mapping package addresses to package names.
+///
+/// This mapping is used for folder naming and import path resolution during code generation.
+/// We use `root_pkg.packages()` rather than `model.packages()` because the model only
+/// includes packages with compiled source—on-chain dependencies (bytecode-only) would be missing.
+///
+/// ## Strategy for Named Packages
+///
+/// For packages with actual names (not "unnamed_legacy_package"):
+/// 1. Look up by exact package name in `named_addresses()`
+/// 2. Fall back to snake_case version (e.g., "ScallopPool" → "scallop_pool")
+/// 3. Use the package name as the id_map value
+///
+/// ## Strategy for Legacy Packages ("unnamed_legacy_package")
+///
+/// Legacy packages (old Move.toml format) are identified as "unnamed_legacy_package" by
+/// `move_package_alt`. For these, we iterate ALL `Defined` addresses and use the address
+/// name directly. This includes both the package's own address and its dependencies.
+///
+/// ## Safety Guarantees
+///
+/// This approach is safe because `move_package_alt` enforces global address consistency:
+/// - Same address name MUST map to same address value across the entire dependency graph
+/// - Conflicts cause build errors before we reach code generation
+/// - Therefore, regardless of which package we learn an address from, the mapping is consistent
+///
+/// Using snake_case address names also ensures correct kebab-case folder names via
+/// `package_import_name()`, which uses `from_case(Case::Snake).to_case(Case::Kebab)`.
+///
+/// See ADR-001 (`docs/adr/001-legacy-package-address-handling.md`) for detailed rationale.
+fn build_id_map_from_root_pkg(
+    root_pkg: &RootPackage<SuiFlavor>,
+) -> BTreeMap<AccountAddress, PackageName> {
+    use move_package_alt::graph::NamedAddress;
+
+    let mut id_map: BTreeMap<AccountAddress, PackageName> = BTreeMap::new();
+
+    for pkg_info in root_pkg.packages() {
+        if pkg_info.is_root() {
+            continue;
         }
 
-        // Extract address from named addresses
+        let pkg_name = pkg_info.name().clone();
+
         if let Ok(named_addrs) = pkg_info.named_addresses() {
-            if let Some(addr) = named_addrs.get(pkg_info.name()) {
-                match addr {
-                    NamedAddress::Unpublished { dummy_addr } => {
-                        // Unpublished package - use dummy address
-                        id_map.insert(dummy_addr.0, pkg_name);
+            // For named packages (not "unnamed_legacy_package"), look up by package name
+            if pkg_name.as_str() != "unnamed_legacy_package" {
+                // Strategy 1: Try exact match on package name
+                let addr = named_addrs.get(pkg_info.name()).cloned();
+
+                // Strategy 2: For packages with PascalCase names, try snake_case version
+                // (e.g., ScallopPool -> scallop_pool)
+                let addr = addr.or_else(|| {
+                    let snake_name = to_snake_case(pkg_info.name().as_str());
+                    named_addrs
+                        .iter()
+                        .find(|(k, _)| k.as_str() == snake_name)
+                        .map(|(_, v)| v.clone())
+                });
+
+                if let Some(addr) = addr {
+                    let address = match addr {
+                        NamedAddress::Unpublished { dummy_addr } => Some(dummy_addr.0),
+                        NamedAddress::Defined(original_id) => Some(original_id.0),
+                        NamedAddress::RootPackage(maybe_addr) => maybe_addr.map(|a| a.0),
+                    };
+                    if let Some(address) = address {
+                        id_map.insert(address, pkg_name);
                     }
-                    NamedAddress::Defined(original_id) => {
-                        // Published package - original_id from Published.toml
-                        id_map.insert(original_id.0, pkg_name);
-                        // Use the published_at address for GraphQL queries, or fall back to original_id
-                        let pub_addr = pkg_info
-                            .published()
-                            .map(|p| p.published_at.0)
-                            .unwrap_or(original_id.0);
-                        published_at.insert(original_id.0, pub_addr);
-                    }
-                    NamedAddress::RootPackage(maybe_addr) => {
-                        // Root package address
-                        if let Some(addr) = maybe_addr {
-                            id_map.insert(addr.0, pkg_name);
+                }
+            } else {
+                // For "unnamed_legacy_package", iterate through ALL named addresses
+                // and use the address name directly as the package name.
+                //
+                // This includes both the package's own address and its dependencies' addresses,
+                // but that's okay because:
+                // 1. Named addresses are globally consistent - same address always has same name
+                // 2. Dependencies' addresses will be added with the same mapping when those
+                //    packages are processed (or have already been processed)
+                // 3. Using snake_case names works with package_import_name's kebab-case conversion
+                for (addr_name, addr) in named_addrs.iter() {
+                    // Only process Defined addresses (legacy packages have their address defined)
+                    if let NamedAddress::Defined(original_id) = addr {
+                        // Use the address name directly (snake_case)
+                        if let Ok(pkg_name) = PackageName::new(addr_name.as_str().to_string()) {
+                            id_map.insert(original_id.0, pkg_name);
                         }
                     }
                 }
@@ -386,7 +472,7 @@ fn build_package_info(
         }
     }
 
-    Ok((id_map, published_at, top_level_packages))
+    id_map
 }
 
 /// Resolve type origins using GraphQL queries.
