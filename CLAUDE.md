@@ -154,3 +154,10 @@ Key upstream crates to investigate for this project:
 - `move-model-2`: Move type system, struct/function definitions
 
 Use this to clarify behavior, debug issues, or understand APIs that aren't well documented.
+
+## Architecture Decision Records
+
+Significant design decisions are documented in `docs/adr/`. Key ADRs:
+
+- **ADR-001**: Legacy package address handling in `id_map` - explains how `model_builder.rs`
+  handles packages that `move_package_alt` identifies as `"unnamed_legacy_package"`
