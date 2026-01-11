@@ -4,10 +4,10 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
-import { String as String1 } from '../../_dependencies/std/ascii/structs'
-import { String } from '../../_dependencies/std/string/structs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj, option, pure } from '../../_framework/util'
+import { String as String1 } from '../../std/ascii/structs'
+import { String } from '../../std/string/structs'
 import { Url } from '../url/structs'
 
 /** Return the total number of `T`'s in circulation. */

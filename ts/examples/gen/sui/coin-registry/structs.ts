@@ -8,9 +8,6 @@
 import { bcs } from '@mysten/sui/bcs'
 import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
-import { Option } from '../../_dependencies/std/option/structs'
-import { String } from '../../_dependencies/std/string/structs'
-import { TypeName } from '../../_dependencies/std/type-name/structs'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -41,6 +38,9 @@ import {
   SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
+import { Option } from '../../std/option/structs'
+import { String } from '../../std/string/structs'
+import { TypeName } from '../../std/type-name/structs'
 import { Bag } from '../bag/structs'
 import { Supply } from '../balance/structs'
 import { ID, UID } from '../object/structs'

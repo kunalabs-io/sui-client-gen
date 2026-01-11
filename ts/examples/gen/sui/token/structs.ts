@@ -22,9 +22,6 @@
 import { bcs } from '@mysten/sui/bcs'
 import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
-import { Option } from '../../_dependencies/std/option/structs'
-import { String } from '../../_dependencies/std/string/structs'
-import { TypeName } from '../../_dependencies/std/type-name/structs'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -52,6 +49,9 @@ import {
   parseTypeName,
   SupportedSuiClient,
 } from '../../_framework/util'
+import { Option } from '../../std/option/structs'
+import { String } from '../../std/string/structs'
+import { TypeName } from '../../std/type-name/structs'
 import { Balance } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { VecMap } from '../vec-map/structs'

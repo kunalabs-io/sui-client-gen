@@ -3,7 +3,6 @@
 import { bcs } from '@mysten/sui/bcs'
 import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
-import { String } from '../../_dependencies/std/ascii/structs'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -23,6 +22,7 @@ import {
   FieldsWithTypes,
   SupportedSuiClient,
 } from '../../_framework/util'
+import { String } from '../../std/ascii/structs'
 
 /* ============================== Url =============================== */
 

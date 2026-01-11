@@ -4,9 +4,9 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
-import { Option } from '../../_dependencies/std/option/structs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj, pure } from '../../_framework/util'
+import { Option } from '../../std/option/structs'
 
 export interface CreateStopActionArgs {
   duration: number | TransactionArgument

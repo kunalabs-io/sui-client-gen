@@ -7,9 +7,6 @@
 import { bcs } from '@mysten/sui/bcs'
 import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
-import { String as StringAscii } from '../../_dependencies/std/ascii/structs'
-import { Option } from '../../_dependencies/std/option/structs'
-import { String } from '../../_dependencies/std/string/structs'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -37,6 +34,9 @@ import {
   parseTypeName,
   SupportedSuiClient,
 } from '../../_framework/util'
+import { String as StringAscii } from '../../std/ascii/structs'
+import { Option } from '../../std/option/structs'
+import { String } from '../../std/string/structs'
 import { Balance, Supply } from '../balance/structs'
 import { ID, UID } from '../object/structs'
 import { Url } from '../url/structs'
