@@ -717,7 +717,6 @@ fn emit_combined_imports_with_enums(
 // ============================================================================
 
 /// Get the origin package address for an enum.
-/// Get the origin package address for an enum.
 fn get_origin_pkg_addr_for_enum<HasSource: SourceKind>(
     enum_: &model::Enum<HasSource>,
     type_origin_table: &TypeOriginTable,

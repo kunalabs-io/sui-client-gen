@@ -274,35 +274,9 @@ fn format_toml_value(value: &toml::Value) -> String {
 fn format_dep_replacement(replacement: &DepReplacement, manifest_dir: &Path) -> Result<String> {
     let mut parts = Vec::new();
 
-    // If there's a dependency source, format it
+    // If there's a dependency source, reuse format_dependency_info
     if let Some(dep) = &replacement.dependency {
-        // Extract the inner fields from the dependency and add them
-        match dep {
-            ManifestDependencyInfo::Local(LocalDepInfo { local }) => {
-                let absolute_path = fs::canonicalize(manifest_dir.join(local))
-                    .with_context(|| format!("Failed to resolve path: {}", local.display()))?;
-                parts.push(format!("local = \"{}\"", absolute_path.display()));
-            }
-            ManifestDependencyInfo::Git(ManifestGitDependency { repo, rev, subdir }) => {
-                parts.push(format!("git = \"{}\"", repo));
-                if let Some(rev) = rev {
-                    parts.push(format!("rev = \"{}\"", rev));
-                }
-                if !subdir.as_os_str().is_empty() {
-                    parts.push(format!("subdir = \"{}\"", subdir.display()));
-                }
-            }
-            ManifestDependencyInfo::External(ExternalDependency { resolver, data }) => {
-                let data_str = format_toml_value(data);
-                parts.push(format!("r.{} = {}", resolver, data_str));
-            }
-            ManifestDependencyInfo::OnChain(OnChainDepInfo { .. }) => {
-                parts.push("on-chain = true".to_string());
-            }
-            ManifestDependencyInfo::System(SystemDependency { system }) => {
-                parts.push(format!("system = \"{}\"", system));
-            }
-        }
+        parts.extend(format_dependency_info(dep, manifest_dir)?);
     }
 
     // Add other replacement fields
