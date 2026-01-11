@@ -362,7 +362,7 @@ fn extract_ir_snapshot(
 fn check_snapshots_compat(default: &EnvIRSnapshot, other: &EnvIRSnapshot) -> Vec<CompatError> {
     let mut errors = Vec::new();
 
-    // Check structs that exist in both
+    // Check structs that exist in both (asymmetry is allowed - items in one but not other are OK)
     for (key, default_struct) in &default.structs {
         if let Some(other_struct) = other.structs.get(key) {
             if let Err(e) = check_struct_compat(
@@ -375,15 +375,6 @@ fn check_snapshots_compat(default: &EnvIRSnapshot, other: &EnvIRSnapshot) -> Vec
                 errors.push(e);
             }
         }
-    }
-
-    // Also check structs that exist in other but not default (reverse check for completeness)
-    for (key, other_struct) in &other.structs {
-        if let Some(default_struct) = default.structs.get(key) {
-            // Already checked above, skip
-            let _ = (default_struct, other_struct);
-        }
-        // If not in default, that's OK (asymmetry allowed)
     }
 
     // Check enums that exist in both
