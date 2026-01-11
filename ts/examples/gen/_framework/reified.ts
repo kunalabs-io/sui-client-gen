@@ -286,6 +286,8 @@ export function decodeFromFields(reified: Reified<TypeArgument, any>, field: any
       return `0x${field.bytes}`
     case '0x2::object::UID':
       return `0x${field.id.bytes}`
+    case '0x1::type_name::TypeName':
+      return new TextDecoder().decode(Uint8Array.from(field.name.bytes)).toString()
     case '0x1::option::Option': {
       if (field.vec.length === 0) {
         return null
@@ -322,6 +324,8 @@ export function decodeFromFieldsWithTypes(reified: Reified<TypeArgument, any>, i
       return item
     case '0x2::object::UID':
       return item.id
+    case '0x1::type_name::TypeName':
+      return item.fields.name
     case '0x2::balance::Balance':
       return reified.fromFields({ value: BigInt(item) })
     case '0x1::option::Option': {
@@ -426,6 +430,7 @@ export function decodeFromJSONField(typeArg: Reified<TypeArgument, any>, field: 
     case '0x2::url::Url':
     case '0x2::object::ID':
     case '0x2::object::UID':
+    case '0x1::type_name::TypeName':
       return field
     case '0x1::option::Option': {
       if (field === null) {

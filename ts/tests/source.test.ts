@@ -39,6 +39,8 @@ import { String as Utf8String } from './gen/std/string/structs'
 import { String as AsciiString } from './gen/std/ascii/structs'
 import { Url } from './gen/sui/url/structs'
 import { ID, UID } from './gen/sui/object/structs'
+import { TypeName } from './gen/std/type-name/structs'
+import { withDefiningIds } from './gen/std/type-name/functions'
 import { loader } from './gen/_framework/loader'
 import { sqrt } from './gen/sui/math/functions'
 import { Action, isWrapped, Wrapped } from '../examples/gen/examples/enums/structs'
@@ -1112,4 +1114,27 @@ it.concurrent('handles enums correctly', async () => {
   // Deserialize from JSON
   const fromJSON = wrappedReified.fromJSON(asJSON)
   expect(fromJSON).toEqual(exp)
+})
+
+it.concurrent('decodes TypeName special type correctly', async () => {
+  const tx = new Transaction()
+
+  // Create WithGenericField<TypeName> with a TypeName value representing Bar
+  createWithGenericField(tx, TypeName.$typeName, withDefiningIds(tx, Bar.$typeName))
+
+  const { id } = await execTx(tx)
+  const { bcsBytes, content } = await fetchMoveObject(client, id)
+
+  // TypeName should be decoded as a string (the type name), not an object
+  const fromBcs = WithGenericField.r(TypeName.reified()).fromBcs(bcsBytes)
+  const fromFieldsWithTypes = WithGenericField.r(TypeName.reified()).fromFieldsWithTypes(content)
+
+  // genericField should be a string like "0x...::fixture::Bar"
+  expect(typeof fromBcs.genericField).toBe('string')
+  expect(fromBcs.genericField).toContain('::fixture::Bar')
+
+  expect(fromFieldsWithTypes).toEqual(fromBcs)
+
+  // JSON round-trip should work
+  expect(WithGenericField.r(TypeName.reified()).fromJSON(fromBcs.toJSON())).toEqual(fromBcs)
 })
