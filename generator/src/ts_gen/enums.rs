@@ -475,7 +475,7 @@ impl EnumIR {
         let name = &self.name;
         let full_type_template = self.full_type_name_template();
         let full_type_as_type_for_static = self.emit_full_type_as_type_for_static();
-        let bcs_section = self.emit_bcs_section_no_type_params();
+        let bcs_section = self.emit_bcs_section();
         let new_switch_cases = self.emit_new_switch_cases_no_type_params();
         let from_fields_switch = self.emit_from_fields_switch();
         let from_fields_with_types_switch = self.emit_from_fields_with_types_switch();
@@ -1419,30 +1419,6 @@ impl EnumIR {
                 name = name,
                 bcs_variants = bcs_variants,
             }
-        }
-    }
-
-    fn emit_bcs_section_no_type_params(&self) -> String {
-        let name = &self.name;
-        let bcs_variants = self.emit_bcs_variants();
-
-        formatdoc! {r#"
-          private static instantiateBcs() {{
-            return bcs.enum('{name}', {{
-        {bcs_variants}
-            }})
-          }}
-
-          private static cachedBcs: ReturnType<typeof {name}.instantiateBcs> | null = null
-
-          static get bcs(): ReturnType<typeof {name}.instantiateBcs> {{
-            if (!{name}.cachedBcs) {{
-              {name}.cachedBcs = {name}.instantiateBcs()
-            }}
-            return {name}.cachedBcs
-          }}"#,
-            name = name,
-            bcs_variants = bcs_variants,
         }
     }
 
