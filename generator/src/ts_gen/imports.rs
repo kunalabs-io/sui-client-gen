@@ -39,12 +39,6 @@ impl NamedImport {
         }
     }
 
-    /// Get the name to use in code (alias if present, otherwise name).
-    #[allow(dead_code)]
-    pub fn use_name(&self) -> &str {
-        self.alias.as_deref().unwrap_or(&self.name)
-    }
-
     fn emit(&self) -> String {
         match &self.alias {
             Some(a) => format!("{} as {}", self.name, a),
