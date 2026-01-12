@@ -477,10 +477,9 @@ impl EnumIR {
         let full_type_as_type_for_static = self.emit_full_type_as_type_for_static();
         let bcs_section = self.emit_bcs_section_no_type_params();
         let new_switch_cases = self.emit_new_switch_cases_no_type_params();
-        let from_fields_switch = self.emit_from_fields_switch_no_type_params();
-        let from_fields_with_types_switch =
-            self.emit_from_fields_with_types_switch_no_type_params();
-        let from_json_field_switch = self.emit_from_json_field_switch_no_type_params();
+        let from_fields_switch = self.emit_from_fields_switch();
+        let from_fields_with_types_switch = self.emit_from_fields_with_types_switch();
+        let from_json_field_switch = self.emit_from_json_field_switch();
 
         formatdoc! {r#"
             export class {name} {{
@@ -1607,10 +1606,6 @@ impl EnumIR {
             .join("\n")
     }
 
-    fn emit_from_fields_switch_no_type_params(&self) -> String {
-        self.emit_from_fields_switch()
-    }
-
     fn emit_from_fields_with_types_switch(&self) -> String {
         self.variants
             .iter()
@@ -1665,10 +1660,6 @@ impl EnumIR {
             .join("\n")
     }
 
-    fn emit_from_fields_with_types_switch_no_type_params(&self) -> String {
-        self.emit_from_fields_with_types_switch()
-    }
-
     fn emit_from_json_field_switch(&self) -> String {
         self.variants
             .iter()
@@ -1718,10 +1709,6 @@ impl EnumIR {
             })
             .collect::<Vec<_>>()
             .join("\n")
-    }
-
-    fn emit_from_json_field_switch_no_type_params(&self) -> String {
-        self.emit_from_json_field_switch()
     }
 }
 

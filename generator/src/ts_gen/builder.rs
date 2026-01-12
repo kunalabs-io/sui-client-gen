@@ -22,6 +22,15 @@ use super::structs::{
 use super::utils::sanitize_identifier;
 use crate::model_builder::{TypeOriginTable, VersionTable};
 
+/// Compute the relative path to the `_framework` directory from a given depth.
+fn compute_framework_path(levels_from_root: u8) -> String {
+    if levels_from_root == 0 {
+        "./_framework".to_string()
+    } else {
+        "../".repeat(levels_from_root as usize) + "_framework"
+    }
+}
+
 /// Get the origin package address for a datatype (struct or enum).
 /// Returns an error with context if the origin address cannot be found.
 fn get_origin_pkg_addr_for_datatype(
@@ -109,16 +118,7 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
         let package_address = module.package().address();
         let module_name = module.name();
         let is_top_level = top_level_pkg_names.contains_key(&package_address);
-
-        let framework_path = if levels_from_root == 0 {
-            "./_framework".to_string()
-        } else {
-            (0..levels_from_root)
-                .map(|_| "..")
-                .collect::<Vec<_>>()
-                .join("/")
-                + "/_framework"
-        };
+        let framework_path = compute_framework_path(levels_from_root);
 
         StructIRBuilder {
             strct,
@@ -338,99 +338,64 @@ impl<'a, 'model, HasSource: SourceKind> StructIRBuilder<'a, 'model, HasSource> {
         }
     }
 
+    /// Resolve an import for a datatype, handling name conflicts with aliases.
+    /// Returns the class name to use (which may be an alias if there's a conflict).
+    fn resolve_import(&mut self, class_name: String, import_path: Option<String>) -> String {
+        let path = match import_path {
+            None => return class_name, // Same module, no import needed
+            Some(p) => p,
+        };
+
+        // Check if we already have an import with this class name
+        if let Some(existing) = self.struct_imports.get(&class_name) {
+            if existing.path == path {
+                // Same import, reuse
+                return class_name;
+            }
+            // Name conflict - need to create an alias
+            // Use module name from path to create a descriptive alias
+            let module_suffix = path
+                .rsplit('/')
+                .nth(1)
+                .unwrap_or("unknown")
+                .replace('-', "_")
+                .to_case(Case::Pascal);
+            let alias = format!("{}{}", class_name, module_suffix);
+
+            // Store with alias as key to avoid overwriting
+            self.struct_imports.insert(
+                alias.clone(),
+                StructImport {
+                    path,
+                    class_name: class_name.clone(),
+                    alias: Some(alias.clone()),
+                },
+            );
+            return alias;
+        }
+
+        // No conflict, add the import
+        self.struct_imports.insert(
+            class_name.clone(),
+            StructImport {
+                path,
+                class_name: class_name.clone(),
+                alias: None,
+            },
+        );
+        class_name
+    }
+
     fn get_import_for_struct<S: SourceKind>(&mut self, strct: &model::Struct<S>) -> String {
         let class_name = strct.name().to_string();
         let import_path = self.import_path_for_module(&strct.module());
-
-        match import_path {
-            None => class_name, // Same module, no import needed
-            Some(path) => {
-                // Check if we already have an import with this class name
-                if let Some(existing) = self.struct_imports.get(&class_name) {
-                    if existing.path == path {
-                        // Same import, reuse
-                        return class_name;
-                    }
-                    // Name conflict - need to create an alias
-                    // Use module name from path to create a descriptive alias
-                    let module_suffix = path
-                        .rsplit('/')
-                        .nth(1)
-                        .unwrap_or("unknown")
-                        .replace('-', "_")
-                        .to_case(Case::Pascal);
-                    let alias = format!("{}{}", class_name, module_suffix);
-
-                    // Store with alias as key to avoid overwriting
-                    self.struct_imports.insert(
-                        alias.clone(),
-                        StructImport {
-                            path,
-                            class_name: class_name.clone(),
-                            alias: Some(alias.clone()),
-                        },
-                    );
-                    return alias;
-                }
-
-                // No conflict, add the import
-                self.struct_imports.insert(
-                    class_name.clone(),
-                    StructImport {
-                        path,
-                        class_name: class_name.clone(),
-                        alias: None,
-                    },
-                );
-                class_name
-            }
-        }
+        self.resolve_import(class_name, import_path)
     }
 
     fn get_import_for_enum<S: SourceKind>(&mut self, enum_: &model::Enum<S>) -> String {
         let class_name = enum_.name().to_string();
         let import_path = self.import_path_for_module(&enum_.module());
-
-        match import_path {
-            None => class_name,
-            Some(path) => {
-                // Check if we already have an import with this class name
-                if let Some(existing) = self.struct_imports.get(&class_name) {
-                    if existing.path == path {
-                        // Same import, reuse
-                        return class_name;
-                    }
-                    // Name conflict - need to create an alias
-                    let module_suffix = path
-                        .rsplit('/')
-                        .nth(1)
-                        .unwrap_or("unknown")
-                        .replace('-', "_")
-                        .to_case(Case::Pascal);
-                    let alias = format!("{}{}", class_name, module_suffix);
-
-                    self.struct_imports.insert(
-                        alias.clone(),
-                        StructImport {
-                            path,
-                            class_name: class_name.clone(),
-                            alias: Some(alias.clone()),
-                        },
-                    );
-                    return alias;
-                }
-
-                self.struct_imports.insert(
-                    class_name.clone(),
-                    StructImport {
-                        path,
-                        class_name: class_name.clone(),
-                        alias: None,
-                    },
-                );
-                class_name
-            }
-        }
+        self.resolve_import(class_name, import_path)
     }
 
     /// Get the import path to a module's structs.ts file.
@@ -760,16 +725,7 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
         let package_address = module.package().address();
         let module_name = module.name();
         let is_top_level = top_level_pkg_names.contains_key(&package_address);
-
-        let framework_path = if levels_from_root == 0 {
-            "./_framework".to_string()
-        } else {
-            (0..levels_from_root)
-                .map(|_| "..")
-                .collect::<Vec<_>>()
-                .join("/")
-                + "/_framework"
-        };
+        let framework_path = compute_framework_path(levels_from_root);
 
         Self {
             enum_,
@@ -1050,29 +1006,31 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
         }
     }
 
-    fn get_import_for_struct(&mut self, s: &model::Struct<'model, HasSource>) -> String {
-        let struct_name = s.name().to_string();
-        let struct_pkg_addr = s.module().package().address();
-        let struct_mod_name = s.module().name();
-
-        if struct_pkg_addr == self.package_address && struct_mod_name == self.module_name {
-            // Same module
-            return struct_name;
+    /// Resolve an import for a datatype, handling name conflicts with aliases.
+    /// Returns the class name to use (which may be an alias if there's a conflict).
+    fn resolve_import(
+        &mut self,
+        class_name: String,
+        pkg_addr: AccountAddress,
+        mod_name: Symbol,
+    ) -> String {
+        if pkg_addr == self.package_address && mod_name == self.module_name {
+            // Same module, no import needed
+            return class_name;
         }
 
-        // Different module - add import
-        let import_path = self.get_import_path(struct_pkg_addr, struct_mod_name);
+        let import_path = self.get_import_path(pkg_addr, mod_name);
 
-        if let Some(existing) = self.struct_imports.get(&struct_name) {
+        if let Some(existing) = self.struct_imports.get(&class_name) {
             if existing.path == import_path {
-                return struct_name;
+                return class_name;
             }
-            // Name conflict - need alias
-            let alias = format!("{}{}", struct_name, self.struct_imports.len());
+            // Name conflict - need alias (use index for uniqueness)
+            let alias = format!("{}{}", class_name, self.struct_imports.len());
             self.struct_imports.insert(
                 alias.clone(),
                 StructImport {
-                    class_name: struct_name.clone(),
+                    class_name: class_name.clone(),
                     path: import_path,
                     alias: Some(alias.clone()),
                 },
@@ -1081,55 +1039,28 @@ impl<'a, 'model, HasSource: SourceKind> EnumIRBuilder<'a, 'model, HasSource> {
         }
 
         self.struct_imports.insert(
-            struct_name.clone(),
+            class_name.clone(),
             StructImport {
-                class_name: struct_name.clone(),
+                class_name: class_name.clone(),
                 path: import_path,
                 alias: None,
             },
         );
-        struct_name
+        class_name
+    }
+
+    fn get_import_for_struct(&mut self, s: &model::Struct<'model, HasSource>) -> String {
+        let class_name = s.name().to_string();
+        let pkg_addr = s.module().package().address();
+        let mod_name = s.module().name();
+        self.resolve_import(class_name, pkg_addr, mod_name)
     }
 
     fn get_import_for_enum(&mut self, e: &model::Enum<'model, HasSource>) -> String {
-        let enum_name = e.name().to_string();
-        let enum_pkg_addr = e.module().package().address();
-        let enum_mod_name = e.module().name();
-
-        if enum_pkg_addr == self.package_address && enum_mod_name == self.module_name {
-            // Same module
-            return enum_name;
-        }
-
-        // Different module - add import
-        let import_path = self.get_import_path(enum_pkg_addr, enum_mod_name);
-
-        if let Some(existing) = self.struct_imports.get(&enum_name) {
-            if existing.path == import_path {
-                return enum_name;
-            }
-            // Name conflict - need alias
-            let alias = format!("{}{}", enum_name, self.struct_imports.len());
-            self.struct_imports.insert(
-                alias.clone(),
-                StructImport {
-                    class_name: enum_name.clone(),
-                    path: import_path,
-                    alias: Some(alias.clone()),
-                },
-            );
-            return alias;
-        }
-
-        self.struct_imports.insert(
-            enum_name.clone(),
-            StructImport {
-                class_name: enum_name.clone(),
-                path: import_path,
-                alias: None,
-            },
-        );
-        enum_name
+        let class_name = e.name().to_string();
+        let pkg_addr = e.module().package().address();
+        let mod_name = e.module().name();
+        self.resolve_import(class_name, pkg_addr, mod_name)
     }
 
     /// Returns the import path for a module's structs.ts file.
@@ -1186,7 +1117,7 @@ impl<'a, 'model, HasSource: SourceKind> FunctionIRBuilder<'a, 'model, HasSource>
         let package_address = func.module().package().address();
         let module_name = func.module().name();
         let is_top_level = top_level_pkg_names.contains_key(&package_address);
-        let framework_path = "../".repeat(levels_from_root as usize) + "_framework";
+        let framework_path = compute_framework_path(levels_from_root);
 
         Some(FunctionIRBuilder {
             func,
@@ -1674,7 +1605,7 @@ pub fn gen_module_functions<HasSource: SourceKind>(
 
     // functions.ts is at <package>/<module>/functions.ts, so +2 levels from package root
     let func_levels = levels_from_root + 2;
-    let framework_path = "../".repeat(func_levels as usize) + "_framework";
+    let framework_path = compute_framework_path(func_levels);
 
     let functions: Vec<_> = module
         .functions()
