@@ -1270,15 +1270,6 @@ impl EnumIR {
         format!("[{}]", types.join(", "))
     }
 
-    #[allow(dead_code)]
-    fn emit_type_args_for_call(&self) -> String {
-        if self.type_params.len() == 1 {
-            "typeArg".to_string()
-        } else {
-            "typeArgs".to_string()
-        }
-    }
-
     /// Parameter name for static methods - enums always use typeArgs array
     fn emit_type_arg_param(&self) -> String {
         "typeArgs".to_string()
@@ -1308,35 +1299,6 @@ impl EnumIR {
             .iter()
             .enumerate()
             .map(|(i, _)| format!("typeArgs[{}]", i))
-            .collect::<Vec<_>>()
-            .join(", ")
-    }
-
-    /// Emit the typeArgs array literal for use in return statements
-    #[allow(dead_code)]
-    fn emit_type_args_array(&self) -> String {
-        if self.type_params.len() == 1 {
-            "[typeArg]".to_string()
-        } else {
-            format!(
-                "[{}]",
-                self.type_params
-                    .iter()
-                    .enumerate()
-                    .map(|(i, _)| format!("typeArgs[{}]", i))
-                    .collect::<Vec<_>>()
-                    .join(", ")
-            )
-        }
-    }
-
-    #[allow(dead_code)]
-    fn emit_to_bcs_calls(&self) -> String {
-        // For reified() method - use actual param names
-        self.type_params
-            .iter()
-            .filter(|p| !p.is_phantom)
-            .map(|p| format!("toBcs({})", p.name))
             .collect::<Vec<_>>()
             .join(", ")
     }
