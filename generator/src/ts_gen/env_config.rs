@@ -160,6 +160,8 @@ pub fn gen_envs_index(env_names: &[String], default_env: &str) -> String {
           getDependencyConfig,
           getPublishedAt,
           getTypeOrigin,
+          getTypeOriginAddresses,
+          getTypeOriginAddressesFor,
           getOriginalId,
         }} from '../_framework/env'
         export type {{ EnvConfig, PackageConfig }} from '../_framework/env'

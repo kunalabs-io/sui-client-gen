@@ -186,3 +186,50 @@ export function getOriginalId(pkgName: string): string {
   }
   return config.originalId
 }
+
+/**
+ * Get all distinct addresses where types in this package were defined.
+ * Useful for understanding package upgrade history and querying objects.
+ * Works for both packages and dependencies.
+ * @param pkgName - Kebab-case package name
+ * @returns Array of unique addresses, sorted for determinism
+ * @throws Error if package not found
+ */
+export function getTypeOriginAddresses(pkgName: string): string[] {
+  const env = getActiveEnv()
+  const config = env.packages[pkgName] || env.dependencies[pkgName]
+  if (!config) {
+    throw new Error(`Package '${pkgName}' not found in active environment '${activeEnvName}'`)
+  }
+  const uniqueAddresses = new Set(Object.values(config.typeOrigins))
+  return Array.from(uniqueAddresses).sort()
+}
+
+/**
+ * Get distinct addresses where specific types are defined.
+ * Useful for querying objects of specific types.
+ * Works for both packages and dependencies.
+ * @param pkgName - Kebab-case package name
+ * @param moduleTypePaths - Array of "module::TypeName" strings (e.g., ["balance::Balance", "coin::Coin"])
+ * @returns Array of unique addresses, sorted for determinism
+ * @throws Error if package not found or any type origin not found
+ */
+export function getTypeOriginAddressesFor(pkgName: string, moduleTypePaths: string[]): string[] {
+  const env = getActiveEnv()
+  const config = env.packages[pkgName] || env.dependencies[pkgName]
+  if (!config) {
+    throw new Error(`Package '${pkgName}' not found in active environment '${activeEnvName}'`)
+  }
+  const addresses = new Set<string>()
+  for (const path of moduleTypePaths) {
+    const origin = config.typeOrigins[path]
+    if (!origin) {
+      throw new Error(
+        `Type origin for '${path}' not found in package '${pkgName}'. `
+          + `Available: ${Object.keys(config.typeOrigins).join(', ') || '(none)'}`,
+      )
+    }
+    addresses.add(origin)
+  }
+  return Array.from(addresses).sort()
+}
