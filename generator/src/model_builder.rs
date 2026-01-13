@@ -96,6 +96,9 @@ pub async fn build_model(
     // Build id_map from root package (with flexible name matching for legacy packages)
     let id_map = build_id_map_from_root_pkg(&root_pkg);
 
+    // Validate that all packages have proper publication info
+    validate_published_at_coverage(&root_pkg, &id_map, &published_at)?;
+
     // Build Move model
     let build_config = BuildConfig {
         default_flavor: Some(Flavor::Sui),
@@ -335,6 +338,79 @@ fn build_published_at_map(
     }
 
     published_at
+}
+
+/// Validate that all non-system packages have publication info.
+///
+/// Returns an error if a package has an address in id_map but no published_at mapping,
+/// which indicates the legacy parser couldn't derive publication info (typically because
+/// module declarations use hardcoded addresses instead of named addresses).
+fn validate_published_at_coverage(
+    root_pkg: &RootPackage<SuiFlavor>,
+    id_map: &BTreeMap<AccountAddress, PackageName>,
+    published_at: &BTreeMap<AccountAddress, AccountAddress>,
+) -> Result<()> {
+    use move_package_alt::graph::NamedAddress;
+
+    // System package addresses that don't need publication info
+    let system_addrs: BTreeSet<AccountAddress> = ["0x1", "0x2", "0x3"]
+        .iter()
+        .filter_map(|s| AccountAddress::from_hex_literal(s).ok())
+        .collect();
+
+    let mut errors = Vec::new();
+
+    for pkg_info in root_pkg.packages() {
+        if pkg_info.is_root() {
+            continue;
+        }
+
+        // Skip packages that have proper publication info
+        if pkg_info.published().is_some() {
+            continue;
+        }
+
+        // Check if this package has addresses we're generating code for
+        if let Ok(named_addrs) = pkg_info.named_addresses() {
+            for (addr_name, addr) in named_addrs.iter() {
+                if let NamedAddress::Defined(original_id) = addr {
+                    // Skip system packages
+                    if system_addrs.contains(&original_id.0) {
+                        continue;
+                    }
+
+                    // If this address is in id_map but not in published_at, we have a problem
+                    if id_map.contains_key(&original_id.0)
+                        && !published_at.contains_key(&original_id.0)
+                    {
+                        errors.push(format!(
+                            "Package '{}' at {} has no publication info.\n\
+                             This usually happens when:\n\
+                             1. Module declarations use hardcoded addresses instead of named addresses\n\
+                             2. The package lacks a Published.toml file\n\n\
+                             To fix:\n\
+                             - Add a Published.toml file to the package, OR\n\
+                             - Update module declarations to use named addresses: `module {}::...` instead of `module 0x...::...`\n\
+                             - Then add `edition = \"2024\"` to Move.toml",
+                            pkg_info.name(),
+                            original_id.0.to_hex_literal(),
+                            addr_name,
+                        ));
+                    }
+                }
+            }
+        }
+    }
+
+    if errors.is_empty() {
+        Ok(())
+    } else {
+        anyhow::bail!(
+            "Missing publication info for {} package(s):\n\n{}",
+            errors.len(),
+            errors.join("\n\n---\n\n")
+        );
+    }
 }
 
 /// Convert a PascalCase or camelCase string to snake_case.
