@@ -23,6 +23,8 @@ export {
   getPublishedAt,
   getRegisteredEnvs,
   getTypeOrigin,
+  getTypeOriginAddresses,
+  getTypeOriginAddressesFor,
   setActiveEnv,
   setActiveEnvWithConfig,
 } from '../_framework/env'
