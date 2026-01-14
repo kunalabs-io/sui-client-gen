@@ -48,7 +48,7 @@ setActiveEnv("testnet");
 
 During generation, we verify that struct and function signatures are compatible across all environments. If there's a mismatch—say, a struct has different fields on mainnet vs testnet—generation fails with a clear error. This prevents subtle decoding bugs at runtime.
 
-## But we're flexible where it makes sense: structs, enums, or functions that exist only in one environment (e.g., test helpers) are allowed. The compatibility check only fails on _conflicting_ definitions, not _missing_ ones.
+But we're flexible where it makes sense: structs, enums, or functions that exist only in one environment (e.g., test helpers) are allowed. The compatibility check only fails on _conflicting_ definitions, not _missing_ ones.
 
 ## Comprehensive Test Coverage
 
