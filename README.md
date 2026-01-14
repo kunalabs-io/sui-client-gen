@@ -19,17 +19,18 @@ environment = "mainnet"  # or "testnet", or a custom environment defined in [env
 
 [packages]
 # based on source code (syntax same as in Move.toml):
-DeepBook = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/deepbook", rev = "releases/sui-v1.4.0-release" }
-AMM = { local = "../move/amm" }
+deepbook = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/deepbook", rev = "mainnet-v1.62.1" }
+my_amm = { local = "../move/amm" }
 # an on-chain package:
-FooPackage = { on-chain = true }
+my_onchain_pkg = { on-chain = true }
 # MVR package:
-MyMVRPackage = { r.mvr = "@namespace/package" }
+my_mvr_pkg = { r.mvr = "@namespace/package" }
 
 # Optional: define custom environments
 # [environments]
-# staging = "abcd1234"  # chain-id required for custom envs
-# testnet = { graphql = "https://my-testnet-endpoint/graphql" }  # override graphql for default env
+# staging = "abcd1234"  # string shorthand: just chain-id
+# staging_alt = { chain-id = "abcd1234", graphql = "https://..." }  # full form
+# testnet = { graphql = "https://my-testnet-endpoint/graphql" }  # override default env's graphql
 
 # Optional: environment-scoped dependency replacements
 # [dep-replacements.staging]
@@ -99,6 +100,35 @@ const pool = poolReified.fromSuiParsedData(res.data.content);
 
 console.log(pool);
 ```
+
+### Working with Enums
+
+Move enums are generated as TypeScript discriminated unions. Each variant becomes its own class:
+
+```ts
+import { Action, isAction } from "./gen/examples/enums/structs";
+import { SUI } from "./gen/sui/sui/structs";
+
+// Type checking
+if (isAction(someType)) {
+  /* ... */
+}
+
+// Fetch and discriminate variants using $variantName
+const action = await Action.r("u64", SUI.p).fetch(client, ACTION_ID);
+switch (action.$variantName) {
+  case "Stop": // action is ActionStop (unit variant - no fields)
+    break;
+  case "Pause": // action is ActionPause (struct variant - named fields)
+    console.log(action.duration, action.genericField);
+    break;
+  case "Jump": // action is ActionJump (tuple variant - positional fields)
+    console.log(action[0], action[1]);
+    break;
+}
+```
+
+For comprehensive enum documentation including variant types and field mappings, see the [docs](https://github.com/kunalabs-io/sui-client-gen/blob/master/DOC.md#enums).
 
 ### Reified
 
@@ -206,6 +236,8 @@ setActiveEnvWithConfig(myCustomConfig)
 ```
 
 The default environment (from `[config].environment` in `gen.toml`) is automatically set on import. For more details, see the [docs](https://github.com/kunalabs-io/sui-client-gen/blob/master/DOC.md#environment-switching).
+
+Each environment configuration includes **type origins** - mappings from type names to the package address where they were originally defined. This is important because when a package is upgraded, the struct types remain associated with their original defining package (v1 address) even though new functions live at a newer address. The SDK handles this automatically via `getTypeOrigin()`. For more details, see the [docs](https://github.com/kunalabs-io/sui-client-gen/blob/master/DOC.md#type-origins).
 
 ### Loader
 

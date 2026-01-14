@@ -342,6 +342,7 @@ Move field types are mapped to TS types as follows:
 | `0x2::object::ID`           | `string`     |
 | `0x2::object::UID`          | `string`     |
 | `0x2::url::Url`             | `string`     |
+| `0x1::type_name::TypeName`  | `string`     |
 | `0x1::option::Option<T>`    | `T \| null`   |
 | `vector<T>`                 | `T[]`        |
 
@@ -355,6 +356,177 @@ The struct class can be instantiated in multiple ways:
 - using the `fromBcs` static method by passing in the bcs bytes
 
 For structs with the `key` ability, the `fetch` static method is also generated, which fetches the object from the chain by its ID.
+
+## Enums
+
+Move enums are generated as TypeScript discriminated unions. The generator supports all three variant types:
+
+- **Unit variants** - no data (e.g., `Stop`)
+- **Struct variants** - named fields (e.g., `Pause { duration: u32, value: T }`)
+- **Tuple variants** - positional fields (e.g., `Jump(u64, T)`)
+
+### Generated Types
+
+For each enum, the following types and functions are generated:
+
+```ts
+// Type guard function
+function isAction(type: string): boolean
+
+// Union type of all variant classes
+type ActionVariant<T, U> = ActionStop<T, U> | ActionPause<T, U> | ActionJump<T, U>
+
+// String literal union of variant names
+type ActionVariantName = 'Stop' | 'Pause' | 'Jump'
+
+// Variant name type guard
+function isActionVariantName(variant: string): variant is ActionVariantName
+```
+
+### Enum Class
+
+The main enum class (e.g., `Action`) provides static methods for reification and parsing:
+
+```ts
+// Reified type (same pattern as structs)
+Action.reified(T, U)  // or Action.r(T, U)
+Action.phantom(T, U)  // or Action.p(T, U)
+
+// Parsing methods
+Action.fromFields(typeArgs, fields)
+Action.fromFieldsWithTypes(typeArgs, item)
+Action.fromBcs(typeArgs, data)
+Action.fromJSON(typeArgs, json)
+Action.fromJSONField(typeArgs, field)
+```
+
+### Variant Classes
+
+Each variant is generated as its own class implementing `EnumVariantClass`:
+
+**Unit variants** (no fields):
+```ts
+class ActionStop<T, U> implements EnumVariantClass {
+  readonly $variantName = 'Stop'
+  // No data fields
+}
+```
+
+**Struct variants** (named fields):
+```ts
+class ActionPause<T, U> implements EnumVariantClass {
+  readonly $variantName = 'Pause'
+  readonly duration: number      // named field
+  readonly genericField: T       // named field
+  readonly phantomField: Balance<U>
+}
+```
+
+**Tuple variants** (positional fields accessed by index):
+```ts
+class ActionJump<T, U> implements EnumVariantClass {
+  readonly $variantName = 'Jump'
+  readonly 0: bigint             // positional field
+  readonly 1: T                  // positional field
+  readonly 2: Balance<U>
+  readonly 3: bigint | null
+}
+```
+
+### Discriminating Variants
+
+Use the `$variantName` property to discriminate between variants:
+
+```ts
+const action = await Action.r('u64', SUI.p).fetch(client, id)
+
+switch (action.$variantName) {
+  case 'Stop':
+    // action is ActionStop - unit variant, no fields
+    break
+  case 'Pause':
+    // action is ActionPause - struct variant
+    console.log(action.duration, action.genericField)
+    break
+  case 'Jump':
+    // action is ActionJump - tuple variant
+    console.log(action[0], action[1], action[2])
+    break
+}
+```
+
+### JSON Serialization
+
+Enum variants serialize to JSON with a `$kind` field for discrimination:
+
+```ts
+// Unit variant
+{ "$kind": "Stop" }
+
+// Struct variant
+{ "$kind": "Pause", "duration": 100, "genericField": "..." }
+
+// Tuple variant
+{ "$kind": "Jump", "vec": [123, "...", "...", null] }
+```
+
+The full JSON representation includes type metadata:
+
+```ts
+{
+  "$typeName": "0x123::enums::Action",
+  "$typeArgs": ["u64", "0x2::sui::SUI"],
+  "$variantName": "Pause",
+  "$kind": "Pause",
+  "duration": 100,
+  "genericField": "..."
+}
+```
+
+### Field Type Mappings
+
+Enum variant fields use the same type mappings as struct fields (see [Structs](#structs) section).
+
+## Type Origins
+
+Type origins map Move types to the package address where they were originally defined. This is important for:
+
+- **Package upgrades**: When a package is upgraded, struct/enum types remain associated with their original defining package (v1 address) even though new functions live at a newer address
+- **Cross-environment compatibility**: The same type may have different addresses on mainnet vs testnet
+- **Runtime type checking**: The SDK uses type origins to verify fetched objects match expected types
+
+### How Type Origins Work
+
+Each environment configuration includes a `typeOrigins` map:
+
+```ts
+{
+  packages: {
+    'my-package': {
+      originalId: '0x123...',      // Package v1 address
+      publishedAt: '0x456...',     // Current published address (may be upgraded)
+      typeOrigins: {
+        'module::MyStruct': '0x123...',  // Type defined at v1
+        'module::MyEnum': '0x123...',
+      }
+    }
+  }
+}
+```
+
+### Using Type Origins
+
+The SDK provides `getTypeOrigin()` to look up where a type was defined:
+
+```ts
+import { getTypeOrigin } from './gen/_envs'
+
+// Get the address where MyStruct was defined
+const addr = getTypeOrigin('my-package', 'module::MyStruct')
+// Returns '0x123...' even if package was upgraded to '0x456...'
+```
+
+This is handled automatically by the generated code - you typically don't need to call `getTypeOrigin()` directly unless building custom type strings.
 
 ## Design Doc
 
