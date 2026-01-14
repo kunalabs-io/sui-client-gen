@@ -34,36 +34,53 @@ The manifest is parsed by `generator/src/manifest.rs`.
 
 - **`[config]`**
 
-  - **`environment`**: target environment (e.g., `mainnet`, `testnet`). Used for resolving `Published.toml` metadata.
-  - **`graphql`**: optional GraphQL URL for fetching type origins. If omitted, defaults to `https://graphql.mainnet.sui.io/graphql`.
-  - **`rpc`**: optional RPC URL (deprecated, use `graphql` instead).
+  - **`environment`**: Required. Target environment (e.g., `mainnet`, `testnet`, or custom defined in `[environments]`). Used for resolving `Published.toml` metadata.
+  - **`graphql`**: Optional. GraphQL URL for fetching type origins. If omitted, uses environment-specific default.
+  - **`output`**: Optional. Output directory for generated code (can also be specified via `--out` CLI flag).
 
 - **`[packages]`**
   - Each entry can be:
-    - **Move dependency** (same schema as `Move.toml` dependencies via `move_package_alt`):
-      - `{ local = "..." }`
-      - `{ git = "...", subdir = "...", rev = "..." }` (and related Move fields)
-    - **On-chain package**:
-      - `{ id = "0x..." }`
+    - **Local package**: `{ local = "..." }`
+    - **Git package**: `{ git = "...", subdir = "...", rev = "..." }`
+    - **On-chain package**: `{ on-chain = true }`
+    - **MVR package**: `{ r.mvr = "@namespace/package" }`
+  - Optional flags: `override = true`, `rename-from = "..."`
 
 Example (`ts/examples/gen/gen.toml`):
 
 ```toml
 [config]
-environment = "mainnet"
-graphql = "https://graphql.mainnet.sui.io/graphql"
-output = "./gen"
+environment = "testnet"
+graphql = "https://graphql.testnet.sui.io/graphql"
 
 [packages]
-Examples = { local = "../../../move/examples" }
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet-v1.62.1" }
-MoveStdlib = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "mainnet-v1.62.1" }
+amm = { local = "../../../move/amm" }
+examples = { local = "../../../move/examples" }
+sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet-v1.62.1", override = true }
+std = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/move-stdlib", rev = "mainnet-v1.62.1", override = true }
 ```
 
-Current limitations (enforced in `model_builder.rs`):
+- **`[environments]`** (optional)
+  - Defines custom environments beyond the defaults (`mainnet`, `testnet`)
+  - Default environments don't need to be listed but can be overridden for graphql endpoint
+  - Custom environments require `chain-id`
 
-- **No external deps** (Move "external" dependency kind) in `gen.toml`
-- **No on-chain deps** specified via Move dependency kind (only `{ id = ... }` is supported)
+  ```toml
+  [environments]
+  staging = "abcd1234"  # string shorthand: just chain-id
+  staging_alt = { chain-id = "abcd1234", graphql = "https://..." }  # full form
+  testnet = { graphql = "https://my-endpoint/graphql" }  # override default's graphql
+  ```
+
+- **`[dep-replacements.<env>]`** (optional)
+  - Environment-scoped dependency overrides
+  - Override source location, published-at, original-id, or bind to different environment
+
+  ```toml
+  [dep-replacements.staging]
+  some_dep = { local = "../other", use-environment = "testnet" }
+  other_dep = { published-at = "0x123...", original-id = "0x456..." }
+  ```
 
 ---
 
@@ -71,8 +88,7 @@ Current limitations (enforced in `model_builder.rs`):
 
 The binary entrypoint is `generator/src/main.rs`:
 
-- Parses args (`--manifest`, `--out`, `--clean`)
-- Registers Sui Move package hooks (`SuiPackageHooks`)
+- Parses args (`--manifest`, `--out`, `--environment`, `--graphql`, `--clean`)
 - Calls `driver::run(RunOptions)`
 
 ### Running the generator locally (from this repo)
@@ -84,15 +100,18 @@ From the repo root:
 cargo run -p sui-client-gen -- --manifest ./gen.toml --out ./gen --clean
 ```
 
-To regenerate the checked-in example output (uses `ts/examples/gen/gen.toml`):
+To regenerate the checked-in example/test outputs:
 
 ```bash
-cargo run -p sui-client-gen -- --manifest ts/examples/gen/gen.toml --out ts/examples/gen --clean
+# From ts/ directory
+pnpm run gen:all       # Regenerate all (examples + tests)
+pnpm run gen:example   # Regenerate examples only
+pnpm run gen:tests     # Regenerate tests only
 ```
 
 Notes:
 
-- **RPC is required** even for “source” packages because the generator tries to resolve type origin/version info from chain (it will warn + fall back if a package can’t be fetched).
+- **GraphQL access is required** to resolve type origin/version info from chain (it will warn + fall back if a package can't be fetched).
 - `--clean` deletes everything under `--out` except `gen.toml` (see `generator/src/io.rs`).
 
 ---
@@ -100,14 +119,10 @@ Notes:
 ## Model building (Move packages → `move_model_2::Model`)
 
 Model building is centralized in `generator/src/model_builder.rs`.
-The driver can build **two independent models**:
-
-- **Source model**: packages from local paths or git deps
-- **On-chain model**: packages fetched from RPC by ID
 
 ### Package System: `move_package_alt`
 
-The generator uses Sui's new `move_package_alt` package system which provides:
+The generator uses Sui's `move_package_alt` package system which provides:
 
 - **Environment support**: Packages can have different published metadata per environment (mainnet, testnet, etc.)
 - **`Published.toml`**: Contains published package metadata for each environment:
@@ -120,9 +135,9 @@ The generator uses Sui's new `move_package_alt` package system which provides:
   ```
 - **GraphQL-based type origin resolution**: Uses Sui's GraphQL API to fetch type origin tables for published packages
 
-### Source model (local/git)
+### `build_model(...)`
 
-Implemented in `build_source_model(...)`:
+The main entry point in `model_builder.rs`:
 
 - Uses `move_package_alt` to resolve and compile all packages from `gen.toml`
   - Local dependency paths are canonicalized relative to `gen.toml`
@@ -130,36 +145,33 @@ Implemented in `build_source_model(...)`:
 - Compiles to `move_model_2::Model` with full source information
 - Reads `Published.toml` metadata for each package to determine published addresses
 
-Additional metadata computed for codegen:
+Returns `ModelResult` containing:
 
-- **`id_map`**: address → package name mapping derived from the resolved package graph
-  - Used to determine which packages are "top-level" vs "dependencies" in output layout.
-- **`published_at`**: original package ID → published-at ID from `Published.toml` metadata
+- **`model`**: the compiled Move model
+- **`id_map`**: address → package name mapping (determines "top-level" vs "dependencies")
+- **`published_at`**: original package ID → published-at ID from `Published.toml`
 - **`type_origin_table`**: for each published package, maps `module::Datatype` → origin package address
-  - Fetched via GraphQL from the Sui network using `graphql/` module
+  - Fetched via GraphQL using `graphql/` module
   - Falls back to "self-origin" for unpublished packages
-- **`version_table`**: maps each origin package address to its version (used for `PKG_V{N}` exports)
-  - Ordering: newest version = V1, older versions = V2, V3, etc.
+- **`version_table`**: maps package addresses to version info
+- **`top_level_packages`**: packages explicitly listed in `gen.toml`
 
-### On-chain model (RPC package IDs)
+### Multi-environment builds (`multi_env.rs`)
 
-Implemented in `build_on_chain_model(...)`:
+The driver uses `build_multi_env_models(...)` to:
 
-- Resolves “original package ID” for each requested package.
-  - If the package is upgraded, the “original” is version 1 (or minimal version for system-upgraded framework packages).
-- Traverses on-chain dependency graph via each package’s `linkage_table`:
-  - Collects all reachable packages
-  - Chooses the **highest upgraded version** for each original package ID
-- Fetches raw modules (`SuiRawMovePackage.module_map`) via `PackageCache`
-- Builds compiled model: `Model::from_compiled(&id_map, modules)`
-- Computes `published_at`, `type_origin_table`, `version_table` similarly to the source model.
+- Collect all environments (from `[config].environment` + `[environments]` + `[dep-replacements.<env>]`)
+- Build a model for each environment
+- Check compatibility across environments (structs, enums, functions must match)
+- Return `MultiEnvResult` with per-environment configs for code generation
 
-### RPC caching
+### GraphQL caching (`graphql/`)
 
-`generator/src/package_cache.rs` provides `PackageCache`, a small RPC-side cache for `SuiRawMovePackage` objects to avoid repeated calls during:
+The `graphql/` module provides:
 
-- on-chain model graph traversal
-- type origin / version resolution
+- **`GraphQLClient`** (`client.rs`): fetches type origin tables from Sui's GraphQL API
+- **`GraphQLCache`** (`cache.rs`): per-chain-id caching to avoid repeated queries
+- **`types.rs`**: response type definitions
 
 ---
 
@@ -320,6 +332,15 @@ Production file generation is module-level:
 
 For tests, we also expose `emit_module_structs_from_ir(...)` (see below).
 
+### Additional ts_gen modules
+
+- **`compat.rs`**: Environment compatibility checking - ensures structs, enums, and functions have matching signatures across all environments
+- **`env_config.rs`**: Generates per-environment configuration files (`_envs/*.ts`) with package addresses and type origins
+- **`init.rs`**: Generates `init.ts` files that register structs/enums with the loader
+- **`imports.rs`**: Import path resolution and deduplication (see below)
+- **`doc_utils.rs`**, **`jsdoc.rs`**: Documentation/JSDoc generation
+- **`format.rs`**, **`utils.rs`**: Formatting and utility functions
+
 ---
 
 ## Import management + path resolution
@@ -369,6 +390,8 @@ Examples:
 
 - `0x1::string::String`
 - `0x1::ascii::String`
+- `0x1::ascii::Char`
+- `0x1::type_name::TypeName`
 - `0x2::object::ID` / `0x2::object::UID`
 - `0x2::url::Url`
 
@@ -594,25 +617,8 @@ cargo test
 Only after all tests pass:
 
 ```bash
-cargo run -p sui-client-gen -- --manifest ts/examples/gen/gen.toml --out ts/examples/gen --clean
+# From ts/ directory
+pnpm run gen:all       # Regenerate all (examples + tests)
+pnpm run gen:example   # Regenerate examples only
 ```
 
-### Best Practices
-
-- **Don't regenerate examples during iteration** - Use IR fixtures and snapshots instead
-- **Add both snapshot and invariant tests** - Snapshots show the full output, invariants catch specific bugs
-- **Fix one issue at a time** - Small iterations are easier to debug
-- **Update all test fixtures** - When adding fields to IR structs, update all fixtures in `snapshot_tests.rs`
-- **Review snapshot diffs carefully** - `cargo insta review` shows exactly what changed
-- **Run the full test suite** - Catch any unexpected side effects
-
-### Example: Fixing Unused Imports
-
-1. Created `test_parse_type_name_not_imported_when_unused()` - fails if imported but unused
-2. Updated `emit_combined_imports_with_enums()` to only import when `has_type_params`
-3. Ran `cargo test --test snapshot_tests` - 15 snapshots updated
-4. Reviewed with `cargo insta review` - confirmed parseTypeName removed from non-generic structs
-5. Accepted with `cargo insta accept`
-6. Verified with `cargo test` - all tests pass
-
-This workflow ensures every fix is protected by regression tests and doesn't break existing functionality.
