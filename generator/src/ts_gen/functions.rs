@@ -269,12 +269,14 @@ impl FunctionIR {
             _ => format!("args: {}", self.args_interface_name()),
         };
 
+        let options_part = "options?: { env?: EnvConfig }".to_string();
+
         // Build the parameters list with proper comma handling
         let all_params = match (has_type_params, has_params) {
-            (true, true) => format!("{}, {}", type_arg_param, params_part),
-            (true, false) => type_arg_param,
-            (false, true) => params_part,
-            (false, false) => String::new(),
+            (true, true) => format!("{}, {}, {}", type_arg_param, params_part, options_part),
+            (true, false) => format!("{}, {}", type_arg_param, options_part),
+            (false, true) => format!("{}, {}", params_part, options_part),
+            (false, false) => options_part,
         };
 
         format!(
@@ -377,7 +379,7 @@ impl FunctionIR {
     pub fn emit_body(&self, module_aliased: &std::collections::HashSet<String>) -> String {
         let sig = self.emit_function_signature();
         let target = format!(
-            "`${{getPublishedAt('{}')}}::{}::{}`",
+            "`${{getPublishedAt('{}', options?.env)}}::{}::{}`",
             self.env_pkg_name, self.module_name, self.move_name
         );
 
@@ -452,7 +454,8 @@ pub fn emit_function_imports(functions: &[FunctionIR], framework_path: &str) -> 
 
     // Import getPublishedAt from _envs (sibling to _framework) to ensure auto-initialization
     let envs_path = framework_path.replace("_framework", "_envs");
-    imports.add_named(envs_path, "getPublishedAt");
+    imports.add_named(&envs_path, "getPublishedAt");
+    imports.add_type_named(&envs_path, "EnvConfig");
 
     // Collect what util imports we need
     let uses_generic = functions.iter().any(|f| f.uses_generic);

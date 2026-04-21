@@ -2,6 +2,7 @@
 source: generator/tests/snapshot_tests.rs
 expression: output
 ---
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import {
   GenericArg,
@@ -26,9 +27,9 @@ export interface CreateSpecialInVectorsArgs {
   optionGeneric: Array<GenericArg | null> | TransactionArgument
 }
 
-export function createSpecialInVectors(tx: Transaction, typeArg: string, args: CreateSpecialInVectorsArgs): TransactionResult {
+export function createSpecialInVectors(tx: Transaction, typeArg: string, args: CreateSpecialInVectorsArgs, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('examples')}::fixture::create_special_in_vectors`,
+    target: `${getPublishedAt('examples', options?.env)}::fixture::create_special_in_vectors`,
     typeArguments: [typeArg],
     arguments: [
       pure(tx, args.string, `vector<${String.$typeName}>`),
