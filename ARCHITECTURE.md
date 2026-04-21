@@ -237,7 +237,7 @@ The driver writes these to `<out>/_framework/`:
 - **`util.ts`**: TS utilities for parsing/compressing types and tx argument helpers
 - **`loader.ts`**: runtime registry to load "reified classes" by type string
 - **`vector.ts`**: `Vector<T>` implementation
-- **`env.ts`**: environment management (registry, active env, getPublishedAt, getTypeOrigin)
+- **`env.ts`**: environment management — registry, active env, `getPublishedAt` / `getTypeOrigin` / `getOriginalId` / `getTypeOriginAddresses(For)` (each accepts an optional per-call `env?: EnvConfig`), plus `cloneEnv` / `getEnv` construction helpers
 - **`init-loader.ts`**: generated list of package init registrars
 
 Environment configurations are written to `<out>/_envs/`:

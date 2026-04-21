@@ -235,6 +235,8 @@ import { setActiveEnvWithConfig, type EnvConfig } from './gen/_envs'
 setActiveEnvWithConfig(myCustomConfig)
 ```
 
+For concurrent code paths that need different configs simultaneously, every generated function also accepts an optional per-call `options?: { env?: EnvConfig }` — a caller-supplied env bypasses any global overrides without touching module state. Build one with `cloneEnv(getEnv('mainnet'), { packages: { 'my-pkg': { publishedAt: '0x...' } } })`.
+
 The default environment (from `[config].environment` in `gen.toml`) is automatically set on import. For more details, see the [docs](https://github.com/kunalabs-io/sui-client-gen/blob/master/DOC.md#environment-switching).
 
 Each environment configuration includes **type origins** - mappings from type names to the package address where they were originally defined. This is important because when a package is upgraded, the struct types remain associated with their original defining package (v1 address) even though new functions live at a newer address. The SDK handles this automatically via `getTypeOrigin()`. For more details, see the [docs](https://github.com/kunalabs-io/sui-client-gen/blob/master/DOC.md#type-origins).

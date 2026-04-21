@@ -225,6 +225,39 @@ setActiveEnv('mainnet')
 // getPublishedAt('my-package') returns the original address from the env config
 ```
 
+### Per-Call Environment Override
+
+`setActiveEnv()` mutates module-level state, so it isn't safe when two callers need different configs concurrently (e.g. one call targeting a historical `publishedAt` while another uses the current one). For that, every generated function accepts an optional `options?: { env?: EnvConfig }` as its last argument, and all the resolvers (`getPublishedAt`, `getTypeOrigin`, `getOriginalId`, `getTypeOriginAddresses`, `getTypeOriginAddressesFor`) accept an optional `env` argument.
+
+A caller-supplied `env` is authoritative — it bypasses any `publishedAtOverrides` you set via `setActiveEnv`. That means two concurrent callers with different envs don't interfere with each other or with the active env.
+
+To build a scoped config, use `cloneEnv()` to derive one from a registered env (retrieved with `getEnv()`):
+
+```ts
+import { cloneEnv, getEnv } from './gen/_envs'
+import { createRebalanceReceipt } from './gen/kai-leverage/position-core-clmm/functions'
+
+// Point a single call at a historical publishedAt, leaving every other package unchanged.
+const historical = cloneEnv(getEnv('mainnet'), {
+  packages: {
+    'kai-leverage': { publishedAt: '0xHISTORICAL_ADDRESS' },
+  },
+})
+
+createRebalanceReceipt(tx, typeArgs, args, { env: historical })
+```
+
+`cloneEnv` shallow-merges per-package: fields you provide replace the base fields, `typeOrigins` are merged (not replaced), and every other package in `base` is preserved. Overriding a package name that doesn't exist in `base` throws.
+
+If you need a fully custom config from scratch (not derived from a registered env), you can just build an `EnvConfig` literal — it's a plain object shape.
+
+Typical uses:
+- Calling a function at a historical package address (e.g. inside `devInspectTransactionBlock` at a past checkpoint).
+- Fan-out processing where each task operates against a different `publishedAt` concurrently.
+- Decoding type origins for a cross-env payload (e.g. `getTypeOrigin('pkg', 'mod::T', otherEnv)`).
+
+Note: per-call `env` currently covers move calls (function bindings) and the env resolvers. Struct classes (`Foo.reified()`, `Foo.fetch()`, `Foo.fromSuiParsedData()`) still read `$typeName` from the active env — cross-env decoding of struct instances still uses `setActiveEnv` today.
+
 ### Querying Active Environment
 
 ```ts
