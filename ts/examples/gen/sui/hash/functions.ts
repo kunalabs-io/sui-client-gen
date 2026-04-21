@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 
@@ -14,9 +15,10 @@ import { pure } from '../../_framework/util'
 export function blake2b256(
   tx: Transaction,
   data: Array<number | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::hash::blake2b256`,
+    target: `${getPublishedAt('sui', options?.env)}::hash::blake2b256`,
     arguments: [pure(tx, data, `vector<u8>`)],
   })
 }
@@ -28,9 +30,10 @@ export function blake2b256(
 export function keccak256(
   tx: Transaction,
   data: Array<number | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::hash::keccak256`,
+    target: `${getPublishedAt('sui', options?.env)}::hash::keccak256`,
     arguments: [pure(tx, data, `vector<u8>`)],
   })
 }

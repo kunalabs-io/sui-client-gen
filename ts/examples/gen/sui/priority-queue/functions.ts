@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj, pure, vector } from '../../_framework/util'
 import { Entry } from './structs'
@@ -13,9 +14,10 @@ export function new_(
   tx: Transaction,
   typeArg: string,
   entries: Array<TransactionObjectInput> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::priority_queue::new`,
+    target: `${getPublishedAt('sui', options?.env)}::priority_queue::new`,
     typeArguments: [typeArg],
     arguments: [vector(tx, `${Entry.$typeName}<${typeArg}>`, entries)],
   })
@@ -26,9 +28,10 @@ export function popMax(
   tx: Transaction,
   typeArg: string,
   pq: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::priority_queue::pop_max`,
+    target: `${getPublishedAt('sui', options?.env)}::priority_queue::pop_max`,
     typeArguments: [typeArg],
     arguments: [obj(tx, pq)],
   })
@@ -41,9 +44,14 @@ export interface InsertArgs {
 }
 
 /** Insert a new entry into the queue. */
-export function insert(tx: Transaction, typeArg: string, args: InsertArgs): TransactionResult {
+export function insert(
+  tx: Transaction,
+  typeArg: string,
+  args: InsertArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::priority_queue::insert`,
+    target: `${getPublishedAt('sui', options?.env)}::priority_queue::insert`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.pq),
@@ -58,9 +66,14 @@ export interface NewEntryArgs {
   value: GenericArg
 }
 
-export function newEntry(tx: Transaction, typeArg: string, args: NewEntryArgs): TransactionResult {
+export function newEntry(
+  tx: Transaction,
+  typeArg: string,
+  args: NewEntryArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::priority_queue::new_entry`,
+    target: `${getPublishedAt('sui', options?.env)}::priority_queue::new_entry`,
     typeArguments: [typeArg],
     arguments: [
       pure(tx, args.priority, `u64`),
@@ -78,9 +91,10 @@ export function createEntries(
   tx: Transaction,
   typeArg: string,
   args: CreateEntriesArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::priority_queue::create_entries`,
+    target: `${getPublishedAt('sui', options?.env)}::priority_queue::create_entries`,
     typeArguments: [typeArg],
     arguments: [
       pure(tx, args.p, `vector<u64>`),
@@ -98,9 +112,10 @@ export function restoreHeapRecursive(
   tx: Transaction,
   typeArg: string,
   args: RestoreHeapRecursiveArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::priority_queue::restore_heap_recursive`,
+    target: `${getPublishedAt('sui', options?.env)}::priority_queue::restore_heap_recursive`,
     typeArguments: [typeArg],
     arguments: [
       vector(tx, `${Entry.$typeName}<${typeArg}>`, args.v),
@@ -126,9 +141,10 @@ export function maxHeapifyRecursive(
   tx: Transaction,
   typeArg: string,
   args: MaxHeapifyRecursiveArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::priority_queue::max_heapify_recursive`,
+    target: `${getPublishedAt('sui', options?.env)}::priority_queue::max_heapify_recursive`,
     typeArguments: [typeArg],
     arguments: [
       vector(tx, `${Entry.$typeName}<${typeArg}>`, args.v),
@@ -142,9 +158,10 @@ export function priorities(
   tx: Transaction,
   typeArg: string,
   pq: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::priority_queue::priorities`,
+    target: `${getPublishedAt('sui', options?.env)}::priority_queue::priorities`,
     typeArguments: [typeArg],
     arguments: [obj(tx, pq)],
   })

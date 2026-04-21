@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 
@@ -22,9 +23,13 @@ export interface FromQuotientArgs {
  * than 2^{-64}.
  * Aborts if the input is too large, e.g. larger than or equal to 2^64.
  */
-export function fromQuotient(tx: Transaction, args: FromQuotientArgs): TransactionResult {
+export function fromQuotient(
+  tx: Transaction,
+  args: FromQuotientArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::uq64_64::from_quotient`,
+    target: `${getPublishedAt('std', options?.env)}::uq64_64::from_quotient`,
     arguments: [
       pure(tx, args.numerator, `u128`),
       pure(tx, args.denominator, `u128`),
@@ -36,9 +41,13 @@ export function fromQuotient(tx: Transaction, args: FromQuotientArgs): Transacti
  * Create a fixed-point value from an integer.
  * `from_int` and `from_quotient` should be preferred over using `from_raw`.
  */
-export function fromInt(tx: Transaction, integer: bigint | TransactionArgument): TransactionResult {
+export function fromInt(
+  tx: Transaction,
+  integer: bigint | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::uq64_64::from_int`,
+    target: `${getPublishedAt('std', options?.env)}::uq64_64::from_int`,
     arguments: [pure(tx, integer, `u64`)],
   })
 }
@@ -52,9 +61,13 @@ export interface AddArgs {
  * Add two fixed-point numbers, `a + b`.
  * Aborts if the sum overflows.
  */
-export function add(tx: Transaction, args: AddArgs): TransactionResult {
+export function add(
+  tx: Transaction,
+  args: AddArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::uq64_64::add`,
+    target: `${getPublishedAt('std', options?.env)}::uq64_64::add`,
     arguments: [
       obj(tx, args.a),
       obj(tx, args.b),
@@ -71,9 +84,13 @@ export interface SubArgs {
  * Subtract two fixed-point numbers, `a - b`.
  * Aborts if `a < b`.
  */
-export function sub(tx: Transaction, args: SubArgs): TransactionResult {
+export function sub(
+  tx: Transaction,
+  args: SubArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::uq64_64::sub`,
+    target: `${getPublishedAt('std', options?.env)}::uq64_64::sub`,
     arguments: [
       obj(tx, args.a),
       obj(tx, args.b),
@@ -90,9 +107,13 @@ export interface MulArgs {
  * Multiply two fixed-point numbers, truncating any fractional part of the product.
  * Aborts if the product overflows.
  */
-export function mul(tx: Transaction, args: MulArgs): TransactionResult {
+export function mul(
+  tx: Transaction,
+  args: MulArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::uq64_64::mul`,
+    target: `${getPublishedAt('std', options?.env)}::uq64_64::mul`,
     arguments: [
       obj(tx, args.a),
       obj(tx, args.b),
@@ -110,9 +131,13 @@ export interface DivArgs {
  * Aborts if the divisor is zero.
  * Aborts if the quotient overflows.
  */
-export function div(tx: Transaction, args: DivArgs): TransactionResult {
+export function div(
+  tx: Transaction,
+  args: DivArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::uq64_64::div`,
+    target: `${getPublishedAt('std', options?.env)}::uq64_64::div`,
     arguments: [
       obj(tx, args.a),
       obj(tx, args.b),
@@ -121,9 +146,13 @@ export function div(tx: Transaction, args: DivArgs): TransactionResult {
 }
 
 /** Convert a fixed-point number to an integer, truncating any fractional part. */
-export function toInt(tx: Transaction, a: TransactionObjectInput): TransactionResult {
+export function toInt(
+  tx: Transaction,
+  a: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::uq64_64::to_int`,
+    target: `${getPublishedAt('std', options?.env)}::uq64_64::to_int`,
     arguments: [obj(tx, a)],
   })
 }
@@ -137,9 +166,13 @@ export interface IntMulArgs {
  * Multiply a `u128` integer by a fixed-point number, truncating any fractional part of the product.
  * Aborts if the product overflows.
  */
-export function intMul(tx: Transaction, args: IntMulArgs): TransactionResult {
+export function intMul(
+  tx: Transaction,
+  args: IntMulArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::uq64_64::int_mul`,
+    target: `${getPublishedAt('std', options?.env)}::uq64_64::int_mul`,
     arguments: [
       pure(tx, args.val, `u128`),
       obj(tx, args.multiplier),
@@ -157,9 +190,13 @@ export interface IntDivArgs {
  * Aborts if the divisor is zero.
  * Aborts if the quotient overflows.
  */
-export function intDiv(tx: Transaction, args: IntDivArgs): TransactionResult {
+export function intDiv(
+  tx: Transaction,
+  args: IntDivArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::uq64_64::int_div`,
+    target: `${getPublishedAt('std', options?.env)}::uq64_64::int_div`,
     arguments: [
       pure(tx, args.val, `u128`),
       obj(tx, args.divisor),
@@ -173,9 +210,13 @@ export interface LeArgs {
 }
 
 /** Less than or equal to. Returns `true` if and only if `a <= a`. */
-export function le(tx: Transaction, args: LeArgs): TransactionResult {
+export function le(
+  tx: Transaction,
+  args: LeArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::uq64_64::le`,
+    target: `${getPublishedAt('std', options?.env)}::uq64_64::le`,
     arguments: [
       obj(tx, args.a),
       obj(tx, args.b),
@@ -189,9 +230,13 @@ export interface LtArgs {
 }
 
 /** Less than. Returns `true` if and only if `a < b`. */
-export function lt(tx: Transaction, args: LtArgs): TransactionResult {
+export function lt(
+  tx: Transaction,
+  args: LtArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::uq64_64::lt`,
+    target: `${getPublishedAt('std', options?.env)}::uq64_64::lt`,
     arguments: [
       obj(tx, args.a),
       obj(tx, args.b),
@@ -205,9 +250,13 @@ export interface GeArgs {
 }
 
 /** Greater than or equal to. Returns `true` if and only if `a >= b`. */
-export function ge(tx: Transaction, args: GeArgs): TransactionResult {
+export function ge(
+  tx: Transaction,
+  args: GeArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::uq64_64::ge`,
+    target: `${getPublishedAt('std', options?.env)}::uq64_64::ge`,
     arguments: [
       obj(tx, args.a),
       obj(tx, args.b),
@@ -221,9 +270,13 @@ export interface GtArgs {
 }
 
 /** Greater than. Returns `true` if and only if `a > b`. */
-export function gt(tx: Transaction, args: GtArgs): TransactionResult {
+export function gt(
+  tx: Transaction,
+  args: GtArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::uq64_64::gt`,
+    target: `${getPublishedAt('std', options?.env)}::uq64_64::gt`,
     arguments: [
       obj(tx, args.a),
       obj(tx, args.b),
@@ -235,9 +288,13 @@ export function gt(tx: Transaction, args: GtArgs): TransactionResult {
  * Accessor for the raw u128 value. Can be paired with `from_raw` to perform less common operations
  * on the raw values directly.
  */
-export function toRaw(tx: Transaction, a: TransactionObjectInput): TransactionResult {
+export function toRaw(
+  tx: Transaction,
+  a: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::uq64_64::to_raw`,
+    target: `${getPublishedAt('std', options?.env)}::uq64_64::to_raw`,
     arguments: [obj(tx, a)],
   })
 }
@@ -249,9 +306,10 @@ export function toRaw(tx: Transaction, a: TransactionObjectInput): TransactionRe
 export function fromRaw(
   tx: Transaction,
   rawValue: bigint | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::uq64_64::from_raw`,
+    target: `${getPublishedAt('std', options?.env)}::uq64_64::from_raw`,
     arguments: [pure(tx, rawValue, `u128`)],
   })
 }

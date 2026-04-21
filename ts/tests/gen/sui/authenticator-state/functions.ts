@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { obj, pure, vector } from '../../_framework/util'
 import { String } from '../../std/string/structs'
@@ -14,9 +15,13 @@ export interface ActiveJwkEqualArgs {
   b: TransactionObjectInput
 }
 
-export function activeJwkEqual(tx: Transaction, args: ActiveJwkEqualArgs): TransactionResult {
+export function activeJwkEqual(
+  tx: Transaction,
+  args: ActiveJwkEqualArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::authenticator_state::active_jwk_equal`,
+    target: `${getPublishedAt('sui', options?.env)}::authenticator_state::active_jwk_equal`,
     arguments: [
       obj(tx, args.a),
       obj(tx, args.b),
@@ -29,9 +34,13 @@ export interface JwkEqualArgs {
   b: TransactionObjectInput
 }
 
-export function jwkEqual(tx: Transaction, args: JwkEqualArgs): TransactionResult {
+export function jwkEqual(
+  tx: Transaction,
+  args: JwkEqualArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::authenticator_state::jwk_equal`,
+    target: `${getPublishedAt('sui', options?.env)}::authenticator_state::jwk_equal`,
     arguments: [
       obj(tx, args.a),
       obj(tx, args.b),
@@ -44,9 +53,13 @@ export interface JwkIdEqualArgs {
   b: TransactionObjectInput
 }
 
-export function jwkIdEqual(tx: Transaction, args: JwkIdEqualArgs): TransactionResult {
+export function jwkIdEqual(
+  tx: Transaction,
+  args: JwkIdEqualArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::authenticator_state::jwk_id_equal`,
+    target: `${getPublishedAt('sui', options?.env)}::authenticator_state::jwk_id_equal`,
     arguments: [
       obj(tx, args.a),
       obj(tx, args.b),
@@ -59,9 +72,13 @@ export interface StringBytesLtArgs {
   b: string | TransactionArgument
 }
 
-export function stringBytesLt(tx: Transaction, args: StringBytesLtArgs): TransactionResult {
+export function stringBytesLt(
+  tx: Transaction,
+  args: StringBytesLtArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::authenticator_state::string_bytes_lt`,
+    target: `${getPublishedAt('sui', options?.env)}::authenticator_state::string_bytes_lt`,
     arguments: [
       pure(tx, args.a, `${String.$typeName}`),
       pure(tx, args.b, `${String.$typeName}`),
@@ -74,9 +91,13 @@ export interface JwkLtArgs {
   b: TransactionObjectInput
 }
 
-export function jwkLt(tx: Transaction, args: JwkLtArgs): TransactionResult {
+export function jwkLt(
+  tx: Transaction,
+  args: JwkLtArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::authenticator_state::jwk_lt`,
+    target: `${getPublishedAt('sui', options?.env)}::authenticator_state::jwk_lt`,
     arguments: [
       obj(tx, args.a),
       obj(tx, args.b),
@@ -89,23 +110,31 @@ export function jwkLt(tx: Transaction, args: JwkLtArgs): TransactionResult {
  * the authenticator state object is first created.
  * Can only be called by genesis or change_epoch transactions.
  */
-export function create(tx: Transaction): TransactionResult {
+export function create(tx: Transaction, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::authenticator_state::create`,
+    target: `${getPublishedAt('sui', options?.env)}::authenticator_state::create`,
     arguments: [],
   })
 }
 
-export function loadInnerMut(tx: Transaction, self: TransactionObjectInput): TransactionResult {
+export function loadInnerMut(
+  tx: Transaction,
+  self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::authenticator_state::load_inner_mut`,
+    target: `${getPublishedAt('sui', options?.env)}::authenticator_state::load_inner_mut`,
     arguments: [obj(tx, self)],
   })
 }
 
-export function loadInner(tx: Transaction, self: TransactionObjectInput): TransactionResult {
+export function loadInner(
+  tx: Transaction,
+  self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::authenticator_state::load_inner`,
+    target: `${getPublishedAt('sui', options?.env)}::authenticator_state::load_inner`,
     arguments: [obj(tx, self)],
   })
 }
@@ -113,9 +142,10 @@ export function loadInner(tx: Transaction, self: TransactionObjectInput): Transa
 export function checkSorted(
   tx: Transaction,
   newActiveJwks: Array<TransactionObjectInput> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::authenticator_state::check_sorted`,
+    target: `${getPublishedAt('sui', options?.env)}::authenticator_state::check_sorted`,
     arguments: [vector(tx, `${ActiveJwk.$typeName}`, newActiveJwks)],
   })
 }
@@ -134,9 +164,12 @@ export interface UpdateAuthenticatorStateArgs {
 export function updateAuthenticatorState(
   tx: Transaction,
   args: UpdateAuthenticatorStateArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::authenticator_state::update_authenticator_state`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::authenticator_state::update_authenticator_state`,
     arguments: [
       obj(tx, args.self),
       vector(tx, `${ActiveJwk.$typeName}`, args.newActiveJwks),
@@ -147,9 +180,10 @@ export function updateAuthenticatorState(
 export function deduplicate(
   tx: Transaction,
   jwks: Array<TransactionObjectInput> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::authenticator_state::deduplicate`,
+    target: `${getPublishedAt('sui', options?.env)}::authenticator_state::deduplicate`,
     arguments: [vector(tx, `${ActiveJwk.$typeName}`, jwks)],
   })
 }
@@ -159,9 +193,13 @@ export interface ExpireJwksArgs {
   minEpoch: bigint | TransactionArgument
 }
 
-export function expireJwks(tx: Transaction, args: ExpireJwksArgs): TransactionResult {
+export function expireJwks(
+  tx: Transaction,
+  args: ExpireJwksArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::authenticator_state::expire_jwks`,
+    target: `${getPublishedAt('sui', options?.env)}::authenticator_state::expire_jwks`,
     arguments: [
       obj(tx, args.self),
       pure(tx, args.minEpoch, `u64`),
@@ -173,9 +211,13 @@ export function expireJwks(tx: Transaction, args: ExpireJwksArgs): TransactionRe
  * Get the current active_jwks. Called when the node starts up in order to load the current
  * JWK state from the chain.
  */
-export function getActiveJwks(tx: Transaction, self: TransactionObjectInput): TransactionResult {
+export function getActiveJwks(
+  tx: Transaction,
+  self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::authenticator_state::get_active_jwks`,
+    target: `${getPublishedAt('sui', options?.env)}::authenticator_state::get_active_jwks`,
     arguments: [obj(tx, self)],
   })
 }

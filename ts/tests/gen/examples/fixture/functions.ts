@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj, option, pure, vector } from '../../_framework/util'
 import { String as String1 } from '../../std/ascii/structs'
@@ -16,17 +17,22 @@ export function createWithGenericField(
   tx: Transaction,
   typeArg: string,
   genericField: GenericArg,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('examples')}::fixture::create_with_generic_field`,
+    target: `${getPublishedAt('examples', options?.env)}::fixture::create_with_generic_field`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, genericField)],
   })
 }
 
-export function createBar(tx: Transaction, value: bigint | TransactionArgument): TransactionResult {
+export function createBar(
+  tx: Transaction,
+  value: bigint | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('examples')}::fixture::create_bar`,
+    target: `${getPublishedAt('examples', options?.env)}::fixture::create_bar`,
     arguments: [pure(tx, value, `u64`)],
   })
 }
@@ -40,9 +46,10 @@ export function createWithTwoGenerics(
   tx: Transaction,
   typeArgs: [string, string],
   args: CreateWithTwoGenericsArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('examples')}::fixture::create_with_two_generics`,
+    target: `${getPublishedAt('examples', options?.env)}::fixture::create_with_two_generics`,
     typeArguments: typeArgs,
     arguments: [
       generic(tx, `${typeArgs[0]}`, args.genericField1),
@@ -70,9 +77,10 @@ export function createFoo(
   tx: Transaction,
   typeArgs: [string, string],
   args: CreateFooArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('examples')}::fixture::create_foo`,
+    target: `${getPublishedAt('examples', options?.env)}::fixture::create_foo`,
     typeArguments: typeArgs,
     arguments: [
       generic(tx, `${typeArgs[0]}`, args.generic),
@@ -116,9 +124,10 @@ export function createSpecial(
   tx: Transaction,
   typeArgs: [string, string],
   args: CreateSpecialArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('examples')}::fixture::create_special`,
+    target: `${getPublishedAt('examples', options?.env)}::fixture::create_special`,
     typeArguments: typeArgs,
     arguments: [
       pure(tx, args.string, `${String.$typeName}`),
@@ -152,9 +161,10 @@ export function createSpecialAsGenerics(
   tx: Transaction,
   typeArgs: [string, string, string, string, string, string, string, string],
   args: CreateSpecialAsGenericsArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('examples')}::fixture::create_special_as_generics`,
+    target: `${getPublishedAt('examples', options?.env)}::fixture::create_special_as_generics`,
     typeArguments: typeArgs,
     arguments: [
       generic(tx, `${typeArgs[0]}`, args.string),
@@ -182,9 +192,10 @@ export function createSpecialInVectors(
   tx: Transaction,
   typeArg: string,
   args: CreateSpecialInVectorsArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('examples')}::fixture::create_special_in_vectors`,
+    target: `${getPublishedAt('examples', options?.env)}::fixture::create_special_in_vectors`,
     typeArguments: [typeArg],
     arguments: [
       pure(tx, args.string, `vector<${String.$typeName}>`),

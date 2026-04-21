@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 
@@ -14,9 +15,13 @@ export interface V2AddArgs {
   addr: string | TransactionArgument
 }
 
-export function v2Add(tx: Transaction, args: V2AddArgs): TransactionResult {
+export function v2Add(
+  tx: Transaction,
+  args: V2AddArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::v2_add`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::v2_add`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -33,9 +38,13 @@ export interface V2RemoveArgs {
   addr: string | TransactionArgument
 }
 
-export function v2Remove(tx: Transaction, args: V2RemoveArgs): TransactionResult {
+export function v2Remove(
+  tx: Transaction,
+  args: V2RemoveArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::v2_remove`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::v2_remove`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -55,9 +64,10 @@ export interface V2ContainsCurrentEpochArgs {
 export function v2ContainsCurrentEpoch(
   tx: Transaction,
   args: V2ContainsCurrentEpochArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::v2_contains_current_epoch`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::v2_contains_current_epoch`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -77,9 +87,10 @@ export interface V2ContainsNextEpochArgs {
 export function v2ContainsNextEpoch(
   tx: Transaction,
   args: V2ContainsNextEpochArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::v2_contains_next_epoch`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::v2_contains_next_epoch`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -98,9 +109,10 @@ export interface V2EnableGlobalPauseArgs {
 export function v2EnableGlobalPause(
   tx: Transaction,
   args: V2EnableGlobalPauseArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::v2_enable_global_pause`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::v2_enable_global_pause`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -118,9 +130,10 @@ export interface V2DisableGlobalPauseArgs {
 export function v2DisableGlobalPause(
   tx: Transaction,
   args: V2DisableGlobalPauseArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::v2_disable_global_pause`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::v2_disable_global_pause`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -138,9 +151,12 @@ export interface V2IsGlobalPauseEnabledCurrentEpochArgs {
 export function v2IsGlobalPauseEnabledCurrentEpoch(
   tx: Transaction,
   args: V2IsGlobalPauseEnabledCurrentEpochArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::v2_is_global_pause_enabled_current_epoch`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::deny_list::v2_is_global_pause_enabled_current_epoch`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -158,9 +174,12 @@ export interface V2IsGlobalPauseEnabledNextEpochArgs {
 export function v2IsGlobalPauseEnabledNextEpoch(
   tx: Transaction,
   args: V2IsGlobalPauseEnabledNextEpochArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::v2_is_global_pause_enabled_next_epoch`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::deny_list::v2_is_global_pause_enabled_next_epoch`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -175,9 +194,13 @@ export interface MigrateV1ToV2Args {
   perTypeKey: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function migrateV1ToV2(tx: Transaction, args: MigrateV1ToV2Args): TransactionResult {
+export function migrateV1ToV2(
+  tx: Transaction,
+  args: MigrateV1ToV2Args,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::migrate_v1_to_v2`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::migrate_v1_to_v2`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -192,9 +215,13 @@ export interface AddPerTypeConfigArgs {
   perTypeKey: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function addPerTypeConfig(tx: Transaction, args: AddPerTypeConfigArgs): TransactionResult {
+export function addPerTypeConfig(
+  tx: Transaction,
+  args: AddPerTypeConfigArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::add_per_type_config`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::add_per_type_config`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -212,9 +239,10 @@ export interface BorrowPerTypeConfigMutArgs {
 export function borrowPerTypeConfigMut(
   tx: Transaction,
   args: BorrowPerTypeConfigMutArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::borrow_per_type_config_mut`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::borrow_per_type_config_mut`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -232,9 +260,10 @@ export interface BorrowPerTypeConfigArgs {
 export function borrowPerTypeConfig(
   tx: Transaction,
   args: BorrowPerTypeConfigArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::borrow_per_type_config`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::borrow_per_type_config`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -249,9 +278,13 @@ export interface PerTypeExistsArgs {
   perTypeKey: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function perTypeExists(tx: Transaction, args: PerTypeExistsArgs): TransactionResult {
+export function perTypeExists(
+  tx: Transaction,
+  args: PerTypeExistsArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::per_type_exists`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::per_type_exists`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -273,9 +306,13 @@ export interface V1AddArgs {
  * the type specified is the type of the coin, not the coin type itself. For example,
  * "00...0123::my_coin::MY_COIN" would be the type, not "00...02::coin::Coin".
  */
-export function v1Add(tx: Transaction, args: V1AddArgs): TransactionResult {
+export function v1Add(
+  tx: Transaction,
+  args: V1AddArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::v1_add`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::v1_add`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -291,9 +328,13 @@ export interface V1PerTypeListAddArgs {
   addr: string | TransactionArgument
 }
 
-export function v1PerTypeListAdd(tx: Transaction, args: V1PerTypeListAddArgs): TransactionResult {
+export function v1PerTypeListAdd(
+  tx: Transaction,
+  args: V1PerTypeListAddArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::v1_per_type_list_add`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::v1_per_type_list_add`,
     arguments: [
       obj(tx, args.list),
       pure(tx, args.type, `vector<u8>`),
@@ -313,9 +354,13 @@ export interface V1RemoveArgs {
  * Removes a previously denied address from the list.
  * Aborts with `ENotDenied` if the address is not on the list.
  */
-export function v1Remove(tx: Transaction, args: V1RemoveArgs): TransactionResult {
+export function v1Remove(
+  tx: Transaction,
+  args: V1RemoveArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::v1_remove`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::v1_remove`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -334,9 +379,10 @@ export interface V1PerTypeListRemoveArgs {
 export function v1PerTypeListRemove(
   tx: Transaction,
   args: V1PerTypeListRemoveArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::v1_per_type_list_remove`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::v1_per_type_list_remove`,
     arguments: [
       obj(tx, args.list),
       pure(tx, args.type, `vector<u8>`),
@@ -353,9 +399,13 @@ export interface V1ContainsArgs {
 }
 
 /** Returns true iff the given address is denied for the given type. */
-export function v1Contains(tx: Transaction, args: V1ContainsArgs): TransactionResult {
+export function v1Contains(
+  tx: Transaction,
+  args: V1ContainsArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::v1_contains`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::v1_contains`,
     arguments: [
       obj(tx, args.denyList),
       pure(tx, args.perTypeIndex, `u64`),
@@ -374,9 +424,10 @@ export interface V1PerTypeListContainsArgs {
 export function v1PerTypeListContains(
   tx: Transaction,
   args: V1PerTypeListContainsArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::v1_per_type_list_contains`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::v1_per_type_list_contains`,
     arguments: [
       obj(tx, args.list),
       pure(tx, args.type, `vector<u8>`),
@@ -389,16 +440,16 @@ export function v1PerTypeListContains(
  * Creation of the deny list object is restricted to the system address
  * via a system transaction.
  */
-export function create(tx: Transaction): TransactionResult {
+export function create(tx: Transaction, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::create`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::create`,
     arguments: [],
   })
 }
 
-export function perTypeList(tx: Transaction): TransactionResult {
+export function perTypeList(tx: Transaction, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::deny_list::per_type_list`,
+    target: `${getPublishedAt('sui', options?.env)}::deny_list::per_type_list`,
     arguments: [],
   })
 }

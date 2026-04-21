@@ -4,14 +4,19 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 import { String } from '../../std/string/structs'
 
 /** Returns the address associated with the given VerifiedID */
-export function owner(tx: Transaction, verifiedId: TransactionObjectInput): TransactionResult {
+export function owner(
+  tx: Transaction,
+  verifiedId: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::zklogin_verified_id::owner`,
+    target: `${getPublishedAt('sui', options?.env)}::zklogin_verified_id::owner`,
     arguments: [obj(tx, verifiedId)],
   })
 }
@@ -20,9 +25,10 @@ export function owner(tx: Transaction, verifiedId: TransactionObjectInput): Tran
 export function keyClaimName(
   tx: Transaction,
   verifiedId: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::zklogin_verified_id::key_claim_name`,
+    target: `${getPublishedAt('sui', options?.env)}::zklogin_verified_id::key_claim_name`,
     arguments: [obj(tx, verifiedId)],
   })
 }
@@ -31,33 +37,46 @@ export function keyClaimName(
 export function keyClaimValue(
   tx: Transaction,
   verifiedId: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::zklogin_verified_id::key_claim_value`,
+    target: `${getPublishedAt('sui', options?.env)}::zklogin_verified_id::key_claim_value`,
     arguments: [obj(tx, verifiedId)],
   })
 }
 
 /** Returns the issuer associated with the given VerifiedID */
-export function issuer(tx: Transaction, verifiedId: TransactionObjectInput): TransactionResult {
+export function issuer(
+  tx: Transaction,
+  verifiedId: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::zklogin_verified_id::issuer`,
+    target: `${getPublishedAt('sui', options?.env)}::zklogin_verified_id::issuer`,
     arguments: [obj(tx, verifiedId)],
   })
 }
 
 /** Returns the audience (wallet) associated with the given VerifiedID */
-export function audience(tx: Transaction, verifiedId: TransactionObjectInput): TransactionResult {
+export function audience(
+  tx: Transaction,
+  verifiedId: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::zklogin_verified_id::audience`,
+    target: `${getPublishedAt('sui', options?.env)}::zklogin_verified_id::audience`,
     arguments: [obj(tx, verifiedId)],
   })
 }
 
 /** Delete a VerifiedID */
-export function delete_(tx: Transaction, verifiedId: TransactionObjectInput): TransactionResult {
+export function delete_(
+  tx: Transaction,
+  verifiedId: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::zklogin_verified_id::delete`,
+    target: `${getPublishedAt('sui', options?.env)}::zklogin_verified_id::delete`,
     arguments: [obj(tx, verifiedId)],
   })
 }
@@ -71,9 +90,13 @@ export interface VerifyZkloginIdArgs {
 }
 
 /** This function has been disabled. */
-export function verifyZkloginId(tx: Transaction, args: VerifyZkloginIdArgs): TransactionResult {
+export function verifyZkloginId(
+  tx: Transaction,
+  args: VerifyZkloginIdArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::zklogin_verified_id::verify_zklogin_id`,
+    target: `${getPublishedAt('sui', options?.env)}::zklogin_verified_id::verify_zklogin_id`,
     arguments: [
       pure(tx, args.keyClaimName, `${String.$typeName}`),
       pure(tx, args.keyClaimValue, `${String.$typeName}`),
@@ -94,9 +117,13 @@ export interface CheckZkloginIdArgs {
 }
 
 /** This function has been disabled. */
-export function checkZkloginId(tx: Transaction, args: CheckZkloginIdArgs): TransactionResult {
+export function checkZkloginId(
+  tx: Transaction,
+  args: CheckZkloginIdArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::zklogin_verified_id::check_zklogin_id`,
+    target: `${getPublishedAt('sui', options?.env)}::zklogin_verified_id::check_zklogin_id`,
     arguments: [
       pure(tx, args.address, `address`),
       pure(tx, args.keyClaimName, `${String.$typeName}`),
@@ -127,9 +154,12 @@ export interface CheckZkloginIdInternalArgs {
 export function checkZkloginIdInternal(
   tx: Transaction,
   args: CheckZkloginIdInternalArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::zklogin_verified_id::check_zklogin_id_internal`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::zklogin_verified_id::check_zklogin_id_internal`,
     arguments: [
       pure(tx, args.address, `address`),
       pure(tx, args.keyClaimName, `vector<u8>`),

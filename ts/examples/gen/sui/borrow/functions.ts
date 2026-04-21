@@ -4,13 +4,19 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj } from '../../_framework/util'
 
 /** Create a new `Referent` struct */
-export function new_(tx: Transaction, typeArg: string, value: GenericArg): TransactionResult {
+export function new_(
+  tx: Transaction,
+  typeArg: string,
+  value: GenericArg,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::borrow::new`,
+    target: `${getPublishedAt('sui', options?.env)}::borrow::new`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, value)],
   })
@@ -24,9 +30,10 @@ export function borrow(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::borrow::borrow`,
+    target: `${getPublishedAt('sui', options?.env)}::borrow::borrow`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -39,9 +46,14 @@ export interface PutBackArgs {
 }
 
 /** Put an object and the `Borrow` hot potato back. */
-export function putBack(tx: Transaction, typeArg: string, args: PutBackArgs): TransactionResult {
+export function putBack(
+  tx: Transaction,
+  typeArg: string,
+  args: PutBackArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::borrow::put_back`,
+    target: `${getPublishedAt('sui', options?.env)}::borrow::put_back`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -56,9 +68,10 @@ export function destroy(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::borrow::destroy`,
+    target: `${getPublishedAt('sui', options?.env)}::borrow::destroy`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })

@@ -48,6 +48,70 @@ export function registerEnv(name: string, config: EnvConfig): void {
 }
 
 /**
+ * Get a registered environment configuration by name.
+ * Useful when building an ad-hoc config derived from a known env, e.g. via `cloneEnv`.
+ * @throws Error if the environment is not registered.
+ */
+export function getEnv(name: string): EnvConfig {
+  const config = envRegistry[name]
+  if (!config) {
+    const available = Object.keys(envRegistry).join(', ') || '(none registered)'
+    throw new Error(`Environment '${name}' not found. Available: ${available}`)
+  }
+  return config
+}
+
+/**
+ * Produce a new `EnvConfig` by shallow-merging `overrides` onto `base`, per package.
+ *
+ * Only the fields you provide on each package are replaced — other fields (including
+ * the untouched packages) are preserved by reference. Useful for creating a scoped
+ * env for a single call (e.g. to target a historical `publishedAt`) without mutating
+ * any shared state.
+ *
+ * @example
+ *   const historical = cloneEnv(getEnv('mainnet'), {
+ *     packages: { 'kai-leverage': { publishedAt: '0x...' } },
+ *   })
+ *   createRebalanceReceipt(tx, typeArgs, args, { env: historical })
+ */
+export function cloneEnv(
+  base: EnvConfig,
+  overrides?: {
+    packages?: Record<string, Partial<PackageConfig>>
+    dependencies?: Record<string, Partial<PackageConfig>>
+  },
+): EnvConfig {
+  const mergeSection = (
+    section: Record<string, PackageConfig>,
+    patch: Record<string, Partial<PackageConfig>> | undefined,
+  ): Record<string, PackageConfig> => {
+    if (!patch) return { ...section }
+    const merged: Record<string, PackageConfig> = { ...section }
+    for (const [pkgName, pkgPatch] of Object.entries(patch)) {
+      const prior = section[pkgName]
+      if (!prior) {
+        throw new Error(
+          `cloneEnv: cannot override unknown package '${pkgName}'. `
+            + `Available: ${Object.keys(section).join(', ') || '(none)'}`,
+        )
+      }
+      merged[pkgName] = {
+        ...prior,
+        ...pkgPatch,
+        typeOrigins: { ...prior.typeOrigins, ...(pkgPatch.typeOrigins ?? {}) },
+      }
+    }
+    return merged
+  }
+
+  return {
+    packages: mergeSection(base.packages, overrides?.packages),
+    dependencies: mergeSection(base.dependencies, overrides?.dependencies),
+  }
+}
+
+/**
  * Set the active environment by name.
  * @param name - The name of a registered environment
  * @param overrides - Optional map of package names to publishedAt addresses to override
@@ -105,14 +169,30 @@ export function getRegisteredEnvs(): string[] {
 }
 
 /**
+ * Describe the env source for error messages: either a caller-supplied scope or
+ * the current active env (named).
+ */
+function envScopeLabel(env: EnvConfig | undefined): string {
+  return env ? 'supplied environment' : `active environment '${activeEnvName}'`
+}
+
+/**
+ * Resolve an `EnvConfig` for a read: use the caller-supplied one if present, else
+ * fall back to the active global env. A missing active env throws.
+ */
+function resolveEnv(env?: EnvConfig): EnvConfig {
+  return env ?? getActiveEnv()
+}
+
+/**
  * Get configuration for a top-level package.
  * @throws Error if package not found
  */
-export function getPackageConfig(pkgName: string): PackageConfig {
-  const env = getActiveEnv()
-  const config = env.packages[pkgName]
+export function getPackageConfig(pkgName: string, env?: EnvConfig): PackageConfig {
+  const source = resolveEnv(env)
+  const config = source.packages[pkgName]
   if (!config) {
-    throw new Error(`Package '${pkgName}' not found in active environment '${activeEnvName}'`)
+    throw new Error(`Package '${pkgName}' not found in ${envScopeLabel(env)}`)
   }
   return config
 }
@@ -121,29 +201,40 @@ export function getPackageConfig(pkgName: string): PackageConfig {
  * Get configuration for a dependency package.
  * @throws Error if dependency not found
  */
-export function getDependencyConfig(pkgName: string): PackageConfig {
-  const env = getActiveEnv()
-  const config = env.dependencies[pkgName]
+export function getDependencyConfig(pkgName: string, env?: EnvConfig): PackageConfig {
+  const source = resolveEnv(env)
+  const config = source.dependencies[pkgName]
   if (!config) {
-    throw new Error(`Dependency '${pkgName}' not found in active environment '${activeEnvName}'`)
+    throw new Error(`Dependency '${pkgName}' not found in ${envScopeLabel(env)}`)
   }
   return config
 }
 
 /**
  * Get the publishedAt address for function calls.
- * Works for both packages and dependencies.
- * Checks publishedAtOverrides first if set via setActiveEnv/setActiveEnvWithConfig.
+ *
+ * When an explicit `env` is supplied, it is authoritative and the module-level
+ * `publishedAtOverrides` (set via `setActiveEnv`) are ignored — callers that pass
+ * their own env own their own scope. Otherwise the active env is used with overrides
+ * applied on top.
+ *
  * @throws Error if package not found
  */
-export function getPublishedAt(pkgName: string): string {
-  // Check overrides first
+export function getPublishedAt(pkgName: string, env?: EnvConfig): string {
+  if (env) {
+    const config = env.packages[pkgName] || env.dependencies[pkgName]
+    if (!config) {
+      throw new Error(`Package '${pkgName}' not found in supplied environment`)
+    }
+    return config.publishedAt
+  }
+
   if (publishedAtOverrides[pkgName]) {
     return publishedAtOverrides[pkgName]
   }
 
-  const env = getActiveEnv()
-  const config = env.packages[pkgName] || env.dependencies[pkgName]
+  const active = getActiveEnv()
+  const config = active.packages[pkgName] || active.dependencies[pkgName]
   if (!config) {
     throw new Error(`Package '${pkgName}' not found in active environment '${activeEnvName}'`)
   }
@@ -157,11 +248,11 @@ export function getPublishedAt(pkgName: string): string {
  * @param moduleTypePath - "module::TypeName" format (e.g., "balance::Balance")
  * @throws Error if package or type origin not found
  */
-export function getTypeOrigin(pkgName: string, moduleTypePath: string): string {
-  const env = getActiveEnv()
-  const config = env.packages[pkgName] || env.dependencies[pkgName]
+export function getTypeOrigin(pkgName: string, moduleTypePath: string, env?: EnvConfig): string {
+  const source = resolveEnv(env)
+  const config = source.packages[pkgName] || source.dependencies[pkgName]
   if (!config) {
-    throw new Error(`Package '${pkgName}' not found in active environment '${activeEnvName}'`)
+    throw new Error(`Package '${pkgName}' not found in ${envScopeLabel(env)}`)
   }
   const origin = config.typeOrigins[moduleTypePath]
   if (!origin) {
@@ -178,11 +269,11 @@ export function getTypeOrigin(pkgName: string, moduleTypePath: string): string {
  * Works for both packages and dependencies.
  * @throws Error if package not found
  */
-export function getOriginalId(pkgName: string): string {
-  const env = getActiveEnv()
-  const config = env.packages[pkgName] || env.dependencies[pkgName]
+export function getOriginalId(pkgName: string, env?: EnvConfig): string {
+  const source = resolveEnv(env)
+  const config = source.packages[pkgName] || source.dependencies[pkgName]
   if (!config) {
-    throw new Error(`Package '${pkgName}' not found in active environment '${activeEnvName}'`)
+    throw new Error(`Package '${pkgName}' not found in ${envScopeLabel(env)}`)
   }
   return config.originalId
 }
@@ -195,11 +286,11 @@ export function getOriginalId(pkgName: string): string {
  * @returns Array of unique addresses, sorted for determinism
  * @throws Error if package not found
  */
-export function getTypeOriginAddresses(pkgName: string): string[] {
-  const env = getActiveEnv()
-  const config = env.packages[pkgName] || env.dependencies[pkgName]
+export function getTypeOriginAddresses(pkgName: string, env?: EnvConfig): string[] {
+  const source = resolveEnv(env)
+  const config = source.packages[pkgName] || source.dependencies[pkgName]
   if (!config) {
-    throw new Error(`Package '${pkgName}' not found in active environment '${activeEnvName}'`)
+    throw new Error(`Package '${pkgName}' not found in ${envScopeLabel(env)}`)
   }
   const uniqueAddresses = new Set(Object.values(config.typeOrigins))
   return Array.from(uniqueAddresses).sort()
@@ -214,11 +305,15 @@ export function getTypeOriginAddresses(pkgName: string): string[] {
  * @returns Array of unique addresses, sorted for determinism
  * @throws Error if package not found or any type origin not found
  */
-export function getTypeOriginAddressesFor(pkgName: string, moduleTypePaths: string[]): string[] {
-  const env = getActiveEnv()
-  const config = env.packages[pkgName] || env.dependencies[pkgName]
+export function getTypeOriginAddressesFor(
+  pkgName: string,
+  moduleTypePaths: string[],
+  env?: EnvConfig,
+): string[] {
+  const source = resolveEnv(env)
+  const config = source.packages[pkgName] || source.dependencies[pkgName]
   if (!config) {
-    throw new Error(`Package '${pkgName}' not found in active environment '${activeEnvName}'`)
+    throw new Error(`Package '${pkgName}' not found in ${envScopeLabel(env)}`)
   }
   const addresses = new Set<string>()
   for (const path of moduleTypePaths) {

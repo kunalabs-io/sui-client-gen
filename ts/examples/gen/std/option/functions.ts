@@ -4,40 +4,60 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, option } from '../../_framework/util'
 
 /** Return an empty `Option` */
-export function none(tx: Transaction, typeArg: string): TransactionResult {
+export function none(
+  tx: Transaction,
+  typeArg: string,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::none`,
+    target: `${getPublishedAt('std', options?.env)}::option::none`,
     typeArguments: [typeArg],
     arguments: [],
   })
 }
 
 /** Return an `Option` containing `e` */
-export function some(tx: Transaction, typeArg: string, e: GenericArg): TransactionResult {
+export function some(
+  tx: Transaction,
+  typeArg: string,
+  e: GenericArg,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::some`,
+    target: `${getPublishedAt('std', options?.env)}::option::some`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, e)],
   })
 }
 
 /** Return true if `t` does not hold a value */
-export function isNone(tx: Transaction, typeArg: string, t: GenericArg | null): TransactionResult {
+export function isNone(
+  tx: Transaction,
+  typeArg: string,
+  t: GenericArg | null,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::is_none`,
+    target: `${getPublishedAt('std', options?.env)}::option::is_none`,
     typeArguments: [typeArg],
     arguments: [option(tx, `${typeArg}`, t)],
   })
 }
 
 /** Return true if `t` holds a value */
-export function isSome(tx: Transaction, typeArg: string, t: GenericArg | null): TransactionResult {
+export function isSome(
+  tx: Transaction,
+  typeArg: string,
+  t: GenericArg | null,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::is_some`,
+    target: `${getPublishedAt('std', options?.env)}::option::is_some`,
     typeArguments: [typeArg],
     arguments: [option(tx, `${typeArg}`, t)],
   })
@@ -52,9 +72,14 @@ export interface ContainsArgs {
  * Return true if the value in `t` is equal to `e_ref`
  * Always returns `false` if `t` does not hold a value
  */
-export function contains(tx: Transaction, typeArg: string, args: ContainsArgs): TransactionResult {
+export function contains(
+  tx: Transaction,
+  typeArg: string,
+  args: ContainsArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::contains`,
+    target: `${getPublishedAt('std', options?.env)}::option::contains`,
     typeArguments: [typeArg],
     arguments: [
       option(tx, `${typeArg}`, args.t),
@@ -67,9 +92,14 @@ export function contains(tx: Transaction, typeArg: string, args: ContainsArgs): 
  * Return an immutable reference to the value inside `t`
  * Aborts if `t` does not hold a value
  */
-export function borrow(tx: Transaction, typeArg: string, t: GenericArg | null): TransactionResult {
+export function borrow(
+  tx: Transaction,
+  typeArg: string,
+  t: GenericArg | null,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::borrow`,
+    target: `${getPublishedAt('std', options?.env)}::option::borrow`,
     typeArguments: [typeArg],
     arguments: [option(tx, `${typeArg}`, t)],
   })
@@ -88,9 +118,10 @@ export function borrowWithDefault(
   tx: Transaction,
   typeArg: string,
   args: BorrowWithDefaultArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::borrow_with_default`,
+    target: `${getPublishedAt('std', options?.env)}::option::borrow_with_default`,
     typeArguments: [typeArg],
     arguments: [
       option(tx, `${typeArg}`, args.t),
@@ -112,9 +143,10 @@ export function getWithDefault(
   tx: Transaction,
   typeArg: string,
   args: GetWithDefaultArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::get_with_default`,
+    target: `${getPublishedAt('std', options?.env)}::option::get_with_default`,
     typeArguments: [typeArg],
     arguments: [
       option(tx, `${typeArg}`, args.t),
@@ -132,9 +164,14 @@ export interface FillArgs {
  * Convert the none option `t` to a some option by adding `e`.
  * Aborts if `t` already holds a value
  */
-export function fill(tx: Transaction, typeArg: string, args: FillArgs): TransactionResult {
+export function fill(
+  tx: Transaction,
+  typeArg: string,
+  args: FillArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::fill`,
+    target: `${getPublishedAt('std', options?.env)}::option::fill`,
     typeArguments: [typeArg],
     arguments: [
       option(tx, `${typeArg}`, args.t),
@@ -147,9 +184,14 @@ export function fill(tx: Transaction, typeArg: string, args: FillArgs): Transact
  * Convert a `some` option to a `none` by removing and returning the value stored inside `t`
  * Aborts if `t` does not hold a value
  */
-export function extract(tx: Transaction, typeArg: string, t: GenericArg | null): TransactionResult {
+export function extract(
+  tx: Transaction,
+  typeArg: string,
+  t: GenericArg | null,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::extract`,
+    target: `${getPublishedAt('std', options?.env)}::option::extract`,
     typeArguments: [typeArg],
     arguments: [option(tx, `${typeArg}`, t)],
   })
@@ -163,9 +205,10 @@ export function borrowMut(
   tx: Transaction,
   typeArg: string,
   t: GenericArg | null,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::borrow_mut`,
+    target: `${getPublishedAt('std', options?.env)}::option::borrow_mut`,
     typeArguments: [typeArg],
     arguments: [option(tx, `${typeArg}`, t)],
   })
@@ -180,9 +223,14 @@ export interface SwapArgs {
  * Swap the old value inside `t` with `e` and return the old value
  * Aborts if `t` does not hold a value
  */
-export function swap(tx: Transaction, typeArg: string, args: SwapArgs): TransactionResult {
+export function swap(
+  tx: Transaction,
+  typeArg: string,
+  args: SwapArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::swap`,
+    target: `${getPublishedAt('std', options?.env)}::option::swap`,
     typeArguments: [typeArg],
     arguments: [
       option(tx, `${typeArg}`, args.t),
@@ -205,9 +253,10 @@ export function swapOrFill(
   tx: Transaction,
   typeArg: string,
   args: SwapOrFillArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::swap_or_fill`,
+    target: `${getPublishedAt('std', options?.env)}::option::swap_or_fill`,
     typeArguments: [typeArg],
     arguments: [
       option(tx, `${typeArg}`, args.t),
@@ -226,9 +275,10 @@ export function destroyWithDefault(
   tx: Transaction,
   typeArg: string,
   args: DestroyWithDefaultArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::destroy_with_default`,
+    target: `${getPublishedAt('std', options?.env)}::option::destroy_with_default`,
     typeArguments: [typeArg],
     arguments: [
       option(tx, `${typeArg}`, args.t),
@@ -245,9 +295,10 @@ export function destroySome(
   tx: Transaction,
   typeArg: string,
   t: GenericArg | null,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::destroy_some`,
+    target: `${getPublishedAt('std', options?.env)}::option::destroy_some`,
     typeArguments: [typeArg],
     arguments: [option(tx, `${typeArg}`, t)],
   })
@@ -261,9 +312,10 @@ export function destroyNone(
   tx: Transaction,
   typeArg: string,
   t: GenericArg | null,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::destroy_none`,
+    target: `${getPublishedAt('std', options?.env)}::option::destroy_none`,
     typeArguments: [typeArg],
     arguments: [option(tx, `${typeArg}`, t)],
   })
@@ -273,9 +325,14 @@ export function destroyNone(
  * Convert `t` into a vector of length 1 if it is `Some`,
  * and an empty vector otherwise
  */
-export function toVec(tx: Transaction, typeArg: string, t: GenericArg | null): TransactionResult {
+export function toVec(
+  tx: Transaction,
+  typeArg: string,
+  t: GenericArg | null,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::option::to_vec`,
+    target: `${getPublishedAt('std', options?.env)}::option::to_vec`,
     typeArguments: [typeArg],
     arguments: [option(tx, `${typeArg}`, t)],
   })

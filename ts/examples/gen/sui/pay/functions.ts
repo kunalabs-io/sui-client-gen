@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { obj, pure, vector } from '../../_framework/util'
 import { Coin } from '../coin/structs'
@@ -13,9 +14,10 @@ export function keep(
   tx: Transaction,
   typeArg: string,
   c: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::pay::keep`,
+    target: `${getPublishedAt('sui', options?.env)}::pay::keep`,
     typeArguments: [typeArg],
     arguments: [obj(tx, c)],
   })
@@ -30,9 +32,14 @@ export interface SplitArgs {
  * Split `coin` to two coins, one with balance `split_amount`,
  * and the remaining balance is left in `coin`.
  */
-export function split(tx: Transaction, typeArg: string, args: SplitArgs): TransactionResult {
+export function split(
+  tx: Transaction,
+  typeArg: string,
+  args: SplitArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::pay::split`,
+    target: `${getPublishedAt('sui', options?.env)}::pay::split`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.coin),
@@ -50,9 +57,14 @@ export interface SplitVecArgs {
  * Split coin `self` into multiple coins, each with balance specified
  * in `split_amounts`. Remaining balance is left in `self`.
  */
-export function splitVec(tx: Transaction, typeArg: string, args: SplitVecArgs): TransactionResult {
+export function splitVec(
+  tx: Transaction,
+  typeArg: string,
+  args: SplitVecArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::pay::split_vec`,
+    target: `${getPublishedAt('sui', options?.env)}::pay::split_vec`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -75,9 +87,10 @@ export function splitAndTransfer(
   tx: Transaction,
   typeArg: string,
   args: SplitAndTransferArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::pay::split_and_transfer`,
+    target: `${getPublishedAt('sui', options?.env)}::pay::split_and_transfer`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.c),
@@ -100,9 +113,10 @@ export function divideAndKeep(
   tx: Transaction,
   typeArg: string,
   args: DivideAndKeepArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::pay::divide_and_keep`,
+    target: `${getPublishedAt('sui', options?.env)}::pay::divide_and_keep`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -120,9 +134,14 @@ export interface JoinArgs {
  * Join `coin` into `self`. Re-exports `coin::join` function.
  * Deprecated: you should call `coin.join(other)` directly.
  */
-export function join(tx: Transaction, typeArg: string, args: JoinArgs): TransactionResult {
+export function join(
+  tx: Transaction,
+  typeArg: string,
+  args: JoinArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::pay::join`,
+    target: `${getPublishedAt('sui', options?.env)}::pay::join`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -137,9 +156,14 @@ export interface JoinVecArgs {
 }
 
 /** Join everything in `coins` with `self` */
-export function joinVec(tx: Transaction, typeArg: string, args: JoinVecArgs): TransactionResult {
+export function joinVec(
+  tx: Transaction,
+  typeArg: string,
+  args: JoinVecArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::pay::join_vec`,
+    target: `${getPublishedAt('sui', options?.env)}::pay::join_vec`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -158,9 +182,10 @@ export function joinVecAndTransfer(
   tx: Transaction,
   typeArg: string,
   args: JoinVecAndTransferArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::pay::join_vec_and_transfer`,
+    target: `${getPublishedAt('sui', options?.env)}::pay::join_vec_and_transfer`,
     typeArguments: [typeArg],
     arguments: [
       vector(tx, `${Coin.$typeName}<${typeArg}>`, args.coins),

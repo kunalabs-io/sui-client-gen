@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj, pure } from '../../_framework/util'
 
@@ -13,9 +14,14 @@ export interface CreateArgs {
 }
 
 /** Create a new Versioned object that contains a initial value of type `T` with an initial version. */
-export function create(tx: Transaction, typeArg: string, args: CreateArgs): TransactionResult {
+export function create(
+  tx: Transaction,
+  typeArg: string,
+  args: CreateArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::versioned::create`,
+    target: `${getPublishedAt('sui', options?.env)}::versioned::create`,
     typeArguments: [typeArg],
     arguments: [
       pure(tx, args.initVersion, `u64`),
@@ -25,9 +31,13 @@ export function create(tx: Transaction, typeArg: string, args: CreateArgs): Tran
 }
 
 /** Get the current version of the inner type. */
-export function version(tx: Transaction, self: TransactionObjectInput): TransactionResult {
+export function version(
+  tx: Transaction,
+  self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::versioned::version`,
+    target: `${getPublishedAt('sui', options?.env)}::versioned::version`,
     arguments: [obj(tx, self)],
   })
 }
@@ -40,9 +50,10 @@ export function loadValue(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::versioned::load_value`,
+    target: `${getPublishedAt('sui', options?.env)}::versioned::load_value`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -53,9 +64,10 @@ export function loadValueMut(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::versioned::load_value_mut`,
+    target: `${getPublishedAt('sui', options?.env)}::versioned::load_value_mut`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -69,9 +81,10 @@ export function removeValueForUpgrade(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::versioned::remove_value_for_upgrade`,
+    target: `${getPublishedAt('sui', options?.env)}::versioned::remove_value_for_upgrade`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -88,9 +101,14 @@ export interface UpgradeArgs {
  * Upgrade the inner object with a new version and new value. Must use the capability returned
  * by calling remove_value_for_upgrade.
  */
-export function upgrade(tx: Transaction, typeArg: string, args: UpgradeArgs): TransactionResult {
+export function upgrade(
+  tx: Transaction,
+  typeArg: string,
+  args: UpgradeArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::versioned::upgrade`,
+    target: `${getPublishedAt('sui', options?.env)}::versioned::upgrade`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -106,9 +124,10 @@ export function destroy(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::versioned::destroy`,
+    target: `${getPublishedAt('sui', options?.env)}::versioned::destroy`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })

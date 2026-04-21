@@ -4,13 +4,18 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, pure, vector } from '../../_framework/util'
 
 /** Create an empty vector. */
-export function empty(tx: Transaction, typeArg: string): TransactionResult {
+export function empty(
+  tx: Transaction,
+  typeArg: string,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::empty`,
+    target: `${getPublishedAt('std', options?.env)}::vector::empty`,
     typeArguments: [typeArg],
     arguments: [],
   })
@@ -21,9 +26,10 @@ export function length(
   tx: Transaction,
   typeArg: string,
   v: Array<GenericArg> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::length`,
+    target: `${getPublishedAt('std', options?.env)}::vector::length`,
     typeArguments: [typeArg],
     arguments: [vector(tx, `${typeArg}`, v)],
   })
@@ -38,9 +44,14 @@ export interface BorrowArgs {
  * Acquire an immutable reference to the `i`th element of the vector `v`.
  * Aborts if `i` is out of bounds.
  */
-export function borrow(tx: Transaction, typeArg: string, args: BorrowArgs): TransactionResult {
+export function borrow(
+  tx: Transaction,
+  typeArg: string,
+  args: BorrowArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::borrow`,
+    target: `${getPublishedAt('std', options?.env)}::vector::borrow`,
     typeArguments: [typeArg],
     arguments: [
       vector(tx, `${typeArg}`, args.v),
@@ -55,9 +66,14 @@ export interface PushBackArgs {
 }
 
 /** Add element `e` to the end of the vector `v`. */
-export function pushBack(tx: Transaction, typeArg: string, args: PushBackArgs): TransactionResult {
+export function pushBack(
+  tx: Transaction,
+  typeArg: string,
+  args: PushBackArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::push_back`,
+    target: `${getPublishedAt('std', options?.env)}::vector::push_back`,
     typeArguments: [typeArg],
     arguments: [
       vector(tx, `${typeArg}`, args.v),
@@ -79,9 +95,10 @@ export function borrowMut(
   tx: Transaction,
   typeArg: string,
   args: BorrowMutArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::borrow_mut`,
+    target: `${getPublishedAt('std', options?.env)}::vector::borrow_mut`,
     typeArguments: [typeArg],
     arguments: [
       vector(tx, `${typeArg}`, args.v),
@@ -98,9 +115,10 @@ export function popBack(
   tx: Transaction,
   typeArg: string,
   v: Array<GenericArg> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::pop_back`,
+    target: `${getPublishedAt('std', options?.env)}::vector::pop_back`,
     typeArguments: [typeArg],
     arguments: [vector(tx, `${typeArg}`, v)],
   })
@@ -114,9 +132,10 @@ export function destroyEmpty(
   tx: Transaction,
   typeArg: string,
   v: Array<GenericArg> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::destroy_empty`,
+    target: `${getPublishedAt('std', options?.env)}::vector::destroy_empty`,
     typeArguments: [typeArg],
     arguments: [vector(tx, `${typeArg}`, v)],
   })
@@ -132,9 +151,14 @@ export interface SwapArgs {
  * Swaps the elements at the `i`th and `j`th indices in the vector `v`.
  * Aborts if `i` or `j` is out of bounds.
  */
-export function swap(tx: Transaction, typeArg: string, args: SwapArgs): TransactionResult {
+export function swap(
+  tx: Transaction,
+  typeArg: string,
+  args: SwapArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::swap`,
+    target: `${getPublishedAt('std', options?.env)}::vector::swap`,
     typeArguments: [typeArg],
     arguments: [
       vector(tx, `${typeArg}`, args.v),
@@ -145,9 +169,14 @@ export function swap(tx: Transaction, typeArg: string, args: SwapArgs): Transact
 }
 
 /** Return an vector of size one containing element `e`. */
-export function singleton(tx: Transaction, typeArg: string, e: GenericArg): TransactionResult {
+export function singleton(
+  tx: Transaction,
+  typeArg: string,
+  e: GenericArg,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::singleton`,
+    target: `${getPublishedAt('std', options?.env)}::vector::singleton`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, e)],
   })
@@ -158,9 +187,10 @@ export function reverse(
   tx: Transaction,
   typeArg: string,
   v: Array<GenericArg> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::reverse`,
+    target: `${getPublishedAt('std', options?.env)}::vector::reverse`,
     typeArguments: [typeArg],
     arguments: [vector(tx, `${typeArg}`, v)],
   })
@@ -172,9 +202,14 @@ export interface AppendArgs {
 }
 
 /** Pushes all of the elements of the `other` vector into the `lhs` vector. */
-export function append(tx: Transaction, typeArg: string, args: AppendArgs): TransactionResult {
+export function append(
+  tx: Transaction,
+  typeArg: string,
+  args: AppendArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::append`,
+    target: `${getPublishedAt('std', options?.env)}::vector::append`,
     typeArguments: [typeArg],
     arguments: [
       vector(tx, `${typeArg}`, args.lhs),
@@ -188,9 +223,10 @@ export function isEmpty(
   tx: Transaction,
   typeArg: string,
   v: Array<GenericArg> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::is_empty`,
+    target: `${getPublishedAt('std', options?.env)}::vector::is_empty`,
     typeArguments: [typeArg],
     arguments: [vector(tx, `${typeArg}`, v)],
   })
@@ -205,9 +241,14 @@ export interface ContainsArgs {
  * Return true if `e` is in the vector `v`.
  * Otherwise, returns false.
  */
-export function contains(tx: Transaction, typeArg: string, args: ContainsArgs): TransactionResult {
+export function contains(
+  tx: Transaction,
+  typeArg: string,
+  args: ContainsArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::contains`,
+    target: `${getPublishedAt('std', options?.env)}::vector::contains`,
     typeArguments: [typeArg],
     arguments: [
       vector(tx, `${typeArg}`, args.v),
@@ -225,9 +266,14 @@ export interface IndexOfArgs {
  * Return `(true, i)` if `e` is in the vector `v` at index `i`.
  * Otherwise, returns `(false, 0)`.
  */
-export function indexOf(tx: Transaction, typeArg: string, args: IndexOfArgs): TransactionResult {
+export function indexOf(
+  tx: Transaction,
+  typeArg: string,
+  args: IndexOfArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::index_of`,
+    target: `${getPublishedAt('std', options?.env)}::vector::index_of`,
     typeArguments: [typeArg],
     arguments: [
       vector(tx, `${typeArg}`, args.v),
@@ -246,9 +292,14 @@ export interface RemoveArgs {
  * This is O(n) and preserves ordering of elements in the vector.
  * Aborts if `i` is out of bounds.
  */
-export function remove(tx: Transaction, typeArg: string, args: RemoveArgs): TransactionResult {
+export function remove(
+  tx: Transaction,
+  typeArg: string,
+  args: RemoveArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::remove`,
+    target: `${getPublishedAt('std', options?.env)}::vector::remove`,
     typeArguments: [typeArg],
     arguments: [
       vector(tx, `${typeArg}`, args.v),
@@ -270,9 +321,14 @@ export interface InsertArgs {
  * This is O(n) and preserves ordering of elements in the vector.
  * Aborts if `i > v.length()`
  */
-export function insert(tx: Transaction, typeArg: string, args: InsertArgs): TransactionResult {
+export function insert(
+  tx: Transaction,
+  typeArg: string,
+  args: InsertArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::insert`,
+    target: `${getPublishedAt('std', options?.env)}::vector::insert`,
     typeArguments: [typeArg],
     arguments: [
       vector(tx, `${typeArg}`, args.v),
@@ -296,9 +352,10 @@ export function swapRemove(
   tx: Transaction,
   typeArg: string,
   args: SwapRemoveArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::swap_remove`,
+    target: `${getPublishedAt('std', options?.env)}::vector::swap_remove`,
     typeArguments: [typeArg],
     arguments: [
       vector(tx, `${typeArg}`, args.v),
@@ -316,9 +373,14 @@ export interface SkipArgs {
  * Return a new vector containing the elements of `v` except the first `n` elements.
  * If `n > length`, returns an empty vector.
  */
-export function skip(tx: Transaction, typeArg: string, args: SkipArgs): TransactionResult {
+export function skip(
+  tx: Transaction,
+  typeArg: string,
+  args: SkipArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::skip`,
+    target: `${getPublishedAt('std', options?.env)}::vector::skip`,
     typeArguments: [typeArg],
     arguments: [
       vector(tx, `${typeArg}`, args.v),
@@ -336,9 +398,14 @@ export interface TakeArgs {
  * Take the first `n` elements of the vector `v` and drop the rest.
  * Aborts if `n` is greater than the length of `v`.
  */
-export function take(tx: Transaction, typeArg: string, args: TakeArgs): TransactionResult {
+export function take(
+  tx: Transaction,
+  typeArg: string,
+  args: TakeArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::take`,
+    target: `${getPublishedAt('std', options?.env)}::vector::take`,
     typeArguments: [typeArg],
     arguments: [
       vector(tx, `${typeArg}`, args.v),
@@ -352,9 +419,10 @@ export function flatten(
   tx: Transaction,
   typeArg: string,
   v: Array<Array<GenericArg> | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::vector::flatten`,
+    target: `${getPublishedAt('std', options?.env)}::vector::flatten`,
     typeArguments: [typeArg],
     arguments: [vector(tx, `vector<${typeArg}>`, v)],
   })

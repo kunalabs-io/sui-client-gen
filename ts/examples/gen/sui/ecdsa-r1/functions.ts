@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 
@@ -28,9 +29,10 @@ export interface Secp256r1EcrecoverArgs {
 export function secp256r1Ecrecover(
   tx: Transaction,
   args: Secp256r1EcrecoverArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::ecdsa_r1::secp256r1_ecrecover`,
+    target: `${getPublishedAt('sui', options?.env)}::ecdsa_r1::secp256r1_ecrecover`,
     arguments: [
       pure(tx, args.signature, `vector<u8>`),
       pure(tx, args.msg, `vector<u8>`),
@@ -57,9 +59,13 @@ export interface Secp256r1VerifyArgs {
  *
  * If the signature is valid to the pubkey and hashed message, return true. Else false.
  */
-export function secp256r1Verify(tx: Transaction, args: Secp256r1VerifyArgs): TransactionResult {
+export function secp256r1Verify(
+  tx: Transaction,
+  args: Secp256r1VerifyArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::ecdsa_r1::secp256r1_verify`,
+    target: `${getPublishedAt('sui', options?.env)}::ecdsa_r1::secp256r1_verify`,
     arguments: [
       pure(tx, args.signature, `vector<u8>`),
       pure(tx, args.publicKey, `vector<u8>`),

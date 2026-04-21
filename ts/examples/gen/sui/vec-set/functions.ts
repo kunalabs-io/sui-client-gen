@@ -4,22 +4,32 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj, vector } from '../../_framework/util'
 
 /** Create an empty `VecSet` */
-export function empty(tx: Transaction, typeArg: string): TransactionResult {
+export function empty(
+  tx: Transaction,
+  typeArg: string,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::vec_set::empty`,
+    target: `${getPublishedAt('sui', options?.env)}::vec_set::empty`,
     typeArguments: [typeArg],
     arguments: [],
   })
 }
 
 /** Create a singleton `VecSet` that only contains one element. */
-export function singleton(tx: Transaction, typeArg: string, key: GenericArg): TransactionResult {
+export function singleton(
+  tx: Transaction,
+  typeArg: string,
+  key: GenericArg,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::vec_set::singleton`,
+    target: `${getPublishedAt('sui', options?.env)}::vec_set::singleton`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, key)],
   })
@@ -34,9 +44,14 @@ export interface InsertArgs {
  * Insert a `key` into self.
  * Aborts if `key` is already present in `self`.
  */
-export function insert(tx: Transaction, typeArg: string, args: InsertArgs): TransactionResult {
+export function insert(
+  tx: Transaction,
+  typeArg: string,
+  args: InsertArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::vec_set::insert`,
+    target: `${getPublishedAt('sui', options?.env)}::vec_set::insert`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -51,9 +66,14 @@ export interface RemoveArgs {
 }
 
 /** Remove the entry `key` from self. Aborts if `key` is not present in `self`. */
-export function remove(tx: Transaction, typeArg: string, args: RemoveArgs): TransactionResult {
+export function remove(
+  tx: Transaction,
+  typeArg: string,
+  args: RemoveArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::vec_set::remove`,
+    target: `${getPublishedAt('sui', options?.env)}::vec_set::remove`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -68,9 +88,14 @@ export interface ContainsArgs {
 }
 
 /** Return true if `self` contains an entry for `key`, false otherwise */
-export function contains(tx: Transaction, typeArg: string, args: ContainsArgs): TransactionResult {
+export function contains(
+  tx: Transaction,
+  typeArg: string,
+  args: ContainsArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::vec_set::contains`,
+    target: `${getPublishedAt('sui', options?.env)}::vec_set::contains`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -84,9 +109,10 @@ export function length(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::vec_set::length`,
+    target: `${getPublishedAt('sui', options?.env)}::vec_set::length`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -97,9 +123,10 @@ export function isEmpty(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::vec_set::is_empty`,
+    target: `${getPublishedAt('sui', options?.env)}::vec_set::is_empty`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -113,9 +140,10 @@ export function intoKeys(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::vec_set::into_keys`,
+    target: `${getPublishedAt('sui', options?.env)}::vec_set::into_keys`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -130,9 +158,10 @@ export function fromKeys(
   tx: Transaction,
   typeArg: string,
   keys: Array<GenericArg> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::vec_set::from_keys`,
+    target: `${getPublishedAt('sui', options?.env)}::vec_set::from_keys`,
     typeArguments: [typeArg],
     arguments: [vector(tx, `${typeArg}`, keys)],
   })
@@ -147,9 +176,10 @@ export function keys(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::vec_set::keys`,
+    target: `${getPublishedAt('sui', options?.env)}::vec_set::keys`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -164,9 +194,10 @@ export function size(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::vec_set::size`,
+    target: `${getPublishedAt('sui', options?.env)}::vec_set::size`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })

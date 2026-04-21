@@ -4,14 +4,19 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 import { String as String1 } from '../../std/ascii/structs'
 
 /** Create a `Url`, with no validation */
-export function newUnsafe(tx: Transaction, url: string | TransactionArgument): TransactionResult {
+export function newUnsafe(
+  tx: Transaction,
+  url: string | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::url::new_unsafe`,
+    target: `${getPublishedAt('sui', options?.env)}::url::new_unsafe`,
     arguments: [pure(tx, url, `${String1.$typeName}`)],
   })
 }
@@ -23,17 +28,22 @@ export function newUnsafe(tx: Transaction, url: string | TransactionArgument): T
 export function newUnsafeFromBytes(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::url::new_unsafe_from_bytes`,
+    target: `${getPublishedAt('sui', options?.env)}::url::new_unsafe_from_bytes`,
     arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }
 
 /** Get inner URL */
-export function innerUrl(tx: Transaction, self: TransactionObjectInput): TransactionResult {
+export function innerUrl(
+  tx: Transaction,
+  self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::url::inner_url`,
+    target: `${getPublishedAt('sui', options?.env)}::url::inner_url`,
     arguments: [obj(tx, self)],
   })
 }
@@ -44,9 +54,13 @@ export interface UpdateArgs {
 }
 
 /** Update the inner URL */
-export function update(tx: Transaction, args: UpdateArgs): TransactionResult {
+export function update(
+  tx: Transaction,
+  args: UpdateArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::url::update`,
+    target: `${getPublishedAt('sui', options?.env)}::url::update`,
     arguments: [
       obj(tx, args.self),
       pure(tx, args.url, `${String1.$typeName}`),

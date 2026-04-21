@@ -4,14 +4,19 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 import { String as String1 } from './structs'
 
 /** Convert a `byte` into a `Char` that is checked to make sure it is valid ASCII. */
-export function char_(tx: Transaction, byte_: number | TransactionArgument): TransactionResult {
+export function char_(
+  tx: Transaction,
+  byte_: number | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::char`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::char`,
     arguments: [pure(tx, byte_, `u8`)],
   })
 }
@@ -23,9 +28,10 @@ export function char_(tx: Transaction, byte_: number | TransactionArgument): Tra
 export function string(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::string`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::string`,
     arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }
@@ -38,9 +44,10 @@ export function string(
 export function tryString(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::try_string`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::try_string`,
     arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }
@@ -52,9 +59,10 @@ export function tryString(
 export function allCharactersPrintable(
   tx: Transaction,
   string: string | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::all_characters_printable`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::all_characters_printable`,
     arguments: [pure(tx, string, `${String1.$typeName}`)],
   })
 }
@@ -65,9 +73,13 @@ export interface PushCharArgs {
 }
 
 /** Push a `Char` to the end of the `string`. */
-export function pushChar(tx: Transaction, args: PushCharArgs): TransactionResult {
+export function pushChar(
+  tx: Transaction,
+  args: PushCharArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::push_char`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::push_char`,
     arguments: [
       pure(tx, args.string, `${String1.$typeName}`),
       obj(tx, args.char),
@@ -76,17 +88,25 @@ export function pushChar(tx: Transaction, args: PushCharArgs): TransactionResult
 }
 
 /** Pop a `Char` from the end of the `string`. */
-export function popChar(tx: Transaction, string: string | TransactionArgument): TransactionResult {
+export function popChar(
+  tx: Transaction,
+  string: string | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::pop_char`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::pop_char`,
     arguments: [pure(tx, string, `${String1.$typeName}`)],
   })
 }
 
 /** Returns the length of the `string` in bytes. */
-export function length(tx: Transaction, string: string | TransactionArgument): TransactionResult {
+export function length(
+  tx: Transaction,
+  string: string | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::length`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::length`,
     arguments: [pure(tx, string, `${String1.$typeName}`)],
   })
 }
@@ -97,9 +117,13 @@ export interface AppendArgs {
 }
 
 /** Append the `other` string to the end of `string`. */
-export function append(tx: Transaction, args: AppendArgs): TransactionResult {
+export function append(
+  tx: Transaction,
+  args: AppendArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::append`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::append`,
     arguments: [
       pure(tx, args.string, `${String1.$typeName}`),
       pure(tx, args.other, `${String1.$typeName}`),
@@ -114,9 +138,13 @@ export interface InsertArgs {
 }
 
 /** Insert the `other` string at the `at` index of `string`. */
-export function insert(tx: Transaction, args: InsertArgs): TransactionResult {
+export function insert(
+  tx: Transaction,
+  args: InsertArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::insert`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::insert`,
     arguments: [
       pure(tx, args.s, `${String1.$typeName}`),
       pure(tx, args.at, `u64`),
@@ -132,9 +160,13 @@ export interface SubstringArgs {
 }
 
 /** Copy the slice of the `string` from `i` to `j` into a new `String`. */
-export function substring(tx: Transaction, args: SubstringArgs): TransactionResult {
+export function substring(
+  tx: Transaction,
+  args: SubstringArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::substring`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::substring`,
     arguments: [
       pure(tx, args.string, `${String1.$typeName}`),
       pure(tx, args.i, `u64`),
@@ -144,9 +176,13 @@ export function substring(tx: Transaction, args: SubstringArgs): TransactionResu
 }
 
 /** Get the inner bytes of the `string` as a reference */
-export function asBytes(tx: Transaction, string: string | TransactionArgument): TransactionResult {
+export function asBytes(
+  tx: Transaction,
+  string: string | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::as_bytes`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::as_bytes`,
     arguments: [pure(tx, string, `${String1.$typeName}`)],
   })
 }
@@ -155,17 +191,22 @@ export function asBytes(tx: Transaction, string: string | TransactionArgument): 
 export function intoBytes(
   tx: Transaction,
   string: string | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::into_bytes`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::into_bytes`,
     arguments: [pure(tx, string, `${String1.$typeName}`)],
   })
 }
 
 /** Unpack the `char` into its underlying bytes. */
-export function byte_(tx: Transaction, char_: TransactionObjectInput): TransactionResult {
+export function byte_(
+  tx: Transaction,
+  char_: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::byte`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::byte`,
     arguments: [obj(tx, char_)],
   })
 }
@@ -174,9 +215,13 @@ export function byte_(tx: Transaction, char_: TransactionObjectInput): Transacti
  * Returns `true` if `b` is a valid ASCII character.
  * Returns `false` otherwise.
  */
-export function isValidChar(tx: Transaction, b: number | TransactionArgument): TransactionResult {
+export function isValidChar(
+  tx: Transaction,
+  b: number | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::is_valid_char`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::is_valid_char`,
     arguments: [pure(tx, b, `u8`)],
   })
 }
@@ -188,17 +233,22 @@ export function isValidChar(tx: Transaction, b: number | TransactionArgument): T
 export function isPrintableChar(
   tx: Transaction,
   byte_: number | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::is_printable_char`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::is_printable_char`,
     arguments: [pure(tx, byte_, `u8`)],
   })
 }
 
 /** Returns `true` if `string` is empty. */
-export function isEmpty(tx: Transaction, string: string | TransactionArgument): TransactionResult {
+export function isEmpty(
+  tx: Transaction,
+  string: string | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::is_empty`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::is_empty`,
     arguments: [pure(tx, string, `${String1.$typeName}`)],
   })
 }
@@ -207,9 +257,10 @@ export function isEmpty(tx: Transaction, string: string | TransactionArgument): 
 export function toUppercase(
   tx: Transaction,
   string: string | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::to_uppercase`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::to_uppercase`,
     arguments: [pure(tx, string, `${String1.$typeName}`)],
   })
 }
@@ -218,9 +269,10 @@ export function toUppercase(
 export function toLowercase(
   tx: Transaction,
   string: string | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::to_lowercase`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::to_lowercase`,
     arguments: [pure(tx, string, `${String1.$typeName}`)],
   })
 }
@@ -235,9 +287,13 @@ export interface IndexOfArgs {
  * Returns the length of the `string` if the `substr` is not found.
  * Returns 0 if the `substr` is empty.
  */
-export function indexOf(tx: Transaction, args: IndexOfArgs): TransactionResult {
+export function indexOf(
+  tx: Transaction,
+  args: IndexOfArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::index_of`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::index_of`,
     arguments: [
       pure(tx, args.string, `${String1.$typeName}`),
       pure(tx, args.substr, `${String1.$typeName}`),
@@ -249,9 +305,10 @@ export function indexOf(tx: Transaction, args: IndexOfArgs): TransactionResult {
 export function charToUppercase(
   tx: Transaction,
   byte_: number | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::char_to_uppercase`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::char_to_uppercase`,
     arguments: [pure(tx, byte_, `u8`)],
   })
 }
@@ -260,9 +317,10 @@ export function charToUppercase(
 export function charToLowercase(
   tx: Transaction,
   byte_: number | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::ascii::char_to_lowercase`,
+    target: `${getPublishedAt('std', options?.env)}::ascii::char_to_lowercase`,
     arguments: [pure(tx, byte_, `u8`)],
   })
 }

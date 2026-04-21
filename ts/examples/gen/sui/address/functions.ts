@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 
@@ -11,9 +12,13 @@ import { pure } from '../../_framework/util'
  * Convert `a` into a u256 by interpreting `a` as the bytes of a big-endian integer
  * (e.g., `to_u256(0x1) == 1`)
  */
-export function toU256(tx: Transaction, a: string | TransactionArgument): TransactionResult {
+export function toU256(
+  tx: Transaction,
+  a: string | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::address::to_u256`,
+    target: `${getPublishedAt('sui', options?.env)}::address::to_u256`,
     arguments: [pure(tx, a, `address`)],
   })
 }
@@ -22,9 +27,13 @@ export function toU256(tx: Transaction, a: string | TransactionArgument): Transa
  * Convert `n` into an address by encoding it as a big-endian integer (e.g., `from_u256(1) = @0x1`)
  * Aborts if `n` > `MAX_ADDRESS`
  */
-export function fromU256(tx: Transaction, n: bigint | TransactionArgument): TransactionResult {
+export function fromU256(
+  tx: Transaction,
+  n: bigint | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::address::from_u256`,
+    target: `${getPublishedAt('sui', options?.env)}::address::from_u256`,
     arguments: [pure(tx, n, `u256`)],
   })
 }
@@ -36,33 +45,46 @@ export function fromU256(tx: Transaction, n: bigint | TransactionArgument): Tran
 export function fromBytes(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::address::from_bytes`,
+    target: `${getPublishedAt('sui', options?.env)}::address::from_bytes`,
     arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }
 
 /** Convert `a` into BCS-encoded bytes. */
-export function toBytes(tx: Transaction, a: string | TransactionArgument): TransactionResult {
+export function toBytes(
+  tx: Transaction,
+  a: string | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::address::to_bytes`,
+    target: `${getPublishedAt('sui', options?.env)}::address::to_bytes`,
     arguments: [pure(tx, a, `address`)],
   })
 }
 
 /** Convert `a` to a hex-encoded ASCII string */
-export function toAsciiString(tx: Transaction, a: string | TransactionArgument): TransactionResult {
+export function toAsciiString(
+  tx: Transaction,
+  a: string | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::address::to_ascii_string`,
+    target: `${getPublishedAt('sui', options?.env)}::address::to_ascii_string`,
     arguments: [pure(tx, a, `address`)],
   })
 }
 
 /** Convert `a` to a hex-encoded string */
-export function toString(tx: Transaction, a: string | TransactionArgument): TransactionResult {
+export function toString(
+  tx: Transaction,
+  a: string | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::address::to_string`,
+    target: `${getPublishedAt('sui', options?.env)}::address::to_string`,
     arguments: [pure(tx, a, `address`)],
   })
 }
@@ -78,32 +100,37 @@ export function toString(tx: Transaction, a: string | TransactionArgument): Tran
 export function fromAsciiBytes(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::address::from_ascii_bytes`,
+    target: `${getPublishedAt('sui', options?.env)}::address::from_ascii_bytes`,
     arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }
 
-export function hexCharValue(tx: Transaction, c: number | TransactionArgument): TransactionResult {
+export function hexCharValue(
+  tx: Transaction,
+  c: number | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::address::hex_char_value`,
+    target: `${getPublishedAt('sui', options?.env)}::address::hex_char_value`,
     arguments: [pure(tx, c, `u8`)],
   })
 }
 
 /** Length of a Sui address in bytes */
-export function length(tx: Transaction): TransactionResult {
+export function length(tx: Transaction, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::address::length`,
+    target: `${getPublishedAt('sui', options?.env)}::address::length`,
     arguments: [],
   })
 }
 
 /** Largest possible address */
-export function max(tx: Transaction): TransactionResult {
+export function max(tx: Transaction, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::address::max`,
+    target: `${getPublishedAt('sui', options?.env)}::address::max`,
     arguments: [],
   })
 }

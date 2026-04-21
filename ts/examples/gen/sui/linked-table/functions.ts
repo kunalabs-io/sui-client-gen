@@ -4,13 +4,18 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj } from '../../_framework/util'
 
 /** Creates a new, empty table */
-export function new_(tx: Transaction, typeArgs: [string, string]): TransactionResult {
+export function new_(
+  tx: Transaction,
+  typeArgs: [string, string],
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::new`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::new`,
     typeArguments: typeArgs,
     arguments: [],
   })
@@ -21,9 +26,10 @@ export function front(
   tx: Transaction,
   typeArgs: [string, string],
   table: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::front`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::front`,
     typeArguments: typeArgs,
     arguments: [obj(tx, table)],
   })
@@ -34,9 +40,10 @@ export function back(
   tx: Transaction,
   typeArgs: [string, string],
   table: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::back`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::back`,
     typeArguments: typeArgs,
     arguments: [obj(tx, table)],
   })
@@ -58,9 +65,10 @@ export function pushFront(
   tx: Transaction,
   typeArgs: [string, string],
   args: PushFrontArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::push_front`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::push_front`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.table),
@@ -86,9 +94,10 @@ export function pushBack(
   tx: Transaction,
   typeArgs: [string, string],
   args: PushBackArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::push_back`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::push_back`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.table),
@@ -112,9 +121,10 @@ export function borrow(
   tx: Transaction,
   typeArgs: [string, string],
   args: BorrowArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::borrow`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::borrow`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.table),
@@ -137,9 +147,10 @@ export function borrowMut(
   tx: Transaction,
   typeArgs: [string, string],
   args: BorrowMutArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::borrow_mut`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::borrow_mut`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.table),
@@ -163,9 +174,10 @@ export function prev(
   tx: Transaction,
   typeArgs: [string, string],
   args: PrevArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::prev`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::prev`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.table),
@@ -189,9 +201,10 @@ export function next(
   tx: Transaction,
   typeArgs: [string, string],
   args: NextArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::next`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::next`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.table),
@@ -215,9 +228,10 @@ export function remove(
   tx: Transaction,
   typeArgs: [string, string],
   args: RemoveArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::remove`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::remove`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.table),
@@ -234,9 +248,10 @@ export function popFront(
   tx: Transaction,
   typeArgs: [string, string],
   table: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::pop_front`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::pop_front`,
     typeArguments: typeArgs,
     arguments: [obj(tx, table)],
   })
@@ -250,9 +265,10 @@ export function popBack(
   tx: Transaction,
   typeArgs: [string, string],
   table: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::pop_back`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::pop_back`,
     typeArguments: typeArgs,
     arguments: [obj(tx, table)],
   })
@@ -271,9 +287,10 @@ export function contains(
   tx: Transaction,
   typeArgs: [string, string],
   args: ContainsArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::contains`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::contains`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.table),
@@ -287,9 +304,10 @@ export function length(
   tx: Transaction,
   typeArgs: [string, string],
   table: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::length`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::length`,
     typeArguments: typeArgs,
     arguments: [obj(tx, table)],
   })
@@ -300,9 +318,10 @@ export function isEmpty(
   tx: Transaction,
   typeArgs: [string, string],
   table: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::is_empty`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::is_empty`,
     typeArguments: typeArgs,
     arguments: [obj(tx, table)],
   })
@@ -316,9 +335,10 @@ export function destroyEmpty(
   tx: Transaction,
   typeArgs: [string, string],
   table: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::destroy_empty`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::destroy_empty`,
     typeArguments: typeArgs,
     arguments: [obj(tx, table)],
   })
@@ -332,9 +352,10 @@ export function drop(
   tx: Transaction,
   typeArgs: [string, string],
   table: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::linked_table::drop`,
+    target: `${getPublishedAt('sui', options?.env)}::linked_table::drop`,
     typeArguments: typeArgs,
     arguments: [obj(tx, table)],
   })

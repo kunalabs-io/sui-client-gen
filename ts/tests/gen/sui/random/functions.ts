@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj, pure, vector } from '../../_framework/util'
 
@@ -12,23 +13,31 @@ import { generic, GenericArg, obj, pure, vector } from '../../_framework/util'
  * the Random object is first created.
  * Can only be called by genesis or change_epoch transactions.
  */
-export function create(tx: Transaction): TransactionResult {
+export function create(tx: Transaction, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::create`,
+    target: `${getPublishedAt('sui', options?.env)}::random::create`,
     arguments: [],
   })
 }
 
-export function loadInnerMut(tx: Transaction, self: TransactionObjectInput): TransactionResult {
+export function loadInnerMut(
+  tx: Transaction,
+  self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::load_inner_mut`,
+    target: `${getPublishedAt('sui', options?.env)}::random::load_inner_mut`,
     arguments: [obj(tx, self)],
   })
 }
 
-export function loadInner(tx: Transaction, self: TransactionObjectInput): TransactionResult {
+export function loadInner(
+  tx: Transaction,
+  self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::load_inner`,
+    target: `${getPublishedAt('sui', options?.env)}::random::load_inner`,
     arguments: [obj(tx, self)],
   })
 }
@@ -46,9 +55,10 @@ export interface UpdateRandomnessStateArgs {
 export function updateRandomnessState(
   tx: Transaction,
   args: UpdateRandomnessStateArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::update_randomness_state`,
+    target: `${getPublishedAt('sui', options?.env)}::random::update_randomness_state`,
     arguments: [
       obj(tx, args.self),
       pure(tx, args.newRound, `u64`),
@@ -65,17 +75,25 @@ export function updateRandomnessState(
  * in a way that breaks security. For more information, see:
  * https://docs.sui.io/guides/developer/advanced/randomness-onchain
  */
-export function newGenerator(tx: Transaction, r: TransactionObjectInput): TransactionResult {
+export function newGenerator(
+  tx: Transaction,
+  r: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::new_generator`,
+    target: `${getPublishedAt('sui', options?.env)}::random::new_generator`,
     arguments: [obj(tx, r)],
   })
 }
 
 /** Get the next block of 32 random bytes. */
-export function deriveNextBlock(tx: Transaction, g: TransactionObjectInput): TransactionResult {
+export function deriveNextBlock(
+  tx: Transaction,
+  g: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::derive_next_block`,
+    target: `${getPublishedAt('sui', options?.env)}::random::derive_next_block`,
     arguments: [obj(tx, g)],
   })
 }
@@ -86,9 +104,13 @@ export interface GenerateBytesArgs {
 }
 
 /** Generate n random bytes. */
-export function generateBytes(tx: Transaction, args: GenerateBytesArgs): TransactionResult {
+export function generateBytes(
+  tx: Transaction,
+  args: GenerateBytesArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::generate_bytes`,
+    target: `${getPublishedAt('sui', options?.env)}::random::generate_bytes`,
     arguments: [
       obj(tx, args.g),
       pure(tx, args.numOfBytes, `u16`),
@@ -97,57 +119,85 @@ export function generateBytes(tx: Transaction, args: GenerateBytesArgs): Transac
 }
 
 /** Generate a u256. */
-export function generateU256(tx: Transaction, g: TransactionObjectInput): TransactionResult {
+export function generateU256(
+  tx: Transaction,
+  g: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::generate_u256`,
+    target: `${getPublishedAt('sui', options?.env)}::random::generate_u256`,
     arguments: [obj(tx, g)],
   })
 }
 
 /** Generate a u128. */
-export function generateU128(tx: Transaction, g: TransactionObjectInput): TransactionResult {
+export function generateU128(
+  tx: Transaction,
+  g: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::generate_u128`,
+    target: `${getPublishedAt('sui', options?.env)}::random::generate_u128`,
     arguments: [obj(tx, g)],
   })
 }
 
 /** Generate a u64. */
-export function generateU64(tx: Transaction, g: TransactionObjectInput): TransactionResult {
+export function generateU64(
+  tx: Transaction,
+  g: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::generate_u64`,
+    target: `${getPublishedAt('sui', options?.env)}::random::generate_u64`,
     arguments: [obj(tx, g)],
   })
 }
 
 /** Generate a u32. */
-export function generateU32(tx: Transaction, g: TransactionObjectInput): TransactionResult {
+export function generateU32(
+  tx: Transaction,
+  g: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::generate_u32`,
+    target: `${getPublishedAt('sui', options?.env)}::random::generate_u32`,
     arguments: [obj(tx, g)],
   })
 }
 
 /** Generate a u16. */
-export function generateU16(tx: Transaction, g: TransactionObjectInput): TransactionResult {
+export function generateU16(
+  tx: Transaction,
+  g: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::generate_u16`,
+    target: `${getPublishedAt('sui', options?.env)}::random::generate_u16`,
     arguments: [obj(tx, g)],
   })
 }
 
 /** Generate a u8. */
-export function generateU8(tx: Transaction, g: TransactionObjectInput): TransactionResult {
+export function generateU8(
+  tx: Transaction,
+  g: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::generate_u8`,
+    target: `${getPublishedAt('sui', options?.env)}::random::generate_u8`,
     arguments: [obj(tx, g)],
   })
 }
 
 /** Generate a boolean. */
-export function generateBool(tx: Transaction, g: TransactionObjectInput): TransactionResult {
+export function generateBool(
+  tx: Transaction,
+  g: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::generate_bool`,
+    target: `${getPublishedAt('sui', options?.env)}::random::generate_bool`,
     arguments: [obj(tx, g)],
   })
 }
@@ -162,9 +212,10 @@ export interface GenerateU128InRangeArgs {
 export function generateU128InRange(
   tx: Transaction,
   args: GenerateU128InRangeArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::generate_u128_in_range`,
+    target: `${getPublishedAt('sui', options?.env)}::random::generate_u128_in_range`,
     arguments: [
       obj(tx, args.g),
       pure(tx, args.min, `u128`),
@@ -182,9 +233,10 @@ export interface GenerateU64InRangeArgs {
 export function generateU64InRange(
   tx: Transaction,
   args: GenerateU64InRangeArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::generate_u64_in_range`,
+    target: `${getPublishedAt('sui', options?.env)}::random::generate_u64_in_range`,
     arguments: [
       obj(tx, args.g),
       pure(tx, args.min, `u64`),
@@ -203,9 +255,10 @@ export interface GenerateU32InRangeArgs {
 export function generateU32InRange(
   tx: Transaction,
   args: GenerateU32InRangeArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::generate_u32_in_range`,
+    target: `${getPublishedAt('sui', options?.env)}::random::generate_u32_in_range`,
     arguments: [
       obj(tx, args.g),
       pure(tx, args.min, `u32`),
@@ -224,9 +277,10 @@ export interface GenerateU16InRangeArgs {
 export function generateU16InRange(
   tx: Transaction,
   args: GenerateU16InRangeArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::generate_u16_in_range`,
+    target: `${getPublishedAt('sui', options?.env)}::random::generate_u16_in_range`,
     arguments: [
       obj(tx, args.g),
       pure(tx, args.min, `u16`),
@@ -242,9 +296,13 @@ export interface GenerateU8InRangeArgs {
 }
 
 /** Generate a random u8 in [min, max] (with a bias of 2^{-64}). */
-export function generateU8InRange(tx: Transaction, args: GenerateU8InRangeArgs): TransactionResult {
+export function generateU8InRange(
+  tx: Transaction,
+  args: GenerateU8InRangeArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::generate_u8_in_range`,
+    target: `${getPublishedAt('sui', options?.env)}::random::generate_u8_in_range`,
     arguments: [
       obj(tx, args.g),
       pure(tx, args.min, `u8`),
@@ -259,9 +317,14 @@ export interface ShuffleArgs {
 }
 
 /** Shuffle a vector using the random generator (Fisher–Yates/Knuth shuffle). */
-export function shuffle(tx: Transaction, typeArg: string, args: ShuffleArgs): TransactionResult {
+export function shuffle(
+  tx: Transaction,
+  typeArg: string,
+  args: ShuffleArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::random::shuffle`,
+    target: `${getPublishedAt('sui', options?.env)}::random::shuffle`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.g),

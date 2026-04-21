@@ -1,4 +1,5 @@
 import { Transaction, TransactionArgument, TransactionResult } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 
@@ -6,9 +7,13 @@ import { pure } from '../../_framework/util'
  * Returns the bitwise not of the value.
  * Each bit that is 1 becomes 0. Each bit that is 0 becomes 1.
  */
-export function bitwiseNot(tx: Transaction, x: number | TransactionArgument): TransactionResult {
+export function bitwiseNot(
+  tx: Transaction,
+  x: number | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u8::bitwise_not`,
+    target: `${getPublishedAt('std', options?.env)}::u8::bitwise_not`,
     arguments: [pure(tx, x, `u8`)],
   })
 }
@@ -19,9 +24,13 @@ export interface MaxArgs {
 }
 
 /** Return the larger of `x` and `y` */
-export function max(tx: Transaction, args: MaxArgs): TransactionResult {
+export function max(
+  tx: Transaction,
+  args: MaxArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u8::max`,
+    target: `${getPublishedAt('std', options?.env)}::u8::max`,
     arguments: [
       pure(tx, args.x, `u8`),
       pure(tx, args.y, `u8`),
@@ -35,9 +44,13 @@ export interface MinArgs {
 }
 
 /** Return the smaller of `x` and `y` */
-export function min(tx: Transaction, args: MinArgs): TransactionResult {
+export function min(
+  tx: Transaction,
+  args: MinArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u8::min`,
+    target: `${getPublishedAt('std', options?.env)}::u8::min`,
     arguments: [
       pure(tx, args.x, `u8`),
       pure(tx, args.y, `u8`),
@@ -51,9 +64,13 @@ export interface DiffArgs {
 }
 
 /** Return the absolute value of x - y */
-export function diff(tx: Transaction, args: DiffArgs): TransactionResult {
+export function diff(
+  tx: Transaction,
+  args: DiffArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u8::diff`,
+    target: `${getPublishedAt('std', options?.env)}::u8::diff`,
     arguments: [
       pure(tx, args.x, `u8`),
       pure(tx, args.y, `u8`),
@@ -67,9 +84,13 @@ export interface DivideAndRoundUpArgs {
 }
 
 /** Calculate x / y, but round up the result. */
-export function divideAndRoundUp(tx: Transaction, args: DivideAndRoundUpArgs): TransactionResult {
+export function divideAndRoundUp(
+  tx: Transaction,
+  args: DivideAndRoundUpArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u8::divide_and_round_up`,
+    target: `${getPublishedAt('std', options?.env)}::u8::divide_and_round_up`,
     arguments: [
       pure(tx, args.x, `u8`),
       pure(tx, args.y, `u8`),
@@ -83,9 +104,13 @@ export interface PowArgs {
 }
 
 /** Return the value of a base raised to a power */
-export function pow(tx: Transaction, args: PowArgs): TransactionResult {
+export function pow(
+  tx: Transaction,
+  args: PowArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u8::pow`,
+    target: `${getPublishedAt('std', options?.env)}::u8::pow`,
     arguments: [
       pure(tx, args.base, `u8`),
       pure(tx, args.exponent, `u8`),
@@ -119,16 +144,24 @@ export function pow(tx: Transaction, args: PowArgs): TransactionResult {
  * math::sqrt(8 * 1000000) => 2828; // same as above, 2828 / 1000 (2.828)
  * ```
  */
-export function sqrt(tx: Transaction, x: number | TransactionArgument): TransactionResult {
+export function sqrt(
+  tx: Transaction,
+  x: number | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u8::sqrt`,
+    target: `${getPublishedAt('std', options?.env)}::u8::sqrt`,
     arguments: [pure(tx, x, `u8`)],
   })
 }
 
-export function toString(tx: Transaction, x: number | TransactionArgument): TransactionResult {
+export function toString(
+  tx: Transaction,
+  x: number | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u8::to_string`,
+    target: `${getPublishedAt('std', options?.env)}::u8::to_string`,
     arguments: [pure(tx, x, `u8`)],
   })
 }

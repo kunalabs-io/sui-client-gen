@@ -4,13 +4,18 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj } from '../../_framework/util'
 
 /** Creates a new, empty table */
-export function new_(tx: Transaction, typeArgs: [string, string]): TransactionResult {
+export function new_(
+  tx: Transaction,
+  typeArgs: [string, string],
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table::new`,
+    target: `${getPublishedAt('sui', options?.env)}::table::new`,
     typeArguments: typeArgs,
     arguments: [],
   })
@@ -27,9 +32,14 @@ export interface AddArgs {
  * Aborts with `sui::dynamic_field::EFieldAlreadyExists` if the table already has an entry with
  * that key `k: K`.
  */
-export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs): TransactionResult {
+export function add(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: AddArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table::add`,
+    target: `${getPublishedAt('sui', options?.env)}::table::add`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.table),
@@ -53,9 +63,10 @@ export function borrow(
   tx: Transaction,
   typeArgs: [string, string],
   args: BorrowArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table::borrow`,
+    target: `${getPublishedAt('sui', options?.env)}::table::borrow`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.table),
@@ -78,9 +89,10 @@ export function borrowMut(
   tx: Transaction,
   typeArgs: [string, string],
   args: BorrowMutArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table::borrow_mut`,
+    target: `${getPublishedAt('sui', options?.env)}::table::borrow_mut`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.table),
@@ -103,9 +115,10 @@ export function remove(
   tx: Transaction,
   typeArgs: [string, string],
   args: RemoveArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table::remove`,
+    target: `${getPublishedAt('sui', options?.env)}::table::remove`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.table),
@@ -124,9 +137,10 @@ export function contains(
   tx: Transaction,
   typeArgs: [string, string],
   args: ContainsArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table::contains`,
+    target: `${getPublishedAt('sui', options?.env)}::table::contains`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.table),
@@ -140,9 +154,10 @@ export function length(
   tx: Transaction,
   typeArgs: [string, string],
   table: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table::length`,
+    target: `${getPublishedAt('sui', options?.env)}::table::length`,
     typeArguments: typeArgs,
     arguments: [obj(tx, table)],
   })
@@ -153,9 +168,10 @@ export function isEmpty(
   tx: Transaction,
   typeArgs: [string, string],
   table: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table::is_empty`,
+    target: `${getPublishedAt('sui', options?.env)}::table::is_empty`,
     typeArguments: typeArgs,
     arguments: [obj(tx, table)],
   })
@@ -169,9 +185,10 @@ export function destroyEmpty(
   tx: Transaction,
   typeArgs: [string, string],
   table: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table::destroy_empty`,
+    target: `${getPublishedAt('sui', options?.env)}::table::destroy_empty`,
     typeArguments: typeArgs,
     arguments: [obj(tx, table)],
   })
@@ -185,9 +202,10 @@ export function drop(
   tx: Transaction,
   typeArgs: [string, string],
   table: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table::drop`,
+    target: `${getPublishedAt('sui', options?.env)}::table::drop`,
     typeArguments: typeArgs,
     arguments: [obj(tx, table)],
   })

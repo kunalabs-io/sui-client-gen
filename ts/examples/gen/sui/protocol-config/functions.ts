@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 
@@ -35,9 +36,10 @@ import { pure } from '../../_framework/util'
 export function isFeatureEnabled(
   tx: Transaction,
   featureFlagName: Array<number | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::protocol_config::is_feature_enabled`,
+    target: `${getPublishedAt('sui', options?.env)}::protocol_config::is_feature_enabled`,
     arguments: [pure(tx, featureFlagName, `vector<u8>`)],
   })
 }

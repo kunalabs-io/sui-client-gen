@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj, pure } from '../../_framework/util'
 
@@ -13,9 +14,14 @@ import { generic, GenericArg, obj, pure } from '../../_framework/util'
  * constraint there can be only one Publisher object per module
  * but multiple per package (!).
  */
-export function claim(tx: Transaction, typeArg: string, otw: GenericArg): TransactionResult {
+export function claim(
+  tx: Transaction,
+  typeArg: string,
+  otw: GenericArg,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::claim`,
+    target: `${getPublishedAt('sui', options?.env)}::package::claim`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, otw)],
   })
@@ -26,9 +32,14 @@ export function claim(tx: Transaction, typeArg: string, otw: GenericArg): Transa
  * Since this function can only be called in the module initializer,
  * the sender is the publisher.
  */
-export function claimAndKeep(tx: Transaction, typeArg: string, otw: GenericArg): TransactionResult {
+export function claimAndKeep(
+  tx: Transaction,
+  typeArg: string,
+  otw: GenericArg,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::claim_and_keep`,
+    target: `${getPublishedAt('sui', options?.env)}::package::claim_and_keep`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, otw)],
   })
@@ -38,9 +49,13 @@ export function claimAndKeep(tx: Transaction, typeArg: string, otw: GenericArg):
  * Destroy a Publisher object effectively removing all privileges
  * associated with it.
  */
-export function burnPublisher(tx: Transaction, self: TransactionObjectInput): TransactionResult {
+export function burnPublisher(
+  tx: Transaction,
+  self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::burn_publisher`,
+    target: `${getPublishedAt('sui', options?.env)}::package::burn_publisher`,
     arguments: [obj(tx, self)],
   })
 }
@@ -50,9 +65,10 @@ export function fromPackage(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::from_package`,
+    target: `${getPublishedAt('sui', options?.env)}::package::from_package`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -63,26 +79,35 @@ export function fromModule(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::from_module`,
+    target: `${getPublishedAt('sui', options?.env)}::package::from_module`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
 }
 
 /** Read the name of the module. */
-export function publishedModule(tx: Transaction, self: TransactionObjectInput): TransactionResult {
+export function publishedModule(
+  tx: Transaction,
+  self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::published_module`,
+    target: `${getPublishedAt('sui', options?.env)}::package::published_module`,
     arguments: [obj(tx, self)],
   })
 }
 
 /** Read the package address string. */
-export function publishedPackage(tx: Transaction, self: TransactionObjectInput): TransactionResult {
+export function publishedPackage(
+  tx: Transaction,
+  self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::published_package`,
+    target: `${getPublishedAt('sui', options?.env)}::package::published_package`,
     arguments: [obj(tx, self)],
   })
 }
@@ -94,9 +119,13 @@ export function publishedPackage(tx: Transaction, self: TransactionObjectInput):
  * Otherwise guaranteed to be the latest version of any given
  * package.
  */
-export function upgradePackage(tx: Transaction, cap: TransactionObjectInput): TransactionResult {
+export function upgradePackage(
+  tx: Transaction,
+  cap: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::upgrade_package`,
+    target: `${getPublishedAt('sui', options?.env)}::package::upgrade_package`,
     arguments: [obj(tx, cap)],
   })
 }
@@ -105,9 +134,13 @@ export function upgradePackage(tx: Transaction, cap: TransactionObjectInput): Tr
  * The most recent version of the package, increments by one for each
  * successfully applied upgrade.
  */
-export function version(tx: Transaction, cap: TransactionObjectInput): TransactionResult {
+export function version(
+  tx: Transaction,
+  cap: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::version`,
+    target: `${getPublishedAt('sui', options?.env)}::package::version`,
     arguments: [obj(tx, cap)],
   })
 }
@@ -116,25 +149,37 @@ export function version(tx: Transaction, cap: TransactionObjectInput): Transacti
  * The most permissive kind of upgrade currently supported by this
  * `cap`.
  */
-export function upgradePolicy(tx: Transaction, cap: TransactionObjectInput): TransactionResult {
+export function upgradePolicy(
+  tx: Transaction,
+  cap: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::upgrade_policy`,
+    target: `${getPublishedAt('sui', options?.env)}::package::upgrade_policy`,
     arguments: [obj(tx, cap)],
   })
 }
 
 /** The package that this ticket is authorized to upgrade */
-export function ticketPackage(tx: Transaction, ticket: TransactionObjectInput): TransactionResult {
+export function ticketPackage(
+  tx: Transaction,
+  ticket: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::ticket_package`,
+    target: `${getPublishedAt('sui', options?.env)}::package::ticket_package`,
     arguments: [obj(tx, ticket)],
   })
 }
 
 /** The kind of upgrade that this ticket authorizes. */
-export function ticketPolicy(tx: Transaction, ticket: TransactionObjectInput): TransactionResult {
+export function ticketPolicy(
+  tx: Transaction,
+  ticket: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::ticket_policy`,
+    target: `${getPublishedAt('sui', options?.env)}::package::ticket_policy`,
     arguments: [obj(tx, ticket)],
   })
 }
@@ -143,9 +188,13 @@ export function ticketPolicy(tx: Transaction, ticket: TransactionObjectInput): T
  * ID of the `UpgradeCap` that this `receipt` should be used to
  * update.
  */
-export function receiptCap(tx: Transaction, receipt: TransactionObjectInput): TransactionResult {
+export function receiptCap(
+  tx: Transaction,
+  receipt: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::receipt_cap`,
+    target: `${getPublishedAt('sui', options?.env)}::package::receipt_cap`,
     arguments: [obj(tx, receipt)],
   })
 }
@@ -157,9 +206,10 @@ export function receiptCap(tx: Transaction, receipt: TransactionObjectInput): Tr
 export function receiptPackage(
   tx: Transaction,
   receipt: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::receipt_package`,
+    target: `${getPublishedAt('sui', options?.env)}::package::receipt_package`,
     arguments: [obj(tx, receipt)],
   })
 }
@@ -178,31 +228,38 @@ export function receiptPackage(
  *
  * sha3_256(sort(modules ++ deps))
  */
-export function ticketDigest(tx: Transaction, ticket: TransactionObjectInput): TransactionResult {
+export function ticketDigest(
+  tx: Transaction,
+  ticket: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::ticket_digest`,
+    target: `${getPublishedAt('sui', options?.env)}::package::ticket_digest`,
     arguments: [obj(tx, ticket)],
   })
 }
 
 /** Expose the constants representing various upgrade policies */
-export function compatiblePolicy(tx: Transaction): TransactionResult {
+export function compatiblePolicy(
+  tx: Transaction,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::compatible_policy`,
+    target: `${getPublishedAt('sui', options?.env)}::package::compatible_policy`,
     arguments: [],
   })
 }
 
-export function additivePolicy(tx: Transaction): TransactionResult {
+export function additivePolicy(tx: Transaction, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::additive_policy`,
+    target: `${getPublishedAt('sui', options?.env)}::package::additive_policy`,
     arguments: [],
   })
 }
 
-export function depOnlyPolicy(tx: Transaction): TransactionResult {
+export function depOnlyPolicy(tx: Transaction, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::dep_only_policy`,
+    target: `${getPublishedAt('sui', options?.env)}::package::dep_only_policy`,
     arguments: [],
   })
 }
@@ -214,9 +271,10 @@ export function depOnlyPolicy(tx: Transaction): TransactionResult {
 export function onlyAdditiveUpgrades(
   tx: Transaction,
   cap: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::only_additive_upgrades`,
+    target: `${getPublishedAt('sui', options?.env)}::package::only_additive_upgrades`,
     arguments: [obj(tx, cap)],
   })
 }
@@ -225,17 +283,25 @@ export function onlyAdditiveUpgrades(
  * Restrict upgrades through this upgrade `cap` to just change
  * dependencies.
  */
-export function onlyDepUpgrades(tx: Transaction, cap: TransactionObjectInput): TransactionResult {
+export function onlyDepUpgrades(
+  tx: Transaction,
+  cap: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::only_dep_upgrades`,
+    target: `${getPublishedAt('sui', options?.env)}::package::only_dep_upgrades`,
     arguments: [obj(tx, cap)],
   })
 }
 
 /** Discard the `UpgradeCap` to make a package immutable. */
-export function makeImmutable(tx: Transaction, cap: TransactionObjectInput): TransactionResult {
+export function makeImmutable(
+  tx: Transaction,
+  cap: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::make_immutable`,
+    target: `${getPublishedAt('sui', options?.env)}::package::make_immutable`,
     arguments: [obj(tx, cap)],
   })
 }
@@ -258,9 +324,13 @@ export interface AuthorizeUpgradeArgs {
  * the parent package must be compatible with the policy in the ticket
  * for the upgrade to succeed.
  */
-export function authorizeUpgrade(tx: Transaction, args: AuthorizeUpgradeArgs): TransactionResult {
+export function authorizeUpgrade(
+  tx: Transaction,
+  args: AuthorizeUpgradeArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::authorize_upgrade`,
+    target: `${getPublishedAt('sui', options?.env)}::package::authorize_upgrade`,
     arguments: [
       obj(tx, args.cap),
       pure(tx, args.policy, `u8`),
@@ -278,9 +348,13 @@ export interface CommitUpgradeArgs {
  * Consume an `UpgradeReceipt` to update its `UpgradeCap`, finalizing
  * the upgrade.
  */
-export function commitUpgrade(tx: Transaction, args: CommitUpgradeArgs): TransactionResult {
+export function commitUpgrade(
+  tx: Transaction,
+  args: CommitUpgradeArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::commit_upgrade`,
+    target: `${getPublishedAt('sui', options?.env)}::package::commit_upgrade`,
     arguments: [
       obj(tx, args.cap),
       obj(tx, args.receipt),
@@ -293,9 +367,13 @@ export interface RestrictArgs {
   policy: number | TransactionArgument
 }
 
-export function restrict(tx: Transaction, args: RestrictArgs): TransactionResult {
+export function restrict(
+  tx: Transaction,
+  args: RestrictArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::package::restrict`,
+    target: `${getPublishedAt('sui', options?.env)}::package::restrict`,
     arguments: [
       obj(tx, args.cap),
       pure(tx, args.policy, `u8`),

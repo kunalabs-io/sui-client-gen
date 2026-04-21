@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 
@@ -21,9 +22,13 @@ export interface Ed25519VerifyArgs {
  * If the signature is a valid Ed25519 signature of the message and public key, return true.
  * Otherwise, return false.
  */
-export function ed25519Verify(tx: Transaction, args: Ed25519VerifyArgs): TransactionResult {
+export function ed25519Verify(
+  tx: Transaction,
+  args: Ed25519VerifyArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::ed25519::ed25519_verify`,
+    target: `${getPublishedAt('sui', options?.env)}::ed25519::ed25519_verify`,
     arguments: [
       pure(tx, args.signature, `vector<u8>`),
       pure(tx, args.publicKey, `vector<u8>`),

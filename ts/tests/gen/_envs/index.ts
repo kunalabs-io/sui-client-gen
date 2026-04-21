@@ -18,9 +18,11 @@ if (!initialized) {
 
 // Re-export public API from _framework/env
 export {
+  cloneEnv,
   getActiveEnv,
   getActiveEnvName,
   getDependencyConfig,
+  getEnv,
   getOriginalId,
   getPackageConfig,
   getPublishedAt,
