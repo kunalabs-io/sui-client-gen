@@ -1,7 +1,8 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
 use move_core_types::account_address::AccountAddress;
 use serde::de::DeserializeOwned;
 use serde_json::json;
+use sui_sdk::types::digests::{ChainIdentifier, CheckpointDigest};
 
 use super::types::{ChainIdentifierResponse, GraphQLResponse, TypeOrigin, TypeOriginMap};
 
@@ -92,15 +93,25 @@ impl GraphQLClient {
     /// Query the chain identifier from the GraphQL endpoint.
     ///
     /// Returns the first 4 bytes of the genesis checkpoint digest as hex (8 characters).
+    ///
+    /// The GraphQL `chainIdentifier` field returns the full 32-byte genesis checkpoint
+    /// digest encoded in base58; we normalize it into the short 4-byte hex form that
+    /// `ChainIdentifier::Display` produces so it can be compared against IDs coming from
+    /// `sui-package-alt` environments and `gen.toml`.
     pub async fn query_chain_identifier(&self) -> Result<String> {
         let response: ChainIdentifierResponse = self
             .execute_query(queries::CHAIN_IDENTIFIER, json!({}))
             .await?;
 
-        match response.data {
-            Some(data) => Ok(data.chain_identifier),
-            None => Err(anyhow::anyhow!("No chain identifier returned from GraphQL endpoint")),
-        }
+        let raw = response
+            .data
+            .ok_or_else(|| anyhow::anyhow!("No chain identifier returned from GraphQL endpoint"))?
+            .chain_identifier;
+
+        let digest: CheckpointDigest = raw
+            .parse()
+            .with_context(|| format!("invalid base58 chain identifier from GraphQL: {raw}"))?;
+        Ok(ChainIdentifier::from(digest).to_string())
     }
 
     /// Query a single package's type origins
