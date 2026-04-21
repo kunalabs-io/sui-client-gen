@@ -1,14 +1,18 @@
 import { it, expect, describe, afterAll } from 'vitest'
 import {
-  setActiveEnv,
-  setActiveEnvWithConfig,
+  cloneEnv,
+  getActiveEnv,
   getActiveEnvName,
-  getRegisteredEnvs,
-  getPublishedAt,
+  getEnv,
   getOriginalId,
+  getPublishedAt,
+  getRegisteredEnvs,
   getTypeOrigin,
   getTypeOriginAddresses,
   getTypeOriginAddressesFor,
+  setActiveEnv,
+  setActiveEnvWithConfig,
+  type EnvConfig,
 } from './gen/_envs'
 
 // Reset to default env after all tests to avoid affecting other test files
@@ -207,5 +211,119 @@ describe('getTypeOriginAddressesFor', () => {
     expect(() => getTypeOriginAddressesFor('nonexistent', ['foo::Bar'])).toThrow(
       "Package 'nonexistent' not found"
     )
+  })
+})
+
+describe('getEnv', () => {
+  it('returns a registered env by name', () => {
+    const env = getEnv('testnet')
+    expect(env.packages['sui'].publishedAt).toBe('0x2')
+  })
+
+  it('throws for unknown env', () => {
+    expect(() => getEnv('nonexistent')).toThrow(
+      "Environment 'nonexistent' not found. Available: testnet, testnet_alt"
+    )
+  })
+})
+
+describe('cloneEnv', () => {
+  it('preserves untouched packages by reference', () => {
+    const base = getEnv('testnet')
+    const cloned = cloneEnv(base)
+    // Same shape
+    expect(cloned.packages['sui'].publishedAt).toBe(base.packages['sui'].publishedAt)
+    // Independent objects (so mutations don't leak)
+    expect(cloned).not.toBe(base)
+    expect(cloned.packages).not.toBe(base.packages)
+  })
+
+  it('shallow-merges a package override', () => {
+    const base = getEnv('testnet')
+    const cloned = cloneEnv(base, {
+      packages: { sui: { publishedAt: '0xUPGRADED' } },
+    })
+    expect(cloned.packages['sui'].publishedAt).toBe('0xUPGRADED')
+    // Other fields preserved
+    expect(cloned.packages['sui'].originalId).toBe(base.packages['sui'].originalId)
+    expect(cloned.packages['sui'].typeOrigins).toEqual(base.packages['sui'].typeOrigins)
+    // Untouched packages preserved
+    expect(cloned.packages['std'].publishedAt).toBe('0x1')
+    // Base is unchanged
+    expect(base.packages['sui'].publishedAt).toBe('0x2')
+  })
+
+  it('merges typeOrigins rather than replacing them', () => {
+    const base = getEnv('testnet')
+    const cloned = cloneEnv(base, {
+      packages: { sui: { typeOrigins: { 'custom::Added': '0xABC' } } },
+    })
+    // Original origins still present
+    expect(cloned.packages['sui'].typeOrigins['coin::Coin']).toBe('0x2')
+    // Added origin present
+    expect(cloned.packages['sui'].typeOrigins['custom::Added']).toBe('0xABC')
+  })
+
+  it('throws when overriding an unknown package', () => {
+    const base = getEnv('testnet')
+    expect(() => cloneEnv(base, { packages: { unknown: { publishedAt: '0x1' } } })).toThrow(
+      "cloneEnv: cannot override unknown package 'unknown'"
+    )
+  })
+})
+
+describe('per-call env override', () => {
+  it('getPublishedAt uses the supplied env, ignoring active overrides', () => {
+    // Set a global override that would normally win
+    setActiveEnv('testnet', { sui: '0xGLOBAL' })
+    expect(getPublishedAt('sui')).toBe('0xGLOBAL')
+
+    // A caller-supplied env takes precedence, overrides are ignored
+    const scoped = cloneEnv(getEnv('testnet'), {
+      packages: { sui: { publishedAt: '0xSCOPED' } },
+    })
+    expect(getPublishedAt('sui', scoped)).toBe('0xSCOPED')
+
+    // Global state unaffected
+    expect(getPublishedAt('sui')).toBe('0xGLOBAL')
+    setActiveEnv('testnet')
+  })
+
+  it('getTypeOrigin / getOriginalId / getTypeOriginAddresses honour supplied env', () => {
+    const base = getEnv('testnet')
+    const scoped: EnvConfig = cloneEnv(base, {
+      packages: {
+        sui: {
+          originalId: '0xORIG',
+          publishedAt: '0xPUB',
+          typeOrigins: { 'coin::Coin': '0xCOIN_V2' },
+        },
+      },
+    })
+
+    expect(getOriginalId('sui', scoped)).toBe('0xORIG')
+    expect(getTypeOrigin('sui', 'coin::Coin', scoped)).toBe('0xCOIN_V2')
+    expect(getTypeOriginAddresses('sui', scoped)).toContain('0xCOIN_V2')
+    expect(getTypeOriginAddressesFor('sui', ['coin::Coin'], scoped)).toEqual(['0xCOIN_V2'])
+  })
+
+  it('missing package in supplied env mentions supplied scope, not active env', () => {
+    const minimal: EnvConfig = { packages: {}, dependencies: {} }
+    expect(() => getPublishedAt('sui', minimal)).toThrow(
+      "Package 'sui' not found in supplied environment"
+    )
+  })
+
+  it('concurrent callers with different envs do not interfere', () => {
+    const base = getEnv('testnet')
+    const envA = cloneEnv(base, { packages: { sui: { publishedAt: '0xAAA' } } })
+    const envB = cloneEnv(base, { packages: { sui: { publishedAt: '0xBBB' } } })
+
+    // Interleave reads as if two callers were racing
+    expect(getPublishedAt('sui', envA)).toBe('0xAAA')
+    expect(getPublishedAt('sui', envB)).toBe('0xBBB')
+    expect(getPublishedAt('sui', envA)).toBe('0xAAA')
+    // And the global env is still the registered one
+    expect(getActiveEnv().packages['sui'].publishedAt).toBe('0x2')
   })
 })
