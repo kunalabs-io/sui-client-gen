@@ -4,20 +4,20 @@ version = "0.4.0"
 edition = "2021"
 
 [dependencies]
-tokio = "1.46.1"
+tokio = "=1.49.0"
 anyhow = "1.0.71"
 futures = "0.3.28"
-tempfile = "^3.20.0"
+tempfile = "3.20.0"
 toml = { version = "0.5.8", features = ["preserve_order"] }
 regex = "1.7.1"
 clap = "4.4"
 codespan-reporting = "0.11.1"
 convert_case = "^0.6.0"
 colored = "2.0.0"
-indoc = "2"
+indoc = "2.0.6"
 serde = { version = "1.0.144", features = ["derive", "rc"] }
 serde_json = { version = "1.0.95", features = ["preserve_order"] }
-reqwest = { version = "0.12", features = ["json"] }
+reqwest = { version = "0.12", default-features = false, features = ["http2", "json", "rustls-tls"] }
 dprint-plugin-typescript = "0.95"
 dprint-core = "0.67"
 
@@ -39,4 +39,4 @@ move-package-alt-compilation = { git = "https://github.com/MystenLabs/sui/", bra
 sui-package-alt = { git = "https://github.com/MystenLabs/sui/", branch = "main"}
 
 [dev-dependencies]
-insta = { version = "1.41", features = ["glob"] }
+insta = { version = "1.46.2", features = ["glob"] }

@@ -13,8 +13,8 @@ use move_compiler::editions::Flavor;
 use move_core_types::account_address::AccountAddress;
 use move_model_2::model::Model;
 use move_model_2::source_kind::WithSource;
-use move_package_alt::package::package_loader::PackageLoader;
-use move_package_alt::package::RootPackage;
+use move_package_alt::PackageLoader;
+use move_package_alt::RootPackage;
 use move_package_alt::schema::{
     DefaultDependency, Environment, ExternalDependency, LocalDepInfo, ManifestDependencyInfo,
     ManifestGitDependency, OnChainDepInfo, PackageName, SystemDependency,
@@ -350,7 +350,7 @@ fn validate_published_at_coverage(
     id_map: &BTreeMap<AccountAddress, PackageName>,
     published_at: &BTreeMap<AccountAddress, AccountAddress>,
 ) -> Result<()> {
-    use move_package_alt::graph::NamedAddress;
+    use move_package_alt::NamedAddress;
 
     // System package addresses that don't need publication info
     let system_addrs: BTreeSet<AccountAddress> = ["0x1", "0x2", "0x3"]
@@ -462,7 +462,7 @@ fn to_snake_case(s: &str) -> String {
 fn build_id_map_from_root_pkg(
     root_pkg: &RootPackage<SuiFlavor>,
 ) -> BTreeMap<AccountAddress, PackageName> {
-    use move_package_alt::graph::NamedAddress;
+    use move_package_alt::NamedAddress;
 
     let mut id_map: BTreeMap<AccountAddress, PackageName> = BTreeMap::new();
 
@@ -665,7 +665,7 @@ mod tests {
     fn test_format_external_mvr_dependency() {
         // MVR dependency: { r.mvr = "@namespace/package" }
         let dep = make_default_dep(ManifestDependencyInfo::External(ExternalDependency {
-            resolver: "mvr".to_string(),
+            resolver: "mvr".to_string().try_into().unwrap(),
             data: toml::Value::String("@potatoes/ascii".to_string()),
         }));
 
@@ -689,7 +689,7 @@ mod tests {
         );
 
         let dep = make_default_dep(ManifestDependencyInfo::External(ExternalDependency {
-            resolver: "mock-resolver".to_string(),
+            resolver: "mock-resolver".to_string().try_into().unwrap(),
             data: toml::Value::Table(data_table),
         }));
 

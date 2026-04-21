@@ -567,7 +567,7 @@ mod tests {
         let ascii = act.packages.get(&PackageName::new("ascii").unwrap()).unwrap();
         match &ascii.dependency_info {
             ManifestDependencyInfo::External(ext) => {
-                assert_eq!(ext.resolver, "mvr");
+                assert_eq!(ext.resolver.to_string(), "mvr");
                 assert_eq!(ext.data, toml::Value::String("@potatoes/ascii".to_string()));
             }
             _ => panic!("Expected External dependency"),
@@ -577,7 +577,7 @@ mod tests {
         let codec = act.packages.get(&PackageName::new("codec").unwrap()).unwrap();
         match &codec.dependency_info {
             ManifestDependencyInfo::External(ext) => {
-                assert_eq!(ext.resolver, "mvr");
+                assert_eq!(ext.resolver.to_string(), "mvr");
                 assert_eq!(ext.data, toml::Value::String("@potatoes/codec".to_string()));
             }
             _ => panic!("Expected External dependency"),

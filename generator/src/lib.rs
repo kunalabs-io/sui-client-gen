@@ -9,7 +9,7 @@ pub mod multi_env;
 pub mod ts_gen;
 
 use manifest::Environments;
-use move_package_alt::flavor::MoveFlavor;
+use move_package_alt::MoveFlavor;
 use sui_package_alt::SuiFlavor;
 
 /// Default GraphQL endpoint for Sui mainnet.
