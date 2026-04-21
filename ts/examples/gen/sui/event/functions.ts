@@ -1,4 +1,5 @@
 import { Transaction, TransactionArgument, TransactionResult } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, pure } from '../../_framework/util'
 
@@ -11,9 +12,14 @@ import { generic, GenericArg, pure } from '../../_framework/util'
  * The type `T` is the main way to index the event, and can contain
  * phantom parameters, eg `emit(MyEvent<phantom T>)`.
  */
-export function emit(tx: Transaction, typeArg: string, event: GenericArg): TransactionResult {
+export function emit(
+  tx: Transaction,
+  typeArg: string,
+  event: GenericArg,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::event::emit`,
+    target: `${getPublishedAt('sui', options?.env)}::event::emit`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, event)],
   })
@@ -30,9 +36,10 @@ export function emitAuthenticated(
   tx: Transaction,
   typeArg: string,
   event: GenericArg,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::event::emit_authenticated`,
+    target: `${getPublishedAt('sui', options?.env)}::event::emit_authenticated`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, event)],
   })
@@ -48,9 +55,10 @@ export function emitAuthenticatedImpl(
   tx: Transaction,
   typeArgs: [string, string],
   args: EmitAuthenticatedImplArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::event::emit_authenticated_impl`,
+    target: `${getPublishedAt('sui', options?.env)}::event::emit_authenticated_impl`,
     typeArguments: typeArgs,
     arguments: [
       pure(tx, args.accumulatorId, `address`),

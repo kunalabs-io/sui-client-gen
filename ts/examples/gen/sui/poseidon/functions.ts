@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 
@@ -25,9 +26,10 @@ import { pure } from '../../_framework/util'
 export function poseidonBn254(
   tx: Transaction,
   data: Array<bigint | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::poseidon::poseidon_bn254`,
+    target: `${getPublishedAt('sui', options?.env)}::poseidon::poseidon_bn254`,
     arguments: [pure(tx, data, `vector<u256>`)],
   })
 }
@@ -40,9 +42,10 @@ export function poseidonBn254(
 export function poseidonBn254Internal(
   tx: Transaction,
   data: Array<Array<number | TransactionArgument> | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::poseidon::poseidon_bn254_internal`,
+    target: `${getPublishedAt('sui', options?.env)}::poseidon::poseidon_bn254_internal`,
     arguments: [pure(tx, data, `vector<vector<u8>>`)],
   })
 }

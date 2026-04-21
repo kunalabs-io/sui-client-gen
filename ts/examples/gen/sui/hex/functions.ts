@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 
@@ -11,9 +12,10 @@ import { pure } from '../../_framework/util'
 export function encode(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::hex::encode`,
+    target: `${getPublishedAt('sui', options?.env)}::hex::encode`,
     arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }
@@ -29,16 +31,21 @@ export function encode(
 export function decode(
   tx: Transaction,
   hex: Array<number | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::hex::decode`,
+    target: `${getPublishedAt('sui', options?.env)}::hex::decode`,
     arguments: [pure(tx, hex, `vector<u8>`)],
   })
 }
 
-export function decodeByte(tx: Transaction, hex: number | TransactionArgument): TransactionResult {
+export function decodeByte(
+  tx: Transaction,
+  hex: number | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::hex::decode_byte`,
+    target: `${getPublishedAt('sui', options?.env)}::hex::decode_byte`,
     arguments: [pure(tx, hex, `u8`)],
   })
 }

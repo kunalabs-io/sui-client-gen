@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 
@@ -19,9 +20,12 @@ export interface AccumulatorRootOwnerExistsArgs {
 export function accumulatorRootOwnerExists(
   tx: Transaction,
   args: AccumulatorRootOwnerExistsArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_root_owner_exists`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::accumulator_metadata::accumulator_root_owner_exists`,
     arguments: [
       obj(tx, args.accumulatorRoot),
       pure(tx, args.owner, `address`),
@@ -38,9 +42,12 @@ export interface AccumulatorRootBorrowOwnerMutArgs {
 export function accumulatorRootBorrowOwnerMut(
   tx: Transaction,
   args: AccumulatorRootBorrowOwnerMutArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_root_borrow_owner_mut`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::accumulator_metadata::accumulator_root_borrow_owner_mut`,
     arguments: [
       obj(tx, args.accumulatorRoot),
       pure(tx, args.owner, `address`),
@@ -57,9 +64,12 @@ export interface AccumulatorRootAttachOwnerArgs {
 export function accumulatorRootAttachOwner(
   tx: Transaction,
   args: AccumulatorRootAttachOwnerArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_root_attach_owner`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::accumulator_metadata::accumulator_root_attach_owner`,
     arguments: [
       obj(tx, args.accumulatorRoot),
       obj(tx, args.owner),
@@ -76,9 +86,12 @@ export interface AccumulatorRootDetachOwnerArgs {
 export function accumulatorRootDetachOwner(
   tx: Transaction,
   args: AccumulatorRootDetachOwnerArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_root_detach_owner`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::accumulator_metadata::accumulator_root_detach_owner`,
     arguments: [
       obj(tx, args.accumulatorRoot),
       pure(tx, args.owner, `address`),
@@ -101,9 +114,12 @@ export function createAccumulatorMetadata(
   tx: Transaction,
   typeArg: string,
   args: CreateAccumulatorMetadataArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_metadata::create_accumulator_metadata`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::accumulator_metadata::create_accumulator_metadata`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.accumulatorRoot),
@@ -127,9 +143,12 @@ export function removeAccumulatorMetadata(
   tx: Transaction,
   typeArg: string,
   args: RemoveAccumulatorMetadataArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_metadata::remove_accumulator_metadata`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::accumulator_metadata::remove_accumulator_metadata`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.accumulatorRoot),
@@ -148,9 +167,12 @@ export function accumulatorOwnerAttachMetadata(
   tx: Transaction,
   typeArg: string,
   args: AccumulatorOwnerAttachMetadataArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_owner_attach_metadata`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::accumulator_metadata::accumulator_owner_attach_metadata`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -164,9 +186,12 @@ export function accumulatorOwnerDetachMetadata(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_owner_detach_metadata`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::accumulator_metadata::accumulator_owner_detach_metadata`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -176,9 +201,12 @@ export function accumulatorOwnerDetachMetadata(
 export function accumulatorOwnerDestroy(
   tx: Transaction,
   this_: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_metadata::accumulator_owner_destroy`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::accumulator_metadata::accumulator_owner_destroy`,
     arguments: [obj(tx, this_)],
   })
 }

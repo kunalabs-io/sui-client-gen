@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 import { String } from '../../std/string/structs'
@@ -16,9 +17,10 @@ export function new_(
   tx: Transaction,
   typeArg: string,
   pub: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::display::new`,
+    target: `${getPublishedAt('sui', options?.env)}::display::new`,
     typeArguments: [typeArg],
     arguments: [obj(tx, pub)],
   })
@@ -35,9 +37,10 @@ export function newWithFields(
   tx: Transaction,
   typeArg: string,
   args: NewWithFieldsArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::display::new_with_fields`,
+    target: `${getPublishedAt('sui', options?.env)}::display::new_with_fields`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.pub),
@@ -52,9 +55,10 @@ export function createAndKeep(
   tx: Transaction,
   typeArg: string,
   pub: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::display::create_and_keep`,
+    target: `${getPublishedAt('sui', options?.env)}::display::create_and_keep`,
     typeArguments: [typeArg],
     arguments: [obj(tx, pub)],
   })
@@ -65,9 +69,10 @@ export function updateVersion(
   tx: Transaction,
   typeArg: string,
   display: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::display::update_version`,
+    target: `${getPublishedAt('sui', options?.env)}::display::update_version`,
     typeArguments: [typeArg],
     arguments: [obj(tx, display)],
   })
@@ -80,9 +85,14 @@ export interface AddArgs {
 }
 
 /** Sets a custom `name` field with the `value`. */
-export function add(tx: Transaction, typeArg: string, args: AddArgs): TransactionResult {
+export function add(
+  tx: Transaction,
+  typeArg: string,
+  args: AddArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::display::add`,
+    target: `${getPublishedAt('sui', options?.env)}::display::add`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -103,9 +113,10 @@ export function addMultiple(
   tx: Transaction,
   typeArg: string,
   args: AddMultipleArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::display::add_multiple`,
+    target: `${getPublishedAt('sui', options?.env)}::display::add_multiple`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -125,9 +136,14 @@ export interface EditArgs {
  * Change the value of the field.
  * TODO (long run): version changes;
  */
-export function edit(tx: Transaction, typeArg: string, args: EditArgs): TransactionResult {
+export function edit(
+  tx: Transaction,
+  typeArg: string,
+  args: EditArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::display::edit`,
+    target: `${getPublishedAt('sui', options?.env)}::display::edit`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -143,9 +159,14 @@ export interface RemoveArgs {
 }
 
 /** Remove the key from the Display. */
-export function remove(tx: Transaction, typeArg: string, args: RemoveArgs): TransactionResult {
+export function remove(
+  tx: Transaction,
+  typeArg: string,
+  args: RemoveArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::display::remove`,
+    target: `${getPublishedAt('sui', options?.env)}::display::remove`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -159,9 +180,10 @@ export function isAuthorized(
   tx: Transaction,
   typeArg: string,
   pub: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::display::is_authorized`,
+    target: `${getPublishedAt('sui', options?.env)}::display::is_authorized`,
     typeArguments: [typeArg],
     arguments: [obj(tx, pub)],
   })
@@ -172,9 +194,10 @@ export function version(
   tx: Transaction,
   typeArg: string,
   d: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::display::version`,
+    target: `${getPublishedAt('sui', options?.env)}::display::version`,
     typeArguments: [typeArg],
     arguments: [obj(tx, d)],
   })
@@ -185,18 +208,23 @@ export function fields(
   tx: Transaction,
   typeArg: string,
   d: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::display::fields`,
+    target: `${getPublishedAt('sui', options?.env)}::display::fields`,
     typeArguments: [typeArg],
     arguments: [obj(tx, d)],
   })
 }
 
 /** Internal function to create a new `Display<T>`. */
-export function createInternal(tx: Transaction, typeArg: string): TransactionResult {
+export function createInternal(
+  tx: Transaction,
+  typeArg: string,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::display::create_internal`,
+    target: `${getPublishedAt('sui', options?.env)}::display::create_internal`,
     typeArguments: [typeArg],
     arguments: [],
   })
@@ -213,9 +241,10 @@ export function addInternal(
   tx: Transaction,
   typeArg: string,
   args: AddInternalArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::display::add_internal`,
+    target: `${getPublishedAt('sui', options?.env)}::display::add_internal`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.display),

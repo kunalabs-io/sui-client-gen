@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj, pure } from '../../_framework/util'
 
@@ -12,9 +13,10 @@ export function value(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::value`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::value`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -25,18 +27,24 @@ export function supplyValue(
   tx: Transaction,
   typeArg: string,
   supply: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::supply_value`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::supply_value`,
     typeArguments: [typeArg],
     arguments: [obj(tx, supply)],
   })
 }
 
 /** Create a new supply for type T. */
-export function createSupply(tx: Transaction, typeArg: string, t: GenericArg): TransactionResult {
+export function createSupply(
+  tx: Transaction,
+  typeArg: string,
+  t: GenericArg,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::create_supply`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::create_supply`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, t)],
   })
@@ -52,9 +60,10 @@ export function increaseSupply(
   tx: Transaction,
   typeArg: string,
   args: IncreaseSupplyArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::increase_supply`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::increase_supply`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -73,9 +82,10 @@ export function decreaseSupply(
   tx: Transaction,
   typeArg: string,
   args: DecreaseSupplyArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::decrease_supply`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::decrease_supply`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -85,9 +95,13 @@ export function decreaseSupply(
 }
 
 /** Create a zero `Balance` for type `T`. */
-export function zero(tx: Transaction, typeArg: string): TransactionResult {
+export function zero(
+  tx: Transaction,
+  typeArg: string,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::zero`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::zero`,
     typeArguments: [typeArg],
     arguments: [],
   })
@@ -99,9 +113,14 @@ export interface JoinArgs {
 }
 
 /** Join two balances together. */
-export function join(tx: Transaction, typeArg: string, args: JoinArgs): TransactionResult {
+export function join(
+  tx: Transaction,
+  typeArg: string,
+  args: JoinArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::join`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::join`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -116,9 +135,14 @@ export interface SplitArgs {
 }
 
 /** Split a `Balance` and take a sub balance from it. */
-export function split(tx: Transaction, typeArg: string, args: SplitArgs): TransactionResult {
+export function split(
+  tx: Transaction,
+  typeArg: string,
+  args: SplitArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::split`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::split`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.self),
@@ -132,9 +156,10 @@ export function withdrawAll(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::withdraw_all`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::withdraw_all`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -145,9 +170,10 @@ export function destroyZero(
   tx: Transaction,
   typeArg: string,
   balance: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::destroy_zero`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::destroy_zero`,
     typeArguments: [typeArg],
     arguments: [obj(tx, balance)],
   })
@@ -163,9 +189,10 @@ export function sendFunds(
   tx: Transaction,
   typeArg: string,
   args: SendFundsArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::send_funds`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::send_funds`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.balance),
@@ -182,9 +209,10 @@ export function redeemFunds(
   tx: Transaction,
   typeArg: string,
   withdrawal: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::redeem_funds`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::redeem_funds`,
     typeArguments: [typeArg],
     arguments: [obj(tx, withdrawal)],
   })
@@ -200,9 +228,10 @@ export function withdrawFundsFromObject(
   tx: Transaction,
   typeArg: string,
   args: WithdrawFundsFromObjectArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::withdraw_funds_from_object`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::withdraw_funds_from_object`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.obj),
@@ -211,9 +240,13 @@ export function withdrawFundsFromObject(
   })
 }
 
-export function createSupplyInternal(tx: Transaction, typeArg: string): TransactionResult {
+export function createSupplyInternal(
+  tx: Transaction,
+  typeArg: string,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::create_supply_internal`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::create_supply_internal`,
     typeArguments: [typeArg],
     arguments: [],
   })
@@ -228,9 +261,10 @@ export function createStakingRewards(
   tx: Transaction,
   typeArg: string,
   value: bigint | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::create_staking_rewards`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::create_staking_rewards`,
     typeArguments: [typeArg],
     arguments: [pure(tx, value, `u64`)],
   })
@@ -245,9 +279,10 @@ export function destroyStorageRebates(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::destroy_storage_rebates`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::destroy_storage_rebates`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })
@@ -258,9 +293,10 @@ export function destroySupply(
   tx: Transaction,
   typeArg: string,
   self: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::balance::destroy_supply`,
+    target: `${getPublishedAt('sui', options?.env)}::balance::destroy_supply`,
     typeArguments: [typeArg],
     arguments: [obj(tx, self)],
   })

@@ -1,4 +1,5 @@
 import { Transaction, TransactionArgument, TransactionResult } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg } from '../../_framework/util'
 
@@ -10,9 +11,10 @@ export function isOneTimeWitness(
   tx: Transaction,
   typeArg: string,
   t: GenericArg,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::types::is_one_time_witness`,
+    target: `${getPublishedAt('sui', options?.env)}::types::is_one_time_witness`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, t)],
   })

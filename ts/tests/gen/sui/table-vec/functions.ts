@@ -4,22 +4,32 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj, pure } from '../../_framework/util'
 
 /** Create an empty TableVec. */
-export function empty(tx: Transaction, typeArg: string): TransactionResult {
+export function empty(
+  tx: Transaction,
+  typeArg: string,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table_vec::empty`,
+    target: `${getPublishedAt('sui', options?.env)}::table_vec::empty`,
     typeArguments: [typeArg],
     arguments: [],
   })
 }
 
 /** Return a TableVec of size one containing element `e`. */
-export function singleton(tx: Transaction, typeArg: string, e: GenericArg): TransactionResult {
+export function singleton(
+  tx: Transaction,
+  typeArg: string,
+  e: GenericArg,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table_vec::singleton`,
+    target: `${getPublishedAt('sui', options?.env)}::table_vec::singleton`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, e)],
   })
@@ -30,9 +40,10 @@ export function length(
   tx: Transaction,
   typeArg: string,
   t: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table_vec::length`,
+    target: `${getPublishedAt('sui', options?.env)}::table_vec::length`,
     typeArguments: [typeArg],
     arguments: [obj(tx, t)],
   })
@@ -43,9 +54,10 @@ export function isEmpty(
   tx: Transaction,
   typeArg: string,
   t: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table_vec::is_empty`,
+    target: `${getPublishedAt('sui', options?.env)}::table_vec::is_empty`,
     typeArguments: [typeArg],
     arguments: [obj(tx, t)],
   })
@@ -60,9 +72,14 @@ export interface BorrowArgs {
  * Acquire an immutable reference to the `i`th element of the TableVec `t`.
  * Aborts if `i` is out of bounds.
  */
-export function borrow(tx: Transaction, typeArg: string, args: BorrowArgs): TransactionResult {
+export function borrow(
+  tx: Transaction,
+  typeArg: string,
+  args: BorrowArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table_vec::borrow`,
+    target: `${getPublishedAt('sui', options?.env)}::table_vec::borrow`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.t),
@@ -77,9 +94,14 @@ export interface PushBackArgs {
 }
 
 /** Add element `e` to the end of the TableVec `t`. */
-export function pushBack(tx: Transaction, typeArg: string, args: PushBackArgs): TransactionResult {
+export function pushBack(
+  tx: Transaction,
+  typeArg: string,
+  args: PushBackArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table_vec::push_back`,
+    target: `${getPublishedAt('sui', options?.env)}::table_vec::push_back`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.t),
@@ -101,9 +123,10 @@ export function borrowMut(
   tx: Transaction,
   typeArg: string,
   args: BorrowMutArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table_vec::borrow_mut`,
+    target: `${getPublishedAt('sui', options?.env)}::table_vec::borrow_mut`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.t),
@@ -120,9 +143,10 @@ export function popBack(
   tx: Transaction,
   typeArg: string,
   t: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table_vec::pop_back`,
+    target: `${getPublishedAt('sui', options?.env)}::table_vec::pop_back`,
     typeArguments: [typeArg],
     arguments: [obj(tx, t)],
   })
@@ -136,9 +160,10 @@ export function destroyEmpty(
   tx: Transaction,
   typeArg: string,
   t: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table_vec::destroy_empty`,
+    target: `${getPublishedAt('sui', options?.env)}::table_vec::destroy_empty`,
     typeArguments: [typeArg],
     arguments: [obj(tx, t)],
   })
@@ -152,9 +177,10 @@ export function drop(
   tx: Transaction,
   typeArg: string,
   t: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table_vec::drop`,
+    target: `${getPublishedAt('sui', options?.env)}::table_vec::drop`,
     typeArguments: [typeArg],
     arguments: [obj(tx, t)],
   })
@@ -170,9 +196,14 @@ export interface SwapArgs {
  * Swaps the elements at the `i`th and `j`th indices in the TableVec `t`.
  * Aborts if `i` or `j` is out of bounds.
  */
-export function swap(tx: Transaction, typeArg: string, args: SwapArgs): TransactionResult {
+export function swap(
+  tx: Transaction,
+  typeArg: string,
+  args: SwapArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table_vec::swap`,
+    target: `${getPublishedAt('sui', options?.env)}::table_vec::swap`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.t),
@@ -196,9 +227,10 @@ export function swapRemove(
   tx: Transaction,
   typeArg: string,
   args: SwapRemoveArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::table_vec::swap_remove`,
+    target: `${getPublishedAt('sui', options?.env)}::table_vec::swap_remove`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.t),

@@ -4,22 +4,31 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 import { String } from '../../std/string/structs'
 
 /** Returns the address associated with the given VerifiedIssuer */
-export function owner(tx: Transaction, verifiedIssuer: TransactionObjectInput): TransactionResult {
+export function owner(
+  tx: Transaction,
+  verifiedIssuer: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::zklogin_verified_issuer::owner`,
+    target: `${getPublishedAt('sui', options?.env)}::zklogin_verified_issuer::owner`,
     arguments: [obj(tx, verifiedIssuer)],
   })
 }
 
 /** Returns the issuer associated with the given VerifiedIssuer */
-export function issuer(tx: Transaction, verifiedIssuer: TransactionObjectInput): TransactionResult {
+export function issuer(
+  tx: Transaction,
+  verifiedIssuer: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::zklogin_verified_issuer::issuer`,
+    target: `${getPublishedAt('sui', options?.env)}::zklogin_verified_issuer::issuer`,
     arguments: [obj(tx, verifiedIssuer)],
   })
 }
@@ -28,9 +37,10 @@ export function issuer(tx: Transaction, verifiedIssuer: TransactionObjectInput):
 export function delete_(
   tx: Transaction,
   verifiedIssuer: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::zklogin_verified_issuer::delete`,
+    target: `${getPublishedAt('sui', options?.env)}::zklogin_verified_issuer::delete`,
     arguments: [obj(tx, verifiedIssuer)],
   })
 }
@@ -49,9 +59,12 @@ export interface VerifyZkloginIssuerArgs {
 export function verifyZkloginIssuer(
   tx: Transaction,
   args: VerifyZkloginIssuerArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::zklogin_verified_issuer::verify_zklogin_issuer`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::zklogin_verified_issuer::verify_zklogin_issuer`,
     arguments: [
       pure(tx, args.addressSeed, `u256`),
       pure(tx, args.issuer, `${String.$typeName}`),
@@ -69,9 +82,10 @@ export interface CheckZkloginIssuerArgs {
 export function checkZkloginIssuer(
   tx: Transaction,
   args: CheckZkloginIssuerArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::zklogin_verified_issuer::check_zklogin_issuer`,
+    target: `${getPublishedAt('sui', options?.env)}::zklogin_verified_issuer::check_zklogin_issuer`,
     arguments: [
       pure(tx, args.address, `address`),
       pure(tx, args.addressSeed, `u256`),
@@ -94,9 +108,12 @@ export interface CheckZkloginIssuerInternalArgs {
 export function checkZkloginIssuerInternal(
   tx: Transaction,
   args: CheckZkloginIssuerInternalArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::zklogin_verified_issuer::check_zklogin_issuer_internal`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::zklogin_verified_issuer::check_zklogin_issuer_internal`,
     arguments: [
       pure(tx, args.address, `address`),
       pure(tx, args.addressSeed, `u256`),

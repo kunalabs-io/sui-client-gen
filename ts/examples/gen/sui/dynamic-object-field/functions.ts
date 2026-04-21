@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj } from '../../_framework/util'
 
@@ -17,9 +18,14 @@ export interface AddArgs {
  * Adds a dynamic object field to the object `object: &mut UID` at field specified by `name: Name`.
  * Aborts with `EFieldAlreadyExists` if the object already has that field with that name.
  */
-export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs): TransactionResult {
+export function add(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: AddArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::dynamic_object_field::add`,
+    target: `${getPublishedAt('sui', options?.env)}::dynamic_object_field::add`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.object),
@@ -44,9 +50,10 @@ export function borrow(
   tx: Transaction,
   typeArgs: [string, string],
   args: BorrowArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::dynamic_object_field::borrow`,
+    target: `${getPublishedAt('sui', options?.env)}::dynamic_object_field::borrow`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.object),
@@ -70,9 +77,10 @@ export function borrowMut(
   tx: Transaction,
   typeArgs: [string, string],
   args: BorrowMutArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::dynamic_object_field::borrow_mut`,
+    target: `${getPublishedAt('sui', options?.env)}::dynamic_object_field::borrow_mut`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.object),
@@ -97,9 +105,10 @@ export function remove(
   tx: Transaction,
   typeArgs: [string, string],
   args: RemoveArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::dynamic_object_field::remove`,
+    target: `${getPublishedAt('sui', options?.env)}::dynamic_object_field::remove`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.object),
@@ -117,9 +126,14 @@ export interface Exists_Args {
  * Returns true if and only if the `object` has a dynamic object field with the name specified by
  * `name: Name`.
  */
-export function exists_(tx: Transaction, typeArg: string, args: Exists_Args): TransactionResult {
+export function exists_(
+  tx: Transaction,
+  typeArg: string,
+  args: Exists_Args,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::dynamic_object_field::exists_`,
+    target: `${getPublishedAt('sui', options?.env)}::dynamic_object_field::exists_`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.object),
@@ -141,9 +155,10 @@ export function existsWithType(
   tx: Transaction,
   typeArgs: [string, string],
   args: ExistsWithTypeArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::dynamic_object_field::exists_with_type`,
+    target: `${getPublishedAt('sui', options?.env)}::dynamic_object_field::exists_with_type`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.object),
@@ -161,9 +176,14 @@ export interface IdArgs {
  * Returns the ID of the object associated with the dynamic object field
  * Returns none otherwise
  */
-export function id(tx: Transaction, typeArg: string, args: IdArgs): TransactionResult {
+export function id(
+  tx: Transaction,
+  typeArg: string,
+  args: IdArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::dynamic_object_field::id`,
+    target: `${getPublishedAt('sui', options?.env)}::dynamic_object_field::id`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.object),
@@ -182,9 +202,10 @@ export function internalAdd(
   tx: Transaction,
   typeArgs: [string, string],
   args: InternalAddArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::dynamic_object_field::internal_add`,
+    target: `${getPublishedAt('sui', options?.env)}::dynamic_object_field::internal_add`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.object),
@@ -203,9 +224,10 @@ export function internalBorrow(
   tx: Transaction,
   typeArgs: [string, string],
   args: InternalBorrowArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::dynamic_object_field::internal_borrow`,
+    target: `${getPublishedAt('sui', options?.env)}::dynamic_object_field::internal_borrow`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.object),
@@ -223,9 +245,10 @@ export function internalBorrowMut(
   tx: Transaction,
   typeArgs: [string, string],
   args: InternalBorrowMutArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::dynamic_object_field::internal_borrow_mut`,
+    target: `${getPublishedAt('sui', options?.env)}::dynamic_object_field::internal_borrow_mut`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.object),
@@ -243,9 +266,10 @@ export function internalRemove(
   tx: Transaction,
   typeArgs: [string, string],
   args: InternalRemoveArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::dynamic_object_field::internal_remove`,
+    target: `${getPublishedAt('sui', options?.env)}::dynamic_object_field::internal_remove`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.object),
@@ -263,9 +287,12 @@ export function internalExistsWithType(
   tx: Transaction,
   typeArgs: [string, string],
   args: InternalExistsWithTypeArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::dynamic_object_field::internal_exists_with_type`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::dynamic_object_field::internal_exists_with_type`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.object),

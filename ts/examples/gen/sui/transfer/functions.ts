@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj as obj_, pure } from '../../_framework/util'
 import { ID } from '../object/structs'
@@ -22,9 +23,14 @@ export interface TransferArgs {
  * that `T` is an object defined in the module where `transfer` is invoked. Use
  * `public_transfer` to transfer an object with `store` outside of its module.
  */
-export function transfer(tx: Transaction, typeArg: string, args: TransferArgs): TransactionResult {
+export function transfer(
+  tx: Transaction,
+  typeArg: string,
+  args: TransferArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::transfer::transfer`,
+    target: `${getPublishedAt('sui', options?.env)}::transfer::transfer`,
     typeArguments: [typeArg],
     arguments: [
       generic(tx, `${typeArg}`, args.obj),
@@ -49,9 +55,10 @@ export function publicTransfer(
   tx: Transaction,
   typeArg: string,
   args: PublicTransferArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::transfer::public_transfer`,
+    target: `${getPublishedAt('sui', options?.env)}::transfer::public_transfer`,
     typeArguments: [typeArg],
     arguments: [
       generic(tx, `${typeArg}`, args.obj),
@@ -83,9 +90,10 @@ export function partyTransfer(
   tx: Transaction,
   typeArg: string,
   args: PartyTransferArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::transfer::party_transfer`,
+    target: `${getPublishedAt('sui', options?.env)}::transfer::party_transfer`,
     typeArguments: [typeArg],
     arguments: [
       generic(tx, `${typeArg}`, args.obj),
@@ -115,9 +123,10 @@ export function publicPartyTransfer(
   tx: Transaction,
   typeArg: string,
   args: PublicPartyTransferArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::transfer::public_party_transfer`,
+    target: `${getPublishedAt('sui', options?.env)}::transfer::public_party_transfer`,
     typeArguments: [typeArg],
     arguments: [
       generic(tx, `${typeArg}`, args.obj),
@@ -133,9 +142,14 @@ export function publicPartyTransfer(
  * that `T` is an object defined in the module where `freeze_object` is invoked. Use
  * `public_freeze_object` to freeze an object with `store` outside of its module.
  */
-export function freezeObject(tx: Transaction, typeArg: string, obj: GenericArg): TransactionResult {
+export function freezeObject(
+  tx: Transaction,
+  typeArg: string,
+  obj: GenericArg,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::transfer::freeze_object`,
+    target: `${getPublishedAt('sui', options?.env)}::transfer::freeze_object`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, obj)],
   })
@@ -150,9 +164,10 @@ export function publicFreezeObject(
   tx: Transaction,
   typeArg: string,
   obj: GenericArg,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::transfer::public_freeze_object`,
+    target: `${getPublishedAt('sui', options?.env)}::transfer::public_freeze_object`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, obj)],
   })
@@ -167,9 +182,14 @@ export function publicFreezeObject(
  * that `T` is an object defined in the module where `share_object` is invoked. Use
  * `public_share_object` to share an object with `store` outside of its module.
  */
-export function shareObject(tx: Transaction, typeArg: string, obj: GenericArg): TransactionResult {
+export function shareObject(
+  tx: Transaction,
+  typeArg: string,
+  obj: GenericArg,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::transfer::share_object`,
+    target: `${getPublishedAt('sui', options?.env)}::transfer::share_object`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, obj)],
   })
@@ -186,9 +206,10 @@ export function publicShareObject(
   tx: Transaction,
   typeArg: string,
   obj: GenericArg,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::transfer::public_share_object`,
+    target: `${getPublishedAt('sui', options?.env)}::transfer::public_share_object`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, obj)],
   })
@@ -207,9 +228,14 @@ export interface ReceiveArgs {
  * that `T` is an object defined in the module where `receive` is invoked. Use
  * `public_receive` to receivne an object with `store` outside of its module.
  */
-export function receive(tx: Transaction, typeArg: string, args: ReceiveArgs): TransactionResult {
+export function receive(
+  tx: Transaction,
+  typeArg: string,
+  args: ReceiveArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::transfer::receive`,
+    target: `${getPublishedAt('sui', options?.env)}::transfer::receive`,
     typeArguments: [typeArg],
     arguments: [
       obj_(tx, args.parent),
@@ -233,9 +259,10 @@ export function publicReceive(
   tx: Transaction,
   typeArg: string,
   args: PublicReceiveArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::transfer::public_receive`,
+    target: `${getPublishedAt('sui', options?.env)}::transfer::public_receive`,
     typeArguments: [typeArg],
     arguments: [
       obj_(tx, args.parent),
@@ -249,9 +276,10 @@ export function receivingObjectId(
   tx: Transaction,
   typeArg: string,
   receiving: TransactionObjectInput,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::transfer::receiving_object_id`,
+    target: `${getPublishedAt('sui', options?.env)}::transfer::receiving_object_id`,
     typeArguments: [typeArg],
     arguments: [obj_(tx, receiving)],
   })
@@ -261,9 +289,10 @@ export function freezeObjectImpl(
   tx: Transaction,
   typeArg: string,
   obj: GenericArg,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::transfer::freeze_object_impl`,
+    target: `${getPublishedAt('sui', options?.env)}::transfer::freeze_object_impl`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, obj)],
   })
@@ -273,9 +302,10 @@ export function shareObjectImpl(
   tx: Transaction,
   typeArg: string,
   obj: GenericArg,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::transfer::share_object_impl`,
+    target: `${getPublishedAt('sui', options?.env)}::transfer::share_object_impl`,
     typeArguments: [typeArg],
     arguments: [generic(tx, `${typeArg}`, obj)],
   })
@@ -292,9 +322,10 @@ export function partyTransferImpl(
   tx: Transaction,
   typeArg: string,
   args: PartyTransferImplArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::transfer::party_transfer_impl`,
+    target: `${getPublishedAt('sui', options?.env)}::transfer::party_transfer_impl`,
     typeArguments: [typeArg],
     arguments: [
       generic(tx, `${typeArg}`, args.obj),
@@ -314,9 +345,10 @@ export function transferImpl(
   tx: Transaction,
   typeArg: string,
   args: TransferImplArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::transfer::transfer_impl`,
+    target: `${getPublishedAt('sui', options?.env)}::transfer::transfer_impl`,
     typeArguments: [typeArg],
     arguments: [
       generic(tx, `${typeArg}`, args.obj),
@@ -335,9 +367,10 @@ export function receiveImpl(
   tx: Transaction,
   typeArg: string,
   args: ReceiveImplArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::transfer::receive_impl`,
+    target: `${getPublishedAt('sui', options?.env)}::transfer::receive_impl`,
     typeArguments: [typeArg],
     arguments: [
       pure(tx, args.parent, `address`),

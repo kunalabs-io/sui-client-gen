@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj, pure } from '../../_framework/util'
 import { Option } from '../../std/option/structs'
@@ -19,9 +20,10 @@ export function createStopAction(
   tx: Transaction,
   typeArgs: [string, string],
   args: CreateStopActionArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('examples')}::enums::create_stop_action`,
+    target: `${getPublishedAt('examples', options?.env)}::enums::create_stop_action`,
     typeArguments: typeArgs,
     arguments: [
       pure(tx, args.duration, `u32`),
@@ -32,9 +34,9 @@ export function createStopAction(
   })
 }
 
-export function createActions(tx: Transaction): TransactionResult {
+export function createActions(tx: Transaction, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('examples')}::enums::create_actions`,
+    target: `${getPublishedAt('examples', options?.env)}::enums::create_actions`,
     arguments: [],
   })
 }

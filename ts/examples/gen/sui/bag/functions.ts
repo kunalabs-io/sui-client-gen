@@ -4,13 +4,14 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj } from '../../_framework/util'
 
 /** Creates a new, empty bag */
-export function new_(tx: Transaction): TransactionResult {
+export function new_(tx: Transaction, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::bag::new`,
+    target: `${getPublishedAt('sui', options?.env)}::bag::new`,
     arguments: [],
   })
 }
@@ -26,9 +27,14 @@ export interface AddArgs {
  * Aborts with `sui::dynamic_field::EFieldAlreadyExists` if the bag already has an entry with
  * that key `k: K`.
  */
-export function add(tx: Transaction, typeArgs: [string, string], args: AddArgs): TransactionResult {
+export function add(
+  tx: Transaction,
+  typeArgs: [string, string],
+  args: AddArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::bag::add`,
+    target: `${getPublishedAt('sui', options?.env)}::bag::add`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.bag),
@@ -54,9 +60,10 @@ export function borrow(
   tx: Transaction,
   typeArgs: [string, string],
   args: BorrowArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::bag::borrow`,
+    target: `${getPublishedAt('sui', options?.env)}::bag::borrow`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.bag),
@@ -81,9 +88,10 @@ export function borrowMut(
   tx: Transaction,
   typeArgs: [string, string],
   args: BorrowMutArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::bag::borrow_mut`,
+    target: `${getPublishedAt('sui', options?.env)}::bag::borrow_mut`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.bag),
@@ -108,9 +116,10 @@ export function remove(
   tx: Transaction,
   typeArgs: [string, string],
   args: RemoveArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::bag::remove`,
+    target: `${getPublishedAt('sui', options?.env)}::bag::remove`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.bag),
@@ -125,9 +134,14 @@ export interface ContainsArgs {
 }
 
 /** Returns true iff there is an value associated with the key `k: K` in the bag `bag: &Bag` */
-export function contains(tx: Transaction, typeArg: string, args: ContainsArgs): TransactionResult {
+export function contains(
+  tx: Transaction,
+  typeArg: string,
+  args: ContainsArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::bag::contains`,
+    target: `${getPublishedAt('sui', options?.env)}::bag::contains`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.bag),
@@ -149,9 +163,10 @@ export function containsWithType(
   tx: Transaction,
   typeArgs: [string, string],
   args: ContainsWithTypeArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::bag::contains_with_type`,
+    target: `${getPublishedAt('sui', options?.env)}::bag::contains_with_type`,
     typeArguments: typeArgs,
     arguments: [
       obj(tx, args.bag),
@@ -161,17 +176,25 @@ export function containsWithType(
 }
 
 /** Returns the size of the bag, the number of key-value pairs */
-export function length(tx: Transaction, bag: TransactionObjectInput): TransactionResult {
+export function length(
+  tx: Transaction,
+  bag: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::bag::length`,
+    target: `${getPublishedAt('sui', options?.env)}::bag::length`,
     arguments: [obj(tx, bag)],
   })
 }
 
 /** Returns true iff the bag is empty (if `length` returns `0`) */
-export function isEmpty(tx: Transaction, bag: TransactionObjectInput): TransactionResult {
+export function isEmpty(
+  tx: Transaction,
+  bag: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::bag::is_empty`,
+    target: `${getPublishedAt('sui', options?.env)}::bag::is_empty`,
     arguments: [obj(tx, bag)],
   })
 }
@@ -180,9 +203,13 @@ export function isEmpty(tx: Transaction, bag: TransactionObjectInput): Transacti
  * Destroys an empty bag
  * Aborts with `EBagNotEmpty` if the bag still contains values
  */
-export function destroyEmpty(tx: Transaction, bag: TransactionObjectInput): TransactionResult {
+export function destroyEmpty(
+  tx: Transaction,
+  bag: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::bag::destroy_empty`,
+    target: `${getPublishedAt('sui', options?.env)}::bag::destroy_empty`,
     arguments: [obj(tx, bag)],
   })
 }

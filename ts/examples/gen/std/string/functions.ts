@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 import { String as String1 } from '../ascii/structs'
@@ -16,17 +17,22 @@ import { String } from './structs'
 export function utf8(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::utf8`,
+    target: `${getPublishedAt('std', options?.env)}::string::utf8`,
     arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }
 
 /** Convert an ASCII string to a UTF8 string */
-export function fromAscii(tx: Transaction, s: string | TransactionArgument): TransactionResult {
+export function fromAscii(
+  tx: Transaction,
+  s: string | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::from_ascii`,
+    target: `${getPublishedAt('std', options?.env)}::string::from_ascii`,
     arguments: [pure(tx, s, `${String1.$typeName}`)],
   })
 }
@@ -35,9 +41,13 @@ export function fromAscii(tx: Transaction, s: string | TransactionArgument): Tra
  * Convert an UTF8 string to an ASCII string.
  * Aborts if `s` is not valid ASCII
  */
-export function toAscii(tx: Transaction, s: string | TransactionArgument): TransactionResult {
+export function toAscii(
+  tx: Transaction,
+  s: string | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::to_ascii`,
+    target: `${getPublishedAt('std', options?.env)}::string::to_ascii`,
     arguments: [pure(tx, s, `${String.$typeName}`)],
   })
 }
@@ -46,41 +56,58 @@ export function toAscii(tx: Transaction, s: string | TransactionArgument): Trans
 export function tryUtf8(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::try_utf8`,
+    target: `${getPublishedAt('std', options?.env)}::string::try_utf8`,
     arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }
 
 /** Returns a reference to the underlying byte vector. */
-export function asBytes(tx: Transaction, s: string | TransactionArgument): TransactionResult {
+export function asBytes(
+  tx: Transaction,
+  s: string | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::as_bytes`,
+    target: `${getPublishedAt('std', options?.env)}::string::as_bytes`,
     arguments: [pure(tx, s, `${String.$typeName}`)],
   })
 }
 
 /** Unpack the `string` to get its underlying bytes. */
-export function intoBytes(tx: Transaction, s: string | TransactionArgument): TransactionResult {
+export function intoBytes(
+  tx: Transaction,
+  s: string | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::into_bytes`,
+    target: `${getPublishedAt('std', options?.env)}::string::into_bytes`,
     arguments: [pure(tx, s, `${String.$typeName}`)],
   })
 }
 
 /** Checks whether this string is empty. */
-export function isEmpty(tx: Transaction, s: string | TransactionArgument): TransactionResult {
+export function isEmpty(
+  tx: Transaction,
+  s: string | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::is_empty`,
+    target: `${getPublishedAt('std', options?.env)}::string::is_empty`,
     arguments: [pure(tx, s, `${String.$typeName}`)],
   })
 }
 
 /** Returns the length of this string, in bytes. */
-export function length(tx: Transaction, s: string | TransactionArgument): TransactionResult {
+export function length(
+  tx: Transaction,
+  s: string | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::length`,
+    target: `${getPublishedAt('std', options?.env)}::string::length`,
     arguments: [pure(tx, s, `${String.$typeName}`)],
   })
 }
@@ -91,9 +118,13 @@ export interface AppendArgs {
 }
 
 /** Appends a string. */
-export function append(tx: Transaction, args: AppendArgs): TransactionResult {
+export function append(
+  tx: Transaction,
+  args: AppendArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::append`,
+    target: `${getPublishedAt('std', options?.env)}::string::append`,
     arguments: [
       pure(tx, args.s, `${String.$typeName}`),
       pure(tx, args.r, `${String.$typeName}`),
@@ -107,9 +138,13 @@ export interface AppendUtf8Args {
 }
 
 /** Appends bytes which must be in valid utf8 format. */
-export function appendUtf8(tx: Transaction, args: AppendUtf8Args): TransactionResult {
+export function appendUtf8(
+  tx: Transaction,
+  args: AppendUtf8Args,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::append_utf8`,
+    target: `${getPublishedAt('std', options?.env)}::string::append_utf8`,
     arguments: [
       pure(tx, args.s, `${String.$typeName}`),
       pure(tx, args.bytes, `vector<u8>`),
@@ -127,9 +162,13 @@ export interface InsertArgs {
  * Insert the other string at the byte index in given string. The index
  * must be at a valid utf8 char boundary.
  */
-export function insert(tx: Transaction, args: InsertArgs): TransactionResult {
+export function insert(
+  tx: Transaction,
+  args: InsertArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::insert`,
+    target: `${getPublishedAt('std', options?.env)}::string::insert`,
     arguments: [
       pure(tx, args.s, `${String.$typeName}`),
       pure(tx, args.at, `u64`),
@@ -150,9 +189,13 @@ export interface SubstringArgs {
  * length of the string). The indices must be at valid utf8 char boundaries,
  * guaranteeing that the result is valid utf8.
  */
-export function substring(tx: Transaction, args: SubstringArgs): TransactionResult {
+export function substring(
+  tx: Transaction,
+  args: SubstringArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::substring`,
+    target: `${getPublishedAt('std', options?.env)}::string::substring`,
     arguments: [
       pure(tx, args.s, `${String.$typeName}`),
       pure(tx, args.i, `u64`),
@@ -170,9 +213,13 @@ export interface IndexOfArgs {
  * Computes the index of the first occurrence of a string. Returns `s.length()`
  * if no occurrence found.
  */
-export function indexOf(tx: Transaction, args: IndexOfArgs): TransactionResult {
+export function indexOf(
+  tx: Transaction,
+  args: IndexOfArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::index_of`,
+    target: `${getPublishedAt('std', options?.env)}::string::index_of`,
     arguments: [
       pure(tx, args.s, `${String.$typeName}`),
       pure(tx, args.r, `${String.$typeName}`),
@@ -183,9 +230,10 @@ export function indexOf(tx: Transaction, args: IndexOfArgs): TransactionResult {
 export function internalCheckUtf8(
   tx: Transaction,
   v: Array<number | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::internal_check_utf8`,
+    target: `${getPublishedAt('std', options?.env)}::string::internal_check_utf8`,
     arguments: [pure(tx, v, `vector<u8>`)],
   })
 }
@@ -198,9 +246,10 @@ export interface InternalIsCharBoundaryArgs {
 export function internalIsCharBoundary(
   tx: Transaction,
   args: InternalIsCharBoundaryArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::internal_is_char_boundary`,
+    target: `${getPublishedAt('std', options?.env)}::string::internal_is_char_boundary`,
     arguments: [
       pure(tx, args.v, `vector<u8>`),
       pure(tx, args.i, `u64`),
@@ -214,9 +263,13 @@ export interface InternalSubStringArgs {
   j: bigint | TransactionArgument
 }
 
-export function internalSubString(tx: Transaction, args: InternalSubStringArgs): TransactionResult {
+export function internalSubString(
+  tx: Transaction,
+  args: InternalSubStringArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::internal_sub_string`,
+    target: `${getPublishedAt('std', options?.env)}::string::internal_sub_string`,
     arguments: [
       pure(tx, args.v, `vector<u8>`),
       pure(tx, args.i, `u64`),
@@ -230,9 +283,13 @@ export interface InternalIndexOfArgs {
   r: Array<number | TransactionArgument> | TransactionArgument
 }
 
-export function internalIndexOf(tx: Transaction, args: InternalIndexOfArgs): TransactionResult {
+export function internalIndexOf(
+  tx: Transaction,
+  args: InternalIndexOfArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::internal_index_of`,
+    target: `${getPublishedAt('std', options?.env)}::string::internal_index_of`,
     arguments: [
       pure(tx, args.v, `vector<u8>`),
       pure(tx, args.r, `vector<u8>`),
@@ -241,9 +298,13 @@ export function internalIndexOf(tx: Transaction, args: InternalIndexOfArgs): Tra
 }
 
 /** @deprecated Use `std::string::as_bytes` instead. */
-export function bytes(tx: Transaction, s: string | TransactionArgument): TransactionResult {
+export function bytes(
+  tx: Transaction,
+  s: string | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::bytes`,
+    target: `${getPublishedAt('std', options?.env)}::string::bytes`,
     arguments: [pure(tx, s, `${String.$typeName}`)],
   })
 }
@@ -255,9 +316,13 @@ export interface SubStringArgs {
 }
 
 /** @deprecated Use `std::string::substring` instead. */
-export function subString(tx: Transaction, args: SubStringArgs): TransactionResult {
+export function subString(
+  tx: Transaction,
+  args: SubStringArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::string::sub_string`,
+    target: `${getPublishedAt('std', options?.env)}::string::sub_string`,
     arguments: [
       pure(tx, args.s, `${String.$typeName}`),
       pure(tx, args.i, `u64`),

@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { generic, GenericArg, obj, pure } from '../../_framework/util'
 import { ID } from '../object/structs'
@@ -14,9 +15,14 @@ export interface ClaimArgs {
 }
 
 /** Claim a deterministic UID, using the parent's UID & any key. */
-export function claim(tx: Transaction, typeArg: string, args: ClaimArgs): TransactionResult {
+export function claim(
+  tx: Transaction,
+  typeArg: string,
+  args: ClaimArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::derived_object::claim`,
+    target: `${getPublishedAt('sui', options?.env)}::derived_object::claim`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.parent),
@@ -34,9 +40,14 @@ export interface ExistsArgs {
  * Checks if a provided `key` has been claimed for the given parent.
  * Note: If the UID has been deleted through `object::delete`, this will always return true.
  */
-export function exists(tx: Transaction, typeArg: string, args: ExistsArgs): TransactionResult {
+export function exists(
+  tx: Transaction,
+  typeArg: string,
+  args: ExistsArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::derived_object::exists`,
+    target: `${getPublishedAt('sui', options?.env)}::derived_object::exists`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.parent),
@@ -55,9 +66,10 @@ export function deriveAddress(
   tx: Transaction,
   typeArg: string,
   args: DeriveAddressArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::derived_object::derive_address`,
+    target: `${getPublishedAt('sui', options?.env)}::derived_object::derive_address`,
     typeArguments: [typeArg],
     arguments: [
       pure(tx, args.parent, `${ID.$typeName}`),

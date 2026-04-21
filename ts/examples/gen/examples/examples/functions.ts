@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { obj, pure, vector } from '../../_framework/util'
 import { String as String1 } from '../../std/ascii/structs'
@@ -12,9 +13,12 @@ import { String } from '../../std/string/structs'
 import { ID } from '../../sui/object/structs'
 import { ExampleStruct } from './structs'
 
-export function createExampleStruct(tx: Transaction): TransactionResult {
+export function createExampleStruct(
+  tx: Transaction,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('examples')}::examples::create_example_struct`,
+    target: `${getPublishedAt('examples', options?.env)}::examples::create_example_struct`,
     arguments: [],
   })
 }
@@ -30,9 +34,13 @@ export interface SpecialTypesArgs {
   optionNone: bigint | TransactionArgument | null
 }
 
-export function specialTypes(tx: Transaction, args: SpecialTypesArgs): TransactionResult {
+export function specialTypes(
+  tx: Transaction,
+  args: SpecialTypesArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('examples')}::examples::special_types`,
+    target: `${getPublishedAt('examples', options?.env)}::examples::special_types`,
     arguments: [
       pure(tx, args.asciiString, `${String1.$typeName}`),
       pure(tx, args.utf8String, `${String.$typeName}`),

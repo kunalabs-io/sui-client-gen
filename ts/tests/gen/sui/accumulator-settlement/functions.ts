@@ -4,6 +4,7 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 
@@ -23,9 +24,10 @@ export interface SettlementPrologueArgs {
 export function settlementPrologue(
   tx: Transaction,
   args: SettlementPrologueArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_settlement::settlement_prologue`,
+    target: `${getPublishedAt('sui', options?.env)}::accumulator_settlement::settlement_prologue`,
     arguments: [
       obj(tx, args.accumulatorRoot),
       pure(tx, args.epoch, `u64`),
@@ -48,9 +50,10 @@ export function settleU128(
   tx: Transaction,
   typeArg: string,
   args: SettleU128Args,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_settlement::settle_u128`,
+    target: `${getPublishedAt('sui', options?.env)}::accumulator_settlement::settle_u128`,
     typeArguments: [typeArg],
     arguments: [
       obj(tx, args.accumulatorRoot),
@@ -70,9 +73,12 @@ export interface RecordSettlementSuiConservationArgs {
 export function recordSettlementSuiConservation(
   tx: Transaction,
   args: RecordSettlementSuiConservationArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_settlement::record_settlement_sui_conservation`,
+    target: `${
+      getPublishedAt('sui', options?.env)
+    }::accumulator_settlement::record_settlement_sui_conservation`,
     arguments: [
       pure(tx, args.inputSui, `u64`),
       pure(tx, args.outputSui, `u64`),
@@ -85,9 +91,13 @@ export interface AddToMmrArgs {
   mmr: Array<bigint | TransactionArgument> | TransactionArgument
 }
 
-export function addToMmr(tx: Transaction, args: AddToMmrArgs): TransactionResult {
+export function addToMmr(
+  tx: Transaction,
+  args: AddToMmrArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_settlement::add_to_mmr`,
+    target: `${getPublishedAt('sui', options?.env)}::accumulator_settlement::add_to_mmr`,
     arguments: [
       pure(tx, args.newVal, `u256`),
       pure(tx, args.mmr, `vector<u256>`),
@@ -98,9 +108,10 @@ export function addToMmr(tx: Transaction, args: AddToMmrArgs): TransactionResult
 export function u256FromBytes(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_settlement::u256_from_bytes`,
+    target: `${getPublishedAt('sui', options?.env)}::accumulator_settlement::u256_from_bytes`,
     arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }
@@ -110,9 +121,13 @@ export interface HashTwoToOneU256Args {
   right: bigint | TransactionArgument
 }
 
-export function hashTwoToOneU256(tx: Transaction, args: HashTwoToOneU256Args): TransactionResult {
+export function hashTwoToOneU256(
+  tx: Transaction,
+  args: HashTwoToOneU256Args,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_settlement::hash_two_to_one_u256`,
+    target: `${getPublishedAt('sui', options?.env)}::accumulator_settlement::hash_two_to_one_u256`,
     arguments: [
       pure(tx, args.left, `u256`),
       pure(tx, args.right, `u256`),
@@ -126,9 +141,13 @@ export interface NewStreamHeadArgs {
   checkpointSeq: bigint | TransactionArgument
 }
 
-export function newStreamHead(tx: Transaction, args: NewStreamHeadArgs): TransactionResult {
+export function newStreamHead(
+  tx: Transaction,
+  args: NewStreamHeadArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_settlement::new_stream_head`,
+    target: `${getPublishedAt('sui', options?.env)}::accumulator_settlement::new_stream_head`,
     arguments: [
       pure(tx, args.newRoot, `u256`),
       pure(tx, args.eventCountDelta, `u64`),
@@ -145,9 +164,13 @@ export interface SettleEventsArgs {
   checkpointSeq: bigint | TransactionArgument
 }
 
-export function settleEvents(tx: Transaction, args: SettleEventsArgs): TransactionResult {
+export function settleEvents(
+  tx: Transaction,
+  args: SettleEventsArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::accumulator_settlement::settle_events`,
+    target: `${getPublishedAt('sui', options?.env)}::accumulator_settlement::settle_events`,
     arguments: [
       obj(tx, args.accumulatorRoot),
       pure(tx, args.streamId, `address`),

@@ -1,4 +1,5 @@
 import { Transaction, TransactionArgument, TransactionResult } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 
@@ -6,9 +7,13 @@ import { pure } from '../../_framework/util'
  * Returns the bitwise not of the value.
  * Each bit that is 1 becomes 0. Each bit that is 0 becomes 1.
  */
-export function bitwiseNot(tx: Transaction, x: bigint | TransactionArgument): TransactionResult {
+export function bitwiseNot(
+  tx: Transaction,
+  x: bigint | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u128::bitwise_not`,
+    target: `${getPublishedAt('std', options?.env)}::u128::bitwise_not`,
     arguments: [pure(tx, x, `u128`)],
   })
 }
@@ -19,9 +24,13 @@ export interface MaxArgs {
 }
 
 /** Return the larger of `x` and `y` */
-export function max(tx: Transaction, args: MaxArgs): TransactionResult {
+export function max(
+  tx: Transaction,
+  args: MaxArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u128::max`,
+    target: `${getPublishedAt('std', options?.env)}::u128::max`,
     arguments: [
       pure(tx, args.x, `u128`),
       pure(tx, args.y, `u128`),
@@ -35,9 +44,13 @@ export interface MinArgs {
 }
 
 /** Return the smaller of `x` and `y` */
-export function min(tx: Transaction, args: MinArgs): TransactionResult {
+export function min(
+  tx: Transaction,
+  args: MinArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u128::min`,
+    target: `${getPublishedAt('std', options?.env)}::u128::min`,
     arguments: [
       pure(tx, args.x, `u128`),
       pure(tx, args.y, `u128`),
@@ -51,9 +64,13 @@ export interface DiffArgs {
 }
 
 /** Return the absolute value of x - y */
-export function diff(tx: Transaction, args: DiffArgs): TransactionResult {
+export function diff(
+  tx: Transaction,
+  args: DiffArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u128::diff`,
+    target: `${getPublishedAt('std', options?.env)}::u128::diff`,
     arguments: [
       pure(tx, args.x, `u128`),
       pure(tx, args.y, `u128`),
@@ -67,9 +84,13 @@ export interface DivideAndRoundUpArgs {
 }
 
 /** Calculate x / y, but round up the result. */
-export function divideAndRoundUp(tx: Transaction, args: DivideAndRoundUpArgs): TransactionResult {
+export function divideAndRoundUp(
+  tx: Transaction,
+  args: DivideAndRoundUpArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u128::divide_and_round_up`,
+    target: `${getPublishedAt('std', options?.env)}::u128::divide_and_round_up`,
     arguments: [
       pure(tx, args.x, `u128`),
       pure(tx, args.y, `u128`),
@@ -83,9 +104,13 @@ export interface PowArgs {
 }
 
 /** Return the value of a base raised to a power */
-export function pow(tx: Transaction, args: PowArgs): TransactionResult {
+export function pow(
+  tx: Transaction,
+  args: PowArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u128::pow`,
+    target: `${getPublishedAt('std', options?.env)}::u128::pow`,
     arguments: [
       pure(tx, args.base, `u128`),
       pure(tx, args.exponent, `u8`),
@@ -119,48 +144,72 @@ export function pow(tx: Transaction, args: PowArgs): TransactionResult {
  * math::sqrt(8 * 1000000) => 2828; // same as above, 2828 / 1000 (2.828)
  * ```
  */
-export function sqrt(tx: Transaction, x: bigint | TransactionArgument): TransactionResult {
+export function sqrt(
+  tx: Transaction,
+  x: bigint | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u128::sqrt`,
+    target: `${getPublishedAt('std', options?.env)}::u128::sqrt`,
     arguments: [pure(tx, x, `u128`)],
   })
 }
 
 /** Try to convert a `u128` to a `u8`. Returns `None` if the value is too large. */
-export function tryAsU8(tx: Transaction, x: bigint | TransactionArgument): TransactionResult {
+export function tryAsU8(
+  tx: Transaction,
+  x: bigint | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u128::try_as_u8`,
+    target: `${getPublishedAt('std', options?.env)}::u128::try_as_u8`,
     arguments: [pure(tx, x, `u128`)],
   })
 }
 
 /** Try to convert a `u128` to a `u16`. Returns `None` if the value is too large. */
-export function tryAsU16(tx: Transaction, x: bigint | TransactionArgument): TransactionResult {
+export function tryAsU16(
+  tx: Transaction,
+  x: bigint | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u128::try_as_u16`,
+    target: `${getPublishedAt('std', options?.env)}::u128::try_as_u16`,
     arguments: [pure(tx, x, `u128`)],
   })
 }
 
 /** Try to convert a `u128` to a `u32`. Returns `None` if the value is too large. */
-export function tryAsU32(tx: Transaction, x: bigint | TransactionArgument): TransactionResult {
+export function tryAsU32(
+  tx: Transaction,
+  x: bigint | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u128::try_as_u32`,
+    target: `${getPublishedAt('std', options?.env)}::u128::try_as_u32`,
     arguments: [pure(tx, x, `u128`)],
   })
 }
 
 /** Try to convert a `u128` to a `u64`. Returns `None` if the value is too large. */
-export function tryAsU64(tx: Transaction, x: bigint | TransactionArgument): TransactionResult {
+export function tryAsU64(
+  tx: Transaction,
+  x: bigint | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u128::try_as_u64`,
+    target: `${getPublishedAt('std', options?.env)}::u128::try_as_u64`,
     arguments: [pure(tx, x, `u128`)],
   })
 }
 
-export function toString(tx: Transaction, x: bigint | TransactionArgument): TransactionResult {
+export function toString(
+  tx: Transaction,
+  x: bigint | TransactionArgument,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('std')}::u128::to_string`,
+    target: `${getPublishedAt('std', options?.env)}::u128::to_string`,
     arguments: [pure(tx, x, `u128`)],
   })
 }

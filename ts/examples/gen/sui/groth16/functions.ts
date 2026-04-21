@@ -4,21 +4,22 @@ import {
   TransactionObjectInput,
   TransactionResult,
 } from '@mysten/sui/transactions'
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { obj, pure } from '../../_framework/util'
 
 /** Return the `Curve` value indicating that the BLS12-381 construction should be used in a given function. */
-export function bls12381(tx: Transaction): TransactionResult {
+export function bls12381(tx: Transaction, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::groth16::bls12381`,
+    target: `${getPublishedAt('sui', options?.env)}::groth16::bls12381`,
     arguments: [],
   })
 }
 
 /** Return the `Curve` value indicating that the BN254 construction should be used in a given function. */
-export function bn254(tx: Transaction): TransactionResult {
+export function bn254(tx: Transaction, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::groth16::bn254`,
+    target: `${getPublishedAt('sui', options?.env)}::groth16::bn254`,
     arguments: [],
   })
 }
@@ -31,9 +32,13 @@ export interface PvkFromBytesArgs {
 }
 
 /** Creates a `PreparedVerifyingKey` from bytes. */
-export function pvkFromBytes(tx: Transaction, args: PvkFromBytesArgs): TransactionResult {
+export function pvkFromBytes(
+  tx: Transaction,
+  args: PvkFromBytesArgs,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::groth16::pvk_from_bytes`,
+    target: `${getPublishedAt('sui', options?.env)}::groth16::pvk_from_bytes`,
     arguments: [
       pure(tx, args.vkGammaAbcG1Bytes, `vector<u8>`),
       pure(tx, args.alphaG1BetaG2Bytes, `vector<u8>`),
@@ -44,9 +49,13 @@ export function pvkFromBytes(tx: Transaction, args: PvkFromBytesArgs): Transacti
 }
 
 /** Returns bytes of the four components of the `PreparedVerifyingKey`. */
-export function pvkToBytes(tx: Transaction, pvk: TransactionObjectInput): TransactionResult {
+export function pvkToBytes(
+  tx: Transaction,
+  pvk: TransactionObjectInput,
+  options?: { env?: EnvConfig },
+): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::groth16::pvk_to_bytes`,
+    target: `${getPublishedAt('sui', options?.env)}::groth16::pvk_to_bytes`,
     arguments: [obj(tx, pvk)],
   })
 }
@@ -58,9 +67,10 @@ export function pvkToBytes(tx: Transaction, pvk: TransactionObjectInput): Transa
 export function publicProofInputsFromBytes(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::groth16::public_proof_inputs_from_bytes`,
+    target: `${getPublishedAt('sui', options?.env)}::groth16::public_proof_inputs_from_bytes`,
     arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }
@@ -69,9 +79,10 @@ export function publicProofInputsFromBytes(
 export function proofPointsFromBytes(
   tx: Transaction,
   bytes: Array<number | TransactionArgument> | TransactionArgument,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::groth16::proof_points_from_bytes`,
+    target: `${getPublishedAt('sui', options?.env)}::groth16::proof_points_from_bytes`,
     arguments: [pure(tx, bytes, `vector<u8>`)],
   })
 }
@@ -92,9 +103,10 @@ export interface PrepareVerifyingKeyArgs {
 export function prepareVerifyingKey(
   tx: Transaction,
   args: PrepareVerifyingKeyArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::groth16::prepare_verifying_key`,
+    target: `${getPublishedAt('sui', options?.env)}::groth16::prepare_verifying_key`,
     arguments: [
       obj(tx, args.curve),
       pure(tx, args.verifyingKey, `vector<u8>`),
@@ -111,9 +123,10 @@ export interface PrepareVerifyingKeyInternalArgs {
 export function prepareVerifyingKeyInternal(
   tx: Transaction,
   args: PrepareVerifyingKeyInternalArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::groth16::prepare_verifying_key_internal`,
+    target: `${getPublishedAt('sui', options?.env)}::groth16::prepare_verifying_key_internal`,
     arguments: [
       pure(tx, args.curve, `u8`),
       pure(tx, args.verifyingKey, `vector<u8>`),
@@ -139,9 +152,10 @@ export interface VerifyGroth16ProofArgs {
 export function verifyGroth16Proof(
   tx: Transaction,
   args: VerifyGroth16ProofArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::groth16::verify_groth16_proof`,
+    target: `${getPublishedAt('sui', options?.env)}::groth16::verify_groth16_proof`,
     arguments: [
       obj(tx, args.curve),
       obj(tx, args.preparedVerifyingKey),
@@ -165,9 +179,10 @@ export interface VerifyGroth16ProofInternalArgs {
 export function verifyGroth16ProofInternal(
   tx: Transaction,
   args: VerifyGroth16ProofInternalArgs,
+  options?: { env?: EnvConfig },
 ): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('sui')}::groth16::verify_groth16_proof_internal`,
+    target: `${getPublishedAt('sui', options?.env)}::groth16::verify_groth16_proof_internal`,
     arguments: [
       pure(tx, args.curve, `u8`),
       pure(tx, args.vkGammaAbcG1Bytes, `vector<u8>`),
