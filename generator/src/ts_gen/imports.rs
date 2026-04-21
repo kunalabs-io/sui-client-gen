@@ -70,6 +70,8 @@ impl NamedImport {
 pub struct TsImportsBuilder {
     /// Named imports grouped by module path
     named: BTreeMap<String, BTreeSet<NamedImport>>,
+    /// Type-only named imports (`import type { ... }`) grouped by module path
+    type_named: BTreeMap<String, BTreeSet<NamedImport>>,
     /// Wildcard imports: path -> alias
     wildcard: BTreeMap<String, String>,
 }
@@ -108,6 +110,18 @@ impl TsImportsBuilder {
         }
     }
 
+    /// Add a type-only named import (`import type { ... }`). Returns the name to use.
+    pub fn add_type_named(
+        &mut self,
+        path: impl Into<String>,
+        name: impl Into<String>,
+    ) -> String {
+        let name = name.into();
+        let import = NamedImport::new(name.clone());
+        self.type_named.entry(path.into()).or_default().insert(import);
+        name
+    }
+
     /// Add a wildcard import (`import * as alias from 'path'`). Returns the alias.
     pub fn add_wildcard(&mut self, path: impl Into<String>, alias: impl Into<String>) -> String {
         let alias = alias.into();
@@ -117,14 +131,15 @@ impl TsImportsBuilder {
 
     /// Check if any imports have been added.
     pub fn is_empty(&self) -> bool {
-        self.named.is_empty() && self.wildcard.is_empty()
+        self.named.is_empty() && self.type_named.is_empty() && self.wildcard.is_empty()
     }
 
     /// Emit all import statements as a formatted string.
     ///
     /// Order:
     /// 1. Wildcard imports (sorted by path)
-    /// 2. Named imports (sorted by path, names sorted within each)
+    /// 2. Type-only named imports (sorted by path, names sorted within each)
+    /// 3. Named imports (sorted by path, names sorted within each)
     pub fn emit(&self) -> String {
         let mut lines = Vec::new();
 
@@ -133,24 +148,29 @@ impl TsImportsBuilder {
             lines.push(format!("import * as {} from '{}'", alias, path));
         }
 
-        // Emit named imports (sorted by path)
-        for (path, imports) in &self.named {
-            if imports.is_empty() {
-                continue;
-            }
-            let names: Vec<String> = imports.iter().map(|i| i.emit()).collect();
+        let emit_block = |lines: &mut Vec<String>, prefix: &str, map: &BTreeMap<String, BTreeSet<NamedImport>>| {
+            for (path, imports) in map {
+                if imports.is_empty() {
+                    continue;
+                }
+                let names: Vec<String> = imports.iter().map(|i| i.emit()).collect();
 
-            // Use multi-line format for many imports
-            if names.len() > 3 {
-                lines.push(format!(
-                    "import {{\n  {}\n}} from '{}'",
-                    names.join(",\n  "),
-                    path
-                ));
-            } else {
-                lines.push(format!("import {{ {} }} from '{}'", names.join(", "), path));
+                // Use multi-line format for many imports
+                if names.len() > 3 {
+                    lines.push(format!(
+                        "{} {{\n  {}\n}} from '{}'",
+                        prefix,
+                        names.join(",\n  "),
+                        path
+                    ));
+                } else {
+                    lines.push(format!("{} {{ {} }} from '{}'", prefix, names.join(", "), path));
+                }
             }
-        }
+        };
+
+        emit_block(&mut lines, "import type", &self.type_named);
+        emit_block(&mut lines, "import", &self.named);
 
         lines.join("\n")
     }

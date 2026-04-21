@@ -2,6 +2,7 @@
 source: generator/tests/snapshot_tests.rs
 expression: output
 ---
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionResult } from '@mysten/sui/transactions'
@@ -11,9 +12,9 @@ import { Transaction, TransactionArgument, TransactionResult } from '@mysten/sui
  *
  * @deprecated
  */
-export function deprecatedSimple(tx: Transaction, ): TransactionResult {
+export function deprecatedSimple(tx: Transaction, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('examples')}::fixture::deprecated_simple`,
+    target: `${getPublishedAt('examples', options?.env)}::fixture::deprecated_simple`,
     arguments: [],
   })
 }
@@ -23,9 +24,9 @@ export function deprecatedSimple(tx: Transaction, ): TransactionResult {
  *
  * @deprecated Use `new_function` instead
  */
-export function deprecatedWithNote(tx: Transaction, value: bigint | TransactionArgument): TransactionResult {
+export function deprecatedWithNote(tx: Transaction, value: bigint | TransactionArgument, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('examples')}::fixture::deprecated_with_note`,
+    target: `${getPublishedAt('examples', options?.env)}::fixture::deprecated_with_note`,
     arguments: [pure(tx, value, `u64`)],
   })
 }
@@ -43,9 +44,9 @@ export interface DeprecatedWithArgsArgs {
  *
  * @deprecated Use `new_function_with_args` instead
  */
-export function deprecatedWithArgs(tx: Transaction, args: DeprecatedWithArgsArgs): TransactionResult {
+export function deprecatedWithArgs(tx: Transaction, args: DeprecatedWithArgsArgs, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('examples')}::fixture::deprecated_with_args`,
+    target: `${getPublishedAt('examples', options?.env)}::fixture::deprecated_with_args`,
     arguments: [
       pure(tx, args.x, `u64`),
       pure(tx, args.y, `u64`),

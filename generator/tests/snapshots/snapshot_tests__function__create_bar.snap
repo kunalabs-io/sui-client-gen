@@ -2,13 +2,14 @@
 source: generator/tests/snapshot_tests.rs
 expression: output
 ---
+import type { EnvConfig } from '../../_envs'
 import { getPublishedAt } from '../../_envs'
 import { pure } from '../../_framework/util'
 import { Transaction, TransactionArgument, TransactionResult } from '@mysten/sui/transactions'
 
-export function createBar(tx: Transaction, value: bigint | TransactionArgument): TransactionResult {
+export function createBar(tx: Transaction, value: bigint | TransactionArgument, options?: { env?: EnvConfig }): TransactionResult {
   return tx.moveCall({
-    target: `${getPublishedAt('examples')}::fixture::create_bar`,
+    target: `${getPublishedAt('examples', options?.env)}::fixture::create_bar`,
     arguments: [pure(tx, value, `u64`)],
   })
 }

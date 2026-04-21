@@ -151,18 +151,20 @@ pub fn gen_envs_index(env_names: &[String], default_env: &str) -> String {
 
         // Re-export public API from _framework/env
         export {{
-          setActiveEnv,
-          setActiveEnvWithConfig,
+          cloneEnv,
           getActiveEnv,
           getActiveEnvName,
-          getRegisteredEnvs,
-          getPackageConfig,
           getDependencyConfig,
+          getEnv,
+          getOriginalId,
+          getPackageConfig,
           getPublishedAt,
+          getRegisteredEnvs,
           getTypeOrigin,
           getTypeOriginAddresses,
           getTypeOriginAddressesFor,
-          getOriginalId,
+          setActiveEnv,
+          setActiveEnvWithConfig,
         }} from '../_framework/env'
         export type {{ EnvConfig, PackageConfig }} from '../_framework/env'
     "#,
