@@ -31,7 +31,9 @@ export type MultiCoinHolderJSON = {
 export class MultiCoinHolder implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::collision::MultiCoinHolder` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::collision::MultiCoinHolder` as const
+  static get $typeName(): `${string}::collision::MultiCoinHolder` {
+    return `${getTypeOrigin('examples', 'example::ExampleStruct')}::collision::MultiCoinHolder` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -59,11 +61,13 @@ export class MultiCoinHolder implements StructClass {
   static reified(): MultiCoinHolderReified {
     const reifiedBcs = MultiCoinHolder.bcs
     return {
-      typeName: MultiCoinHolder.$typeName,
-      fullTypeName: composeSuiType(
-        MultiCoinHolder.$typeName,
-        ...[]
-      ) as `${string}::collision::MultiCoinHolder`,
+      get typeName() { return MultiCoinHolder.$typeName },
+      get fullTypeName() {
+        return composeSuiType(
+          MultiCoinHolder.$typeName,
+          ...[]
+        ) as `${string}::collision::MultiCoinHolder`
+      },
       typeArgs: [] as [],
       isPhantom: MultiCoinHolder.$isPhantom,
       reifiedTypeArgs: [],

@@ -29,7 +29,9 @@ export type DocumentedStructJSON = {
 export class DocumentedStruct implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::test::DocumentedStruct` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::DocumentedStruct` as const
+  static get $typeName(): `${string}::test::DocumentedStruct` {
+    return `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::DocumentedStruct` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -54,11 +56,13 @@ export class DocumentedStruct implements StructClass {
   static reified(): DocumentedStructReified {
     const reifiedBcs = DocumentedStruct.bcs
     return {
-      typeName: DocumentedStruct.$typeName,
-      fullTypeName: composeSuiType(
-        DocumentedStruct.$typeName,
-        ...[]
-      ) as `${string}::test::DocumentedStruct`,
+      get typeName() { return DocumentedStruct.$typeName },
+      get fullTypeName() {
+        return composeSuiType(
+          DocumentedStruct.$typeName,
+          ...[]
+        ) as `${string}::test::DocumentedStruct`
+      },
       typeArgs: [] as [],
       isPhantom: DocumentedStruct.$isPhantom,
       reifiedTypeArgs: [],

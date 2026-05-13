@@ -29,7 +29,9 @@ export type EscapedDocJSON = {
 export class EscapedDoc implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::test::EscapedDoc` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::EscapedDoc` as const
+  static get $typeName(): `${string}::test::EscapedDoc` {
+    return `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::EscapedDoc` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -54,11 +56,13 @@ export class EscapedDoc implements StructClass {
   static reified(): EscapedDocReified {
     const reifiedBcs = EscapedDoc.bcs
     return {
-      typeName: EscapedDoc.$typeName,
-      fullTypeName: composeSuiType(
-        EscapedDoc.$typeName,
-        ...[]
-      ) as `${string}::test::EscapedDoc`,
+      get typeName() { return EscapedDoc.$typeName },
+      get fullTypeName() {
+        return composeSuiType(
+          EscapedDoc.$typeName,
+          ...[]
+        ) as `${string}::test::EscapedDoc`
+      },
       typeArgs: [] as [],
       isPhantom: EscapedDoc.$isPhantom,
       reifiedTypeArgs: [],

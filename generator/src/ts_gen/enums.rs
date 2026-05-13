@@ -130,6 +130,29 @@ impl EnumIR {
         matches!(&self.package_info, PackageInfo::Dynamic { .. })
     }
 
+    /// Emit the `static $typeName` declaration.
+    ///
+    /// System packages (std at `0x1`, sui at `0x2`) emit a `static readonly` so the
+    /// literal type is preserved. Dynamic packages emit a `static get` whose body
+    /// re-resolves on each access, keeping `Name.$typeName` env-current after
+    /// `setActiveEnv(...)` calls.
+    fn emit_static_type_name_decl(
+        &self,
+        full_type_template: &str,
+        full_type_as_type: &str,
+    ) -> String {
+        match &self.package_info {
+            PackageInfo::System { .. } => format!(
+                "static readonly $typeName: {} = `{}` as const",
+                full_type_as_type, full_type_template
+            ),
+            PackageInfo::Dynamic { .. } => format!(
+                "static get $typeName(): {} {{\n    return `{}` as const\n  }}",
+                full_type_as_type, full_type_template
+            ),
+        }
+    }
+
     fn emit_type_guard(&self) -> String {
         let full_type_template = self.full_type_name_template();
 
@@ -303,6 +326,8 @@ impl EnumIR {
             let extract_types = self.emit_extract_types();
             let full_type_as_type = self.emit_full_type_as_type();
             let full_type_as_type_for_static = self.emit_full_type_as_type_for_static();
+            let type_name_decl =
+                self.emit_static_type_name_decl(&full_type_template, &full_type_as_type_for_static);
             let type_args_as_type = self.emit_type_args_as_type();
             let bcs_section = self.emit_bcs_section();
             let reified_bcs_init = self.emit_reified_bcs_init();
@@ -320,7 +345,7 @@ impl EnumIR {
 
             formatdoc! {r#"
                 export class {name} {{
-                  static readonly $typeName: {full_type_as_type_for_static} = `{full_type_template}` as const
+                  {type_name_decl}
                   static readonly $numTypeParams = {num_type_params}
                   static readonly $isPhantom = {is_phantom_array} as const
 
@@ -329,12 +354,14 @@ impl EnumIR {
                   ): {name}Reified{to_type_args} {{
                     const reifiedBcs = {reified_bcs_init}
                     return {{
-                      typeName: {name}.$typeName,
-                      fullTypeName: composeSuiType(
-                        {name}.$typeName,
-                        ...[{extract_types}]
-                      ) as {full_type_as_type},
-                      typeArgs: [{extract_types}] as {type_args_as_type},
+                      get typeName() {{ return {name}.$typeName }},
+                      get fullTypeName() {{
+                        return composeSuiType(
+                          {name}.$typeName,
+                          ...[{extract_types}]
+                        ) as {full_type_as_type}
+                      }},
+                      get typeArgs() {{ return [{extract_types}] as {type_args_as_type} }},
                       isPhantom: {name}.$isPhantom,
                       reifiedTypeArgs: [{reified_arg_names}],
                       fromFields: (fields: Record<string, any>) => {name}.fromFields([{reified_arg_names}], fields),
@@ -446,7 +473,7 @@ impl EnumIR {
                 }}"#,
                 name = name,
                 name_lower = name.to_lowercase(),
-                full_type_template = full_type_template,
+                type_name_decl = type_name_decl,
                 num_type_params = num_type_params,
                 is_phantom_array = is_phantom_array,
                 reified_type_params = reified_type_params,
@@ -475,6 +502,8 @@ impl EnumIR {
         let name = &self.name;
         let full_type_template = self.full_type_name_template();
         let full_type_as_type_for_static = self.emit_full_type_as_type_for_static();
+        let type_name_decl =
+            self.emit_static_type_name_decl(&full_type_template, &full_type_as_type_for_static);
         let bcs_section = self.emit_bcs_section();
         let new_switch_cases = self.emit_new_switch_cases_no_type_params();
         let from_fields_switch = self.emit_from_fields_switch();
@@ -483,15 +512,15 @@ impl EnumIR {
 
         formatdoc! {r#"
             export class {name} {{
-              static readonly $typeName: {full_type_as_type_for_static} = `{full_type_template}` as const
+              {type_name_decl}
               static readonly $numTypeParams = 0
               static readonly $isPhantom = [] as const
 
               static reified(): {name}Reified {{
                 const reifiedBcs = {name}.bcs
                 return {{
-                  typeName: {name}.$typeName,
-                  fullTypeName: composeSuiType({name}.$typeName) as `{full_type_template}`,
+                  get typeName() {{ return {name}.$typeName }},
+                  get fullTypeName() {{ return composeSuiType({name}.$typeName) as `{full_type_template}` }},
                   typeArgs: [] as [],
                   isPhantom: {name}.$isPhantom,
                   reifiedTypeArgs: [],
@@ -578,6 +607,7 @@ impl EnumIR {
             }}"#,
             name = name,
             name_lower = name.to_lowercase(),
+            type_name_decl = type_name_decl,
             full_type_template = full_type_template,
             bcs_section = bcs_section,
             new_switch_cases = new_switch_cases,
@@ -684,7 +714,7 @@ impl EnumIR {
                 {{
                   __EnumVariantClass = true as const
 
-                  static readonly $typeName: typeof {enum_name}.$typeName = {enum_name}.$typeName
+                  static get $typeName(): typeof {enum_name}.$typeName {{ return {enum_name}.$typeName }}
                   static readonly $numTypeParams: typeof {enum_name}.$numTypeParams = {enum_name}.$numTypeParams
                   static readonly $isPhantom: typeof {enum_name}.$isPhantom = {enum_name}.$isPhantom
                   static readonly $variantName = '{variant_name}' as const
@@ -747,7 +777,7 @@ impl EnumIR {
                 {{
                   __EnumVariantClass = true as const
 
-                  static readonly $typeName: typeof {enum_name}.$typeName = {enum_name}.$typeName
+                  static get $typeName(): typeof {enum_name}.$typeName {{ return {enum_name}.$typeName }}
                   static readonly $numTypeParams: typeof {enum_name}.$numTypeParams = {enum_name}.$numTypeParams
                   static readonly $isPhantom: typeof {enum_name}.$isPhantom = {enum_name}.$isPhantom
                   static readonly $variantName = '{variant_name}' as const

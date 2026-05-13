@@ -29,7 +29,9 @@ export type WithGenericFieldJSON<T extends TypeArgument> = {
 export class WithGenericField<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::fixture::WithGenericField` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithGenericField` as const
+  static get $typeName(): `${string}::fixture::WithGenericField` {
+    return `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithGenericField` as const
+  }
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
@@ -57,12 +59,14 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
   ): WithGenericFieldReified<ToTypeArgument<T>> {
     const reifiedBcs = WithGenericField.bcs(toBcs(T))
     return {
-      typeName: WithGenericField.$typeName,
-      fullTypeName: composeSuiType(
-        WithGenericField.$typeName,
-        ...[extractType(T)]
-      ) as `${string}::fixture::WithGenericField<${ToTypeStr<ToTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      get typeName() { return WithGenericField.$typeName },
+      get fullTypeName() {
+        return composeSuiType(
+          WithGenericField.$typeName,
+          ...[extractType(T)]
+        ) as `${string}::fixture::WithGenericField<${ToTypeStr<ToTypeArgument<T>>}>`
+      },
+      get typeArgs() { return [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>] },
       isPhantom: WithGenericField.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => WithGenericField.fromFields(T, fields),

@@ -69,7 +69,9 @@ export type ContainerReified<T1 extends TypeArgument, T2 extends PhantomTypeArgu
 >
 
 export class Container {
-  static readonly $typeName: string = `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::Container` as const
+  static get $typeName(): string {
+    return `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::Container` as const
+  }
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, true] as const
 
@@ -78,12 +80,14 @@ export class Container {
   ): ContainerReified<ToTypeArgument<T1>, ToPhantomTypeArgument<T2>> {
     const reifiedBcs = Container.bcs(toBcs(T1))
     return {
-      typeName: Container.$typeName,
-      fullTypeName: composeSuiType(
-        Container.$typeName,
-        ...[extractType(T1), extractType(T2)]
-      ) as string,
-      typeArgs: [extractType(T1), extractType(T2)] as [ToTypeStr<ToTypeArgument<T1>>, PhantomToTypeStr<ToPhantomTypeArgument<T2>>],
+      get typeName() { return Container.$typeName },
+      get fullTypeName() {
+        return composeSuiType(
+          Container.$typeName,
+          ...[extractType(T1), extractType(T2)]
+        ) as string
+      },
+      get typeArgs() { return [extractType(T1), extractType(T2)] as [ToTypeStr<ToTypeArgument<T1>>, PhantomToTypeStr<ToPhantomTypeArgument<T2>>] },
       isPhantom: Container.$isPhantom,
       reifiedTypeArgs: [T1, T2],
       fromFields: (fields: Record<string, any>) => Container.fromFields([T1, T2], fields),
@@ -249,7 +253,7 @@ export class ContainerEmpty<T1 extends TypeArgument, T2 extends PhantomTypeArgum
 {
   __EnumVariantClass = true as const
 
-  static readonly $typeName: typeof Container.$typeName = Container.$typeName
+  static get $typeName(): typeof Container.$typeName { return Container.$typeName }
   static readonly $numTypeParams: typeof Container.$numTypeParams = Container.$numTypeParams
   static readonly $isPhantom: typeof Container.$isPhantom = Container.$isPhantom
   static readonly $variantName = 'Empty' as const
@@ -302,7 +306,7 @@ export class ContainerWithTable<T1 extends TypeArgument, T2 extends PhantomTypeA
 {
   __EnumVariantClass = true as const
 
-  static readonly $typeName: typeof Container.$typeName = Container.$typeName
+  static get $typeName(): typeof Container.$typeName { return Container.$typeName }
   static readonly $numTypeParams: typeof Container.$numTypeParams = Container.$numTypeParams
   static readonly $isPhantom: typeof Container.$isPhantom = Container.$isPhantom
   static readonly $variantName = 'WithTable' as const
