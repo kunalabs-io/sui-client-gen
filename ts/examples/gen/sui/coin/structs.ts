@@ -97,12 +97,18 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
   ): CoinReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Coin.bcs
     return {
-      typeName: Coin.$typeName,
-      fullTypeName: composeSuiType(
-        Coin.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::coin::Coin<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return Coin.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Coin.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::coin::Coin<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: Coin.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Coin.fromFields(T, fields),
@@ -398,12 +404,18 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
   ): CoinMetadataReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = CoinMetadata.bcs
     return {
-      typeName: CoinMetadata.$typeName,
-      fullTypeName: composeSuiType(
-        CoinMetadata.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::coin::CoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return CoinMetadata.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          CoinMetadata.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::coin::CoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: CoinMetadata.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => CoinMetadata.fromFields(T, fields),
@@ -692,12 +704,18 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
   ): RegulatedCoinMetadataReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = RegulatedCoinMetadata.bcs
     return {
-      typeName: RegulatedCoinMetadata.$typeName,
-      fullTypeName: composeSuiType(
-        RegulatedCoinMetadata.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::coin::RegulatedCoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return RegulatedCoinMetadata.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          RegulatedCoinMetadata.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::coin::RegulatedCoinMetadata<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: RegulatedCoinMetadata.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => RegulatedCoinMetadata.fromFields(T, fields),
@@ -968,12 +986,18 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
   ): TreasuryCapReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = TreasuryCap.bcs
     return {
-      typeName: TreasuryCap.$typeName,
-      fullTypeName: composeSuiType(
-        TreasuryCap.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::coin::TreasuryCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return TreasuryCap.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          TreasuryCap.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::coin::TreasuryCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: TreasuryCap.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TreasuryCap.fromFields(T, fields),
@@ -1236,12 +1260,18 @@ export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
   ): DenyCapV2Reified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = DenyCapV2.bcs
     return {
-      typeName: DenyCapV2.$typeName,
-      fullTypeName: composeSuiType(
-        DenyCapV2.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::coin::DenyCapV2<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return DenyCapV2.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          DenyCapV2.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::coin::DenyCapV2<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: DenyCapV2.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => DenyCapV2.fromFields(T, fields),
@@ -1493,12 +1523,18 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
   ): CurrencyCreatedReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = CurrencyCreated.bcs
     return {
-      typeName: CurrencyCreated.$typeName,
-      fullTypeName: composeSuiType(
-        CurrencyCreated.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::coin::CurrencyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return CurrencyCreated.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          CurrencyCreated.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::coin::CurrencyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: CurrencyCreated.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => CurrencyCreated.fromFields(T, fields),
@@ -1746,12 +1782,18 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
   ): DenyCapReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = DenyCap.bcs
     return {
-      typeName: DenyCap.$typeName,
-      fullTypeName: composeSuiType(
-        DenyCap.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::coin::DenyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return DenyCap.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          DenyCap.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::coin::DenyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: DenyCap.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => DenyCap.fromFields(T, fields),

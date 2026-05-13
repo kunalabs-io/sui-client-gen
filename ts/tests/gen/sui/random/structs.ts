@@ -85,11 +85,15 @@ export class Random implements StructClass {
   static reified(): RandomReified {
     const reifiedBcs = Random.bcs
     return {
-      typeName: Random.$typeName,
-      fullTypeName: composeSuiType(
-        Random.$typeName,
-        ...[],
-      ) as `0x2::random::Random`,
+      get typeName() {
+        return Random.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Random.$typeName,
+          ...[],
+        ) as `0x2::random::Random`
+      },
       typeArgs: [] as [],
       isPhantom: Random.$isPhantom,
       reifiedTypeArgs: [],
@@ -284,11 +288,15 @@ export class RandomInner implements StructClass {
   static reified(): RandomInnerReified {
     const reifiedBcs = RandomInner.bcs
     return {
-      typeName: RandomInner.$typeName,
-      fullTypeName: composeSuiType(
-        RandomInner.$typeName,
-        ...[],
-      ) as `0x2::random::RandomInner`,
+      get typeName() {
+        return RandomInner.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          RandomInner.$typeName,
+          ...[],
+        ) as `0x2::random::RandomInner`
+      },
       typeArgs: [] as [],
       isPhantom: RandomInner.$isPhantom,
       reifiedTypeArgs: [],
@@ -491,11 +499,15 @@ export class RandomGenerator implements StructClass {
   static reified(): RandomGeneratorReified {
     const reifiedBcs = RandomGenerator.bcs
     return {
-      typeName: RandomGenerator.$typeName,
-      fullTypeName: composeSuiType(
-        RandomGenerator.$typeName,
-        ...[],
-      ) as `0x2::random::RandomGenerator`,
+      get typeName() {
+        return RandomGenerator.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          RandomGenerator.$typeName,
+          ...[],
+        ) as `0x2::random::RandomGenerator`
+      },
       typeArgs: [] as [],
       isPhantom: RandomGenerator.$isPhantom,
       reifiedTypeArgs: [],

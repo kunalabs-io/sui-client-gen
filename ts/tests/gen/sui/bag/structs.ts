@@ -102,11 +102,15 @@ export class Bag implements StructClass {
   static reified(): BagReified {
     const reifiedBcs = Bag.bcs
     return {
-      typeName: Bag.$typeName,
-      fullTypeName: composeSuiType(
-        Bag.$typeName,
-        ...[],
-      ) as `0x2::bag::Bag`,
+      get typeName() {
+        return Bag.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Bag.$typeName,
+          ...[],
+        ) as `0x2::bag::Bag`
+      },
       typeArgs: [] as [],
       isPhantom: Bag.$isPhantom,
       reifiedTypeArgs: [],

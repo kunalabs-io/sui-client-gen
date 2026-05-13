@@ -85,11 +85,15 @@ export class UQ64_64 implements StructClass {
   static reified(): UQ64_64Reified {
     const reifiedBcs = UQ64_64.bcs
     return {
-      typeName: UQ64_64.$typeName,
-      fullTypeName: composeSuiType(
-        UQ64_64.$typeName,
-        ...[],
-      ) as `0x1::uq64_64::UQ64_64`,
+      get typeName() {
+        return UQ64_64.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          UQ64_64.$typeName,
+          ...[],
+        ) as `0x1::uq64_64::UQ64_64`
+      },
       typeArgs: [] as [],
       isPhantom: UQ64_64.$isPhantom,
       reifiedTypeArgs: [],

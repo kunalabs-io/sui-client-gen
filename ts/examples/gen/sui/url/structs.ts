@@ -74,11 +74,15 @@ export class Url implements StructClass {
   static reified(): UrlReified {
     const reifiedBcs = Url.bcs
     return {
-      typeName: Url.$typeName,
-      fullTypeName: composeSuiType(
-        Url.$typeName,
-        ...[],
-      ) as `0x2::url::Url`,
+      get typeName() {
+        return Url.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Url.$typeName,
+          ...[],
+        ) as `0x2::url::Url`
+      },
       typeArgs: [] as [],
       isPhantom: Url.$isPhantom,
       reifiedTypeArgs: [],

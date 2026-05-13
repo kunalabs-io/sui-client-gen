@@ -95,12 +95,18 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
   ): PriorityQueueReified<ToTypeArgument<T>> {
     const reifiedBcs = PriorityQueue.bcs(toBcs(T))
     return {
-      typeName: PriorityQueue.$typeName,
-      fullTypeName: composeSuiType(
-        PriorityQueue.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::priority_queue::PriorityQueue<${ToTypeStr<ToTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      get typeName() {
+        return PriorityQueue.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          PriorityQueue.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::priority_queue::PriorityQueue<${ToTypeStr<ToTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>]
+      },
       isPhantom: PriorityQueue.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => PriorityQueue.fromFields(T, fields),
@@ -353,12 +359,18 @@ export class Entry<T extends TypeArgument> implements StructClass {
   ): EntryReified<ToTypeArgument<T>> {
     const reifiedBcs = Entry.bcs(toBcs(T))
     return {
-      typeName: Entry.$typeName,
-      fullTypeName: composeSuiType(
-        Entry.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::priority_queue::Entry<${ToTypeStr<ToTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      get typeName() {
+        return Entry.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Entry.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::priority_queue::Entry<${ToTypeStr<ToTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>]
+      },
       isPhantom: Entry.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Entry.fromFields(T, fields),

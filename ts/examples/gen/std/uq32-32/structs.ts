@@ -85,11 +85,15 @@ export class UQ32_32 implements StructClass {
   static reified(): UQ32_32Reified {
     const reifiedBcs = UQ32_32.bcs
     return {
-      typeName: UQ32_32.$typeName,
-      fullTypeName: composeSuiType(
-        UQ32_32.$typeName,
-        ...[],
-      ) as `0x1::uq32_32::UQ32_32`,
+      get typeName() {
+        return UQ32_32.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          UQ32_32.$typeName,
+          ...[],
+        ) as `0x1::uq32_32::UQ32_32`
+      },
       typeArgs: [] as [],
       isPhantom: UQ32_32.$isPhantom,
       reifiedTypeArgs: [],

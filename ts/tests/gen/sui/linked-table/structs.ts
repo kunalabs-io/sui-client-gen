@@ -123,17 +123,23 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
   ): LinkedTableReified<ToTypeArgument<K>, ToPhantomTypeArgument<V>> {
     const reifiedBcs = LinkedTable.bcs(toBcs(K))
     return {
-      typeName: LinkedTable.$typeName,
-      fullTypeName: composeSuiType(
-        LinkedTable.$typeName,
-        ...[extractType(K), extractType(V)],
-      ) as `0x2::linked_table::LinkedTable<${ToTypeStr<ToTypeArgument<K>>}, ${PhantomToTypeStr<
-        ToPhantomTypeArgument<V>
-      >}>`,
-      typeArgs: [extractType(K), extractType(V)] as [
-        ToTypeStr<ToTypeArgument<K>>,
-        PhantomToTypeStr<ToPhantomTypeArgument<V>>,
-      ],
+      get typeName() {
+        return LinkedTable.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          LinkedTable.$typeName,
+          ...[extractType(K), extractType(V)],
+        ) as `0x2::linked_table::LinkedTable<${ToTypeStr<ToTypeArgument<K>>}, ${PhantomToTypeStr<
+          ToPhantomTypeArgument<V>
+        >}>`
+      },
+      get typeArgs() {
+        return [extractType(K), extractType(V)] as [
+          ToTypeStr<ToTypeArgument<K>>,
+          PhantomToTypeStr<ToPhantomTypeArgument<V>>,
+        ]
+      },
       isPhantom: LinkedTable.$isPhantom,
       reifiedTypeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => LinkedTable.fromFields([K, V], fields),
@@ -440,17 +446,23 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
   ): NodeReified<ToTypeArgument<K>, ToTypeArgument<V>> {
     const reifiedBcs = Node.bcs(toBcs(K), toBcs(V))
     return {
-      typeName: Node.$typeName,
-      fullTypeName: composeSuiType(
-        Node.$typeName,
-        ...[extractType(K), extractType(V)],
-      ) as `0x2::linked_table::Node<${ToTypeStr<ToTypeArgument<K>>}, ${ToTypeStr<
-        ToTypeArgument<V>
-      >}>`,
-      typeArgs: [extractType(K), extractType(V)] as [
-        ToTypeStr<ToTypeArgument<K>>,
-        ToTypeStr<ToTypeArgument<V>>,
-      ],
+      get typeName() {
+        return Node.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Node.$typeName,
+          ...[extractType(K), extractType(V)],
+        ) as `0x2::linked_table::Node<${ToTypeStr<ToTypeArgument<K>>}, ${ToTypeStr<
+          ToTypeArgument<V>
+        >}>`
+      },
+      get typeArgs() {
+        return [extractType(K), extractType(V)] as [
+          ToTypeStr<ToTypeArgument<K>>,
+          ToTypeStr<ToTypeArgument<V>>,
+        ]
+      },
       isPhantom: Node.$isPhantom,
       reifiedTypeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => Node.fromFields([K, V], fields),

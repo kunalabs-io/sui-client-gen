@@ -72,11 +72,15 @@ export class Scalar implements StructClass {
   static reified(): ScalarReified {
     const reifiedBcs = Scalar.bcs
     return {
-      typeName: Scalar.$typeName,
-      fullTypeName: composeSuiType(
-        Scalar.$typeName,
-        ...[],
-      ) as `0x2::bls12381::Scalar`,
+      get typeName() {
+        return Scalar.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Scalar.$typeName,
+          ...[],
+        ) as `0x2::bls12381::Scalar`
+      },
       typeArgs: [] as [],
       isPhantom: Scalar.$isPhantom,
       reifiedTypeArgs: [],
@@ -254,11 +258,15 @@ export class G1 implements StructClass {
   static reified(): G1Reified {
     const reifiedBcs = G1.bcs
     return {
-      typeName: G1.$typeName,
-      fullTypeName: composeSuiType(
-        G1.$typeName,
-        ...[],
-      ) as `0x2::bls12381::G1`,
+      get typeName() {
+        return G1.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          G1.$typeName,
+          ...[],
+        ) as `0x2::bls12381::G1`
+      },
       typeArgs: [] as [],
       isPhantom: G1.$isPhantom,
       reifiedTypeArgs: [],
@@ -436,11 +444,15 @@ export class G2 implements StructClass {
   static reified(): G2Reified {
     const reifiedBcs = G2.bcs
     return {
-      typeName: G2.$typeName,
-      fullTypeName: composeSuiType(
-        G2.$typeName,
-        ...[],
-      ) as `0x2::bls12381::G2`,
+      get typeName() {
+        return G2.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          G2.$typeName,
+          ...[],
+        ) as `0x2::bls12381::G2`
+      },
       typeArgs: [] as [],
       isPhantom: G2.$isPhantom,
       reifiedTypeArgs: [],
@@ -618,11 +630,15 @@ export class GT implements StructClass {
   static reified(): GTReified {
     const reifiedBcs = GT.bcs
     return {
-      typeName: GT.$typeName,
-      fullTypeName: composeSuiType(
-        GT.$typeName,
-        ...[],
-      ) as `0x2::bls12381::GT`,
+      get typeName() {
+        return GT.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          GT.$typeName,
+          ...[],
+        ) as `0x2::bls12381::GT`
+      },
       typeArgs: [] as [],
       isPhantom: GT.$isPhantom,
       reifiedTypeArgs: [],
@@ -801,11 +817,15 @@ export class UncompressedG1 implements StructClass {
   static reified(): UncompressedG1Reified {
     const reifiedBcs = UncompressedG1.bcs
     return {
-      typeName: UncompressedG1.$typeName,
-      fullTypeName: composeSuiType(
-        UncompressedG1.$typeName,
-        ...[],
-      ) as `0x2::bls12381::UncompressedG1`,
+      get typeName() {
+        return UncompressedG1.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          UncompressedG1.$typeName,
+          ...[],
+        ) as `0x2::bls12381::UncompressedG1`
+      },
       typeArgs: [] as [],
       isPhantom: UncompressedG1.$isPhantom,
       reifiedTypeArgs: [],

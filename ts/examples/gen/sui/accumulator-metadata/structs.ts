@@ -91,11 +91,15 @@ export class OwnerKey implements StructClass {
   static reified(): OwnerKeyReified {
     const reifiedBcs = OwnerKey.bcs
     return {
-      typeName: OwnerKey.$typeName,
-      fullTypeName: composeSuiType(
-        OwnerKey.$typeName,
-        ...[],
-      ) as `0x2::accumulator_metadata::OwnerKey`,
+      get typeName() {
+        return OwnerKey.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          OwnerKey.$typeName,
+          ...[],
+        ) as `0x2::accumulator_metadata::OwnerKey`
+      },
       typeArgs: [] as [],
       isPhantom: OwnerKey.$isPhantom,
       reifiedTypeArgs: [],
@@ -287,11 +291,15 @@ export class Owner implements StructClass {
   static reified(): OwnerReified {
     const reifiedBcs = Owner.bcs
     return {
-      typeName: Owner.$typeName,
-      fullTypeName: composeSuiType(
-        Owner.$typeName,
-        ...[],
-      ) as `0x2::accumulator_metadata::Owner`,
+      get typeName() {
+        return Owner.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Owner.$typeName,
+          ...[],
+        ) as `0x2::accumulator_metadata::Owner`
+      },
       typeArgs: [] as [],
       isPhantom: Owner.$isPhantom,
       reifiedTypeArgs: [],
@@ -483,12 +491,18 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
   ): MetadataKeyReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = MetadataKey.bcs
     return {
-      typeName: MetadataKey.$typeName,
-      fullTypeName: composeSuiType(
-        MetadataKey.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::accumulator_metadata::MetadataKey<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return MetadataKey.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          MetadataKey.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::accumulator_metadata::MetadataKey<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: MetadataKey.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => MetadataKey.fromFields(T, fields),
@@ -736,12 +750,18 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
   ): MetadataReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Metadata.bcs
     return {
-      typeName: Metadata.$typeName,
-      fullTypeName: composeSuiType(
-        Metadata.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::accumulator_metadata::Metadata<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return Metadata.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Metadata.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::accumulator_metadata::Metadata<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: Metadata.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Metadata.fromFields(T, fields),

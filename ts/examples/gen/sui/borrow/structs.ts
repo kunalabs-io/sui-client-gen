@@ -95,12 +95,18 @@ export class Referent<T extends TypeArgument> implements StructClass {
   ): ReferentReified<ToTypeArgument<T>> {
     const reifiedBcs = Referent.bcs(toBcs(T))
     return {
-      typeName: Referent.$typeName,
-      fullTypeName: composeSuiType(
-        Referent.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::borrow::Referent<${ToTypeStr<ToTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      get typeName() {
+        return Referent.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Referent.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::borrow::Referent<${ToTypeStr<ToTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>]
+      },
       isPhantom: Referent.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Referent.fromFields(T, fields),
@@ -357,11 +363,15 @@ export class Borrow implements StructClass {
   static reified(): BorrowReified {
     const reifiedBcs = Borrow.bcs
     return {
-      typeName: Borrow.$typeName,
-      fullTypeName: composeSuiType(
-        Borrow.$typeName,
-        ...[],
-      ) as `0x2::borrow::Borrow`,
+      get typeName() {
+        return Borrow.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Borrow.$typeName,
+          ...[],
+        ) as `0x2::borrow::Borrow`
+      },
       typeArgs: [] as [],
       isPhantom: Borrow.$isPhantom,
       reifiedTypeArgs: [],

@@ -162,12 +162,18 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
   ): TransferRequestReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = TransferRequest.bcs
     return {
-      typeName: TransferRequest.$typeName,
-      fullTypeName: composeSuiType(
-        TransferRequest.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::transfer_policy::TransferRequest<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return TransferRequest.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          TransferRequest.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::transfer_policy::TransferRequest<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: TransferRequest.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TransferRequest.fromFields(T, fields),
@@ -469,12 +475,18 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
   ): TransferPolicyReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = TransferPolicy.bcs
     return {
-      typeName: TransferPolicy.$typeName,
-      fullTypeName: composeSuiType(
-        TransferPolicy.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::transfer_policy::TransferPolicy<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return TransferPolicy.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          TransferPolicy.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::transfer_policy::TransferPolicy<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: TransferPolicy.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TransferPolicy.fromFields(T, fields),
@@ -743,12 +755,20 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructC
   ): TransferPolicyCapReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = TransferPolicyCap.bcs
     return {
-      typeName: TransferPolicyCap.$typeName,
-      fullTypeName: composeSuiType(
-        TransferPolicyCap.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return TransferPolicyCap.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          TransferPolicyCap.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::transfer_policy::TransferPolicyCap<${PhantomToTypeStr<
+          ToPhantomTypeArgument<T>
+        >}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: TransferPolicyCap.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TransferPolicyCap.fromFields(T, fields),
@@ -1009,14 +1029,20 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> implements Str
   ): TransferPolicyCreatedReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = TransferPolicyCreated.bcs
     return {
-      typeName: TransferPolicyCreated.$typeName,
-      fullTypeName: composeSuiType(
-        TransferPolicyCreated.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T>
-      >}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return TransferPolicyCreated.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          TransferPolicyCreated.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::transfer_policy::TransferPolicyCreated<${PhantomToTypeStr<
+          ToPhantomTypeArgument<T>
+        >}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: TransferPolicyCreated.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TransferPolicyCreated.fromFields(T, fields),
@@ -1275,14 +1301,20 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements S
   ): TransferPolicyDestroyedReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = TransferPolicyDestroyed.bcs
     return {
-      typeName: TransferPolicyDestroyed.$typeName,
-      fullTypeName: composeSuiType(
-        TransferPolicyDestroyed.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<
-        ToPhantomTypeArgument<T>
-      >}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return TransferPolicyDestroyed.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          TransferPolicyDestroyed.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::transfer_policy::TransferPolicyDestroyed<${PhantomToTypeStr<
+          ToPhantomTypeArgument<T>
+        >}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: TransferPolicyDestroyed.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TransferPolicyDestroyed.fromFields(T, fields),
@@ -1534,12 +1566,18 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
   ): RuleKeyReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = RuleKey.bcs
     return {
-      typeName: RuleKey.$typeName,
-      fullTypeName: composeSuiType(
-        RuleKey.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::transfer_policy::RuleKey<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return RuleKey.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          RuleKey.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::transfer_policy::RuleKey<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: RuleKey.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => RuleKey.fromFields(T, fields),

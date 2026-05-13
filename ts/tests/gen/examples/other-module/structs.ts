@@ -53,9 +53,11 @@ export type StructFromOtherModuleJSON = {
 export class StructFromOtherModule implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::other_module::StructFromOtherModule` = `${
-    getTypeOrigin('examples', 'other_module::StructFromOtherModule')
-  }::other_module::StructFromOtherModule` as const
+  static get $typeName(): `${string}::other_module::StructFromOtherModule` {
+    return `${
+      getTypeOrigin('examples', 'other_module::StructFromOtherModule')
+    }::other_module::StructFromOtherModule` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -79,11 +81,15 @@ export class StructFromOtherModule implements StructClass {
   static reified(): StructFromOtherModuleReified {
     const reifiedBcs = StructFromOtherModule.bcs
     return {
-      typeName: StructFromOtherModule.$typeName,
-      fullTypeName: composeSuiType(
-        StructFromOtherModule.$typeName,
-        ...[],
-      ) as `${string}::other_module::StructFromOtherModule`,
+      get typeName() {
+        return StructFromOtherModule.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          StructFromOtherModule.$typeName,
+          ...[],
+        ) as `${string}::other_module::StructFromOtherModule`
+      },
       typeArgs: [] as [],
       isPhantom: StructFromOtherModule.$isPhantom,
       reifiedTypeArgs: [],
@@ -246,9 +252,11 @@ export type AddedInAnUpgradeJSON = {
 export class AddedInAnUpgrade implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::other_module::AddedInAnUpgrade` = `${
-    getTypeOrigin('examples', 'other_module::AddedInAnUpgrade')
-  }::other_module::AddedInAnUpgrade` as const
+  static get $typeName(): `${string}::other_module::AddedInAnUpgrade` {
+    return `${
+      getTypeOrigin('examples', 'other_module::AddedInAnUpgrade')
+    }::other_module::AddedInAnUpgrade` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -272,11 +280,15 @@ export class AddedInAnUpgrade implements StructClass {
   static reified(): AddedInAnUpgradeReified {
     const reifiedBcs = AddedInAnUpgrade.bcs
     return {
-      typeName: AddedInAnUpgrade.$typeName,
-      fullTypeName: composeSuiType(
-        AddedInAnUpgrade.$typeName,
-        ...[],
-      ) as `${string}::other_module::AddedInAnUpgrade`,
+      get typeName() {
+        return AddedInAnUpgrade.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          AddedInAnUpgrade.$typeName,
+          ...[],
+        ) as `${string}::other_module::AddedInAnUpgrade`
+      },
       typeArgs: [] as [],
       isPhantom: AddedInAnUpgrade.$isPhantom,
       reifiedTypeArgs: [],

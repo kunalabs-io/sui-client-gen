@@ -88,12 +88,18 @@ export class Config<WriteCap extends PhantomTypeArgument> implements StructClass
   ): ConfigReified<ToPhantomTypeArgument<WriteCap>> {
     const reifiedBcs = Config.bcs
     return {
-      typeName: Config.$typeName,
-      fullTypeName: composeSuiType(
-        Config.$typeName,
-        ...[extractType(WriteCap)],
-      ) as `0x2::config::Config<${PhantomToTypeStr<ToPhantomTypeArgument<WriteCap>>}>`,
-      typeArgs: [extractType(WriteCap)] as [PhantomToTypeStr<ToPhantomTypeArgument<WriteCap>>],
+      get typeName() {
+        return Config.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Config.$typeName,
+          ...[extractType(WriteCap)],
+        ) as `0x2::config::Config<${PhantomToTypeStr<ToPhantomTypeArgument<WriteCap>>}>`
+      },
+      get typeArgs() {
+        return [extractType(WriteCap)] as [PhantomToTypeStr<ToPhantomTypeArgument<WriteCap>>]
+      },
       isPhantom: Config.$isPhantom,
       reifiedTypeArgs: [WriteCap],
       fromFields: (fields: Record<string, any>) => Config.fromFields(WriteCap, fields),
@@ -340,12 +346,18 @@ export class Setting<Value extends TypeArgument> implements StructClass {
   ): SettingReified<ToTypeArgument<Value>> {
     const reifiedBcs = Setting.bcs(toBcs(Value))
     return {
-      typeName: Setting.$typeName,
-      fullTypeName: composeSuiType(
-        Setting.$typeName,
-        ...[extractType(Value)],
-      ) as `0x2::config::Setting<${ToTypeStr<ToTypeArgument<Value>>}>`,
-      typeArgs: [extractType(Value)] as [ToTypeStr<ToTypeArgument<Value>>],
+      get typeName() {
+        return Setting.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Setting.$typeName,
+          ...[extractType(Value)],
+        ) as `0x2::config::Setting<${ToTypeStr<ToTypeArgument<Value>>}>`
+      },
+      get typeArgs() {
+        return [extractType(Value)] as [ToTypeStr<ToTypeArgument<Value>>]
+      },
       isPhantom: Setting.$isPhantom,
       reifiedTypeArgs: [Value],
       fromFields: (fields: Record<string, any>) => Setting.fromFields(Value, fields),
@@ -608,12 +620,18 @@ export class SettingData<Value extends TypeArgument> implements StructClass {
   ): SettingDataReified<ToTypeArgument<Value>> {
     const reifiedBcs = SettingData.bcs(toBcs(Value))
     return {
-      typeName: SettingData.$typeName,
-      fullTypeName: composeSuiType(
-        SettingData.$typeName,
-        ...[extractType(Value)],
-      ) as `0x2::config::SettingData<${ToTypeStr<ToTypeArgument<Value>>}>`,
-      typeArgs: [extractType(Value)] as [ToTypeStr<ToTypeArgument<Value>>],
+      get typeName() {
+        return SettingData.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          SettingData.$typeName,
+          ...[extractType(Value)],
+        ) as `0x2::config::SettingData<${ToTypeStr<ToTypeArgument<Value>>}>`
+      },
+      get typeArgs() {
+        return [extractType(Value)] as [ToTypeStr<ToTypeArgument<Value>>]
+      },
       isPhantom: SettingData.$isPhantom,
       reifiedTypeArgs: [Value],
       fromFields: (fields: Record<string, any>) => SettingData.fromFields(Value, fields),

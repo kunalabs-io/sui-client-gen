@@ -85,11 +85,15 @@ export class String implements StructClass {
   static reified(): StringReified {
     const reifiedBcs = String.bcs
     return {
-      typeName: String.$typeName,
-      fullTypeName: composeSuiType(
-        String.$typeName,
-        ...[],
-      ) as `0x1::ascii::String`,
+      get typeName() {
+        return String.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          String.$typeName,
+          ...[],
+        ) as `0x1::ascii::String`
+      },
       typeArgs: [] as [],
       isPhantom: String.$isPhantom,
       reifiedTypeArgs: [],
@@ -268,11 +272,15 @@ export class Char implements StructClass {
   static reified(): CharReified {
     const reifiedBcs = Char.bcs
     return {
-      typeName: Char.$typeName,
-      fullTypeName: composeSuiType(
-        Char.$typeName,
-        ...[],
-      ) as `0x1::ascii::Char`,
+      get typeName() {
+        return Char.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Char.$typeName,
+          ...[],
+        ) as `0x1::ascii::Char`
+      },
       typeArgs: [] as [],
       isPhantom: Char.$isPhantom,
       reifiedTypeArgs: [],

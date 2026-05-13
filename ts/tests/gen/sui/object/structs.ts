@@ -80,11 +80,15 @@ export class ID implements StructClass {
   static reified(): IDReified {
     const reifiedBcs = ID.bcs
     return {
-      typeName: ID.$typeName,
-      fullTypeName: composeSuiType(
-        ID.$typeName,
-        ...[],
-      ) as `0x2::object::ID`,
+      get typeName() {
+        return ID.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          ID.$typeName,
+          ...[],
+        ) as `0x2::object::ID`
+      },
       typeArgs: [] as [],
       isPhantom: ID.$isPhantom,
       reifiedTypeArgs: [],
@@ -273,11 +277,15 @@ export class UID implements StructClass {
   static reified(): UIDReified {
     const reifiedBcs = UID.bcs
     return {
-      typeName: UID.$typeName,
-      fullTypeName: composeSuiType(
-        UID.$typeName,
-        ...[],
-      ) as `0x2::object::UID`,
+      get typeName() {
+        return UID.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          UID.$typeName,
+          ...[],
+        ) as `0x2::object::UID`
+      },
       typeArgs: [] as [],
       isPhantom: UID.$isPhantom,
       reifiedTypeArgs: [],

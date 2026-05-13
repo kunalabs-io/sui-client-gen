@@ -135,12 +135,18 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
   ): DisplayReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Display.bcs
     return {
-      typeName: Display.$typeName,
-      fullTypeName: composeSuiType(
-        Display.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::display::Display<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return Display.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Display.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::display::Display<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: Display.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Display.fromFields(T, fields),
@@ -409,12 +415,18 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
   ): DisplayCreatedReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = DisplayCreated.bcs
     return {
-      typeName: DisplayCreated.$typeName,
-      fullTypeName: composeSuiType(
-        DisplayCreated.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::display::DisplayCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return DisplayCreated.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          DisplayCreated.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::display::DisplayCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: DisplayCreated.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => DisplayCreated.fromFields(T, fields),
@@ -671,12 +683,18 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
   ): VersionUpdatedReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = VersionUpdated.bcs
     return {
-      typeName: VersionUpdated.$typeName,
-      fullTypeName: composeSuiType(
-        VersionUpdated.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::display::VersionUpdated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return VersionUpdated.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          VersionUpdated.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::display::VersionUpdated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: VersionUpdated.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => VersionUpdated.fromFields(T, fields),

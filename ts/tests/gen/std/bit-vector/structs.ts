@@ -77,11 +77,15 @@ export class BitVector implements StructClass {
   static reified(): BitVectorReified {
     const reifiedBcs = BitVector.bcs
     return {
-      typeName: BitVector.$typeName,
-      fullTypeName: composeSuiType(
-        BitVector.$typeName,
-        ...[],
-      ) as `0x1::bit_vector::BitVector`,
+      get typeName() {
+        return BitVector.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          BitVector.$typeName,
+          ...[],
+        ) as `0x1::bit_vector::BitVector`
+      },
       typeArgs: [] as [],
       isPhantom: BitVector.$isPhantom,
       reifiedTypeArgs: [],

@@ -95,11 +95,15 @@ export class Publisher implements StructClass {
   static reified(): PublisherReified {
     const reifiedBcs = Publisher.bcs
     return {
-      typeName: Publisher.$typeName,
-      fullTypeName: composeSuiType(
-        Publisher.$typeName,
-        ...[],
-      ) as `0x2::package::Publisher`,
+      get typeName() {
+        return Publisher.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Publisher.$typeName,
+          ...[],
+        ) as `0x2::package::Publisher`
+      },
       typeArgs: [] as [],
       isPhantom: Publisher.$isPhantom,
       reifiedTypeArgs: [],
@@ -312,11 +316,15 @@ export class UpgradeCap implements StructClass {
   static reified(): UpgradeCapReified {
     const reifiedBcs = UpgradeCap.bcs
     return {
-      typeName: UpgradeCap.$typeName,
-      fullTypeName: composeSuiType(
-        UpgradeCap.$typeName,
-        ...[],
-      ) as `0x2::package::UpgradeCap`,
+      get typeName() {
+        return UpgradeCap.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          UpgradeCap.$typeName,
+          ...[],
+        ) as `0x2::package::UpgradeCap`
+      },
       typeArgs: [] as [],
       isPhantom: UpgradeCap.$isPhantom,
       reifiedTypeArgs: [],
@@ -551,11 +559,15 @@ export class UpgradeTicket implements StructClass {
   static reified(): UpgradeTicketReified {
     const reifiedBcs = UpgradeTicket.bcs
     return {
-      typeName: UpgradeTicket.$typeName,
-      fullTypeName: composeSuiType(
-        UpgradeTicket.$typeName,
-        ...[],
-      ) as `0x2::package::UpgradeTicket`,
+      get typeName() {
+        return UpgradeTicket.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          UpgradeTicket.$typeName,
+          ...[],
+        ) as `0x2::package::UpgradeTicket`
+      },
       typeArgs: [] as [],
       isPhantom: UpgradeTicket.$isPhantom,
       reifiedTypeArgs: [],
@@ -763,11 +775,15 @@ export class UpgradeReceipt implements StructClass {
   static reified(): UpgradeReceiptReified {
     const reifiedBcs = UpgradeReceipt.bcs
     return {
-      typeName: UpgradeReceipt.$typeName,
-      fullTypeName: composeSuiType(
-        UpgradeReceipt.$typeName,
-        ...[],
-      ) as `0x2::package::UpgradeReceipt`,
+      get typeName() {
+        return UpgradeReceipt.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          UpgradeReceipt.$typeName,
+          ...[],
+        ) as `0x2::package::UpgradeReceipt`
+      },
       typeArgs: [] as [],
       isPhantom: UpgradeReceipt.$isPhantom,
       reifiedTypeArgs: [],

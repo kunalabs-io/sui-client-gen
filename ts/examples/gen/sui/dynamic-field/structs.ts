@@ -118,17 +118,23 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
   ): FieldReified<ToTypeArgument<Name>, ToTypeArgument<Value>> {
     const reifiedBcs = Field.bcs(toBcs(Name), toBcs(Value))
     return {
-      typeName: Field.$typeName,
-      fullTypeName: composeSuiType(
-        Field.$typeName,
-        ...[extractType(Name), extractType(Value)],
-      ) as `0x2::dynamic_field::Field<${ToTypeStr<ToTypeArgument<Name>>}, ${ToTypeStr<
-        ToTypeArgument<Value>
-      >}>`,
-      typeArgs: [extractType(Name), extractType(Value)] as [
-        ToTypeStr<ToTypeArgument<Name>>,
-        ToTypeStr<ToTypeArgument<Value>>,
-      ],
+      get typeName() {
+        return Field.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Field.$typeName,
+          ...[extractType(Name), extractType(Value)],
+        ) as `0x2::dynamic_field::Field<${ToTypeStr<ToTypeArgument<Name>>}, ${ToTypeStr<
+          ToTypeArgument<Value>
+        >}>`
+      },
+      get typeArgs() {
+        return [extractType(Name), extractType(Value)] as [
+          ToTypeStr<ToTypeArgument<Name>>,
+          ToTypeStr<ToTypeArgument<Value>>,
+        ]
+      },
       isPhantom: Field.$isPhantom,
       reifiedTypeArgs: [Name, Value],
       fromFields: (fields: Record<string, any>) => Field.fromFields([Name, Value], fields),

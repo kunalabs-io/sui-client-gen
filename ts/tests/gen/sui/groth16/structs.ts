@@ -77,11 +77,15 @@ export class Curve implements StructClass {
   static reified(): CurveReified {
     const reifiedBcs = Curve.bcs
     return {
-      typeName: Curve.$typeName,
-      fullTypeName: composeSuiType(
-        Curve.$typeName,
-        ...[],
-      ) as `0x2::groth16::Curve`,
+      get typeName() {
+        return Curve.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Curve.$typeName,
+          ...[],
+        ) as `0x2::groth16::Curve`
+      },
       typeArgs: [] as [],
       isPhantom: Curve.$isPhantom,
       reifiedTypeArgs: [],
@@ -273,11 +277,15 @@ export class PreparedVerifyingKey implements StructClass {
   static reified(): PreparedVerifyingKeyReified {
     const reifiedBcs = PreparedVerifyingKey.bcs
     return {
-      typeName: PreparedVerifyingKey.$typeName,
-      fullTypeName: composeSuiType(
-        PreparedVerifyingKey.$typeName,
-        ...[],
-      ) as `0x2::groth16::PreparedVerifyingKey`,
+      get typeName() {
+        return PreparedVerifyingKey.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          PreparedVerifyingKey.$typeName,
+          ...[],
+        ) as `0x2::groth16::PreparedVerifyingKey`
+      },
       typeArgs: [] as [],
       isPhantom: PreparedVerifyingKey.$isPhantom,
       reifiedTypeArgs: [],
@@ -481,11 +489,15 @@ export class PublicProofInputs implements StructClass {
   static reified(): PublicProofInputsReified {
     const reifiedBcs = PublicProofInputs.bcs
     return {
-      typeName: PublicProofInputs.$typeName,
-      fullTypeName: composeSuiType(
-        PublicProofInputs.$typeName,
-        ...[],
-      ) as `0x2::groth16::PublicProofInputs`,
+      get typeName() {
+        return PublicProofInputs.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          PublicProofInputs.$typeName,
+          ...[],
+        ) as `0x2::groth16::PublicProofInputs`
+      },
       typeArgs: [] as [],
       isPhantom: PublicProofInputs.$isPhantom,
       reifiedTypeArgs: [],
@@ -664,11 +676,15 @@ export class ProofPoints implements StructClass {
   static reified(): ProofPointsReified {
     const reifiedBcs = ProofPoints.bcs
     return {
-      typeName: ProofPoints.$typeName,
-      fullTypeName: composeSuiType(
-        ProofPoints.$typeName,
-        ...[],
-      ) as `0x2::groth16::ProofPoints`,
+      get typeName() {
+        return ProofPoints.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          ProofPoints.$typeName,
+          ...[],
+        ) as `0x2::groth16::ProofPoints`
+      },
       typeArgs: [] as [],
       isPhantom: ProofPoints.$isPhantom,
       reifiedTypeArgs: [],

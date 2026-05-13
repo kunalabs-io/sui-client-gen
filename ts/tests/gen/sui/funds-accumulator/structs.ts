@@ -104,12 +104,18 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
   ): WithdrawalReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Withdrawal.bcs
     return {
-      typeName: Withdrawal.$typeName,
-      fullTypeName: composeSuiType(
-        Withdrawal.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::funds_accumulator::Withdrawal<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return Withdrawal.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Withdrawal.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::funds_accumulator::Withdrawal<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: Withdrawal.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Withdrawal.fromFields(T, fields),

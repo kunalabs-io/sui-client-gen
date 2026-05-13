@@ -97,11 +97,15 @@ export class Claimed implements StructClass {
   static reified(): ClaimedReified {
     const reifiedBcs = Claimed.bcs
     return {
-      typeName: Claimed.$typeName,
-      fullTypeName: composeSuiType(
-        Claimed.$typeName,
-        ...[],
-      ) as `0x2::derived_object::Claimed`,
+      get typeName() {
+        return Claimed.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Claimed.$typeName,
+          ...[],
+        ) as `0x2::derived_object::Claimed`
+      },
       typeArgs: [] as [],
       isPhantom: Claimed.$isPhantom,
       reifiedTypeArgs: [],
@@ -286,12 +290,18 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
   ): DerivedObjectKeyReified<ToTypeArgument<K>> {
     const reifiedBcs = DerivedObjectKey.bcs(toBcs(K))
     return {
-      typeName: DerivedObjectKey.$typeName,
-      fullTypeName: composeSuiType(
-        DerivedObjectKey.$typeName,
-        ...[extractType(K)],
-      ) as `0x2::derived_object::DerivedObjectKey<${ToTypeStr<ToTypeArgument<K>>}>`,
-      typeArgs: [extractType(K)] as [ToTypeStr<ToTypeArgument<K>>],
+      get typeName() {
+        return DerivedObjectKey.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          DerivedObjectKey.$typeName,
+          ...[extractType(K)],
+        ) as `0x2::derived_object::DerivedObjectKey<${ToTypeStr<ToTypeArgument<K>>}>`
+      },
+      get typeArgs() {
+        return [extractType(K)] as [ToTypeStr<ToTypeArgument<K>>]
+      },
       isPhantom: DerivedObjectKey.$isPhantom,
       reifiedTypeArgs: [K],
       fromFields: (fields: Record<string, any>) => DerivedObjectKey.fromFields(K, fields),
@@ -525,8 +535,12 @@ export class ClaimedStatus {
   static reified(): ClaimedStatusReified {
     const reifiedBcs = ClaimedStatus.bcs
     return {
-      typeName: ClaimedStatus.$typeName,
-      fullTypeName: composeSuiType(ClaimedStatus.$typeName) as `0x2::derived_object::ClaimedStatus`,
+      get typeName() {
+        return ClaimedStatus.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(ClaimedStatus.$typeName) as `0x2::derived_object::ClaimedStatus`
+      },
       typeArgs: [] as [],
       isPhantom: ClaimedStatus.$isPhantom,
       reifiedTypeArgs: [],
@@ -647,7 +661,9 @@ export type ClaimedStatusReservedJSON = {
 export class ClaimedStatusReserved implements EnumVariantClass {
   __EnumVariantClass = true as const
 
-  static readonly $typeName: typeof ClaimedStatus.$typeName = ClaimedStatus.$typeName
+  static get $typeName(): typeof ClaimedStatus.$typeName {
+    return ClaimedStatus.$typeName
+  }
   static readonly $numTypeParams: typeof ClaimedStatus.$numTypeParams = ClaimedStatus.$numTypeParams
   static readonly $isPhantom: typeof ClaimedStatus.$isPhantom = ClaimedStatus.$isPhantom
   static readonly $variantName = 'Reserved' as const

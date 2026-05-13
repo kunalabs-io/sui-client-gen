@@ -217,11 +217,15 @@ export class Kiosk implements StructClass {
   static reified(): KioskReified {
     const reifiedBcs = Kiosk.bcs
     return {
-      typeName: Kiosk.$typeName,
-      fullTypeName: composeSuiType(
-        Kiosk.$typeName,
-        ...[],
-      ) as `0x2::kiosk::Kiosk`,
+      get typeName() {
+        return Kiosk.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Kiosk.$typeName,
+          ...[],
+        ) as `0x2::kiosk::Kiosk`
+      },
       typeArgs: [] as [],
       isPhantom: Kiosk.$isPhantom,
       reifiedTypeArgs: [],
@@ -433,11 +437,15 @@ export class KioskOwnerCap implements StructClass {
   static reified(): KioskOwnerCapReified {
     const reifiedBcs = KioskOwnerCap.bcs
     return {
-      typeName: KioskOwnerCap.$typeName,
-      fullTypeName: composeSuiType(
-        KioskOwnerCap.$typeName,
-        ...[],
-      ) as `0x2::kiosk::KioskOwnerCap`,
+      get typeName() {
+        return KioskOwnerCap.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          KioskOwnerCap.$typeName,
+          ...[],
+        ) as `0x2::kiosk::KioskOwnerCap`
+      },
       typeArgs: [] as [],
       isPhantom: KioskOwnerCap.$isPhantom,
       reifiedTypeArgs: [],
@@ -654,12 +662,18 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
   ): PurchaseCapReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = PurchaseCap.bcs
     return {
-      typeName: PurchaseCap.$typeName,
-      fullTypeName: composeSuiType(
-        PurchaseCap.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::kiosk::PurchaseCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return PurchaseCap.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          PurchaseCap.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::kiosk::PurchaseCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: PurchaseCap.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => PurchaseCap.fromFields(T, fields),
@@ -924,11 +938,15 @@ export class Borrow implements StructClass {
   static reified(): BorrowReified {
     const reifiedBcs = Borrow.bcs
     return {
-      typeName: Borrow.$typeName,
-      fullTypeName: composeSuiType(
-        Borrow.$typeName,
-        ...[],
-      ) as `0x2::kiosk::Borrow`,
+      get typeName() {
+        return Borrow.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Borrow.$typeName,
+          ...[],
+        ) as `0x2::kiosk::Borrow`
+      },
       typeArgs: [] as [],
       isPhantom: Borrow.$isPhantom,
       reifiedTypeArgs: [],
@@ -1112,11 +1130,15 @@ export class Item implements StructClass {
   static reified(): ItemReified {
     const reifiedBcs = Item.bcs
     return {
-      typeName: Item.$typeName,
-      fullTypeName: composeSuiType(
-        Item.$typeName,
-        ...[],
-      ) as `0x2::kiosk::Item`,
+      get typeName() {
+        return Item.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Item.$typeName,
+          ...[],
+        ) as `0x2::kiosk::Item`
+      },
       typeArgs: [] as [],
       isPhantom: Item.$isPhantom,
       reifiedTypeArgs: [],
@@ -1302,11 +1324,15 @@ export class Listing implements StructClass {
   static reified(): ListingReified {
     const reifiedBcs = Listing.bcs
     return {
-      typeName: Listing.$typeName,
-      fullTypeName: composeSuiType(
-        Listing.$typeName,
-        ...[],
-      ) as `0x2::kiosk::Listing`,
+      get typeName() {
+        return Listing.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Listing.$typeName,
+          ...[],
+        ) as `0x2::kiosk::Listing`
+      },
       typeArgs: [] as [],
       isPhantom: Listing.$isPhantom,
       reifiedTypeArgs: [],
@@ -1494,11 +1520,15 @@ export class Lock implements StructClass {
   static reified(): LockReified {
     const reifiedBcs = Lock.bcs
     return {
-      typeName: Lock.$typeName,
-      fullTypeName: composeSuiType(
-        Lock.$typeName,
-        ...[],
-      ) as `0x2::kiosk::Lock`,
+      get typeName() {
+        return Lock.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Lock.$typeName,
+          ...[],
+        ) as `0x2::kiosk::Lock`
+      },
       typeArgs: [] as [],
       isPhantom: Lock.$isPhantom,
       reifiedTypeArgs: [],
@@ -1694,12 +1724,18 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
   ): ItemListedReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = ItemListed.bcs
     return {
-      typeName: ItemListed.$typeName,
-      fullTypeName: composeSuiType(
-        ItemListed.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::kiosk::ItemListed<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return ItemListed.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          ItemListed.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::kiosk::ItemListed<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: ItemListed.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => ItemListed.fromFields(T, fields),
@@ -1975,12 +2011,18 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
   ): ItemPurchasedReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = ItemPurchased.bcs
     return {
-      typeName: ItemPurchased.$typeName,
-      fullTypeName: composeSuiType(
-        ItemPurchased.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::kiosk::ItemPurchased<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return ItemPurchased.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          ItemPurchased.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::kiosk::ItemPurchased<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: ItemPurchased.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => ItemPurchased.fromFields(T, fields),
@@ -2245,12 +2287,18 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
   ): ItemDelistedReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = ItemDelisted.bcs
     return {
-      typeName: ItemDelisted.$typeName,
-      fullTypeName: composeSuiType(
-        ItemDelisted.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::kiosk::ItemDelisted<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return ItemDelisted.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          ItemDelisted.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::kiosk::ItemDelisted<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: ItemDelisted.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => ItemDelisted.fromFields(T, fields),

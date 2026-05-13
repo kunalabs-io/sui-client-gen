@@ -85,11 +85,15 @@ export class AuthenticatorState implements StructClass {
   static reified(): AuthenticatorStateReified {
     const reifiedBcs = AuthenticatorState.bcs
     return {
-      typeName: AuthenticatorState.$typeName,
-      fullTypeName: composeSuiType(
-        AuthenticatorState.$typeName,
-        ...[],
-      ) as `0x2::authenticator_state::AuthenticatorState`,
+      get typeName() {
+        return AuthenticatorState.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          AuthenticatorState.$typeName,
+          ...[],
+        ) as `0x2::authenticator_state::AuthenticatorState`
+      },
       typeArgs: [] as [],
       isPhantom: AuthenticatorState.$isPhantom,
       reifiedTypeArgs: [],
@@ -283,11 +287,15 @@ export class AuthenticatorStateInner implements StructClass {
   static reified(): AuthenticatorStateInnerReified {
     const reifiedBcs = AuthenticatorStateInner.bcs
     return {
-      typeName: AuthenticatorStateInner.$typeName,
-      fullTypeName: composeSuiType(
-        AuthenticatorStateInner.$typeName,
-        ...[],
-      ) as `0x2::authenticator_state::AuthenticatorStateInner`,
+      get typeName() {
+        return AuthenticatorStateInner.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          AuthenticatorStateInner.$typeName,
+          ...[],
+        ) as `0x2::authenticator_state::AuthenticatorStateInner`
+      },
       typeArgs: [] as [],
       isPhantom: AuthenticatorStateInner.$isPhantom,
       reifiedTypeArgs: [],
@@ -490,11 +498,15 @@ export class JWK implements StructClass {
   static reified(): JWKReified {
     const reifiedBcs = JWK.bcs
     return {
-      typeName: JWK.$typeName,
-      fullTypeName: composeSuiType(
-        JWK.$typeName,
-        ...[],
-      ) as `0x2::authenticator_state::JWK`,
+      get typeName() {
+        return JWK.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          JWK.$typeName,
+          ...[],
+        ) as `0x2::authenticator_state::JWK`
+      },
       typeArgs: [] as [],
       isPhantom: JWK.$isPhantom,
       reifiedTypeArgs: [],
@@ -693,11 +705,15 @@ export class JwkId implements StructClass {
   static reified(): JwkIdReified {
     const reifiedBcs = JwkId.bcs
     return {
-      typeName: JwkId.$typeName,
-      fullTypeName: composeSuiType(
-        JwkId.$typeName,
-        ...[],
-      ) as `0x2::authenticator_state::JwkId`,
+      get typeName() {
+        return JwkId.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          JwkId.$typeName,
+          ...[],
+        ) as `0x2::authenticator_state::JwkId`
+      },
       typeArgs: [] as [],
       isPhantom: JwkId.$isPhantom,
       reifiedTypeArgs: [],
@@ -889,11 +905,15 @@ export class ActiveJwk implements StructClass {
   static reified(): ActiveJwkReified {
     const reifiedBcs = ActiveJwk.bcs
     return {
-      typeName: ActiveJwk.$typeName,
-      fullTypeName: composeSuiType(
-        ActiveJwk.$typeName,
-        ...[],
-      ) as `0x2::authenticator_state::ActiveJwk`,
+      get typeName() {
+        return ActiveJwk.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          ActiveJwk.$typeName,
+          ...[],
+        ) as `0x2::authenticator_state::ActiveJwk`
+      },
       typeArgs: [] as [],
       isPhantom: ActiveJwk.$isPhantom,
       reifiedTypeArgs: [],

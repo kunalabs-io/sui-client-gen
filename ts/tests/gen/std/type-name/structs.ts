@@ -91,11 +91,15 @@ export class TypeName implements StructClass {
   static reified(): TypeNameReified {
     const reifiedBcs = TypeName.bcs
     return {
-      typeName: TypeName.$typeName,
-      fullTypeName: composeSuiType(
-        TypeName.$typeName,
-        ...[],
-      ) as `0x1::type_name::TypeName`,
+      get typeName() {
+        return TypeName.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          TypeName.$typeName,
+          ...[],
+        ) as `0x1::type_name::TypeName`
+      },
       typeArgs: [] as [],
       isPhantom: TypeName.$isPhantom,
       reifiedTypeArgs: [],

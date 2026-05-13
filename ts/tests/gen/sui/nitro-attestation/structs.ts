@@ -80,11 +80,15 @@ export class PCREntry implements StructClass {
   static reified(): PCREntryReified {
     const reifiedBcs = PCREntry.bcs
     return {
-      typeName: PCREntry.$typeName,
-      fullTypeName: composeSuiType(
-        PCREntry.$typeName,
-        ...[],
-      ) as `0x2::nitro_attestation::PCREntry`,
+      get typeName() {
+        return PCREntry.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          PCREntry.$typeName,
+          ...[],
+        ) as `0x2::nitro_attestation::PCREntry`
+      },
       typeArgs: [] as [],
       isPhantom: PCREntry.$isPhantom,
       reifiedTypeArgs: [],
@@ -323,11 +327,15 @@ export class NitroAttestationDocument implements StructClass {
   static reified(): NitroAttestationDocumentReified {
     const reifiedBcs = NitroAttestationDocument.bcs
     return {
-      typeName: NitroAttestationDocument.$typeName,
-      fullTypeName: composeSuiType(
-        NitroAttestationDocument.$typeName,
-        ...[],
-      ) as `0x2::nitro_attestation::NitroAttestationDocument`,
+      get typeName() {
+        return NitroAttestationDocument.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          NitroAttestationDocument.$typeName,
+          ...[],
+        ) as `0x2::nitro_attestation::NitroAttestationDocument`
+      },
       typeArgs: [] as [],
       isPhantom: NitroAttestationDocument.$isPhantom,
       reifiedTypeArgs: [],

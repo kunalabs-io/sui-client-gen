@@ -88,11 +88,15 @@ export class EventStreamHead implements StructClass {
   static reified(): EventStreamHeadReified {
     const reifiedBcs = EventStreamHead.bcs
     return {
-      typeName: EventStreamHead.$typeName,
-      fullTypeName: composeSuiType(
-        EventStreamHead.$typeName,
-        ...[],
-      ) as `0x2::accumulator_settlement::EventStreamHead`,
+      get typeName() {
+        return EventStreamHead.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          EventStreamHead.$typeName,
+          ...[],
+        ) as `0x2::accumulator_settlement::EventStreamHead`
+      },
       typeArgs: [] as [],
       isPhantom: EventStreamHead.$isPhantom,
       reifiedTypeArgs: [],

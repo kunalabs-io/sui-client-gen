@@ -118,17 +118,23 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
   ): TableReified<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     const reifiedBcs = Table.bcs
     return {
-      typeName: Table.$typeName,
-      fullTypeName: composeSuiType(
-        Table.$typeName,
-        ...[extractType(K), extractType(V)],
-      ) as `0x2::table::Table<${PhantomToTypeStr<ToPhantomTypeArgument<K>>}, ${PhantomToTypeStr<
-        ToPhantomTypeArgument<V>
-      >}>`,
-      typeArgs: [extractType(K), extractType(V)] as [
-        PhantomToTypeStr<ToPhantomTypeArgument<K>>,
-        PhantomToTypeStr<ToPhantomTypeArgument<V>>,
-      ],
+      get typeName() {
+        return Table.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Table.$typeName,
+          ...[extractType(K), extractType(V)],
+        ) as `0x2::table::Table<${PhantomToTypeStr<ToPhantomTypeArgument<K>>}, ${PhantomToTypeStr<
+          ToPhantomTypeArgument<V>
+        >}>`
+      },
+      get typeArgs() {
+        return [extractType(K), extractType(V)] as [
+          PhantomToTypeStr<ToPhantomTypeArgument<K>>,
+          PhantomToTypeStr<ToPhantomTypeArgument<V>>,
+        ]
+      },
       isPhantom: Table.$isPhantom,
       reifiedTypeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => Table.fromFields([K, V], fields),

@@ -89,12 +89,18 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
   ): SupplyReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Supply.bcs
     return {
-      typeName: Supply.$typeName,
-      fullTypeName: composeSuiType(
-        Supply.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::balance::Supply<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return Supply.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Supply.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::balance::Supply<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: Supply.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Supply.fromFields(T, fields),
@@ -342,12 +348,18 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
   ): BalanceReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Balance.bcs
     return {
-      typeName: Balance.$typeName,
-      fullTypeName: composeSuiType(
-        Balance.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::balance::Balance<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return Balance.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Balance.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::balance::Balance<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: Balance.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Balance.fromFields(T, fields),

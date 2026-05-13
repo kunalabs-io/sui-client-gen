@@ -112,11 +112,15 @@ export class BCS implements StructClass {
   static reified(): BCSReified {
     const reifiedBcs = BCS.bcs
     return {
-      typeName: BCS.$typeName,
-      fullTypeName: composeSuiType(
-        BCS.$typeName,
-        ...[],
-      ) as `0x2::bcs::BCS`,
+      get typeName() {
+        return BCS.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          BCS.$typeName,
+          ...[],
+        ) as `0x2::bcs::BCS`
+      },
       typeArgs: [] as [],
       isPhantom: BCS.$isPhantom,
       reifiedTypeArgs: [],

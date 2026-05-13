@@ -120,7 +120,7 @@ export type ToPhantomTypeArgument<T extends PhantomReified<PhantomTypeArgument>>
 export type PhantomTypeArgument = string
 
 export interface PhantomReified<P> {
-  phantomType: P
+  readonly phantomType: P
   kind: 'PhantomReified'
 }
 
@@ -135,8 +135,15 @@ export function phantom(type: string | Reified<TypeArgument, any>): PhantomReifi
       kind: 'PhantomReified',
     }
   } else {
+    // Reified handle case: read `fullTypeName` lazily so phantom handles created
+    // before `setActiveEnv(...)` still reflect the current env on each access.
+    // Without this getter, `phantomType` would freeze the typeName at phantom-call time
+    // and leak the wrong address into vector/option type-arg strings produced via
+    // `extractType(...)`.
     return {
-      phantomType: type.fullTypeName,
+      get phantomType() {
+        return type.fullTypeName
+      },
       kind: 'PhantomReified',
     }
   }
