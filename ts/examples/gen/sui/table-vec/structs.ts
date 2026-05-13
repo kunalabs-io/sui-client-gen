@@ -87,12 +87,18 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
   ): TableVecReified<ToPhantomTypeArgument<Element>> {
     const reifiedBcs = TableVec.bcs
     return {
-      typeName: TableVec.$typeName,
-      fullTypeName: composeSuiType(
-        TableVec.$typeName,
-        ...[extractType(Element)],
-      ) as `0x2::table_vec::TableVec<${PhantomToTypeStr<ToPhantomTypeArgument<Element>>}>`,
-      typeArgs: [extractType(Element)] as [PhantomToTypeStr<ToPhantomTypeArgument<Element>>],
+      get typeName() {
+        return TableVec.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          TableVec.$typeName,
+          ...[extractType(Element)],
+        ) as `0x2::table_vec::TableVec<${PhantomToTypeStr<ToPhantomTypeArgument<Element>>}>`
+      },
+      get typeArgs() {
+        return [extractType(Element)] as [PhantomToTypeStr<ToPhantomTypeArgument<Element>>]
+      },
       isPhantom: TableVec.$isPhantom,
       reifiedTypeArgs: [Element],
       fromFields: (fields: Record<string, any>) => TableVec.fromFields(Element, fields),

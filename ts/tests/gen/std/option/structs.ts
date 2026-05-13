@@ -93,12 +93,18 @@ export class Option<Element extends TypeArgument> implements StructClass {
   ): OptionReified<ToTypeArgument<Element>> {
     const reifiedBcs = Option.bcs(toBcs(Element))
     return {
-      typeName: Option.$typeName,
-      fullTypeName: composeSuiType(
-        Option.$typeName,
-        ...[extractType(Element)],
-      ) as `0x1::option::Option<${ToTypeStr<ToTypeArgument<Element>>}>`,
-      typeArgs: [extractType(Element)] as [ToTypeStr<ToTypeArgument<Element>>],
+      get typeName() {
+        return Option.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Option.$typeName,
+          ...[extractType(Element)],
+        ) as `0x1::option::Option<${ToTypeStr<ToTypeArgument<Element>>}>`
+      },
+      get typeArgs() {
+        return [extractType(Element)] as [ToTypeStr<ToTypeArgument<Element>>]
+      },
       isPhantom: Option.$isPhantom,
       reifiedTypeArgs: [Element],
       fromFields: (fields: Record<string, any>) => Option.fromFields(Element, fields),

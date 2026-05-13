@@ -91,11 +91,15 @@ export class DenyList implements StructClass {
   static reified(): DenyListReified {
     const reifiedBcs = DenyList.bcs
     return {
-      typeName: DenyList.$typeName,
-      fullTypeName: composeSuiType(
-        DenyList.$typeName,
-        ...[],
-      ) as `0x2::deny_list::DenyList`,
+      get typeName() {
+        return DenyList.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          DenyList.$typeName,
+          ...[],
+        ) as `0x2::deny_list::DenyList`
+      },
       typeArgs: [] as [],
       isPhantom: DenyList.$isPhantom,
       reifiedTypeArgs: [],
@@ -283,11 +287,15 @@ export class ConfigWriteCap implements StructClass {
   static reified(): ConfigWriteCapReified {
     const reifiedBcs = ConfigWriteCap.bcs
     return {
-      typeName: ConfigWriteCap.$typeName,
-      fullTypeName: composeSuiType(
-        ConfigWriteCap.$typeName,
-        ...[],
-      ) as `0x2::deny_list::ConfigWriteCap`,
+      get typeName() {
+        return ConfigWriteCap.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          ConfigWriteCap.$typeName,
+          ...[],
+        ) as `0x2::deny_list::ConfigWriteCap`
+      },
       typeArgs: [] as [],
       isPhantom: ConfigWriteCap.$isPhantom,
       reifiedTypeArgs: [],
@@ -473,11 +481,15 @@ export class ConfigKey implements StructClass {
   static reified(): ConfigKeyReified {
     const reifiedBcs = ConfigKey.bcs
     return {
-      typeName: ConfigKey.$typeName,
-      fullTypeName: composeSuiType(
-        ConfigKey.$typeName,
-        ...[],
-      ) as `0x2::deny_list::ConfigKey`,
+      get typeName() {
+        return ConfigKey.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          ConfigKey.$typeName,
+          ...[],
+        ) as `0x2::deny_list::ConfigKey`
+      },
       typeArgs: [] as [],
       isPhantom: ConfigKey.$isPhantom,
       reifiedTypeArgs: [],
@@ -661,11 +673,15 @@ export class AddressKey implements StructClass {
   static reified(): AddressKeyReified {
     const reifiedBcs = AddressKey.bcs
     return {
-      typeName: AddressKey.$typeName,
-      fullTypeName: composeSuiType(
-        AddressKey.$typeName,
-        ...[],
-      ) as `0x2::deny_list::AddressKey`,
+      get typeName() {
+        return AddressKey.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          AddressKey.$typeName,
+          ...[],
+        ) as `0x2::deny_list::AddressKey`
+      },
       typeArgs: [] as [],
       isPhantom: AddressKey.$isPhantom,
       reifiedTypeArgs: [],
@@ -848,11 +864,15 @@ export class GlobalPauseKey implements StructClass {
   static reified(): GlobalPauseKeyReified {
     const reifiedBcs = GlobalPauseKey.bcs
     return {
-      typeName: GlobalPauseKey.$typeName,
-      fullTypeName: composeSuiType(
-        GlobalPauseKey.$typeName,
-        ...[],
-      ) as `0x2::deny_list::GlobalPauseKey`,
+      get typeName() {
+        return GlobalPauseKey.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          GlobalPauseKey.$typeName,
+          ...[],
+        ) as `0x2::deny_list::GlobalPauseKey`
+      },
       typeArgs: [] as [],
       isPhantom: GlobalPauseKey.$isPhantom,
       reifiedTypeArgs: [],
@@ -1039,11 +1059,15 @@ export class PerTypeConfigCreated implements StructClass {
   static reified(): PerTypeConfigCreatedReified {
     const reifiedBcs = PerTypeConfigCreated.bcs
     return {
-      typeName: PerTypeConfigCreated.$typeName,
-      fullTypeName: composeSuiType(
-        PerTypeConfigCreated.$typeName,
-        ...[],
-      ) as `0x2::deny_list::PerTypeConfigCreated`,
+      get typeName() {
+        return PerTypeConfigCreated.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          PerTypeConfigCreated.$typeName,
+          ...[],
+        ) as `0x2::deny_list::PerTypeConfigCreated`
+      },
       typeArgs: [] as [],
       isPhantom: PerTypeConfigCreated.$isPhantom,
       reifiedTypeArgs: [],
@@ -1259,11 +1283,15 @@ export class PerTypeList implements StructClass {
   static reified(): PerTypeListReified {
     const reifiedBcs = PerTypeList.bcs
     return {
-      typeName: PerTypeList.$typeName,
-      fullTypeName: composeSuiType(
-        PerTypeList.$typeName,
-        ...[],
-      ) as `0x2::deny_list::PerTypeList`,
+      get typeName() {
+        return PerTypeList.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          PerTypeList.$typeName,
+          ...[],
+        ) as `0x2::deny_list::PerTypeList`
+      },
       typeArgs: [] as [],
       isPhantom: PerTypeList.$isPhantom,
       reifiedTypeArgs: [],

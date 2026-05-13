@@ -84,12 +84,18 @@ export class Element<T extends PhantomTypeArgument> implements StructClass {
   ): ElementReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Element.bcs
     return {
-      typeName: Element.$typeName,
-      fullTypeName: composeSuiType(
-        Element.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::group_ops::Element<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return Element.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Element.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::group_ops::Element<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: Element.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Element.fromFields(T, fields),

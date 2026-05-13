@@ -54,9 +54,11 @@ export type ExampleStructJSON = {
 export class ExampleStruct implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::examples::ExampleStruct` = `${
-    getTypeOrigin('examples', 'examples::ExampleStruct')
-  }::examples::ExampleStruct` as const
+  static get $typeName(): `${string}::examples::ExampleStruct` {
+    return `${
+      getTypeOrigin('examples', 'examples::ExampleStruct')
+    }::examples::ExampleStruct` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -80,11 +82,15 @@ export class ExampleStruct implements StructClass {
   static reified(): ExampleStructReified {
     const reifiedBcs = ExampleStruct.bcs
     return {
-      typeName: ExampleStruct.$typeName,
-      fullTypeName: composeSuiType(
-        ExampleStruct.$typeName,
-        ...[],
-      ) as `${string}::examples::ExampleStruct`,
+      get typeName() {
+        return ExampleStruct.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          ExampleStruct.$typeName,
+          ...[],
+        ) as `${string}::examples::ExampleStruct`
+      },
       typeArgs: [] as [],
       isPhantom: ExampleStruct.$isPhantom,
       reifiedTypeArgs: [],
@@ -255,9 +261,11 @@ export type SpecialTypesStructJSON = {
 export class SpecialTypesStruct implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::examples::SpecialTypesStruct` = `${
-    getTypeOrigin('examples', 'examples::SpecialTypesStruct')
-  }::examples::SpecialTypesStruct` as const
+  static get $typeName(): `${string}::examples::SpecialTypesStruct` {
+    return `${
+      getTypeOrigin('examples', 'examples::SpecialTypesStruct')
+    }::examples::SpecialTypesStruct` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -297,11 +305,15 @@ export class SpecialTypesStruct implements StructClass {
   static reified(): SpecialTypesStructReified {
     const reifiedBcs = SpecialTypesStruct.bcs
     return {
-      typeName: SpecialTypesStruct.$typeName,
-      fullTypeName: composeSuiType(
-        SpecialTypesStruct.$typeName,
-        ...[],
-      ) as `${string}::examples::SpecialTypesStruct`,
+      get typeName() {
+        return SpecialTypesStruct.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          SpecialTypesStruct.$typeName,
+          ...[],
+        ) as `${string}::examples::SpecialTypesStruct`
+      },
       typeArgs: [] as [],
       isPhantom: SpecialTypesStruct.$isPhantom,
       reifiedTypeArgs: [],

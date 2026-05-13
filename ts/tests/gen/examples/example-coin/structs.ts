@@ -51,9 +51,11 @@ export type EXAMPLE_COINJSON = {
 export class EXAMPLE_COIN implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::example_coin::EXAMPLE_COIN` = `${
-    getTypeOrigin('examples', 'example_coin::EXAMPLE_COIN')
-  }::example_coin::EXAMPLE_COIN` as const
+  static get $typeName(): `${string}::example_coin::EXAMPLE_COIN` {
+    return `${
+      getTypeOrigin('examples', 'example_coin::EXAMPLE_COIN')
+    }::example_coin::EXAMPLE_COIN` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -77,11 +79,15 @@ export class EXAMPLE_COIN implements StructClass {
   static reified(): EXAMPLE_COINReified {
     const reifiedBcs = EXAMPLE_COIN.bcs
     return {
-      typeName: EXAMPLE_COIN.$typeName,
-      fullTypeName: composeSuiType(
-        EXAMPLE_COIN.$typeName,
-        ...[],
-      ) as `${string}::example_coin::EXAMPLE_COIN`,
+      get typeName() {
+        return EXAMPLE_COIN.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          EXAMPLE_COIN.$typeName,
+          ...[],
+        ) as `${string}::example_coin::EXAMPLE_COIN`
+      },
       typeArgs: [] as [],
       isPhantom: EXAMPLE_COIN.$isPhantom,
       reifiedTypeArgs: [],
@@ -237,9 +243,9 @@ export type FaucetJSON = {
 export class Faucet implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::example_coin::Faucet` = `${
-    getTypeOrigin('examples', 'example_coin::Faucet')
-  }::example_coin::Faucet` as const
+  static get $typeName(): `${string}::example_coin::Faucet` {
+    return `${getTypeOrigin('examples', 'example_coin::Faucet')}::example_coin::Faucet` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -265,11 +271,15 @@ export class Faucet implements StructClass {
   static reified(): FaucetReified {
     const reifiedBcs = Faucet.bcs
     return {
-      typeName: Faucet.$typeName,
-      fullTypeName: composeSuiType(
-        Faucet.$typeName,
-        ...[],
-      ) as `${string}::example_coin::Faucet`,
+      get typeName() {
+        return Faucet.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Faucet.$typeName,
+          ...[],
+        ) as `${string}::example_coin::Faucet`
+      },
       typeArgs: [] as [],
       isPhantom: Faucet.$isPhantom,
       reifiedTypeArgs: [],

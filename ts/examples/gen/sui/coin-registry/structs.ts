@@ -101,11 +101,15 @@ export class CoinRegistry implements StructClass {
   static reified(): CoinRegistryReified {
     const reifiedBcs = CoinRegistry.bcs
     return {
-      typeName: CoinRegistry.$typeName,
-      fullTypeName: composeSuiType(
-        CoinRegistry.$typeName,
-        ...[],
-      ) as `0x2::coin_registry::CoinRegistry`,
+      get typeName() {
+        return CoinRegistry.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          CoinRegistry.$typeName,
+          ...[],
+        ) as `0x2::coin_registry::CoinRegistry`
+      },
       typeArgs: [] as [],
       isPhantom: CoinRegistry.$isPhantom,
       reifiedTypeArgs: [],
@@ -293,11 +297,15 @@ export class ExtraField implements StructClass {
   static reified(): ExtraFieldReified {
     const reifiedBcs = ExtraField.bcs
     return {
-      typeName: ExtraField.$typeName,
-      fullTypeName: composeSuiType(
-        ExtraField.$typeName,
-        ...[],
-      ) as `0x2::coin_registry::ExtraField`,
+      get typeName() {
+        return ExtraField.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          ExtraField.$typeName,
+          ...[],
+        ) as `0x2::coin_registry::ExtraField`
+      },
       typeArgs: [] as [],
       isPhantom: ExtraField.$isPhantom,
       reifiedTypeArgs: [],
@@ -487,12 +495,18 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
   ): CurrencyKeyReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = CurrencyKey.bcs
     return {
-      typeName: CurrencyKey.$typeName,
-      fullTypeName: composeSuiType(
-        CurrencyKey.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::coin_registry::CurrencyKey<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return CurrencyKey.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          CurrencyKey.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::coin_registry::CurrencyKey<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: CurrencyKey.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => CurrencyKey.fromFields(T, fields),
@@ -736,11 +750,15 @@ export class LegacyMetadataKey implements StructClass {
   static reified(): LegacyMetadataKeyReified {
     const reifiedBcs = LegacyMetadataKey.bcs
     return {
-      typeName: LegacyMetadataKey.$typeName,
-      fullTypeName: composeSuiType(
-        LegacyMetadataKey.$typeName,
-        ...[],
-      ) as `0x2::coin_registry::LegacyMetadataKey`,
+      get typeName() {
+        return LegacyMetadataKey.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          LegacyMetadataKey.$typeName,
+          ...[],
+        ) as `0x2::coin_registry::LegacyMetadataKey`
+      },
       typeArgs: [] as [],
       isPhantom: LegacyMetadataKey.$isPhantom,
       reifiedTypeArgs: [],
@@ -929,12 +947,18 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
   ): MetadataCapReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = MetadataCap.bcs
     return {
-      typeName: MetadataCap.$typeName,
-      fullTypeName: composeSuiType(
-        MetadataCap.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::coin_registry::MetadataCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return MetadataCap.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          MetadataCap.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::coin_registry::MetadataCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: MetadataCap.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => MetadataCap.fromFields(T, fields),
@@ -1179,12 +1203,18 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
   ): BorrowReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Borrow.bcs
     return {
-      typeName: Borrow.$typeName,
-      fullTypeName: composeSuiType(
-        Borrow.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::coin_registry::Borrow<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return Borrow.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Borrow.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::coin_registry::Borrow<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: Borrow.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Borrow.fromFields(T, fields),
@@ -1501,12 +1531,18 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
   ): CurrencyReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Currency.bcs
     return {
-      typeName: Currency.$typeName,
-      fullTypeName: composeSuiType(
-        Currency.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::coin_registry::Currency<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return Currency.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Currency.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::coin_registry::Currency<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: Currency.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Currency.fromFields(T, fields),
@@ -1842,12 +1878,20 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
   ): CurrencyInitializerReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = CurrencyInitializer.bcs
     return {
-      typeName: CurrencyInitializer.$typeName,
-      fullTypeName: composeSuiType(
-        CurrencyInitializer.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::coin_registry::CurrencyInitializer<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return CurrencyInitializer.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          CurrencyInitializer.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::coin_registry::CurrencyInitializer<${PhantomToTypeStr<
+          ToPhantomTypeArgument<T>
+        >}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: CurrencyInitializer.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => CurrencyInitializer.fromFields(T, fields),
@@ -2105,12 +2149,18 @@ export class SupplyState {
   ): SupplyStateReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = SupplyState.bcs
     return {
-      typeName: SupplyState.$typeName,
-      fullTypeName: composeSuiType(
-        SupplyState.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::coin_registry::SupplyState<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return SupplyState.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          SupplyState.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::coin_registry::SupplyState<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: SupplyState.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => SupplyState.fromFields([T], fields),
@@ -2295,7 +2345,9 @@ export type SupplyStateFixedJSON<T extends PhantomTypeArgument> = {
 export class SupplyStateFixed<T extends PhantomTypeArgument> implements EnumVariantClass {
   __EnumVariantClass = true as const
 
-  static readonly $typeName: typeof SupplyState.$typeName = SupplyState.$typeName
+  static get $typeName(): typeof SupplyState.$typeName {
+    return SupplyState.$typeName
+  }
   static readonly $numTypeParams: typeof SupplyState.$numTypeParams = SupplyState.$numTypeParams
   static readonly $isPhantom: typeof SupplyState.$isPhantom = SupplyState.$isPhantom
   static readonly $variantName = 'Fixed' as const
@@ -2356,7 +2408,9 @@ export type SupplyStateBurnOnlyJSON<T extends PhantomTypeArgument> = {
 export class SupplyStateBurnOnly<T extends PhantomTypeArgument> implements EnumVariantClass {
   __EnumVariantClass = true as const
 
-  static readonly $typeName: typeof SupplyState.$typeName = SupplyState.$typeName
+  static get $typeName(): typeof SupplyState.$typeName {
+    return SupplyState.$typeName
+  }
   static readonly $numTypeParams: typeof SupplyState.$numTypeParams = SupplyState.$numTypeParams
   static readonly $isPhantom: typeof SupplyState.$isPhantom = SupplyState.$isPhantom
   static readonly $variantName = 'BurnOnly' as const
@@ -2414,7 +2468,9 @@ export type SupplyStateUnknownJSON<T extends PhantomTypeArgument> = {
 export class SupplyStateUnknown<T extends PhantomTypeArgument> implements EnumVariantClass {
   __EnumVariantClass = true as const
 
-  static readonly $typeName: typeof SupplyState.$typeName = SupplyState.$typeName
+  static get $typeName(): typeof SupplyState.$typeName {
+    return SupplyState.$typeName
+  }
   static readonly $numTypeParams: typeof SupplyState.$numTypeParams = SupplyState.$numTypeParams
   static readonly $isPhantom: typeof SupplyState.$isPhantom = SupplyState.$isPhantom
   static readonly $variantName = 'Unknown' as const
@@ -2496,10 +2552,12 @@ export class RegulatedState {
   static reified(): RegulatedStateReified {
     const reifiedBcs = RegulatedState.bcs
     return {
-      typeName: RegulatedState.$typeName,
-      fullTypeName: composeSuiType(
-        RegulatedState.$typeName,
-      ) as `0x2::coin_registry::RegulatedState`,
+      get typeName() {
+        return RegulatedState.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(RegulatedState.$typeName) as `0x2::coin_registry::RegulatedState`
+      },
       typeArgs: [] as [],
       isPhantom: RegulatedState.$isPhantom,
       reifiedTypeArgs: [],
@@ -2670,7 +2728,9 @@ export type RegulatedStateRegulatedJSON = {
 export class RegulatedStateRegulated implements EnumVariantClass {
   __EnumVariantClass = true as const
 
-  static readonly $typeName: typeof RegulatedState.$typeName = RegulatedState.$typeName
+  static get $typeName(): typeof RegulatedState.$typeName {
+    return RegulatedState.$typeName
+  }
   static readonly $numTypeParams: typeof RegulatedState.$numTypeParams =
     RegulatedState.$numTypeParams
   static readonly $isPhantom: typeof RegulatedState.$isPhantom = RegulatedState.$isPhantom
@@ -2737,7 +2797,9 @@ export type RegulatedStateUnregulatedJSON = {
 export class RegulatedStateUnregulated implements EnumVariantClass {
   __EnumVariantClass = true as const
 
-  static readonly $typeName: typeof RegulatedState.$typeName = RegulatedState.$typeName
+  static get $typeName(): typeof RegulatedState.$typeName {
+    return RegulatedState.$typeName
+  }
   static readonly $numTypeParams: typeof RegulatedState.$numTypeParams =
     RegulatedState.$numTypeParams
   static readonly $isPhantom: typeof RegulatedState.$isPhantom = RegulatedState.$isPhantom
@@ -2792,7 +2854,9 @@ export type RegulatedStateUnknownJSON = {
 export class RegulatedStateUnknown implements EnumVariantClass {
   __EnumVariantClass = true as const
 
-  static readonly $typeName: typeof RegulatedState.$typeName = RegulatedState.$typeName
+  static get $typeName(): typeof RegulatedState.$typeName {
+    return RegulatedState.$typeName
+  }
   static readonly $numTypeParams: typeof RegulatedState.$numTypeParams =
     RegulatedState.$numTypeParams
   static readonly $isPhantom: typeof RegulatedState.$isPhantom = RegulatedState.$isPhantom
@@ -2873,10 +2937,12 @@ export class MetadataCapState {
   static reified(): MetadataCapStateReified {
     const reifiedBcs = MetadataCapState.bcs
     return {
-      typeName: MetadataCapState.$typeName,
-      fullTypeName: composeSuiType(
-        MetadataCapState.$typeName,
-      ) as `0x2::coin_registry::MetadataCapState`,
+      get typeName() {
+        return MetadataCapState.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(MetadataCapState.$typeName) as `0x2::coin_registry::MetadataCapState`
+      },
       typeArgs: [] as [],
       isPhantom: MetadataCapState.$isPhantom,
       reifiedTypeArgs: [],
@@ -3025,7 +3091,9 @@ export type MetadataCapStateClaimedJSON = {
 export class MetadataCapStateClaimed implements EnumVariantClass {
   __EnumVariantClass = true as const
 
-  static readonly $typeName: typeof MetadataCapState.$typeName = MetadataCapState.$typeName
+  static get $typeName(): typeof MetadataCapState.$typeName {
+    return MetadataCapState.$typeName
+  }
   static readonly $numTypeParams: typeof MetadataCapState.$numTypeParams =
     MetadataCapState.$numTypeParams
   static readonly $isPhantom: typeof MetadataCapState.$isPhantom = MetadataCapState.$isPhantom
@@ -3085,7 +3153,9 @@ export type MetadataCapStateUnclaimedJSON = {
 export class MetadataCapStateUnclaimed implements EnumVariantClass {
   __EnumVariantClass = true as const
 
-  static readonly $typeName: typeof MetadataCapState.$typeName = MetadataCapState.$typeName
+  static get $typeName(): typeof MetadataCapState.$typeName {
+    return MetadataCapState.$typeName
+  }
   static readonly $numTypeParams: typeof MetadataCapState.$numTypeParams =
     MetadataCapState.$numTypeParams
   static readonly $isPhantom: typeof MetadataCapState.$isPhantom = MetadataCapState.$isPhantom
@@ -3137,7 +3207,9 @@ export type MetadataCapStateDeletedJSON = {
 export class MetadataCapStateDeleted implements EnumVariantClass {
   __EnumVariantClass = true as const
 
-  static readonly $typeName: typeof MetadataCapState.$typeName = MetadataCapState.$typeName
+  static get $typeName(): typeof MetadataCapState.$typeName {
+    return MetadataCapState.$typeName
+  }
   static readonly $numTypeParams: typeof MetadataCapState.$numTypeParams =
     MetadataCapState.$numTypeParams
   static readonly $isPhantom: typeof MetadataCapState.$isPhantom = MetadataCapState.$isPhantom

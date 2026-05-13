@@ -82,11 +82,15 @@ export class String implements StructClass {
   static reified(): StringReified {
     const reifiedBcs = String.bcs
     return {
-      typeName: String.$typeName,
-      fullTypeName: composeSuiType(
-        String.$typeName,
-        ...[],
-      ) as `0x1::string::String`,
+      get typeName() {
+        return String.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          String.$typeName,
+          ...[],
+        ) as `0x1::string::String`
+      },
       typeArgs: [] as [],
       isPhantom: String.$isPhantom,
       reifiedTypeArgs: [],

@@ -110,11 +110,15 @@ export class TxContext implements StructClass {
   static reified(): TxContextReified {
     const reifiedBcs = TxContext.bcs
     return {
-      typeName: TxContext.$typeName,
-      fullTypeName: composeSuiType(
-        TxContext.$typeName,
-        ...[],
-      ) as `0x2::tx_context::TxContext`,
+      get typeName() {
+        return TxContext.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          TxContext.$typeName,
+          ...[],
+        ) as `0x2::tx_context::TxContext`
+      },
       typeArgs: [] as [],
       isPhantom: TxContext.$isPhantom,
       reifiedTypeArgs: [],

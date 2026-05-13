@@ -118,12 +118,18 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
   ): TokenReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Token.bcs
     return {
-      typeName: Token.$typeName,
-      fullTypeName: composeSuiType(
-        Token.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::token::Token<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return Token.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Token.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::token::Token<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: Token.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Token.fromFields(T, fields),
@@ -383,12 +389,18 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
   ): TokenPolicyCapReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = TokenPolicyCap.bcs
     return {
-      typeName: TokenPolicyCap.$typeName,
-      fullTypeName: composeSuiType(
-        TokenPolicyCap.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::token::TokenPolicyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return TokenPolicyCap.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          TokenPolicyCap.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::token::TokenPolicyCap<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: TokenPolicyCap.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TokenPolicyCap.fromFields(T, fields),
@@ -685,12 +697,18 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
   ): TokenPolicyReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = TokenPolicy.bcs
     return {
-      typeName: TokenPolicy.$typeName,
-      fullTypeName: composeSuiType(
-        TokenPolicy.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::token::TokenPolicy<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return TokenPolicy.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          TokenPolicy.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::token::TokenPolicy<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: TokenPolicy.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TokenPolicy.fromFields(T, fields),
@@ -1015,12 +1033,18 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
   ): ActionRequestReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = ActionRequest.bcs
     return {
-      typeName: ActionRequest.$typeName,
-      fullTypeName: composeSuiType(
-        ActionRequest.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::token::ActionRequest<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return ActionRequest.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          ActionRequest.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::token::ActionRequest<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: ActionRequest.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => ActionRequest.fromFields(T, fields),
@@ -1317,12 +1341,18 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
   ): RuleKeyReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = RuleKey.bcs
     return {
-      typeName: RuleKey.$typeName,
-      fullTypeName: composeSuiType(
-        RuleKey.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::token::RuleKey<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return RuleKey.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          RuleKey.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::token::RuleKey<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: RuleKey.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => RuleKey.fromFields(T, fields),
@@ -1589,12 +1619,18 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
   ): TokenPolicyCreatedReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = TokenPolicyCreated.bcs
     return {
-      typeName: TokenPolicyCreated.$typeName,
-      fullTypeName: composeSuiType(
-        TokenPolicyCreated.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::token::TokenPolicyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return TokenPolicyCreated.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          TokenPolicyCreated.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::token::TokenPolicyCreated<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: TokenPolicyCreated.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => TokenPolicyCreated.fromFields(T, fields),

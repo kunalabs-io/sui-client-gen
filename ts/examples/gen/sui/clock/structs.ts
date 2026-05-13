@@ -102,11 +102,15 @@ export class Clock implements StructClass {
   static reified(): ClockReified {
     const reifiedBcs = Clock.bcs
     return {
-      typeName: Clock.$typeName,
-      fullTypeName: composeSuiType(
-        Clock.$typeName,
-        ...[],
-      ) as `0x2::clock::Clock`,
+      get typeName() {
+        return Clock.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Clock.$typeName,
+          ...[],
+        ) as `0x2::clock::Clock`
+      },
       typeArgs: [] as [],
       isPhantom: Clock.$isPhantom,
       reifiedTypeArgs: [],

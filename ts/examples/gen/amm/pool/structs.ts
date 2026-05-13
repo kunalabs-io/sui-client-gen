@@ -59,9 +59,9 @@ export type PoolCreationEventJSON = {
 export class PoolCreationEvent implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::pool::PoolCreationEvent` = `${
-    getTypeOrigin('amm', 'pool::PoolCreationEvent')
-  }::pool::PoolCreationEvent` as const
+  static get $typeName(): `${string}::pool::PoolCreationEvent` {
+    return `${getTypeOrigin('amm', 'pool::PoolCreationEvent')}::pool::PoolCreationEvent` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -85,11 +85,15 @@ export class PoolCreationEvent implements StructClass {
   static reified(): PoolCreationEventReified {
     const reifiedBcs = PoolCreationEvent.bcs
     return {
-      typeName: PoolCreationEvent.$typeName,
-      fullTypeName: composeSuiType(
-        PoolCreationEvent.$typeName,
-        ...[],
-      ) as `${string}::pool::PoolCreationEvent`,
+      get typeName() {
+        return PoolCreationEvent.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          PoolCreationEvent.$typeName,
+          ...[],
+        ) as `${string}::pool::PoolCreationEvent`
+      },
       typeArgs: [] as [],
       isPhantom: PoolCreationEvent.$isPhantom,
       reifiedTypeArgs: [],
@@ -249,9 +253,9 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::pool::LP` = `${
-    getTypeOrigin('amm', 'pool::LP')
-  }::pool::LP` as const
+  static get $typeName(): `${string}::pool::LP` {
+    return `${getTypeOrigin('amm', 'pool::LP')}::pool::LP` as const
+  }
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, true] as const
 
@@ -284,17 +288,23 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   ): LPReified<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     const reifiedBcs = LP.bcs
     return {
-      typeName: LP.$typeName,
-      fullTypeName: composeSuiType(
-        LP.$typeName,
-        ...[extractType(A), extractType(B)],
-      ) as `${string}::pool::LP<${PhantomToTypeStr<ToPhantomTypeArgument<A>>}, ${PhantomToTypeStr<
-        ToPhantomTypeArgument<B>
-      >}>`,
-      typeArgs: [extractType(A), extractType(B)] as [
-        PhantomToTypeStr<ToPhantomTypeArgument<A>>,
-        PhantomToTypeStr<ToPhantomTypeArgument<B>>,
-      ],
+      get typeName() {
+        return LP.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          LP.$typeName,
+          ...[extractType(A), extractType(B)],
+        ) as `${string}::pool::LP<${PhantomToTypeStr<ToPhantomTypeArgument<A>>}, ${PhantomToTypeStr<
+          ToPhantomTypeArgument<B>
+        >}>`
+      },
+      get typeArgs() {
+        return [extractType(A), extractType(B)] as [
+          PhantomToTypeStr<ToPhantomTypeArgument<A>>,
+          PhantomToTypeStr<ToPhantomTypeArgument<B>>,
+        ]
+      },
       isPhantom: LP.$isPhantom,
       reifiedTypeArgs: [A, B],
       fromFields: (fields: Record<string, any>) => LP.fromFields([A, B], fields),
@@ -564,9 +574,9 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::pool::Pool` = `${
-    getTypeOrigin('amm', 'pool::Pool')
-  }::pool::Pool` as const
+  static get $typeName(): `${string}::pool::Pool` {
+    return `${getTypeOrigin('amm', 'pool::Pool')}::pool::Pool` as const
+  }
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, true] as const
 
@@ -617,17 +627,23 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
   ): PoolReified<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
     const reifiedBcs = Pool.bcs
     return {
-      typeName: Pool.$typeName,
-      fullTypeName: composeSuiType(
-        Pool.$typeName,
-        ...[extractType(A), extractType(B)],
-      ) as `${string}::pool::Pool<${PhantomToTypeStr<ToPhantomTypeArgument<A>>}, ${PhantomToTypeStr<
-        ToPhantomTypeArgument<B>
-      >}>`,
-      typeArgs: [extractType(A), extractType(B)] as [
-        PhantomToTypeStr<ToPhantomTypeArgument<A>>,
-        PhantomToTypeStr<ToPhantomTypeArgument<B>>,
-      ],
+      get typeName() {
+        return Pool.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Pool.$typeName,
+          ...[extractType(A), extractType(B)],
+        ) as `${string}::pool::Pool<${PhantomToTypeStr<
+          ToPhantomTypeArgument<A>
+        >}, ${PhantomToTypeStr<ToPhantomTypeArgument<B>>}>`
+      },
+      get typeArgs() {
+        return [extractType(A), extractType(B)] as [
+          PhantomToTypeStr<ToPhantomTypeArgument<A>>,
+          PhantomToTypeStr<ToPhantomTypeArgument<B>>,
+        ]
+      },
       isPhantom: Pool.$isPhantom,
       reifiedTypeArgs: [A, B],
       fromFields: (fields: Record<string, any>) => Pool.fromFields([A, B], fields),
@@ -927,9 +943,9 @@ export type PoolRegistryJSON = {
 export class PoolRegistry implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::pool::PoolRegistry` = `${
-    getTypeOrigin('amm', 'pool::PoolRegistry')
-  }::pool::PoolRegistry` as const
+  static get $typeName(): `${string}::pool::PoolRegistry` {
+    return `${getTypeOrigin('amm', 'pool::PoolRegistry')}::pool::PoolRegistry` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -955,11 +971,15 @@ export class PoolRegistry implements StructClass {
   static reified(): PoolRegistryReified {
     const reifiedBcs = PoolRegistry.bcs
     return {
-      typeName: PoolRegistry.$typeName,
-      fullTypeName: composeSuiType(
-        PoolRegistry.$typeName,
-        ...[],
-      ) as `${string}::pool::PoolRegistry`,
+      get typeName() {
+        return PoolRegistry.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          PoolRegistry.$typeName,
+          ...[],
+        ) as `${string}::pool::PoolRegistry`
+      },
       typeArgs: [] as [],
       isPhantom: PoolRegistry.$isPhantom,
       reifiedTypeArgs: [],
@@ -1130,9 +1150,9 @@ export type PoolRegistryItemJSON = {
 export class PoolRegistryItem implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::pool::PoolRegistryItem` = `${
-    getTypeOrigin('amm', 'pool::PoolRegistryItem')
-  }::pool::PoolRegistryItem` as const
+  static get $typeName(): `${string}::pool::PoolRegistryItem` {
+    return `${getTypeOrigin('amm', 'pool::PoolRegistryItem')}::pool::PoolRegistryItem` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -1158,11 +1178,15 @@ export class PoolRegistryItem implements StructClass {
   static reified(): PoolRegistryItemReified {
     const reifiedBcs = PoolRegistryItem.bcs
     return {
-      typeName: PoolRegistryItem.$typeName,
-      fullTypeName: composeSuiType(
-        PoolRegistryItem.$typeName,
-        ...[],
-      ) as `${string}::pool::PoolRegistryItem`,
+      get typeName() {
+        return PoolRegistryItem.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          PoolRegistryItem.$typeName,
+          ...[],
+        ) as `${string}::pool::PoolRegistryItem`
+      },
       typeArgs: [] as [],
       isPhantom: PoolRegistryItem.$isPhantom,
       reifiedTypeArgs: [],
@@ -1326,9 +1350,9 @@ export type AdminCapJSON = {
 export class AdminCap implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::pool::AdminCap` = `${
-    getTypeOrigin('amm', 'pool::AdminCap')
-  }::pool::AdminCap` as const
+  static get $typeName(): `${string}::pool::AdminCap` {
+    return `${getTypeOrigin('amm', 'pool::AdminCap')}::pool::AdminCap` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -1352,11 +1376,15 @@ export class AdminCap implements StructClass {
   static reified(): AdminCapReified {
     const reifiedBcs = AdminCap.bcs
     return {
-      typeName: AdminCap.$typeName,
-      fullTypeName: composeSuiType(
-        AdminCap.$typeName,
-        ...[],
-      ) as `${string}::pool::AdminCap`,
+      get typeName() {
+        return AdminCap.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          AdminCap.$typeName,
+          ...[],
+        ) as `${string}::pool::AdminCap`
+      },
       typeArgs: [] as [],
       isPhantom: AdminCap.$isPhantom,
       reifiedTypeArgs: [],

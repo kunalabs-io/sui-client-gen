@@ -87,9 +87,9 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
 {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::enums::Wrapped` = `${
-    getTypeOrigin('examples', 'enums::Wrapped')
-  }::enums::Wrapped` as const
+  static get $typeName(): `${string}::enums::Wrapped` {
+    return `${getTypeOrigin('examples', 'enums::Wrapped')}::enums::Wrapped` as const
+  }
   static readonly $numTypeParams = 3
   static readonly $isPhantom = [false, false, false] as const
 
@@ -138,18 +138,24 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
   ): WrappedReified<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>> {
     const reifiedBcs = Wrapped.bcs(toBcs(T), toBcs(U), toBcs(V))
     return {
-      typeName: Wrapped.$typeName,
-      fullTypeName: composeSuiType(
-        Wrapped.$typeName,
-        ...[extractType(T), extractType(U), extractType(V)],
-      ) as `${string}::enums::Wrapped<${ToTypeStr<ToTypeArgument<T>>}, ${ToTypeStr<
-        ToTypeArgument<U>
-      >}, ${ToTypeStr<ToTypeArgument<V>>}>`,
-      typeArgs: [extractType(T), extractType(U), extractType(V)] as [
-        ToTypeStr<ToTypeArgument<T>>,
-        ToTypeStr<ToTypeArgument<U>>,
-        ToTypeStr<ToTypeArgument<V>>,
-      ],
+      get typeName() {
+        return Wrapped.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Wrapped.$typeName,
+          ...[extractType(T), extractType(U), extractType(V)],
+        ) as `${string}::enums::Wrapped<${ToTypeStr<ToTypeArgument<T>>}, ${ToTypeStr<
+          ToTypeArgument<U>
+        >}, ${ToTypeStr<ToTypeArgument<V>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T), extractType(U), extractType(V)] as [
+          ToTypeStr<ToTypeArgument<T>>,
+          ToTypeStr<ToTypeArgument<U>>,
+          ToTypeStr<ToTypeArgument<V>>,
+        ]
+      },
       isPhantom: Wrapped.$isPhantom,
       reifiedTypeArgs: [T, U, V],
       fromFields: (fields: Record<string, any>) => Wrapped.fromFields([T, U, V], fields),
@@ -461,9 +467,9 @@ export type ActionReified<T extends TypeArgument, U extends PhantomTypeArgument>
 >
 
 export class Action {
-  static readonly $typeName: string = `${
-    getTypeOrigin('examples', 'enums::Action')
-  }::enums::Action` as const
+  static get $typeName(): string {
+    return `${getTypeOrigin('examples', 'enums::Action')}::enums::Action` as const
+  }
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [false, true] as const
 
@@ -476,15 +482,21 @@ export class Action {
   ): ActionReified<ToTypeArgument<T>, ToPhantomTypeArgument<U>> {
     const reifiedBcs = Action.bcs(toBcs(T))
     return {
-      typeName: Action.$typeName,
-      fullTypeName: composeSuiType(
-        Action.$typeName,
-        ...[extractType(T), extractType(U)],
-      ) as string,
-      typeArgs: [extractType(T), extractType(U)] as [
-        ToTypeStr<ToTypeArgument<T>>,
-        PhantomToTypeStr<ToPhantomTypeArgument<U>>,
-      ],
+      get typeName() {
+        return Action.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Action.$typeName,
+          ...[extractType(T), extractType(U)],
+        ) as string
+      },
+      get typeArgs() {
+        return [extractType(T), extractType(U)] as [
+          ToTypeStr<ToTypeArgument<T>>,
+          PhantomToTypeStr<ToPhantomTypeArgument<U>>,
+        ]
+      },
       isPhantom: Action.$isPhantom,
       reifiedTypeArgs: [T, U],
       fromFields: (fields: Record<string, any>) => Action.fromFields([T, U], fields),
@@ -713,7 +725,9 @@ export class ActionStop<T extends TypeArgument, U extends PhantomTypeArgument>
 {
   __EnumVariantClass = true as const
 
-  static readonly $typeName: typeof Action.$typeName = Action.$typeName
+  static get $typeName(): typeof Action.$typeName {
+    return Action.$typeName
+  }
   static readonly $numTypeParams: typeof Action.$numTypeParams = Action.$numTypeParams
   static readonly $isPhantom: typeof Action.$isPhantom = Action.$isPhantom
   static readonly $variantName = 'Stop' as const
@@ -772,7 +786,9 @@ export class ActionPause<T extends TypeArgument, U extends PhantomTypeArgument>
 {
   __EnumVariantClass = true as const
 
-  static readonly $typeName: typeof Action.$typeName = Action.$typeName
+  static get $typeName(): typeof Action.$typeName {
+    return Action.$typeName
+  }
   static readonly $numTypeParams: typeof Action.$numTypeParams = Action.$numTypeParams
   static readonly $isPhantom: typeof Action.$isPhantom = Action.$isPhantom
   static readonly $variantName = 'Pause' as const
@@ -847,7 +863,9 @@ export class ActionJump<T extends TypeArgument, U extends PhantomTypeArgument>
 {
   __EnumVariantClass = true as const
 
-  static readonly $typeName: typeof Action.$typeName = Action.$typeName
+  static get $typeName(): typeof Action.$typeName {
+    return Action.$typeName
+  }
   static readonly $numTypeParams: typeof Action.$numTypeParams = Action.$numTypeParams
   static readonly $isPhantom: typeof Action.$isPhantom = Action.$isPhantom
   static readonly $variantName = 'Jump' as const

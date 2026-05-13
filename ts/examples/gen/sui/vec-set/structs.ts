@@ -89,12 +89,18 @@ export class VecSet<K extends TypeArgument> implements StructClass {
   ): VecSetReified<ToTypeArgument<K>> {
     const reifiedBcs = VecSet.bcs(toBcs(K))
     return {
-      typeName: VecSet.$typeName,
-      fullTypeName: composeSuiType(
-        VecSet.$typeName,
-        ...[extractType(K)],
-      ) as `0x2::vec_set::VecSet<${ToTypeStr<ToTypeArgument<K>>}>`,
-      typeArgs: [extractType(K)] as [ToTypeStr<ToTypeArgument<K>>],
+      get typeName() {
+        return VecSet.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          VecSet.$typeName,
+          ...[extractType(K)],
+        ) as `0x2::vec_set::VecSet<${ToTypeStr<ToTypeArgument<K>>}>`
+      },
+      get typeArgs() {
+        return [extractType(K)] as [ToTypeStr<ToTypeArgument<K>>]
+      },
       isPhantom: VecSet.$isPhantom,
       reifiedTypeArgs: [K],
       fromFields: (fields: Record<string, any>) => VecSet.fromFields(K, fields),

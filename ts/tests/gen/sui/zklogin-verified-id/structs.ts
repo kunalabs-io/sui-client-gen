@@ -106,11 +106,15 @@ export class VerifiedID implements StructClass {
   static reified(): VerifiedIDReified {
     const reifiedBcs = VerifiedID.bcs
     return {
-      typeName: VerifiedID.$typeName,
-      fullTypeName: composeSuiType(
-        VerifiedID.$typeName,
-        ...[],
-      ) as `0x2::zklogin_verified_id::VerifiedID`,
+      get typeName() {
+        return VerifiedID.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          VerifiedID.$typeName,
+          ...[],
+        ) as `0x2::zklogin_verified_id::VerifiedID`
+      },
       typeArgs: [] as [],
       isPhantom: VerifiedID.$isPhantom,
       reifiedTypeArgs: [],

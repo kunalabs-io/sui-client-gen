@@ -94,15 +94,23 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
   ): VecMapReified<ToTypeArgument<K>, ToTypeArgument<V>> {
     const reifiedBcs = VecMap.bcs(toBcs(K), toBcs(V))
     return {
-      typeName: VecMap.$typeName,
-      fullTypeName: composeSuiType(
-        VecMap.$typeName,
-        ...[extractType(K), extractType(V)],
-      ) as `0x2::vec_map::VecMap<${ToTypeStr<ToTypeArgument<K>>}, ${ToTypeStr<ToTypeArgument<V>>}>`,
-      typeArgs: [extractType(K), extractType(V)] as [
-        ToTypeStr<ToTypeArgument<K>>,
-        ToTypeStr<ToTypeArgument<V>>,
-      ],
+      get typeName() {
+        return VecMap.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          VecMap.$typeName,
+          ...[extractType(K), extractType(V)],
+        ) as `0x2::vec_map::VecMap<${ToTypeStr<ToTypeArgument<K>>}, ${ToTypeStr<
+          ToTypeArgument<V>
+        >}>`
+      },
+      get typeArgs() {
+        return [extractType(K), extractType(V)] as [
+          ToTypeStr<ToTypeArgument<K>>,
+          ToTypeStr<ToTypeArgument<V>>,
+        ]
+      },
       isPhantom: VecMap.$isPhantom,
       reifiedTypeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => VecMap.fromFields([K, V], fields),
@@ -378,15 +386,21 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
   ): EntryReified<ToTypeArgument<K>, ToTypeArgument<V>> {
     const reifiedBcs = Entry.bcs(toBcs(K), toBcs(V))
     return {
-      typeName: Entry.$typeName,
-      fullTypeName: composeSuiType(
-        Entry.$typeName,
-        ...[extractType(K), extractType(V)],
-      ) as `0x2::vec_map::Entry<${ToTypeStr<ToTypeArgument<K>>}, ${ToTypeStr<ToTypeArgument<V>>}>`,
-      typeArgs: [extractType(K), extractType(V)] as [
-        ToTypeStr<ToTypeArgument<K>>,
-        ToTypeStr<ToTypeArgument<V>>,
-      ],
+      get typeName() {
+        return Entry.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Entry.$typeName,
+          ...[extractType(K), extractType(V)],
+        ) as `0x2::vec_map::Entry<${ToTypeStr<ToTypeArgument<K>>}, ${ToTypeStr<ToTypeArgument<V>>}>`
+      },
+      get typeArgs() {
+        return [extractType(K), extractType(V)] as [
+          ToTypeStr<ToTypeArgument<K>>,
+          ToTypeStr<ToTypeArgument<V>>,
+        ]
+      },
       isPhantom: Entry.$isPhantom,
       reifiedTypeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => Entry.fromFields([K, V], fields),

@@ -87,11 +87,15 @@ export class FixedPoint32 implements StructClass {
   static reified(): FixedPoint32Reified {
     const reifiedBcs = FixedPoint32.bcs
     return {
-      typeName: FixedPoint32.$typeName,
-      fullTypeName: composeSuiType(
-        FixedPoint32.$typeName,
-        ...[],
-      ) as `0x1::fixed_point32::FixedPoint32`,
+      get typeName() {
+        return FixedPoint32.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          FixedPoint32.$typeName,
+          ...[],
+        ) as `0x1::fixed_point32::FixedPoint32`
+      },
       typeArgs: [] as [],
       isPhantom: FixedPoint32.$isPhantom,
       reifiedTypeArgs: [],

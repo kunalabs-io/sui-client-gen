@@ -91,11 +91,15 @@ export class VerifiedIssuer implements StructClass {
   static reified(): VerifiedIssuerReified {
     const reifiedBcs = VerifiedIssuer.bcs
     return {
-      typeName: VerifiedIssuer.$typeName,
-      fullTypeName: composeSuiType(
-        VerifiedIssuer.$typeName,
-        ...[],
-      ) as `0x2::zklogin_verified_issuer::VerifiedIssuer`,
+      get typeName() {
+        return VerifiedIssuer.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          VerifiedIssuer.$typeName,
+          ...[],
+        ) as `0x2::zklogin_verified_issuer::VerifiedIssuer`
+      },
       typeArgs: [] as [],
       isPhantom: VerifiedIssuer.$isPhantom,
       reifiedTypeArgs: [],

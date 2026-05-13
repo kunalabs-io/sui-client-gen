@@ -108,17 +108,23 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
   ): ObjectTableReified<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
     const reifiedBcs = ObjectTable.bcs
     return {
-      typeName: ObjectTable.$typeName,
-      fullTypeName: composeSuiType(
-        ObjectTable.$typeName,
-        ...[extractType(K), extractType(V)],
-      ) as `0x2::object_table::ObjectTable<${PhantomToTypeStr<
-        ToPhantomTypeArgument<K>
-      >}, ${PhantomToTypeStr<ToPhantomTypeArgument<V>>}>`,
-      typeArgs: [extractType(K), extractType(V)] as [
-        PhantomToTypeStr<ToPhantomTypeArgument<K>>,
-        PhantomToTypeStr<ToPhantomTypeArgument<V>>,
-      ],
+      get typeName() {
+        return ObjectTable.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          ObjectTable.$typeName,
+          ...[extractType(K), extractType(V)],
+        ) as `0x2::object_table::ObjectTable<${PhantomToTypeStr<
+          ToPhantomTypeArgument<K>
+        >}, ${PhantomToTypeStr<ToPhantomTypeArgument<V>>}>`
+      },
+      get typeArgs() {
+        return [extractType(K), extractType(V)] as [
+          PhantomToTypeStr<ToPhantomTypeArgument<K>>,
+          PhantomToTypeStr<ToPhantomTypeArgument<V>>,
+        ]
+      },
       isPhantom: ObjectTable.$isPhantom,
       reifiedTypeArgs: [K, V],
       fromFields: (fields: Record<string, any>) => ObjectTable.fromFields([K, V], fields),

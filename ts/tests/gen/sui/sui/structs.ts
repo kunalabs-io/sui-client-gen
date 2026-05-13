@@ -76,11 +76,15 @@ export class SUI implements StructClass {
   static reified(): SUIReified {
     const reifiedBcs = SUI.bcs
     return {
-      typeName: SUI.$typeName,
-      fullTypeName: composeSuiType(
-        SUI.$typeName,
-        ...[],
-      ) as `0x2::sui::SUI`,
+      get typeName() {
+        return SUI.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          SUI.$typeName,
+          ...[],
+        ) as `0x2::sui::SUI`
+      },
       typeArgs: [] as [],
       isPhantom: SUI.$isPhantom,
       reifiedTypeArgs: [],

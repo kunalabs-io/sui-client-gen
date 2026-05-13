@@ -79,11 +79,15 @@ export class AccumulatorRoot implements StructClass {
   static reified(): AccumulatorRootReified {
     const reifiedBcs = AccumulatorRoot.bcs
     return {
-      typeName: AccumulatorRoot.$typeName,
-      fullTypeName: composeSuiType(
-        AccumulatorRoot.$typeName,
-        ...[],
-      ) as `0x2::accumulator::AccumulatorRoot`,
+      get typeName() {
+        return AccumulatorRoot.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          AccumulatorRoot.$typeName,
+          ...[],
+        ) as `0x2::accumulator::AccumulatorRoot`
+      },
       typeArgs: [] as [],
       isPhantom: AccumulatorRoot.$isPhantom,
       reifiedTypeArgs: [],
@@ -268,11 +272,15 @@ export class U128 implements StructClass {
   static reified(): U128Reified {
     const reifiedBcs = U128.bcs
     return {
-      typeName: U128.$typeName,
-      fullTypeName: composeSuiType(
-        U128.$typeName,
-        ...[],
-      ) as `0x2::accumulator::U128`,
+      get typeName() {
+        return U128.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          U128.$typeName,
+          ...[],
+        ) as `0x2::accumulator::U128`
+      },
       typeArgs: [] as [],
       isPhantom: U128.$isPhantom,
       reifiedTypeArgs: [],
@@ -456,12 +464,18 @@ export class Key<T extends PhantomTypeArgument> implements StructClass {
   ): KeyReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Key.bcs
     return {
-      typeName: Key.$typeName,
-      fullTypeName: composeSuiType(
-        Key.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::accumulator::Key<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return Key.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Key.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::accumulator::Key<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: Key.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Key.fromFields(T, fields),

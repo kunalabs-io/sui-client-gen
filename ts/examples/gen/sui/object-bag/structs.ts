@@ -86,11 +86,15 @@ export class ObjectBag implements StructClass {
   static reified(): ObjectBagReified {
     const reifiedBcs = ObjectBag.bcs
     return {
-      typeName: ObjectBag.$typeName,
-      fullTypeName: composeSuiType(
-        ObjectBag.$typeName,
-        ...[],
-      ) as `0x2::object_bag::ObjectBag`,
+      get typeName() {
+        return ObjectBag.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          ObjectBag.$typeName,
+          ...[],
+        ) as `0x2::object_bag::ObjectBag`
+      },
       typeArgs: [] as [],
       isPhantom: ObjectBag.$isPhantom,
       reifiedTypeArgs: [],

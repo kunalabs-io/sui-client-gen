@@ -112,12 +112,18 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
   ): PermitReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Permit.bcs
     return {
-      typeName: Permit.$typeName,
-      fullTypeName: composeSuiType(
-        Permit.$typeName,
-        ...[extractType(T)],
-      ) as `0x1::internal::Permit<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return Permit.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Permit.$typeName,
+          ...[extractType(T)],
+        ) as `0x1::internal::Permit<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: Permit.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Permit.fromFields(T, fields),

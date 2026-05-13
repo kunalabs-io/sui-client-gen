@@ -88,12 +88,18 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
   ): WrapperReified<ToTypeArgument<Name>> {
     const reifiedBcs = Wrapper.bcs(toBcs(Name))
     return {
-      typeName: Wrapper.$typeName,
-      fullTypeName: composeSuiType(
-        Wrapper.$typeName,
-        ...[extractType(Name)],
-      ) as `0x2::dynamic_object_field::Wrapper<${ToTypeStr<ToTypeArgument<Name>>}>`,
-      typeArgs: [extractType(Name)] as [ToTypeStr<ToTypeArgument<Name>>],
+      get typeName() {
+        return Wrapper.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Wrapper.$typeName,
+          ...[extractType(Name)],
+        ) as `0x2::dynamic_object_field::Wrapper<${ToTypeStr<ToTypeArgument<Name>>}>`
+      },
+      get typeArgs() {
+        return [extractType(Name)] as [ToTypeStr<ToTypeArgument<Name>>]
+      },
       isPhantom: Wrapper.$isPhantom,
       reifiedTypeArgs: [Name],
       fromFields: (fields: Record<string, any>) => Wrapper.fromFields(Name, fields),

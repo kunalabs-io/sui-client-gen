@@ -83,11 +83,15 @@ export class Versioned implements StructClass {
   static reified(): VersionedReified {
     const reifiedBcs = Versioned.bcs
     return {
-      typeName: Versioned.$typeName,
-      fullTypeName: composeSuiType(
-        Versioned.$typeName,
-        ...[],
-      ) as `0x2::versioned::Versioned`,
+      get typeName() {
+        return Versioned.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Versioned.$typeName,
+          ...[],
+        ) as `0x2::versioned::Versioned`
+      },
       typeArgs: [] as [],
       isPhantom: Versioned.$isPhantom,
       reifiedTypeArgs: [],
@@ -279,11 +283,15 @@ export class VersionChangeCap implements StructClass {
   static reified(): VersionChangeCapReified {
     const reifiedBcs = VersionChangeCap.bcs
     return {
-      typeName: VersionChangeCap.$typeName,
-      fullTypeName: composeSuiType(
-        VersionChangeCap.$typeName,
-        ...[],
-      ) as `0x2::versioned::VersionChangeCap`,
+      get typeName() {
+        return VersionChangeCap.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          VersionChangeCap.$typeName,
+          ...[],
+        ) as `0x2::versioned::VersionChangeCap`
+      },
       typeArgs: [] as [],
       isPhantom: VersionChangeCap.$isPhantom,
       reifiedTypeArgs: [],

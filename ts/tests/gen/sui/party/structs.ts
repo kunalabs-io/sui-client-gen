@@ -88,11 +88,15 @@ export class Party implements StructClass {
   static reified(): PartyReified {
     const reifiedBcs = Party.bcs
     return {
-      typeName: Party.$typeName,
-      fullTypeName: composeSuiType(
-        Party.$typeName,
-        ...[],
-      ) as `0x2::party::Party`,
+      get typeName() {
+        return Party.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Party.$typeName,
+          ...[],
+        ) as `0x2::party::Party`
+      },
       typeArgs: [] as [],
       isPhantom: Party.$isPhantom,
       reifiedTypeArgs: [],
@@ -288,11 +292,15 @@ export class Permissions implements StructClass {
   static reified(): PermissionsReified {
     const reifiedBcs = Permissions.bcs
     return {
-      typeName: Permissions.$typeName,
-      fullTypeName: composeSuiType(
-        Permissions.$typeName,
-        ...[],
-      ) as `0x2::party::Permissions`,
+      get typeName() {
+        return Permissions.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Permissions.$typeName,
+          ...[],
+        ) as `0x2::party::Permissions`
+      },
       typeArgs: [] as [],
       isPhantom: Permissions.$isPhantom,
       reifiedTypeArgs: [],

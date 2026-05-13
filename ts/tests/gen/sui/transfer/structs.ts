@@ -96,12 +96,18 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
   ): ReceivingReified<ToPhantomTypeArgument<T>> {
     const reifiedBcs = Receiving.bcs
     return {
-      typeName: Receiving.$typeName,
-      fullTypeName: composeSuiType(
-        Receiving.$typeName,
-        ...[extractType(T)],
-      ) as `0x2::transfer::Receiving<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>],
+      get typeName() {
+        return Receiving.$typeName
+      },
+      get fullTypeName() {
+        return composeSuiType(
+          Receiving.$typeName,
+          ...[extractType(T)],
+        ) as `0x2::transfer::Receiving<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}>`
+      },
+      get typeArgs() {
+        return [extractType(T)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>]
+      },
       isPhantom: Receiving.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Receiving.fromFields(T, fields),
