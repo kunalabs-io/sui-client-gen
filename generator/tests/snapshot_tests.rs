@@ -29,14 +29,12 @@ fn examples_pkg_for(module_type_path: &str) -> PackageInfo {
     }
 }
 
-#[allow(dead_code)]
 fn sui_pkg() -> PackageInfo {
     PackageInfo::System {
         address: "0x2".to_string(),
     }
 }
 
-#[allow(dead_code)]
 fn stdlib_pkg() -> PackageInfo {
     PackageInfo::System {
         address: "0x1".to_string(),
@@ -2364,4 +2362,149 @@ fn test_struct_doc_escaping_snapshot() {
     assert!(output.contains("*\\/"), "Doc comments should escape */ to *\\/");
 
     insta::assert_snapshot!("struct__doc_escaping", output);
+}
+
+// =============================================================================
+// System-package fixtures (env-independent addresses)
+// =============================================================================
+//
+// These cover the `static readonly $typeName = "0x..." as const` branch — System
+// packages (std at 0x1, sui at 0x2) keep the literal-typed field instead of the
+// dynamic getter used for Dynamic packages. They lock in the invariant that
+// System emission preserves precise literal type narrowing.
+
+/// `0x2::object::ID` shape — System struct, no type params.
+fn make_system_struct_ir() -> StructIR {
+    StructIR {
+        name: "ID".to_string(),
+        module_struct_path: "object::ID".to_string(),
+        package_info: sui_pkg(),
+        type_params: vec![],
+        fields: vec![FieldIR {
+            ts_name: "bytes".to_string(),
+            move_name: "bytes".to_string(),
+            field_type: FieldTypeIR::Primitive("address".to_string()),
+            doc_comment: None,
+        }],
+        struct_imports: vec![],
+        uses_vector: false,
+        uses_address: true,
+        uses_phantom_struct_args: false,
+        has_non_phantom_type_params: false,
+        uses_field_to_json: false,
+        doc_comment: None,
+    }
+}
+
+/// Synthetic System enum at `0x1::sample::Status` with two unit variants.
+fn make_system_enum_ir() -> EnumIR {
+    EnumIR {
+        name: "Status".to_string(),
+        module_enum_path: "sample::Status".to_string(),
+        package_info: stdlib_pkg(),
+        type_params: vec![],
+        variants: vec![
+            EnumVariantIR {
+                name: "Ready".to_string(),
+                fields: vec![],
+                is_tuple: false,
+                doc_comment: None,
+            },
+            EnumVariantIR {
+                name: "Pending".to_string(),
+                fields: vec![],
+                is_tuple: false,
+                doc_comment: None,
+            },
+        ],
+        uses_vector: false,
+        uses_address: false,
+        uses_phantom_struct_args: false,
+        doc_comment: None,
+    }
+}
+
+#[test]
+fn test_system_struct_keeps_static_readonly() {
+    let ir = make_system_struct_ir();
+    let output = ir.emit_body();
+
+    // System packages must keep `static readonly` with the literal address,
+    // preserving precise template-literal type narrowing.
+    assert!(
+        output.contains("static readonly $typeName: `0x2::object::ID` = `0x2::object::ID` as const"),
+        "System struct must keep static readonly with literal type; got:\n{}",
+        output
+    );
+    // The getter form is reserved for Dynamic packages.
+    assert!(
+        !output.contains("static get $typeName"),
+        "System struct must NOT emit a getter for $typeName"
+    );
+
+    insta::assert_snapshot!("system__struct_keeps_readonly", output);
+}
+
+#[test]
+fn test_system_enum_keeps_static_readonly() {
+    let ir = make_system_enum_ir();
+    let output = ir.emit_body();
+
+    // Same invariant for the parent enum class: System addresses are constant,
+    // so `static readonly` with the literal address is preserved.
+    assert!(
+        output
+            .contains("static readonly $typeName: `0x1::sample::Status` = `0x1::sample::Status` as const"),
+        "System enum must keep static readonly with literal type; got:\n{}",
+        output
+    );
+    // Variant classes always emit a delegating getter (`static get $typeName(): typeof Status.$typeName`)
+    // regardless of System/Dynamic — the variant resolves through the parent's
+    // value, which for System is the constant literal. That's still a `static get`
+    // declaration, so we only assert the parent shape here.
+
+    insta::assert_snapshot!("system__enum_keeps_readonly", output);
+}
+
+#[test]
+fn test_dynamic_struct_emits_typename_getter() {
+    let ir = make_fixture_dummy_ir();
+    let output = ir.emit_body();
+
+    // Dynamic packages must emit the getter form so $typeName reflects
+    // setActiveEnv() calls made after class load.
+    assert!(
+        output.contains("static get $typeName():"),
+        "Dynamic struct must emit `static get $typeName()`; got:\n{}",
+        output
+    );
+    assert!(
+        !output.contains("static readonly $typeName"),
+        "Dynamic struct must not emit `static readonly $typeName`"
+    );
+
+    // reified() return-object fields must also be getters so stored reified
+    // handles read live env values.
+    assert!(
+        output.contains("get typeName() { return Dummy.$typeName }"),
+        "Dynamic struct reified() must expose typeName as a getter"
+    );
+    assert!(
+        output.contains("get fullTypeName() {"),
+        "Dynamic struct reified() must expose fullTypeName as a getter"
+    );
+}
+
+#[test]
+fn test_dynamic_enum_variant_typename_delegates_via_getter() {
+    let ir = make_enums_action_ir();
+    let output = ir.emit_body();
+
+    // Variant classes must delegate to the enum's $typeName via a getter, not
+    // capture the value at class-load time.
+    assert!(
+        output.contains("static get $typeName(): typeof Action.$typeName { return Action.$typeName }"),
+        "Variant class must emit a delegating getter for $typeName; got:\n{}",
+        output
+    );
 }

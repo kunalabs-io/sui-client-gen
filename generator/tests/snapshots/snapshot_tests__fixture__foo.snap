@@ -53,7 +53,9 @@ export type FooJSON<T extends TypeArgument> = {
 export class Foo<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::fixture::Foo` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Foo` as const
+  static get $typeName(): `${string}::fixture::Foo` {
+    return `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Foo` as const
+  }
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
@@ -105,12 +107,14 @@ export class Foo<T extends TypeArgument> implements StructClass {
   ): FooReified<ToTypeArgument<T>> {
     const reifiedBcs = Foo.bcs(toBcs(T))
     return {
-      typeName: Foo.$typeName,
-      fullTypeName: composeSuiType(
-        Foo.$typeName,
-        ...[extractType(T)]
-      ) as `${string}::fixture::Foo<${ToTypeStr<ToTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      get typeName() { return Foo.$typeName },
+      get fullTypeName() {
+        return composeSuiType(
+          Foo.$typeName,
+          ...[extractType(T)]
+        ) as `${string}::fixture::Foo<${ToTypeStr<ToTypeArgument<T>>}>`
+      },
+      get typeArgs() { return [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>] },
       isPhantom: Foo.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => Foo.fromFields(T, fields),

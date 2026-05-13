@@ -27,7 +27,9 @@ export type BarJSON = {
 export class Bar implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::fixture::Bar` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Bar` as const
+  static get $typeName(): `${string}::fixture::Bar` {
+    return `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Bar` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -51,11 +53,13 @@ export class Bar implements StructClass {
   static reified(): BarReified {
     const reifiedBcs = Bar.bcs
     return {
-      typeName: Bar.$typeName,
-      fullTypeName: composeSuiType(
-        Bar.$typeName,
-        ...[]
-      ) as `${string}::fixture::Bar`,
+      get typeName() { return Bar.$typeName },
+      get fullTypeName() {
+        return composeSuiType(
+          Bar.$typeName,
+          ...[]
+        ) as `${string}::fixture::Bar`
+      },
       typeArgs: [] as [],
       isPhantom: Bar.$isPhantom,
       reifiedTypeArgs: [],

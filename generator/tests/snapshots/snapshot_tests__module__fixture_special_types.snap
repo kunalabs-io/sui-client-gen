@@ -97,7 +97,9 @@ export type WithSpecialTypesJSON<T extends PhantomTypeArgument, U extends TypeAr
 export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::fixture::WithSpecialTypes` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithSpecialTypes` as const
+  static get $typeName(): `${string}::fixture::WithSpecialTypes` {
+    return `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithSpecialTypes` as const
+  }
   static readonly $numTypeParams = 2
   static readonly $isPhantom = [true, false] as const
 
@@ -147,12 +149,14 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
   ): WithSpecialTypesReified<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
     const reifiedBcs = WithSpecialTypes.bcs(toBcs(U))
     return {
-      typeName: WithSpecialTypes.$typeName,
-      fullTypeName: composeSuiType(
-        WithSpecialTypes.$typeName,
-        ...[extractType(T), extractType(U)]
-      ) as `${string}::fixture::WithSpecialTypes<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}, ${ToTypeStr<ToTypeArgument<U>>}>`,
-      typeArgs: [extractType(T), extractType(U)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>, ToTypeStr<ToTypeArgument<U>>],
+      get typeName() { return WithSpecialTypes.$typeName },
+      get fullTypeName() {
+        return composeSuiType(
+          WithSpecialTypes.$typeName,
+          ...[extractType(T), extractType(U)]
+        ) as `${string}::fixture::WithSpecialTypes<${PhantomToTypeStr<ToPhantomTypeArgument<T>>}, ${ToTypeStr<ToTypeArgument<U>>}>`
+      },
+      get typeArgs() { return [extractType(T), extractType(U)] as [PhantomToTypeStr<ToPhantomTypeArgument<T>>, ToTypeStr<ToTypeArgument<U>>] },
       isPhantom: WithSpecialTypes.$isPhantom,
       reifiedTypeArgs: [T, U],
       fromFields: (fields: Record<string, any>) => WithSpecialTypes.fromFields([T, U], fields),
@@ -441,7 +445,9 @@ export type WithSpecialTypesInVectorsJSON<T extends TypeArgument> = {
 export class WithSpecialTypesInVectors<T extends TypeArgument> implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::fixture::WithSpecialTypesInVectors` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithSpecialTypesInVectors` as const
+  static get $typeName(): `${string}::fixture::WithSpecialTypesInVectors` {
+    return `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::WithSpecialTypesInVectors` as const
+  }
   static readonly $numTypeParams = 1
   static readonly $isPhantom = [false] as const
 
@@ -479,12 +485,14 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
   ): WithSpecialTypesInVectorsReified<ToTypeArgument<T>> {
     const reifiedBcs = WithSpecialTypesInVectors.bcs(toBcs(T))
     return {
-      typeName: WithSpecialTypesInVectors.$typeName,
-      fullTypeName: composeSuiType(
-        WithSpecialTypesInVectors.$typeName,
-        ...[extractType(T)]
-      ) as `${string}::fixture::WithSpecialTypesInVectors<${ToTypeStr<ToTypeArgument<T>>}>`,
-      typeArgs: [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>],
+      get typeName() { return WithSpecialTypesInVectors.$typeName },
+      get fullTypeName() {
+        return composeSuiType(
+          WithSpecialTypesInVectors.$typeName,
+          ...[extractType(T)]
+        ) as `${string}::fixture::WithSpecialTypesInVectors<${ToTypeStr<ToTypeArgument<T>>}>`
+      },
+      get typeArgs() { return [extractType(T)] as [ToTypeStr<ToTypeArgument<T>>] },
       isPhantom: WithSpecialTypesInVectors.$isPhantom,
       reifiedTypeArgs: [T],
       fromFields: (fields: Record<string, any>) => WithSpecialTypesInVectors.fromFields(T, fields),

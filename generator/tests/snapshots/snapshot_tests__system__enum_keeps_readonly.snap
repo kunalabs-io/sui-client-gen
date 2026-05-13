@@ -1,0 +1,254 @@
+---
+source: generator/tests/snapshot_tests.rs
+expression: output
+---
+/* ============================== Status =============================== */
+
+export function isStatus(type: string): boolean {
+  type = compressSuiType(type)
+  return type === `0x1::sample::Status`
+}
+
+export type StatusVariant =
+  | StatusReady
+  | StatusPending
+
+export type StatusVariantJSON =
+  | StatusReadyJSON
+  | StatusPendingJSON
+
+export type StatusVariantName = 'Ready' | 'Pending'
+
+export function isStatusVariantName(variant: string): variant is StatusVariantName {
+  return variant === 'Ready' || variant === 'Pending'
+}
+
+export type StatusFields =
+  | StatusReadyFields
+  | StatusPendingFields
+
+export type StatusReified = Reified<
+  StatusVariant,
+  StatusFields
+>
+
+export class Status {
+  static readonly $typeName: `0x1::sample::Status` = `0x1::sample::Status` as const
+  static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
+
+  static reified(): StatusReified {
+    const reifiedBcs = Status.bcs
+    return {
+      get typeName() { return Status.$typeName },
+      get fullTypeName() { return composeSuiType(Status.$typeName) as `0x1::sample::Status` },
+      typeArgs: [] as [],
+      isPhantom: Status.$isPhantom,
+      reifiedTypeArgs: [],
+      fromFields: (fields: Record<string, any>) => Status.fromFields([], fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Status.fromFieldsWithTypes([], item),
+      fromBcs: (data: Uint8Array) => Status.fromBcs([], data),
+      bcs: reifiedBcs,
+      fromJSONField: (field: any) => Status.fromJSONField([], field),
+      fromJSON: (json: Record<string, any>) => Status.fromJSON([], json),
+      new: (variant: StatusVariantName, fields: StatusFields) => {
+        switch (variant) {
+          case 'Ready':
+            return new StatusReady([], fields as StatusReadyFields)
+          case 'Pending':
+            return new StatusPending([], fields as StatusPendingFields)
+        }
+      },
+      kind: 'EnumClassReified',
+    } as StatusReified
+  }
+
+  static get r(): typeof Status.reified {
+    return Status.reified
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<StatusVariant>> {
+    return phantom(Status.reified())
+  }
+
+  static get p(): typeof Status.phantom {
+    return Status.phantom
+  }
+
+  private static instantiateBcs() {
+    return bcs.enum('Status', {
+      Ready: null,
+      Pending: null,
+    })
+  }
+
+  private static cachedBcs: ReturnType<typeof Status.instantiateBcs> | null = null
+
+  static get bcs(): ReturnType<typeof Status.instantiateBcs> {
+    if (!Status.cachedBcs) {
+      Status.cachedBcs = Status.instantiateBcs()
+    }
+    return Status.cachedBcs
+  }
+
+  static fromFields(typeArgs: [], fields: Record<string, any>): StatusVariant {
+    const r = Status.reified()
+
+    if (!fields.$kind || !isStatusVariantName(fields.$kind)) {
+      throw new Error(`Invalid status variant: ${fields.$kind}`)
+    }
+    switch (fields.$kind) {
+      case 'Ready':
+        return r.new('Ready', fields.Ready)
+      case 'Pending':
+        return r.new('Pending', fields.Pending)
+    }
+  }
+
+  static fromFieldsWithTypes(typeArgs: [], item: FieldsWithTypes): StatusVariant {
+    if (!isStatus(item.type)) {
+      throw new Error('not a Status type')
+    }
+
+    const variant = (item as FieldsWithTypes & { variant: StatusVariantName }).variant
+    if (!variant || !isStatusVariantName(variant)) {
+      throw new Error(`Invalid status variant: ${variant}`)
+    }
+
+    const r = Status.reified()
+    switch (variant) {
+      case 'Ready':
+        return r.new('Ready', {})
+      case 'Pending':
+        return r.new('Pending', {})
+    }
+  }
+
+  static fromBcs(typeArgs: [], data: Uint8Array): StatusVariant {
+    const parsed = Status.bcs.parse(data)
+    return Status.fromFields([], parsed)
+  }
+
+  static fromJSONField(typeArgs: [], field: any): StatusVariant {
+    const r = Status.reified()
+
+    const kind = field.$kind
+    if (!kind || !isStatusVariantName(kind)) {
+      throw new Error(`Invalid status variant: ${kind}`)
+    }
+    switch (kind) {
+      case 'Ready':
+        return r.new('Ready', {})
+      case 'Pending':
+        return r.new('Pending', {})
+    }
+  }
+
+  static fromJSON(typeArgs: [], json: Record<string, any>): StatusVariant {
+    if (json.$typeName !== Status.$typeName) {
+      throw new Error(`not a Status json object: expected '${Status.$typeName}' but got '${json.$typeName}'`)
+    }
+
+    return Status.fromJSONField(typeArgs, json)
+  }
+}
+
+export type StatusReadyFields = Record<string, never>
+
+export type StatusReadyJSONField = {
+  $kind: 'Ready'
+}
+
+export type StatusReadyJSON = {
+  $typeName: typeof Status.$typeName
+  $typeArgs: []
+  $variantName: 'Ready'
+} & StatusReadyJSONField
+
+export class StatusReady
+  implements EnumVariantClass
+{
+  __EnumVariantClass = true as const
+
+  static get $typeName(): typeof Status.$typeName { return Status.$typeName }
+  static readonly $numTypeParams: typeof Status.$numTypeParams = Status.$numTypeParams
+  static readonly $isPhantom: typeof Status.$isPhantom = Status.$isPhantom
+  static readonly $variantName = 'Ready' as const
+
+  readonly $typeName: typeof StatusReady.$typeName = StatusReady.$typeName
+  readonly $fullTypeName: `${typeof Status.$typeName}`
+  readonly $typeArgs: []
+  readonly $isPhantom: typeof Status.$isPhantom = Status.$isPhantom
+  readonly $variantName: typeof StatusReady.$variantName = StatusReady.$variantName
+
+  constructor(typeArgs: [], fields: StatusReadyFields) {
+    this.$fullTypeName = composeSuiType(
+      Status.$typeName,
+      ...typeArgs
+    ) as `${typeof Status.$typeName}`
+    this.$typeArgs = typeArgs
+  }
+
+  toJSONField(): StatusReadyJSONField {
+    return { $kind: this.$variantName }
+  }
+
+  toJSON(): StatusReadyJSON {
+    return {
+      $typeName: this.$typeName,
+      $typeArgs: this.$typeArgs,
+      $variantName: this.$variantName,
+      ...this.toJSONField(),
+    }
+  }
+}
+
+export type StatusPendingFields = Record<string, never>
+
+export type StatusPendingJSONField = {
+  $kind: 'Pending'
+}
+
+export type StatusPendingJSON = {
+  $typeName: typeof Status.$typeName
+  $typeArgs: []
+  $variantName: 'Pending'
+} & StatusPendingJSONField
+
+export class StatusPending
+  implements EnumVariantClass
+{
+  __EnumVariantClass = true as const
+
+  static get $typeName(): typeof Status.$typeName { return Status.$typeName }
+  static readonly $numTypeParams: typeof Status.$numTypeParams = Status.$numTypeParams
+  static readonly $isPhantom: typeof Status.$isPhantom = Status.$isPhantom
+  static readonly $variantName = 'Pending' as const
+
+  readonly $typeName: typeof StatusPending.$typeName = StatusPending.$typeName
+  readonly $fullTypeName: `${typeof Status.$typeName}`
+  readonly $typeArgs: []
+  readonly $isPhantom: typeof Status.$isPhantom = Status.$isPhantom
+  readonly $variantName: typeof StatusPending.$variantName = StatusPending.$variantName
+
+  constructor(typeArgs: [], fields: StatusPendingFields) {
+    this.$fullTypeName = composeSuiType(
+      Status.$typeName,
+      ...typeArgs
+    ) as `${typeof Status.$typeName}`
+    this.$typeArgs = typeArgs
+  }
+
+  toJSONField(): StatusPendingJSONField {
+    return { $kind: this.$variantName }
+  }
+
+  toJSON(): StatusPendingJSON {
+    return {
+      $typeName: this.$typeName,
+      $typeArgs: this.$typeArgs,
+      $variantName: this.$variantName,
+      ...this.toJSONField(),
+    }
+  }
+}

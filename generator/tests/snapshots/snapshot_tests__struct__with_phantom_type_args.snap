@@ -27,7 +27,9 @@ export type ACLJSON = {
 export class ACL implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::acl::ACL` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::acl::ACL` as const
+  static get $typeName(): `${string}::acl::ACL` {
+    return `${getTypeOrigin('examples', 'example::ExampleStruct')}::acl::ACL` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -51,11 +53,13 @@ export class ACL implements StructClass {
   static reified(): ACLReified {
     const reifiedBcs = ACL.bcs
     return {
-      typeName: ACL.$typeName,
-      fullTypeName: composeSuiType(
-        ACL.$typeName,
-        ...[]
-      ) as `${string}::acl::ACL`,
+      get typeName() { return ACL.$typeName },
+      get fullTypeName() {
+        return composeSuiType(
+          ACL.$typeName,
+          ...[]
+        ) as `${string}::acl::ACL`
+      },
       typeArgs: [] as [],
       isPhantom: ACL.$isPhantom,
       reifiedTypeArgs: [],

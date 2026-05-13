@@ -37,7 +37,9 @@ export type MultilineDocJSON = {
 export class MultilineDoc implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::test::MultilineDoc` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::MultilineDoc` as const
+  static get $typeName(): `${string}::test::MultilineDoc` {
+    return `${getTypeOrigin('examples', 'example::ExampleStruct')}::test::MultilineDoc` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -66,11 +68,13 @@ export class MultilineDoc implements StructClass {
   static reified(): MultilineDocReified {
     const reifiedBcs = MultilineDoc.bcs
     return {
-      typeName: MultilineDoc.$typeName,
-      fullTypeName: composeSuiType(
-        MultilineDoc.$typeName,
-        ...[]
-      ) as `${string}::test::MultilineDoc`,
+      get typeName() { return MultilineDoc.$typeName },
+      get fullTypeName() {
+        return composeSuiType(
+          MultilineDoc.$typeName,
+          ...[]
+        ) as `${string}::test::MultilineDoc`
+      },
       typeArgs: [] as [],
       isPhantom: MultilineDoc.$isPhantom,
       reifiedTypeArgs: [],

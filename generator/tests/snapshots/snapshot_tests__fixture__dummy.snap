@@ -27,7 +27,9 @@ export type DummyJSON = {
 export class Dummy implements StructClass {
   __StructClass = true as const
 
-  static readonly $typeName: `${string}::fixture::Dummy` = `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Dummy` as const
+  static get $typeName(): `${string}::fixture::Dummy` {
+    return `${getTypeOrigin('examples', 'example::ExampleStruct')}::fixture::Dummy` as const
+  }
   static readonly $numTypeParams = 0
   static readonly $isPhantom = [] as const
 
@@ -51,11 +53,13 @@ export class Dummy implements StructClass {
   static reified(): DummyReified {
     const reifiedBcs = Dummy.bcs
     return {
-      typeName: Dummy.$typeName,
-      fullTypeName: composeSuiType(
-        Dummy.$typeName,
-        ...[]
-      ) as `${string}::fixture::Dummy`,
+      get typeName() { return Dummy.$typeName },
+      get fullTypeName() {
+        return composeSuiType(
+          Dummy.$typeName,
+          ...[]
+        ) as `${string}::fixture::Dummy`
+      },
       typeArgs: [] as [],
       isPhantom: Dummy.$isPhantom,
       reifiedTypeArgs: [],

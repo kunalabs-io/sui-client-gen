@@ -397,6 +397,33 @@ impl StructIR {
         matches!(&self.package_info, PackageInfo::Dynamic { .. })
     }
 
+    /// Emit the `static $typeName` declaration.
+    ///
+    /// For System packages the address is constant across all chains, so we emit a
+    /// `static readonly` with `as const` to preserve the precise literal type
+    /// (e.g. `\`0x2::balance::Balance\``).
+    ///
+    /// For Dynamic packages the address depends on the active environment, so we
+    /// emit a `static get` whose body re-resolves on each access. This keeps
+    /// `Name.$typeName` correct after `setActiveEnv(...)` calls and matches the
+    /// runtime behavior the function-binding `target` already has.
+    fn emit_static_type_name_decl(
+        &self,
+        full_type_template: &str,
+        full_type_as_type: &str,
+    ) -> String {
+        match &self.package_info {
+            PackageInfo::System { .. } => format!(
+                "static readonly $typeName: {} = `{}` as const",
+                full_type_as_type, full_type_template
+            ),
+            PackageInfo::Dynamic { .. } => format!(
+                "static get $typeName(): {} {{\n    return `{}` as const\n  }}",
+                full_type_as_type, full_type_template
+            ),
+        }
+    }
+
     fn emit_fields_interface(&self) -> String {
         let type_params_decl = self.emit_type_params_decl();
 
@@ -486,6 +513,7 @@ impl StructIR {
     fn emit_class_no_type_params(&self) -> String {
         let full_type_template = self.full_type_name_template();
         let full_type_as_type = self.full_type_name_as_type();
+        let type_name_decl = self.emit_static_type_name_decl(&full_type_template, &full_type_as_type);
 
         let field_decls: Vec<String> = self
             .fields
@@ -566,7 +594,7 @@ impl StructIR {
             export class {name} implements StructClass {{
               __StructClass = true as const
 
-              static readonly $typeName: {full_type_as_type} = `{full_type_template}` as const
+              {type_name_decl}
               static readonly $numTypeParams = 0
               static readonly $isPhantom = [] as const
 
@@ -590,11 +618,13 @@ impl StructIR {
               static reified(): {name}Reified {{
                 const reifiedBcs = {name}.bcs
                 return {{
-                  typeName: {name}.$typeName,
-                  fullTypeName: composeSuiType(
-                    {name}.$typeName,
-                    ...[]
-                  ) as {full_type_as_type},
+                  get typeName() {{ return {name}.$typeName }},
+                  get fullTypeName() {{
+                    return composeSuiType(
+                      {name}.$typeName,
+                      ...[]
+                    ) as {full_type_as_type}
+                  }},
                   typeArgs: [] as [],
                   isPhantom: {name}.$isPhantom,
                   reifiedTypeArgs: [],
@@ -721,7 +751,7 @@ impl StructIR {
               }}
             }}"#,
             name = self.name,
-            full_type_template = full_type_template,
+            type_name_decl = type_name_decl,
             full_type_as_type = full_type_as_type,
             field_decls = field_decls.join("\n"),
             field_assignments = field_assignments.join("\n"),
@@ -743,6 +773,8 @@ impl StructIR {
     fn emit_class_with_type_params(&self) -> String {
         let full_type_template = self.full_type_name_template();
         let full_type_as_type_no_generics = self.full_type_name_as_type();
+        let type_name_decl =
+            self.emit_static_type_name_decl(&full_type_template, &full_type_as_type_no_generics);
 
         // Build various type-param-related strings
         let type_param_extends = self.emit_type_param_extends();
@@ -959,7 +991,7 @@ impl StructIR {
             export class {name}{type_param_extends} implements StructClass {{
               __StructClass = true as const
 
-              static readonly $typeName: {full_type_as_type_no_generics} = `{full_type_template}` as const
+              {type_name_decl}
               static readonly $numTypeParams = {num_type_params}
               static readonly $isPhantom = {is_phantom_array} as const
             {inner_fields_section}
@@ -985,12 +1017,14 @@ impl StructIR {
               ): {name}Reified{to_phantom_type_args} {{
                 const reifiedBcs = {reified_bcs_init}
                 return {{
-                  typeName: {name}.$typeName,
-                  fullTypeName: composeSuiType(
-                    {name}.$typeName,
-                    ...[{extract_types}]
-                  ) as {full_type_as_type_with_generics},
-                  typeArgs: [{extract_types}] as {type_args_as_phantom},
+                  get typeName() {{ return {name}.$typeName }},
+                  get fullTypeName() {{
+                    return composeSuiType(
+                      {name}.$typeName,
+                      ...[{extract_types}]
+                    ) as {full_type_as_type_with_generics}
+                  }},
+                  get typeArgs() {{ return [{extract_types}] as {type_args_as_phantom} }},
                   isPhantom: {name}.$isPhantom,
                   reifiedTypeArgs: [{reified_arg_names}],
                   fromFields: (fields: Record<string, any>) => {name}.fromFields({reified_args_for_static}, fields),
@@ -1152,7 +1186,7 @@ impl StructIR {
               }}
             }}"#,
             name = self.name,
-            full_type_template = full_type_template,
+            type_name_decl = type_name_decl,
             num_type_params = num_type_params,
             type_param_extends = type_param_extends,
             type_params_use = type_params_use,
