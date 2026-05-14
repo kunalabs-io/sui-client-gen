@@ -26,12 +26,11 @@ interface _StructClass {
 }
 
 export class StructClassLoader {
-  private map: Map<string, _StructClass> = new Map()
+  // Don't key on $typeName at register time — it's a getter (see ADR-005).
+  private classes: _StructClass[] = []
 
   register(...classes: _StructClass[]): void {
-    for (const cls of classes) {
-      this.map.set(cls.$typeName, cls)
-    }
+    this.classes.push(...classes)
   }
 
   reified<T extends Primitive>(type: T): T
@@ -59,11 +58,11 @@ export class StructClassLoader {
       }
     }
 
-    if (!this.map.has(typeName)) {
+    const cls = this.classes.find(c => c.$typeName === typeName)
+    if (!cls) {
       throw new Error(`Unknown type ${typeName}`)
     }
 
-    const cls = this.map.get(typeName)!
     if (cls.$numTypeParams !== typeArgs.length) {
       throw new Error(
         `Type ${typeName} expects ${cls.$numTypeParams} type arguments, but got ${typeArgs.length}`,
