@@ -1,10 +1,9 @@
 import { Transaction } from '@mysten/sui/transactions'
-import { SuiClient } from '@mysten/sui/client'
-import { SerialTransactionExecutor } from '@mysten/sui/transactions'
+import { SuiGrpcClient } from '@mysten/sui/grpc'
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519'
 import { fromBase64 } from '@mysten/sui/utils'
-import { it, expect, describe, afterAll } from 'vitest'
-import { TEXT_ENCODER, fetchMoveObject, extractUid, TEST_IDS } from './test-utils'
+import { it, expect, describe } from 'vitest'
+import { TEXT_ENCODER, fetchMoveObject, TEST_IDS, TESTNET_ENDPOINTS } from './test-utils'
 import {
   Bar,
   Dummy,
@@ -50,25 +49,30 @@ const keypair = Ed25519Keypair.fromSecretKey(
   fromBase64('AMVT58FaLF2tJtg/g8X2z1/vG0FvNn0jvRu9X2Wl8F+u').slice(1)
 ) // address: 0x8becfafb14c111fc08adee6cc9afa95a863d1bf133f796626eec353f98ea8507
 
-const client = new SuiClient({
-  url: 'https://fullnode.testnet.sui.io:443/',
+const client = new SuiGrpcClient({
+  baseUrl: TESTNET_ENDPOINTS.GRPC,
+  network: 'testnet',
 })
-
-// SerialTransactionExecutor handles gas coin management to avoid conflicts in parallel tests
-const executor = new SerialTransactionExecutor({
-  client,
-  signer: keypair,
-})
-
-afterAll(() => executor.resetCache())
 
 // Helper to execute transaction and wait for object to be indexed
 async function execTx(tx: Transaction) {
-  const res = await executor.executeTransaction(tx, { showEffects: true })
-  const id = res.data.effects!.created![0].reference.objectId
+  const res = await client.signAndExecuteTransaction({
+    transaction: tx,
+    signer: keypair,
+    include: { effects: true },
+  })
+  if (res.$kind !== 'Transaction') {
+    throw new Error('transaction failed')
+  }
+  const created = res.Transaction.effects.changedObjects.find(
+    c => c.idOperation === 'Created' && c.outputState === 'ObjectWrite'
+  )
+  if (!created) {
+    throw new Error('no created object in transaction effects')
+  }
   // Wait briefly for object to be indexed on full node
-  await client.waitForTransaction({ digest: res.digest, pollInterval: 200 })
-  return { id, res }
+  await client.waitForTransaction({ digest: res.Transaction.digest })
+  return { id: created.objectId, res }
 }
 
 it.concurrent('creates and decodes an object with object as type param', async () => {
@@ -141,7 +145,7 @@ it.concurrent('creates and decodes an object with object as type param', async (
 
   const { id } = await execTx(tx)
 
-  const { bcsBytes, content } = await fetchMoveObject(client, id)
+  const { bcsBytes, obj } = await fetchMoveObject(client, id)
 
   const exp = Foo.r(Bar.reified()).new({
     id,
@@ -202,8 +206,7 @@ it.concurrent('creates and decodes an object with object as type param', async (
   const de = Foo.fromBcs(Bar.reified(), bcsBytes)
 
   expect(de).toEqual(exp)
-  expect(Foo.fromFieldsWithTypes(Bar.reified(), content)).toEqual(exp)
-  expect(Foo.fromSuiParsedData(Bar.reified(), content)).toEqual(exp)
+  expect(Foo.fromCoreObject(Bar.reified(), obj)).toEqual(exp)
   expect(await Foo.fetch(client, Bar.reified(), id)).toEqual(exp)
   expect(Foo.fromJSON(Bar.reified(), de.toJSON())).toEqual(exp)
 })
@@ -286,7 +289,7 @@ it.concurrent('creates and decodes Foo with vector of objects as type param', as
 
   const { id } = await execTx(tx)
 
-  const { bcsBytes: bcsBytes2, content: content2 } = await fetchMoveObject(client, id)
+  const { bcsBytes: bcsBytes2, obj: obj2 } = await fetchMoveObject(client, id)
 
   const exp = Foo.r(reifiedT).new({
     id: id,
@@ -348,7 +351,7 @@ it.concurrent('creates and decodes Foo with vector of objects as type param', as
 
   expect(de).toEqual(exp)
 
-  expect(Foo.fromFieldsWithTypes(reifiedT, content2)).toEqual(exp)
+  expect(Foo.fromCoreObject(reifiedT, obj2)).toEqual(exp)
   expect(Foo.fromJSON(reifiedT, de.toJSON())).toEqual(exp)
 })
 
@@ -375,12 +378,12 @@ it.concurrent('decodes special-cased types correctly', async () => {
 
   const { id } = await execTx(tx)
 
-  const { bcsBytes: bcsBytes3, content: content3 } = await fetchMoveObject(client, id)
+  const { bcsBytes: bcsBytes3, obj: obj3 } = await fetchMoveObject(client, id)
 
   const fromBcs = WithSpecialTypes.r(...reifiedArgs).fromBcs(bcsBytes3)
-  const fromFieldsWithTypes = WithSpecialTypes.r(...reifiedArgs).fromFieldsWithTypes(content3)
+  const fromCoreObject = WithSpecialTypes.r(...reifiedArgs).fromCoreObject(obj3)
 
-  const uid = extractUid(content3)
+  const uid = fromBcs.uid
 
   const exp = WithSpecialTypes.r(...reifiedArgs).new({
     id,
@@ -398,7 +401,7 @@ it.concurrent('decodes special-cased types correctly', async () => {
     optionGenericNone: null,
   })
 
-  expect(fromFieldsWithTypes).toEqual(exp)
+  expect(fromCoreObject).toEqual(exp)
   expect(fromBcs).toEqual(exp)
   expect(WithSpecialTypes.r(...reifiedArgs).fromJSON(exp.toJSON())).toEqual(exp)
 })
@@ -440,14 +443,12 @@ it.concurrent('decodes special-cased types as generics correctly', async () => {
 
   const { id } = await execTx(tx)
 
-  const { bcsBytes: bcsBytes4, content: content4 } = await fetchMoveObject(client, id)
-
-  const uid = extractUid(content4)
+  const { bcsBytes: bcsBytes4, obj: obj4 } = await fetchMoveObject(client, id)
 
   const fromBcs = WithSpecialTypesAsGenerics.r(...reifiedArgs).fromBcs(bcsBytes4)
-  const fromFieldsWithTypes = WithSpecialTypesAsGenerics.r(...reifiedArgs).fromFieldsWithTypes(
-    content4
-  )
+  const uid = fromBcs.uid
+
+  const fromCoreObject = WithSpecialTypesAsGenerics.r(...reifiedArgs).fromCoreObject(obj4)
 
   const exp = WithSpecialTypesAsGenerics.r(...reifiedArgs).new({
     id,
@@ -462,7 +463,7 @@ it.concurrent('decodes special-cased types as generics correctly', async () => {
   })
 
   expect(fromBcs).toEqual(exp)
-  expect(fromFieldsWithTypes).toEqual(exp)
+  expect(fromCoreObject).toEqual(exp)
   expect(WithSpecialTypesAsGenerics.r(...reifiedArgs).fromJSON(exp.toJSON())).toEqual(exp)
 })
 
@@ -498,16 +499,18 @@ it.concurrent('calls function correctly when special types are used', async () =
 
   const { id } = await execTx(tx)
 
-  const { content: content5 } = await fetchMoveObject(client, id)
+  const { obj: obj5 } = await fetchMoveObject(client, id)
 
-  expect(WithSpecialTypes.fromFieldsWithTypes([SUI.p, reifiedArgs[1]], content5)).toEqual(
+  const decoded = WithSpecialTypes.fromCoreObject([SUI.p, reifiedArgs[1]], obj5)
+
+  expect(decoded).toEqual(
     WithSpecialTypes.r(SUI.p, reifiedArgs[1]).new({
       id,
       string: 'string',
       asciiString: 'ascii',
       url: 'https://example.com',
       idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
-      uid: extractUid(content5),
+      uid: decoded.uid,
       balance: Balance.r(SUI.p).new({ value: 0n }),
       option: 100n,
       optionObj: Bar.r.new({ value: 100n }),
@@ -562,16 +565,18 @@ it.concurrent('calls function correctly when special types are used as generics'
 
   const { id } = await execTx(tx)
 
-  const { content: content6 } = await fetchMoveObject(client, id)
+  const { obj: obj6 } = await fetchMoveObject(client, id)
 
-  expect(WithSpecialTypesAsGenerics.r(...reifiedArgs).fromFieldsWithTypes(content6)).toEqual(
+  const decoded = WithSpecialTypesAsGenerics.r(...reifiedArgs).fromCoreObject(obj6)
+
+  expect(decoded).toEqual(
     WithSpecialTypesAsGenerics.r(...reifiedArgs).new({
       id,
       string: 'string',
       asciiString: 'ascii',
       url: 'https://example.com',
       idField: '0xfaf60f9f9d1f6c490dce8673c1371b9df456e0c183f38524e5f78d959ea559a5',
-      uid: extractUid(content6),
+      uid: decoded.uid,
       balance: Balance.r(SUI.p).new({ value: 0n }),
       option: [5n, null, 3n],
       optionNone: null,
@@ -593,9 +598,9 @@ it.concurrent('calls function correctly when special types are used as as vector
 
   const { id } = await execTx(tx)
 
-  const { content: content7 } = await fetchMoveObject(client, id)
+  const { obj: obj7 } = await fetchMoveObject(client, id)
 
-  expect(WithSpecialTypesInVectors.fromFieldsWithTypes(vector('u64'), content7)).toEqual(
+  expect(WithSpecialTypesInVectors.fromCoreObject(vector('u64'), obj7)).toEqual(
     WithSpecialTypesInVectors.r(vector('u64')).new({
       id,
       string: ['string'],
@@ -637,13 +642,13 @@ it.concurrent('loads with loader correctly', async () => {
 
   const { id } = await execTx(tx)
 
-  const { content: content8 } = await fetchMoveObject(client, id)
+  const { obj: obj8 } = await fetchMoveObject(client, id)
 
   const withGenericFieldReified = loader.reified(`${WithGenericField.$typeName}<${T}>`)
 
   expect(extractType(withGenericFieldReified)).toEqual(`${WithGenericField.$typeName}<${T}>`)
 
-  const fromBcs = withGenericFieldReified.fromFieldsWithTypes(content8)
+  const fromBcs = withGenericFieldReified.fromCoreObject(obj8)
   expect(fromBcs).toEqual(
     WithGenericField.r(tReified).new({
       id,
@@ -807,7 +812,7 @@ it.concurrent('decodes address field correctly', async () => {
 
   const { id } = await execTx(tx)
 
-  const { bcsBytes: bcsBytes9, content: content9 } = await fetchMoveObject(client, id)
+  const { bcsBytes: bcsBytes9, obj: obj9 } = await fetchMoveObject(client, id)
 
   const exp = Foo.r('address').new({
     id,
@@ -866,11 +871,10 @@ it.concurrent('decodes address field correctly', async () => {
   })
 
   expect(Foo.fromBcs('address', bcsBytes9)).toEqual(exp)
-  expect(Foo.fromFieldsWithTypes('address', content9)).toEqual(exp)
-  expect(Foo.fromSuiParsedData('address', content9)).toEqual(exp)
+  expect(Foo.fromCoreObject('address', obj9)).toEqual(exp)
   expect(await Foo.fetch(client, 'address', id)).toEqual(exp)
 
-  const de = Foo.fromFieldsWithTypes('address', content9)
+  const de = Foo.fromCoreObject('address', obj9)
   expect(Foo.fromJSON('address', de.toJSON())).toEqual(exp)
 })
 
@@ -1059,25 +1063,23 @@ it.concurrent('handles enums correctly', async () => {
     jump: actionReified.new('Jump', [109n, 110n, zeroBalance, 111n]),
   })
 
-  // Fetch object from chain
-  const res = await client.getObject({
-    id,
-    options: { showBcs: true, showContent: true },
+  // Fetch object from chain via the core API
+  const { object } = await client.core.getObject({
+    objectId: id,
+    include: { content: true },
   })
 
-  // Decode from BCS
-  if (res.data?.bcs?.dataType !== 'moveObject' || !isWrapped(res.data.bcs.type)) {
+  if (!isWrapped(object.type)) {
     throw new Error(`object at id ${id} is not a Wrapped object`)
   }
-  const fromBcs = wrappedReified.fromBcs(fromBase64(res.data.bcs.bcsBytes))
+
+  // Decode from raw BCS bytes
+  const fromBcs = wrappedReified.fromBcs(object.content)
   expect(fromBcs).toEqual(exp)
 
-  // Decode from parsed data (fields with types)
-  if (res.data?.content?.dataType !== 'moveObject' || !isWrapped(res.data.content.type)) {
-    throw new Error(`object at id ${id} is not a Wrapped object`)
-  }
-  const fromFields = wrappedReified.fromSuiParsedData(res.data.content)
-  expect(fromFields).toEqual(exp)
+  // Decode via the safe fromCoreObject path
+  const fromCore = wrappedReified.fromCoreObject(object)
+  expect(fromCore).toEqual(exp)
 
   // Serialize to JSON
   const asJSON = exp.toJSON()
@@ -1123,17 +1125,17 @@ it.concurrent('decodes TypeName special type correctly', async () => {
   createWithGenericField(tx, TypeName.$typeName, withDefiningIds(tx, Bar.$typeName))
 
   const { id } = await execTx(tx)
-  const { bcsBytes, content } = await fetchMoveObject(client, id)
+  const { bcsBytes, obj } = await fetchMoveObject(client, id)
 
   // TypeName should be decoded as a string (the type name), not an object
   const fromBcs = WithGenericField.r(TypeName.reified()).fromBcs(bcsBytes)
-  const fromFieldsWithTypes = WithGenericField.r(TypeName.reified()).fromFieldsWithTypes(content)
+  const fromCoreObject = WithGenericField.r(TypeName.reified()).fromCoreObject(obj)
 
   // genericField should be a string like "0x...::fixture::Bar"
   expect(typeof fromBcs.genericField).toBe('string')
   expect(fromBcs.genericField).toContain('::fixture::Bar')
 
-  expect(fromFieldsWithTypes).toEqual(fromBcs)
+  expect(fromCoreObject).toEqual(fromBcs)
 
   // JSON round-trip should work
   expect(WithGenericField.r(TypeName.reified()).fromJSON(fromBcs.toJSON())).toEqual(fromBcs)

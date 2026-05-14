@@ -1,6 +1,6 @@
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519'
-import { fromB64, normalizeSuiAddress } from '@mysten/sui/utils'
-import { SuiClient } from '@mysten/sui/client'
+import { fromBase64, normalizeSuiAddress } from '@mysten/sui/utils'
+import { SuiGraphQLClient } from '@mysten/sui/graphql'
 import { Transaction } from '@mysten/sui/transactions'
 import { create } from './gen/amm/pool/functions'
 import { intoBalance, fromBalance } from './gen/sui/coin/functions'
@@ -26,11 +26,12 @@ const AMM_POOL_ID = '0x799331284a2f75ed54b1a2bf212a26e3f465cbc7b974dbfa956f093de
 const WITH_GENERIC_FIELD_ID = '0xf170bc37f72659e942b376cef95b3194f8ffbecc0a82e601d682ae6e2693cd35'
 
 const keypair = Ed25519Keypair.fromSecretKey(
-  fromB64('AMVT58FaLF2tJtg/g8X2z1/vG0FvNn0jvRu9X2Wl8F+u').slice(1)
+  fromBase64('AMVT58FaLF2tJtg/g8X2z1/vG0FvNn0jvRu9X2Wl8F+u').slice(1)
 ) // address: 0x8becfafb14c111fc08adee6cc9afa95a863d1bf133f796626eec353f98ea8507
 
-const client = new SuiClient({
-  url: 'https://fullnode.testnet.sui.io:443/',
+const client = new SuiGraphQLClient({
+  url: 'https://graphql.testnet.sui.io/graphql',
+  network: 'testnet',
 })
 
 /**
@@ -68,7 +69,7 @@ async function createPool() {
     signer: keypair,
     transaction: tx,
   })
-  console.log(`tx digest: ${res.digest}`)
+  console.log(`tx digest: ${(res.Transaction ?? res.FailedTransaction)?.digest}`)
 }
 
 /** An example for object fetching. Fetch and print the AMM pool at AMM_POOL_ID. */
@@ -77,15 +78,32 @@ async function fetchPool() {
   console.log(pool)
 }
 
-/** An example for event fetching. Fetch and print the pool creation events. */
+/**
+ * An example for event fetching. Fetch and print the pool creation events.
+ *
+ * CoreClient does not expose an event query API — events live in GraphQL.
+ * Use SuiGraphQLClient's raw `.query()` method to run a typed GraphQL query.
+ */
 async function fetchPoolCreationEvents() {
-  const res = await client.queryEvents({
-    query: {
-      MoveEventType: PoolCreationEvent.$typeName,
-    },
+  const res = await client.query<{
+    events: { nodes: { eventBcs: string }[] }
+  }>({
+    query: /* GraphQL */ `
+      query EventsByType($type: String!) {
+        events(first: 50, filter: { type: $type }) {
+          nodes {
+            eventBcs
+          }
+        }
+      }
+    `,
+    variables: { type: PoolCreationEvent.$typeName },
   })
-  res.data.map(e => {
-    console.log(PoolCreationEvent.fromBcs(fromB64(e.bcs!)))
+  if (res.errors?.length) {
+    throw new Error(`GraphQL errors: ${JSON.stringify(res.errors)}`)
+  }
+  res.data!.events.nodes.forEach(e => {
+    console.log(PoolCreationEvent.fromBcs(fromBase64(e.eventBcs)))
   })
 }
 
@@ -95,14 +113,14 @@ async function fetchPoolCreationEvents() {
  */
 async function fetchPoolRegistryItems() {
   const registry = await PoolRegistry.fetch(client, AMM_POOL_REGISTRY_ID)
-  const fields = await client.getDynamicFields({
+  const fields = await client.core.listDynamicFields({
     parentId: registry.table.id,
   })
 
   const item = await Field.fetch(
     client,
     [PoolRegistryItem.reified(), 'bool'],
-    fields.data[0].objectId
+    fields.dynamicFields[0].fieldId
   )
   console.log(item)
 }
@@ -173,7 +191,7 @@ async function createSpecialTypes() {
     signer: keypair,
     transaction: tx,
   })
-  console.log(res.digest)
+  console.log((res.Transaction ?? res.FailedTransaction)?.digest)
 }
 
 async function main() {
