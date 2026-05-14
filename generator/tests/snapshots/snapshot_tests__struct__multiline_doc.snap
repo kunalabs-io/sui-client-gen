@@ -84,9 +84,10 @@ export class MultilineDoc implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => MultilineDoc.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => MultilineDoc.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => MultilineDoc.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => MultilineDoc.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => MultilineDoc.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => MultilineDoc.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => MultilineDoc.fetch(client, id),
       new: (fields: MultilineDocFields) => {
         return new MultilineDoc([], fields)
       },
@@ -165,6 +166,14 @@ export class MultilineDoc implements StructClass {
     return MultilineDoc.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): MultilineDoc {
+    if (!isMultilineDoc(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a MultilineDoc object`)
+    }
+    return MultilineDoc.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link MultilineDoc.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): MultilineDoc {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -175,6 +184,7 @@ export class MultilineDoc implements StructClass {
     return MultilineDoc.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link MultilineDoc.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): MultilineDoc {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isMultilineDoc(data.bcs.type)) {
@@ -191,12 +201,14 @@ export class MultilineDoc implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<MultilineDoc> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isMultilineDoc(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<MultilineDoc> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isMultilineDoc(object.type)) {
       throw new Error(`object at id ${id} is not a MultilineDoc object`)
     }
-
-    return MultilineDoc.fromBcs(res.bcsBytes)
+    return MultilineDoc.fromBcs(object.content)
   }
 }

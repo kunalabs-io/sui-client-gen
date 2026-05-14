@@ -72,9 +72,10 @@ export class DocumentedStruct implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => DocumentedStruct.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => DocumentedStruct.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => DocumentedStruct.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => DocumentedStruct.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => DocumentedStruct.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => DocumentedStruct.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => DocumentedStruct.fetch(client, id),
       new: (fields: DocumentedStructFields) => {
         return new DocumentedStruct([], fields)
       },
@@ -153,6 +154,14 @@ export class DocumentedStruct implements StructClass {
     return DocumentedStruct.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): DocumentedStruct {
+    if (!isDocumentedStruct(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a DocumentedStruct object`)
+    }
+    return DocumentedStruct.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link DocumentedStruct.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): DocumentedStruct {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -163,6 +172,7 @@ export class DocumentedStruct implements StructClass {
     return DocumentedStruct.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link DocumentedStruct.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): DocumentedStruct {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isDocumentedStruct(data.bcs.type)) {
@@ -179,12 +189,14 @@ export class DocumentedStruct implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<DocumentedStruct> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isDocumentedStruct(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<DocumentedStruct> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isDocumentedStruct(object.type)) {
       throw new Error(`object at id ${id} is not a DocumentedStruct object`)
     }
-
-    return DocumentedStruct.fromBcs(res.bcsBytes)
+    return DocumentedStruct.fromBcs(object.content)
   }
 }

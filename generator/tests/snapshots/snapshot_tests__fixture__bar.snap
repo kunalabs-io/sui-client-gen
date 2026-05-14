@@ -69,9 +69,10 @@ export class Bar implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Bar.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Bar.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Bar.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => Bar.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Bar.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => Bar.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Bar.fetch(client, id),
       new: (fields: BarFields) => {
         return new Bar([], fields)
       },
@@ -150,6 +151,14 @@ export class Bar implements StructClass {
     return Bar.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): Bar {
+    if (!isBar(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Bar object`)
+    }
+    return Bar.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Bar.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): Bar {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -160,6 +169,7 @@ export class Bar implements StructClass {
     return Bar.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Bar.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): Bar {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isBar(data.bcs.type)) {
@@ -176,12 +186,14 @@ export class Bar implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<Bar> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isBar(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<Bar> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isBar(object.type)) {
       throw new Error(`object at id ${id} is not a Bar object`)
     }
-
-    return Bar.fromBcs(res.bcsBytes)
+    return Bar.fromBcs(object.content)
   }
 }

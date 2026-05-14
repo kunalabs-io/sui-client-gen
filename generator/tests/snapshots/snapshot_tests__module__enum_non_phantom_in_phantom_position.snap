@@ -2,6 +2,8 @@
 source: generator/tests/snapshot_tests.rs
 expression: output
 ---
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { getTypeOrigin } from '../../_envs'
 import {
   EnumVariantClass,
@@ -28,14 +30,11 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   parseTypeName
 } from '../../_framework/util'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Container =============================== */

@@ -69,9 +69,10 @@ export class Dummy implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Dummy.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Dummy.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Dummy.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => Dummy.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Dummy.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => Dummy.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Dummy.fetch(client, id),
       new: (fields: DummyFields) => {
         return new Dummy([], fields)
       },
@@ -150,6 +151,14 @@ export class Dummy implements StructClass {
     return Dummy.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): Dummy {
+    if (!isDummy(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Dummy object`)
+    }
+    return Dummy.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Dummy.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): Dummy {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -160,6 +169,7 @@ export class Dummy implements StructClass {
     return Dummy.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Dummy.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): Dummy {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isDummy(data.bcs.type)) {
@@ -176,12 +186,14 @@ export class Dummy implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<Dummy> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isDummy(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<Dummy> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isDummy(object.type)) {
       throw new Error(`object at id ${id} is not a Dummy object`)
     }
-
-    return Dummy.fromBcs(res.bcsBytes)
+    return Dummy.fromBcs(object.content)
   }
 }

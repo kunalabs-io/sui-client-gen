@@ -77,9 +77,10 @@ export class MultiCoinHolder implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => MultiCoinHolder.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => MultiCoinHolder.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => MultiCoinHolder.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => MultiCoinHolder.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => MultiCoinHolder.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => MultiCoinHolder.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => MultiCoinHolder.fetch(client, id),
       new: (fields: MultiCoinHolderFields) => {
         return new MultiCoinHolder([], fields)
       },
@@ -168,6 +169,14 @@ export class MultiCoinHolder implements StructClass {
     return MultiCoinHolder.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): MultiCoinHolder {
+    if (!isMultiCoinHolder(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a MultiCoinHolder object`)
+    }
+    return MultiCoinHolder.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link MultiCoinHolder.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): MultiCoinHolder {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -178,6 +187,7 @@ export class MultiCoinHolder implements StructClass {
     return MultiCoinHolder.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link MultiCoinHolder.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): MultiCoinHolder {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isMultiCoinHolder(data.bcs.type)) {
@@ -194,12 +204,14 @@ export class MultiCoinHolder implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<MultiCoinHolder> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isMultiCoinHolder(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<MultiCoinHolder> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isMultiCoinHolder(object.type)) {
       throw new Error(`object at id ${id} is not a MultiCoinHolder object`)
     }
-
-    return MultiCoinHolder.fromBcs(res.bcsBytes)
+    return MultiCoinHolder.fromBcs(object.content)
   }
 }

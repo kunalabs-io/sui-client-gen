@@ -621,12 +621,11 @@ fn emit_combined_imports_with_enums(
             "FieldsWithTypes",
             "composeSuiType",
             "compressSuiType",
-            "SupportedSuiClient",
-            "fetchObjectBcs",
         ],
     );
 
-    // parseTypeName is only needed for structs/enums with type params (used in fromSuiObjectData)
+    // parseTypeName is needed for structs/enums with type params (used in fromCoreObject,
+    // fromSuiObjectData, and fetch to extract and validate runtime type arguments).
     if has_type_params {
         imports.add_named(&util_path, "parseTypeName");
     }
@@ -661,11 +660,12 @@ fn emit_combined_imports_with_enums(
         imports.add_named("@mysten/sui/bcs", "bcs");
     }
 
-    // Sui client imports
-    imports.add_named_many(
-        "@mysten/sui/client",
-        &["SuiObjectData", "SuiParsedData"],
-    );
+    // Sui client imports — type-only since they're only used in method signatures.
+    imports.add_type_named("@mysten/sui/client", "ClientWithCoreApi");
+    imports.add_type_named("@mysten/sui/client", "SuiClientTypes");
+    // JSON-RPC-only types used by the deprecated fromSuiParsedData / fromSuiObjectData methods.
+    imports.add_type_named("@mysten/sui/jsonRpc", "SuiObjectData");
+    imports.add_type_named("@mysten/sui/jsonRpc", "SuiParsedData");
 
     // Sui utils imports
     if uses_address {
