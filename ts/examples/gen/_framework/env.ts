@@ -71,9 +71,9 @@ export function getEnv(name: string): EnvConfig {
  *
  * @example
  *   const historical = cloneEnv(getEnv('mainnet'), {
- *     packages: { 'kai-leverage': { publishedAt: '0x...' } },
+ *     packages: { 'my-app': { publishedAt: '0x...' } },
  *   })
- *   createRebalanceReceipt(tx, typeArgs, args, { env: historical })
+ *   transfer(tx, typeArgs, args, { env: historical })
  */
 export function cloneEnv(
   base: EnvConfig,
