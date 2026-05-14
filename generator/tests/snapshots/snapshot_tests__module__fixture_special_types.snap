@@ -2,6 +2,8 @@
 source: generator/tests/snapshot_tests.rs
 expression: output
 ---
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { getTypeOrigin } from '../../_envs'
 import {
   PhantomReified,
@@ -29,10 +31,8 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   parseTypeName
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
@@ -45,7 +45,6 @@ import { SUI } from '../../sui/sui/structs'
 import { Url } from '../../sui/url/structs'
 import { Bar } from './structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== WithSpecialTypes =============================== */
@@ -165,9 +164,10 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
       bcs: reifiedBcs,
       fromJSONField: (field: any) => WithSpecialTypes.fromJSONField([T, U], field),
       fromJSON: (json: Record<string, any>) => WithSpecialTypes.fromJSON([T, U], json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => WithSpecialTypes.fromCoreObject([T, U], obj),
       fromSuiParsedData: (content: SuiParsedData) => WithSpecialTypes.fromSuiParsedData([T, U], content),
       fromSuiObjectData: (content: SuiObjectData) => WithSpecialTypes.fromSuiObjectData([T, U], content),
-      fetch: async (client: SupportedSuiClient, id: string) => WithSpecialTypes.fetch(client, [T, U], id),
+      fetch: async (client: ClientWithCoreApi, id: string) => WithSpecialTypes.fetch(client, [T, U], id),
       new: (fields: WithSpecialTypesFields<ToPhantomTypeArgument<T>, ToTypeArgument<U>>) => {
         return new WithSpecialTypes([extractType(T), extractType(U)], fields)
       },
@@ -330,6 +330,34 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     return WithSpecialTypes.fromJSONField(typeArgs, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
+    typeArgs: [T, U],
+    obj: SuiClientTypes.Object<{ content: true }>
+  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
+    if (!isWithSpecialTypes(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a WithSpecialTypes object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
+      }
+
+    return WithSpecialTypes.fromBcs(typeArgs, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link WithSpecialTypes.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
     typeArgs: [T, U],
     content: SuiParsedData
@@ -343,6 +371,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
     return WithSpecialTypes.fromFieldsWithTypes(typeArgs, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link WithSpecialTypes.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
     typeArgs: [T, U],
     data: SuiObjectData
@@ -379,16 +408,19 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArgs: [T, U],
     id: string
   ): Promise<WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isWithSpecialTypes(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isWithSpecialTypes(object.type)) {
       throw new Error(`object at id ${id} is not a WithSpecialTypes object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 2) {
       throw new Error(
         `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
@@ -404,7 +436,7 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
         }
       }
 
-    return WithSpecialTypes.fromBcs(typeArgs, res.bcsBytes)
+    return WithSpecialTypes.fromBcs(typeArgs, object.content)
   }
 }
 
@@ -501,9 +533,10 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
       bcs: reifiedBcs,
       fromJSONField: (field: any) => WithSpecialTypesInVectors.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => WithSpecialTypesInVectors.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => WithSpecialTypesInVectors.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => WithSpecialTypesInVectors.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => WithSpecialTypesInVectors.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => WithSpecialTypesInVectors.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => WithSpecialTypesInVectors.fetch(client, T, id),
       new: (fields: WithSpecialTypesInVectorsFields<ToTypeArgument<T>>) => {
         return new WithSpecialTypesInVectors([extractType(T)], fields)
       },
@@ -637,6 +670,34 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     return WithSpecialTypesInVectors.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends Reified<TypeArgument, any>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>
+  ): WithSpecialTypesInVectors<ToTypeArgument<T>> {
+    if (!isWithSpecialTypesInVectors(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a WithSpecialTypesInVectors object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
+      }
+
+    return WithSpecialTypesInVectors.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link WithSpecialTypesInVectors.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends Reified<TypeArgument, any>>(
     typeArg: T,
     content: SuiParsedData
@@ -650,6 +711,7 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
     return WithSpecialTypesInVectors.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link WithSpecialTypesInVectors.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends Reified<TypeArgument, any>>(
     typeArg: T,
     data: SuiObjectData
@@ -686,16 +748,19 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
   }
 
   static async fetch<T extends Reified<TypeArgument, any>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string
   ): Promise<WithSpecialTypesInVectors<ToTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isWithSpecialTypesInVectors(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isWithSpecialTypesInVectors(object.type)) {
       throw new Error(`object at id ${id} is not a WithSpecialTypesInVectors object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`
@@ -711,6 +776,6 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
         }
       }
 
-    return WithSpecialTypesInVectors.fromBcs(typeArg, res.bcsBytes)
+    return WithSpecialTypesInVectors.fromBcs(typeArg, object.content)
   }
 }

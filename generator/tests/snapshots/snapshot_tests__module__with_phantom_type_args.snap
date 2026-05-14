@@ -2,6 +2,8 @@
 source: generator/tests/snapshot_tests.rs
 expression: output
 ---
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { getTypeOrigin } from '../../_envs'
 import {
   PhantomReified,
@@ -16,16 +18,9 @@ import {
   decodeFromJSONField,
   phantom
 } from '../../_framework/reified'
-import {
-  FieldsWithTypes,
-  SupportedSuiClient,
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs
-} from '../../_framework/util'
+import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { LinkedTable } from '../../some-pkg/linked-table/structs'
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== ACL =============================== */
@@ -95,9 +90,10 @@ export class ACL implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => ACL.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ACL.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => ACL.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => ACL.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => ACL.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => ACL.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => ACL.fetch(client, id),
       new: (fields: ACLFields) => {
         return new ACL([], fields)
       },
@@ -176,6 +172,14 @@ export class ACL implements StructClass {
     return ACL.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): ACL {
+    if (!isACL(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a ACL object`)
+    }
+    return ACL.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ACL.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): ACL {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -186,6 +190,7 @@ export class ACL implements StructClass {
     return ACL.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ACL.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): ACL {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isACL(data.bcs.type)) {
@@ -202,12 +207,14 @@ export class ACL implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<ACL> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isACL(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<ACL> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isACL(object.type)) {
       throw new Error(`object at id ${id} is not a ACL object`)
     }
-
-    return ACL.fromBcs(res.bcsBytes)
+    return ACL.fromBcs(object.content)
   }
 }

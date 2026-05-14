@@ -67,9 +67,10 @@ export class ID implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => ID.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ID.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => ID.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => ID.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => ID.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => ID.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => ID.fetch(client, id),
       new: (fields: IDFields) => {
         return new ID([], fields)
       },
@@ -148,6 +149,14 @@ export class ID implements StructClass {
     return ID.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): ID {
+    if (!isID(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a ID object`)
+    }
+    return ID.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ID.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): ID {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -158,6 +167,7 @@ export class ID implements StructClass {
     return ID.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ID.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): ID {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isID(data.bcs.type)) {
@@ -174,12 +184,14 @@ export class ID implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<ID> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isID(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<ID> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isID(object.type)) {
       throw new Error(`object at id ${id} is not a ID object`)
     }
-
-    return ID.fromBcs(res.bcsBytes)
+    return ID.fromBcs(object.content)
   }
 }

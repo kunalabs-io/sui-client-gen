@@ -72,9 +72,10 @@ export class EscapedDoc implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => EscapedDoc.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => EscapedDoc.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => EscapedDoc.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => EscapedDoc.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => EscapedDoc.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => EscapedDoc.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => EscapedDoc.fetch(client, id),
       new: (fields: EscapedDocFields) => {
         return new EscapedDoc([], fields)
       },
@@ -153,6 +154,14 @@ export class EscapedDoc implements StructClass {
     return EscapedDoc.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): EscapedDoc {
+    if (!isEscapedDoc(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a EscapedDoc object`)
+    }
+    return EscapedDoc.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link EscapedDoc.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): EscapedDoc {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -163,6 +172,7 @@ export class EscapedDoc implements StructClass {
     return EscapedDoc.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link EscapedDoc.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): EscapedDoc {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isEscapedDoc(data.bcs.type)) {
@@ -179,12 +189,14 @@ export class EscapedDoc implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<EscapedDoc> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isEscapedDoc(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<EscapedDoc> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isEscapedDoc(object.type)) {
       throw new Error(`object at id ${id} is not a EscapedDoc object`)
     }
-
-    return EscapedDoc.fromBcs(res.bcsBytes)
+    return EscapedDoc.fromBcs(object.content)
   }
 }

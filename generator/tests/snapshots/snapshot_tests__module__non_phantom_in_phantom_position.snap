@@ -2,6 +2,8 @@
 source: generator/tests/snapshot_tests.rs
 expression: output
 ---
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { getTypeOrigin } from '../../_envs'
 import {
   PhantomReified,
@@ -27,16 +29,13 @@ import {
 } from '../../_framework/reified'
 import {
   FieldsWithTypes,
-  SupportedSuiClient,
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   parseTypeName
 } from '../../_framework/util'
 import { UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
 import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== WitTable =============================== */
@@ -112,9 +111,10 @@ export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T
       bcs: reifiedBcs,
       fromJSONField: (field: any) => WitTable.fromJSONField([T0, T1, T2], field),
       fromJSON: (json: Record<string, any>) => WitTable.fromJSON([T0, T1, T2], json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => WitTable.fromCoreObject([T0, T1, T2], obj),
       fromSuiParsedData: (content: SuiParsedData) => WitTable.fromSuiParsedData([T0, T1, T2], content),
       fromSuiObjectData: (content: SuiObjectData) => WitTable.fromSuiObjectData([T0, T1, T2], content),
-      fetch: async (client: SupportedSuiClient, id: string) => WitTable.fetch(client, [T0, T1, T2], id),
+      fetch: async (client: ClientWithCoreApi, id: string) => WitTable.fetch(client, [T0, T1, T2], id),
       new: (fields: WitTableFields<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>, ToPhantomTypeArgument<T2>>) => {
         return new WitTable([extractType(T0), extractType(T1), extractType(T2)], fields)
       },
@@ -222,6 +222,34 @@ export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T
     return WitTable.fromJSONField(typeArgs, json)
   }
 
+  static fromCoreObject<T0 extends PhantomReified<PhantomTypeArgument>, T1 extends Reified<TypeArgument, any>, T2 extends PhantomReified<PhantomTypeArgument>>(
+    typeArgs: [T0, T1, T2],
+    obj: SuiClientTypes.Object<{ content: true }>
+  ): WitTable<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>, ToPhantomTypeArgument<T2>> {
+    if (!isWitTable(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a WitTable object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 3) {
+      throw new Error(
+        `type argument mismatch: expected 3 type arguments but got '${gotTypeArgs.length}'`
+      )
+    }
+    for (let i = 0; i < 3; i++) {
+        const gotTypeArg = compressSuiType(gotTypeArgs[i])
+        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+        if (gotTypeArg !== expectedTypeArg) {
+          throw new Error(
+            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
+          )
+        }
+      }
+
+    return WitTable.fromBcs(typeArgs, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link WitTable.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T0 extends PhantomReified<PhantomTypeArgument>, T1 extends Reified<TypeArgument, any>, T2 extends PhantomReified<PhantomTypeArgument>>(
     typeArgs: [T0, T1, T2],
     content: SuiParsedData
@@ -235,6 +263,7 @@ export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T
     return WitTable.fromFieldsWithTypes(typeArgs, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link WitTable.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T0 extends PhantomReified<PhantomTypeArgument>, T1 extends Reified<TypeArgument, any>, T2 extends PhantomReified<PhantomTypeArgument>>(
     typeArgs: [T0, T1, T2],
     data: SuiObjectData
@@ -271,16 +300,19 @@ export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T
   }
 
   static async fetch<T0 extends PhantomReified<PhantomTypeArgument>, T1 extends Reified<TypeArgument, any>, T2 extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArgs: [T0, T1, T2],
     id: string
   ): Promise<WitTable<ToPhantomTypeArgument<T0>, ToTypeArgument<T1>, ToPhantomTypeArgument<T2>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isWitTable(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isWitTable(object.type)) {
       throw new Error(`object at id ${id} is not a WitTable object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 3) {
       throw new Error(
         `type argument mismatch: expected 3 type arguments but got '${gotTypeArgs.length}'`
@@ -296,6 +328,6 @@ export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T
         }
       }
 
-    return WitTable.fromBcs(typeArgs, res.bcsBytes)
+    return WitTable.fromBcs(typeArgs, object.content)
   }
 }
