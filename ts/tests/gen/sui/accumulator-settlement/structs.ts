@@ -1,5 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
@@ -15,13 +16,7 @@ import {
   ToTypeStr,
   vector,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 
 /* ============================== EventStreamHead =============================== */
@@ -106,9 +101,11 @@ export class EventStreamHead implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => EventStreamHead.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => EventStreamHead.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        EventStreamHead.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => EventStreamHead.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => EventStreamHead.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => EventStreamHead.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => EventStreamHead.fetch(client, id),
       new: (fields: EventStreamHeadFields) => {
         return new EventStreamHead([], fields)
       },
@@ -199,6 +196,14 @@ export class EventStreamHead implements StructClass {
     return EventStreamHead.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): EventStreamHead {
+    if (!isEventStreamHead(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a EventStreamHead object`)
+    }
+    return EventStreamHead.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link EventStreamHead.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): EventStreamHead {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -209,6 +214,7 @@ export class EventStreamHead implements StructClass {
     return EventStreamHead.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link EventStreamHead.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): EventStreamHead {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isEventStreamHead(data.bcs.type)) {
@@ -225,12 +231,14 @@ export class EventStreamHead implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<EventStreamHead> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isEventStreamHead(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<EventStreamHead> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isEventStreamHead(object.type)) {
       throw new Error(`object at id ${id} is not a EventStreamHead object`)
     }
-
-    return EventStreamHead.fromBcs(res.bcsBytes)
+    return EventStreamHead.fromBcs(object.content)
   }
 }

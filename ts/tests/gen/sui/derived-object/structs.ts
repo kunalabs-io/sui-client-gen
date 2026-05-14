@@ -14,7 +14,8 @@
  */
 
 import { bcs, BcsType } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -39,10 +40,8 @@ import {
 import {
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   FieldsWithTypes,
   parseTypeName,
-  SupportedSuiClient,
 } from '../../_framework/util'
 import { ID } from '../object/structs'
 
@@ -115,9 +114,11 @@ export class Claimed implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Claimed.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Claimed.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Claimed.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => Claimed.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Claimed.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => Claimed.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Claimed.fetch(client, id),
       new: (fields: ClaimedFields) => {
         return new Claimed([], fields)
       },
@@ -198,6 +199,14 @@ export class Claimed implements StructClass {
     return Claimed.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): Claimed {
+    if (!isClaimed(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Claimed object`)
+    }
+    return Claimed.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Claimed.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): Claimed {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -208,6 +217,7 @@ export class Claimed implements StructClass {
     return Claimed.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Claimed.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): Claimed {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isClaimed(data.bcs.type)) {
@@ -224,13 +234,15 @@ export class Claimed implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<Claimed> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isClaimed(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<Claimed> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isClaimed(object.type)) {
       throw new Error(`object at id ${id} is not a Claimed object`)
     }
-
-    return Claimed.fromBcs(res.bcsBytes)
+    return Claimed.fromBcs(object.content)
   }
 }
 
@@ -310,10 +322,11 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => DerivedObjectKey.fromJSONField(K, field),
       fromJSON: (json: Record<string, any>) => DerivedObjectKey.fromJSON(K, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        DerivedObjectKey.fromCoreObject(K, obj),
       fromSuiParsedData: (content: SuiParsedData) => DerivedObjectKey.fromSuiParsedData(K, content),
       fromSuiObjectData: (content: SuiObjectData) => DerivedObjectKey.fromSuiObjectData(K, content),
-      fetch: async (client: SupportedSuiClient, id: string) =>
-        DerivedObjectKey.fetch(client, K, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => DerivedObjectKey.fetch(client, K, id),
       new: (fields: DerivedObjectKeyFields<ToTypeArgument<K>>) => {
         return new DerivedObjectKey([extractType(K)], fields)
       },
@@ -419,6 +432,34 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
     return DerivedObjectKey.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<K extends Reified<TypeArgument, any>>(
+    typeArg: K,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): DerivedObjectKey<ToTypeArgument<K>> {
+    if (!isDerivedObjectKey(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a DerivedObjectKey object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return DerivedObjectKey.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link DerivedObjectKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<K extends Reified<TypeArgument, any>>(
     typeArg: K,
     content: SuiParsedData,
@@ -432,6 +473,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
     return DerivedObjectKey.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link DerivedObjectKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<K extends Reified<TypeArgument, any>>(
     typeArg: K,
     data: SuiObjectData,
@@ -468,16 +510,19 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
   }
 
   static async fetch<K extends Reified<TypeArgument, any>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: K,
     id: string,
   ): Promise<DerivedObjectKey<ToTypeArgument<K>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isDerivedObjectKey(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isDerivedObjectKey(object.type)) {
       throw new Error(`object at id ${id} is not a DerivedObjectKey object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -493,7 +538,7 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
       }
     }
 
-    return DerivedObjectKey.fromBcs(typeArg, res.bcsBytes)
+    return DerivedObjectKey.fromBcs(typeArg, object.content)
   }
 }
 

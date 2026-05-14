@@ -33,7 +33,8 @@
  */
 
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
@@ -49,13 +50,7 @@ import {
   ToTypeStr,
   vector,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 
 /* ============================== BCS =============================== */
@@ -130,9 +125,10 @@ export class BCS implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => BCS.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => BCS.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => BCS.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => BCS.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => BCS.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => BCS.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => BCS.fetch(client, id),
       new: (fields: BCSFields) => {
         return new BCS([], fields)
       },
@@ -213,6 +209,14 @@ export class BCS implements StructClass {
     return BCS.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): BCS {
+    if (!isBCS(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a BCS object`)
+    }
+    return BCS.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link BCS.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): BCS {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -223,6 +227,7 @@ export class BCS implements StructClass {
     return BCS.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link BCS.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): BCS {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isBCS(data.bcs.type)) {
@@ -239,12 +244,14 @@ export class BCS implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<BCS> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isBCS(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<BCS> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isBCS(object.type)) {
       throw new Error(`object at id ${id} is not a BCS object`)
     }
-
-    return BCS.fromBcs(res.bcsBytes)
+    return BCS.fromBcs(object.content)
   }
 }

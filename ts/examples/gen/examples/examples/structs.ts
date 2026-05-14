@@ -1,5 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 import { getTypeOrigin } from '../../_envs'
 import {
@@ -16,13 +17,7 @@ import {
   ToTypeStr,
   vector,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { String } from '../../std/ascii/structs'
 import { Option } from '../../std/option/structs'
@@ -100,9 +95,11 @@ export class ExampleStruct implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => ExampleStruct.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ExampleStruct.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        ExampleStruct.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => ExampleStruct.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => ExampleStruct.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => ExampleStruct.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => ExampleStruct.fetch(client, id),
       new: (fields: ExampleStructFields) => {
         return new ExampleStruct([], fields)
       },
@@ -183,6 +180,14 @@ export class ExampleStruct implements StructClass {
     return ExampleStruct.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): ExampleStruct {
+    if (!isExampleStruct(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a ExampleStruct object`)
+    }
+    return ExampleStruct.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ExampleStruct.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): ExampleStruct {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -193,6 +198,7 @@ export class ExampleStruct implements StructClass {
     return ExampleStruct.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ExampleStruct.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): ExampleStruct {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isExampleStruct(data.bcs.type)) {
@@ -209,13 +215,15 @@ export class ExampleStruct implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<ExampleStruct> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isExampleStruct(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<ExampleStruct> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isExampleStruct(object.type)) {
       throw new Error(`object at id ${id} is not a ExampleStruct object`)
     }
-
-    return ExampleStruct.fromBcs(res.bcsBytes)
+    return ExampleStruct.fromBcs(object.content)
   }
 }
 
@@ -323,9 +331,11 @@ export class SpecialTypesStruct implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => SpecialTypesStruct.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => SpecialTypesStruct.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        SpecialTypesStruct.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => SpecialTypesStruct.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => SpecialTypesStruct.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => SpecialTypesStruct.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => SpecialTypesStruct.fetch(client, id),
       new: (fields: SpecialTypesStructFields) => {
         return new SpecialTypesStruct([], fields)
       },
@@ -455,6 +465,14 @@ export class SpecialTypesStruct implements StructClass {
     return SpecialTypesStruct.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): SpecialTypesStruct {
+    if (!isSpecialTypesStruct(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a SpecialTypesStruct object`)
+    }
+    return SpecialTypesStruct.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link SpecialTypesStruct.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): SpecialTypesStruct {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -465,6 +483,7 @@ export class SpecialTypesStruct implements StructClass {
     return SpecialTypesStruct.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link SpecialTypesStruct.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): SpecialTypesStruct {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isSpecialTypesStruct(data.bcs.type)) {
@@ -481,12 +500,14 @@ export class SpecialTypesStruct implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<SpecialTypesStruct> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isSpecialTypesStruct(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<SpecialTypesStruct> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isSpecialTypesStruct(object.type)) {
       throw new Error(`object at id ${id} is not a SpecialTypesStruct object`)
     }
-
-    return SpecialTypesStruct.fromBcs(res.bcsBytes)
+    return SpecialTypesStruct.fromBcs(object.content)
   }
 }

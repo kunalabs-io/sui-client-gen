@@ -1,5 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 import {
   decodeFromFields,
@@ -13,13 +14,7 @@ import {
   ToJSON,
   ToTypeStr,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 import { VecMap } from '../vec-map/structs'
 
 /* ============================== Party =============================== */
@@ -106,9 +101,10 @@ export class Party implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Party.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Party.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Party.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => Party.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Party.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => Party.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Party.fetch(client, id),
       new: (fields: PartyFields) => {
         return new Party([], fields)
       },
@@ -203,6 +199,14 @@ export class Party implements StructClass {
     return Party.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): Party {
+    if (!isParty(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Party object`)
+    }
+    return Party.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Party.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): Party {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -213,6 +217,7 @@ export class Party implements StructClass {
     return Party.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Party.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): Party {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isParty(data.bcs.type)) {
@@ -229,13 +234,15 @@ export class Party implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<Party> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isParty(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<Party> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isParty(object.type)) {
       throw new Error(`object at id ${id} is not a Party object`)
     }
-
-    return Party.fromBcs(res.bcsBytes)
+    return Party.fromBcs(object.content)
   }
 }
 
@@ -310,9 +317,11 @@ export class Permissions implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Permissions.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Permissions.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Permissions.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => Permissions.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Permissions.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => Permissions.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Permissions.fetch(client, id),
       new: (fields: PermissionsFields) => {
         return new Permissions([], fields)
       },
@@ -393,6 +402,14 @@ export class Permissions implements StructClass {
     return Permissions.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): Permissions {
+    if (!isPermissions(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Permissions object`)
+    }
+    return Permissions.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Permissions.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): Permissions {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -403,6 +420,7 @@ export class Permissions implements StructClass {
     return Permissions.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Permissions.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): Permissions {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isPermissions(data.bcs.type)) {
@@ -419,12 +437,14 @@ export class Permissions implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<Permissions> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isPermissions(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<Permissions> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isPermissions(object.type)) {
       throw new Error(`object at id ${id} is not a Permissions object`)
     }
-
-    return Permissions.fromBcs(res.bcsBytes)
+    return Permissions.fromBcs(object.content)
   }
 }

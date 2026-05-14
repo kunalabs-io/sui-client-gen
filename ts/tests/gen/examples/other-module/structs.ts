@@ -1,5 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import { getTypeOrigin } from '../../_envs'
 import {
@@ -14,13 +15,7 @@ import {
   ToJSON,
   ToTypeStr,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 
 /* ============================== StructFromOtherModule =============================== */
 
@@ -100,11 +95,13 @@ export class StructFromOtherModule implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => StructFromOtherModule.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => StructFromOtherModule.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        StructFromOtherModule.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) =>
         StructFromOtherModule.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) =>
         StructFromOtherModule.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) =>
+      fetch: async (client: ClientWithCoreApi, id: string) =>
         StructFromOtherModule.fetch(client, id),
       new: (fields: StructFromOtherModuleFields) => {
         return new StructFromOtherModule([], fields)
@@ -186,6 +183,14 @@ export class StructFromOtherModule implements StructClass {
     return StructFromOtherModule.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): StructFromOtherModule {
+    if (!isStructFromOtherModule(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a StructFromOtherModule object`)
+    }
+    return StructFromOtherModule.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link StructFromOtherModule.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): StructFromOtherModule {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -198,6 +203,7 @@ export class StructFromOtherModule implements StructClass {
     return StructFromOtherModule.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link StructFromOtherModule.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): StructFromOtherModule {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isStructFromOtherModule(data.bcs.type)) {
@@ -214,13 +220,15 @@ export class StructFromOtherModule implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<StructFromOtherModule> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isStructFromOtherModule(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<StructFromOtherModule> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isStructFromOtherModule(object.type)) {
       throw new Error(`object at id ${id} is not a StructFromOtherModule object`)
     }
-
-    return StructFromOtherModule.fromBcs(res.bcsBytes)
+    return StructFromOtherModule.fromBcs(object.content)
   }
 }
 
@@ -298,9 +306,11 @@ export class AddedInAnUpgrade implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => AddedInAnUpgrade.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => AddedInAnUpgrade.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        AddedInAnUpgrade.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => AddedInAnUpgrade.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => AddedInAnUpgrade.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => AddedInAnUpgrade.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => AddedInAnUpgrade.fetch(client, id),
       new: (fields: AddedInAnUpgradeFields) => {
         return new AddedInAnUpgrade([], fields)
       },
@@ -381,6 +391,14 @@ export class AddedInAnUpgrade implements StructClass {
     return AddedInAnUpgrade.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): AddedInAnUpgrade {
+    if (!isAddedInAnUpgrade(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a AddedInAnUpgrade object`)
+    }
+    return AddedInAnUpgrade.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link AddedInAnUpgrade.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): AddedInAnUpgrade {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -391,6 +409,7 @@ export class AddedInAnUpgrade implements StructClass {
     return AddedInAnUpgrade.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link AddedInAnUpgrade.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): AddedInAnUpgrade {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isAddedInAnUpgrade(data.bcs.type)) {
@@ -407,12 +426,14 @@ export class AddedInAnUpgrade implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<AddedInAnUpgrade> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isAddedInAnUpgrade(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<AddedInAnUpgrade> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isAddedInAnUpgrade(object.type)) {
       throw new Error(`object at id ${id} is not a AddedInAnUpgrade object`)
     }
-
-    return AddedInAnUpgrade.fromBcs(res.bcsBytes)
+    return AddedInAnUpgrade.fromBcs(object.content)
   }
 }

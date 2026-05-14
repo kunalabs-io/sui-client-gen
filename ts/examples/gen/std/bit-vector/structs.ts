@@ -1,5 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
@@ -15,13 +16,7 @@ import {
   ToTypeStr,
   vector,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 
 /* ============================== BitVector =============================== */
@@ -95,9 +90,11 @@ export class BitVector implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => BitVector.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => BitVector.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        BitVector.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => BitVector.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => BitVector.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => BitVector.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => BitVector.fetch(client, id),
       new: (fields: BitVectorFields) => {
         return new BitVector([], fields)
       },
@@ -183,6 +180,14 @@ export class BitVector implements StructClass {
     return BitVector.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): BitVector {
+    if (!isBitVector(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a BitVector object`)
+    }
+    return BitVector.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link BitVector.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): BitVector {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -193,6 +198,7 @@ export class BitVector implements StructClass {
     return BitVector.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link BitVector.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): BitVector {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isBitVector(data.bcs.type)) {
@@ -209,12 +215,14 @@ export class BitVector implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<BitVector> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isBitVector(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<BitVector> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isBitVector(object.type)) {
       throw new Error(`object at id ${id} is not a BitVector object`)
     }
-
-    return BitVector.fromBcs(res.bcsBytes)
+    return BitVector.fromBcs(object.content)
   }
 }

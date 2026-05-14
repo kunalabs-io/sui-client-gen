@@ -1,5 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
@@ -15,13 +16,7 @@ import {
   ToTypeStr,
   vector,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 
 /* ============================== Curve =============================== */
@@ -95,9 +90,10 @@ export class Curve implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Curve.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Curve.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Curve.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => Curve.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Curve.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => Curve.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Curve.fetch(client, id),
       new: (fields: CurveFields) => {
         return new Curve([], fields)
       },
@@ -178,6 +174,14 @@ export class Curve implements StructClass {
     return Curve.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): Curve {
+    if (!isCurve(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Curve object`)
+    }
+    return Curve.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Curve.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): Curve {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -188,6 +192,7 @@ export class Curve implements StructClass {
     return Curve.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Curve.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): Curve {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isCurve(data.bcs.type)) {
@@ -204,13 +209,15 @@ export class Curve implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<Curve> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isCurve(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<Curve> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isCurve(object.type)) {
       throw new Error(`object at id ${id} is not a Curve object`)
     }
-
-    return Curve.fromBcs(res.bcsBytes)
+    return Curve.fromBcs(object.content)
   }
 }
 
@@ -296,11 +303,13 @@ export class PreparedVerifyingKey implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => PreparedVerifyingKey.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => PreparedVerifyingKey.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        PreparedVerifyingKey.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) =>
         PreparedVerifyingKey.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) =>
         PreparedVerifyingKey.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) =>
+      fetch: async (client: ClientWithCoreApi, id: string) =>
         PreparedVerifyingKey.fetch(client, id),
       new: (fields: PreparedVerifyingKeyFields) => {
         return new PreparedVerifyingKey([], fields)
@@ -400,6 +409,14 @@ export class PreparedVerifyingKey implements StructClass {
     return PreparedVerifyingKey.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): PreparedVerifyingKey {
+    if (!isPreparedVerifyingKey(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a PreparedVerifyingKey object`)
+    }
+    return PreparedVerifyingKey.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PreparedVerifyingKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): PreparedVerifyingKey {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -412,6 +429,7 @@ export class PreparedVerifyingKey implements StructClass {
     return PreparedVerifyingKey.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PreparedVerifyingKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): PreparedVerifyingKey {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isPreparedVerifyingKey(data.bcs.type)) {
@@ -428,13 +446,15 @@ export class PreparedVerifyingKey implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<PreparedVerifyingKey> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isPreparedVerifyingKey(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<PreparedVerifyingKey> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isPreparedVerifyingKey(object.type)) {
       throw new Error(`object at id ${id} is not a PreparedVerifyingKey object`)
     }
-
-    return PreparedVerifyingKey.fromBcs(res.bcsBytes)
+    return PreparedVerifyingKey.fromBcs(object.content)
   }
 }
 
@@ -507,9 +527,11 @@ export class PublicProofInputs implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => PublicProofInputs.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => PublicProofInputs.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        PublicProofInputs.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => PublicProofInputs.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => PublicProofInputs.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => PublicProofInputs.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => PublicProofInputs.fetch(client, id),
       new: (fields: PublicProofInputsFields) => {
         return new PublicProofInputs([], fields)
       },
@@ -590,6 +612,14 @@ export class PublicProofInputs implements StructClass {
     return PublicProofInputs.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): PublicProofInputs {
+    if (!isPublicProofInputs(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a PublicProofInputs object`)
+    }
+    return PublicProofInputs.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PublicProofInputs.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): PublicProofInputs {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -600,6 +630,7 @@ export class PublicProofInputs implements StructClass {
     return PublicProofInputs.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PublicProofInputs.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): PublicProofInputs {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isPublicProofInputs(data.bcs.type)) {
@@ -616,13 +647,15 @@ export class PublicProofInputs implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<PublicProofInputs> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isPublicProofInputs(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<PublicProofInputs> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isPublicProofInputs(object.type)) {
       throw new Error(`object at id ${id} is not a PublicProofInputs object`)
     }
-
-    return PublicProofInputs.fromBcs(res.bcsBytes)
+    return PublicProofInputs.fromBcs(object.content)
   }
 }
 
@@ -694,9 +727,11 @@ export class ProofPoints implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => ProofPoints.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ProofPoints.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        ProofPoints.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => ProofPoints.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => ProofPoints.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => ProofPoints.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => ProofPoints.fetch(client, id),
       new: (fields: ProofPointsFields) => {
         return new ProofPoints([], fields)
       },
@@ -777,6 +812,14 @@ export class ProofPoints implements StructClass {
     return ProofPoints.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): ProofPoints {
+    if (!isProofPoints(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a ProofPoints object`)
+    }
+    return ProofPoints.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ProofPoints.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): ProofPoints {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -787,6 +830,7 @@ export class ProofPoints implements StructClass {
     return ProofPoints.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ProofPoints.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): ProofPoints {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isProofPoints(data.bcs.type)) {
@@ -803,12 +847,14 @@ export class ProofPoints implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<ProofPoints> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isProofPoints(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<ProofPoints> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isProofPoints(object.type)) {
       throw new Error(`object at id ${id} is not a ProofPoints object`)
     }
-
-    return ProofPoints.fromBcs(res.bcsBytes)
+    return ProofPoints.fromBcs(object.content)
   }
 }

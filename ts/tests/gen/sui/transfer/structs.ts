@@ -1,5 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -22,10 +23,8 @@ import {
 import {
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   FieldsWithTypes,
   parseTypeName,
-  SupportedSuiClient,
 } from '../../_framework/util'
 import { ID } from '../object/structs'
 
@@ -116,9 +115,11 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Receiving.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Receiving.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Receiving.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => Receiving.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Receiving.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => Receiving.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Receiving.fetch(client, T, id),
       new: (fields: ReceivingFields<ToPhantomTypeArgument<T>>) => {
         return new Receiving([extractType(T)], fields)
       },
@@ -227,6 +228,34 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
     return Receiving.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): Receiving<ToPhantomTypeArgument<T>> {
+    if (!isReceiving(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Receiving object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return Receiving.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Receiving.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -240,6 +269,7 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
     return Receiving.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Receiving.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -276,16 +306,19 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<Receiving<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isReceiving(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isReceiving(object.type)) {
       throw new Error(`object at id ${id} is not a Receiving object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -301,6 +334,6 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
       }
     }
 
-    return Receiving.fromBcs(typeArg, res.bcsBytes)
+    return Receiving.fromBcs(typeArg, object.content)
   }
 }

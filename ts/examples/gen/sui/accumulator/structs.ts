@@ -1,5 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -22,10 +23,8 @@ import {
 import {
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   FieldsWithTypes,
   parseTypeName,
-  SupportedSuiClient,
 } from '../../_framework/util'
 import { UID } from '../object/structs'
 
@@ -97,9 +96,11 @@ export class AccumulatorRoot implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => AccumulatorRoot.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => AccumulatorRoot.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        AccumulatorRoot.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => AccumulatorRoot.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => AccumulatorRoot.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => AccumulatorRoot.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => AccumulatorRoot.fetch(client, id),
       new: (fields: AccumulatorRootFields) => {
         return new AccumulatorRoot([], fields)
       },
@@ -180,6 +181,14 @@ export class AccumulatorRoot implements StructClass {
     return AccumulatorRoot.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): AccumulatorRoot {
+    if (!isAccumulatorRoot(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a AccumulatorRoot object`)
+    }
+    return AccumulatorRoot.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link AccumulatorRoot.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): AccumulatorRoot {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -190,6 +199,7 @@ export class AccumulatorRoot implements StructClass {
     return AccumulatorRoot.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link AccumulatorRoot.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): AccumulatorRoot {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isAccumulatorRoot(data.bcs.type)) {
@@ -206,13 +216,15 @@ export class AccumulatorRoot implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<AccumulatorRoot> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isAccumulatorRoot(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<AccumulatorRoot> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isAccumulatorRoot(object.type)) {
       throw new Error(`object at id ${id} is not a AccumulatorRoot object`)
     }
-
-    return AccumulatorRoot.fromBcs(res.bcsBytes)
+    return AccumulatorRoot.fromBcs(object.content)
   }
 }
 
@@ -290,9 +302,10 @@ export class U128 implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => U128.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => U128.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => U128.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => U128.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => U128.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => U128.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => U128.fetch(client, id),
       new: (fields: U128Fields) => {
         return new U128([], fields)
       },
@@ -373,6 +386,14 @@ export class U128 implements StructClass {
     return U128.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): U128 {
+    if (!isU128(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a U128 object`)
+    }
+    return U128.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link U128.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): U128 {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -383,6 +404,7 @@ export class U128 implements StructClass {
     return U128.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link U128.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): U128 {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isU128(data.bcs.type)) {
@@ -399,13 +421,15 @@ export class U128 implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<U128> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isU128(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<U128> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isU128(object.type)) {
       throw new Error(`object at id ${id} is not a U128 object`)
     }
-
-    return U128.fromBcs(res.bcsBytes)
+    return U128.fromBcs(object.content)
   }
 }
 
@@ -484,9 +508,10 @@ export class Key<T extends PhantomTypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Key.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Key.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Key.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => Key.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Key.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => Key.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Key.fetch(client, T, id),
       new: (fields: KeyFields<ToPhantomTypeArgument<T>>) => {
         return new Key([extractType(T)], fields)
       },
@@ -593,6 +618,34 @@ export class Key<T extends PhantomTypeArgument> implements StructClass {
     return Key.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): Key<ToPhantomTypeArgument<T>> {
+    if (!isKey(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Key object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return Key.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Key.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -606,6 +659,7 @@ export class Key<T extends PhantomTypeArgument> implements StructClass {
     return Key.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Key.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -642,16 +696,19 @@ export class Key<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<Key<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isKey(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isKey(object.type)) {
       throw new Error(`object at id ${id} is not a Key object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -667,6 +724,6 @@ export class Key<T extends PhantomTypeArgument> implements StructClass {
       }
     }
 
-    return Key.fromBcs(typeArg, res.bcsBytes)
+    return Key.fromBcs(typeArg, object.content)
   }
 }

@@ -4,7 +4,8 @@
  */
 
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
@@ -18,13 +19,7 @@ import {
   ToJSON,
   ToTypeStr,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 import { UID } from '../object/structs'
 
 /* ============================== Clock =============================== */
@@ -120,9 +115,10 @@ export class Clock implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Clock.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Clock.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Clock.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => Clock.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Clock.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => Clock.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Clock.fetch(client, id),
       new: (fields: ClockFields) => {
         return new Clock([], fields)
       },
@@ -208,6 +204,14 @@ export class Clock implements StructClass {
     return Clock.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): Clock {
+    if (!isClock(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Clock object`)
+    }
+    return Clock.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Clock.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): Clock {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -218,6 +222,7 @@ export class Clock implements StructClass {
     return Clock.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Clock.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): Clock {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isClock(data.bcs.type)) {
@@ -234,12 +239,14 @@ export class Clock implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<Clock> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isClock(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<Clock> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isClock(object.type)) {
       throw new Error(`object at id ${id} is not a Clock object`)
     }
-
-    return Clock.fromBcs(res.bcsBytes)
+    return Clock.fromBcs(object.content)
   }
 }

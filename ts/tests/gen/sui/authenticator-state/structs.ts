@@ -1,5 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
@@ -15,13 +16,7 @@ import {
   ToTypeStr,
   vector,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { String } from '../../std/string/structs'
 import { UID } from '../object/structs'
@@ -103,9 +98,11 @@ export class AuthenticatorState implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => AuthenticatorState.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => AuthenticatorState.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        AuthenticatorState.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => AuthenticatorState.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => AuthenticatorState.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => AuthenticatorState.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => AuthenticatorState.fetch(client, id),
       new: (fields: AuthenticatorStateFields) => {
         return new AuthenticatorState([], fields)
       },
@@ -191,6 +188,14 @@ export class AuthenticatorState implements StructClass {
     return AuthenticatorState.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): AuthenticatorState {
+    if (!isAuthenticatorState(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a AuthenticatorState object`)
+    }
+    return AuthenticatorState.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link AuthenticatorState.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): AuthenticatorState {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -201,6 +206,7 @@ export class AuthenticatorState implements StructClass {
     return AuthenticatorState.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link AuthenticatorState.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): AuthenticatorState {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isAuthenticatorState(data.bcs.type)) {
@@ -217,13 +223,15 @@ export class AuthenticatorState implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<AuthenticatorState> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isAuthenticatorState(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<AuthenticatorState> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isAuthenticatorState(object.type)) {
       throw new Error(`object at id ${id} is not a AuthenticatorState object`)
     }
-
-    return AuthenticatorState.fromBcs(res.bcsBytes)
+    return AuthenticatorState.fromBcs(object.content)
   }
 }
 
@@ -306,11 +314,13 @@ export class AuthenticatorStateInner implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => AuthenticatorStateInner.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => AuthenticatorStateInner.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        AuthenticatorStateInner.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) =>
         AuthenticatorStateInner.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) =>
         AuthenticatorStateInner.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) =>
+      fetch: async (client: ClientWithCoreApi, id: string) =>
         AuthenticatorStateInner.fetch(client, id),
       new: (fields: AuthenticatorStateInnerFields) => {
         return new AuthenticatorStateInner([], fields)
@@ -397,6 +407,14 @@ export class AuthenticatorStateInner implements StructClass {
     return AuthenticatorStateInner.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): AuthenticatorStateInner {
+    if (!isAuthenticatorStateInner(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a AuthenticatorStateInner object`)
+    }
+    return AuthenticatorStateInner.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link AuthenticatorStateInner.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): AuthenticatorStateInner {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -409,6 +427,7 @@ export class AuthenticatorStateInner implements StructClass {
     return AuthenticatorStateInner.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link AuthenticatorStateInner.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): AuthenticatorStateInner {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isAuthenticatorStateInner(data.bcs.type)) {
@@ -425,13 +444,15 @@ export class AuthenticatorStateInner implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<AuthenticatorStateInner> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isAuthenticatorStateInner(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<AuthenticatorStateInner> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isAuthenticatorStateInner(object.type)) {
       throw new Error(`object at id ${id} is not a AuthenticatorStateInner object`)
     }
-
-    return AuthenticatorStateInner.fromBcs(res.bcsBytes)
+    return AuthenticatorStateInner.fromBcs(object.content)
   }
 }
 
@@ -516,9 +537,10 @@ export class JWK implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => JWK.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => JWK.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => JWK.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => JWK.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => JWK.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => JWK.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => JWK.fetch(client, id),
       new: (fields: JWKFields) => {
         return new JWK([], fields)
       },
@@ -614,6 +636,14 @@ export class JWK implements StructClass {
     return JWK.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): JWK {
+    if (!isJWK(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a JWK object`)
+    }
+    return JWK.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link JWK.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): JWK {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -624,6 +654,7 @@ export class JWK implements StructClass {
     return JWK.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link JWK.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): JWK {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isJWK(data.bcs.type)) {
@@ -640,13 +671,15 @@ export class JWK implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<JWK> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isJWK(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<JWK> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isJWK(object.type)) {
       throw new Error(`object at id ${id} is not a JWK object`)
     }
-
-    return JWK.fromBcs(res.bcsBytes)
+    return JWK.fromBcs(object.content)
   }
 }
 
@@ -723,9 +756,10 @@ export class JwkId implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => JwkId.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => JwkId.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => JwkId.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => JwkId.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => JwkId.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => JwkId.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => JwkId.fetch(client, id),
       new: (fields: JwkIdFields) => {
         return new JwkId([], fields)
       },
@@ -811,6 +845,14 @@ export class JwkId implements StructClass {
     return JwkId.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): JwkId {
+    if (!isJwkId(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a JwkId object`)
+    }
+    return JwkId.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link JwkId.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): JwkId {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -821,6 +863,7 @@ export class JwkId implements StructClass {
     return JwkId.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link JwkId.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): JwkId {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isJwkId(data.bcs.type)) {
@@ -837,13 +880,15 @@ export class JwkId implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<JwkId> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isJwkId(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<JwkId> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isJwkId(object.type)) {
       throw new Error(`object at id ${id} is not a JwkId object`)
     }
-
-    return JwkId.fromBcs(res.bcsBytes)
+    return JwkId.fromBcs(object.content)
   }
 }
 
@@ -923,9 +968,11 @@ export class ActiveJwk implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => ActiveJwk.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ActiveJwk.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        ActiveJwk.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => ActiveJwk.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => ActiveJwk.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => ActiveJwk.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => ActiveJwk.fetch(client, id),
       new: (fields: ActiveJwkFields) => {
         return new ActiveJwk([], fields)
       },
@@ -1016,6 +1063,14 @@ export class ActiveJwk implements StructClass {
     return ActiveJwk.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): ActiveJwk {
+    if (!isActiveJwk(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a ActiveJwk object`)
+    }
+    return ActiveJwk.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ActiveJwk.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): ActiveJwk {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -1026,6 +1081,7 @@ export class ActiveJwk implements StructClass {
     return ActiveJwk.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ActiveJwk.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): ActiveJwk {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isActiveJwk(data.bcs.type)) {
@@ -1042,12 +1098,14 @@ export class ActiveJwk implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<ActiveJwk> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isActiveJwk(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<ActiveJwk> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isActiveJwk(object.type)) {
       throw new Error(`object at id ${id} is not a ActiveJwk object`)
     }
-
-    return ActiveJwk.fromBcs(res.bcsBytes)
+    return ActiveJwk.fromBcs(object.content)
   }
 }

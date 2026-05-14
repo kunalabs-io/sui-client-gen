@@ -1,7 +1,8 @@
 /** Group operations of BLS12-381. */
 
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
@@ -15,13 +16,7 @@ import {
   ToJSON,
   ToTypeStr,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 
 /* ============================== Scalar =============================== */
 
@@ -90,9 +85,10 @@ export class Scalar implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Scalar.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Scalar.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Scalar.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => Scalar.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Scalar.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => Scalar.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Scalar.fetch(client, id),
       new: (fields: ScalarFields) => {
         return new Scalar([], fields)
       },
@@ -173,6 +169,14 @@ export class Scalar implements StructClass {
     return Scalar.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): Scalar {
+    if (!isScalar(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Scalar object`)
+    }
+    return Scalar.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Scalar.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): Scalar {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -183,6 +187,7 @@ export class Scalar implements StructClass {
     return Scalar.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Scalar.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): Scalar {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isScalar(data.bcs.type)) {
@@ -199,13 +204,15 @@ export class Scalar implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<Scalar> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isScalar(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<Scalar> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isScalar(object.type)) {
       throw new Error(`object at id ${id} is not a Scalar object`)
     }
-
-    return Scalar.fromBcs(res.bcsBytes)
+    return Scalar.fromBcs(object.content)
   }
 }
 
@@ -276,9 +283,10 @@ export class G1 implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => G1.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => G1.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => G1.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => G1.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => G1.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => G1.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => G1.fetch(client, id),
       new: (fields: G1Fields) => {
         return new G1([], fields)
       },
@@ -359,6 +367,14 @@ export class G1 implements StructClass {
     return G1.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): G1 {
+    if (!isG1(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a G1 object`)
+    }
+    return G1.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link G1.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): G1 {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -369,6 +385,7 @@ export class G1 implements StructClass {
     return G1.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link G1.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): G1 {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isG1(data.bcs.type)) {
@@ -385,13 +402,15 @@ export class G1 implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<G1> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isG1(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<G1> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isG1(object.type)) {
       throw new Error(`object at id ${id} is not a G1 object`)
     }
-
-    return G1.fromBcs(res.bcsBytes)
+    return G1.fromBcs(object.content)
   }
 }
 
@@ -462,9 +481,10 @@ export class G2 implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => G2.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => G2.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => G2.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => G2.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => G2.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => G2.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => G2.fetch(client, id),
       new: (fields: G2Fields) => {
         return new G2([], fields)
       },
@@ -545,6 +565,14 @@ export class G2 implements StructClass {
     return G2.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): G2 {
+    if (!isG2(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a G2 object`)
+    }
+    return G2.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link G2.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): G2 {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -555,6 +583,7 @@ export class G2 implements StructClass {
     return G2.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link G2.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): G2 {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isG2(data.bcs.type)) {
@@ -571,13 +600,15 @@ export class G2 implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<G2> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isG2(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<G2> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isG2(object.type)) {
       throw new Error(`object at id ${id} is not a G2 object`)
     }
-
-    return G2.fromBcs(res.bcsBytes)
+    return G2.fromBcs(object.content)
   }
 }
 
@@ -648,9 +679,10 @@ export class GT implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => GT.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => GT.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => GT.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => GT.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => GT.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => GT.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => GT.fetch(client, id),
       new: (fields: GTFields) => {
         return new GT([], fields)
       },
@@ -731,6 +763,14 @@ export class GT implements StructClass {
     return GT.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): GT {
+    if (!isGT(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a GT object`)
+    }
+    return GT.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link GT.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): GT {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -741,6 +781,7 @@ export class GT implements StructClass {
     return GT.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link GT.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): GT {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isGT(data.bcs.type)) {
@@ -757,13 +798,15 @@ export class GT implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<GT> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isGT(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<GT> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isGT(object.type)) {
       throw new Error(`object at id ${id} is not a GT object`)
     }
-
-    return GT.fromBcs(res.bcsBytes)
+    return GT.fromBcs(object.content)
   }
 }
 
@@ -835,9 +878,11 @@ export class UncompressedG1 implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => UncompressedG1.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UncompressedG1.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        UncompressedG1.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => UncompressedG1.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => UncompressedG1.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => UncompressedG1.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => UncompressedG1.fetch(client, id),
       new: (fields: UncompressedG1Fields) => {
         return new UncompressedG1([], fields)
       },
@@ -918,6 +963,14 @@ export class UncompressedG1 implements StructClass {
     return UncompressedG1.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): UncompressedG1 {
+    if (!isUncompressedG1(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a UncompressedG1 object`)
+    }
+    return UncompressedG1.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link UncompressedG1.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): UncompressedG1 {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -928,6 +981,7 @@ export class UncompressedG1 implements StructClass {
     return UncompressedG1.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link UncompressedG1.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): UncompressedG1 {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isUncompressedG1(data.bcs.type)) {
@@ -944,12 +998,14 @@ export class UncompressedG1 implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<UncompressedG1> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isUncompressedG1(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<UncompressedG1> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isUncompressedG1(object.type)) {
       throw new Error(`object at id ${id} is not a UncompressedG1 object`)
     }
-
-    return UncompressedG1.fromBcs(res.bcsBytes)
+    return UncompressedG1.fromBcs(object.content)
   }
 }

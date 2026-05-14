@@ -8,7 +8,8 @@
  */
 
 import { bcs, BcsType } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -32,10 +33,8 @@ import {
 import {
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   FieldsWithTypes,
   parseTypeName,
-  SupportedSuiClient,
 } from '../../_framework/util'
 import { UID } from '../object/structs'
 
@@ -144,11 +143,13 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Field.fromJSONField([Name, Value], field),
       fromJSON: (json: Record<string, any>) => Field.fromJSON([Name, Value], json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Field.fromCoreObject([Name, Value], obj),
       fromSuiParsedData: (content: SuiParsedData) =>
         Field.fromSuiParsedData([Name, Value], content),
       fromSuiObjectData: (content: SuiObjectData) =>
         Field.fromSuiObjectData([Name, Value], content),
-      fetch: async (client: SupportedSuiClient, id: string) =>
+      fetch: async (client: ClientWithCoreApi, id: string) =>
         Field.fetch(client, [Name, Value], id),
       new: (fields: FieldFields<ToTypeArgument<Name>, ToTypeArgument<Value>>) => {
         return new Field([extractType(Name), extractType(Value)], fields)
@@ -277,6 +278,37 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     return Field.fromJSONField(typeArgs, json)
   }
 
+  static fromCoreObject<
+    Name extends Reified<TypeArgument, any>,
+    Value extends Reified<TypeArgument, any>,
+  >(
+    typeArgs: [Name, Value],
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
+    if (!isField(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Field object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return Field.fromBcs(typeArgs, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Field.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<
     Name extends Reified<TypeArgument, any>,
     Value extends Reified<TypeArgument, any>,
@@ -293,6 +325,7 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     return Field.fromFieldsWithTypes(typeArgs, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Field.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<
     Name extends Reified<TypeArgument, any>,
     Value extends Reified<TypeArgument, any>,
@@ -335,16 +368,19 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     Name extends Reified<TypeArgument, any>,
     Value extends Reified<TypeArgument, any>,
   >(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArgs: [Name, Value],
     id: string,
   ): Promise<Field<ToTypeArgument<Name>, ToTypeArgument<Value>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isField(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isField(object.type)) {
       throw new Error(`object at id ${id} is not a Field object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 2) {
       throw new Error(
         `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
@@ -360,6 +396,6 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
       }
     }
 
-    return Field.fromBcs(typeArgs, res.bcsBytes)
+    return Field.fromBcs(typeArgs, object.content)
   }
 }

@@ -22,7 +22,8 @@
  */
 
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
@@ -36,13 +37,7 @@ import {
   ToJSON,
   ToTypeStr,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 import { UID } from '../object/structs'
 
 /* ============================== Bag =============================== */
@@ -120,9 +115,10 @@ export class Bag implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Bag.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Bag.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Bag.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => Bag.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Bag.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => Bag.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Bag.fetch(client, id),
       new: (fields: BagFields) => {
         return new Bag([], fields)
       },
@@ -208,6 +204,14 @@ export class Bag implements StructClass {
     return Bag.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): Bag {
+    if (!isBag(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Bag object`)
+    }
+    return Bag.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Bag.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): Bag {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -218,6 +222,7 @@ export class Bag implements StructClass {
     return Bag.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Bag.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): Bag {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isBag(data.bcs.type)) {
@@ -234,12 +239,14 @@ export class Bag implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<Bag> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isBag(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<Bag> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isBag(object.type)) {
       throw new Error(`object at id ${id} is not a Bag object`)
     }
-
-    return Bag.fromBcs(res.bcsBytes)
+    return Bag.fromBcs(object.content)
   }
 }

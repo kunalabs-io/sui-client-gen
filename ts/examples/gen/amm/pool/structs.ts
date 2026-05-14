@@ -1,5 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import { getTypeOrigin } from '../../_envs'
 import {
@@ -24,10 +25,8 @@ import {
 import {
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   FieldsWithTypes,
   parseTypeName,
-  SupportedSuiClient,
 } from '../../_framework/util'
 import { TypeName } from '../../std/type-name/structs'
 import { Balance, Supply } from '../../sui/balance/structs'
@@ -103,9 +102,11 @@ export class PoolCreationEvent implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => PoolCreationEvent.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => PoolCreationEvent.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        PoolCreationEvent.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => PoolCreationEvent.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => PoolCreationEvent.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => PoolCreationEvent.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => PoolCreationEvent.fetch(client, id),
       new: (fields: PoolCreationEventFields) => {
         return new PoolCreationEvent([], fields)
       },
@@ -186,6 +187,14 @@ export class PoolCreationEvent implements StructClass {
     return PoolCreationEvent.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): PoolCreationEvent {
+    if (!isPoolCreationEvent(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a PoolCreationEvent object`)
+    }
+    return PoolCreationEvent.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PoolCreationEvent.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): PoolCreationEvent {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -196,6 +205,7 @@ export class PoolCreationEvent implements StructClass {
     return PoolCreationEvent.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PoolCreationEvent.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): PoolCreationEvent {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isPoolCreationEvent(data.bcs.type)) {
@@ -212,13 +222,15 @@ export class PoolCreationEvent implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<PoolCreationEvent> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isPoolCreationEvent(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<PoolCreationEvent> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isPoolCreationEvent(object.type)) {
       throw new Error(`object at id ${id} is not a PoolCreationEvent object`)
     }
-
-    return PoolCreationEvent.fromBcs(res.bcsBytes)
+    return PoolCreationEvent.fromBcs(object.content)
   }
 }
 
@@ -313,9 +325,11 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       bcs: reifiedBcs,
       fromJSONField: (field: any) => LP.fromJSONField([A, B], field),
       fromJSON: (json: Record<string, any>) => LP.fromJSON([A, B], json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        LP.fromCoreObject([A, B], obj),
       fromSuiParsedData: (content: SuiParsedData) => LP.fromSuiParsedData([A, B], content),
       fromSuiObjectData: (content: SuiObjectData) => LP.fromSuiObjectData([A, B], content),
-      fetch: async (client: SupportedSuiClient, id: string) => LP.fetch(client, [A, B], id),
+      fetch: async (client: ClientWithCoreApi, id: string) => LP.fetch(client, [A, B], id),
       new: (fields: LPFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>) => {
         return new LP([extractType(A), extractType(B)], fields)
       },
@@ -438,6 +452,37 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     return LP.fromJSONField(typeArgs, json)
   }
 
+  static fromCoreObject<
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
+  >(
+    typeArgs: [A, B],
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
+    if (!isLP(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a LP object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return LP.fromBcs(typeArgs, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link LP.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
@@ -454,6 +499,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     return LP.fromFieldsWithTypes(typeArgs, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link LP.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
@@ -496,16 +542,19 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
   >(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArgs: [A, B],
     id: string,
   ): Promise<LP<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isLP(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isLP(object.type)) {
       throw new Error(`object at id ${id} is not a LP object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 2) {
       throw new Error(
         `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
@@ -521,7 +570,7 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       }
     }
 
-    return LP.fromBcs(typeArgs, res.bcsBytes)
+    return LP.fromBcs(typeArgs, object.content)
   }
 }
 
@@ -652,9 +701,11 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Pool.fromJSONField([A, B], field),
       fromJSON: (json: Record<string, any>) => Pool.fromJSON([A, B], json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Pool.fromCoreObject([A, B], obj),
       fromSuiParsedData: (content: SuiParsedData) => Pool.fromSuiParsedData([A, B], content),
       fromSuiObjectData: (content: SuiObjectData) => Pool.fromSuiObjectData([A, B], content),
-      fetch: async (client: SupportedSuiClient, id: string) => Pool.fetch(client, [A, B], id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Pool.fetch(client, [A, B], id),
       new: (fields: PoolFields<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>) => {
         return new Pool([extractType(A), extractType(B)], fields)
       },
@@ -825,6 +876,37 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     return Pool.fromJSONField(typeArgs, json)
   }
 
+  static fromCoreObject<
+    A extends PhantomReified<PhantomTypeArgument>,
+    B extends PhantomReified<PhantomTypeArgument>,
+  >(
+    typeArgs: [A, B],
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>> {
+    if (!isPool(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Pool object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return Pool.fromBcs(typeArgs, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Pool.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
@@ -841,6 +923,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     return Pool.fromFieldsWithTypes(typeArgs, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Pool.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
@@ -883,16 +966,19 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
     A extends PhantomReified<PhantomTypeArgument>,
     B extends PhantomReified<PhantomTypeArgument>,
   >(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArgs: [A, B],
     id: string,
   ): Promise<Pool<ToPhantomTypeArgument<A>, ToPhantomTypeArgument<B>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isPool(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isPool(object.type)) {
       throw new Error(`object at id ${id} is not a Pool object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 2) {
       throw new Error(
         `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
@@ -908,7 +994,7 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
       }
     }
 
-    return Pool.fromBcs(typeArgs, res.bcsBytes)
+    return Pool.fromBcs(typeArgs, object.content)
   }
 }
 
@@ -989,9 +1075,11 @@ export class PoolRegistry implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => PoolRegistry.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => PoolRegistry.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        PoolRegistry.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => PoolRegistry.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => PoolRegistry.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => PoolRegistry.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => PoolRegistry.fetch(client, id),
       new: (fields: PoolRegistryFields) => {
         return new PoolRegistry([], fields)
       },
@@ -1086,6 +1174,14 @@ export class PoolRegistry implements StructClass {
     return PoolRegistry.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): PoolRegistry {
+    if (!isPoolRegistry(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a PoolRegistry object`)
+    }
+    return PoolRegistry.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PoolRegistry.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): PoolRegistry {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -1096,6 +1192,7 @@ export class PoolRegistry implements StructClass {
     return PoolRegistry.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PoolRegistry.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): PoolRegistry {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isPoolRegistry(data.bcs.type)) {
@@ -1112,13 +1209,15 @@ export class PoolRegistry implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<PoolRegistry> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isPoolRegistry(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<PoolRegistry> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isPoolRegistry(object.type)) {
       throw new Error(`object at id ${id} is not a PoolRegistry object`)
     }
-
-    return PoolRegistry.fromBcs(res.bcsBytes)
+    return PoolRegistry.fromBcs(object.content)
   }
 }
 
@@ -1196,9 +1295,11 @@ export class PoolRegistryItem implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => PoolRegistryItem.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => PoolRegistryItem.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        PoolRegistryItem.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => PoolRegistryItem.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => PoolRegistryItem.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => PoolRegistryItem.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => PoolRegistryItem.fetch(client, id),
       new: (fields: PoolRegistryItemFields) => {
         return new PoolRegistryItem([], fields)
       },
@@ -1284,6 +1385,14 @@ export class PoolRegistryItem implements StructClass {
     return PoolRegistryItem.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): PoolRegistryItem {
+    if (!isPoolRegistryItem(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a PoolRegistryItem object`)
+    }
+    return PoolRegistryItem.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PoolRegistryItem.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): PoolRegistryItem {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -1294,6 +1403,7 @@ export class PoolRegistryItem implements StructClass {
     return PoolRegistryItem.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PoolRegistryItem.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): PoolRegistryItem {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isPoolRegistryItem(data.bcs.type)) {
@@ -1310,13 +1420,15 @@ export class PoolRegistryItem implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<PoolRegistryItem> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isPoolRegistryItem(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<PoolRegistryItem> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isPoolRegistryItem(object.type)) {
       throw new Error(`object at id ${id} is not a PoolRegistryItem object`)
     }
-
-    return PoolRegistryItem.fromBcs(res.bcsBytes)
+    return PoolRegistryItem.fromBcs(object.content)
   }
 }
 
@@ -1394,9 +1506,11 @@ export class AdminCap implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => AdminCap.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => AdminCap.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        AdminCap.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => AdminCap.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => AdminCap.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => AdminCap.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => AdminCap.fetch(client, id),
       new: (fields: AdminCapFields) => {
         return new AdminCap([], fields)
       },
@@ -1477,6 +1591,14 @@ export class AdminCap implements StructClass {
     return AdminCap.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): AdminCap {
+    if (!isAdminCap(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a AdminCap object`)
+    }
+    return AdminCap.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link AdminCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): AdminCap {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -1487,6 +1609,7 @@ export class AdminCap implements StructClass {
     return AdminCap.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link AdminCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): AdminCap {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isAdminCap(data.bcs.type)) {
@@ -1503,12 +1626,14 @@ export class AdminCap implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<AdminCap> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isAdminCap(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<AdminCap> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isAdminCap(object.type)) {
       throw new Error(`object at id ${id} is not a AdminCap object`)
     }
-
-    return AdminCap.fromBcs(res.bcsBytes)
+    return AdminCap.fromBcs(object.content)
   }
 }

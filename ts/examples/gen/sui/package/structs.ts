@@ -5,7 +5,8 @@
  */
 
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
@@ -21,13 +22,7 @@ import {
   ToTypeStr,
   vector,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { String } from '../../std/ascii/structs'
 import { ID, UID } from '../object/structs'
@@ -113,9 +108,11 @@ export class Publisher implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Publisher.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Publisher.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Publisher.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => Publisher.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Publisher.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => Publisher.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Publisher.fetch(client, id),
       new: (fields: PublisherFields) => {
         return new Publisher([], fields)
       },
@@ -206,6 +203,14 @@ export class Publisher implements StructClass {
     return Publisher.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): Publisher {
+    if (!isPublisher(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Publisher object`)
+    }
+    return Publisher.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Publisher.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): Publisher {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -216,6 +221,7 @@ export class Publisher implements StructClass {
     return Publisher.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Publisher.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): Publisher {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isPublisher(data.bcs.type)) {
@@ -232,13 +238,15 @@ export class Publisher implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<Publisher> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isPublisher(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<Publisher> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isPublisher(object.type)) {
       throw new Error(`object at id ${id} is not a Publisher object`)
     }
-
-    return Publisher.fromBcs(res.bcsBytes)
+    return Publisher.fromBcs(object.content)
   }
 }
 
@@ -334,9 +342,11 @@ export class UpgradeCap implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => UpgradeCap.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UpgradeCap.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        UpgradeCap.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => UpgradeCap.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => UpgradeCap.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => UpgradeCap.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => UpgradeCap.fetch(client, id),
       new: (fields: UpgradeCapFields) => {
         return new UpgradeCap([], fields)
       },
@@ -432,6 +442,14 @@ export class UpgradeCap implements StructClass {
     return UpgradeCap.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): UpgradeCap {
+    if (!isUpgradeCap(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a UpgradeCap object`)
+    }
+    return UpgradeCap.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link UpgradeCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): UpgradeCap {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -442,6 +460,7 @@ export class UpgradeCap implements StructClass {
     return UpgradeCap.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link UpgradeCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): UpgradeCap {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isUpgradeCap(data.bcs.type)) {
@@ -458,13 +477,15 @@ export class UpgradeCap implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<UpgradeCap> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isUpgradeCap(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<UpgradeCap> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isUpgradeCap(object.type)) {
       throw new Error(`object at id ${id} is not a UpgradeCap object`)
     }
-
-    return UpgradeCap.fromBcs(res.bcsBytes)
+    return UpgradeCap.fromBcs(object.content)
   }
 }
 
@@ -577,9 +598,11 @@ export class UpgradeTicket implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => UpgradeTicket.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UpgradeTicket.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        UpgradeTicket.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => UpgradeTicket.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => UpgradeTicket.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => UpgradeTicket.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => UpgradeTicket.fetch(client, id),
       new: (fields: UpgradeTicketFields) => {
         return new UpgradeTicket([], fields)
       },
@@ -675,6 +698,14 @@ export class UpgradeTicket implements StructClass {
     return UpgradeTicket.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): UpgradeTicket {
+    if (!isUpgradeTicket(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a UpgradeTicket object`)
+    }
+    return UpgradeTicket.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link UpgradeTicket.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): UpgradeTicket {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -685,6 +716,7 @@ export class UpgradeTicket implements StructClass {
     return UpgradeTicket.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link UpgradeTicket.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): UpgradeTicket {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isUpgradeTicket(data.bcs.type)) {
@@ -701,13 +733,15 @@ export class UpgradeTicket implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<UpgradeTicket> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isUpgradeTicket(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<UpgradeTicket> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isUpgradeTicket(object.type)) {
       throw new Error(`object at id ${id} is not a UpgradeTicket object`)
     }
-
-    return UpgradeTicket.fromBcs(res.bcsBytes)
+    return UpgradeTicket.fromBcs(object.content)
   }
 }
 
@@ -793,9 +827,11 @@ export class UpgradeReceipt implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => UpgradeReceipt.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UpgradeReceipt.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        UpgradeReceipt.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => UpgradeReceipt.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => UpgradeReceipt.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => UpgradeReceipt.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => UpgradeReceipt.fetch(client, id),
       new: (fields: UpgradeReceiptFields) => {
         return new UpgradeReceipt([], fields)
       },
@@ -881,6 +917,14 @@ export class UpgradeReceipt implements StructClass {
     return UpgradeReceipt.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): UpgradeReceipt {
+    if (!isUpgradeReceipt(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a UpgradeReceipt object`)
+    }
+    return UpgradeReceipt.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link UpgradeReceipt.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): UpgradeReceipt {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -891,6 +935,7 @@ export class UpgradeReceipt implements StructClass {
     return UpgradeReceipt.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link UpgradeReceipt.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): UpgradeReceipt {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isUpgradeReceipt(data.bcs.type)) {
@@ -907,12 +952,14 @@ export class UpgradeReceipt implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<UpgradeReceipt> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isUpgradeReceipt(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<UpgradeReceipt> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isUpgradeReceipt(object.type)) {
       throw new Error(`object at id ${id} is not a UpgradeReceipt object`)
     }
-
-    return UpgradeReceipt.fromBcs(res.bcsBytes)
+    return UpgradeReceipt.fromBcs(object.content)
   }
 }
