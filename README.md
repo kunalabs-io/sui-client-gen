@@ -288,6 +288,59 @@ specialTypes(tx, {
 });
 ```
 
+## Migrating to `@mysten/sui@2.x`
+
+Generated SDKs now require `@mysten/sui` v2 (peer dependency). The breaking changes on the
+generated surface are:
+
+- **`fetch(client, id)`** now takes any client implementing `ClientWithCoreApi`
+  (e.g. `SuiJsonRpcClient`, `SuiGrpcClient`, `SuiGraphQLClient`). Internally it calls
+  `client.core.getObject({ objectId: id, include: { content: true } })` and parses the
+  returned BCS bytes — the same call path regardless of transport.
+- **New `fromCoreObject(obj)`** static method on every generated class. Pass it an object
+  returned by `client.core.getObject(...)` / `client.core.getObjects(...)` with
+  `include: { content: true }`. It performs the same type checks as the old
+  `fromSuiObjectData` (asserts the response's type matches the class and, for generics,
+  validates type arguments) before decoding from BCS.
+- **`fromSuiParsedData(content)`** and **`fromSuiObjectData(data)`** are kept but marked
+  `@deprecated`. Their input types (`SuiParsedData`, `SuiObjectData`) moved to
+  `@mysten/sui/jsonRpc`; their bodies are unchanged. They will be removed when JSON-RPC
+  support is dropped upstream — migrate callers to `fromCoreObject`.
+- The generator no longer emits the `SupportedSuiClient` union / `fetchObjectBcs`
+  dispatcher in `_framework/util.ts`. Transport selection is handled by the SDK itself
+  via `client.core.*`.
+
+Example migration:
+
+```diff
+- import { SuiClient } from '@mysten/sui/client';
+- const client = new SuiClient({ url: getFullnodeUrl('testnet') });
++ import { SuiGrpcClient } from '@mysten/sui/grpc';
++ const client = new SuiGrpcClient({ baseUrl: 'https://fullnode.testnet.sui.io', network: 'testnet' });
+
+  // fetch by id (unchanged at the call site):
+  const pool = await Pool.r(SUI.p, EXAMPLE_COIN.p).fetch(client, AMM_POOL_ID);
+
+  // batch decode — new pattern:
+- const res = await client.multiGetObjects({ ids, options: { showBcs: true } });
+- const pools = res.map(r => Pool.fromSuiObjectData([SUI.p, EXAMPLE_COIN.p], r.data!));
++ const { objects } = await client.core.getObjects({
++   objectIds: ids,
++   include: { content: true },
++ });
++ const pools = objects.map(o =>
++   o instanceof Error ? null : Pool.fromCoreObject([SUI.p, EXAMPLE_COIN.p], o),
++ );
+```
+
+If you stay on JSON-RPC, the deprecated methods continue to work — just update the import
+path for their input types:
+
+```diff
+- import type { SuiObjectData } from '@mysten/sui/client';
++ import type { SuiObjectData } from '@mysten/sui/jsonRpc';
+```
+
 ## Caveats
 
 - When re-running the generator, the files generated on previous run will _not_ be automatically deleted in order to avoid accidental data wipes. The old files can either be deleted manually before re-running the tool (it's safe to delete everything aside from `gen.toml`) or by running the generator with `--clean` (use with caution).
