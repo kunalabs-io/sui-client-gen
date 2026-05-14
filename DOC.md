@@ -235,16 +235,16 @@ To build a scoped config, use `cloneEnv()` to derive one from a registered env (
 
 ```ts
 import { cloneEnv, getEnv } from './gen/_envs'
-import { createRebalanceReceipt } from './gen/kai-leverage/position-core-clmm/functions'
+import { transfer } from './gen/my-app/escrow/functions'
 
 // Point a single call at a historical publishedAt, leaving every other package unchanged.
 const historical = cloneEnv(getEnv('mainnet'), {
   packages: {
-    'kai-leverage': { publishedAt: '0xHISTORICAL_ADDRESS' },
+    'my-app': { publishedAt: '0xHISTORICAL_ADDRESS' },
   },
 })
 
-createRebalanceReceipt(tx, typeArgs, args, { env: historical })
+transfer(tx, typeArgs, args, { env: historical })
 ```
 
 `cloneEnv` shallow-merges per-package: fields you provide replace the base fields, `typeOrigins` are merged (not replaced), and every other package in `base` is preserved. Overriding a package name that doesn't exist in `base` throws.
@@ -256,7 +256,7 @@ Typical uses:
 - Fan-out processing where each task operates against a different `publishedAt` concurrently.
 - Decoding type origins for a cross-env payload (e.g. `getTypeOrigin('pkg', 'mod::T', otherEnv)`).
 
-Note: per-call `env` currently covers move calls (function bindings) and the env resolvers. Struct classes (`Foo.reified()`, `Foo.fetch()`, `Foo.fromSuiParsedData()`) still read `$typeName` from the active env — cross-env decoding of struct instances still uses `setActiveEnv` today.
+Note: per-call `env` covers move calls (function bindings) and the env resolvers, not the struct-class static methods. `Foo.reified()`, `Foo.fetch()`, `Foo.fromSuiParsedData()` etc. don't accept an `env` argument — they resolve `$typeName` against the active env. Switching that active env with `setActiveEnv()` is reflected on every subsequent read (including stored `reified()` handles and `phantom()` wrappers — see [ADR-005](docs/adr/005-dynamic-typename-via-getters.md)), so cross-env decoding works, but you can't pin a single decode call to a specific env without flipping the active one. Multi-env-instances-in-one-process is the planned next step.
 
 ### Querying Active Environment
 
@@ -379,7 +379,7 @@ Move field types are mapped to TS types as follows:
 | `0x1::option::Option<T>`    | `T \| null`   |
 | `vector<T>`                 | `T[]`        |
 
-The struct class holds the above fields as well as the `$typeName` and `$numTypeParams` static fields and the `$typeArgs` field in case the struct has type parameters. The `$typeName` field holds the full name of the type with the address but without type parameters (e.g., `0x2::balance::Balance` and not `0x2::balance::Balance<T>`).
+The struct class holds the above fields as well as the `$typeName` and `$numTypeParams` static fields and the `$typeArgs` field in case the struct has type parameters. `$typeName` holds the full name of the type with the address but without type parameters (e.g., `0x2::balance::Balance`, not `0x2::balance::Balance<T>`). For packages whose address depends on the environment (everything except system packages at `0x1`/`0x2`), `$typeName` is emitted as a static getter that resolves the address against the active env on every read — see [ADR-005](docs/adr/005-dynamic-typename-via-getters.md).
 
 The struct class can be instantiated in multiple ways:
 - using the constructor by passing in the fields manually

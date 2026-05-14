@@ -81,7 +81,7 @@ describe('System-package $typeName is constant across env switches', () => {
 describe('Stored reified handles follow env switches', () => {
   it('typeName / fullTypeName / typeArgs on a stored handle update after the active env changes', () => {
     setActiveEnv('testnet')
-    // Capture a reified handle under testnet — the exact pattern kai-ts-sdk uses
+    // Capture a reified handle under testnet — the pattern wrapper SDKs use
     // when storing `this.r = SupplyPool_.r(args.T.r, args.ST.r)` in a constructor.
     // (T in WithGenericField is non-phantom, so we pass `SUI.r` here.)
     const stored = WithGenericField.reified(SUI.r)
