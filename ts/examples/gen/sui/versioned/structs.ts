@@ -1,5 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
@@ -13,13 +14,7 @@ import {
   ToJSON,
   ToTypeStr,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 import { ID, UID } from '../object/structs'
 
 /* ============================== Versioned =============================== */
@@ -101,9 +96,11 @@ export class Versioned implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Versioned.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Versioned.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Versioned.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => Versioned.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Versioned.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => Versioned.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Versioned.fetch(client, id),
       new: (fields: VersionedFields) => {
         return new Versioned([], fields)
       },
@@ -189,6 +186,14 @@ export class Versioned implements StructClass {
     return Versioned.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): Versioned {
+    if (!isVersioned(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Versioned object`)
+    }
+    return Versioned.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Versioned.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): Versioned {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -199,6 +204,7 @@ export class Versioned implements StructClass {
     return Versioned.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Versioned.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): Versioned {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isVersioned(data.bcs.type)) {
@@ -215,13 +221,15 @@ export class Versioned implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<Versioned> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isVersioned(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<Versioned> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isVersioned(object.type)) {
       throw new Error(`object at id ${id} is not a Versioned object`)
     }
-
-    return Versioned.fromBcs(res.bcsBytes)
+    return Versioned.fromBcs(object.content)
   }
 }
 
@@ -301,9 +309,11 @@ export class VersionChangeCap implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => VersionChangeCap.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => VersionChangeCap.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        VersionChangeCap.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => VersionChangeCap.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => VersionChangeCap.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => VersionChangeCap.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => VersionChangeCap.fetch(client, id),
       new: (fields: VersionChangeCapFields) => {
         return new VersionChangeCap([], fields)
       },
@@ -389,6 +399,14 @@ export class VersionChangeCap implements StructClass {
     return VersionChangeCap.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): VersionChangeCap {
+    if (!isVersionChangeCap(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a VersionChangeCap object`)
+    }
+    return VersionChangeCap.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link VersionChangeCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): VersionChangeCap {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -399,6 +417,7 @@ export class VersionChangeCap implements StructClass {
     return VersionChangeCap.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link VersionChangeCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): VersionChangeCap {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isVersionChangeCap(data.bcs.type)) {
@@ -415,12 +434,14 @@ export class VersionChangeCap implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<VersionChangeCap> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isVersionChangeCap(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<VersionChangeCap> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isVersionChangeCap(object.type)) {
       throw new Error(`object at id ${id} is not a VersionChangeCap object`)
     }
-
-    return VersionChangeCap.fromBcs(res.bcsBytes)
+    return VersionChangeCap.fromBcs(object.content)
   }
 }

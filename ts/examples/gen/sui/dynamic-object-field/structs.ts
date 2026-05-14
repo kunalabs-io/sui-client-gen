@@ -6,7 +6,8 @@
  */
 
 import { bcs, BcsType } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -30,10 +31,8 @@ import {
 import {
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   FieldsWithTypes,
   parseTypeName,
-  SupportedSuiClient,
 } from '../../_framework/util'
 
 /* ============================== Wrapper =============================== */
@@ -108,9 +107,11 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Wrapper.fromJSONField(Name, field),
       fromJSON: (json: Record<string, any>) => Wrapper.fromJSON(Name, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Wrapper.fromCoreObject(Name, obj),
       fromSuiParsedData: (content: SuiParsedData) => Wrapper.fromSuiParsedData(Name, content),
       fromSuiObjectData: (content: SuiObjectData) => Wrapper.fromSuiObjectData(Name, content),
-      fetch: async (client: SupportedSuiClient, id: string) => Wrapper.fetch(client, Name, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Wrapper.fetch(client, Name, id),
       new: (fields: WrapperFields<ToTypeArgument<Name>>) => {
         return new Wrapper([extractType(Name)], fields)
       },
@@ -216,6 +217,34 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
     return Wrapper.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<Name extends Reified<TypeArgument, any>>(
+    typeArg: Name,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): Wrapper<ToTypeArgument<Name>> {
+    if (!isWrapper(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Wrapper object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return Wrapper.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Wrapper.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<Name extends Reified<TypeArgument, any>>(
     typeArg: Name,
     content: SuiParsedData,
@@ -229,6 +258,7 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
     return Wrapper.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Wrapper.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<Name extends Reified<TypeArgument, any>>(
     typeArg: Name,
     data: SuiObjectData,
@@ -265,16 +295,19 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
   }
 
   static async fetch<Name extends Reified<TypeArgument, any>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: Name,
     id: string,
   ): Promise<Wrapper<ToTypeArgument<Name>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isWrapper(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isWrapper(object.type)) {
       throw new Error(`object at id ${id} is not a Wrapper object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -290,6 +323,6 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
       }
     }
 
-    return Wrapper.fromBcs(typeArg, res.bcsBytes)
+    return Wrapper.fromBcs(typeArg, object.content)
   }
 }

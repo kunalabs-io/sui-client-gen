@@ -1,7 +1,8 @@
 /** This module defines the Option type and its methods to represent and handle an optional value. */
 
 import { bcs, BcsType } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -26,10 +27,8 @@ import {
 import {
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   FieldsWithTypes,
   parseTypeName,
-  SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 
@@ -113,9 +112,11 @@ export class Option<Element extends TypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Option.fromJSONField(Element, field),
       fromJSON: (json: Record<string, any>) => Option.fromJSON(Element, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Option.fromCoreObject(Element, obj),
       fromSuiParsedData: (content: SuiParsedData) => Option.fromSuiParsedData(Element, content),
       fromSuiObjectData: (content: SuiObjectData) => Option.fromSuiObjectData(Element, content),
-      fetch: async (client: SupportedSuiClient, id: string) => Option.fetch(client, Element, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Option.fetch(client, Element, id),
       new: (fields: OptionFields<ToTypeArgument<Element>>) => {
         return new Option([extractType(Element)], fields)
       },
@@ -221,6 +222,34 @@ export class Option<Element extends TypeArgument> implements StructClass {
     return Option.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<Element extends Reified<TypeArgument, any>>(
+    typeArg: Element,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): Option<ToTypeArgument<Element>> {
+    if (!isOption(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Option object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return Option.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Option.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<Element extends Reified<TypeArgument, any>>(
     typeArg: Element,
     content: SuiParsedData,
@@ -234,6 +263,7 @@ export class Option<Element extends TypeArgument> implements StructClass {
     return Option.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Option.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<Element extends Reified<TypeArgument, any>>(
     typeArg: Element,
     data: SuiObjectData,
@@ -270,16 +300,19 @@ export class Option<Element extends TypeArgument> implements StructClass {
   }
 
   static async fetch<Element extends Reified<TypeArgument, any>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: Element,
     id: string,
   ): Promise<Option<ToTypeArgument<Element>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isOption(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isOption(object.type)) {
       throw new Error(`object at id ${id} is not a Option object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -295,6 +328,6 @@ export class Option<Element extends TypeArgument> implements StructClass {
       }
     }
 
-    return Option.fromBcs(typeArg, res.bcsBytes)
+    return Option.fromBcs(typeArg, object.content)
   }
 }

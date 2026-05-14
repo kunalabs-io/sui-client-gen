@@ -1,5 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -22,10 +23,8 @@ import {
 import {
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   FieldsWithTypes,
   parseTypeName,
-  SupportedSuiClient,
 } from '../../_framework/util'
 import { Bag } from '../bag/structs'
 
@@ -109,9 +108,11 @@ export class OwnerKey implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => OwnerKey.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => OwnerKey.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        OwnerKey.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => OwnerKey.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => OwnerKey.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => OwnerKey.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => OwnerKey.fetch(client, id),
       new: (fields: OwnerKeyFields) => {
         return new OwnerKey([], fields)
       },
@@ -195,6 +196,14 @@ export class OwnerKey implements StructClass {
     return OwnerKey.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): OwnerKey {
+    if (!isOwnerKey(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a OwnerKey object`)
+    }
+    return OwnerKey.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link OwnerKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): OwnerKey {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -205,6 +214,7 @@ export class OwnerKey implements StructClass {
     return OwnerKey.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link OwnerKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): OwnerKey {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isOwnerKey(data.bcs.type)) {
@@ -221,13 +231,15 @@ export class OwnerKey implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<OwnerKey> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isOwnerKey(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<OwnerKey> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isOwnerKey(object.type)) {
       throw new Error(`object at id ${id} is not a OwnerKey object`)
     }
-
-    return OwnerKey.fromBcs(res.bcsBytes)
+    return OwnerKey.fromBcs(object.content)
   }
 }
 
@@ -309,9 +321,10 @@ export class Owner implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Owner.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Owner.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Owner.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => Owner.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Owner.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => Owner.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Owner.fetch(client, id),
       new: (fields: OwnerFields) => {
         return new Owner([], fields)
       },
@@ -400,6 +413,14 @@ export class Owner implements StructClass {
     return Owner.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): Owner {
+    if (!isOwner(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Owner object`)
+    }
+    return Owner.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Owner.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): Owner {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -410,6 +431,7 @@ export class Owner implements StructClass {
     return Owner.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Owner.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): Owner {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isOwner(data.bcs.type)) {
@@ -426,13 +448,15 @@ export class Owner implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<Owner> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isOwner(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<Owner> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isOwner(object.type)) {
       throw new Error(`object at id ${id} is not a Owner object`)
     }
-
-    return Owner.fromBcs(res.bcsBytes)
+    return Owner.fromBcs(object.content)
   }
 }
 
@@ -511,9 +535,11 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => MetadataKey.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => MetadataKey.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        MetadataKey.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => MetadataKey.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => MetadataKey.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => MetadataKey.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => MetadataKey.fetch(client, T, id),
       new: (fields: MetadataKeyFields<ToPhantomTypeArgument<T>>) => {
         return new MetadataKey([extractType(T)], fields)
       },
@@ -617,6 +643,34 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
     return MetadataKey.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): MetadataKey<ToPhantomTypeArgument<T>> {
+    if (!isMetadataKey(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a MetadataKey object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return MetadataKey.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link MetadataKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -630,6 +684,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
     return MetadataKey.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link MetadataKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -666,16 +721,19 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<MetadataKey<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isMetadataKey(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isMetadataKey(object.type)) {
       throw new Error(`object at id ${id} is not a MetadataKey object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -691,7 +749,7 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
       }
     }
 
-    return MetadataKey.fromBcs(typeArg, res.bcsBytes)
+    return MetadataKey.fromBcs(typeArg, object.content)
   }
 }
 
@@ -770,9 +828,11 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Metadata.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Metadata.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Metadata.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => Metadata.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Metadata.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => Metadata.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Metadata.fetch(client, T, id),
       new: (fields: MetadataFields<ToPhantomTypeArgument<T>>) => {
         return new Metadata([extractType(T)], fields)
       },
@@ -876,6 +936,34 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
     return Metadata.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): Metadata<ToPhantomTypeArgument<T>> {
+    if (!isMetadata(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Metadata object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return Metadata.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Metadata.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -889,6 +977,7 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
     return Metadata.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Metadata.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -925,16 +1014,19 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<Metadata<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isMetadata(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isMetadata(object.type)) {
       throw new Error(`object at id ${id} is not a Metadata object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -950,6 +1042,6 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
       }
     }
 
-    return Metadata.fromBcs(typeArg, res.bcsBytes)
+    return Metadata.fromBcs(typeArg, object.content)
   }
 }

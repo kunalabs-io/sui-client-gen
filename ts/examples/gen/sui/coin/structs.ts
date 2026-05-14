@@ -5,7 +5,8 @@
  */
 
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -29,10 +30,8 @@ import {
 import {
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   FieldsWithTypes,
   parseTypeName,
-  SupportedSuiClient,
 } from '../../_framework/util'
 import { String as StringAscii } from '../../std/ascii/structs'
 import { Option } from '../../std/option/structs'
@@ -117,9 +116,11 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Coin.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Coin.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Coin.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => Coin.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Coin.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => Coin.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Coin.fetch(client, T, id),
       new: (fields: CoinFields<ToPhantomTypeArgument<T>>) => {
         return new Coin([extractType(T)], fields)
       },
@@ -228,6 +229,34 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
     return Coin.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): Coin<ToPhantomTypeArgument<T>> {
+    if (!isCoin(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Coin object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return Coin.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Coin.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -241,6 +270,7 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
     return Coin.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Coin.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -277,16 +307,19 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<Coin<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isCoin(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isCoin(object.type)) {
       throw new Error(`object at id ${id} is not a Coin object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -302,7 +335,7 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
       }
     }
 
-    return Coin.fromBcs(typeArg, res.bcsBytes)
+    return Coin.fromBcs(typeArg, object.content)
   }
 }
 
@@ -424,9 +457,11 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
       bcs: reifiedBcs,
       fromJSONField: (field: any) => CoinMetadata.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => CoinMetadata.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        CoinMetadata.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => CoinMetadata.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => CoinMetadata.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => CoinMetadata.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => CoinMetadata.fetch(client, T, id),
       new: (fields: CoinMetadataFields<ToPhantomTypeArgument<T>>) => {
         return new CoinMetadata([extractType(T)], fields)
       },
@@ -555,6 +590,34 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
     return CoinMetadata.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): CoinMetadata<ToPhantomTypeArgument<T>> {
+    if (!isCoinMetadata(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a CoinMetadata object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return CoinMetadata.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link CoinMetadata.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -568,6 +631,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
     return CoinMetadata.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link CoinMetadata.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -604,16 +668,19 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<CoinMetadata<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isCoinMetadata(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isCoinMetadata(object.type)) {
       throw new Error(`object at id ${id} is not a CoinMetadata object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -629,7 +696,7 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
       }
     }
 
-    return CoinMetadata.fromBcs(typeArg, res.bcsBytes)
+    return CoinMetadata.fromBcs(typeArg, object.content)
   }
 }
 
@@ -725,11 +792,13 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
       bcs: reifiedBcs,
       fromJSONField: (field: any) => RegulatedCoinMetadata.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => RegulatedCoinMetadata.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        RegulatedCoinMetadata.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) =>
         RegulatedCoinMetadata.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) =>
         RegulatedCoinMetadata.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) =>
+      fetch: async (client: ClientWithCoreApi, id: string) =>
         RegulatedCoinMetadata.fetch(client, T, id),
       new: (fields: RegulatedCoinMetadataFields<ToPhantomTypeArgument<T>>) => {
         return new RegulatedCoinMetadata([extractType(T)], fields)
@@ -844,6 +913,34 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
     return RegulatedCoinMetadata.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): RegulatedCoinMetadata<ToPhantomTypeArgument<T>> {
+    if (!isRegulatedCoinMetadata(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a RegulatedCoinMetadata object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return RegulatedCoinMetadata.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link RegulatedCoinMetadata.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -859,6 +956,7 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
     return RegulatedCoinMetadata.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link RegulatedCoinMetadata.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -895,16 +993,19 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<RegulatedCoinMetadata<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isRegulatedCoinMetadata(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isRegulatedCoinMetadata(object.type)) {
       throw new Error(`object at id ${id} is not a RegulatedCoinMetadata object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -920,7 +1021,7 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
       }
     }
 
-    return RegulatedCoinMetadata.fromBcs(typeArg, res.bcsBytes)
+    return RegulatedCoinMetadata.fromBcs(typeArg, object.content)
   }
 }
 
@@ -1006,9 +1107,11 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => TreasuryCap.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => TreasuryCap.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        TreasuryCap.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => TreasuryCap.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => TreasuryCap.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => TreasuryCap.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => TreasuryCap.fetch(client, T, id),
       new: (fields: TreasuryCapFields<ToPhantomTypeArgument<T>>) => {
         return new TreasuryCap([extractType(T)], fields)
       },
@@ -1117,6 +1220,34 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
     return TreasuryCap.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): TreasuryCap<ToPhantomTypeArgument<T>> {
+    if (!isTreasuryCap(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a TreasuryCap object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return TreasuryCap.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link TreasuryCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -1130,6 +1261,7 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
     return TreasuryCap.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link TreasuryCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -1166,16 +1298,19 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<TreasuryCap<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isTreasuryCap(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isTreasuryCap(object.type)) {
       throw new Error(`object at id ${id} is not a TreasuryCap object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -1191,7 +1326,7 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
       }
     }
 
-    return TreasuryCap.fromBcs(typeArg, res.bcsBytes)
+    return TreasuryCap.fromBcs(typeArg, object.content)
   }
 }
 
@@ -1280,9 +1415,11 @@ export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => DenyCapV2.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => DenyCapV2.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        DenyCapV2.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => DenyCapV2.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => DenyCapV2.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => DenyCapV2.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => DenyCapV2.fetch(client, T, id),
       new: (fields: DenyCapV2Fields<ToPhantomTypeArgument<T>>) => {
         return new DenyCapV2([extractType(T)], fields)
       },
@@ -1391,6 +1528,34 @@ export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
     return DenyCapV2.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): DenyCapV2<ToPhantomTypeArgument<T>> {
+    if (!isDenyCapV2(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a DenyCapV2 object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return DenyCapV2.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link DenyCapV2.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -1404,6 +1569,7 @@ export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
     return DenyCapV2.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link DenyCapV2.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -1440,16 +1606,19 @@ export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<DenyCapV2<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isDenyCapV2(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isDenyCapV2(object.type)) {
       throw new Error(`object at id ${id} is not a DenyCapV2 object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -1465,7 +1634,7 @@ export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
       }
     }
 
-    return DenyCapV2.fromBcs(typeArg, res.bcsBytes)
+    return DenyCapV2.fromBcs(typeArg, object.content)
   }
 }
 
@@ -1543,9 +1712,11 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
       bcs: reifiedBcs,
       fromJSONField: (field: any) => CurrencyCreated.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => CurrencyCreated.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        CurrencyCreated.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => CurrencyCreated.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => CurrencyCreated.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => CurrencyCreated.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => CurrencyCreated.fetch(client, T, id),
       new: (fields: CurrencyCreatedFields<ToPhantomTypeArgument<T>>) => {
         return new CurrencyCreated([extractType(T)], fields)
       },
@@ -1649,6 +1820,34 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
     return CurrencyCreated.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): CurrencyCreated<ToPhantomTypeArgument<T>> {
+    if (!isCurrencyCreated(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a CurrencyCreated object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return CurrencyCreated.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link CurrencyCreated.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -1662,6 +1861,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
     return CurrencyCreated.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link CurrencyCreated.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -1698,16 +1898,19 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<CurrencyCreated<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isCurrencyCreated(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isCurrencyCreated(object.type)) {
       throw new Error(`object at id ${id} is not a CurrencyCreated object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -1723,7 +1926,7 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
       }
     }
 
-    return CurrencyCreated.fromBcs(typeArg, res.bcsBytes)
+    return CurrencyCreated.fromBcs(typeArg, object.content)
   }
 }
 
@@ -1802,9 +2005,11 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => DenyCap.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => DenyCap.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        DenyCap.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => DenyCap.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => DenyCap.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => DenyCap.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => DenyCap.fetch(client, T, id),
       new: (fields: DenyCapFields<ToPhantomTypeArgument<T>>) => {
         return new DenyCap([extractType(T)], fields)
       },
@@ -1908,6 +2113,34 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
     return DenyCap.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): DenyCap<ToPhantomTypeArgument<T>> {
+    if (!isDenyCap(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a DenyCap object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return DenyCap.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link DenyCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -1921,6 +2154,7 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
     return DenyCap.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link DenyCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -1957,16 +2191,19 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<DenyCap<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isDenyCap(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isDenyCap(object.type)) {
       throw new Error(`object at id ${id} is not a DenyCap object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -1982,6 +2219,6 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
       }
     }
 
-    return DenyCap.fromBcs(typeArg, res.bcsBytes)
+    return DenyCap.fromBcs(typeArg, object.content)
   }
 }

@@ -1,5 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import { getTypeOrigin } from '../../_envs'
 import {
@@ -15,13 +16,7 @@ import {
   ToTypeStr,
   ToTypeStr as ToPhantom,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 import { TreasuryCap } from '../../sui/coin/structs'
 import { UID } from '../../sui/object/structs'
 
@@ -97,9 +92,11 @@ export class EXAMPLE_COIN implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => EXAMPLE_COIN.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => EXAMPLE_COIN.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        EXAMPLE_COIN.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => EXAMPLE_COIN.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => EXAMPLE_COIN.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => EXAMPLE_COIN.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => EXAMPLE_COIN.fetch(client, id),
       new: (fields: EXAMPLE_COINFields) => {
         return new EXAMPLE_COIN([], fields)
       },
@@ -180,6 +177,14 @@ export class EXAMPLE_COIN implements StructClass {
     return EXAMPLE_COIN.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): EXAMPLE_COIN {
+    if (!isEXAMPLE_COIN(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a EXAMPLE_COIN object`)
+    }
+    return EXAMPLE_COIN.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link EXAMPLE_COIN.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): EXAMPLE_COIN {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -190,6 +195,7 @@ export class EXAMPLE_COIN implements StructClass {
     return EXAMPLE_COIN.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link EXAMPLE_COIN.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): EXAMPLE_COIN {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isEXAMPLE_COIN(data.bcs.type)) {
@@ -206,13 +212,15 @@ export class EXAMPLE_COIN implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<EXAMPLE_COIN> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isEXAMPLE_COIN(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<EXAMPLE_COIN> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isEXAMPLE_COIN(object.type)) {
       throw new Error(`object at id ${id} is not a EXAMPLE_COIN object`)
     }
-
-    return EXAMPLE_COIN.fromBcs(res.bcsBytes)
+    return EXAMPLE_COIN.fromBcs(object.content)
   }
 }
 
@@ -289,9 +297,10 @@ export class Faucet implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Faucet.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Faucet.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Faucet.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => Faucet.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Faucet.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => Faucet.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Faucet.fetch(client, id),
       new: (fields: FaucetFields) => {
         return new Faucet([], fields)
       },
@@ -380,6 +389,14 @@ export class Faucet implements StructClass {
     return Faucet.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): Faucet {
+    if (!isFaucet(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Faucet object`)
+    }
+    return Faucet.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Faucet.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): Faucet {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -390,6 +407,7 @@ export class Faucet implements StructClass {
     return Faucet.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Faucet.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): Faucet {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isFaucet(data.bcs.type)) {
@@ -406,12 +424,14 @@ export class Faucet implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<Faucet> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isFaucet(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<Faucet> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isFaucet(object.type)) {
       throw new Error(`object at id ${id} is not a Faucet object`)
     }
-
-    return Faucet.fromBcs(res.bcsBytes)
+    return Faucet.fromBcs(object.content)
   }
 }

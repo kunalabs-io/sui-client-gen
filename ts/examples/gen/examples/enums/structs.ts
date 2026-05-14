@@ -1,5 +1,6 @@
 import { bcs, BcsType } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import { getTypeOrigin } from '../../_envs'
 import {
@@ -29,10 +30,8 @@ import {
 import {
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   FieldsWithTypes,
   parseTypeName,
-  SupportedSuiClient,
 } from '../../_framework/util'
 import { Option } from '../../std/option/structs'
 import { Balance } from '../../sui/balance/structs'
@@ -164,9 +163,11 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Wrapped.fromJSONField([T, U, V], field),
       fromJSON: (json: Record<string, any>) => Wrapped.fromJSON([T, U, V], json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Wrapped.fromCoreObject([T, U, V], obj),
       fromSuiParsedData: (content: SuiParsedData) => Wrapped.fromSuiParsedData([T, U, V], content),
       fromSuiObjectData: (content: SuiObjectData) => Wrapped.fromSuiObjectData([T, U, V], content),
-      fetch: async (client: SupportedSuiClient, id: string) => Wrapped.fetch(client, [T, U, V], id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Wrapped.fetch(client, [T, U, V], id),
       new: (fields: WrappedFields<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>>) => {
         return new Wrapped([extractType(T), extractType(U), extractType(V)], fields)
       },
@@ -343,6 +344,38 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     return Wrapped.fromJSONField(typeArgs, json)
   }
 
+  static fromCoreObject<
+    T extends Reified<TypeArgument, any>,
+    U extends Reified<TypeArgument, any>,
+    V extends Reified<TypeArgument, any>,
+  >(
+    typeArgs: [T, U, V],
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): Wrapped<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>> {
+    if (!isWrapped(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Wrapped object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 3) {
+      throw new Error(
+        `type argument mismatch: expected 3 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 3; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return Wrapped.fromBcs(typeArgs, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Wrapped.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<
     T extends Reified<TypeArgument, any>,
     U extends Reified<TypeArgument, any>,
@@ -360,6 +393,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     return Wrapped.fromFieldsWithTypes(typeArgs, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Wrapped.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<
     T extends Reified<TypeArgument, any>,
     U extends Reified<TypeArgument, any>,
@@ -404,16 +438,19 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
     U extends Reified<TypeArgument, any>,
     V extends Reified<TypeArgument, any>,
   >(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArgs: [T, U, V],
     id: string,
   ): Promise<Wrapped<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isWrapped(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isWrapped(object.type)) {
       throw new Error(`object at id ${id} is not a Wrapped object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 3) {
       throw new Error(
         `type argument mismatch: expected 3 type arguments but got '${gotTypeArgs.length}'`,
@@ -429,7 +466,7 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
       }
     }
 
-    return Wrapped.fromBcs(typeArgs, res.bcsBytes)
+    return Wrapped.fromBcs(typeArgs, object.content)
   }
 }
 

@@ -28,7 +28,8 @@
  */
 
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -51,10 +52,8 @@ import {
 import {
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   FieldsWithTypes,
   parseTypeName,
-  SupportedSuiClient,
 } from '../../_framework/util'
 
 /* ============================== Permit =============================== */
@@ -132,9 +131,11 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Permit.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Permit.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Permit.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => Permit.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Permit.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => Permit.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Permit.fetch(client, T, id),
       new: (fields: PermitFields<ToPhantomTypeArgument<T>>) => {
         return new Permit([extractType(T)], fields)
       },
@@ -238,6 +239,34 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
     return Permit.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): Permit<ToPhantomTypeArgument<T>> {
+    if (!isPermit(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Permit object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return Permit.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Permit.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -251,6 +280,7 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
     return Permit.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Permit.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -287,16 +317,19 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<Permit<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isPermit(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isPermit(object.type)) {
       throw new Error(`object at id ${id} is not a Permit object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -312,6 +345,6 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
       }
     }
 
-    return Permit.fromBcs(typeArg, res.bcsBytes)
+    return Permit.fromBcs(typeArg, object.content)
   }
 }

@@ -1,7 +1,8 @@
 /** Functionality for converting Move types into values. Use with care! */
 
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
@@ -15,13 +16,7 @@ import {
   ToJSON,
   ToTypeStr,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 import { String } from '../ascii/structs'
 
 /* ============================== TypeName =============================== */
@@ -109,9 +104,11 @@ export class TypeName implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => TypeName.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => TypeName.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        TypeName.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => TypeName.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => TypeName.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => TypeName.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => TypeName.fetch(client, id),
       new: (fields: TypeNameFields) => {
         return new TypeName([], fields)
       },
@@ -192,6 +189,14 @@ export class TypeName implements StructClass {
     return TypeName.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): TypeName {
+    if (!isTypeName(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a TypeName object`)
+    }
+    return TypeName.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link TypeName.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): TypeName {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -202,6 +207,7 @@ export class TypeName implements StructClass {
     return TypeName.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link TypeName.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): TypeName {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isTypeName(data.bcs.type)) {
@@ -218,12 +224,14 @@ export class TypeName implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<TypeName> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isTypeName(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<TypeName> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isTypeName(object.type)) {
       throw new Error(`object at id ${id} is not a TypeName object`)
     }
-
-    return TypeName.fromBcs(res.bcsBytes)
+    return TypeName.fromBcs(object.content)
   }
 }

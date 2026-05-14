@@ -1,7 +1,8 @@
 /** A basic scalable vector library implemented using `Table`. */
 
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -24,10 +25,8 @@ import {
 import {
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   FieldsWithTypes,
   parseTypeName,
-  SupportedSuiClient,
 } from '../../_framework/util'
 import { Table } from '../table/structs'
 
@@ -107,9 +106,11 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
       bcs: reifiedBcs,
       fromJSONField: (field: any) => TableVec.fromJSONField(Element, field),
       fromJSON: (json: Record<string, any>) => TableVec.fromJSON(Element, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        TableVec.fromCoreObject(Element, obj),
       fromSuiParsedData: (content: SuiParsedData) => TableVec.fromSuiParsedData(Element, content),
       fromSuiObjectData: (content: SuiObjectData) => TableVec.fromSuiObjectData(Element, content),
-      fetch: async (client: SupportedSuiClient, id: string) => TableVec.fetch(client, Element, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => TableVec.fetch(client, Element, id),
       new: (fields: TableVecFields<ToPhantomTypeArgument<Element>>) => {
         return new TableVec([extractType(Element)], fields)
       },
@@ -216,6 +217,34 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
     return TableVec.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<Element extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: Element,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): TableVec<ToPhantomTypeArgument<Element>> {
+    if (!isTableVec(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a TableVec object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return TableVec.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link TableVec.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<Element extends PhantomReified<PhantomTypeArgument>>(
     typeArg: Element,
     content: SuiParsedData,
@@ -229,6 +258,7 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
     return TableVec.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link TableVec.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<Element extends PhantomReified<PhantomTypeArgument>>(
     typeArg: Element,
     data: SuiObjectData,
@@ -265,16 +295,19 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
   }
 
   static async fetch<Element extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: Element,
     id: string,
   ): Promise<TableVec<ToPhantomTypeArgument<Element>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isTableVec(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isTableVec(object.type)) {
       throw new Error(`object at id ${id} is not a TableVec object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -290,6 +323,6 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
       }
     }
 
-    return TableVec.fromBcs(typeArg, res.bcsBytes)
+    return TableVec.fromBcs(typeArg, object.content)
   }
 }

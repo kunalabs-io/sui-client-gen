@@ -17,7 +17,8 @@
  */
 
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -40,10 +41,8 @@ import {
 import {
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   FieldsWithTypes,
   parseTypeName,
-  SupportedSuiClient,
 } from '../../_framework/util'
 import { UID } from '../object/structs'
 
@@ -143,9 +142,11 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Table.fromJSONField([K, V], field),
       fromJSON: (json: Record<string, any>) => Table.fromJSON([K, V], json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Table.fromCoreObject([K, V], obj),
       fromSuiParsedData: (content: SuiParsedData) => Table.fromSuiParsedData([K, V], content),
       fromSuiObjectData: (content: SuiObjectData) => Table.fromSuiObjectData([K, V], content),
-      fetch: async (client: SupportedSuiClient, id: string) => Table.fetch(client, [K, V], id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Table.fetch(client, [K, V], id),
       new: (fields: TableFields<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>) => {
         return new Table([extractType(K), extractType(V)], fields)
       },
@@ -273,6 +274,37 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
     return Table.fromJSONField(typeArgs, json)
   }
 
+  static fromCoreObject<
+    K extends PhantomReified<PhantomTypeArgument>,
+    V extends PhantomReified<PhantomTypeArgument>,
+  >(
+    typeArgs: [K, V],
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
+    if (!isTable(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Table object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 2) {
+      throw new Error(
+        `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 2; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return Table.fromBcs(typeArgs, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Table.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<
     K extends PhantomReified<PhantomTypeArgument>,
     V extends PhantomReified<PhantomTypeArgument>,
@@ -289,6 +321,7 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
     return Table.fromFieldsWithTypes(typeArgs, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Table.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<
     K extends PhantomReified<PhantomTypeArgument>,
     V extends PhantomReified<PhantomTypeArgument>,
@@ -331,16 +364,19 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
     K extends PhantomReified<PhantomTypeArgument>,
     V extends PhantomReified<PhantomTypeArgument>,
   >(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArgs: [K, V],
     id: string,
   ): Promise<Table<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isTable(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isTable(object.type)) {
       throw new Error(`object at id ${id} is not a Table object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 2) {
       throw new Error(
         `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
@@ -356,6 +392,6 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
       }
     }
 
-    return Table.fromBcs(typeArgs, res.bcsBytes)
+    return Table.fromBcs(typeArgs, object.content)
   }
 }

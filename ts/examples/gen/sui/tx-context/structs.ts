@@ -1,5 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 import {
   decodeFromFields,
@@ -15,13 +16,7 @@ import {
   ToTypeStr,
   vector,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 
 /* ============================== TxContext =============================== */
@@ -128,9 +123,11 @@ export class TxContext implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => TxContext.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => TxContext.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        TxContext.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => TxContext.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => TxContext.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => TxContext.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => TxContext.fetch(client, id),
       new: (fields: TxContextFields) => {
         return new TxContext([], fields)
       },
@@ -234,6 +231,14 @@ export class TxContext implements StructClass {
     return TxContext.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): TxContext {
+    if (!isTxContext(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a TxContext object`)
+    }
+    return TxContext.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link TxContext.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): TxContext {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -244,6 +249,7 @@ export class TxContext implements StructClass {
     return TxContext.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link TxContext.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): TxContext {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isTxContext(data.bcs.type)) {
@@ -260,12 +266,14 @@ export class TxContext implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<TxContext> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isTxContext(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<TxContext> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isTxContext(object.type)) {
       throw new Error(`object at id ${id} is not a TxContext object`)
     }
-
-    return TxContext.fromBcs(res.bcsBytes)
+    return TxContext.fromBcs(object.content)
   }
 }

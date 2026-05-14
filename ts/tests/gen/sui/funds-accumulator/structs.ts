@@ -1,7 +1,8 @@
 /** A module for accumulating funds, i.e. Balance-like types. */
 
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -24,10 +25,8 @@ import {
 import {
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   FieldsWithTypes,
   parseTypeName,
-  SupportedSuiClient,
 } from '../../_framework/util'
 
 /* ============================== Withdrawal =============================== */
@@ -124,9 +123,11 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Withdrawal.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Withdrawal.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Withdrawal.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => Withdrawal.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Withdrawal.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => Withdrawal.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Withdrawal.fetch(client, T, id),
       new: (fields: WithdrawalFields<ToPhantomTypeArgument<T>>) => {
         return new Withdrawal([extractType(T)], fields)
       },
@@ -238,6 +239,34 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
     return Withdrawal.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): Withdrawal<ToPhantomTypeArgument<T>> {
+    if (!isWithdrawal(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Withdrawal object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return Withdrawal.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Withdrawal.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -251,6 +280,7 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
     return Withdrawal.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Withdrawal.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -287,16 +317,19 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<Withdrawal<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isWithdrawal(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isWithdrawal(object.type)) {
       throw new Error(`object at id ${id} is not a Withdrawal object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -312,6 +345,6 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
       }
     }
 
-    return Withdrawal.fromBcs(typeArg, res.bcsBytes)
+    return Withdrawal.fromBcs(typeArg, object.content)
   }
 }

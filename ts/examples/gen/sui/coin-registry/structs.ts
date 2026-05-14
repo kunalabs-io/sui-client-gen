@@ -6,7 +6,8 @@
  */
 
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -32,10 +33,8 @@ import {
 import {
   composeSuiType,
   compressSuiType,
-  fetchObjectBcs,
   FieldsWithTypes,
   parseTypeName,
-  SupportedSuiClient,
 } from '../../_framework/util'
 import { Vector } from '../../_framework/vector'
 import { Option } from '../../std/option/structs'
@@ -119,9 +118,11 @@ export class CoinRegistry implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => CoinRegistry.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => CoinRegistry.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        CoinRegistry.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => CoinRegistry.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => CoinRegistry.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => CoinRegistry.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => CoinRegistry.fetch(client, id),
       new: (fields: CoinRegistryFields) => {
         return new CoinRegistry([], fields)
       },
@@ -202,6 +203,14 @@ export class CoinRegistry implements StructClass {
     return CoinRegistry.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): CoinRegistry {
+    if (!isCoinRegistry(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a CoinRegistry object`)
+    }
+    return CoinRegistry.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link CoinRegistry.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): CoinRegistry {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -212,6 +221,7 @@ export class CoinRegistry implements StructClass {
     return CoinRegistry.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link CoinRegistry.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): CoinRegistry {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isCoinRegistry(data.bcs.type)) {
@@ -228,13 +238,15 @@ export class CoinRegistry implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<CoinRegistry> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isCoinRegistry(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<CoinRegistry> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isCoinRegistry(object.type)) {
       throw new Error(`object at id ${id} is not a CoinRegistry object`)
     }
-
-    return CoinRegistry.fromBcs(res.bcsBytes)
+    return CoinRegistry.fromBcs(object.content)
   }
 }
 
@@ -315,9 +327,11 @@ export class ExtraField implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => ExtraField.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ExtraField.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        ExtraField.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => ExtraField.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => ExtraField.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => ExtraField.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => ExtraField.fetch(client, id),
       new: (fields: ExtraFieldFields) => {
         return new ExtraField([], fields)
       },
@@ -403,6 +417,14 @@ export class ExtraField implements StructClass {
     return ExtraField.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): ExtraField {
+    if (!isExtraField(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a ExtraField object`)
+    }
+    return ExtraField.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ExtraField.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): ExtraField {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -413,6 +435,7 @@ export class ExtraField implements StructClass {
     return ExtraField.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ExtraField.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): ExtraField {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isExtraField(data.bcs.type)) {
@@ -429,13 +452,15 @@ export class ExtraField implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<ExtraField> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isExtraField(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<ExtraField> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isExtraField(object.type)) {
       throw new Error(`object at id ${id} is not a ExtraField object`)
     }
-
-    return ExtraField.fromBcs(res.bcsBytes)
+    return ExtraField.fromBcs(object.content)
   }
 }
 
@@ -515,9 +540,11 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => CurrencyKey.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => CurrencyKey.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        CurrencyKey.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => CurrencyKey.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => CurrencyKey.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => CurrencyKey.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => CurrencyKey.fetch(client, T, id),
       new: (fields: CurrencyKeyFields<ToPhantomTypeArgument<T>>) => {
         return new CurrencyKey([extractType(T)], fields)
       },
@@ -621,6 +648,34 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
     return CurrencyKey.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): CurrencyKey<ToPhantomTypeArgument<T>> {
+    if (!isCurrencyKey(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a CurrencyKey object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return CurrencyKey.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link CurrencyKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -634,6 +689,7 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
     return CurrencyKey.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link CurrencyKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -670,16 +726,19 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<CurrencyKey<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isCurrencyKey(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isCurrencyKey(object.type)) {
       throw new Error(`object at id ${id} is not a CurrencyKey object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -695,7 +754,7 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
       }
     }
 
-    return CurrencyKey.fromBcs(typeArg, res.bcsBytes)
+    return CurrencyKey.fromBcs(typeArg, object.content)
   }
 }
 
@@ -768,9 +827,11 @@ export class LegacyMetadataKey implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => LegacyMetadataKey.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => LegacyMetadataKey.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        LegacyMetadataKey.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => LegacyMetadataKey.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => LegacyMetadataKey.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => LegacyMetadataKey.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => LegacyMetadataKey.fetch(client, id),
       new: (fields: LegacyMetadataKeyFields) => {
         return new LegacyMetadataKey([], fields)
       },
@@ -851,6 +912,14 @@ export class LegacyMetadataKey implements StructClass {
     return LegacyMetadataKey.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): LegacyMetadataKey {
+    if (!isLegacyMetadataKey(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a LegacyMetadataKey object`)
+    }
+    return LegacyMetadataKey.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link LegacyMetadataKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): LegacyMetadataKey {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -861,6 +930,7 @@ export class LegacyMetadataKey implements StructClass {
     return LegacyMetadataKey.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link LegacyMetadataKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): LegacyMetadataKey {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isLegacyMetadataKey(data.bcs.type)) {
@@ -877,13 +947,15 @@ export class LegacyMetadataKey implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<LegacyMetadataKey> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isLegacyMetadataKey(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<LegacyMetadataKey> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isLegacyMetadataKey(object.type)) {
       throw new Error(`object at id ${id} is not a LegacyMetadataKey object`)
     }
-
-    return LegacyMetadataKey.fromBcs(res.bcsBytes)
+    return LegacyMetadataKey.fromBcs(object.content)
   }
 }
 
@@ -967,9 +1039,11 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => MetadataCap.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => MetadataCap.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        MetadataCap.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => MetadataCap.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => MetadataCap.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => MetadataCap.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => MetadataCap.fetch(client, T, id),
       new: (fields: MetadataCapFields<ToPhantomTypeArgument<T>>) => {
         return new MetadataCap([extractType(T)], fields)
       },
@@ -1073,6 +1147,34 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
     return MetadataCap.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): MetadataCap<ToPhantomTypeArgument<T>> {
+    if (!isMetadataCap(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a MetadataCap object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return MetadataCap.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link MetadataCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -1086,6 +1188,7 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
     return MetadataCap.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link MetadataCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -1122,16 +1225,19 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<MetadataCap<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isMetadataCap(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isMetadataCap(object.type)) {
       throw new Error(`object at id ${id} is not a MetadataCap object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -1147,7 +1253,7 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
       }
     }
 
-    return MetadataCap.fromBcs(typeArg, res.bcsBytes)
+    return MetadataCap.fromBcs(typeArg, object.content)
   }
 }
 
@@ -1223,9 +1329,11 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Borrow.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Borrow.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Borrow.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => Borrow.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Borrow.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => Borrow.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Borrow.fetch(client, T, id),
       new: (fields: BorrowFields<ToPhantomTypeArgument<T>>) => {
         return new Borrow([extractType(T)], fields)
       },
@@ -1329,6 +1437,34 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
     return Borrow.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): Borrow<ToPhantomTypeArgument<T>> {
+    if (!isBorrow(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Borrow object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return Borrow.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Borrow.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -1342,6 +1478,7 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
     return Borrow.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Borrow.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -1378,16 +1515,19 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<Borrow<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isBorrow(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isBorrow(object.type)) {
       throw new Error(`object at id ${id} is not a Borrow object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -1403,7 +1543,7 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
       }
     }
 
-    return Borrow.fromBcs(typeArg, res.bcsBytes)
+    return Borrow.fromBcs(typeArg, object.content)
   }
 }
 
@@ -1551,9 +1691,11 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Currency.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => Currency.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        Currency.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) => Currency.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) => Currency.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) => Currency.fetch(client, T, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Currency.fetch(client, T, id),
       new: (fields: CurrencyFields<ToPhantomTypeArgument<T>>) => {
         return new Currency([extractType(T)], fields)
       },
@@ -1731,6 +1873,34 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
     return Currency.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): Currency<ToPhantomTypeArgument<T>> {
+    if (!isCurrency(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Currency object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return Currency.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Currency.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -1744,6 +1914,7 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
     return Currency.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Currency.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -1780,16 +1951,19 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<Currency<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isCurrency(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isCurrency(object.type)) {
       throw new Error(`object at id ${id} is not a Currency object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -1805,7 +1979,7 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
       }
     }
 
-    return Currency.fromBcs(typeArg, res.bcsBytes)
+    return Currency.fromBcs(typeArg, object.content)
   }
 }
 
@@ -1901,11 +2075,13 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
       bcs: reifiedBcs,
       fromJSONField: (field: any) => CurrencyInitializer.fromJSONField(T, field),
       fromJSON: (json: Record<string, any>) => CurrencyInitializer.fromJSON(T, json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
+        CurrencyInitializer.fromCoreObject(T, obj),
       fromSuiParsedData: (content: SuiParsedData) =>
         CurrencyInitializer.fromSuiParsedData(T, content),
       fromSuiObjectData: (content: SuiObjectData) =>
         CurrencyInitializer.fromSuiObjectData(T, content),
-      fetch: async (client: SupportedSuiClient, id: string) =>
+      fetch: async (client: ClientWithCoreApi, id: string) =>
         CurrencyInitializer.fetch(client, T, id),
       new: (fields: CurrencyInitializerFields<ToPhantomTypeArgument<T>>) => {
         return new CurrencyInitializer([extractType(T)], fields)
@@ -2020,6 +2196,34 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
     return CurrencyInitializer.fromJSONField(typeArg, json)
   }
 
+  static fromCoreObject<T extends PhantomReified<PhantomTypeArgument>>(
+    typeArg: T,
+    obj: SuiClientTypes.Object<{ content: true }>,
+  ): CurrencyInitializer<ToPhantomTypeArgument<T>> {
+    if (!isCurrencyInitializer(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a CurrencyInitializer object`)
+    }
+
+    const gotTypeArgs = parseTypeName(obj.type).typeArgs
+    if (gotTypeArgs.length !== 1) {
+      throw new Error(
+        `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
+      )
+    }
+    for (let i = 0; i < 1; i++) {
+      const gotTypeArg = compressSuiType(gotTypeArgs[i])
+      const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
+      if (gotTypeArg !== expectedTypeArg) {
+        throw new Error(
+          `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
+        )
+      }
+    }
+
+    return CurrencyInitializer.fromBcs(typeArg, obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link CurrencyInitializer.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     content: SuiParsedData,
@@ -2033,6 +2237,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
     return CurrencyInitializer.fromFieldsWithTypes(typeArg, content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link CurrencyInitializer.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
     typeArg: T,
     data: SuiObjectData,
@@ -2069,16 +2274,19 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
-    client: SupportedSuiClient,
+    client: ClientWithCoreApi,
     typeArg: T,
     id: string,
   ): Promise<CurrencyInitializer<ToPhantomTypeArgument<T>>> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isCurrencyInitializer(res.type)) {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isCurrencyInitializer(object.type)) {
       throw new Error(`object at id ${id} is not a CurrencyInitializer object`)
     }
 
-    const gotTypeArgs = parseTypeName(res.type).typeArgs
+    const gotTypeArgs = parseTypeName(object.type).typeArgs
     if (gotTypeArgs.length !== 1) {
       throw new Error(
         `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
@@ -2094,7 +2302,7 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
       }
     }
 
-    return CurrencyInitializer.fromBcs(typeArg, res.bcsBytes)
+    return CurrencyInitializer.fromBcs(typeArg, object.content)
   }
 }
 

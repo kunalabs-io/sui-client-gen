@@ -1,7 +1,8 @@
 /** URL: standard Uniform Resource Locator string */
 
 import { bcs } from '@mysten/sui/bcs'
-import { SuiObjectData, SuiParsedData } from '@mysten/sui/client'
+import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
+import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
@@ -15,13 +16,7 @@ import {
   ToJSON,
   ToTypeStr,
 } from '../../_framework/reified'
-import {
-  composeSuiType,
-  compressSuiType,
-  fetchObjectBcs,
-  FieldsWithTypes,
-  SupportedSuiClient,
-} from '../../_framework/util'
+import { composeSuiType, compressSuiType, FieldsWithTypes } from '../../_framework/util'
 import { String } from '../../std/ascii/structs'
 
 /* ============================== Url =============================== */
@@ -92,9 +87,10 @@ export class Url implements StructClass {
       bcs: reifiedBcs,
       fromJSONField: (field: any) => Url.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Url.fromJSON(json),
+      fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Url.fromCoreObject(obj),
       fromSuiParsedData: (content: SuiParsedData) => Url.fromSuiParsedData(content),
       fromSuiObjectData: (content: SuiObjectData) => Url.fromSuiObjectData(content),
-      fetch: async (client: SupportedSuiClient, id: string) => Url.fetch(client, id),
+      fetch: async (client: ClientWithCoreApi, id: string) => Url.fetch(client, id),
       new: (fields: UrlFields) => {
         return new Url([], fields)
       },
@@ -175,6 +171,14 @@ export class Url implements StructClass {
     return Url.fromJSONField(json)
   }
 
+  static fromCoreObject(obj: SuiClientTypes.Object<{ content: true }>): Url {
+    if (!isUrl(obj.type)) {
+      throw new Error(`object at ${obj.objectId} is not a Url object`)
+    }
+    return Url.fromBcs(obj.content)
+  }
+
+  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Url.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiParsedData(content: SuiParsedData): Url {
     if (content.dataType !== 'moveObject') {
       throw new Error('not an object')
@@ -185,6 +189,7 @@ export class Url implements StructClass {
     return Url.fromFieldsWithTypes(content)
   }
 
+  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Url.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
   static fromSuiObjectData(data: SuiObjectData): Url {
     if (data.bcs) {
       if (data.bcs.dataType !== 'moveObject' || !isUrl(data.bcs.type)) {
@@ -201,12 +206,14 @@ export class Url implements StructClass {
     )
   }
 
-  static async fetch(client: SupportedSuiClient, id: string): Promise<Url> {
-    const res = await fetchObjectBcs(client, id)
-    if (!isUrl(res.type)) {
+  static async fetch(client: ClientWithCoreApi, id: string): Promise<Url> {
+    const { object } = await client.core.getObject({
+      objectId: id,
+      include: { content: true },
+    })
+    if (!isUrl(object.type)) {
       throw new Error(`object at id ${id} is not a Url object`)
     }
-
-    return Url.fromBcs(res.bcsBytes)
+    return Url.fromBcs(object.content)
   }
 }
