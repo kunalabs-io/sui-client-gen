@@ -83,22 +83,13 @@ pub fn collect_all_environments(manifest: &GenManifest) -> Vec<String> {
     envs.into_iter().collect()
 }
 
-/// Build a map of top-level package addresses to their names.
-///
-/// Filters the id_map to only include packages that are in the top_level_packages set.
-fn build_top_level_addr_map(
-    id_map: &BTreeMap<AccountAddress, move_package_alt::schema::PackageName>,
-    top_level_packages: &BTreeSet<move_package_alt::schema::PackageName>,
+/// Convert the model's top-level address map to Symbol values for code generation.
+fn to_symbol_addr_map(
+    top_level_addr_map: &BTreeMap<AccountAddress, move_package_alt::schema::PackageName>,
 ) -> BTreeMap<AccountAddress, Symbol> {
-    id_map
+    top_level_addr_map
         .iter()
-        .filter_map(|(addr, name)| {
-            if top_level_packages.contains(name) {
-                Some((*addr, Symbol::from(name.as_str())))
-            } else {
-                None
-            }
-        })
+        .map(|(addr, name)| (*addr, Symbol::from(name.as_str())))
         .collect()
 }
 
@@ -151,8 +142,7 @@ pub async fn build_multi_env_models(
     .context(format!("Failed to build model for default environment '{}'", default_env))?;
 
     // Build top-level address map and folder names from default model
-    let top_level_addr_map =
-        build_top_level_addr_map(&default_model.id_map, &default_model.top_level_packages);
+    let top_level_addr_map = to_symbol_addr_map(&default_model.top_level_addr_map);
     let folder_names =
         crate::layout::build_package_folder_names(&default_model.id_map, &top_level_addr_map);
 
@@ -226,8 +216,7 @@ pub async fn build_multi_env_models(
         env_id_maps.insert(env_name.clone(), env_model.id_map.clone());
 
         // Build environment-specific folder_names and top_level_addr_map for IR extraction
-        let env_top_level_addr_map =
-            build_top_level_addr_map(&env_model.id_map, &env_model.top_level_packages);
+        let env_top_level_addr_map = to_symbol_addr_map(&env_model.top_level_addr_map);
         let env_folder_names = crate::layout::build_package_folder_names(
             &env_model.id_map,
             &env_top_level_addr_map,

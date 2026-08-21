@@ -35,7 +35,7 @@ struct CachedTestData {
     published_at: BTreeMap<AccountAddress, AccountAddress>,
     type_origin_table: TypeOriginTable,
     version_table: VersionTable,
-    top_level_packages: BTreeSet<PackageName>,
+    top_level_addr_map: BTreeMap<AccountAddress, PackageName>,
 }
 
 /// Global cache for test data
@@ -54,7 +54,7 @@ fn get_cached_data() -> &'static CachedTestData {
             published_at: result.published_at,
             type_origin_table: result.type_origin_table,
             version_table: result.version_table,
-            top_level_packages: result.top_level_packages,
+            top_level_addr_map: result.top_level_addr_map,
         }
     })
 }
@@ -146,7 +146,7 @@ fn test_top_level_packages_count() {
 
     // gen.toml has exactly 3 top-level packages
     assert_eq!(
-        data.top_level_packages.len(),
+        data.top_level_addr_map.len(),
         3,
         "Should have exactly 3 top-level packages from gen.toml"
     );
@@ -157,7 +157,7 @@ fn test_top_level_packages_contains_expected() {
     let data = get_cached_data();
 
     let top_level_names: BTreeSet<&str> =
-        data.top_level_packages.iter().map(|n| n.as_str()).collect();
+        data.top_level_addr_map.values().map(|n| n.as_str()).collect();
 
     assert!(
         top_level_names.contains("pkg_published_toplevel"),
@@ -179,7 +179,7 @@ fn test_transitive_packages_not_in_top_level() {
     let data = get_cached_data();
 
     let top_level_names: BTreeSet<&str> =
-        data.top_level_packages.iter().map(|n| n.as_str()).collect();
+        data.top_level_addr_map.values().map(|n| n.as_str()).collect();
 
     // Transitive dependencies should NOT be in top_level_packages
     assert!(
@@ -702,5 +702,123 @@ async fn test_custom_env_model_build() {
         actual_published_at,
         Some(&expected_published_at),
         "pkg_unpublished_transitive should have published-at address from Published.toml"
+    );
+}
+
+// ===========================================================================
+// RENAME-FROM / SHARED-NAME TESTS
+// ===========================================================================
+
+/// Get the path to the rename-from test fixtures.
+///
+/// The fixture has two distinct packages that are both named `pkg_b`: one is a
+/// top-level package (gen.toml `pkg_b`), the other is a dependency of `pkg_a`
+/// bound as `pkg_b2` via `rename-from = "pkg_b"`.
+fn rename_from_fixtures_path() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/rename-from")
+}
+
+async fn build_rename_from_model() -> ModelResult {
+    let fixtures = rename_from_fixtures_path();
+    let gen_toml_path = fixtures.join("gen.toml");
+
+    let manifest = sui_client_gen::manifest::parse_gen_manifest_from_file(&gen_toml_path)
+        .expect("Failed to parse gen.toml");
+
+    let graphql_endpoint = sui_client_gen::resolve_graphql(
+        manifest.config.graphql.as_deref(),
+        &manifest.config.environment,
+        &manifest.environments,
+    );
+    let graphql_client = GraphQLClient::new(&graphql_endpoint);
+
+    let chain_id = sui_client_gen::resolve_chain_id(
+        &manifest.config.environment,
+        &manifest.environments,
+    )
+    .expect("Failed to resolve chain ID");
+
+    model_builder::build_model(
+        &manifest.packages,
+        &gen_toml_path,
+        &manifest.config.environment,
+        &chain_id,
+        &manifest.environments,
+        &manifest.dep_replacements,
+        &graphql_client,
+    )
+    .await
+    .expect("Failed to build model")
+}
+
+/// A transitive package that shares its name with a top-level package (via rename-from)
+/// must not be promoted to top-level, and folder names must stay unique.
+#[tokio::test]
+async fn test_rename_from_shared_name_not_promoted_to_top_level() {
+    use move_symbol_pool::Symbol;
+    use sui_client_gen::layout::build_package_folder_names;
+
+    let result = build_rename_from_model().await;
+
+    // Both pkg_b packages are in the id_map under their real name, with distinct addresses
+    let b_addrs: Vec<AccountAddress> = result
+        .id_map
+        .iter()
+        .filter(|(_, n)| n.as_str() == "pkg_b")
+        .map(|(a, _)| *a)
+        .collect();
+    assert_eq!(
+        b_addrs.len(),
+        2,
+        "id_map should contain two distinct packages named pkg_b"
+    );
+
+    // Top-level packages are exactly the gen.toml entries
+    assert_eq!(
+        result.top_level_addr_map.len(),
+        2,
+        "only gen.toml entries should be top-level"
+    );
+    let top_names: BTreeSet<&str> = result
+        .top_level_addr_map
+        .values()
+        .map(|n| n.as_str())
+        .collect();
+    assert_eq!(top_names, BTreeSet::from(["pkg_a", "pkg_b"]));
+
+    // Only one of the two pkg_b addresses is top-level; the renamed-in one stays a dependency
+    let top_b_addrs: Vec<AccountAddress> = b_addrs
+        .iter()
+        .copied()
+        .filter(|a| result.top_level_addr_map.contains_key(a))
+        .collect();
+    assert_eq!(
+        top_b_addrs.len(),
+        1,
+        "the package bound via rename-from must not be marked top-level"
+    );
+
+    // Folder names must be unique across top-level packages and dependencies
+    let top_symbols: BTreeMap<AccountAddress, Symbol> = result
+        .top_level_addr_map
+        .iter()
+        .map(|(a, n)| (*a, Symbol::from(n.as_str())))
+        .collect();
+    let folder_names = build_package_folder_names(&result.id_map, &top_symbols);
+
+    let unique_names: BTreeSet<&String> = folder_names.values().collect();
+    assert_eq!(
+        unique_names.len(),
+        folder_names.len(),
+        "folder names must be unique across all packages"
+    );
+
+    let top_b_addr = top_b_addrs[0];
+    let dep_b_addr = *b_addrs.iter().find(|a| **a != top_b_addr).unwrap();
+    assert_eq!(folder_names.get(&top_b_addr), Some(&"pkg-b".to_string()));
+    assert_eq!(
+        folder_names.get(&dep_b_addr),
+        Some(&"pkg-b-1".to_string()),
+        "the same-named dependency must get a suffixed folder name"
     );
 }

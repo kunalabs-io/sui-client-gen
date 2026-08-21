@@ -1,0 +1,7 @@
+[package]
+name = "pkg_a"
+edition = "2024"
+
+[dependencies]
+pkg_b = { local = "../pkg_b" }
+pkg_b2 = { local = "../pkg_b_other", rename-from = "pkg_b" }
