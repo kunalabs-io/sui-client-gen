@@ -600,7 +600,10 @@ mod tests {
 
         // Check the on-chain package
         let pkg = act.packages.get(&PackageName::new("SomePackage").unwrap()).unwrap();
-        assert!(matches!(&pkg.dependency_info, ManifestDependencyInfo::OnChain(_)));
+        assert!(matches!(
+            &pkg.dependency_info,
+            ManifestDependencyInfo::OnChainPlaceholder(_)
+        ));
     }
 
     #[test]
@@ -634,7 +637,7 @@ mod tests {
         ));
         assert!(matches!(
             act.packages.get(&PackageName::new("onchain_pkg").unwrap()).map(|d| &d.dependency_info),
-            Some(ManifestDependencyInfo::OnChain(_))
+            Some(ManifestDependencyInfo::OnChainPlaceholder(_))
         ));
     }
 

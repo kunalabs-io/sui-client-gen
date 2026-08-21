@@ -17,7 +17,7 @@ use move_package_alt::PackageLoader;
 use move_package_alt::RootPackage;
 use move_package_alt::schema::{
     DefaultDependency, Environment, ExternalDependency, LocalDepInfo, ManifestDependencyInfo,
-    ManifestGitDependency, OnChainDepInfo, PackageName, SystemDependency,
+    ManifestGitDependency, OnChainAddress, OnChainPlaceholder, PackageName, SystemDependency,
 };
 use move_package_alt_compilation::build_config::BuildConfig;
 use sui_package_alt::SuiFlavor;
@@ -82,8 +82,8 @@ pub async fn build_model(
     let env = Environment::new(environment.to_string(), chain_id.to_string());
 
     // Load root package
-    let root_pkg = PackageLoader::new(temp_dir.path(), env)
-        .load::<SuiFlavor>()
+    let root_pkg = PackageLoader::new(temp_dir.path(), env, SuiFlavor::new())
+        .load()
         .await
         .context("Failed to load root package")?;
 
@@ -242,8 +242,11 @@ fn format_dependency_info(dep: &ManifestDependencyInfo, manifest_dir: &Path) -> 
             let data_str = format_toml_value(data);
             Ok(vec![format!("r.{} = {}", resolver, data_str)])
         }
-        ManifestDependencyInfo::OnChain(OnChainDepInfo { .. }) => {
+        ManifestDependencyInfo::OnChainPlaceholder(OnChainPlaceholder { .. }) => {
             Ok(vec!["on-chain = true".to_string()])
+        }
+        ManifestDependencyInfo::OnChain(OnChainAddress { on_chain }) => {
+            Ok(vec![format!("on-chain = \"{}\"", on_chain)])
         }
         ManifestDependencyInfo::System(SystemDependency { system }) => {
             Ok(vec![format!("system = \"{}\"", system)])
@@ -704,9 +707,11 @@ mod tests {
     #[test]
     fn test_format_onchain_dependency() {
         // On-chain dependency: { on-chain = true }
-        let dep = make_default_dep(ManifestDependencyInfo::OnChain(OnChainDepInfo {
-            on_chain: ConstTrue,
-        }));
+        let dep = make_default_dep(ManifestDependencyInfo::OnChainPlaceholder(
+            OnChainPlaceholder {
+                on_chain: ConstTrue,
+            },
+        ));
 
         let manifest_dir = PathBuf::from("/tmp");
         let result = format_dependency(&dep, &manifest_dir).unwrap();

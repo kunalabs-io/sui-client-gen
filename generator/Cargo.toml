@@ -4,7 +4,7 @@ version = "0.4.0"
 edition = "2021"
 
 [dependencies]
-tokio = "=1.49.0"
+tokio = "=1.52.1"
 anyhow = "1.0.71"
 futures = "0.3.28"
 tempfile = "3.20.0"
