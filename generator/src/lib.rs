@@ -31,7 +31,8 @@ pub fn resolve_chain_id(environment: &str, environments: &Environments) -> Optio
         return env.chain_id.clone();
     }
     // Fall back to defaults
-    SuiFlavor::default_environments()
+    SuiFlavor::new()
+        .default_environments()
         .get(environment)
         .cloned()
 }
