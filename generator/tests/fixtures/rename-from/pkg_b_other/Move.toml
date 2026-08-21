@@ -1,0 +1,3 @@
+[package]
+name = "pkg_b"
+edition = "2024"

@@ -47,8 +47,8 @@ pub struct ModelResult {
     pub type_origin_table: TypeOriginTable,
     /// Version table for PKG_V{N} exports
     pub version_table: VersionTable,
-    /// Set of top-level package names (from gen.toml)
-    pub top_level_packages: BTreeSet<PackageName>,
+    /// Map from package address to gen.toml package name, for top-level packages only
+    pub top_level_addr_map: BTreeMap<AccountAddress, PackageName>,
 }
 
 /// Build a Move model from packages using the move_package_alt system.
@@ -90,8 +90,8 @@ pub async fn build_model(
     // Build published_at map (needed for GraphQL queries)
     let published_at = build_published_at_map(&root_pkg);
 
-    // Build top-level packages set
-    let top_level_packages = build_top_level_packages(&root_pkg, packages);
+    // Build top-level address map from the stub root's direct dependencies
+    let top_level_addr_map = build_top_level_addr_map(&root_pkg);
 
     // Build id_map from root package (with flexible name matching for legacy packages)
     let id_map = build_id_map_from_root_pkg(&root_pkg);
@@ -119,7 +119,7 @@ pub async fn build_model(
         published_at,
         type_origin_table,
         version_table,
-        top_level_packages,
+        top_level_addr_map,
     })
 }
 
@@ -305,20 +305,33 @@ fn format_dep_replacement(replacement: &DepReplacement, manifest_dir: &Path) -> 
     Ok(format!("{{ {} }}", parts.join(", ")))
 }
 
-/// Build the set of top-level package names from gen.toml.
-fn build_top_level_packages(
+/// Build the top-level address map from the stub root's direct dependencies.
+///
+/// The stub package lists gen.toml packages as direct dependencies keyed by their gen.toml
+/// name (rename-from bindings included), so the root's named addresses resolve each gen.toml
+/// key to the exact address of the package it refers to. Matching by identity rather than by
+/// package name matters: a transitive package that shares a name with a gen.toml entry (e.g.
+/// via rename-from) must not be mistaken for a top-level package.
+fn build_top_level_addr_map(
     root_pkg: &RootPackage<SuiFlavor>,
-    gen_packages: &Packages,
-) -> BTreeSet<PackageName> {
-    let gen_package_names: BTreeSet<&PackageName> = gen_packages.keys().collect();
+) -> BTreeMap<AccountAddress, PackageName> {
+    use move_package_alt::NamedAddress;
 
-    root_pkg
-        .packages()
-        .into_iter()
-        .filter(|pkg_info| !pkg_info.is_root())
-        .filter(|pkg_info| gen_package_names.contains(pkg_info.name()))
-        .map(|pkg_info| pkg_info.name().clone())
-        .collect()
+    let mut result = BTreeMap::new();
+
+    if let Ok(named_addrs) = root_pkg.package_info().named_addresses() {
+        for (name, addr) in named_addrs {
+            let address = match addr {
+                NamedAddress::Unpublished { dummy_addr } => dummy_addr.0,
+                NamedAddress::Defined(original_id) => original_id.0,
+                // The root's own entry; the stub itself is not a top-level package
+                NamedAddress::RootPackage(_) => continue,
+            };
+            result.insert(address, name);
+        }
+    }
+
+    result
 }
 
 /// Build the published_at map from the loaded RootPackage.
