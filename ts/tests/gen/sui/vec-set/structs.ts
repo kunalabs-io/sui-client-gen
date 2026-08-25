@@ -1,7 +1,5 @@
 import { bcs, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -110,8 +108,6 @@ export class VecSet<K extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => VecSet.fromJSON(K, json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         VecSet.fromCoreObject(K, obj),
-      fromSuiParsedData: (content: SuiParsedData) => VecSet.fromSuiParsedData(K, content),
-      fromSuiObjectData: (content: SuiObjectData) => VecSet.fromSuiObjectData(K, content),
       fetch: async (client: ClientWithCoreApi, id: string) => VecSet.fetch(client, K, id),
       new: (fields: VecSetFields<ToTypeArgument<K>>) => {
         return new VecSet([extractType(K)], fields)
@@ -243,56 +239,6 @@ export class VecSet<K extends TypeArgument> implements StructClass {
     }
 
     return VecSet.fromBcs(typeArg, obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link VecSet.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<K extends Reified<TypeArgument, any>>(
-    typeArg: K,
-    content: SuiParsedData,
-  ): VecSet<ToTypeArgument<K>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isVecSet(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a VecSet object`)
-    }
-    return VecSet.fromFieldsWithTypes(typeArg, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link VecSet.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<K extends Reified<TypeArgument, any>>(
-    typeArg: K,
-    data: SuiObjectData,
-  ): VecSet<ToTypeArgument<K>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isVecSet(data.bcs.type)) {
-        throw new Error(`object at is not a VecSet object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 1; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return VecSet.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return VecSet.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch<K extends Reified<TypeArgument, any>>(

@@ -1,7 +1,5 @@
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -103,8 +101,6 @@ export class EventStreamHead implements StructClass {
       fromJSON: (json: Record<string, any>) => EventStreamHead.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         EventStreamHead.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => EventStreamHead.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => EventStreamHead.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => EventStreamHead.fetch(client, id),
       new: (fields: EventStreamHeadFields) => {
         return new EventStreamHead([], fields)
@@ -201,34 +197,6 @@ export class EventStreamHead implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a EventStreamHead object`)
     }
     return EventStreamHead.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link EventStreamHead.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): EventStreamHead {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isEventStreamHead(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a EventStreamHead object`)
-    }
-    return EventStreamHead.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link EventStreamHead.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): EventStreamHead {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isEventStreamHead(data.bcs.type)) {
-        throw new Error(`object at is not a EventStreamHead object`)
-      }
-
-      return EventStreamHead.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return EventStreamHead.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<EventStreamHead> {

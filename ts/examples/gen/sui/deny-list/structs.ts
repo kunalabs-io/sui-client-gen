@@ -6,8 +6,7 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
+import { fromHex, toHex } from '@mysten/sui/utils'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -106,8 +105,6 @@ export class DenyList implements StructClass {
       fromJSON: (json: Record<string, any>) => DenyList.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         DenyList.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => DenyList.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => DenyList.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => DenyList.fetch(client, id),
       new: (fields: DenyListFields) => {
         return new DenyList([], fields)
@@ -201,34 +198,6 @@ export class DenyList implements StructClass {
     return DenyList.fromBcs(obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link DenyList.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): DenyList {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isDenyList(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a DenyList object`)
-    }
-    return DenyList.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link DenyList.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): DenyList {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isDenyList(data.bcs.type)) {
-        throw new Error(`object at is not a DenyList object`)
-      }
-
-      return DenyList.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return DenyList.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch(client: ClientWithCoreApi, id: string): Promise<DenyList> {
     const { object } = await client.core.getObject({
       objectId: id,
@@ -315,8 +284,6 @@ export class ConfigWriteCap implements StructClass {
       fromJSON: (json: Record<string, any>) => ConfigWriteCap.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         ConfigWriteCap.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => ConfigWriteCap.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => ConfigWriteCap.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => ConfigWriteCap.fetch(client, id),
       new: (fields: ConfigWriteCapFields) => {
         return new ConfigWriteCap([], fields)
@@ -403,34 +370,6 @@ export class ConfigWriteCap implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a ConfigWriteCap object`)
     }
     return ConfigWriteCap.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ConfigWriteCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): ConfigWriteCap {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isConfigWriteCap(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a ConfigWriteCap object`)
-    }
-    return ConfigWriteCap.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ConfigWriteCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): ConfigWriteCap {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isConfigWriteCap(data.bcs.type)) {
-        throw new Error(`object at is not a ConfigWriteCap object`)
-      }
-
-      return ConfigWriteCap.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return ConfigWriteCap.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<ConfigWriteCap> {
@@ -522,8 +461,6 @@ export class ConfigKey implements StructClass {
       fromJSON: (json: Record<string, any>) => ConfigKey.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         ConfigKey.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => ConfigKey.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => ConfigKey.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => ConfigKey.fetch(client, id),
       new: (fields: ConfigKeyFields) => {
         return new ConfigKey([], fields)
@@ -617,34 +554,6 @@ export class ConfigKey implements StructClass {
     return ConfigKey.fromBcs(obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ConfigKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): ConfigKey {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isConfigKey(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a ConfigKey object`)
-    }
-    return ConfigKey.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ConfigKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): ConfigKey {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isConfigKey(data.bcs.type)) {
-        throw new Error(`object at is not a ConfigKey object`)
-      }
-
-      return ConfigKey.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return ConfigKey.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch(client: ClientWithCoreApi, id: string): Promise<ConfigKey> {
     const { object } = await client.core.getObject({
       objectId: id,
@@ -727,8 +636,6 @@ export class AddressKey implements StructClass {
       fromJSON: (json: Record<string, any>) => AddressKey.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         AddressKey.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => AddressKey.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => AddressKey.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => AddressKey.fetch(client, id),
       new: (fields: AddressKeyFields) => {
         return new AddressKey([], fields)
@@ -820,34 +727,6 @@ export class AddressKey implements StructClass {
     return AddressKey.fromBcs(obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link AddressKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): AddressKey {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isAddressKey(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a AddressKey object`)
-    }
-    return AddressKey.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link AddressKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): AddressKey {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isAddressKey(data.bcs.type)) {
-        throw new Error(`object at is not a AddressKey object`)
-      }
-
-      return AddressKey.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return AddressKey.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch(client: ClientWithCoreApi, id: string): Promise<AddressKey> {
     const { object } = await client.core.getObject({
       objectId: id,
@@ -931,8 +810,6 @@ export class GlobalPauseKey implements StructClass {
       fromJSON: (json: Record<string, any>) => GlobalPauseKey.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         GlobalPauseKey.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => GlobalPauseKey.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => GlobalPauseKey.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => GlobalPauseKey.fetch(client, id),
       new: (fields: GlobalPauseKeyFields) => {
         return new GlobalPauseKey([], fields)
@@ -1019,34 +896,6 @@ export class GlobalPauseKey implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a GlobalPauseKey object`)
     }
     return GlobalPauseKey.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link GlobalPauseKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): GlobalPauseKey {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isGlobalPauseKey(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a GlobalPauseKey object`)
-    }
-    return GlobalPauseKey.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link GlobalPauseKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): GlobalPauseKey {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isGlobalPauseKey(data.bcs.type)) {
-        throw new Error(`object at is not a GlobalPauseKey object`)
-      }
-
-      return GlobalPauseKey.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return GlobalPauseKey.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<GlobalPauseKey> {
@@ -1140,10 +989,6 @@ export class PerTypeConfigCreated implements StructClass {
       fromJSON: (json: Record<string, any>) => PerTypeConfigCreated.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         PerTypeConfigCreated.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) =>
-        PerTypeConfigCreated.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) =>
-        PerTypeConfigCreated.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) =>
         PerTypeConfigCreated.fetch(client, id),
       new: (fields: PerTypeConfigCreatedFields) => {
@@ -1236,36 +1081,6 @@ export class PerTypeConfigCreated implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a PerTypeConfigCreated object`)
     }
     return PerTypeConfigCreated.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PerTypeConfigCreated.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): PerTypeConfigCreated {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isPerTypeConfigCreated(content.type)) {
-      throw new Error(
-        `object at ${(content.fields as any).id} is not a PerTypeConfigCreated object`,
-      )
-    }
-    return PerTypeConfigCreated.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PerTypeConfigCreated.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): PerTypeConfigCreated {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isPerTypeConfigCreated(data.bcs.type)) {
-        throw new Error(`object at is not a PerTypeConfigCreated object`)
-      }
-
-      return PerTypeConfigCreated.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return PerTypeConfigCreated.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<PerTypeConfigCreated> {
@@ -1376,8 +1191,6 @@ export class PerTypeList implements StructClass {
       fromJSON: (json: Record<string, any>) => PerTypeList.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         PerTypeList.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => PerTypeList.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => PerTypeList.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => PerTypeList.fetch(client, id),
       new: (fields: PerTypeListFields) => {
         return new PerTypeList([], fields)
@@ -1492,34 +1305,6 @@ export class PerTypeList implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a PerTypeList object`)
     }
     return PerTypeList.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PerTypeList.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): PerTypeList {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isPerTypeList(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a PerTypeList object`)
-    }
-    return PerTypeList.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PerTypeList.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): PerTypeList {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isPerTypeList(data.bcs.type)) {
-        throw new Error(`object at is not a PerTypeList object`)
-      }
-
-      return PerTypeList.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return PerTypeList.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<PerTypeList> {

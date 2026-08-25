@@ -6,8 +6,6 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -110,8 +108,6 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Supply.fromJSON(T, json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         Supply.fromCoreObject(T, obj),
-      fromSuiParsedData: (content: SuiParsedData) => Supply.fromSuiParsedData(T, content),
-      fromSuiObjectData: (content: SuiObjectData) => Supply.fromSuiObjectData(T, content),
       fetch: async (client: ClientWithCoreApi, id: string) => Supply.fetch(client, T, id),
       new: (fields: SupplyFields<ToPhantomTypeArgument<T>>) => {
         return new Supply([extractType(T)], fields)
@@ -243,56 +239,6 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
     return Supply.fromBcs(typeArg, obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Supply.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T,
-    content: SuiParsedData,
-  ): Supply<ToPhantomTypeArgument<T>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isSupply(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Supply object`)
-    }
-    return Supply.fromFieldsWithTypes(typeArg, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Supply.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T,
-    data: SuiObjectData,
-  ): Supply<ToPhantomTypeArgument<T>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isSupply(data.bcs.type)) {
-        throw new Error(`object at is not a Supply object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 1; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return Supply.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Supply.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: ClientWithCoreApi,
     typeArg: T,
@@ -403,8 +349,6 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Balance.fromJSON(T, json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         Balance.fromCoreObject(T, obj),
-      fromSuiParsedData: (content: SuiParsedData) => Balance.fromSuiParsedData(T, content),
-      fromSuiObjectData: (content: SuiObjectData) => Balance.fromSuiObjectData(T, content),
       fetch: async (client: ClientWithCoreApi, id: string) => Balance.fetch(client, T, id),
       new: (fields: BalanceFields<ToPhantomTypeArgument<T>>) => {
         return new Balance([extractType(T)], fields)
@@ -534,56 +478,6 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
     }
 
     return Balance.fromBcs(typeArg, obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Balance.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T,
-    content: SuiParsedData,
-  ): Balance<ToPhantomTypeArgument<T>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isBalance(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Balance object`)
-    }
-    return Balance.fromFieldsWithTypes(typeArg, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Balance.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T,
-    data: SuiObjectData,
-  ): Balance<ToPhantomTypeArgument<T>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isBalance(data.bcs.type)) {
-        throw new Error(`object at is not a Balance object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 1; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return Balance.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Balance.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(

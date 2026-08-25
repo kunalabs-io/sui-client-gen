@@ -7,8 +7,6 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -134,8 +132,6 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
       fromJSON: (json: Record<string, any>) => ObjectTable.fromJSON([K, V], json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         ObjectTable.fromCoreObject([K, V], obj),
-      fromSuiParsedData: (content: SuiParsedData) => ObjectTable.fromSuiParsedData([K, V], content),
-      fromSuiObjectData: (content: SuiObjectData) => ObjectTable.fromSuiObjectData([K, V], content),
       fetch: async (client: ClientWithCoreApi, id: string) => ObjectTable.fetch(client, [K, V], id),
       new: (fields: ObjectTableFields<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>>) => {
         return new ObjectTable([extractType(K), extractType(V)], fields)
@@ -292,62 +288,6 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
     }
 
     return ObjectTable.fromBcs(typeArgs, obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ObjectTable.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<
-    K extends PhantomReified<PhantomTypeArgument>,
-    V extends PhantomReified<PhantomTypeArgument>,
-  >(
-    typeArgs: [K, V],
-    content: SuiParsedData,
-  ): ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isObjectTable(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a ObjectTable object`)
-    }
-    return ObjectTable.fromFieldsWithTypes(typeArgs, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ObjectTable.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<
-    K extends PhantomReified<PhantomTypeArgument>,
-    V extends PhantomReified<PhantomTypeArgument>,
-  >(
-    typeArgs: [K, V],
-    data: SuiObjectData,
-  ): ObjectTable<ToPhantomTypeArgument<K>, ToPhantomTypeArgument<V>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isObjectTable(data.bcs.type)) {
-        throw new Error(`object at is not a ObjectTable object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 2) {
-        throw new Error(
-          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 2; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return ObjectTable.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return ObjectTable.fromSuiParsedData(typeArgs, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch<

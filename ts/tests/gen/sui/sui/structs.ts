@@ -5,8 +5,6 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -90,8 +88,6 @@ export class SUI implements StructClass {
       fromJSONField: (field: any) => SUI.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => SUI.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => SUI.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => SUI.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => SUI.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => SUI.fetch(client, id),
       new: (fields: SUIFields) => {
         return new SUI([], fields)
@@ -178,34 +174,6 @@ export class SUI implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a SUI object`)
     }
     return SUI.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link SUI.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): SUI {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isSUI(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a SUI object`)
-    }
-    return SUI.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link SUI.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): SUI {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isSUI(data.bcs.type)) {
-        throw new Error(`object at is not a SUI object`)
-      }
-
-      return SUI.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return SUI.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<SUI> {

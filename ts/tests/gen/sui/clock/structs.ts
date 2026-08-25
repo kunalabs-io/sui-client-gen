@@ -5,8 +5,6 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -116,8 +114,6 @@ export class Clock implements StructClass {
       fromJSONField: (field: any) => Clock.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Clock.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Clock.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => Clock.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Clock.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => Clock.fetch(client, id),
       new: (fields: ClockFields) => {
         return new Clock([], fields)
@@ -209,34 +205,6 @@ export class Clock implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a Clock object`)
     }
     return Clock.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Clock.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): Clock {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isClock(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Clock object`)
-    }
-    return Clock.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Clock.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): Clock {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isClock(data.bcs.type)) {
-        throw new Error(`object at is not a Clock object`)
-      }
-
-      return Clock.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Clock.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<Clock> {

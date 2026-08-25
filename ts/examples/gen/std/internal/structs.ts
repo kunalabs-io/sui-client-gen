@@ -29,8 +29,6 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -133,8 +131,6 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Permit.fromJSON(T, json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         Permit.fromCoreObject(T, obj),
-      fromSuiParsedData: (content: SuiParsedData) => Permit.fromSuiParsedData(T, content),
-      fromSuiObjectData: (content: SuiObjectData) => Permit.fromSuiObjectData(T, content),
       fetch: async (client: ClientWithCoreApi, id: string) => Permit.fetch(client, T, id),
       new: (fields: PermitFields<ToPhantomTypeArgument<T>>) => {
         return new Permit([extractType(T)], fields)
@@ -264,56 +260,6 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
     }
 
     return Permit.fromBcs(typeArg, obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Permit.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T,
-    content: SuiParsedData,
-  ): Permit<ToPhantomTypeArgument<T>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isPermit(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Permit object`)
-    }
-    return Permit.fromFieldsWithTypes(typeArg, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Permit.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T,
-    data: SuiObjectData,
-  ): Permit<ToPhantomTypeArgument<T>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isPermit(data.bcs.type)) {
-        throw new Error(`object at is not a Permit object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 1; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return Permit.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Permit.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(

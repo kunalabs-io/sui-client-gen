@@ -1,6 +1,5 @@
 import { bcs, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { fromHex, toHex } from '@mysten/sui/utils'
 import { compressSuiType, FieldsWithTypes, parseTypeName } from './util'
 
@@ -59,10 +58,6 @@ export interface StructClassReified<T extends StructClass, Fields> {
   fromJSONField: (field: any) => T
   fromJSON: (json: Record<string, any>) => T
   fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => T
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link StructClassReified.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  fromSuiParsedData: (content: SuiParsedData) => T
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link StructClassReified.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  fromSuiObjectData: (data: SuiObjectData) => T
   fetch: (client: ClientWithCoreApi, id: string) => Promise<T>
   new: (fields: Fields) => T
   kind: 'StructClassReified'

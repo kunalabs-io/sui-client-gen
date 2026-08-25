@@ -2,8 +2,6 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -88,8 +86,6 @@ export class Url implements StructClass {
       fromJSONField: (field: any) => Url.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Url.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Url.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => Url.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Url.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => Url.fetch(client, id),
       new: (fields: UrlFields) => {
         return new Url([], fields)
@@ -176,34 +172,6 @@ export class Url implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a Url object`)
     }
     return Url.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Url.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): Url {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isUrl(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Url object`)
-    }
-    return Url.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Url.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): Url {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isUrl(data.bcs.type)) {
-        throw new Error(`object at is not a Url object`)
-      }
-
-      return Url.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Url.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<Url> {

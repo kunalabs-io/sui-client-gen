@@ -1,7 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
+import { fromHex, toHex } from '@mysten/sui/utils'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -102,8 +101,6 @@ export class Party implements StructClass {
       fromJSONField: (field: any) => Party.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Party.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Party.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => Party.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Party.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => Party.fetch(client, id),
       new: (fields: PartyFields) => {
         return new Party([], fields)
@@ -206,34 +203,6 @@ export class Party implements StructClass {
     return Party.fromBcs(obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Party.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): Party {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isParty(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Party object`)
-    }
-    return Party.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Party.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): Party {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isParty(data.bcs.type)) {
-        throw new Error(`object at is not a Party object`)
-      }
-
-      return Party.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Party.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch(client: ClientWithCoreApi, id: string): Promise<Party> {
     const { object } = await client.core.getObject({
       objectId: id,
@@ -319,8 +288,6 @@ export class Permissions implements StructClass {
       fromJSON: (json: Record<string, any>) => Permissions.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         Permissions.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => Permissions.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Permissions.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => Permissions.fetch(client, id),
       new: (fields: PermissionsFields) => {
         return new Permissions([], fields)
@@ -407,34 +374,6 @@ export class Permissions implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a Permissions object`)
     }
     return Permissions.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Permissions.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): Permissions {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isPermissions(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Permissions object`)
-    }
-    return Permissions.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Permissions.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): Permissions {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isPermissions(data.bcs.type)) {
-        throw new Error(`object at is not a Permissions object`)
-      }
-
-      return Permissions.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Permissions.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<Permissions> {

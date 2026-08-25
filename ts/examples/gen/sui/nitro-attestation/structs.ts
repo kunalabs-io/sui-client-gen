@@ -1,7 +1,5 @@
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -95,8 +93,6 @@ export class PCREntry implements StructClass {
       fromJSON: (json: Record<string, any>) => PCREntry.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         PCREntry.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => PCREntry.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => PCREntry.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => PCREntry.fetch(client, id),
       new: (fields: PCREntryFields) => {
         return new PCREntry([], fields)
@@ -188,34 +184,6 @@ export class PCREntry implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a PCREntry object`)
     }
     return PCREntry.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PCREntry.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): PCREntry {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isPCREntry(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a PCREntry object`)
-    }
-    return PCREntry.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PCREntry.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): PCREntry {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isPCREntry(data.bcs.type)) {
-        throw new Error(`object at is not a PCREntry object`)
-      }
-
-      return PCREntry.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return PCREntry.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<PCREntry> {
@@ -356,10 +324,6 @@ export class NitroAttestationDocument implements StructClass {
       fromJSON: (json: Record<string, any>) => NitroAttestationDocument.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         NitroAttestationDocument.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) =>
-        NitroAttestationDocument.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) =>
-        NitroAttestationDocument.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) =>
         NitroAttestationDocument.fetch(client, id),
       new: (fields: NitroAttestationDocumentFields) => {
@@ -480,36 +444,6 @@ export class NitroAttestationDocument implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a NitroAttestationDocument object`)
     }
     return NitroAttestationDocument.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link NitroAttestationDocument.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): NitroAttestationDocument {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isNitroAttestationDocument(content.type)) {
-      throw new Error(
-        `object at ${(content.fields as any).id} is not a NitroAttestationDocument object`,
-      )
-    }
-    return NitroAttestationDocument.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link NitroAttestationDocument.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): NitroAttestationDocument {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isNitroAttestationDocument(data.bcs.type)) {
-        throw new Error(`object at is not a NitroAttestationDocument object`)
-      }
-
-      return NitroAttestationDocument.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return NitroAttestationDocument.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<NitroAttestationDocument> {

@@ -1,7 +1,5 @@
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import { getTypeOrigin } from '../../_envs'
 import {
   decodeFromFields,
@@ -94,8 +92,6 @@ export class EXAMPLE_COIN implements StructClass {
       fromJSON: (json: Record<string, any>) => EXAMPLE_COIN.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         EXAMPLE_COIN.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => EXAMPLE_COIN.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => EXAMPLE_COIN.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => EXAMPLE_COIN.fetch(client, id),
       new: (fields: EXAMPLE_COINFields) => {
         return new EXAMPLE_COIN([], fields)
@@ -184,34 +180,6 @@ export class EXAMPLE_COIN implements StructClass {
     return EXAMPLE_COIN.fromBcs(obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link EXAMPLE_COIN.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): EXAMPLE_COIN {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isEXAMPLE_COIN(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a EXAMPLE_COIN object`)
-    }
-    return EXAMPLE_COIN.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link EXAMPLE_COIN.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): EXAMPLE_COIN {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isEXAMPLE_COIN(data.bcs.type)) {
-        throw new Error(`object at is not a EXAMPLE_COIN object`)
-      }
-
-      return EXAMPLE_COIN.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return EXAMPLE_COIN.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch(client: ClientWithCoreApi, id: string): Promise<EXAMPLE_COIN> {
     const { object } = await client.core.getObject({
       objectId: id,
@@ -298,8 +266,6 @@ export class Faucet implements StructClass {
       fromJSONField: (field: any) => Faucet.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Faucet.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Faucet.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => Faucet.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Faucet.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => Faucet.fetch(client, id),
       new: (fields: FaucetFields) => {
         return new Faucet([], fields)
@@ -394,34 +360,6 @@ export class Faucet implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a Faucet object`)
     }
     return Faucet.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Faucet.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): Faucet {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isFaucet(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Faucet object`)
-    }
-    return Faucet.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Faucet.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): Faucet {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isFaucet(data.bcs.type)) {
-        throw new Error(`object at is not a Faucet object`)
-      }
-
-      return Faucet.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Faucet.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<Faucet> {

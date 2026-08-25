@@ -40,8 +40,6 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -205,8 +203,6 @@ export class Extension implements StructClass {
       fromJSON: (json: Record<string, any>) => Extension.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         Extension.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => Extension.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Extension.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => Extension.fetch(client, id),
       new: (fields: ExtensionFields) => {
         return new Extension([], fields)
@@ -305,34 +301,6 @@ export class Extension implements StructClass {
     return Extension.fromBcs(obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Extension.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): Extension {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isExtension(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Extension object`)
-    }
-    return Extension.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Extension.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): Extension {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isExtension(data.bcs.type)) {
-        throw new Error(`object at is not a Extension object`)
-      }
-
-      return Extension.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Extension.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch(client: ClientWithCoreApi, id: string): Promise<Extension> {
     const { object } = await client.core.getObject({
       objectId: id,
@@ -427,8 +395,6 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
       fromJSON: (json: Record<string, any>) => ExtensionKey.fromJSON(Ext, json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         ExtensionKey.fromCoreObject(Ext, obj),
-      fromSuiParsedData: (content: SuiParsedData) => ExtensionKey.fromSuiParsedData(Ext, content),
-      fromSuiObjectData: (content: SuiObjectData) => ExtensionKey.fromSuiObjectData(Ext, content),
       fetch: async (client: ClientWithCoreApi, id: string) => ExtensionKey.fetch(client, Ext, id),
       new: (fields: ExtensionKeyFields<ToPhantomTypeArgument<Ext>>) => {
         return new ExtensionKey([extractType(Ext)], fields)
@@ -558,56 +524,6 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
     }
 
     return ExtensionKey.fromBcs(typeArg, obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ExtensionKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<Ext extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: Ext,
-    content: SuiParsedData,
-  ): ExtensionKey<ToPhantomTypeArgument<Ext>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isExtensionKey(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a ExtensionKey object`)
-    }
-    return ExtensionKey.fromFieldsWithTypes(typeArg, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ExtensionKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<Ext extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: Ext,
-    data: SuiObjectData,
-  ): ExtensionKey<ToPhantomTypeArgument<Ext>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isExtensionKey(data.bcs.type)) {
-        throw new Error(`object at is not a ExtensionKey object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 1; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return ExtensionKey.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return ExtensionKey.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch<Ext extends PhantomReified<PhantomTypeArgument>>(
