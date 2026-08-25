@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { TestProject } from 'vitest/node'
@@ -9,19 +10,31 @@ import { FaucetRateLimitError, requestSuiFromFaucetV2 } from '@mysten/sui/faucet
 
 import { startLocalNetwork, type LocalNetwork } from './utils/network'
 import { createSuiCliConfig, type SuiCliConfig } from './utils/sui-cli-config'
-import { publishPackage, stageMoveTree } from './utils/publish'
+import { createPubfile, publishPackage, stageMoveTree, upgradePackage } from './utils/publish'
 import { LOCALNET_FAUCET_PORT, LOCALNET_RPC_PORT, TEST_SECRET_KEY } from './utils/constants'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(here, '../..')
 const moveDir = path.join(repoRoot, 'move')
 
+/** The module whose pre-upgrade copy drives the staged publish-then-upgrade. */
+const OTHER_MODULE_REL = 'sources/other_module.move'
+const OTHER_MODULE_V1 = path.join(here, 'fixtures/examples-v1/other_module.move')
+/** The struct that only exists from v2 onwards. */
+const UPGRADE_ADDED_STRUCT = 'AddedInAnUpgrade'
+/** Matched as a declaration so a passing mention in a comment doesn't count as defining it. */
+const UPGRADE_ADDED_STRUCT_DECL = `public struct ${UPGRADE_ADDED_STRUCT}`
+
 declare module 'vitest' {
   export interface ProvidedContext {
     rpcUrl: string
     faucetUrl: string
-    /** Fresh package ID of `move/examples` on this run's localnet. */
-    examplesPackageId: string
+    /** Address of examples v1 — where every type except `AddedInAnUpgrade` originates. */
+    examplesOriginalId: string
+    /** Address of examples v2 — where move calls into the package are dispatched. */
+    examplesPublishedAt: string
+    /** Address of the version that introduced `other_module::AddedInAnUpgrade` (v2). */
+    examplesUpgradeAddedOriginId: string
     /** Fresh package ID of `move/amm` on this run's localnet. */
     ammPackageId: string
     /** `Wrapped<Action<u64, SUI>, ...>` object created by `examples::enums::create_actions`. */
@@ -32,11 +45,25 @@ declare module 'vitest' {
 let network: LocalNetwork | undefined
 let cliConfig: SuiCliConfig | undefined
 
-export default async function setup({ provide }: TestProject): Promise<() => Promise<void>> {
+export default async function setup(project: TestProject): Promise<() => Promise<void>> {
   network = await startLocalNetwork({
     rpcPort: LOCALNET_RPC_PORT,
     faucetPort: LOCALNET_FAUCET_PORT,
   })
+  try {
+    return await provisionChain(project)
+  } catch (e) {
+    // Vitest never calls the teardown when setup throws, so anything started above has to be
+    // cleaned up here. A leaked validator holds port 9000 and the *next* run then talks to a
+    // chain that has none of this run's packages on it — failures that look like decoding bugs
+    // and have nothing to do with the code under test.
+    await teardown()
+    throw e
+  }
+}
+
+async function provisionChain({ provide }: TestProject): Promise<() => Promise<void>> {
+  if (!network) throw new Error('provisionChain called before the network was started')
   const client = new SuiGrpcClient({ network: 'localnet', baseUrl: network.rpcUrl })
   const keypair = Ed25519Keypair.fromSecretKey(fromBase64(TEST_SECRET_KEY).slice(1))
   const address = keypair.toSuiAddress()
@@ -47,35 +74,107 @@ export default async function setup({ provide }: TestProject): Promise<() => Pro
   cliConfig = await createSuiCliConfig({ rpcUrl: network.rpcUrl, keypair })
 
   const staged = await stageMoveTree(moveDir)
-  let examples: { packageId: string }
+  const pubfile = await createPubfile()
+  let examples: { originalId: string; publishedAt: string }
   let amm: { packageId: string }
   try {
-    examples = await publishPackage({
-      packagePath: path.join(staged.dir, 'examples'),
-      clientConfigPath: cliConfig.clientYamlPath,
-    })
-    amm = await publishPackage({
-      packagePath: path.join(staged.dir, 'amm'),
-      clientConfigPath: cliConfig.clientYamlPath,
-    })
+    examples = await publishExamplesWithUpgrade(
+      path.join(staged.dir, 'examples'),
+      cliConfig.clientYamlPath,
+      pubfile.path
+    )
+    const ammPubfile = await createPubfile()
+    try {
+      amm = await publishPackage({
+        packagePath: path.join(staged.dir, 'amm'),
+        clientConfigPath: cliConfig.clientYamlPath,
+        pubfilePath: ammPubfile.path,
+      })
+    } finally {
+      await ammPubfile.dispose()
+    }
   } finally {
+    await pubfile.dispose()
     await staged.dispose()
   }
 
-  const wrappedEnumId = await createWrappedEnum(client, keypair, examples.packageId)
+  const wrappedEnumId = await createWrappedEnum(client, keypair, examples.publishedAt)
 
   provide('rpcUrl', network.rpcUrl)
   provide('faucetUrl', network.faucetUrl)
-  provide('examplesPackageId', examples.packageId)
+  provide('examplesOriginalId', examples.originalId)
+  provide('examplesPublishedAt', examples.publishedAt)
+  // `AddedInAnUpgrade` is introduced by the upgrade, so it originates at v2's address.
+  provide('examplesUpgradeAddedOriginId', examples.publishedAt)
   provide('ammPackageId', amm.packageId)
   provide('wrappedEnumId', wrappedEnumId)
 
-  return async () => {
-    await cliConfig?.dispose()
-    cliConfig = undefined
-    await network?.stop()
-    network = undefined
+  return teardown
+}
+
+async function teardown(): Promise<void> {
+  await cliConfig?.dispose()
+  cliConfig = undefined
+  await network?.stop()
+  network = undefined
+}
+
+/**
+ * Publish the examples package as v1 without `AddedInAnUpgrade`, then restore the struct and
+ * upgrade to v2.
+ *
+ * This reproduces on a throwaway chain the shape the package really has on testnet, where that
+ * struct was added in an upgrade and therefore originates at a later address than the rest of
+ * the package. Without it a from-scratch publish collapses `originalId`, `publishedAt`, and
+ * every type origin into one address — and the distinction between them is precisely what the
+ * generated code has to get right, since `$typeName` is built from a type's defining address
+ * while move calls target `publishedAt`.
+ *
+ * Returns v1's address (`originalId`) and v2's (`publishedAt`).
+ */
+async function publishExamplesWithUpgrade(
+  packagePath: string,
+  clientConfigPath: string,
+  pubfilePath: string
+): Promise<{ originalId: string; publishedAt: string }> {
+  const modulePath = path.join(packagePath, OTHER_MODULE_REL)
+  const [current, v1] = await Promise.all([
+    fs.readFile(modulePath, 'utf8'),
+    fs.readFile(OTHER_MODULE_V1, 'utf8'),
+  ])
+
+  // Guard both directions, so drift fails here rather than silently collapsing the two
+  // versions into one and quietly deleting this test's whole reason for existing.
+  if (!current.includes(UPGRADE_ADDED_STRUCT_DECL)) {
+    throw new Error(
+      `move/examples/${OTHER_MODULE_REL} no longer defines ${UPGRADE_ADDED_STRUCT}. The fixture ` +
+        `at ${OTHER_MODULE_V1} exists to withhold it for v1; without it in the real source ` +
+        `there is no upgrade to reproduce.`
+    )
   }
+  if (v1.includes(UPGRADE_ADDED_STRUCT_DECL)) {
+    throw new Error(
+      `the pre-upgrade fixture ${OTHER_MODULE_V1} defines ${UPGRADE_ADDED_STRUCT}, so v1 and v2 ` +
+        `would be identical and no type would originate in the upgrade.`
+    )
+  }
+
+  await fs.writeFile(modulePath, v1)
+  const published = await publishPackage({ packagePath, clientConfigPath, pubfilePath })
+
+  await fs.writeFile(modulePath, current)
+  const upgraded = await upgradePackage({
+    packagePath,
+    clientConfigPath,
+    pubfilePath,
+    upgradeCapId: published.upgradeCapId,
+  })
+
+  if (upgraded.packageId === published.packageId) {
+    throw new Error('upgrade returned the same package ID as the publish; nothing was upgraded')
+  }
+
+  return { originalId: published.packageId, publishedAt: upgraded.packageId }
 }
 
 /**

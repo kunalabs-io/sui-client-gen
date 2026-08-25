@@ -17,21 +17,44 @@ export interface EnvConfigLike {
 }
 
 /**
+ * How a package was published locally.
+ *
+ * A bare string is a package published once and never upgraded: `originalId`, `publishedAt`,
+ * and every type origin collapse to that single address.
+ */
+export type PackageLocalization =
+  | string
+  | {
+      /** Address of the first version — where types introduced in v1 originate. */
+      originalId: string
+      /** Address of the newest version — where move calls are dispatched. */
+      publishedAt: string
+      /**
+       * Types introduced after v1, mapped to the address of the version that added them.
+       * Anything not listed originates at `originalId`.
+       */
+      typeOriginOverrides?: Record<string, string>
+    }
+
+/**
  * Rewrite `base` so the named packages point at freshly published local addresses.
  *
- * A package published to a fresh genesis has never been upgraded, which collapses the three
- * addresses the committed testnet config distinguishes: `originalId`, `publishedAt`, and every
- * entry in `typeOrigins` all become the new package ID. (On testnet they differ — `examples`
- * has been upgraded, so its types originate across two different addresses depending on which
- * version introduced them.)
+ * The committed testnet config distinguishes three things that a from-scratch publish would
+ * collapse into one: `originalId`, `publishedAt`, and per-type origins. Keeping them distinct
+ * matters, because `$typeName` is built from a type's *defining* address while move calls
+ * target `publishedAt` — a distinction that is invisible unless the package really has been
+ * upgraded.
  *
  * Type-origin *keys* are preserved from the base config, so the set of known types still comes
  * from the committed configuration rather than being guessed at runtime.
  */
-export function localizeEnv<T extends EnvConfigLike>(base: T, ids: Record<string, string>): T {
-  const packages: Record<string, PackageConfigLike> = { ...base.packages }
+export function localizeEnv<T extends EnvConfigLike>(
+  base: T,
+  packages: Record<string, PackageLocalization>
+): T {
+  const merged: Record<string, PackageConfigLike> = { ...base.packages }
 
-  for (const [name, id] of Object.entries(ids)) {
+  for (const [name, localization] of Object.entries(packages)) {
     const prior = base.packages[name]
     if (!prior) {
       throw new Error(
@@ -39,12 +62,29 @@ export function localizeEnv<T extends EnvConfigLike>(base: T, ids: Record<string
           `Available: ${Object.keys(base.packages).join(', ') || '(none)'}`
       )
     }
-    packages[name] = {
-      originalId: id,
-      publishedAt: id,
-      typeOrigins: Object.fromEntries(Object.keys(prior.typeOrigins).map(k => [k, id])),
+
+    const spec =
+      typeof localization === 'string'
+        ? { originalId: localization, publishedAt: localization, typeOriginOverrides: {} }
+        : { typeOriginOverrides: {}, ...localization }
+
+    for (const key of Object.keys(spec.typeOriginOverrides)) {
+      if (!(key in prior.typeOrigins)) {
+        throw new Error(
+          `localizeEnv: '${name}' has no type '${key}' to override the origin of. ` +
+            `The generated config and the fixture sources have drifted apart.`
+        )
+      }
+    }
+
+    merged[name] = {
+      originalId: spec.originalId,
+      publishedAt: spec.publishedAt,
+      typeOrigins: Object.fromEntries(
+        Object.keys(prior.typeOrigins).map(k => [k, spec.typeOriginOverrides[k] ?? spec.originalId])
+      ),
     }
   }
 
-  return { ...base, packages }
+  return { ...base, packages: merged }
 }

@@ -33,40 +33,94 @@ export async function stageMoveTree(moveDir: string): Promise<StagedMoveTree> {
   return { dir, dispose: () => fs.rm(tmp, { recursive: true, force: true }) }
 }
 
+/**
+ * An ephemeral publication file.
+ *
+ * `test-publish` records the package's addresses here, and `test-upgrade` reads them back to
+ * know what it is upgrading — so a publish and its later upgrade must share one pubfile.
+ * Ephemeral means the metadata never lands in the Move source tree.
+ */
+export interface Pubfile {
+  path: string
+  dispose: () => Promise<void>
+}
+
+export async function createPubfile(): Promise<Pubfile> {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'sui-client-gen-pub-'))
+  return {
+    path: path.join(dir, 'Pub.localnet.toml'),
+    dispose: () => fs.rm(dir, { recursive: true, force: true }),
+  }
+}
+
 export interface PublishOptions {
   /** Absolute path to the Move package directory. */
   packagePath: string
   /** Path to the throwaway `client.yaml` produced by `createSuiCliConfig`. */
   clientConfigPath: string
+  /** Shared pubfile; pass the same one to `upgradePackage` to upgrade this publication. */
+  pubfilePath: string
   suiBin?: string
 }
 
 export interface PublishResult {
   packageId: string
-  modules: string[]
+  /** `0x2::package::UpgradeCap` minted by the publish, required to upgrade later. */
+  upgradeCapId: string
 }
 
-interface PublishedChange {
+export interface UpgradeOptions extends PublishOptions {
+  upgradeCapId: string
+}
+
+interface ObjectChange {
   type?: string
   packageId?: string
-  modules?: string[]
+  objectId?: string
+  objectType?: string
 }
 
 /**
- * Publish a Move package to the network the CLI config points at, and return its
- * fresh package ID.
+ * Publish a Move package to the network the CLI config points at, and return its fresh
+ * package ID together with the upgrade capability minted for it.
  *
- * Uses `sui client test-publish`, which compiles against `--build-env` while publishing to
- * whatever network the config names, recording dependency addresses in an ephemeral pubfile.
- * The build env stays `testnet` rather than tracking the localnet: `--force-regenesis` mints a
- * new chain identifier on every run, so no committed `[environments]` entry could match it,
- * and the build env only selects which addresses compilation uses — it does not have to be the
- * network being published to.
+ * The build env stays `testnet` while publishing to localnet. That is supported — the build
+ * env only selects which addresses compilation uses, not where the transaction lands — and it
+ * is necessary, because `--force-regenesis` mints a new chain identifier on every run, so no
+ * committed `[environments]` entry could ever match the local chain.
  */
 export async function publishPackage(opts: PublishOptions): Promise<PublishResult> {
+  const changes = await runPackageCommand('test-publish', opts, ['--publish-unpublished-deps'])
+
+  const packageId = singlePublishedId(changes, opts.packagePath)
+  const cap = changes.find(
+    c => c.type === 'created' && (c.objectType ?? '').includes('::package::UpgradeCap')
+  )
+  if (!cap?.objectId) throw new Error(`no UpgradeCap minted publishing ${opts.packagePath}`)
+
+  return { packageId, upgradeCapId: cap.objectId }
+}
+
+/**
+ * Upgrade a previously published package and return the new package ID.
+ *
+ * Must use `test-upgrade` rather than `upgrade`: the plain subcommand rejects `--pubfile-path`
+ * outright, since ephemeral publications are not recorded in the package's lockfile.
+ */
+export async function upgradePackage(opts: UpgradeOptions): Promise<{ packageId: string }> {
+  const changes = await runPackageCommand('test-upgrade', opts, [
+    '--upgrade-capability',
+    opts.upgradeCapId,
+  ])
+  return { packageId: singlePublishedId(changes, opts.packagePath) }
+}
+
+async function runPackageCommand(
+  subcommand: 'test-publish' | 'test-upgrade',
+  opts: PublishOptions,
+  extraArgs: string[]
+): Promise<ObjectChange[]> {
   const suiBin = opts.suiBin ?? process.env.SUI_BIN ?? 'sui'
-  const pubfileDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sui-client-gen-pub-'))
-  const pubfilePath = path.join(pubfileDir, 'Pub.localnet.toml')
 
   let stdout: string
   try {
@@ -76,12 +130,12 @@ export async function publishPackage(opts: PublishOptions): Promise<PublishResul
         'client',
         '--client.config',
         opts.clientConfigPath,
-        'test-publish',
+        subcommand,
         '--pubfile-path',
-        pubfilePath,
+        opts.pubfilePath,
         '--build-env',
         'testnet',
-        '--publish-unpublished-deps',
+        ...extraArgs,
         '--skip-dependency-verification',
         '--silence-warnings',
         '--json',
@@ -94,28 +148,32 @@ export async function publishPackage(opts: PublishOptions): Promise<PublishResul
     const err = e as { stderr?: string; stdout?: string; message?: string }
     const detail = [err.stderr, err.stdout].filter(Boolean).join('\n').trim()
     throw new Error(
-      `sui client test-publish failed for ${opts.packagePath}:\n${detail || err.message}`,
-      { cause: e }
+      `sui client ${subcommand} failed for ${opts.packagePath}:\n${detail || err.message}`,
+      {
+        cause: e,
+      }
     )
-  } finally {
-    await fs.rm(pubfileDir, { recursive: true, force: true })
   }
 
+  // The CLI prints human-readable preamble before the JSON payload.
   const start = stdout.indexOf('{')
-  if (start < 0) throw new Error(`sui client test-publish produced no JSON for ${opts.packagePath}`)
-  const parsed = JSON.parse(stdout.slice(start)) as { objectChanges?: PublishedChange[] }
+  if (start < 0)
+    throw new Error(`sui client ${subcommand} produced no JSON for ${opts.packagePath}`)
+  const parsed = JSON.parse(stdout.slice(start)) as { objectChanges?: ObjectChange[] }
+  return parsed.objectChanges ?? []
+}
 
-  const published = (parsed.objectChanges ?? []).filter(c => c.type === 'published')
+function singlePublishedId(changes: ObjectChange[], packagePath: string): string {
+  const published = changes.filter(c => c.type === 'published')
   if (published.length !== 1) {
-    // Our fixture packages have no unpublished local dependencies, so exactly one package
-    // is published per call. More than one means the fixtures grew a dependency and the
-    // caller can no longer assume which ID belongs to which source directory.
+    // The fixture packages have no unpublished local dependencies, so exactly one package is
+    // published per call. More than one means a fixture grew a dependency, and the caller can
+    // no longer assume which ID belongs to which source directory.
     throw new Error(
-      `expected exactly 1 published package from ${opts.packagePath}, got ${published.length}`
+      `expected exactly 1 published package from ${packagePath}, got ${published.length}`
     )
   }
-
-  const { packageId, modules } = published[0]
-  if (!packageId) throw new Error(`no packageId in publish output for ${opts.packagePath}`)
-  return { packageId, modules: modules ?? [] }
+  const { packageId } = published[0]
+  if (!packageId) throw new Error(`no packageId in publish output for ${packagePath}`)
+  return packageId
 }
