@@ -4,6 +4,7 @@
  * Contains helper functions to reduce code duplication across test files.
  */
 
+import { inject } from 'vitest'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 
 // ============================================================================
@@ -19,26 +20,23 @@ export const TEXT_ENCODER: InstanceType<typeof TextEncoder> = new TextEncoder()
 
 /** Common test object IDs used across tests */
 export const TEST_IDS: {
-  readonly AMM_POOL: string
   readonly WRAPPED_ENUM: string
   readonly SUI_FRAMEWORK: string
   readonly NON_EXISTING: string
 } = {
-  /** AMM Pool object */
-  AMM_POOL: '0x799331284a2f75ed54b1a2bf212a26e3f465cbc7b974dbfa956f093de9ad8059',
-  /** Enum test object (Wrapped containing Action variants) */
-  WRAPPED_ENUM: '0x867aff39fede0ba58effd5d9fec74184503391321cf72ff5df5c631824b2c75a',
+  /** Enum test object (Wrapped containing Action variants), created by global setup */
+  WRAPPED_ENUM: inject('wrappedEnumId'),
   /** Sui framework package ID */
   SUI_FRAMEWORK: '0x0000000000000000000000000000000000000000000000000000000000000002',
   /** Non-existing object ID for error tests */
   NON_EXISTING: '0x1111111111111111111111111111111111111111111111111111111111111111',
 }
 
-/** Testnet endpoints */
-export const TESTNET_ENDPOINTS = {
-  RPC: 'https://fullnode.testnet.sui.io:443/',
-  GRPC: 'https://fullnode.testnet.sui.io',
-} as const
+/** Endpoints of the local validator started by global setup. */
+export const LOCALNET_ENDPOINTS: { readonly RPC: string; readonly GRPC: string } = {
+  RPC: inject('rpcUrl'),
+  GRPC: inject('rpcUrl'),
+}
 
 // ============================================================================
 // Object Fetching Helpers

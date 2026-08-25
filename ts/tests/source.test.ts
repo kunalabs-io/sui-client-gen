@@ -2,8 +2,10 @@ import { Transaction } from '@mysten/sui/transactions'
 import { SuiGrpcClient } from '@mysten/sui/grpc'
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519'
 import { fromBase64 } from '@mysten/sui/utils'
-import { it, expect, describe } from 'vitest'
-import { TEXT_ENCODER, fetchMoveObject, TEST_IDS, TESTNET_ENDPOINTS } from './test-utils'
+import { it, expect, describe, inject } from 'vitest'
+import { TEXT_ENCODER, fetchMoveObject, TEST_IDS, LOCALNET_ENDPOINTS } from './test-utils'
+import { localizeEnv } from './utils/local-env'
+import { TEST_SECRET_KEY } from './utils/constants'
 import {
   Bar,
   Dummy,
@@ -43,15 +45,31 @@ import { withDefiningIds } from './gen/std/type-name/functions'
 import { loader } from './gen/_framework/loader'
 import { sqrt } from './gen/sui/math/functions'
 import { Action, isWrapped, Wrapped } from '../examples/gen/examples/enums/structs'
-import { getOriginalId } from '../examples/gen/_envs'
+import {
+  getOriginalId,
+  getEnv as getExamplesEnv,
+  setActiveEnvWithConfig as setExamplesActiveEnv,
+} from '../examples/gen/_envs'
+import { getEnv, setActiveEnvWithConfig } from './gen/_envs'
 
-const keypair = Ed25519Keypair.fromSecretKey(
-  fromBase64('AMVT58FaLF2tJtg/g8X2z1/vG0FvNn0jvRu9X2Wl8F+u').slice(1)
-) // address: 0x8becfafb14c111fc08adee6cc9afa95a863d1bf133f796626eec353f98ea8507
+// The generated code ships addresses for the environments in gen.toml, but this suite runs
+// against a throwaway localnet where both fixture packages were published fresh by global
+// setup. Point both generated trees at those addresses before anything reads a `$typeName`.
+// Vitest isolates module state per test file, so this does not leak into the env-switching
+// suites, which assert against the committed testnet configuration.
+setActiveEnvWithConfig(localizeEnv(getEnv('testnet'), { examples: inject('examplesPackageId') }))
+setExamplesActiveEnv(
+  localizeEnv(getExamplesEnv('testnet'), {
+    examples: inject('examplesPackageId'),
+    amm: inject('ammPackageId'),
+  })
+)
+
+const keypair = Ed25519Keypair.fromSecretKey(fromBase64(TEST_SECRET_KEY).slice(1)) // address: 0x8becfafb14c111fc08adee6cc9afa95a863d1bf133f796626eec353f98ea8507
 
 const client = new SuiGrpcClient({
-  baseUrl: TESTNET_ENDPOINTS.GRPC,
-  network: 'testnet',
+  baseUrl: LOCALNET_ENDPOINTS.GRPC,
+  network: 'localnet',
 })
 
 // Helper to execute transaction and wait for object to be indexed
