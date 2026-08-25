@@ -2,8 +2,6 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -108,8 +106,6 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
       fromJSON: (json: Record<string, any>) => TableVec.fromJSON(Element, json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         TableVec.fromCoreObject(Element, obj),
-      fromSuiParsedData: (content: SuiParsedData) => TableVec.fromSuiParsedData(Element, content),
-      fromSuiObjectData: (content: SuiObjectData) => TableVec.fromSuiObjectData(Element, content),
       fetch: async (client: ClientWithCoreApi, id: string) => TableVec.fetch(client, Element, id),
       new: (fields: TableVecFields<ToPhantomTypeArgument<Element>>) => {
         return new TableVec([extractType(Element)], fields)
@@ -242,56 +238,6 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
     }
 
     return TableVec.fromBcs(typeArg, obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link TableVec.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<Element extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: Element,
-    content: SuiParsedData,
-  ): TableVec<ToPhantomTypeArgument<Element>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isTableVec(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a TableVec object`)
-    }
-    return TableVec.fromFieldsWithTypes(typeArg, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link TableVec.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<Element extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: Element,
-    data: SuiObjectData,
-  ): TableVec<ToPhantomTypeArgument<Element>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isTableVec(data.bcs.type)) {
-        throw new Error(`object at is not a TableVec object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 1; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return TableVec.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return TableVec.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch<Element extends PhantomReified<PhantomTypeArgument>>(

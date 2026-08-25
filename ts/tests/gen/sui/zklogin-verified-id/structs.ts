@@ -1,7 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
+import { fromHex, toHex } from '@mysten/sui/utils'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -121,8 +120,6 @@ export class VerifiedID implements StructClass {
       fromJSON: (json: Record<string, any>) => VerifiedID.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         VerifiedID.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => VerifiedID.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => VerifiedID.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => VerifiedID.fetch(client, id),
       new: (fields: VerifiedIDFields) => {
         return new VerifiedID([], fields)
@@ -237,34 +234,6 @@ export class VerifiedID implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a VerifiedID object`)
     }
     return VerifiedID.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link VerifiedID.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): VerifiedID {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isVerifiedID(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a VerifiedID object`)
-    }
-    return VerifiedID.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link VerifiedID.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): VerifiedID {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isVerifiedID(data.bcs.type)) {
-        throw new Error(`object at is not a VerifiedID object`)
-      }
-
-      return VerifiedID.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return VerifiedID.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<VerifiedID> {

@@ -1,7 +1,5 @@
 import { bcs, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -120,8 +118,6 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
       fromJSON: (json: Record<string, any>) => VecMap.fromJSON([K, V], json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         VecMap.fromCoreObject([K, V], obj),
-      fromSuiParsedData: (content: SuiParsedData) => VecMap.fromSuiParsedData([K, V], content),
-      fromSuiObjectData: (content: SuiObjectData) => VecMap.fromSuiObjectData([K, V], content),
       fetch: async (client: ClientWithCoreApi, id: string) => VecMap.fetch(client, [K, V], id),
       new: (fields: VecMapFields<ToTypeArgument<K>, ToTypeArgument<V>>) => {
         return new VecMap([extractType(K), extractType(V)], fields)
@@ -270,62 +266,6 @@ export class VecMap<K extends TypeArgument, V extends TypeArgument> implements S
     return VecMap.fromBcs(typeArgs, obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link VecMap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<
-    K extends Reified<TypeArgument, any>,
-    V extends Reified<TypeArgument, any>,
-  >(
-    typeArgs: [K, V],
-    content: SuiParsedData,
-  ): VecMap<ToTypeArgument<K>, ToTypeArgument<V>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isVecMap(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a VecMap object`)
-    }
-    return VecMap.fromFieldsWithTypes(typeArgs, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link VecMap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<
-    K extends Reified<TypeArgument, any>,
-    V extends Reified<TypeArgument, any>,
-  >(
-    typeArgs: [K, V],
-    data: SuiObjectData,
-  ): VecMap<ToTypeArgument<K>, ToTypeArgument<V>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isVecMap(data.bcs.type)) {
-        throw new Error(`object at is not a VecMap object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 2) {
-        throw new Error(
-          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 2; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return VecMap.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return VecMap.fromSuiParsedData(typeArgs, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch<K extends Reified<TypeArgument, any>, V extends Reified<TypeArgument, any>>(
     client: ClientWithCoreApi,
     typeArgs: [K, V],
@@ -444,8 +384,6 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
       fromJSON: (json: Record<string, any>) => Entry.fromJSON([K, V], json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         Entry.fromCoreObject([K, V], obj),
-      fromSuiParsedData: (content: SuiParsedData) => Entry.fromSuiParsedData([K, V], content),
-      fromSuiObjectData: (content: SuiObjectData) => Entry.fromSuiObjectData([K, V], content),
       fetch: async (client: ClientWithCoreApi, id: string) => Entry.fetch(client, [K, V], id),
       new: (fields: EntryFields<ToTypeArgument<K>, ToTypeArgument<V>>) => {
         return new Entry([extractType(K), extractType(V)], fields)
@@ -585,62 +523,6 @@ export class Entry<K extends TypeArgument, V extends TypeArgument> implements St
     }
 
     return Entry.fromBcs(typeArgs, obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Entry.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<
-    K extends Reified<TypeArgument, any>,
-    V extends Reified<TypeArgument, any>,
-  >(
-    typeArgs: [K, V],
-    content: SuiParsedData,
-  ): Entry<ToTypeArgument<K>, ToTypeArgument<V>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isEntry(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Entry object`)
-    }
-    return Entry.fromFieldsWithTypes(typeArgs, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Entry.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<
-    K extends Reified<TypeArgument, any>,
-    V extends Reified<TypeArgument, any>,
-  >(
-    typeArgs: [K, V],
-    data: SuiObjectData,
-  ): Entry<ToTypeArgument<K>, ToTypeArgument<V>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isEntry(data.bcs.type)) {
-        throw new Error(`object at is not a Entry object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 2) {
-        throw new Error(
-          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 2; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return Entry.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Entry.fromSuiParsedData(typeArgs, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch<K extends Reified<TypeArgument, any>, V extends Reified<TypeArgument, any>>(

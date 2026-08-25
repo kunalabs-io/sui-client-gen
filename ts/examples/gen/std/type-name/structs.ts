@@ -2,8 +2,6 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -106,8 +104,6 @@ export class TypeName implements StructClass {
       fromJSON: (json: Record<string, any>) => TypeName.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         TypeName.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => TypeName.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => TypeName.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => TypeName.fetch(client, id),
       new: (fields: TypeNameFields) => {
         return new TypeName([], fields)
@@ -194,34 +190,6 @@ export class TypeName implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a TypeName object`)
     }
     return TypeName.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link TypeName.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): TypeName {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isTypeName(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a TypeName object`)
-    }
-    return TypeName.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link TypeName.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): TypeName {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isTypeName(data.bcs.type)) {
-        throw new Error(`object at is not a TypeName object`)
-      }
-
-      return TypeName.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return TypeName.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<TypeName> {

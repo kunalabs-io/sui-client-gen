@@ -1,7 +1,5 @@
 import { bcs, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -109,8 +107,6 @@ export class Config<WriteCap extends PhantomTypeArgument> implements StructClass
       fromJSON: (json: Record<string, any>) => Config.fromJSON(WriteCap, json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         Config.fromCoreObject(WriteCap, obj),
-      fromSuiParsedData: (content: SuiParsedData) => Config.fromSuiParsedData(WriteCap, content),
-      fromSuiObjectData: (content: SuiObjectData) => Config.fromSuiObjectData(WriteCap, content),
       fetch: async (client: ClientWithCoreApi, id: string) => Config.fetch(client, WriteCap, id),
       new: (fields: ConfigFields<ToPhantomTypeArgument<WriteCap>>) => {
         return new Config([extractType(WriteCap)], fields)
@@ -242,56 +238,6 @@ export class Config<WriteCap extends PhantomTypeArgument> implements StructClass
     return Config.fromBcs(typeArg, obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Config.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<WriteCap extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: WriteCap,
-    content: SuiParsedData,
-  ): Config<ToPhantomTypeArgument<WriteCap>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isConfig(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Config object`)
-    }
-    return Config.fromFieldsWithTypes(typeArg, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Config.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<WriteCap extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: WriteCap,
-    data: SuiObjectData,
-  ): Config<ToPhantomTypeArgument<WriteCap>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isConfig(data.bcs.type)) {
-        throw new Error(`object at is not a Config object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 1; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return Config.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Config.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch<WriteCap extends PhantomReified<PhantomTypeArgument>>(
     client: ClientWithCoreApi,
     typeArg: WriteCap,
@@ -401,8 +347,6 @@ export class Setting<Value extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Setting.fromJSON(Value, json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         Setting.fromCoreObject(Value, obj),
-      fromSuiParsedData: (content: SuiParsedData) => Setting.fromSuiParsedData(Value, content),
-      fromSuiObjectData: (content: SuiObjectData) => Setting.fromSuiObjectData(Value, content),
       fetch: async (client: ClientWithCoreApi, id: string) => Setting.fetch(client, Value, id),
       new: (fields: SettingFields<ToTypeArgument<Value>>) => {
         return new Setting([extractType(Value)], fields)
@@ -542,56 +486,6 @@ export class Setting<Value extends TypeArgument> implements StructClass {
     return Setting.fromBcs(typeArg, obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Setting.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<Value extends Reified<TypeArgument, any>>(
-    typeArg: Value,
-    content: SuiParsedData,
-  ): Setting<ToTypeArgument<Value>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isSetting(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Setting object`)
-    }
-    return Setting.fromFieldsWithTypes(typeArg, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Setting.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<Value extends Reified<TypeArgument, any>>(
-    typeArg: Value,
-    data: SuiObjectData,
-  ): Setting<ToTypeArgument<Value>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isSetting(data.bcs.type)) {
-        throw new Error(`object at is not a Setting object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 1; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return Setting.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Setting.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch<Value extends Reified<TypeArgument, any>>(
     client: ClientWithCoreApi,
     typeArg: Value,
@@ -709,8 +603,6 @@ export class SettingData<Value extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => SettingData.fromJSON(Value, json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         SettingData.fromCoreObject(Value, obj),
-      fromSuiParsedData: (content: SuiParsedData) => SettingData.fromSuiParsedData(Value, content),
-      fromSuiObjectData: (content: SuiObjectData) => SettingData.fromSuiObjectData(Value, content),
       fetch: async (client: ClientWithCoreApi, id: string) => SettingData.fetch(client, Value, id),
       new: (fields: SettingDataFields<ToTypeArgument<Value>>) => {
         return new SettingData([extractType(Value)], fields)
@@ -861,56 +753,6 @@ export class SettingData<Value extends TypeArgument> implements StructClass {
     }
 
     return SettingData.fromBcs(typeArg, obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link SettingData.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<Value extends Reified<TypeArgument, any>>(
-    typeArg: Value,
-    content: SuiParsedData,
-  ): SettingData<ToTypeArgument<Value>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isSettingData(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a SettingData object`)
-    }
-    return SettingData.fromFieldsWithTypes(typeArg, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link SettingData.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<Value extends Reified<TypeArgument, any>>(
-    typeArg: Value,
-    data: SuiObjectData,
-  ): SettingData<ToTypeArgument<Value>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isSettingData(data.bcs.type)) {
-        throw new Error(`object at is not a SettingData object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 1; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return SettingData.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return SettingData.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch<Value extends Reified<TypeArgument, any>>(

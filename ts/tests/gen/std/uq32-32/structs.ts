@@ -9,8 +9,6 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -100,8 +98,6 @@ export class UQ32_32 implements StructClass {
       fromJSON: (json: Record<string, any>) => UQ32_32.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         UQ32_32.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => UQ32_32.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => UQ32_32.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => UQ32_32.fetch(client, id),
       new: (fields: UQ32_32Fields) => {
         return new UQ32_32([], fields)
@@ -188,34 +184,6 @@ export class UQ32_32 implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a UQ32_32 object`)
     }
     return UQ32_32.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link UQ32_32.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): UQ32_32 {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isUQ32_32(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a UQ32_32 object`)
-    }
-    return UQ32_32.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link UQ32_32.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): UQ32_32 {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isUQ32_32(data.bcs.type)) {
-        throw new Error(`object at is not a UQ32_32 object`)
-      }
-
-      return UQ32_32.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return UQ32_32.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<UQ32_32> {

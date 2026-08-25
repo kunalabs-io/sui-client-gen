@@ -9,8 +9,6 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -100,8 +98,6 @@ export class UQ64_64 implements StructClass {
       fromJSON: (json: Record<string, any>) => UQ64_64.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         UQ64_64.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => UQ64_64.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => UQ64_64.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => UQ64_64.fetch(client, id),
       new: (fields: UQ64_64Fields) => {
         return new UQ64_64([], fields)
@@ -188,34 +184,6 @@ export class UQ64_64 implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a UQ64_64 object`)
     }
     return UQ64_64.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link UQ64_64.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): UQ64_64 {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isUQ64_64(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a UQ64_64 object`)
-    }
-    return UQ64_64.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link UQ64_64.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): UQ64_64 {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isUQ64_64(data.bcs.type)) {
-        throw new Error(`object at is not a UQ64_64 object`)
-      }
-
-      return UQ64_64.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return UQ64_64.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<UQ64_64> {

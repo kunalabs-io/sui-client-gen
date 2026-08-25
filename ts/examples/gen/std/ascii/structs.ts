@@ -5,8 +5,6 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -99,8 +97,6 @@ export class String implements StructClass {
       fromJSONField: (field: any) => String.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => String.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => String.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => String.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => String.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => String.fetch(client, id),
       new: (fields: StringFields) => {
         return new String([], fields)
@@ -189,34 +185,6 @@ export class String implements StructClass {
     return String.fromBcs(obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link String.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): String {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isString(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a String object`)
-    }
-    return String.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link String.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): String {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isString(data.bcs.type)) {
-        throw new Error(`object at is not a String object`)
-      }
-
-      return String.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return String.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch(client: ClientWithCoreApi, id: string): Promise<String> {
     const { object } = await client.core.getObject({
       objectId: id,
@@ -298,8 +266,6 @@ export class Char implements StructClass {
       fromJSONField: (field: any) => Char.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Char.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Char.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => Char.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Char.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => Char.fetch(client, id),
       new: (fields: CharFields) => {
         return new Char([], fields)
@@ -386,34 +352,6 @@ export class Char implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a Char object`)
     }
     return Char.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Char.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): Char {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isChar(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Char object`)
-    }
-    return Char.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Char.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): Char {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isChar(data.bcs.type)) {
-        throw new Error(`object at is not a Char object`)
-      }
-
-      return Char.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Char.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<Char> {

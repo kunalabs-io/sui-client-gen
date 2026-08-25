@@ -82,8 +82,7 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
+import { fromHex, toHex } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -235,8 +234,6 @@ export class Kiosk implements StructClass {
       fromJSONField: (field: any) => Kiosk.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Kiosk.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Kiosk.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => Kiosk.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Kiosk.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => Kiosk.fetch(client, id),
       new: (fields: KioskFields) => {
         return new Kiosk([], fields)
@@ -351,34 +348,6 @@ export class Kiosk implements StructClass {
     return Kiosk.fromBcs(obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Kiosk.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): Kiosk {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isKiosk(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Kiosk object`)
-    }
-    return Kiosk.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Kiosk.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): Kiosk {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isKiosk(data.bcs.type)) {
-        throw new Error(`object at is not a Kiosk object`)
-      }
-
-      return Kiosk.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Kiosk.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch(client: ClientWithCoreApi, id: string): Promise<Kiosk> {
     const { object } = await client.core.getObject({
       objectId: id,
@@ -468,8 +437,6 @@ export class KioskOwnerCap implements StructClass {
       fromJSON: (json: Record<string, any>) => KioskOwnerCap.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         KioskOwnerCap.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => KioskOwnerCap.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => KioskOwnerCap.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => KioskOwnerCap.fetch(client, id),
       new: (fields: KioskOwnerCapFields) => {
         return new KioskOwnerCap([], fields)
@@ -561,34 +528,6 @@ export class KioskOwnerCap implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a KioskOwnerCap object`)
     }
     return KioskOwnerCap.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link KioskOwnerCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): KioskOwnerCap {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isKioskOwnerCap(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a KioskOwnerCap object`)
-    }
-    return KioskOwnerCap.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link KioskOwnerCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): KioskOwnerCap {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isKioskOwnerCap(data.bcs.type)) {
-        throw new Error(`object at is not a KioskOwnerCap object`)
-      }
-
-      return KioskOwnerCap.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return KioskOwnerCap.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<KioskOwnerCap> {
@@ -708,8 +647,6 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => PurchaseCap.fromJSON(T, json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         PurchaseCap.fromCoreObject(T, obj),
-      fromSuiParsedData: (content: SuiParsedData) => PurchaseCap.fromSuiParsedData(T, content),
-      fromSuiObjectData: (content: SuiObjectData) => PurchaseCap.fromSuiObjectData(T, content),
       fetch: async (client: ClientWithCoreApi, id: string) => PurchaseCap.fetch(client, T, id),
       new: (fields: PurchaseCapFields<ToPhantomTypeArgument<T>>) => {
         return new PurchaseCap([extractType(T)], fields)
@@ -856,56 +793,6 @@ export class PurchaseCap<T extends PhantomTypeArgument> implements StructClass {
     return PurchaseCap.fromBcs(typeArg, obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PurchaseCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T,
-    content: SuiParsedData,
-  ): PurchaseCap<ToPhantomTypeArgument<T>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isPurchaseCap(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a PurchaseCap object`)
-    }
-    return PurchaseCap.fromFieldsWithTypes(typeArg, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link PurchaseCap.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T,
-    data: SuiObjectData,
-  ): PurchaseCap<ToPhantomTypeArgument<T>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isPurchaseCap(data.bcs.type)) {
-        throw new Error(`object at is not a PurchaseCap object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 1; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return PurchaseCap.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return PurchaseCap.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: ClientWithCoreApi,
     typeArg: T,
@@ -1015,8 +902,6 @@ export class Borrow implements StructClass {
       fromJSONField: (field: any) => Borrow.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Borrow.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Borrow.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => Borrow.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Borrow.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => Borrow.fetch(client, id),
       new: (fields: BorrowFields) => {
         return new Borrow([], fields)
@@ -1110,34 +995,6 @@ export class Borrow implements StructClass {
     return Borrow.fromBcs(obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Borrow.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): Borrow {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isBorrow(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Borrow object`)
-    }
-    return Borrow.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Borrow.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): Borrow {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isBorrow(data.bcs.type)) {
-        throw new Error(`object at is not a Borrow object`)
-      }
-
-      return Borrow.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Borrow.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch(client: ClientWithCoreApi, id: string): Promise<Borrow> {
     const { object } = await client.core.getObject({
       objectId: id,
@@ -1219,8 +1076,6 @@ export class Item implements StructClass {
       fromJSONField: (field: any) => Item.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Item.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Item.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => Item.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Item.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => Item.fetch(client, id),
       new: (fields: ItemFields) => {
         return new Item([], fields)
@@ -1307,34 +1162,6 @@ export class Item implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a Item object`)
     }
     return Item.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Item.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): Item {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isItem(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Item object`)
-    }
-    return Item.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Item.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): Item {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isItem(data.bcs.type)) {
-        throw new Error(`object at is not a Item object`)
-      }
-
-      return Item.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Item.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<Item> {
@@ -1426,8 +1253,6 @@ export class Listing implements StructClass {
       fromJSON: (json: Record<string, any>) => Listing.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         Listing.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => Listing.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Listing.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => Listing.fetch(client, id),
       new: (fields: ListingFields) => {
         return new Listing([], fields)
@@ -1521,34 +1346,6 @@ export class Listing implements StructClass {
     return Listing.fromBcs(obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Listing.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): Listing {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isListing(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Listing object`)
-    }
-    return Listing.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Listing.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): Listing {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isListing(data.bcs.type)) {
-        throw new Error(`object at is not a Listing object`)
-      }
-
-      return Listing.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Listing.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch(client: ClientWithCoreApi, id: string): Promise<Listing> {
     const { object } = await client.core.getObject({
       objectId: id,
@@ -1634,8 +1431,6 @@ export class Lock implements StructClass {
       fromJSONField: (field: any) => Lock.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Lock.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Lock.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => Lock.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Lock.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => Lock.fetch(client, id),
       new: (fields: LockFields) => {
         return new Lock([], fields)
@@ -1722,34 +1517,6 @@ export class Lock implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a Lock object`)
     }
     return Lock.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Lock.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): Lock {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isLock(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Lock object`)
-    }
-    return Lock.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Lock.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): Lock {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isLock(data.bcs.type)) {
-        throw new Error(`object at is not a Lock object`)
-      }
-
-      return Lock.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Lock.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<Lock> {
@@ -1853,8 +1620,6 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => ItemListed.fromJSON(T, json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         ItemListed.fromCoreObject(T, obj),
-      fromSuiParsedData: (content: SuiParsedData) => ItemListed.fromSuiParsedData(T, content),
-      fromSuiObjectData: (content: SuiObjectData) => ItemListed.fromSuiObjectData(T, content),
       fetch: async (client: ClientWithCoreApi, id: string) => ItemListed.fetch(client, T, id),
       new: (fields: ItemListedFields<ToPhantomTypeArgument<T>>) => {
         return new ItemListed([extractType(T)], fields)
@@ -1996,56 +1761,6 @@ export class ItemListed<T extends PhantomTypeArgument> implements StructClass {
     return ItemListed.fromBcs(typeArg, obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ItemListed.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T,
-    content: SuiParsedData,
-  ): ItemListed<ToPhantomTypeArgument<T>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isItemListed(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a ItemListed object`)
-    }
-    return ItemListed.fromFieldsWithTypes(typeArg, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ItemListed.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T,
-    data: SuiObjectData,
-  ): ItemListed<ToPhantomTypeArgument<T>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isItemListed(data.bcs.type)) {
-        throw new Error(`object at is not a ItemListed object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 1; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return ItemListed.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return ItemListed.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: ClientWithCoreApi,
     typeArg: T,
@@ -2174,8 +1889,6 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
       fromJSON: (json: Record<string, any>) => ItemPurchased.fromJSON(T, json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         ItemPurchased.fromCoreObject(T, obj),
-      fromSuiParsedData: (content: SuiParsedData) => ItemPurchased.fromSuiParsedData(T, content),
-      fromSuiObjectData: (content: SuiObjectData) => ItemPurchased.fromSuiObjectData(T, content),
       fetch: async (client: ClientWithCoreApi, id: string) => ItemPurchased.fetch(client, T, id),
       new: (fields: ItemPurchasedFields<ToPhantomTypeArgument<T>>) => {
         return new ItemPurchased([extractType(T)], fields)
@@ -2317,56 +2030,6 @@ export class ItemPurchased<T extends PhantomTypeArgument> implements StructClass
     return ItemPurchased.fromBcs(typeArg, obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ItemPurchased.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T,
-    content: SuiParsedData,
-  ): ItemPurchased<ToPhantomTypeArgument<T>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isItemPurchased(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a ItemPurchased object`)
-    }
-    return ItemPurchased.fromFieldsWithTypes(typeArg, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ItemPurchased.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T,
-    data: SuiObjectData,
-  ): ItemPurchased<ToPhantomTypeArgument<T>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isItemPurchased(data.bcs.type)) {
-        throw new Error(`object at is not a ItemPurchased object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 1; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return ItemPurchased.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return ItemPurchased.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(
     client: ClientWithCoreApi,
     typeArg: T,
@@ -2484,8 +2147,6 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
       fromJSON: (json: Record<string, any>) => ItemDelisted.fromJSON(T, json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         ItemDelisted.fromCoreObject(T, obj),
-      fromSuiParsedData: (content: SuiParsedData) => ItemDelisted.fromSuiParsedData(T, content),
-      fromSuiObjectData: (content: SuiObjectData) => ItemDelisted.fromSuiObjectData(T, content),
       fetch: async (client: ClientWithCoreApi, id: string) => ItemDelisted.fetch(client, T, id),
       new: (fields: ItemDelistedFields<ToPhantomTypeArgument<T>>) => {
         return new ItemDelisted([extractType(T)], fields)
@@ -2620,56 +2281,6 @@ export class ItemDelisted<T extends PhantomTypeArgument> implements StructClass 
     }
 
     return ItemDelisted.fromBcs(typeArg, obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ItemDelisted.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T,
-    content: SuiParsedData,
-  ): ItemDelisted<ToPhantomTypeArgument<T>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isItemDelisted(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a ItemDelisted object`)
-    }
-    return ItemDelisted.fromFieldsWithTypes(typeArg, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ItemDelisted.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>>(
-    typeArg: T,
-    data: SuiObjectData,
-  ): ItemDelisted<ToPhantomTypeArgument<T>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isItemDelisted(data.bcs.type)) {
-        throw new Error(`object at is not a ItemDelisted object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 1; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return ItemDelisted.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return ItemDelisted.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>>(

@@ -2,8 +2,6 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -99,8 +97,6 @@ export class Random implements StructClass {
       fromJSONField: (field: any) => Random.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Random.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Random.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => Random.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Random.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => Random.fetch(client, id),
       new: (fields: RandomFields) => {
         return new Random([], fields)
@@ -192,34 +188,6 @@ export class Random implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a Random object`)
     }
     return Random.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Random.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): Random {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isRandom(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Random object`)
-    }
-    return Random.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Random.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): Random {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isRandom(data.bcs.type)) {
-        throw new Error(`object at is not a Random object`)
-      }
-
-      return Random.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Random.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<Random> {
@@ -315,8 +283,6 @@ export class RandomInner implements StructClass {
       fromJSON: (json: Record<string, any>) => RandomInner.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         RandomInner.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => RandomInner.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => RandomInner.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => RandomInner.fetch(client, id),
       new: (fields: RandomInnerFields) => {
         return new RandomInner([], fields)
@@ -420,34 +386,6 @@ export class RandomInner implements StructClass {
     return RandomInner.fromBcs(obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link RandomInner.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): RandomInner {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isRandomInner(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a RandomInner object`)
-    }
-    return RandomInner.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link RandomInner.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): RandomInner {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isRandomInner(data.bcs.type)) {
-        throw new Error(`object at is not a RandomInner object`)
-      }
-
-      return RandomInner.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return RandomInner.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch(client: ClientWithCoreApi, id: string): Promise<RandomInner> {
     const { object } = await client.core.getObject({
       objectId: id,
@@ -539,8 +477,6 @@ export class RandomGenerator implements StructClass {
       fromJSON: (json: Record<string, any>) => RandomGenerator.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         RandomGenerator.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => RandomGenerator.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => RandomGenerator.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => RandomGenerator.fetch(client, id),
       new: (fields: RandomGeneratorFields) => {
         return new RandomGenerator([], fields)
@@ -637,34 +573,6 @@ export class RandomGenerator implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a RandomGenerator object`)
     }
     return RandomGenerator.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link RandomGenerator.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): RandomGenerator {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isRandomGenerator(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a RandomGenerator object`)
-    }
-    return RandomGenerator.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link RandomGenerator.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): RandomGenerator {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isRandomGenerator(data.bcs.type)) {
-        throw new Error(`object at is not a RandomGenerator object`)
-      }
-
-      return RandomGenerator.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return RandomGenerator.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<RandomGenerator> {

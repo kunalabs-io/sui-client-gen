@@ -9,8 +9,6 @@
 
 import { bcs, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -145,10 +143,6 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
       fromJSON: (json: Record<string, any>) => Field.fromJSON([Name, Value], json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         Field.fromCoreObject([Name, Value], obj),
-      fromSuiParsedData: (content: SuiParsedData) =>
-        Field.fromSuiParsedData([Name, Value], content),
-      fromSuiObjectData: (content: SuiObjectData) =>
-        Field.fromSuiObjectData([Name, Value], content),
       fetch: async (client: ClientWithCoreApi, id: string) =>
         Field.fetch(client, [Name, Value], id),
       new: (fields: FieldFields<ToTypeArgument<Name>, ToTypeArgument<Value>>) => {
@@ -306,62 +300,6 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
     }
 
     return Field.fromBcs(typeArgs, obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Field.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<
-    Name extends Reified<TypeArgument, any>,
-    Value extends Reified<TypeArgument, any>,
-  >(
-    typeArgs: [Name, Value],
-    content: SuiParsedData,
-  ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isField(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Field object`)
-    }
-    return Field.fromFieldsWithTypes(typeArgs, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Field.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<
-    Name extends Reified<TypeArgument, any>,
-    Value extends Reified<TypeArgument, any>,
-  >(
-    typeArgs: [Name, Value],
-    data: SuiObjectData,
-  ): Field<ToTypeArgument<Name>, ToTypeArgument<Value>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isField(data.bcs.type)) {
-        throw new Error(`object at is not a Field object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 2) {
-        throw new Error(
-          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 2; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return Field.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Field.fromSuiParsedData(typeArgs, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch<

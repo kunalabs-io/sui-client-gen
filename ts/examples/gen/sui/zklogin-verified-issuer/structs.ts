@@ -1,7 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
+import { fromHex, toHex } from '@mysten/sui/utils'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -106,8 +105,6 @@ export class VerifiedIssuer implements StructClass {
       fromJSON: (json: Record<string, any>) => VerifiedIssuer.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         VerifiedIssuer.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => VerifiedIssuer.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => VerifiedIssuer.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => VerifiedIssuer.fetch(client, id),
       new: (fields: VerifiedIssuerFields) => {
         return new VerifiedIssuer([], fields)
@@ -207,34 +204,6 @@ export class VerifiedIssuer implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a VerifiedIssuer object`)
     }
     return VerifiedIssuer.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link VerifiedIssuer.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): VerifiedIssuer {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isVerifiedIssuer(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a VerifiedIssuer object`)
-    }
-    return VerifiedIssuer.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link VerifiedIssuer.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): VerifiedIssuer {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isVerifiedIssuer(data.bcs.type)) {
-        throw new Error(`object at is not a VerifiedIssuer object`)
-      }
-
-      return VerifiedIssuer.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return VerifiedIssuer.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<VerifiedIssuer> {

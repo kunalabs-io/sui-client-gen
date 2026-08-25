@@ -15,8 +15,6 @@
 
 import { bcs, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -116,8 +114,6 @@ export class Claimed implements StructClass {
       fromJSON: (json: Record<string, any>) => Claimed.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         Claimed.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => Claimed.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Claimed.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => Claimed.fetch(client, id),
       new: (fields: ClaimedFields) => {
         return new Claimed([], fields)
@@ -204,34 +200,6 @@ export class Claimed implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a Claimed object`)
     }
     return Claimed.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Claimed.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): Claimed {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isClaimed(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Claimed object`)
-    }
-    return Claimed.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Claimed.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): Claimed {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isClaimed(data.bcs.type)) {
-        throw new Error(`object at is not a Claimed object`)
-      }
-
-      return Claimed.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Claimed.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<Claimed> {
@@ -324,8 +292,6 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => DerivedObjectKey.fromJSON(K, json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         DerivedObjectKey.fromCoreObject(K, obj),
-      fromSuiParsedData: (content: SuiParsedData) => DerivedObjectKey.fromSuiParsedData(K, content),
-      fromSuiObjectData: (content: SuiObjectData) => DerivedObjectKey.fromSuiObjectData(K, content),
       fetch: async (client: ClientWithCoreApi, id: string) => DerivedObjectKey.fetch(client, K, id),
       new: (fields: DerivedObjectKeyFields<ToTypeArgument<K>>) => {
         return new DerivedObjectKey([extractType(K)], fields)
@@ -457,56 +423,6 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
     }
 
     return DerivedObjectKey.fromBcs(typeArg, obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link DerivedObjectKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<K extends Reified<TypeArgument, any>>(
-    typeArg: K,
-    content: SuiParsedData,
-  ): DerivedObjectKey<ToTypeArgument<K>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isDerivedObjectKey(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a DerivedObjectKey object`)
-    }
-    return DerivedObjectKey.fromFieldsWithTypes(typeArg, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link DerivedObjectKey.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<K extends Reified<TypeArgument, any>>(
-    typeArg: K,
-    data: SuiObjectData,
-  ): DerivedObjectKey<ToTypeArgument<K>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isDerivedObjectKey(data.bcs.type)) {
-        throw new Error(`object at is not a DerivedObjectKey object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 1; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return DerivedObjectKey.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return DerivedObjectKey.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch<K extends Reified<TypeArgument, any>>(

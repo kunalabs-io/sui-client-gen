@@ -7,8 +7,6 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64 } from '@mysten/sui/utils'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -101,8 +99,6 @@ export class ObjectBag implements StructClass {
       fromJSON: (json: Record<string, any>) => ObjectBag.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         ObjectBag.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => ObjectBag.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => ObjectBag.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => ObjectBag.fetch(client, id),
       new: (fields: ObjectBagFields) => {
         return new ObjectBag([], fields)
@@ -194,34 +190,6 @@ export class ObjectBag implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a ObjectBag object`)
     }
     return ObjectBag.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ObjectBag.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): ObjectBag {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isObjectBag(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a ObjectBag object`)
-    }
-    return ObjectBag.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ObjectBag.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): ObjectBag {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isObjectBag(data.bcs.type)) {
-        throw new Error(`object at is not a ObjectBag object`)
-      }
-
-      return ObjectBag.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return ObjectBag.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<ObjectBag> {

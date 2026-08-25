@@ -2,8 +2,7 @@
 
 import { bcs } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
+import { fromHex, toHex } from '@mysten/sui/utils'
 import {
   decodeFromFields,
   decodeFromFieldsWithTypes,
@@ -94,8 +93,6 @@ export class ID implements StructClass {
       fromJSONField: (field: any) => ID.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => ID.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => ID.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => ID.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => ID.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => ID.fetch(client, id),
       new: (fields: IDFields) => {
         return new ID([], fields)
@@ -187,34 +184,6 @@ export class ID implements StructClass {
     return ID.fromBcs(obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ID.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): ID {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isID(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a ID object`)
-    }
-    return ID.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link ID.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): ID {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isID(data.bcs.type)) {
-        throw new Error(`object at is not a ID object`)
-      }
-
-      return ID.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return ID.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch(client: ClientWithCoreApi, id: string): Promise<ID> {
     const { object } = await client.core.getObject({
       objectId: id,
@@ -303,8 +272,6 @@ export class UID implements StructClass {
       fromJSONField: (field: any) => UID.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => UID.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => UID.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => UID.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => UID.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => UID.fetch(client, id),
       new: (fields: UIDFields) => {
         return new UID([], fields)
@@ -391,34 +358,6 @@ export class UID implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a UID object`)
     }
     return UID.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link UID.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): UID {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isUID(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a UID object`)
-    }
-    return UID.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link UID.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): UID {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isUID(data.bcs.type)) {
-        throw new Error(`object at is not a UID object`)
-      }
-
-      return UID.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return UID.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<UID> {

@@ -8,8 +8,7 @@
 
 import { bcs, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
-import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'
+import { fromHex, toHex } from '@mysten/sui/utils'
 import {
   assertFieldsWithTypesArgsMatch,
   assertReifiedTypeArgsMatch,
@@ -116,8 +115,6 @@ export class Referent<T extends TypeArgument> implements StructClass {
       fromJSON: (json: Record<string, any>) => Referent.fromJSON(T, json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) =>
         Referent.fromCoreObject(T, obj),
-      fromSuiParsedData: (content: SuiParsedData) => Referent.fromSuiParsedData(T, content),
-      fromSuiObjectData: (content: SuiObjectData) => Referent.fromSuiObjectData(T, content),
       fetch: async (client: ClientWithCoreApi, id: string) => Referent.fetch(client, T, id),
       new: (fields: ReferentFields<ToTypeArgument<T>>) => {
         return new Referent([extractType(T)], fields)
@@ -259,56 +256,6 @@ export class Referent<T extends TypeArgument> implements StructClass {
     return Referent.fromBcs(typeArg, obj.content)
   }
 
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Referent.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<T extends Reified<TypeArgument, any>>(
-    typeArg: T,
-    content: SuiParsedData,
-  ): Referent<ToTypeArgument<T>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isReferent(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Referent object`)
-    }
-    return Referent.fromFieldsWithTypes(typeArg, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Referent.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<T extends Reified<TypeArgument, any>>(
-    typeArg: T,
-    data: SuiObjectData,
-  ): Referent<ToTypeArgument<T>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isReferent(data.bcs.type)) {
-        throw new Error(`object at is not a Referent object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 1) {
-        throw new Error(
-          `type argument mismatch: expected 1 type arguments but got '${gotTypeArgs.length}'`,
-        )
-      }
-      for (let i = 0; i < 1; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType([typeArg][i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`,
-          )
-        }
-      }
-
-      return Referent.fromBcs(typeArg, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Referent.fromSuiParsedData(typeArg, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
-  }
-
   static async fetch<T extends Reified<TypeArgument, any>>(
     client: ClientWithCoreApi,
     typeArg: T,
@@ -415,8 +362,6 @@ export class Borrow implements StructClass {
       fromJSONField: (field: any) => Borrow.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Borrow.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Borrow.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => Borrow.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Borrow.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => Borrow.fetch(client, id),
       new: (fields: BorrowFields) => {
         return new Borrow([], fields)
@@ -511,34 +456,6 @@ export class Borrow implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a Borrow object`)
     }
     return Borrow.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Borrow.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): Borrow {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isBorrow(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Borrow object`)
-    }
-    return Borrow.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Borrow.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): Borrow {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isBorrow(data.bcs.type)) {
-        throw new Error(`object at is not a Borrow object`)
-      }
-
-      return Borrow.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Borrow.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.',
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<Borrow> {
