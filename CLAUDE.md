@@ -45,6 +45,16 @@ pnpm run test             # Run vitest (single run)
 pnpm run test:watch       # Run vitest in watch mode
 ```
 
+**The test suite runs against a local validator, not testnet.** `tests/globalSetup.ts` spawns
+`sui start --force-regenesis --with-faucet`, publishes `move/examples` and `move/amm` against
+it, and creates the shared fixture objects, so a `sui` binary must be on `PATH` (override with
+`SUI_BIN`) and ports 9000/9123 must be free. Each run starts from a fresh genesis, so nothing
+carries over between runs. Set `SUI_NETWORK_LOG=1` to see validator output when setup fails.
+
+Tests are currently serialized (`fileParallelism: false`, `maxConcurrency: 1`): they all sign
+with one account holding a single gas coin, and concurrent transactions race on that coin's
+version. Paying gas from the address balance instead will remove that constraint.
+
 **Slow commands - avoid during iteration:**
 ```bash
 pnpm run gen:example      # Regenerate example code
