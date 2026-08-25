@@ -256,7 +256,7 @@ Typical uses:
 - Fan-out processing where each task operates against a different `publishedAt` concurrently.
 - Decoding type origins for a cross-env payload (e.g. `getTypeOrigin('pkg', 'mod::T', otherEnv)`).
 
-Note: per-call `env` covers move calls (function bindings) and the env resolvers, not the struct-class static methods. `Foo.reified()`, `Foo.fetch()`, `Foo.fromSuiParsedData()` etc. don't accept an `env` argument — they resolve `$typeName` against the active env. Switching that active env with `setActiveEnv()` is reflected on every subsequent read (including stored `reified()` handles and `phantom()` wrappers — see [ADR-005](docs/adr/005-dynamic-typename-via-getters.md)), so cross-env decoding works, but you can't pin a single decode call to a specific env without flipping the active one. Multi-env-instances-in-one-process is the planned next step.
+Note: per-call `env` covers move calls (function bindings) and the env resolvers, not the struct-class static methods. `Foo.reified()`, `Foo.fetch()`, `Foo.fromCoreObject()` etc. don't accept an `env` argument — they resolve `$typeName` against the active env. Switching that active env with `setActiveEnv()` is reflected on every subsequent read (including stored `reified()` handles and `phantom()` wrappers — see [ADR-005](docs/adr/005-dynamic-typename-via-getters.md)), so cross-env decoding works, but you can't pin a single decode call to a specific env without flipping the active one. Multi-env-instances-in-one-process is the planned next step.
 
 ### Querying Active Environment
 
@@ -385,7 +385,7 @@ The struct class can be instantiated in multiple ways:
 - using the constructor by passing in the fields manually
 - using the `fromFields` static method by passing in the fields as when decoded from bcs
 - using the `fromFieldsWithTypes` static method by passing in the fields as returned by the RPC response with `showContent` option set to `true`
-- using the `fromSuiParsedData` which is a wrapper around `fromFieldsWithTypes` that takes in the `content` field of the RPC response
+- using the `fromCoreObject` static method by passing in an object returned by `client.core.getObject({ objectId, include: { content: true } })`
 - using the `fromBcs` static method by passing in the bcs bytes
 
 For structs with the `key` ability, the `fetch` static method is also generated, which fetches the object from the chain by its ID.

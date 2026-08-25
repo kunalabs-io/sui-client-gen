@@ -73,8 +73,6 @@ export class EscapedDoc implements StructClass {
       fromJSONField: (field: any) => EscapedDoc.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => EscapedDoc.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => EscapedDoc.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => EscapedDoc.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => EscapedDoc.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => EscapedDoc.fetch(client, id),
       new: (fields: EscapedDocFields) => {
         return new EscapedDoc([], fields)
@@ -159,34 +157,6 @@ export class EscapedDoc implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a EscapedDoc object`)
     }
     return EscapedDoc.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link EscapedDoc.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): EscapedDoc {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isEscapedDoc(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a EscapedDoc object`)
-    }
-    return EscapedDoc.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link EscapedDoc.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): EscapedDoc {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isEscapedDoc(data.bcs.type)) {
-        throw new Error(`object at is not a EscapedDoc object`)
-      }
-
-      return EscapedDoc.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return EscapedDoc.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<EscapedDoc> {

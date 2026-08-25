@@ -85,8 +85,6 @@ export class MultilineDoc implements StructClass {
       fromJSONField: (field: any) => MultilineDoc.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => MultilineDoc.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => MultilineDoc.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => MultilineDoc.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => MultilineDoc.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => MultilineDoc.fetch(client, id),
       new: (fields: MultilineDocFields) => {
         return new MultilineDoc([], fields)
@@ -171,34 +169,6 @@ export class MultilineDoc implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a MultilineDoc object`)
     }
     return MultilineDoc.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link MultilineDoc.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): MultilineDoc {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isMultilineDoc(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a MultilineDoc object`)
-    }
-    return MultilineDoc.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link MultilineDoc.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): MultilineDoc {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isMultilineDoc(data.bcs.type)) {
-        throw new Error(`object at is not a MultilineDoc object`)
-      }
-
-      return MultilineDoc.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return MultilineDoc.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<MultilineDoc> {

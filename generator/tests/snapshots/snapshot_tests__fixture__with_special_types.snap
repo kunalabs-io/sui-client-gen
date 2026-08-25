@@ -120,8 +120,6 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
       fromJSONField: (field: any) => WithSpecialTypes.fromJSONField([T, U], field),
       fromJSON: (json: Record<string, any>) => WithSpecialTypes.fromJSON([T, U], json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => WithSpecialTypes.fromCoreObject([T, U], obj),
-      fromSuiParsedData: (content: SuiParsedData) => WithSpecialTypes.fromSuiParsedData([T, U], content),
-      fromSuiObjectData: (content: SuiObjectData) => WithSpecialTypes.fromSuiObjectData([T, U], content),
       fetch: async (client: ClientWithCoreApi, id: string) => WithSpecialTypes.fetch(client, [T, U], id),
       new: (fields: WithSpecialTypesFields<ToPhantomTypeArgument<T>, ToTypeArgument<U>>) => {
         return new WithSpecialTypes([extractType(T), extractType(U)], fields)
@@ -310,56 +308,6 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
       }
 
     return WithSpecialTypes.fromBcs(typeArgs, obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link WithSpecialTypes.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
-    typeArgs: [T, U],
-    content: SuiParsedData
-  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isWithSpecialTypes(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a WithSpecialTypes object`)
-    }
-    return WithSpecialTypes.fromFieldsWithTypes(typeArgs, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link WithSpecialTypes.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
-    typeArgs: [T, U],
-    data: SuiObjectData
-  ): WithSpecialTypes<ToPhantomTypeArgument<T>, ToTypeArgument<U>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isWithSpecialTypes(data.bcs.type)) {
-        throw new Error(`object at is not a WithSpecialTypes object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 2) {
-        throw new Error(
-          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
-        )
-      }
-      for (let i = 0; i < 2; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-          )
-        }
-      }
-
-      return WithSpecialTypes.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return WithSpecialTypes.fromSuiParsedData(typeArgs, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
-    )
   }
 
   static async fetch<T extends PhantomReified<PhantomTypeArgument>, U extends Reified<TypeArgument, any>>(
