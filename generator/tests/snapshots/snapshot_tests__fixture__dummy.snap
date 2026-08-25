@@ -70,8 +70,6 @@ export class Dummy implements StructClass {
       fromJSONField: (field: any) => Dummy.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => Dummy.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Dummy.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => Dummy.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => Dummy.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => Dummy.fetch(client, id),
       new: (fields: DummyFields) => {
         return new Dummy([], fields)
@@ -156,34 +154,6 @@ export class Dummy implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a Dummy object`)
     }
     return Dummy.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Dummy.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): Dummy {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isDummy(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Dummy object`)
-    }
-    return Dummy.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Dummy.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): Dummy {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isDummy(data.bcs.type)) {
-        throw new Error(`object at is not a Dummy object`)
-      }
-
-      return Dummy.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Dummy.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<Dummy> {

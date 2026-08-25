@@ -76,8 +76,6 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> imp
       fromJSONField: (field: any) => WithTwoGenerics.fromJSONField([T, U], field),
       fromJSON: (json: Record<string, any>) => WithTwoGenerics.fromJSON([T, U], json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => WithTwoGenerics.fromCoreObject([T, U], obj),
-      fromSuiParsedData: (content: SuiParsedData) => WithTwoGenerics.fromSuiParsedData([T, U], content),
-      fromSuiObjectData: (content: SuiObjectData) => WithTwoGenerics.fromSuiObjectData([T, U], content),
       fetch: async (client: ClientWithCoreApi, id: string) => WithTwoGenerics.fetch(client, [T, U], id),
       new: (fields: WithTwoGenericsFields<ToTypeArgument<T>, ToTypeArgument<U>>) => {
         return new WithTwoGenerics([extractType(T), extractType(U)], fields)
@@ -211,56 +209,6 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument> imp
       }
 
     return WithTwoGenerics.fromBcs(typeArgs, obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link WithTwoGenerics.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
-    typeArgs: [T, U],
-    content: SuiParsedData
-  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isWithTwoGenerics(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a WithTwoGenerics object`)
-    }
-    return WithTwoGenerics.fromFieldsWithTypes(typeArgs, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link WithTwoGenerics.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(
-    typeArgs: [T, U],
-    data: SuiObjectData
-  ): WithTwoGenerics<ToTypeArgument<T>, ToTypeArgument<U>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isWithTwoGenerics(data.bcs.type)) {
-        throw new Error(`object at is not a WithTwoGenerics object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 2) {
-        throw new Error(
-          `type argument mismatch: expected 2 type arguments but got '${gotTypeArgs.length}'`
-        )
-      }
-      for (let i = 0; i < 2; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-          )
-        }
-      }
-
-      return WithTwoGenerics.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return WithTwoGenerics.fromSuiParsedData(typeArgs, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
-    )
   }
 
   static async fetch<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>>(

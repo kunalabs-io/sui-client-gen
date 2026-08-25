@@ -3,7 +3,6 @@ source: generator/tests/snapshot_tests.rs
 expression: output
 ---
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
-import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'
 import { getTypeOrigin } from '../../_envs'
 import {
   EnumVariantClass,
@@ -39,7 +38,6 @@ import { UID } from '../../sui/object/structs'
 import { SUI } from '../../sui/sui/structs'
 import { Action } from './structs'
 import { BcsType, bcs } from '@mysten/sui/bcs'
-import { fromBase64 } from '@mysten/sui/utils'
 
 /* ============================== Wrapped =============================== */
 
@@ -135,8 +133,6 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
       fromJSONField: (field: any) => Wrapped.fromJSONField([T, U, V], field),
       fromJSON: (json: Record<string, any>) => Wrapped.fromJSON([T, U, V], json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => Wrapped.fromCoreObject([T, U, V], obj),
-      fromSuiParsedData: (content: SuiParsedData) => Wrapped.fromSuiParsedData([T, U, V], content),
-      fromSuiObjectData: (content: SuiObjectData) => Wrapped.fromSuiObjectData([T, U, V], content),
       fetch: async (client: ClientWithCoreApi, id: string) => Wrapped.fetch(client, [T, U, V], id),
       new: (fields: WrappedFields<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>>) => {
         return new Wrapped([extractType(T), extractType(U), extractType(V)], fields)
@@ -295,56 +291,6 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
       }
 
     return Wrapped.fromBcs(typeArgs, obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Wrapped.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>, V extends Reified<TypeArgument, any>>(
-    typeArgs: [T, U, V],
-    content: SuiParsedData
-  ): Wrapped<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>> {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isWrapped(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a Wrapped object`)
-    }
-    return Wrapped.fromFieldsWithTypes(typeArgs, content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link Wrapped.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>, V extends Reified<TypeArgument, any>>(
-    typeArgs: [T, U, V],
-    data: SuiObjectData
-  ): Wrapped<ToTypeArgument<T>, ToTypeArgument<U>, ToTypeArgument<V>> {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isWrapped(data.bcs.type)) {
-        throw new Error(`object at is not a Wrapped object`)
-      }
-
-      const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-      if (gotTypeArgs.length !== 3) {
-        throw new Error(
-          `type argument mismatch: expected 3 type arguments but got '${gotTypeArgs.length}'`
-        )
-      }
-      for (let i = 0; i < 3; i++) {
-        const gotTypeArg = compressSuiType(gotTypeArgs[i])
-        const expectedTypeArg = compressSuiType(extractType(typeArgs[i]))
-        if (gotTypeArg !== expectedTypeArg) {
-          throw new Error(
-            `type argument mismatch at position ${i}: expected '${expectedTypeArg}' but got '${gotTypeArg}'`
-          )
-        }
-      }
-
-      return Wrapped.fromBcs(typeArgs, fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return Wrapped.fromSuiParsedData(typeArgs, data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
-    )
   }
 
   static async fetch<T extends Reified<TypeArgument, any>, U extends Reified<TypeArgument, any>, V extends Reified<TypeArgument, any>>(

@@ -73,8 +73,6 @@ export class DocumentedStruct implements StructClass {
       fromJSONField: (field: any) => DocumentedStruct.fromJSONField(field),
       fromJSON: (json: Record<string, any>) => DocumentedStruct.fromJSON(json),
       fromCoreObject: (obj: SuiClientTypes.Object<{ content: true }>) => DocumentedStruct.fromCoreObject(obj),
-      fromSuiParsedData: (content: SuiParsedData) => DocumentedStruct.fromSuiParsedData(content),
-      fromSuiObjectData: (content: SuiObjectData) => DocumentedStruct.fromSuiObjectData(content),
       fetch: async (client: ClientWithCoreApi, id: string) => DocumentedStruct.fetch(client, id),
       new: (fields: DocumentedStructFields) => {
         return new DocumentedStruct([], fields)
@@ -159,34 +157,6 @@ export class DocumentedStruct implements StructClass {
       throw new Error(`object at ${obj.objectId} is not a DocumentedStruct object`)
     }
     return DocumentedStruct.fromBcs(obj.content)
-  }
-
-  /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {@link DocumentedStruct.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiParsedData(content: SuiParsedData): DocumentedStruct {
-    if (content.dataType !== 'moveObject') {
-      throw new Error('not an object')
-    }
-    if (!isDocumentedStruct(content.type)) {
-      throw new Error(`object at ${(content.fields as any).id} is not a DocumentedStruct object`)
-    }
-    return DocumentedStruct.fromFieldsWithTypes(content)
-  }
-
-  /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {@link DocumentedStruct.fromCoreObject} together with `client.core.getObject({ include: { content: true } })` for transport-agnostic parsing. */
-  static fromSuiObjectData(data: SuiObjectData): DocumentedStruct {
-    if (data.bcs) {
-      if (data.bcs.dataType !== 'moveObject' || !isDocumentedStruct(data.bcs.type)) {
-        throw new Error(`object at is not a DocumentedStruct object`)
-      }
-
-      return DocumentedStruct.fromBcs(fromBase64(data.bcs.bcsBytes))
-    }
-    if (data.content) {
-      return DocumentedStruct.fromSuiParsedData(data.content)
-    }
-    throw new Error(
-      'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
-    )
   }
 
   static async fetch(client: ClientWithCoreApi, id: string): Promise<DocumentedStruct> {

@@ -92,11 +92,11 @@ const poolReified = Pool.r(SUI.p, EXAMPLE_COIN.p); // or Pool.reified(SUI.phanto
 const pool = await poolReified.fetch(client, POOL_ID);
 
 // alternatively
-const res = await client.getObject({
-  id: POOL_ID,
-  options: { showContent: true },
+const { object } = await client.core.getObject({
+  objectId: POOL_ID,
+  include: { content: true },
 });
-const pool = poolReified.fromSuiParsedData(res.data.content);
+const pool = poolReified.fromCoreObject(object);
 
 console.log(pool);
 ```
@@ -302,10 +302,12 @@ generated surface are:
   `include: { content: true }`. It performs the same type checks as the old
   `fromSuiObjectData` (asserts the response's type matches the class and, for generics,
   validates type arguments) before decoding from BCS.
-- **`fromSuiParsedData(content)`** and **`fromSuiObjectData(data)`** are kept but marked
-  `@deprecated`. Their input types (`SuiParsedData`, `SuiObjectData`) moved to
-  `@mysten/sui/jsonRpc`; their bodies are unchanged. They will be removed when JSON-RPC
-  support is dropped upstream — migrate callers to `fromCoreObject`.
+- **`fromSuiParsedData(content)`** and **`fromSuiObjectData(data)`** have been **removed**.
+  They consumed the JSON-RPC-shaped `SuiParsedData` / `SuiObjectData` types, which public
+  fullnodes no longer serve. This is not a loss of JSON-RPC support: `SuiJsonRpcClient`
+  implements `ClientWithCoreApi`, so callers on a JSON-RPC endpoint use
+  `client.core.getObject({ objectId, include: { content: true } })` with `fromCoreObject`
+  like every other transport.
 - The generator no longer emits the `SupportedSuiClient` union / `fetchObjectBcs`
   dispatcher in `_framework/util.ts`. Transport selection is handled by the SDK itself
   via `client.core.*`.
@@ -323,7 +325,7 @@ Example migration:
 
   // batch decode — new pattern:
 - const res = await client.multiGetObjects({ ids, options: { showBcs: true } });
-- const pools = res.map(r => Pool.fromSuiObjectData([SUI.p, EXAMPLE_COIN.p], r.data!));
+- const pools = res.map(r => Pool.fromSuiObjectData([SUI.p, EXAMPLE_COIN.p], r.data!)); // removed
 + const { objects } = await client.core.getObjects({
 +   objectIds: ids,
 +   include: { content: true },

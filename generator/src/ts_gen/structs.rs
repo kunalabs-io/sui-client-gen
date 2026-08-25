@@ -325,16 +325,9 @@ impl StructIR {
             "import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'"
                 .to_string(),
         );
-        lines.push(
-            "import type { SuiObjectData, SuiParsedData } from '@mysten/sui/jsonRpc'".to_string(),
-        );
-
-        // Utils imports - add fromHex/toHex if addresses are used
+        // Utils imports - only needed if addresses are used
         if self.uses_address {
-            lines
-                .push("import { fromBase64, fromHex, toHex } from '@mysten/sui/utils'".to_string());
-        } else {
-            lines.push("import { fromBase64 } from '@mysten/sui/utils'".to_string());
+            lines.push("import { fromHex, toHex } from '@mysten/sui/utils'".to_string());
         }
 
         lines.join("\n")
@@ -639,8 +632,6 @@ impl StructIR {
                   fromJSONField: (field: any) => {name}.fromJSONField(field),
                   fromJSON: (json: Record<string, any>) => {name}.fromJSON(json),
                   fromCoreObject: (obj: SuiClientTypes.Object<{{ content: true }}>) => {name}.fromCoreObject(obj),
-                  fromSuiParsedData: (content: SuiParsedData) => {name}.fromSuiParsedData(content),
-                  fromSuiObjectData: (content: SuiObjectData) => {name}.fromSuiObjectData(content),
                   fetch: async (client: ClientWithCoreApi, id: string) => {name}.fetch(client, id),
                   new: (fields: {name}Fields) => {{
                     return new {name}([], fields)
@@ -725,34 +716,6 @@ impl StructIR {
                   throw new Error(`object at ${{obj.objectId}} is not a {name} object`)
                 }}
                 return {name}.fromBcs(obj.content)
-              }}
-
-              /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {{@link {name}.fromCoreObject}} together with `client.core.getObject({{ include: {{ content: true }} }})` for transport-agnostic parsing. */
-              static fromSuiParsedData(content: SuiParsedData): {name} {{
-                if (content.dataType !== 'moveObject') {{
-                  throw new Error('not an object')
-                }}
-                if (!is{name}(content.type)) {{
-                  throw new Error(`object at ${{(content.fields as any).id}} is not a {name} object`)
-                }}
-                return {name}.fromFieldsWithTypes(content)
-              }}
-
-              /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {{@link {name}.fromCoreObject}} together with `client.core.getObject({{ include: {{ content: true }} }})` for transport-agnostic parsing. */
-              static fromSuiObjectData(data: SuiObjectData): {name} {{
-                if (data.bcs) {{
-                  if (data.bcs.dataType !== 'moveObject' || !is{name}(data.bcs.type)) {{
-                    throw new Error(`object at is not a {name} object`)
-                  }}
-
-                  return {name}.fromBcs(fromBase64(data.bcs.bcsBytes))
-                }}
-                if (data.content) {{
-                  return {name}.fromSuiParsedData(data.content)
-                }}
-                throw new Error(
-                  'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
-                )
               }}
 
               static async fetch(client: ClientWithCoreApi, id: string): Promise<{name}> {{
@@ -1050,8 +1013,6 @@ impl StructIR {
                   fromJSONField: (field: any) => {name}.fromJSONField({reified_args_for_static}, field),
                   fromJSON: (json: Record<string, any>) => {name}.fromJSON({reified_args_for_static}, json),
                   fromCoreObject: (obj: SuiClientTypes.Object<{{ content: true }}>) => {name}.fromCoreObject({reified_args_for_static}, obj),
-                  fromSuiParsedData: (content: SuiParsedData) => {name}.fromSuiParsedData({reified_args_for_static}, content),
-                  fromSuiObjectData: (content: SuiObjectData) => {name}.fromSuiObjectData({reified_args_for_static}, content),
                   fetch: async (client: ClientWithCoreApi, id: string) => {name}.fetch(client, {reified_args_for_static}, id),
                   new: (fields: {name}Fields{to_phantom_type_args}) => {{
                     return new {name}([{extract_types}], fields)
@@ -1158,48 +1119,6 @@ impl StructIR {
                 {type_arg_checks}
 
                 return {name}.fromBcs({type_args_for_call}, obj.content)
-              }}
-
-              /** @deprecated `SuiParsedData` is a JSON-RPC-only type that is being phased out upstream. Use {{@link {name}.fromCoreObject}} together with `client.core.getObject({{ include: {{ content: true }} }})` for transport-agnostic parsing. */
-              static fromSuiParsedData{reified_type_params}(
-                {reified_arg_first}
-                content: SuiParsedData
-              ): {name}{to_phantom_type_args} {{
-                if (content.dataType !== 'moveObject') {{
-                  throw new Error('not an object')
-                }}
-                if (!is{name}(content.type)) {{
-                  throw new Error(`object at ${{(content.fields as any).id}} is not a {name} object`)
-                }}
-                return {name}.fromFieldsWithTypes({type_args_for_call}, content)
-              }}
-
-              /** @deprecated `SuiObjectData` is a JSON-RPC-only type that is being phased out upstream. Use {{@link {name}.fromCoreObject}} together with `client.core.getObject({{ include: {{ content: true }} }})` for transport-agnostic parsing. */
-              static fromSuiObjectData{reified_type_params}(
-                {reified_arg_first}
-                data: SuiObjectData
-              ): {name}{to_phantom_type_args} {{
-                if (data.bcs) {{
-                  if (data.bcs.dataType !== 'moveObject' || !is{name}(data.bcs.type)) {{
-                    throw new Error(`object at is not a {name} object`)
-                  }}
-
-                  const gotTypeArgs = parseTypeName(data.bcs.type).typeArgs
-                  if (gotTypeArgs.length !== {num_type_params}) {{
-                    throw new Error(
-                      `type argument mismatch: expected {num_type_params} type arguments but got '${{gotTypeArgs.length}}'`
-                    )
-                  }}
-                  {type_arg_checks}
-
-                  return {name}.fromBcs({type_args_for_call}, fromBase64(data.bcs.bcsBytes))
-                }}
-                if (data.content) {{
-                  return {name}.fromSuiParsedData({type_args_for_call}, data.content)
-                }}
-                throw new Error(
-                  'Both `bcs` and `content` fields are missing from the data. Include `showBcs` or `showContent` in the request.'
-                )
               }}
 
               static async fetch{reified_type_params}(
@@ -1594,7 +1513,7 @@ impl StructIR {
         }
     }
 
-    /// Emit type argument checks in fromSuiObjectData
+    /// Emit type argument checks in fromCoreObject
     fn emit_type_arg_checks(&self) -> String {
         let num_params = self.type_params.len();
         let type_args_ref = if num_params == 1 {
