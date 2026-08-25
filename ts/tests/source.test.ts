@@ -57,10 +57,17 @@ import { getEnv, setActiveEnvWithConfig } from './gen/_envs'
 // setup. Point both generated trees at those addresses before anything reads a `$typeName`.
 // Vitest isolates module state per test file, so this does not leak into the env-switching
 // suites, which assert against the committed testnet configuration.
-setActiveEnvWithConfig(localizeEnv(getEnv('testnet'), { examples: inject('examplesPackageId') }))
+const localExamples = {
+  originalId: inject('examplesOriginalId'),
+  publishedAt: inject('examplesPublishedAt'),
+  typeOriginOverrides: {
+    'other_module::AddedInAnUpgrade': inject('examplesUpgradeAddedOriginId'),
+  },
+}
+setActiveEnvWithConfig(localizeEnv(getEnv('testnet'), { examples: localExamples }))
 setExamplesActiveEnv(
   localizeEnv(getExamplesEnv('testnet'), {
-    examples: inject('examplesPackageId'),
+    examples: localExamples,
     amm: inject('ammPackageId'),
   })
 )
