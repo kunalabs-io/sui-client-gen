@@ -11,10 +11,10 @@ export default defineConfig({
     globalSetup: ['tests/globalSetup.ts'],
     testTimeout: 30_000,
     hookTimeout: 180_000,
-    // Tests submit real transactions from one account holding a single gas coin, so
-    // concurrent transactions race on that coin's version. Serialized until gas moves to the
-    // address balance, which removes the shared owned object from the gas path.
-    fileParallelism: false,
-    maxConcurrency: 1,
+    // Test files run in parallel, and `it.concurrent` tests within them. All of them sign as
+    // the same account, which is only safe because global setup leaves that account without
+    // SUI coins: gas comes from its address balance, which has no object version for
+    // concurrent transactions to race on. See tests/utils/gas.ts.
+    fileParallelism: true,
   },
 })

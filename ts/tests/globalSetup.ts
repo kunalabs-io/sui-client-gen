@@ -11,6 +11,7 @@ import { FaucetRateLimitError, requestSuiFromFaucetV2 } from '@mysten/sui/faucet
 import { startLocalNetwork, type LocalNetwork } from './utils/network'
 import { createSuiCliConfig, type SuiCliConfig } from './utils/sui-cli-config'
 import { createPubfile, publishPackage, stageMoveTree, upgradePackage } from './utils/publish'
+import { useAddressBalanceForGas } from './utils/gas'
 import { LOCALNET_FAUCET_PORT, LOCALNET_RPC_PORT, TEST_SECRET_KEY } from './utils/constants'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -99,6 +100,12 @@ async function provisionChain({ provide }: TestProject): Promise<() => Promise<v
   }
 
   const wrappedEnumId = await createWrappedEnum(client, keypair, examples.publishedAt)
+
+  // Last step that touches the chain during setup: everything above — the `sui` CLI publishes
+  // especially — pays gas from a coin, and this leaves the account with none. From here on
+  // transactions draw gas from the address balance, which is what makes it safe for the test
+  // files to run concurrently against this single shared account.
+  await useAddressBalanceForGas(client, keypair)
 
   provide('rpcUrl', network.rpcUrl)
   provide('faucetUrl', network.faucetUrl)
