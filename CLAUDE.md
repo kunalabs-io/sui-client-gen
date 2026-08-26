@@ -51,9 +51,15 @@ it, and creates the shared fixture objects, so a `sui` binary must be on `PATH` 
 `SUI_BIN`) and ports 9000/9123 must be free. Each run starts from a fresh genesis, so nothing
 carries over between runs. Set `SUI_NETWORK_LOG=1` to see validator output when setup fails.
 
-Tests are currently serialized (`fileParallelism: false`, `maxConcurrency: 1`): they all sign
-with one account holding a single gas coin, and concurrent transactions race on that coin's
-version. Paying gas from the address balance instead will remove that constraint.
+Setup also publishes the examples package in two steps — without `other_module::AddedInAnUpgrade`,
+then upgraded with it — so type origins are genuinely split across versions, as they are on
+testnet. A from-scratch publish would collapse `originalId`, `publishedAt`, and every type
+origin into one address and hide any confusion between them.
+
+Tests run in parallel. That is only safe because setup leaves the shared signing account with
+**no SUI coins**: gas is paid from its address balance, which has no object version for
+concurrent transactions to race on (`tests/utils/gas.ts`). Re-introducing coin gas brings back
+intermittent equivocation failures, so `harness.test.ts` asserts the account stays coinless.
 
 **Slow commands - avoid during iteration:**
 ```bash
