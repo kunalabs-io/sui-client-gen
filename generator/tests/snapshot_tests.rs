@@ -2508,3 +2508,49 @@ fn test_dynamic_enum_variant_typename_delegates_via_getter() {
         output
     );
 }
+
+fn make_dynamic_non_generic_enum_ir() -> EnumIR {
+    EnumIR {
+        name: "Kind".to_string(),
+        module_enum_path: "enums::Kind".to_string(),
+        package_info: examples_pkg_for("enums::Kind"),
+        type_params: vec![],
+        variants: vec![
+            EnumVariantIR {
+                name: "A".to_string(),
+                fields: vec![],
+                is_tuple: false,
+                doc_comment: None,
+            },
+            EnumVariantIR {
+                name: "B".to_string(),
+                fields: vec![],
+                is_tuple: false,
+                doc_comment: None,
+            },
+        ],
+        uses_vector: false,
+        uses_address: false,
+        uses_phantom_struct_args: false,
+        doc_comment: None,
+    }
+}
+
+#[test]
+fn test_dynamic_non_generic_enum_full_type_name_is_a_type() {
+    let ir = make_dynamic_non_generic_enum_ir();
+    let output = ir.emit_body();
+
+    assert!(
+        !output.contains("as `${getTypeOrigin("),
+        "fullTypeName must not assert to a template literal type that calls a function; got:\n{}",
+        output
+    );
+    assert!(
+        output.contains("get fullTypeName() { return composeSuiType(Kind.$typeName) as string }"),
+        "Dynamic non-generic enum must assert fullTypeName as string; got:\n{}",
+        output
+    );
+
+    insta::assert_snapshot!("dynamic__non_generic_enum", output);
+}

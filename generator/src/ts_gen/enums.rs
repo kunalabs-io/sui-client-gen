@@ -520,7 +520,7 @@ impl EnumIR {
                 const reifiedBcs = {name}.bcs
                 return {{
                   get typeName() {{ return {name}.$typeName }},
-                  get fullTypeName() {{ return composeSuiType({name}.$typeName) as `{full_type_template}` }},
+                  get fullTypeName() {{ return composeSuiType({name}.$typeName) as {full_type_as_type_for_static} }},
                   typeArgs: [] as [],
                   isPhantom: {name}.$isPhantom,
                   reifiedTypeArgs: [],
@@ -608,7 +608,7 @@ impl EnumIR {
             name = name,
             name_lower = name.to_lowercase(),
             type_name_decl = type_name_decl,
-            full_type_template = full_type_template,
+            full_type_as_type_for_static = full_type_as_type_for_static,
             bcs_section = bcs_section,
             new_switch_cases = new_switch_cases,
             from_fields_switch = from_fields_switch,

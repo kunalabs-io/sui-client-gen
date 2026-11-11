@@ -1,0 +1,256 @@
+---
+source: generator/tests/snapshot_tests.rs
+expression: output
+---
+/* ============================== Kind =============================== */
+
+export function isKind(type: string): boolean {
+  type = compressSuiType(type)
+  return type === `${getTypeOrigin('examples', 'enums::Kind')}::enums::Kind`
+}
+
+export type KindVariant =
+  | KindA
+  | KindB
+
+export type KindVariantJSON =
+  | KindAJSON
+  | KindBJSON
+
+export type KindVariantName = 'A' | 'B'
+
+export function isKindVariantName(variant: string): variant is KindVariantName {
+  return variant === 'A' || variant === 'B'
+}
+
+export type KindFields =
+  | KindAFields
+  | KindBFields
+
+export type KindReified = Reified<
+  KindVariant,
+  KindFields
+>
+
+export class Kind {
+  static get $typeName(): string {
+    return `${getTypeOrigin('examples', 'enums::Kind')}::enums::Kind` as const
+  }
+  static readonly $numTypeParams = 0
+  static readonly $isPhantom = [] as const
+
+  static reified(): KindReified {
+    const reifiedBcs = Kind.bcs
+    return {
+      get typeName() { return Kind.$typeName },
+      get fullTypeName() { return composeSuiType(Kind.$typeName) as string },
+      typeArgs: [] as [],
+      isPhantom: Kind.$isPhantom,
+      reifiedTypeArgs: [],
+      fromFields: (fields: Record<string, any>) => Kind.fromFields([], fields),
+      fromFieldsWithTypes: (item: FieldsWithTypes) => Kind.fromFieldsWithTypes([], item),
+      fromBcs: (data: Uint8Array) => Kind.fromBcs([], data),
+      bcs: reifiedBcs,
+      fromJSONField: (field: any) => Kind.fromJSONField([], field),
+      fromJSON: (json: Record<string, any>) => Kind.fromJSON([], json),
+      new: (variant: KindVariantName, fields: KindFields) => {
+        switch (variant) {
+          case 'A':
+            return new KindA([], fields as KindAFields)
+          case 'B':
+            return new KindB([], fields as KindBFields)
+        }
+      },
+      kind: 'EnumClassReified',
+    } as KindReified
+  }
+
+  static get r(): typeof Kind.reified {
+    return Kind.reified
+  }
+
+  static phantom(): PhantomReified<ToTypeStr<KindVariant>> {
+    return phantom(Kind.reified())
+  }
+
+  static get p(): typeof Kind.phantom {
+    return Kind.phantom
+  }
+
+  private static instantiateBcs() {
+    return bcs.enum('Kind', {
+      A: null,
+      B: null,
+    })
+  }
+
+  private static cachedBcs: ReturnType<typeof Kind.instantiateBcs> | null = null
+
+  static get bcs(): ReturnType<typeof Kind.instantiateBcs> {
+    if (!Kind.cachedBcs) {
+      Kind.cachedBcs = Kind.instantiateBcs()
+    }
+    return Kind.cachedBcs
+  }
+
+  static fromFields(typeArgs: [], fields: Record<string, any>): KindVariant {
+    const r = Kind.reified()
+
+    if (!fields.$kind || !isKindVariantName(fields.$kind)) {
+      throw new Error(`Invalid kind variant: ${fields.$kind}`)
+    }
+    switch (fields.$kind) {
+      case 'A':
+        return r.new('A', fields.A)
+      case 'B':
+        return r.new('B', fields.B)
+    }
+  }
+
+  static fromFieldsWithTypes(typeArgs: [], item: FieldsWithTypes): KindVariant {
+    if (!isKind(item.type)) {
+      throw new Error('not a Kind type')
+    }
+
+    const variant = (item as FieldsWithTypes & { variant: KindVariantName }).variant
+    if (!variant || !isKindVariantName(variant)) {
+      throw new Error(`Invalid kind variant: ${variant}`)
+    }
+
+    const r = Kind.reified()
+    switch (variant) {
+      case 'A':
+        return r.new('A', {})
+      case 'B':
+        return r.new('B', {})
+    }
+  }
+
+  static fromBcs(typeArgs: [], data: Uint8Array): KindVariant {
+    const parsed = Kind.bcs.parse(data)
+    return Kind.fromFields([], parsed)
+  }
+
+  static fromJSONField(typeArgs: [], field: any): KindVariant {
+    const r = Kind.reified()
+
+    const kind = field.$kind
+    if (!kind || !isKindVariantName(kind)) {
+      throw new Error(`Invalid kind variant: ${kind}`)
+    }
+    switch (kind) {
+      case 'A':
+        return r.new('A', {})
+      case 'B':
+        return r.new('B', {})
+    }
+  }
+
+  static fromJSON(typeArgs: [], json: Record<string, any>): KindVariant {
+    if (json.$typeName !== Kind.$typeName) {
+      throw new Error(`not a Kind json object: expected '${Kind.$typeName}' but got '${json.$typeName}'`)
+    }
+
+    return Kind.fromJSONField(typeArgs, json)
+  }
+}
+
+export type KindAFields = Record<string, never>
+
+export type KindAJSONField = {
+  $kind: 'A'
+}
+
+export type KindAJSON = {
+  $typeName: typeof Kind.$typeName
+  $typeArgs: []
+  $variantName: 'A'
+} & KindAJSONField
+
+export class KindA
+  implements EnumVariantClass
+{
+  __EnumVariantClass = true as const
+
+  static get $typeName(): typeof Kind.$typeName { return Kind.$typeName }
+  static readonly $numTypeParams: typeof Kind.$numTypeParams = Kind.$numTypeParams
+  static readonly $isPhantom: typeof Kind.$isPhantom = Kind.$isPhantom
+  static readonly $variantName = 'A' as const
+
+  readonly $typeName: typeof KindA.$typeName = KindA.$typeName
+  readonly $fullTypeName: `${typeof Kind.$typeName}`
+  readonly $typeArgs: []
+  readonly $isPhantom: typeof Kind.$isPhantom = Kind.$isPhantom
+  readonly $variantName: typeof KindA.$variantName = KindA.$variantName
+
+  constructor(typeArgs: [], fields: KindAFields) {
+    this.$fullTypeName = composeSuiType(
+      Kind.$typeName,
+      ...typeArgs
+    ) as `${typeof Kind.$typeName}`
+    this.$typeArgs = typeArgs
+  }
+
+  toJSONField(): KindAJSONField {
+    return { $kind: this.$variantName }
+  }
+
+  toJSON(): KindAJSON {
+    return {
+      $typeName: this.$typeName,
+      $typeArgs: this.$typeArgs,
+      $variantName: this.$variantName,
+      ...this.toJSONField(),
+    }
+  }
+}
+
+export type KindBFields = Record<string, never>
+
+export type KindBJSONField = {
+  $kind: 'B'
+}
+
+export type KindBJSON = {
+  $typeName: typeof Kind.$typeName
+  $typeArgs: []
+  $variantName: 'B'
+} & KindBJSONField
+
+export class KindB
+  implements EnumVariantClass
+{
+  __EnumVariantClass = true as const
+
+  static get $typeName(): typeof Kind.$typeName { return Kind.$typeName }
+  static readonly $numTypeParams: typeof Kind.$numTypeParams = Kind.$numTypeParams
+  static readonly $isPhantom: typeof Kind.$isPhantom = Kind.$isPhantom
+  static readonly $variantName = 'B' as const
+
+  readonly $typeName: typeof KindB.$typeName = KindB.$typeName
+  readonly $fullTypeName: `${typeof Kind.$typeName}`
+  readonly $typeArgs: []
+  readonly $isPhantom: typeof Kind.$isPhantom = Kind.$isPhantom
+  readonly $variantName: typeof KindB.$variantName = KindB.$variantName
+
+  constructor(typeArgs: [], fields: KindBFields) {
+    this.$fullTypeName = composeSuiType(
+      Kind.$typeName,
+      ...typeArgs
+    ) as `${typeof Kind.$typeName}`
+    this.$typeArgs = typeArgs
+  }
+
+  toJSONField(): KindBJSONField {
+    return { $kind: this.$variantName }
+  }
+
+  toJSON(): KindBJSON {
+    return {
+      $typeName: this.$typeName,
+      $typeArgs: this.$typeArgs,
+      $variantName: this.$variantName,
+      ...this.toJSONField(),
+    }
+  }
+}
