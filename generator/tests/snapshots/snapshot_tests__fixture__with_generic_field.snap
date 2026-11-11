@@ -108,7 +108,10 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof WithGenericField.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof WithGenericField.instantiateBcs> {
+  static get bcs(): <T extends BcsType<any>>(T: T) => BcsStruct<{
+      id: typeof UID.bcs
+      generic_field: T
+  }> {
     if (!WithGenericField.cachedBcs) {
       WithGenericField.cachedBcs = WithGenericField.instantiateBcs()
     }

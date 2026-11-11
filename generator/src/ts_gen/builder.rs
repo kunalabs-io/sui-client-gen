@@ -654,10 +654,25 @@ fn emit_combined_imports_with_enums(
     }
 
     // BCS imports
-    if has_non_phantom_type_params {
-        imports.add_named_many("@mysten/sui/bcs", &["BcsType", "bcs"]);
-    } else {
-        imports.add_named("@mysten/sui/bcs", "bcs");
+    imports.add_named("@mysten/sui/bcs", "bcs");
+    if has_non_phantom_type_params || uses_address {
+        imports.add_named("@mysten/sui/bcs", "BcsType");
+    }
+    let has_struct_bcs = !structs.is_empty()
+        || enums
+            .iter()
+            .any(|e| e.variants.iter().any(|v| !v.is_unit() && !v.is_tuple));
+    if has_struct_bcs {
+        imports.add_named("@mysten/sui/bcs", "BcsStruct");
+    }
+    if has_enums {
+        imports.add_named("@mysten/sui/bcs", "BcsEnum");
+    }
+    if enums
+        .iter()
+        .any(|e| e.variants.iter().any(|v| !v.is_unit() && v.is_tuple))
+    {
+        imports.add_named("@mysten/sui/bcs", "BcsTuple");
     }
 
     // Sui client imports — type-only since they're only used in method signatures.

@@ -108,7 +108,11 @@ export class MultiCoinHolder implements StructClass {
 
   private static cachedBcs: ReturnType<typeof MultiCoinHolder.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof MultiCoinHolder.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+      id: typeof UID.bcs
+      sui_coin: typeof Coin.bcs
+      custom_coin: typeof CoinCustom.bcs
+  }> {
     if (!MultiCoinHolder.cachedBcs) {
       MultiCoinHolder.cachedBcs = MultiCoinHolder.instantiateBcs()
     }

@@ -163,7 +163,21 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
 
   private static cachedBcs: ReturnType<typeof WithSpecialTypes.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof WithSpecialTypes.instantiateBcs> {
+  static get bcs(): <U extends BcsType<any>>(U: U) => BcsStruct<{
+      id: typeof UID.bcs
+      string: typeof String.bcs
+      ascii_string: typeof StringAscii.bcs
+      url: typeof Url.bcs
+      id_field: typeof ID.bcs
+      uid: typeof UID.bcs
+      balance: typeof Balance.bcs
+      option: ReturnType<typeof Option.bcs<ReturnType<typeof bcs.u64>>>
+      option_obj: ReturnType<typeof Option.bcs<typeof Bar.bcs>>
+      option_none: ReturnType<typeof Option.bcs<ReturnType<typeof bcs.u64>>>
+      balance_generic: typeof Balance.bcs
+      option_generic: ReturnType<typeof Option.bcs<U>>
+      option_generic_none: ReturnType<typeof Option.bcs<U>>
+  }> {
     if (!WithSpecialTypes.cachedBcs) {
       WithSpecialTypes.cachedBcs = WithSpecialTypes.instantiateBcs()
     }

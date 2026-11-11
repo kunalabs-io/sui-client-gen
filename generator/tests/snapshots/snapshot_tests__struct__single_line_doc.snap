@@ -101,7 +101,9 @@ export class DocumentedStruct implements StructClass {
 
   private static cachedBcs: ReturnType<typeof DocumentedStruct.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof DocumentedStruct.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+      value: ReturnType<typeof bcs.u64>
+  }> {
     if (!DocumentedStruct.cachedBcs) {
       DocumentedStruct.cachedBcs = DocumentedStruct.instantiateBcs()
     }

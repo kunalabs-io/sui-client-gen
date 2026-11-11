@@ -96,7 +96,9 @@ export class ID implements StructClass {
 
   private static cachedBcs: ReturnType<typeof ID.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof ID.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+      bytes: BcsType<string, string>
+  }> {
     if (!ID.cachedBcs) {
       ID.cachedBcs = ID.instantiateBcs()
     }

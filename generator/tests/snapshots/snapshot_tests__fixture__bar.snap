@@ -98,7 +98,9 @@ export class Bar implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Bar.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Bar.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+      value: ReturnType<typeof bcs.u64>
+  }> {
     if (!Bar.cachedBcs) {
       Bar.cachedBcs = Bar.instantiateBcs()
     }

@@ -84,7 +84,10 @@ export class Status {
 
   private static cachedBcs: ReturnType<typeof Status.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Status.instantiateBcs> {
+  static get bcs(): BcsEnum<{
+      Ready: null
+      Pending: null
+  }> {
     if (!Status.cachedBcs) {
       Status.cachedBcs = Status.instantiateBcs()
     }

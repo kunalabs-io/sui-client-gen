@@ -133,7 +133,15 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
 
   private static cachedBcs: ReturnType<typeof WithSpecialTypesInVectors.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof WithSpecialTypesInVectors.instantiateBcs> {
+  static get bcs(): <T extends BcsType<any>>(T: T) => BcsStruct<{
+      id: typeof UID.bcs
+      string: ReturnType<typeof bcs.vector<typeof String.bcs>>
+      ascii_string: ReturnType<typeof bcs.vector<typeof StringAscii.bcs>>
+      id_field: ReturnType<typeof bcs.vector<typeof ID.bcs>>
+      bar: ReturnType<typeof bcs.vector<typeof Bar.bcs>>
+      option: ReturnType<typeof bcs.vector<ReturnType<typeof Option.bcs<ReturnType<typeof bcs.u64>>>>>
+      option_generic: ReturnType<typeof bcs.vector<ReturnType<typeof Option.bcs<T>>>>
+  }> {
     if (!WithSpecialTypesInVectors.cachedBcs) {
       WithSpecialTypesInVectors.cachedBcs = WithSpecialTypesInVectors.instantiateBcs()
     }

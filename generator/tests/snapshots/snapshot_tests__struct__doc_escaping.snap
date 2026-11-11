@@ -101,7 +101,9 @@ export class EscapedDoc implements StructClass {
 
   private static cachedBcs: ReturnType<typeof EscapedDoc.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof EscapedDoc.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+      value: ReturnType<typeof bcs.u64>
+  }> {
     if (!EscapedDoc.cachedBcs) {
       EscapedDoc.cachedBcs = EscapedDoc.instantiateBcs()
     }

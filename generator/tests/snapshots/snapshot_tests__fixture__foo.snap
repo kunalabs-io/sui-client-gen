@@ -168,7 +168,22 @@ export class Foo<T extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Foo.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Foo.instantiateBcs> {
+  static get bcs(): <T extends BcsType<any>>(T: T) => BcsStruct<{
+      id: typeof UID.bcs
+      generic: T
+      reified_primitive_vec: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u64>>>
+      reified_object_vec: ReturnType<typeof bcs.vector<typeof Bar.bcs>>
+      generic_vec: ReturnType<typeof bcs.vector<T>>
+      generic_vec_nested: ReturnType<typeof bcs.vector<ReturnType<typeof WithTwoGenerics.bcs<T, ReturnType<typeof bcs.u8>>>>>
+      two_generics: ReturnType<typeof WithTwoGenerics.bcs<T, typeof Bar.bcs>>
+      two_generics_reified_primitive: ReturnType<typeof WithTwoGenerics.bcs<ReturnType<typeof bcs.u16>, ReturnType<typeof bcs.u64>>>
+      two_generics_reified_object: ReturnType<typeof WithTwoGenerics.bcs<typeof Bar.bcs, typeof Bar.bcs>>
+      two_generics_nested: ReturnType<typeof WithTwoGenerics.bcs<T, ReturnType<typeof WithTwoGenerics.bcs<ReturnType<typeof bcs.u8>, ReturnType<typeof bcs.u8>>>>>
+      two_generics_reified_nested: ReturnType<typeof WithTwoGenerics.bcs<typeof Bar.bcs, ReturnType<typeof WithTwoGenerics.bcs<ReturnType<typeof bcs.u8>, ReturnType<typeof bcs.u8>>>>>
+      two_generics_nested_vec: ReturnType<typeof bcs.vector<ReturnType<typeof WithTwoGenerics.bcs<typeof Bar.bcs, ReturnType<typeof bcs.vector<ReturnType<typeof WithTwoGenerics.bcs<T, ReturnType<typeof bcs.u8>>>>>>>>>
+      dummy: typeof Dummy.bcs
+      other: typeof StructFromOtherModule.bcs
+  }> {
     if (!Foo.cachedBcs) {
       Foo.cachedBcs = Foo.instantiateBcs()
     }

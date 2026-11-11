@@ -19,7 +19,7 @@ import {
 } from '../../_framework/reified'
 import { FieldsWithTypes, composeSuiType, compressSuiType } from '../../_framework/util'
 import { LinkedTable } from '../../some-pkg/linked-table/structs'
-import { bcs } from '@mysten/sui/bcs'
+import { BcsStruct, bcs } from '@mysten/sui/bcs'
 
 /* ============================== ACL =============================== */
 
@@ -117,7 +117,9 @@ export class ACL implements StructClass {
 
   private static cachedBcs: ReturnType<typeof ACL.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof ACL.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+      permissions: ReturnType<typeof LinkedTable.bcs<BcsType<string, string>>>
+  }> {
     if (!ACL.cachedBcs) {
       ACL.cachedBcs = ACL.instantiateBcs()
     }
