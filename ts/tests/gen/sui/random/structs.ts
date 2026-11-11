@@ -1,6 +1,6 @@
 /** This module provides functionality for generating secure randomness. */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -126,7 +126,10 @@ export class Random implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Random.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Random.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    inner: typeof Versioned.bcs
+  }> {
     if (!Random.cachedBcs) {
       Random.cachedBcs = Random.instantiateBcs()
     }
@@ -314,7 +317,12 @@ export class RandomInner implements StructClass {
 
   private static cachedBcs: ReturnType<typeof RandomInner.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof RandomInner.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    version: ReturnType<typeof bcs.u64>
+    epoch: ReturnType<typeof bcs.u64>
+    randomness_round: ReturnType<typeof bcs.u64>
+    random_bytes: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+  }> {
     if (!RandomInner.cachedBcs) {
       RandomInner.cachedBcs = RandomInner.instantiateBcs()
     }
@@ -507,7 +515,11 @@ export class RandomGenerator implements StructClass {
 
   private static cachedBcs: ReturnType<typeof RandomGenerator.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof RandomGenerator.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    seed: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+    counter: ReturnType<typeof bcs.u16>
+    buffer: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+  }> {
     if (!RandomGenerator.cachedBcs) {
       RandomGenerator.cachedBcs = RandomGenerator.instantiateBcs()
     }

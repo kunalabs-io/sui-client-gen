@@ -38,7 +38,7 @@
  * implement custom authorization scheme for `place` and `lock` respectively).
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -233,7 +233,11 @@ export class Extension implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Extension.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Extension.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    storage: typeof Bag.bcs
+    permissions: ReturnType<typeof bcs.u128>
+    is_enabled: ReturnType<typeof bcs.bool>
+  }> {
     if (!Extension.cachedBcs) {
       Extension.cachedBcs = Extension.instantiateBcs()
     }
@@ -425,7 +429,9 @@ export class ExtensionKey<Ext extends PhantomTypeArgument> implements StructClas
 
   private static cachedBcs: ReturnType<typeof ExtensionKey.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof ExtensionKey.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!ExtensionKey.cachedBcs) {
       ExtensionKey.cachedBcs = ExtensionKey.instantiateBcs()
     }

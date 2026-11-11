@@ -3,7 +3,7 @@
  * It has 9 decimals, and the smallest unit (10^-9) is called "mist".
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -116,7 +116,9 @@ export class SUI implements StructClass {
 
   private static cachedBcs: ReturnType<typeof SUI.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof SUI.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!SUI.cachedBcs) {
       SUI.cachedBcs = SUI.instantiateBcs()
     }

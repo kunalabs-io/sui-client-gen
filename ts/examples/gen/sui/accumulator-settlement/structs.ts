@@ -1,4 +1,4 @@
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -131,7 +131,11 @@ export class EventStreamHead implements StructClass {
 
   private static cachedBcs: ReturnType<typeof EventStreamHead.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof EventStreamHead.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    mmr: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u256>>>
+    checkpoint_seq: ReturnType<typeof bcs.u64>
+    num_events: ReturnType<typeof bcs.u64>
+  }> {
     if (!EventStreamHead.cachedBcs) {
       EventStreamHead.cachedBcs = EventStreamHead.instantiateBcs()
     }

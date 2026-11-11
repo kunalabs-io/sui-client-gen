@@ -1,4 +1,4 @@
-import { bcs, BcsType } from '@mysten/sui/bcs'
+import { bcs, BcsEnum, BcsStruct, BcsTuple, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import { getTypeOrigin } from '../../_envs'
 import {
@@ -210,7 +210,19 @@ export class Wrapped<T extends TypeArgument, U extends TypeArgument, V extends T
 
   private static cachedBcs: ReturnType<typeof Wrapped.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Wrapped.instantiateBcs> {
+  static get bcs(): <T extends BcsType<any>, U extends BcsType<any>, V extends BcsType<any>>(
+    T: T,
+    U: U,
+    V: V,
+  ) => BcsStruct<{
+    id: typeof UID.bcs
+    t: T
+    u: U
+    v: V
+    stop: ReturnType<typeof Action.bcs<ReturnType<typeof bcs.u64>>>
+    pause: ReturnType<typeof Action.bcs<ReturnType<typeof bcs.u64>>>
+    jump: ReturnType<typeof Action.bcs<ReturnType<typeof bcs.u64>>>
+  }> {
     if (!Wrapped.cachedBcs) {
       Wrapped.cachedBcs = Wrapped.instantiateBcs()
     }
@@ -537,7 +549,23 @@ export class Action {
 
   private static cachedBcs: ReturnType<typeof Action.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Action.instantiateBcs> {
+  static get bcs(): <T extends BcsType<any>>(T: T) => BcsEnum<{
+    Stop: null
+    Pause: BcsStruct<{
+      duration: ReturnType<typeof bcs.u32>
+      generic_field: T
+      phantom_field: typeof Balance.bcs
+      reified_field: ReturnType<typeof Option.bcs<ReturnType<typeof bcs.u64>>>
+    }>
+    Jump: BcsTuple<
+      readonly [
+        ReturnType<typeof bcs.u64>,
+        T,
+        typeof Balance.bcs,
+        ReturnType<typeof Option.bcs<ReturnType<typeof bcs.u64>>>,
+      ]
+    >
+  }> {
     if (!Action.cachedBcs) {
       Action.cachedBcs = Action.instantiateBcs()
     }

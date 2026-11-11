@@ -21,7 +21,7 @@
  * of the type at once.
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -214,7 +214,12 @@ export class TransferRequest<T extends PhantomTypeArgument> implements StructCla
 
   private static cachedBcs: ReturnType<typeof TransferRequest.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof TransferRequest.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    item: typeof ID.bcs
+    paid: ReturnType<typeof bcs.u64>
+    from: typeof ID.bcs
+    receipts: ReturnType<typeof VecSet.bcs<typeof TypeName.bcs>>
+  }> {
     if (!TransferRequest.cachedBcs) {
       TransferRequest.cachedBcs = TransferRequest.instantiateBcs()
     }
@@ -508,7 +513,11 @@ export class TransferPolicy<T extends PhantomTypeArgument> implements StructClas
 
   private static cachedBcs: ReturnType<typeof TransferPolicy.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof TransferPolicy.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    balance: typeof Balance.bcs
+    rules: ReturnType<typeof VecSet.bcs<typeof TypeName.bcs>>
+  }> {
     if (!TransferPolicy.cachedBcs) {
       TransferPolicy.cachedBcs = TransferPolicy.instantiateBcs()
     }
@@ -773,7 +782,10 @@ export class TransferPolicyCap<T extends PhantomTypeArgument> implements StructC
 
   private static cachedBcs: ReturnType<typeof TransferPolicyCap.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof TransferPolicyCap.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    policy_id: typeof ID.bcs
+  }> {
     if (!TransferPolicyCap.cachedBcs) {
       TransferPolicyCap.cachedBcs = TransferPolicyCap.instantiateBcs()
     }
@@ -1026,7 +1038,9 @@ export class TransferPolicyCreated<T extends PhantomTypeArgument> implements Str
 
   private static cachedBcs: ReturnType<typeof TransferPolicyCreated.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof TransferPolicyCreated.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof ID.bcs
+  }> {
     if (!TransferPolicyCreated.cachedBcs) {
       TransferPolicyCreated.cachedBcs = TransferPolicyCreated.instantiateBcs()
     }
@@ -1276,7 +1290,9 @@ export class TransferPolicyDestroyed<T extends PhantomTypeArgument> implements S
 
   private static cachedBcs: ReturnType<typeof TransferPolicyDestroyed.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof TransferPolicyDestroyed.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof ID.bcs
+  }> {
     if (!TransferPolicyDestroyed.cachedBcs) {
       TransferPolicyDestroyed.cachedBcs = TransferPolicyDestroyed.instantiateBcs()
     }
@@ -1515,7 +1531,9 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof RuleKey.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof RuleKey.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!RuleKey.cachedBcs) {
       RuleKey.cachedBcs = RuleKey.instantiateBcs()
     }

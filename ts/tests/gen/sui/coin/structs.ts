@@ -4,7 +4,7 @@
  * `Balance` type.
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -147,7 +147,10 @@ export class Coin<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Coin.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Coin.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    balance: typeof Balance.bcs
+  }> {
     if (!Coin.cachedBcs) {
       Coin.cachedBcs = Coin.instantiateBcs()
     }
@@ -440,7 +443,14 @@ export class CoinMetadata<T extends PhantomTypeArgument> implements StructClass 
 
   private static cachedBcs: ReturnType<typeof CoinMetadata.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof CoinMetadata.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    decimals: ReturnType<typeof bcs.u8>
+    name: typeof String.bcs
+    symbol: typeof StringAscii.bcs
+    description: typeof String.bcs
+    icon_url: ReturnType<typeof Option.bcs<typeof Url.bcs>>
+  }> {
     if (!CoinMetadata.cachedBcs) {
       CoinMetadata.cachedBcs = CoinMetadata.instantiateBcs()
     }
@@ -721,7 +731,11 @@ export class RegulatedCoinMetadata<T extends PhantomTypeArgument> implements Str
 
   private static cachedBcs: ReturnType<typeof RegulatedCoinMetadata.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof RegulatedCoinMetadata.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    coin_metadata_object: typeof ID.bcs
+    deny_cap_object: typeof ID.bcs
+  }> {
     if (!RegulatedCoinMetadata.cachedBcs) {
       RegulatedCoinMetadata.cachedBcs = RegulatedCoinMetadata.instantiateBcs()
     }
@@ -978,7 +992,10 @@ export class TreasuryCap<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof TreasuryCap.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof TreasuryCap.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    total_supply: typeof Supply.bcs
+  }> {
     if (!TreasuryCap.cachedBcs) {
       TreasuryCap.cachedBcs = TreasuryCap.instantiateBcs()
     }
@@ -1234,7 +1251,10 @@ export class DenyCapV2<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof DenyCapV2.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof DenyCapV2.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    allow_global_pause: ReturnType<typeof bcs.bool>
+  }> {
     if (!DenyCapV2.cachedBcs) {
       DenyCapV2.cachedBcs = DenyCapV2.instantiateBcs()
     }
@@ -1478,7 +1498,9 @@ export class CurrencyCreated<T extends PhantomTypeArgument> implements StructCla
 
   private static cachedBcs: ReturnType<typeof CurrencyCreated.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof CurrencyCreated.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    decimals: ReturnType<typeof bcs.u8>
+  }> {
     if (!CurrencyCreated.cachedBcs) {
       CurrencyCreated.cachedBcs = CurrencyCreated.instantiateBcs()
     }
@@ -1719,7 +1741,9 @@ export class DenyCap<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof DenyCap.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof DenyCap.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+  }> {
     if (!DenyCap.cachedBcs) {
       DenyCap.cachedBcs = DenyCap.instantiateBcs()
     }

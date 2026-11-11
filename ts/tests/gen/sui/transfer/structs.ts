@@ -1,4 +1,4 @@
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -146,7 +146,10 @@ export class Receiving<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Receiving.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Receiving.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof ID.bcs
+    version: ReturnType<typeof bcs.u64>
+  }> {
     if (!Receiving.cachedBcs) {
       Receiving.cachedBcs = Receiving.instantiateBcs()
     }

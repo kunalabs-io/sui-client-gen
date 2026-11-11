@@ -5,7 +5,7 @@
  * The difference is otherwise not observable from within Move.
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -128,7 +128,10 @@ export class ObjectBag implements StructClass {
 
   private static cachedBcs: ReturnType<typeof ObjectBag.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof ObjectBag.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    size: ReturnType<typeof bcs.u64>
+  }> {
     if (!ObjectBag.cachedBcs) {
       ObjectBag.cachedBcs = ObjectBag.instantiateBcs()
     }

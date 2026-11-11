@@ -1,4 +1,4 @@
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import { fromHex, toHex } from '@mysten/sui/utils'
 import {
@@ -156,7 +156,14 @@ export class VerifiedID implements StructClass {
 
   private static cachedBcs: ReturnType<typeof VerifiedID.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof VerifiedID.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    owner: BcsType<string, string>
+    key_claim_name: typeof String.bcs
+    key_claim_value: typeof String.bcs
+    issuer: typeof String.bcs
+    audience: typeof String.bcs
+  }> {
     if (!VerifiedID.cachedBcs) {
       VerifiedID.cachedBcs = VerifiedID.instantiateBcs()
     }

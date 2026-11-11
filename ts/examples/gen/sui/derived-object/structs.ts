@@ -13,7 +13,7 @@
  * which derived addresses have been claimed to prevent duplicates.
  */
 
-import { bcs, BcsType } from '@mysten/sui/bcs'
+import { bcs, BcsEnum, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -142,7 +142,9 @@ export class Claimed implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Claimed.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Claimed.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    pos0: typeof ID.bcs
+  }> {
     if (!Claimed.cachedBcs) {
       Claimed.cachedBcs = Claimed.instantiateBcs()
     }
@@ -323,7 +325,9 @@ export class DerivedObjectKey<K extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof DerivedObjectKey.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof DerivedObjectKey.instantiateBcs> {
+  static get bcs(): <K extends BcsType<any>>(K: K) => BcsStruct<{
+    pos0: K
+  }> {
     if (!DerivedObjectKey.cachedBcs) {
       DerivedObjectKey.cachedBcs = DerivedObjectKey.instantiateBcs()
     }
@@ -541,7 +545,9 @@ export class ClaimedStatus {
 
   private static cachedBcs: ReturnType<typeof ClaimedStatus.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof ClaimedStatus.instantiateBcs> {
+  static get bcs(): BcsEnum<{
+    Reserved: null
+  }> {
     if (!ClaimedStatus.cachedBcs) {
       ClaimedStatus.cachedBcs = ClaimedStatus.instantiateBcs()
     }

@@ -7,7 +7,7 @@
  * building block for core collection types
  */
 
-import { bcs, BcsType } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -178,7 +178,14 @@ export class Field<Name extends TypeArgument, Value extends TypeArgument> implem
 
   private static cachedBcs: ReturnType<typeof Field.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Field.instantiateBcs> {
+  static get bcs(): <Name extends BcsType<any>, Value extends BcsType<any>>(
+    Name: Name,
+    Value: Value,
+  ) => BcsStruct<{
+    id: typeof UID.bcs
+    name: Name
+    value: Value
+  }> {
     if (!Field.cachedBcs) {
       Field.cachedBcs = Field.instantiateBcs()
     }

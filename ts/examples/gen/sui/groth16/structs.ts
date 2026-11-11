@@ -1,4 +1,4 @@
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -117,7 +117,9 @@ export class Curve implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Curve.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Curve.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: ReturnType<typeof bcs.u8>
+  }> {
     if (!Curve.cachedBcs) {
       Curve.cachedBcs = Curve.instantiateBcs()
     }
@@ -305,7 +307,12 @@ export class PreparedVerifyingKey implements StructClass {
 
   private static cachedBcs: ReturnType<typeof PreparedVerifyingKey.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof PreparedVerifyingKey.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    vk_gamma_abc_g1_bytes: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+    alpha_g1_beta_g2_bytes: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+    gamma_g2_neg_pc_bytes: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+    delta_g2_neg_pc_bytes: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+  }> {
     if (!PreparedVerifyingKey.cachedBcs) {
       PreparedVerifyingKey.cachedBcs = PreparedVerifyingKey.instantiateBcs()
     }
@@ -491,7 +498,9 @@ export class PublicProofInputs implements StructClass {
 
   private static cachedBcs: ReturnType<typeof PublicProofInputs.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof PublicProofInputs.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    bytes: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+  }> {
     if (!PublicProofInputs.cachedBcs) {
       PublicProofInputs.cachedBcs = PublicProofInputs.instantiateBcs()
     }
@@ -661,7 +670,9 @@ export class ProofPoints implements StructClass {
 
   private static cachedBcs: ReturnType<typeof ProofPoints.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof ProofPoints.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    bytes: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+  }> {
     if (!ProofPoints.cachedBcs) {
       ProofPoints.cachedBcs = ProofPoints.instantiateBcs()
     }

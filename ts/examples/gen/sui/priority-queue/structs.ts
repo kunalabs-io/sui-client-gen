@@ -1,6 +1,6 @@
 /** Priority queue implemented using a max heap. */
 
-import { bcs, BcsType } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -145,7 +145,9 @@ export class PriorityQueue<T extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof PriorityQueue.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof PriorityQueue.instantiateBcs> {
+  static get bcs(): <T extends BcsType<any>>(T: T) => BcsStruct<{
+    entries: ReturnType<typeof bcs.vector<ReturnType<typeof Entry.bcs<T>>>>
+  }> {
     if (!PriorityQueue.cachedBcs) {
       PriorityQueue.cachedBcs = PriorityQueue.instantiateBcs()
     }
@@ -392,7 +394,10 @@ export class Entry<T extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Entry.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Entry.instantiateBcs> {
+  static get bcs(): <T extends BcsType<any>>(T: T) => BcsStruct<{
+    priority: ReturnType<typeof bcs.u64>
+    value: T
+  }> {
     if (!Entry.cachedBcs) {
       Entry.cachedBcs = Entry.instantiateBcs()
     }

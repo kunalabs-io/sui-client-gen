@@ -4,7 +4,7 @@
  * - Administering package upgrades through upgrade policies.
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -138,7 +138,11 @@ export class Publisher implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Publisher.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Publisher.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    package: typeof String.bcs
+    module_name: typeof String.bcs
+  }> {
     if (!Publisher.cachedBcs) {
       Publisher.cachedBcs = Publisher.instantiateBcs()
     }
@@ -343,7 +347,12 @@ export class UpgradeCap implements StructClass {
 
   private static cachedBcs: ReturnType<typeof UpgradeCap.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof UpgradeCap.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    package: typeof ID.bcs
+    version: ReturnType<typeof bcs.u64>
+    policy: ReturnType<typeof bcs.u8>
+  }> {
     if (!UpgradeCap.cachedBcs) {
       UpgradeCap.cachedBcs = UpgradeCap.instantiateBcs()
     }
@@ -569,7 +578,12 @@ export class UpgradeTicket implements StructClass {
 
   private static cachedBcs: ReturnType<typeof UpgradeTicket.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof UpgradeTicket.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    cap: typeof ID.bcs
+    package: typeof ID.bcs
+    policy: ReturnType<typeof bcs.u8>
+    digest: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+  }> {
     if (!UpgradeTicket.cachedBcs) {
       UpgradeTicket.cachedBcs = UpgradeTicket.instantiateBcs()
     }
@@ -766,7 +780,10 @@ export class UpgradeReceipt implements StructClass {
 
   private static cachedBcs: ReturnType<typeof UpgradeReceipt.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof UpgradeReceipt.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    cap: typeof ID.bcs
+    package: typeof ID.bcs
+  }> {
     if (!UpgradeReceipt.cachedBcs) {
       UpgradeReceipt.cachedBcs = UpgradeReceipt.instantiateBcs()
     }

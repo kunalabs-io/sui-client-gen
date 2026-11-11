@@ -21,7 +21,7 @@
  * empty to be destroyed.
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -143,7 +143,10 @@ export class Bag implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Bag.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Bag.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    size: ReturnType<typeof bcs.u64>
+  }> {
     if (!Bag.cachedBcs) {
       Bag.cachedBcs = Bag.instantiateBcs()
     }

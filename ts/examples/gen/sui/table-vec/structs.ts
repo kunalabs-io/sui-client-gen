@@ -1,6 +1,6 @@
 /** A basic scalable vector library implemented using `Table`. */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -136,7 +136,9 @@ export class TableVec<Element extends PhantomTypeArgument> implements StructClas
 
   private static cachedBcs: ReturnType<typeof TableVec.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof TableVec.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    contents: typeof Table.bcs
+  }> {
     if (!TableVec.cachedBcs) {
       TableVec.cachedBcs = TableVec.instantiateBcs()
     }

@@ -5,7 +5,7 @@
  * for external tools. The difference is otherwise not observable from within Move.
  */
 
-import { bcs, BcsType } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -138,7 +138,9 @@ export class Wrapper<Name extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Wrapper.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Wrapper.instantiateBcs> {
+  static get bcs(): <Name extends BcsType<any>>(Name: Name) => BcsStruct<{
+    name: Name
+  }> {
     if (!Wrapper.cachedBcs) {
       Wrapper.cachedBcs = Wrapper.instantiateBcs()
     }

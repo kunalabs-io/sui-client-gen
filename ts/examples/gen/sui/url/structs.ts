@@ -1,6 +1,6 @@
 /** URL: standard Uniform Resource Locator string */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -114,7 +114,9 @@ export class Url implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Url.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Url.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    url: typeof String.bcs
+  }> {
     if (!Url.cachedBcs) {
       Url.cachedBcs = Url.instantiateBcs()
     }

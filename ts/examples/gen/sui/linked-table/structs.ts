@@ -3,7 +3,7 @@
  * removal
  */
 
-import { bcs, BcsType } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -185,7 +185,12 @@ export class LinkedTable<K extends TypeArgument, V extends PhantomTypeArgument>
 
   private static cachedBcs: ReturnType<typeof LinkedTable.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof LinkedTable.instantiateBcs> {
+  static get bcs(): <K extends BcsType<any>>(K: K) => BcsStruct<{
+    id: typeof UID.bcs
+    size: ReturnType<typeof bcs.u64>
+    head: ReturnType<typeof Option.bcs<K>>
+    tail: ReturnType<typeof Option.bcs<K>>
+  }> {
     if (!LinkedTable.cachedBcs) {
       LinkedTable.cachedBcs = LinkedTable.instantiateBcs()
     }
@@ -482,7 +487,11 @@ export class Node<K extends TypeArgument, V extends TypeArgument> implements Str
 
   private static cachedBcs: ReturnType<typeof Node.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Node.instantiateBcs> {
+  static get bcs(): <K extends BcsType<any>, V extends BcsType<any>>(K: K, V: V) => BcsStruct<{
+    prev: ReturnType<typeof Option.bcs<K>>
+    next: ReturnType<typeof Option.bcs<K>>
+    value: V
+  }> {
     if (!Node.cachedBcs) {
       Node.cachedBcs = Node.instantiateBcs()
     }

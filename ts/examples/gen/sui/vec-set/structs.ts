@@ -1,4 +1,4 @@
-import { bcs, BcsType } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -139,7 +139,9 @@ export class VecSet<K extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof VecSet.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof VecSet.instantiateBcs> {
+  static get bcs(): <K extends BcsType<any>>(K: K) => BcsStruct<{
+    contents: ReturnType<typeof bcs.vector<K>>
+  }> {
     if (!VecSet.cachedBcs) {
       VecSet.cachedBcs = VecSet.instantiateBcs()
     }

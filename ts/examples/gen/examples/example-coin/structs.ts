@@ -1,4 +1,4 @@
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import { getTypeOrigin } from '../../_envs'
 import {
@@ -120,7 +120,9 @@ export class EXAMPLE_COIN implements StructClass {
 
   private static cachedBcs: ReturnType<typeof EXAMPLE_COIN.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof EXAMPLE_COIN.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!EXAMPLE_COIN.cachedBcs) {
       EXAMPLE_COIN.cachedBcs = EXAMPLE_COIN.instantiateBcs()
     }
@@ -295,7 +297,10 @@ export class Faucet implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Faucet.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Faucet.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    cap: typeof TreasuryCap.bcs
+  }> {
     if (!Faucet.cachedBcs) {
       Faucet.cachedBcs = Faucet.instantiateBcs()
     }

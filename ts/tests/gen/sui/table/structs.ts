@@ -16,7 +16,7 @@
  * ```
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -177,7 +177,10 @@ export class Table<K extends PhantomTypeArgument, V extends PhantomTypeArgument>
 
   private static cachedBcs: ReturnType<typeof Table.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Table.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    size: ReturnType<typeof bcs.u64>
+  }> {
     if (!Table.cachedBcs) {
       Table.cachedBcs = Table.instantiateBcs()
     }

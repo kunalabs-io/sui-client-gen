@@ -7,7 +7,7 @@
  * the number of bits in the fractional part--in this case 32 bits for each.
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -126,7 +126,9 @@ export class UQ32_32 implements StructClass {
 
   private static cachedBcs: ReturnType<typeof UQ32_32.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof UQ32_32.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    pos0: ReturnType<typeof bcs.u64>
+  }> {
     if (!UQ32_32.cachedBcs) {
       UQ32_32.cachedBcs = UQ32_32.instantiateBcs()
     }

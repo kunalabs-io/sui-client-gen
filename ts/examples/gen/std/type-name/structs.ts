@@ -1,6 +1,6 @@
 /** Functionality for converting Move types into values. Use with care! */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -132,7 +132,9 @@ export class TypeName implements StructClass {
 
   private static cachedBcs: ReturnType<typeof TypeName.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof TypeName.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    name: typeof String.bcs
+  }> {
     if (!TypeName.cachedBcs) {
       TypeName.cachedBcs = TypeName.instantiateBcs()
     }
