@@ -19,7 +19,7 @@
  * control over the currency which a simple open-loop system can't provide.
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import { fromHex, toHex } from '@mysten/sui/utils'
 import {
@@ -169,7 +169,10 @@ export class Token<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Token.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Token.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    balance: typeof Balance.bcs
+  }> {
     if (!Token.cachedBcs) {
       Token.cachedBcs = Token.instantiateBcs()
     }
@@ -422,7 +425,10 @@ export class TokenPolicyCap<T extends PhantomTypeArgument> implements StructClas
 
   private static cachedBcs: ReturnType<typeof TokenPolicyCap.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof TokenPolicyCap.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    for: typeof ID.bcs
+  }> {
     if (!TokenPolicyCap.cachedBcs) {
       TokenPolicyCap.cachedBcs = TokenPolicyCap.instantiateBcs()
     }
@@ -713,7 +719,13 @@ export class TokenPolicy<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof TokenPolicy.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof TokenPolicy.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    spent_balance: typeof Balance.bcs
+    rules: ReturnType<
+      typeof VecMap.bcs<typeof String.bcs, ReturnType<typeof VecSet.bcs<typeof TypeName.bcs>>>
+    >
+  }> {
     if (!TokenPolicy.cachedBcs) {
       TokenPolicy.cachedBcs = TokenPolicy.instantiateBcs()
     }
@@ -1042,7 +1054,14 @@ export class ActionRequest<T extends PhantomTypeArgument> implements StructClass
 
   private static cachedBcs: ReturnType<typeof ActionRequest.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof ActionRequest.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    name: typeof String.bcs
+    amount: ReturnType<typeof bcs.u64>
+    sender: BcsType<string, string>
+    recipient: ReturnType<typeof Option.bcs<BcsType<string, string>>>
+    spent_balance: ReturnType<typeof Option.bcs<typeof Balance.bcs>>
+    approvals: ReturnType<typeof VecSet.bcs<typeof TypeName.bcs>>
+  }> {
     if (!ActionRequest.cachedBcs) {
       ActionRequest.cachedBcs = ActionRequest.instantiateBcs()
     }
@@ -1319,7 +1338,9 @@ export class RuleKey<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof RuleKey.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof RuleKey.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    is_protected: ReturnType<typeof bcs.bool>
+  }> {
     if (!RuleKey.cachedBcs) {
       RuleKey.cachedBcs = RuleKey.instantiateBcs()
     }
@@ -1582,7 +1603,10 @@ export class TokenPolicyCreated<T extends PhantomTypeArgument> implements Struct
 
   private static cachedBcs: ReturnType<typeof TokenPolicyCreated.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof TokenPolicyCreated.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof ID.bcs
+    is_mutable: ReturnType<typeof bcs.bool>
+  }> {
     if (!TokenPolicyCreated.cachedBcs) {
       TokenPolicyCreated.cachedBcs = TokenPolicyCreated.instantiateBcs()
     }

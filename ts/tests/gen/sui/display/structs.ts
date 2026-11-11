@@ -10,7 +10,7 @@
  * More entry functions might be added in the future depending on the use cases.
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -186,7 +186,11 @@ export class Display<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Display.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Display.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    fields: ReturnType<typeof VecMap.bcs<typeof String.bcs, typeof String.bcs>>
+    version: ReturnType<typeof bcs.u16>
+  }> {
     if (!Display.cachedBcs) {
       Display.cachedBcs = Display.instantiateBcs()
     }
@@ -446,7 +450,9 @@ export class DisplayCreated<T extends PhantomTypeArgument> implements StructClas
 
   private static cachedBcs: ReturnType<typeof DisplayCreated.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof DisplayCreated.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof ID.bcs
+  }> {
     if (!DisplayCreated.cachedBcs) {
       DisplayCreated.cachedBcs = DisplayCreated.instantiateBcs()
     }
@@ -698,7 +704,11 @@ export class VersionUpdated<T extends PhantomTypeArgument> implements StructClas
 
   private static cachedBcs: ReturnType<typeof VersionUpdated.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof VersionUpdated.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof ID.bcs
+    version: ReturnType<typeof bcs.u16>
+    fields: ReturnType<typeof VecMap.bcs<typeof String.bcs, typeof String.bcs>>
+  }> {
     if (!VersionUpdated.cachedBcs) {
       VersionUpdated.cachedBcs = VersionUpdated.instantiateBcs()
     }

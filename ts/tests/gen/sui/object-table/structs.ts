@@ -5,7 +5,7 @@
  * The difference is otherwise not observable from within Move.
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -167,7 +167,10 @@ export class ObjectTable<K extends PhantomTypeArgument, V extends PhantomTypeArg
 
   private static cachedBcs: ReturnType<typeof ObjectTable.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof ObjectTable.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    size: ReturnType<typeof bcs.u64>
+  }> {
     if (!ObjectTable.cachedBcs) {
       ObjectTable.cachedBcs = ObjectTable.instantiateBcs()
     }

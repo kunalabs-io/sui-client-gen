@@ -98,7 +98,9 @@ export class Dummy implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Dummy.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Dummy.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+      dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!Dummy.cachedBcs) {
       Dummy.cachedBcs = Dummy.instantiateBcs()
     }

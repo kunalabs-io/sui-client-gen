@@ -1,4 +1,4 @@
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import { fromHex, toHex } from '@mysten/sui/utils'
 import { getTypeOrigin } from '../../_envs'
@@ -124,7 +124,9 @@ export class ExampleStruct implements StructClass {
 
   private static cachedBcs: ReturnType<typeof ExampleStruct.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof ExampleStruct.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!ExampleStruct.cachedBcs) {
       ExampleStruct.cachedBcs = ExampleStruct.instantiateBcs()
     }
@@ -341,7 +343,17 @@ export class SpecialTypesStruct implements StructClass {
 
   private static cachedBcs: ReturnType<typeof SpecialTypesStruct.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof SpecialTypesStruct.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    ascii_string: typeof String.bcs
+    utf8_string: typeof StringString.bcs
+    vector_of_u64: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u64>>>
+    vector_of_objects: ReturnType<typeof bcs.vector<typeof ExampleStruct.bcs>>
+    id_field: typeof ID.bcs
+    address: BcsType<string, string>
+    option_some: ReturnType<typeof Option.bcs<ReturnType<typeof bcs.u64>>>
+    option_none: ReturnType<typeof Option.bcs<ReturnType<typeof bcs.u64>>>
+  }> {
     if (!SpecialTypesStruct.cachedBcs) {
       SpecialTypesStruct.cachedBcs = SpecialTypesStruct.instantiateBcs()
     }

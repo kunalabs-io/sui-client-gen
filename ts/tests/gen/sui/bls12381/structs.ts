@@ -1,6 +1,6 @@
 /** Group operations of BLS12-381. */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -112,7 +112,9 @@ export class Scalar implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Scalar.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Scalar.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!Scalar.cachedBcs) {
       Scalar.cachedBcs = Scalar.instantiateBcs()
     }
@@ -280,7 +282,9 @@ export class G1 implements StructClass {
 
   private static cachedBcs: ReturnType<typeof G1.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof G1.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!G1.cachedBcs) {
       G1.cachedBcs = G1.instantiateBcs()
     }
@@ -448,7 +452,9 @@ export class G2 implements StructClass {
 
   private static cachedBcs: ReturnType<typeof G2.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof G2.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!G2.cachedBcs) {
       G2.cachedBcs = G2.instantiateBcs()
     }
@@ -616,7 +622,9 @@ export class GT implements StructClass {
 
   private static cachedBcs: ReturnType<typeof GT.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof GT.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!GT.cachedBcs) {
       GT.cachedBcs = GT.instantiateBcs()
     }
@@ -786,7 +794,9 @@ export class UncompressedG1 implements StructClass {
 
   private static cachedBcs: ReturnType<typeof UncompressedG1.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof UncompressedG1.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!UncompressedG1.cachedBcs) {
       UncompressedG1.cachedBcs = UncompressedG1.instantiateBcs()
     }

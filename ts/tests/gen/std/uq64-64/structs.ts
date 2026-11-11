@@ -7,7 +7,7 @@
  * the number of bits in the fractional part--in this case 64 bits for each.
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -126,7 +126,9 @@ export class UQ64_64 implements StructClass {
 
   private static cachedBcs: ReturnType<typeof UQ64_64.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof UQ64_64.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    pos0: ReturnType<typeof bcs.u128>
+  }> {
     if (!UQ64_64.cachedBcs) {
       UQ64_64.cachedBcs = UQ64_64.instantiateBcs()
     }

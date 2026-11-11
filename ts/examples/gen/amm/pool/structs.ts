@@ -1,4 +1,4 @@
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import { getTypeOrigin } from '../../_envs'
 import {
@@ -130,7 +130,9 @@ export class PoolCreationEvent implements StructClass {
 
   private static cachedBcs: ReturnType<typeof PoolCreationEvent.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof PoolCreationEvent.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    pool_id: typeof ID.bcs
+  }> {
     if (!PoolCreationEvent.cachedBcs) {
       PoolCreationEvent.cachedBcs = PoolCreationEvent.instantiateBcs()
     }
@@ -329,7 +331,9 @@ export class LP<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 
   private static cachedBcs: ReturnType<typeof LP.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof LP.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!LP.cachedBcs) {
       LP.cachedBcs = LP.instantiateBcs()
     }
@@ -653,7 +657,15 @@ export class Pool<A extends PhantomTypeArgument, B extends PhantomTypeArgument>
 
   private static cachedBcs: ReturnType<typeof Pool.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Pool.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    balance_a: typeof Balance.bcs
+    balance_b: typeof Balance.bcs
+    lp_supply: typeof Supply.bcs
+    lp_fee_bps: ReturnType<typeof bcs.u64>
+    admin_fee_pct: ReturnType<typeof bcs.u64>
+    admin_fee_balance: typeof Balance.bcs
+  }> {
     if (!Pool.cachedBcs) {
       Pool.cachedBcs = Pool.instantiateBcs()
     }
@@ -958,7 +970,10 @@ export class PoolRegistry implements StructClass {
 
   private static cachedBcs: ReturnType<typeof PoolRegistry.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof PoolRegistry.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    table: typeof Table.bcs
+  }> {
     if (!PoolRegistry.cachedBcs) {
       PoolRegistry.cachedBcs = PoolRegistry.instantiateBcs()
     }
@@ -1148,7 +1163,10 @@ export class PoolRegistryItem implements StructClass {
 
   private static cachedBcs: ReturnType<typeof PoolRegistryItem.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof PoolRegistryItem.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    a: typeof TypeName.bcs
+    b: typeof TypeName.bcs
+  }> {
     if (!PoolRegistryItem.cachedBcs) {
       PoolRegistryItem.cachedBcs = PoolRegistryItem.instantiateBcs()
     }
@@ -1328,7 +1346,9 @@ export class AdminCap implements StructClass {
 
   private static cachedBcs: ReturnType<typeof AdminCap.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof AdminCap.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+  }> {
     if (!AdminCap.cachedBcs) {
       AdminCap.cachedBcs = AdminCap.instantiateBcs()
     }

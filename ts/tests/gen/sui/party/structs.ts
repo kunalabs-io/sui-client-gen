@@ -1,4 +1,4 @@
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import { fromHex, toHex } from '@mysten/sui/utils'
 import {
@@ -136,7 +136,10 @@ export class Party implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Party.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Party.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    default: typeof Permissions.bcs
+    members: ReturnType<typeof VecMap.bcs<BcsType<string, string>, typeof Permissions.bcs>>
+  }> {
     if (!Party.cachedBcs) {
       Party.cachedBcs = Party.instantiateBcs()
     }
@@ -316,7 +319,9 @@ export class Permissions implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Permissions.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Permissions.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    pos0: ReturnType<typeof bcs.u64>
+  }> {
     if (!Permissions.cachedBcs) {
       Permissions.cachedBcs = Permissions.instantiateBcs()
     }

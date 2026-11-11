@@ -4,7 +4,7 @@
  * custom coins with `Supply` and `Balance`s.
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -138,7 +138,9 @@ export class Supply<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Supply.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Supply.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    value: ReturnType<typeof bcs.u64>
+  }> {
     if (!Supply.cachedBcs) {
       Supply.cachedBcs = Supply.instantiateBcs()
     }
@@ -379,7 +381,9 @@ export class Balance<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Balance.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Balance.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    value: ReturnType<typeof bcs.u64>
+  }> {
     if (!Balance.cachedBcs) {
       Balance.cachedBcs = Balance.instantiateBcs()
     }

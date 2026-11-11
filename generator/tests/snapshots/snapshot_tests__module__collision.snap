@@ -22,7 +22,7 @@ import { Coin as CoinCustom } from '../../custom-pkg/custom-coin/structs'
 import { Coin } from '../../sui/coin/structs'
 import { UID } from '../../sui/object/structs'
 import { SUI } from '../../sui/sui/structs'
-import { bcs } from '@mysten/sui/bcs'
+import { BcsStruct, bcs } from '@mysten/sui/bcs'
 
 /* ============================== MultiCoinHolder =============================== */
 
@@ -130,7 +130,11 @@ export class MultiCoinHolder implements StructClass {
 
   private static cachedBcs: ReturnType<typeof MultiCoinHolder.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof MultiCoinHolder.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+      id: typeof UID.bcs
+      sui_coin: typeof Coin.bcs
+      custom_coin: typeof CoinCustom.bcs
+  }> {
     if (!MultiCoinHolder.cachedBcs) {
       MultiCoinHolder.cachedBcs = MultiCoinHolder.instantiateBcs()
     }

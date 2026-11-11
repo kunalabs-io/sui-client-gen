@@ -3,7 +3,7 @@
  * strings.
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -122,7 +122,9 @@ export class String implements StructClass {
 
   private static cachedBcs: ReturnType<typeof String.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof String.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    bytes: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+  }> {
     if (!String.cachedBcs) {
       String.cachedBcs = String.instantiateBcs()
     }

@@ -1,4 +1,4 @@
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -122,7 +122,10 @@ export class PCREntry implements StructClass {
 
   private static cachedBcs: ReturnType<typeof PCREntry.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof PCREntry.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    index: ReturnType<typeof bcs.u8>
+    value: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+  }> {
     if (!PCREntry.cachedBcs) {
       PCREntry.cachedBcs = PCREntry.instantiateBcs()
     }
@@ -359,7 +362,19 @@ export class NitroAttestationDocument implements StructClass {
 
   private static cachedBcs: ReturnType<typeof NitroAttestationDocument.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof NitroAttestationDocument.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    module_id: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+    timestamp: ReturnType<typeof bcs.u64>
+    digest: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+    pcrs: ReturnType<typeof bcs.vector<typeof PCREntry.bcs>>
+    public_key: ReturnType<
+      typeof Option.bcs<ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>>
+    >
+    user_data: ReturnType<
+      typeof Option.bcs<ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>>
+    >
+    nonce: ReturnType<typeof Option.bcs<ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>>>
+  }> {
     if (!NitroAttestationDocument.cachedBcs) {
       NitroAttestationDocument.cachedBcs = NitroAttestationDocument.instantiateBcs()
     }

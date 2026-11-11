@@ -1,4 +1,4 @@
-import { bcs, BcsType } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import { getTypeOrigin } from '../../_envs'
 import {
@@ -139,7 +139,9 @@ export class Dummy implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Dummy.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Dummy.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!Dummy.cachedBcs) {
       Dummy.cachedBcs = Dummy.instantiateBcs()
     }
@@ -329,7 +331,10 @@ export class WithGenericField<T extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof WithGenericField.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof WithGenericField.instantiateBcs> {
+  static get bcs(): <T extends BcsType<any>>(T: T) => BcsStruct<{
+    id: typeof UID.bcs
+    generic_field: T
+  }> {
     if (!WithGenericField.cachedBcs) {
       WithGenericField.cachedBcs = WithGenericField.instantiateBcs()
     }
@@ -566,7 +571,9 @@ export class Bar implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Bar.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Bar.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    value: ReturnType<typeof bcs.u64>
+  }> {
     if (!Bar.cachedBcs) {
       Bar.cachedBcs = Bar.instantiateBcs()
     }
@@ -767,7 +774,10 @@ export class WithTwoGenerics<T extends TypeArgument, U extends TypeArgument>
 
   private static cachedBcs: ReturnType<typeof WithTwoGenerics.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof WithTwoGenerics.instantiateBcs> {
+  static get bcs(): <T extends BcsType<any>, U extends BcsType<any>>(T: T, U: U) => BcsStruct<{
+    generic_field_1: T
+    generic_field_2: U
+  }> {
     if (!WithTwoGenerics.cachedBcs) {
       WithTwoGenerics.cachedBcs = WithTwoGenerics.instantiateBcs()
     }
@@ -1088,7 +1098,51 @@ export class Foo<T extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Foo.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Foo.instantiateBcs> {
+  static get bcs(): <T extends BcsType<any>>(T: T) => BcsStruct<{
+    id: typeof UID.bcs
+    generic: T
+    reified_primitive_vec: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u64>>>
+    reified_object_vec: ReturnType<typeof bcs.vector<typeof Bar.bcs>>
+    generic_vec: ReturnType<typeof bcs.vector<T>>
+    generic_vec_nested: ReturnType<
+      typeof bcs.vector<ReturnType<typeof WithTwoGenerics.bcs<T, ReturnType<typeof bcs.u8>>>>
+    >
+    two_generics: ReturnType<typeof WithTwoGenerics.bcs<T, typeof Bar.bcs>>
+    two_generics_reified_primitive: ReturnType<
+      typeof WithTwoGenerics.bcs<ReturnType<typeof bcs.u16>, ReturnType<typeof bcs.u64>>
+    >
+    two_generics_reified_object: ReturnType<
+      typeof WithTwoGenerics.bcs<typeof Bar.bcs, typeof Bar.bcs>
+    >
+    two_generics_nested: ReturnType<
+      typeof WithTwoGenerics.bcs<
+        T,
+        ReturnType<typeof WithTwoGenerics.bcs<ReturnType<typeof bcs.u8>, ReturnType<typeof bcs.u8>>>
+      >
+    >
+    two_generics_reified_nested: ReturnType<
+      typeof WithTwoGenerics.bcs<
+        typeof Bar.bcs,
+        ReturnType<typeof WithTwoGenerics.bcs<ReturnType<typeof bcs.u8>, ReturnType<typeof bcs.u8>>>
+      >
+    >
+    two_generics_nested_vec: ReturnType<
+      typeof bcs.vector<
+        ReturnType<
+          typeof WithTwoGenerics.bcs<
+            typeof Bar.bcs,
+            ReturnType<
+              typeof bcs.vector<
+                ReturnType<typeof WithTwoGenerics.bcs<T, ReturnType<typeof bcs.u8>>>
+              >
+            >
+          >
+        >
+      >
+    >
+    dummy: typeof Dummy.bcs
+    other: typeof StructFromOtherModule.bcs
+  }> {
     if (!Foo.cachedBcs) {
       Foo.cachedBcs = Foo.instantiateBcs()
     }
@@ -1553,7 +1607,21 @@ export class WithSpecialTypes<T extends PhantomTypeArgument, U extends TypeArgum
 
   private static cachedBcs: ReturnType<typeof WithSpecialTypes.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof WithSpecialTypes.instantiateBcs> {
+  static get bcs(): <U extends BcsType<any>>(U: U) => BcsStruct<{
+    id: typeof UID.bcs
+    string: typeof String.bcs
+    ascii_string: typeof StringAscii.bcs
+    url: typeof Url.bcs
+    id_field: typeof ID.bcs
+    uid: typeof UID.bcs
+    balance: typeof Balance.bcs
+    option: ReturnType<typeof Option.bcs<ReturnType<typeof bcs.u64>>>
+    option_obj: ReturnType<typeof Option.bcs<typeof Bar.bcs>>
+    option_none: ReturnType<typeof Option.bcs<ReturnType<typeof bcs.u64>>>
+    balance_generic: typeof Balance.bcs
+    option_generic: ReturnType<typeof Option.bcs<U>>
+    option_generic_none: ReturnType<typeof Option.bcs<U>>
+  }> {
     if (!WithSpecialTypes.cachedBcs) {
       WithSpecialTypes.cachedBcs = WithSpecialTypes.instantiateBcs()
     }
@@ -2155,7 +2223,26 @@ export class WithSpecialTypesAsGenerics<
   private static cachedBcs: ReturnType<typeof WithSpecialTypesAsGenerics.instantiateBcs> | null =
     null
 
-  static get bcs(): ReturnType<typeof WithSpecialTypesAsGenerics.instantiateBcs> {
+  static get bcs(): <
+    T0 extends BcsType<any>,
+    T1 extends BcsType<any>,
+    T2 extends BcsType<any>,
+    T3 extends BcsType<any>,
+    T4 extends BcsType<any>,
+    T5 extends BcsType<any>,
+    T6 extends BcsType<any>,
+    T7 extends BcsType<any>,
+  >(T0: T0, T1: T1, T2: T2, T3: T3, T4: T4, T5: T5, T6: T6, T7: T7) => BcsStruct<{
+    id: typeof UID.bcs
+    string: T0
+    ascii_string: T1
+    url: T2
+    id_field: T3
+    uid: T4
+    balance: T5
+    option: T6
+    option_none: T7
+  }> {
     if (!WithSpecialTypesAsGenerics.cachedBcs) {
       WithSpecialTypesAsGenerics.cachedBcs = WithSpecialTypesAsGenerics.instantiateBcs()
     }
@@ -2639,7 +2726,15 @@ export class WithSpecialTypesInVectors<T extends TypeArgument> implements Struct
   private static cachedBcs: ReturnType<typeof WithSpecialTypesInVectors.instantiateBcs> | null =
     null
 
-  static get bcs(): ReturnType<typeof WithSpecialTypesInVectors.instantiateBcs> {
+  static get bcs(): <T extends BcsType<any>>(T: T) => BcsStruct<{
+    id: typeof UID.bcs
+    string: ReturnType<typeof bcs.vector<typeof String.bcs>>
+    ascii_string: ReturnType<typeof bcs.vector<typeof StringAscii.bcs>>
+    id_field: ReturnType<typeof bcs.vector<typeof ID.bcs>>
+    bar: ReturnType<typeof bcs.vector<typeof Bar.bcs>>
+    option: ReturnType<typeof bcs.vector<ReturnType<typeof Option.bcs<ReturnType<typeof bcs.u64>>>>>
+    option_generic: ReturnType<typeof bcs.vector<ReturnType<typeof Option.bcs<T>>>>
+  }> {
     if (!WithSpecialTypesInVectors.cachedBcs) {
       WithSpecialTypesInVectors.cachedBcs = WithSpecialTypesInVectors.instantiateBcs()
     }

@@ -1,4 +1,4 @@
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import { fromHex, toHex } from '@mysten/sui/utils'
 import {
@@ -159,7 +159,13 @@ export class TxContext implements StructClass {
 
   private static cachedBcs: ReturnType<typeof TxContext.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof TxContext.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    sender: BcsType<string, string>
+    tx_hash: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+    epoch: ReturnType<typeof bcs.u64>
+    epoch_timestamp_ms: ReturnType<typeof bcs.u64>
+    ids_created: ReturnType<typeof bcs.u64>
+  }> {
     if (!TxContext.cachedBcs) {
       TxContext.cachedBcs = TxContext.instantiateBcs()
     }

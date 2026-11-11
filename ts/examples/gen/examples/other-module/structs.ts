@@ -1,4 +1,4 @@
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import { getTypeOrigin } from '../../_envs'
 import {
@@ -124,7 +124,9 @@ export class StructFromOtherModule implements StructClass {
 
   private static cachedBcs: ReturnType<typeof StructFromOtherModule.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof StructFromOtherModule.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!StructFromOtherModule.cachedBcs) {
       StructFromOtherModule.cachedBcs = StructFromOtherModule.instantiateBcs()
     }
@@ -300,7 +302,9 @@ export class AddedInAnUpgrade implements StructClass {
 
   private static cachedBcs: ReturnType<typeof AddedInAnUpgrade.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof AddedInAnUpgrade.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!AddedInAnUpgrade.cachedBcs) {
       AddedInAnUpgrade.cachedBcs = AddedInAnUpgrade.instantiateBcs()
     }

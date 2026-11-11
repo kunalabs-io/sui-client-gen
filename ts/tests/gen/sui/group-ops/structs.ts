@@ -1,6 +1,6 @@
 /** Generic Move and native functions for group operations. */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -133,7 +133,9 @@ export class Element<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Element.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Element.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    bytes: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+  }> {
     if (!Element.cachedBcs) {
       Element.cachedBcs = Element.instantiateBcs()
     }

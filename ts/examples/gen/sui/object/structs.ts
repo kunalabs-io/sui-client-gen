@@ -1,6 +1,6 @@
 /** Sui object identifiers */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import { fromHex, toHex } from '@mysten/sui/utils'
 import {
@@ -124,7 +124,9 @@ export class ID implements StructClass {
 
   private static cachedBcs: ReturnType<typeof ID.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof ID.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    bytes: BcsType<string, string>
+  }> {
     if (!ID.cachedBcs) {
       ID.cachedBcs = ID.instantiateBcs()
     }
@@ -300,7 +302,9 @@ export class UID implements StructClass {
 
   private static cachedBcs: ReturnType<typeof UID.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof UID.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof ID.bcs
+  }> {
     if (!UID.cachedBcs) {
       UID.cachedBcs = UID.instantiateBcs()
     }

@@ -1,4 +1,4 @@
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -125,7 +125,10 @@ export class Versioned implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Versioned.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Versioned.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    version: ReturnType<typeof bcs.u64>
+  }> {
     if (!Versioned.cachedBcs) {
       Versioned.cachedBcs = Versioned.instantiateBcs()
     }
@@ -308,7 +311,10 @@ export class VersionChangeCap implements StructClass {
 
   private static cachedBcs: ReturnType<typeof VersionChangeCap.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof VersionChangeCap.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    versioned_id: typeof ID.bcs
+    old_version: ReturnType<typeof bcs.u64>
+  }> {
     if (!VersionChangeCap.cachedBcs) {
       VersionChangeCap.cachedBcs = VersionChangeCap.instantiateBcs()
     }

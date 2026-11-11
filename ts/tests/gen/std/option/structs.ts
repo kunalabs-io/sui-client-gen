@@ -1,6 +1,6 @@
 /** This module defines the Option type and its methods to represent and handle an optional value. */
 
-import { bcs, BcsType } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -143,7 +143,9 @@ export class Option<Element extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Option.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Option.instantiateBcs> {
+  static get bcs(): <Element extends BcsType<any>>(Element: Element) => BcsStruct<{
+    vec: ReturnType<typeof bcs.vector<Element>>
+  }> {
     if (!Option.cachedBcs) {
       Option.cachedBcs = Option.instantiateBcs()
     }

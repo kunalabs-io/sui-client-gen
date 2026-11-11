@@ -1284,6 +1284,39 @@ fn test_no_duplicate_null() {
     );
 }
 
+#[test]
+fn test_bcs_getter_type_does_not_reference_private_builder() {
+    let outputs = vec![
+        make_fixture_dummy_ir().emit_body(),
+        make_fixture_with_generic_field_ir().emit_body(),
+        make_fixture_with_two_generics_ir().emit_body(),
+        make_fixture_with_special_types_ir().emit_body(),
+        make_fixture_with_special_types_in_vectors_ir().emit_body(),
+        make_fixture_foo_ir().emit_body(),
+        make_struct_with_phantom_type_args_ir().emit_body(),
+        make_enums_action_ir().emit_body(),
+        make_enum_with_non_phantom_in_phantom_position_ir().emit_body(),
+        make_system_enum_ir().emit_body(),
+    ];
+
+    for output in outputs {
+        let getter = output
+            .lines()
+            .find(|line| line.contains("static get bcs()"))
+            .unwrap_or_else(|| panic!("bcs getter missing; got:\n{}", output));
+        assert!(
+            !getter.contains("instantiateBcs"),
+            "bcs getter type must not go through the private builder; got: {}",
+            getter
+        );
+        assert!(
+            getter.contains("BcsStruct<") || getter.contains("BcsEnum<"),
+            "bcs getter must declare its BcsStruct/BcsEnum type; got: {}",
+            getter
+        );
+    }
+}
+
 // =============================================================================
 // Function IR Fixtures (Milestone 3)
 // =============================================================================

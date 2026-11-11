@@ -3,7 +3,7 @@
  * shared object that is created at 0x6 during genesis.
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -143,7 +143,10 @@ export class Clock implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Clock.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Clock.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    timestamp_ms: ReturnType<typeof bcs.u64>
+  }> {
     if (!Clock.cachedBcs) {
       Clock.cachedBcs = Clock.instantiateBcs()
     }

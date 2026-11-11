@@ -33,7 +33,12 @@ import {
   compressSuiType,
   parseTypeName
 } from '../../_framework/util'
-import { BcsType, bcs } from '@mysten/sui/bcs'
+import {
+  BcsEnum,
+  BcsStruct,
+  BcsType,
+  bcs
+} from '@mysten/sui/bcs'
 
 /* ============================== Container =============================== */
 
@@ -137,7 +142,12 @@ export class Container {
 
   private static cachedBcs: ReturnType<typeof Container.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Container.instantiateBcs> {
+  static get bcs(): <T1 extends BcsType<any>>(T1: T1) => BcsEnum<{
+      Empty: null
+      WithTable: BcsStruct<{
+        table: ReturnType<typeof Table.bcs<T2>>
+      }>
+  }> {
     if (!Container.cachedBcs) {
       Container.cachedBcs = Container.instantiateBcs()
     }

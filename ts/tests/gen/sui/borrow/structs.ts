@@ -6,7 +6,7 @@
  * sure the object is returned and was not swapped for another one.
  */
 
-import { bcs, BcsType } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import { fromHex, toHex } from '@mysten/sui/utils'
 import {
@@ -150,7 +150,10 @@ export class Referent<T extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Referent.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Referent.instantiateBcs> {
+  static get bcs(): <T extends BcsType<any>>(T: T) => BcsStruct<{
+    id: BcsType<string, string>
+    value: ReturnType<typeof Option.bcs<T>>
+  }> {
     if (!Referent.cachedBcs) {
       Referent.cachedBcs = Referent.instantiateBcs()
     }
@@ -394,7 +397,10 @@ export class Borrow implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Borrow.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Borrow.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    ref: BcsType<string, string>
+    obj: typeof ID.bcs
+  }> {
     if (!Borrow.cachedBcs) {
       Borrow.cachedBcs = Borrow.instantiateBcs()
     }

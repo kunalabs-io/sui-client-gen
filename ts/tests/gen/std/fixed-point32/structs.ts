@@ -3,7 +3,7 @@
  * a 32-bit fractional part.
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -128,7 +128,9 @@ export class FixedPoint32 implements StructClass {
 
   private static cachedBcs: ReturnType<typeof FixedPoint32.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof FixedPoint32.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    value: ReturnType<typeof bcs.u64>
+  }> {
     if (!FixedPoint32.cachedBcs) {
       FixedPoint32.cachedBcs = FixedPoint32.instantiateBcs()
     }

@@ -1,4 +1,4 @@
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import { fromHex, toHex } from '@mysten/sui/utils'
 import {
@@ -140,7 +140,9 @@ export class OwnerKey implements StructClass {
 
   private static cachedBcs: ReturnType<typeof OwnerKey.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof OwnerKey.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    owner: BcsType<string, string>
+  }> {
     if (!OwnerKey.cachedBcs) {
       OwnerKey.cachedBcs = OwnerKey.instantiateBcs()
     }
@@ -323,7 +325,10 @@ export class Owner implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Owner.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Owner.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    balances: typeof Bag.bcs
+    owner: BcsType<string, string>
+  }> {
     if (!Owner.cachedBcs) {
       Owner.cachedBcs = Owner.instantiateBcs()
     }
@@ -506,7 +511,9 @@ export class MetadataKey<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof MetadataKey.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof MetadataKey.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!MetadataKey.cachedBcs) {
       MetadataKey.cachedBcs = MetadataKey.instantiateBcs()
     }
@@ -747,7 +754,9 @@ export class Metadata<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Metadata.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Metadata.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    fields: typeof Bag.bcs
+  }> {
     if (!Metadata.cachedBcs) {
       Metadata.cachedBcs = Metadata.instantiateBcs()
     }

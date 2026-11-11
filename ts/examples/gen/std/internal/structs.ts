@@ -27,7 +27,7 @@
  * ```
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -161,7 +161,9 @@ export class Permit<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Permit.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Permit.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!Permit.cachedBcs) {
       Permit.cachedBcs = Permit.instantiateBcs()
     }

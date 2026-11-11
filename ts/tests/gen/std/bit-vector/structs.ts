@@ -1,4 +1,4 @@
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -119,7 +119,10 @@ export class BitVector implements StructClass {
 
   private static cachedBcs: ReturnType<typeof BitVector.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof BitVector.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    length: ReturnType<typeof bcs.u64>
+    bit_field: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.bool>>>
+  }> {
     if (!BitVector.cachedBcs) {
       BitVector.cachedBcs = BitVector.instantiateBcs()
     }

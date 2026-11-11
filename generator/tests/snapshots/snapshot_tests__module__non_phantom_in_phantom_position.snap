@@ -34,7 +34,7 @@ import {
 } from '../../_framework/util'
 import { UID } from '../../sui/object/structs'
 import { Table } from '../../sui/table/structs'
-import { BcsType, bcs } from '@mysten/sui/bcs'
+import { BcsStruct, BcsType, bcs } from '@mysten/sui/bcs'
 
 /* ============================== WitTable =============================== */
 
@@ -142,7 +142,10 @@ export class WitTable<T0 extends PhantomTypeArgument, T1 extends TypeArgument, T
 
   private static cachedBcs: ReturnType<typeof WitTable.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof WitTable.instantiateBcs> {
+  static get bcs(): <T1 extends BcsType<any>>(T1: T1) => BcsStruct<{
+      id: typeof UID.bcs
+      table: ReturnType<typeof Table.bcs<T2>>
+  }> {
     if (!WitTable.cachedBcs) {
       WitTable.cachedBcs = WitTable.instantiateBcs()
     }

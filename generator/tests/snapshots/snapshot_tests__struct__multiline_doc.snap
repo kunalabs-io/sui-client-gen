@@ -113,7 +113,9 @@ export class MultilineDoc implements StructClass {
 
   private static cachedBcs: ReturnType<typeof MultilineDoc.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof MultilineDoc.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+      data: ReturnType<typeof bcs.u64>
+  }> {
     if (!MultilineDoc.cachedBcs) {
       MultilineDoc.cachedBcs = MultilineDoc.instantiateBcs()
     }

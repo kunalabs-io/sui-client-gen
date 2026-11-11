@@ -98,7 +98,9 @@ export class ACL implements StructClass {
 
   private static cachedBcs: ReturnType<typeof ACL.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof ACL.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+      permissions: ReturnType<typeof LinkedTable.bcs<BcsType<string, string>>>
+  }> {
     if (!ACL.cachedBcs) {
       ACL.cachedBcs = ACL.instantiateBcs()
     }

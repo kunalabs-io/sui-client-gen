@@ -315,11 +315,10 @@ impl StructIR {
             lines.push(format!("import {{ {} }} from '{}'", name, imp.path));
         }
 
-        // BCS imports - add BcsType if non-phantom type params
-        if self.has_non_phantom_type_params {
-            lines.push("import { BcsType, bcs } from '@mysten/sui/bcs'".to_string());
+        if self.has_non_phantom_type_params || self.uses_address {
+            lines.push("import { BcsStruct, BcsType, bcs } from '@mysten/sui/bcs'".to_string());
         } else {
-            lines.push("import { bcs } from '@mysten/sui/bcs'".to_string());
+            lines.push("import { BcsStruct, bcs } from '@mysten/sui/bcs'".to_string());
         }
         lines.push(
             "import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'"
@@ -542,6 +541,12 @@ impl StructIR {
             .map(|f| format!("      {}: {},", f.move_name, f.field_type.to_bcs()))
             .collect();
 
+        let bcs_field_types: Vec<String> = self
+            .fields
+            .iter()
+            .map(|f| format!("      {}: {}", f.move_name, f.field_type.to_bcs_type()))
+            .collect();
+
         let from_fields_decodes: Vec<String> = self
             .fields
             .iter()
@@ -660,7 +665,9 @@ impl StructIR {
 
               private static cachedBcs: ReturnType<typeof {name}.instantiateBcs> | null = null
 
-              static get bcs(): ReturnType<typeof {name}.instantiateBcs> {{
+              static get bcs(): BcsStruct<{{
+            {bcs_field_types}
+              }}> {{
                 if (!{name}.cachedBcs) {{
                   {name}.cachedBcs = {name}.instantiateBcs()
                 }}
@@ -735,6 +742,7 @@ impl StructIR {
             field_decls = field_decls.join("\n"),
             field_assignments = field_assignments.join("\n"),
             bcs_fields = bcs_fields.join("\n"),
+            bcs_field_types = bcs_field_types.join("\n"),
             from_fields_decodes = from_fields_decodes.join("\n"),
             from_fields_with_types_decodes = from_fields_with_types_decodes.join("\n"),
             to_json_fields = to_json_fields.join("\n"),
@@ -795,6 +803,12 @@ impl StructIR {
             .fields
             .iter()
             .map(|f| format!("      {}: {},", f.move_name, f.field_type.to_bcs()))
+            .collect();
+
+        let bcs_field_types: Vec<String> = self
+            .fields
+            .iter()
+            .map(|f| format!("      {}: {}", f.move_name, f.field_type.to_bcs_type()))
             .collect();
 
         let num_type_params = self.type_params.len();
@@ -875,7 +889,9 @@ impl StructIR {
 
               private static cachedBcs: ReturnType<typeof {name}.instantiateBcs> | null = null
 
-              static get bcs(): ReturnType<typeof {name}.instantiateBcs> {{
+              static get bcs(): {bcs_type_params}{bcs_params} => BcsStruct<{{
+            {bcs_field_types}
+              }}> {{
                 if (!{name}.cachedBcs) {{
                   {name}.cachedBcs = {name}.instantiateBcs()
                 }}
@@ -886,6 +902,7 @@ impl StructIR {
                 bcs_params = bcs_params,
                 bcs_struct_name = bcs_struct_name,
                 bcs_fields = bcs_fields.join("\n"),
+                bcs_field_types = bcs_field_types.join("\n"),
             }
         } else {
             // Phantom-only: BCS is a static value
@@ -898,7 +915,9 @@ impl StructIR {
 
               private static cachedBcs: ReturnType<typeof {name}.instantiateBcs> | null = null
 
-              static get bcs(): ReturnType<typeof {name}.instantiateBcs> {{
+              static get bcs(): BcsStruct<{{
+            {bcs_field_types}
+              }}> {{
                 if (!{name}.cachedBcs) {{
                   {name}.cachedBcs = {name}.instantiateBcs()
                 }}
@@ -906,6 +925,7 @@ impl StructIR {
               }}"#,
                 name = self.name,
                 bcs_fields = bcs_fields.join("\n"),
+                bcs_field_types = bcs_field_types.join("\n"),
             }
         };
 
@@ -1730,6 +1750,42 @@ impl FieldTypeIR {
                     format!("{}.bcs", class_name)
                 } else {
                     format!("{}.bcs({})", class_name, non_phantom_args.join(", "))
+                }
+            }
+            FieldTypeIR::TypeParam { name, .. } => name.clone(),
+        }
+    }
+
+    pub fn to_bcs_type(&self) -> String {
+        match self {
+            FieldTypeIR::Primitive(p) => match p.as_str() {
+                "address" => "BcsType<string, string>".to_string(),
+                _ => format!("ReturnType<typeof bcs.{}>", p),
+            },
+            FieldTypeIR::Vector(inner) => {
+                format!("ReturnType<typeof bcs.vector<{}>>", inner.to_bcs_type())
+            }
+            FieldTypeIR::Datatype {
+                class_name,
+                type_args,
+                type_arg_is_phantom,
+                ..
+            } => {
+                let non_phantom_args: Vec<String> = type_args
+                    .iter()
+                    .zip(type_arg_is_phantom.iter())
+                    .filter(|(_, is_phantom)| !**is_phantom)
+                    .map(|(arg, _)| arg.to_bcs_type())
+                    .collect();
+
+                if non_phantom_args.is_empty() {
+                    format!("typeof {}.bcs", class_name)
+                } else {
+                    format!(
+                        "ReturnType<typeof {}.bcs<{}>>",
+                        class_name,
+                        non_phantom_args.join(", ")
+                    )
                 }
             }
             FieldTypeIR::TypeParam { name, .. } => name.clone(),

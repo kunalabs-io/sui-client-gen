@@ -1,4 +1,4 @@
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import { fromHex, toHex } from '@mysten/sui/utils'
 import {
@@ -125,7 +125,9 @@ export class AccumulatorRoot implements StructClass {
 
   private static cachedBcs: ReturnType<typeof AccumulatorRoot.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof AccumulatorRoot.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+  }> {
     if (!AccumulatorRoot.cachedBcs) {
       AccumulatorRoot.cachedBcs = AccumulatorRoot.instantiateBcs()
     }
@@ -300,7 +302,9 @@ export class U128 implements StructClass {
 
   private static cachedBcs: ReturnType<typeof U128.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof U128.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    value: ReturnType<typeof bcs.u128>
+  }> {
     if (!U128.cachedBcs) {
       U128.cachedBcs = U128.instantiateBcs()
     }
@@ -481,7 +485,9 @@ export class Key<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Key.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Key.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    address: BcsType<string, string>
+  }> {
     if (!Key.cachedBcs) {
       Key.cachedBcs = Key.instantiateBcs()
     }

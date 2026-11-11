@@ -1,6 +1,6 @@
 /** A module for accumulating funds, i.e. Balance-like types. */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import { fromHex, toHex } from '@mysten/sui/utils'
 import {
@@ -158,7 +158,10 @@ export class Withdrawal<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Withdrawal.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Withdrawal.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    owner: BcsType<string, string>
+    limit: ReturnType<typeof bcs.u256>
+  }> {
     if (!Withdrawal.cachedBcs) {
       Withdrawal.cachedBcs = Withdrawal.instantiateBcs()
     }

@@ -5,7 +5,7 @@
  * supply information, regulatory status, and metadata capabilities.
  */
 
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsEnum, BcsStruct, BcsTuple } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -146,7 +146,9 @@ export class CoinRegistry implements StructClass {
 
   private static cachedBcs: ReturnType<typeof CoinRegistry.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof CoinRegistry.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+  }> {
     if (!CoinRegistry.cachedBcs) {
       CoinRegistry.cachedBcs = CoinRegistry.instantiateBcs()
     }
@@ -326,7 +328,10 @@ export class ExtraField implements StructClass {
 
   private static cachedBcs: ReturnType<typeof ExtraField.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof ExtraField.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    pos0: typeof TypeName.bcs
+    pos1: ReturnType<typeof bcs.vector<ReturnType<typeof bcs.u8>>>
+  }> {
     if (!ExtraField.cachedBcs) {
       ExtraField.cachedBcs = ExtraField.instantiateBcs()
     }
@@ -510,7 +515,9 @@ export class CurrencyKey<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof CurrencyKey.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof CurrencyKey.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!CurrencyKey.cachedBcs) {
       CurrencyKey.cachedBcs = CurrencyKey.instantiateBcs()
     }
@@ -743,7 +750,9 @@ export class LegacyMetadataKey implements StructClass {
 
   private static cachedBcs: ReturnType<typeof LegacyMetadataKey.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof LegacyMetadataKey.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!LegacyMetadataKey.cachedBcs) {
       LegacyMetadataKey.cachedBcs = LegacyMetadataKey.instantiateBcs()
     }
@@ -927,7 +936,9 @@ export class MetadataCap<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof MetadataCap.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof MetadataCap.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+  }> {
     if (!MetadataCap.cachedBcs) {
       MetadataCap.cachedBcs = MetadataCap.instantiateBcs()
     }
@@ -1165,7 +1176,9 @@ export class Borrow<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Borrow.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Borrow.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    dummy_field: ReturnType<typeof bcs.bool>
+  }> {
     if (!Borrow.cachedBcs) {
       Borrow.cachedBcs = Borrow.instantiateBcs()
     }
@@ -1485,7 +1498,19 @@ export class Currency<T extends PhantomTypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Currency.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Currency.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    decimals: ReturnType<typeof bcs.u8>
+    name: typeof String.bcs
+    symbol: typeof String.bcs
+    description: typeof String.bcs
+    icon_url: typeof String.bcs
+    supply: ReturnType<typeof Option.bcs<typeof SupplyState.bcs>>
+    regulated: typeof RegulatedState.bcs
+    treasury_cap_id: ReturnType<typeof Option.bcs<typeof ID.bcs>>
+    metadata_cap_id: typeof MetadataCapState.bcs
+    extra_fields: ReturnType<typeof VecMap.bcs<typeof String.bcs, typeof ExtraField.bcs>>
+  }> {
     if (!Currency.cachedBcs) {
       Currency.cachedBcs = Currency.instantiateBcs()
     }
@@ -1810,7 +1835,11 @@ export class CurrencyInitializer<T extends PhantomTypeArgument> implements Struc
 
   private static cachedBcs: ReturnType<typeof CurrencyInitializer.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof CurrencyInitializer.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    currency: typeof Currency.bcs
+    extra_fields: typeof Bag.bcs
+    is_otw: ReturnType<typeof bcs.bool>
+  }> {
     if (!CurrencyInitializer.cachedBcs) {
       CurrencyInitializer.cachedBcs = CurrencyInitializer.instantiateBcs()
     }
@@ -2070,7 +2099,11 @@ export class SupplyState {
 
   private static cachedBcs: ReturnType<typeof SupplyState.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof SupplyState.instantiateBcs> {
+  static get bcs(): BcsEnum<{
+    Fixed: BcsTuple<readonly [typeof Supply.bcs]>
+    BurnOnly: BcsTuple<readonly [typeof Supply.bcs]>
+    Unknown: null
+  }> {
     if (!SupplyState.cachedBcs) {
       SupplyState.cachedBcs = SupplyState.instantiateBcs()
     }
@@ -2461,7 +2494,15 @@ export class RegulatedState {
 
   private static cachedBcs: ReturnType<typeof RegulatedState.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof RegulatedState.instantiateBcs> {
+  static get bcs(): BcsEnum<{
+    Regulated: BcsStruct<{
+      cap: typeof ID.bcs
+      allow_global_pause: ReturnType<typeof Option.bcs<ReturnType<typeof bcs.bool>>>
+      variant: ReturnType<typeof bcs.u8>
+    }>
+    Unregulated: null
+    Unknown: null
+  }> {
     if (!RegulatedState.cachedBcs) {
       RegulatedState.cachedBcs = RegulatedState.instantiateBcs()
     }
@@ -2843,7 +2884,11 @@ export class MetadataCapState {
 
   private static cachedBcs: ReturnType<typeof MetadataCapState.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof MetadataCapState.instantiateBcs> {
+  static get bcs(): BcsEnum<{
+    Claimed: BcsTuple<readonly [typeof ID.bcs]>
+    Unclaimed: null
+    Deleted: null
+  }> {
     if (!MetadataCapState.cachedBcs) {
       MetadataCapState.cachedBcs = MetadataCapState.instantiateBcs()
     }

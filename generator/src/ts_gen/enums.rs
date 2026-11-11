@@ -1379,7 +1379,9 @@ impl EnumIR {
 
               private static cachedBcs: ReturnType<typeof {name}.instantiateBcs> | null = null
 
-              static get bcs(): ReturnType<typeof {name}.instantiateBcs> {{
+              static get bcs(): {bcs_type_params}{bcs_params} => BcsEnum<{{
+            {bcs_variant_types}
+              }}> {{
                 if (!{name}.cachedBcs) {{
                   {name}.cachedBcs = {name}.instantiateBcs()
                 }}
@@ -1390,6 +1392,7 @@ impl EnumIR {
                 bcs_params = bcs_params,
                 bcs_struct_name = bcs_struct_name,
                 bcs_variants = bcs_variants,
+                bcs_variant_types = self.emit_bcs_variant_types(),
             }
         } else {
             let bcs_variants = self.emit_bcs_variants();
@@ -1402,7 +1405,9 @@ impl EnumIR {
 
               private static cachedBcs: ReturnType<typeof {name}.instantiateBcs> | null = null
 
-              static get bcs(): ReturnType<typeof {name}.instantiateBcs> {{
+              static get bcs(): BcsEnum<{{
+            {bcs_variant_types}
+              }}> {{
                 if (!{name}.cachedBcs) {{
                   {name}.cachedBcs = {name}.instantiateBcs()
                 }}
@@ -1410,6 +1415,7 @@ impl EnumIR {
               }}"#,
                 name = name,
                 bcs_variants = bcs_variants,
+                bcs_variant_types = self.emit_bcs_variant_types(),
             }
         }
     }
@@ -1450,6 +1456,40 @@ impl EnumIR {
             .map(|p| format!("${{{}.name}}", p.name))
             .collect();
         format!("`{}<{}>`", self.name, name_parts.join(", "))
+    }
+
+    fn emit_bcs_variant_types(&self) -> String {
+        self.variants
+            .iter()
+            .map(|v| {
+                if v.is_unit() {
+                    format!("      {}: null", v.name)
+                } else if v.is_tuple {
+                    let fields: Vec<String> = v
+                        .fields
+                        .iter()
+                        .map(|f| f.field_type.to_bcs_type())
+                        .collect();
+                    format!(
+                        "      {}: BcsTuple<readonly [{}]>",
+                        v.name,
+                        fields.join(", ")
+                    )
+                } else {
+                    let fields: Vec<String> = v
+                        .fields
+                        .iter()
+                        .map(|f| format!("{}: {}", f.move_name, f.field_type.to_bcs_type()))
+                        .collect();
+                    format!(
+                        "      {}: BcsStruct<{{\n        {}\n      }}>",
+                        v.name,
+                        fields.join("\n        ")
+                    )
+                }
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
     }
 
     fn emit_bcs_variants(&self) -> String {

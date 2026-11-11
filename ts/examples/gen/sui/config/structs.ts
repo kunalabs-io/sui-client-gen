@@ -1,4 +1,4 @@
-import { bcs, BcsType } from '@mysten/sui/bcs'
+import { bcs, BcsStruct, BcsType } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   assertFieldsWithTypesArgsMatch,
@@ -137,7 +137,9 @@ export class Config<WriteCap extends PhantomTypeArgument> implements StructClass
 
   private static cachedBcs: ReturnType<typeof Config.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Config.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+  }> {
     if (!Config.cachedBcs) {
       Config.cachedBcs = Config.instantiateBcs()
     }
@@ -378,7 +380,9 @@ export class Setting<Value extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof Setting.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof Setting.instantiateBcs> {
+  static get bcs(): <Value extends BcsType<any>>(Value: Value) => BcsStruct<{
+    data: ReturnType<typeof Option.bcs<ReturnType<typeof SettingData.bcs<Value>>>>
+  }> {
     if (!Setting.cachedBcs) {
       Setting.cachedBcs = Setting.instantiateBcs()
     }
@@ -636,7 +640,11 @@ export class SettingData<Value extends TypeArgument> implements StructClass {
 
   private static cachedBcs: ReturnType<typeof SettingData.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof SettingData.instantiateBcs> {
+  static get bcs(): <Value extends BcsType<any>>(Value: Value) => BcsStruct<{
+    newer_value_epoch: ReturnType<typeof bcs.u64>
+    newer_value: ReturnType<typeof Option.bcs<Value>>
+    older_value_opt: ReturnType<typeof Option.bcs<Value>>
+  }> {
     if (!SettingData.cachedBcs) {
       SettingData.cachedBcs = SettingData.instantiateBcs()
     }

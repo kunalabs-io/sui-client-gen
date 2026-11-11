@@ -1,4 +1,4 @@
-import { bcs } from '@mysten/sui/bcs'
+import { bcs, BcsStruct } from '@mysten/sui/bcs'
 import type { ClientWithCoreApi, SuiClientTypes } from '@mysten/sui/client'
 import {
   decodeFromFields,
@@ -127,7 +127,10 @@ export class AuthenticatorState implements StructClass {
 
   private static cachedBcs: ReturnType<typeof AuthenticatorState.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof AuthenticatorState.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    id: typeof UID.bcs
+    version: ReturnType<typeof bcs.u64>
+  }> {
     if (!AuthenticatorState.cachedBcs) {
       AuthenticatorState.cachedBcs = AuthenticatorState.instantiateBcs()
     }
@@ -314,7 +317,10 @@ export class AuthenticatorStateInner implements StructClass {
 
   private static cachedBcs: ReturnType<typeof AuthenticatorStateInner.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof AuthenticatorStateInner.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    version: ReturnType<typeof bcs.u64>
+    active_jwks: ReturnType<typeof bcs.vector<typeof ActiveJwk.bcs>>
+  }> {
     if (!AuthenticatorStateInner.cachedBcs) {
       AuthenticatorStateInner.cachedBcs = AuthenticatorStateInner.instantiateBcs()
     }
@@ -503,7 +509,12 @@ export class JWK implements StructClass {
 
   private static cachedBcs: ReturnType<typeof JWK.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof JWK.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    kty: typeof String.bcs
+    e: typeof String.bcs
+    n: typeof String.bcs
+    alg: typeof String.bcs
+  }> {
     if (!JWK.cachedBcs) {
       JWK.cachedBcs = JWK.instantiateBcs()
     }
@@ -690,7 +701,10 @@ export class JwkId implements StructClass {
 
   private static cachedBcs: ReturnType<typeof JwkId.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof JwkId.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    iss: typeof String.bcs
+    kid: typeof String.bcs
+  }> {
     if (!JwkId.cachedBcs) {
       JwkId.cachedBcs = JwkId.instantiateBcs()
     }
@@ -874,7 +888,11 @@ export class ActiveJwk implements StructClass {
 
   private static cachedBcs: ReturnType<typeof ActiveJwk.instantiateBcs> | null = null
 
-  static get bcs(): ReturnType<typeof ActiveJwk.instantiateBcs> {
+  static get bcs(): BcsStruct<{
+    jwk_id: typeof JwkId.bcs
+    jwk: typeof JWK.bcs
+    epoch: ReturnType<typeof bcs.u64>
+  }> {
     if (!ActiveJwk.cachedBcs) {
       ActiveJwk.cachedBcs = ActiveJwk.instantiateBcs()
     }
